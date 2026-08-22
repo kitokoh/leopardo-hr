@@ -5,6 +5,9 @@ import { ArrowUpRight, BriefcaseBusiness, Loader2, Sparkles } from 'lucide-react
 import { apiFetch } from '@/lib/api-client';
 import type { StoredAuthUser } from '@/lib/i18n';
 
+type ApplicationEvent = { to_status: string; note?: string | null; changed_at?: string | null };
+type Application = { id: number; job?: { title?: string | null }; status: string; applied_at?: string | null; status_history?: ApplicationEvent[] };
+
 type Recommendation = {
   id: number;
   title: string;
@@ -26,6 +29,7 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
   const [applying, setApplying] = useState<number | null>(null);
   const [applied, setApplied] = useState<number[]>([]);
   const [coverLetters, setCoverLetters] = useState<Record<number, string>>({});
+  const [applications, setApplications] = useState<Application[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -35,6 +39,9 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
         const payload = await response.json() as { data?: Recommendation[]; error?: string };
         if (!response.ok) throw new Error(payload.error ?? 'Recommandations indisponibles.');
         if (!cancelled) setItems(payload.data ?? []);
+        const applicationsResponse = await apiFetch('/user/job-applications');
+        const applicationsPayload = await applicationsResponse.json() as { data?: Application[] };
+        if (!cancelled && applicationsResponse.ok) setApplications(applicationsPayload.data ?? []);
       } catch (cause) {
         if (!cancelled) setError(cause instanceof Error ? cause.message : 'Recommandations indisponibles.');
       } finally {
@@ -60,6 +67,9 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
       const payload = await response.json() as { error?: string };
       if (!response.ok) throw new Error(payload.error === 'ALREADY_APPLIED' ? 'Vous avez déjà postulé à cette offre.' : 'Candidature impossible.');
       setApplied((current) => [...current, job.id]);
+      const applicationsResponse = await apiFetch('/user/job-applications');
+      const applicationsPayload = await applicationsResponse.json() as { data?: Application[] };
+      if (applicationsResponse.ok) setApplications(applicationsPayload.data ?? []);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Candidature impossible.');
     } finally {
@@ -80,6 +90,26 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
       {loading && <div className="mt-6 flex items-center gap-2 text-sm text-slate-600"><Loader2 className="h-4 w-4 animate-spin" /> Recherche des offres…</div>}
       {error && <p className="mt-5 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">{error}</p>}
       {!loading && !error && items.length === 0 && <p className="mt-5 rounded-xl bg-white/70 px-4 py-3 text-sm text-slate-600">Aucune offre publiée ne correspond encore à vos préférences.</p>}
+      {applications.length > 0 && (
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white/70 p-4">
+          <h3 className="font-bold text-slate-950">Suivi de mes candidatures</h3>
+          <div className="mt-3 space-y-4">
+            {applications.map((application) => {
+              const history = application.status_history ?? [];
+              const currentStatus = application.status;
+              const stages = ['new', 'screening', 'interview', 'offer', 'hired'];
+              const currentIndex = stages.indexOf(currentStatus);
+              return (
+                <div key={application.id} className="rounded-xl border border-slate-100 p-3">
+                  <div className="flex items-center justify-between gap-3"><span className="text-sm font-bold text-slate-900">{application.job?.title ?? `Candidature #${application.id}`}</span><span className="text-xs font-black uppercase text-indigo-700">{currentStatus}</span></div>
+                  <div className="mt-3 grid grid-cols-5 gap-1">{stages.map((stage, index) => <span key={stage} className={`h-1.5 rounded-full ${index <= currentIndex ? 'bg-emerald-500' : 'bg-slate-200'}`} title={stage} />)}</div>
+                  <p className="mt-2 text-xs text-slate-500">{history.length > 0 ? (history[history.length - 1]?.note ?? 'Dernière mise à jour du dossier.') : 'Candidature envoyée.'}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
       <div className="mt-5 grid gap-3 lg:grid-cols-2">
         {items.map((job) => (
           <article key={`${job.company?.slug ?? 'company'}-${job.id}`} className="rounded-2xl border border-white bg-white/90 p-4 shadow-sm">

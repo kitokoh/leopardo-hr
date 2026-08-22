@@ -58,6 +58,20 @@ class Applicant extends Model
         'applied_at' => 'datetime',
     ];
 
+    protected static function booted(): void
+    {
+        static::created(function (Applicant $applicant): void {
+            ApplicantStatusHistory::create([
+                'applicant_id' => $applicant->id,
+                'from_status' => null,
+                'to_status' => (string) ($applicant->status ?: 'new'),
+                'actor_type' => 'system',
+                'note' => 'Candidature envoyée',
+                'changed_at' => $applicant->applied_at ?? now(),
+            ]);
+        });
+    }
+
     /** @return BelongsTo<JobPosting, $this> */
     public function jobPosting(): BelongsTo
     {
@@ -68,6 +82,12 @@ class Applicant extends Model
     public function interviews(): HasMany
     {
         return $this->hasMany(Interview::class, 'applicant_id');
+    }
+
+    /** @return HasMany<ApplicantStatusHistory, $this> */
+    public function statusHistory(): HasMany
+    {
+        return $this->hasMany(ApplicantStatusHistory::class, 'applicant_id')->orderBy('changed_at');
     }
 
     public function getFullNameAttribute(): string

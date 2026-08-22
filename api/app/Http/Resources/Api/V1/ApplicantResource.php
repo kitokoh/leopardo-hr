@@ -23,11 +23,20 @@ class ApplicantResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'source' => $this->source,
-            'stage' => $this->stage,
+            'status' => $this->status,
+            'stage' => $this->status,
             'rating' => $this->rating,
-            'resume_url' => $this->resume_url,
+            'resume_url' => $this->resume_path,
             'notes' => $this->notes,
             'interviews' => $this->whenLoaded('interviews'),
+            'status_history' => $this->whenLoaded('statusHistory', fn () => $this->statusHistory->map(fn ($event) => [
+                'id' => $event->id,
+                'from_status' => $event->from_status,
+                'to_status' => $event->to_status,
+                'note' => $event->note,
+                'actor_type' => $event->actor_type,
+                'changed_at' => $event->changed_at?->toIso8601String(),
+            ])),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

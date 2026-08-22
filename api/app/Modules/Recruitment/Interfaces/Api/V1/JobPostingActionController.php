@@ -9,6 +9,7 @@ use App\Http\Resources\Api\V1\ApplicantResource;
 use App\Http\Resources\Api\V1\InterviewResource;
 use App\Http\Resources\Api\V1\JobPostingResource;
 use App\Modules\Recruitment\Domain\Models\Applicant;
+use App\Modules\Recruitment\Domain\Models\ApplicantStatusHistory;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Recruitment\Domain\Models\Interview;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
@@ -86,7 +87,7 @@ class JobPostingActionController extends Controller
         }
 
         $applicant = Applicant::where('company_id', $user->company_id)
-            ->with(['jobPosting:id,title', 'interviews'])
+            ->with(['jobPosting:id,title', 'interviews', 'statusHistory'])
             ->findOrFail($id);
 
         return (new ApplicantResource($applicant))->response();
@@ -102,12 +103,25 @@ class JobPostingActionController extends Controller
 
         $validated = $request->validate([
             'status' => 'required|in:new,screening,interview,offer,hired,rejected,withdrawn',
+            'note' => 'nullable|string|max:2000',
         ]);
 
         $applicant = Applicant::where('company_id', $user->company_id)->findOrFail($id);
-        $applicant->update($validated);
+        $fromStatus = (string) $applicant->status;
+        $applicant->update(['status' => $validated['status']]);
+        if ($fromStatus !== $validated['status'] || ! empty($validated['note'])) {
+            ApplicantStatusHistory::create([
+                'applicant_id' => $applicant->id,
+                'from_status' => $fromStatus,
+                'to_status' => $validated['status'],
+                'changed_by' => $user->id,
+                'actor_type' => 'company',
+                'note' => $validated['note'] ?? null,
+                'changed_at' => now(),
+            ]);
+        }
 
-        return (new ApplicantResource($applicant->fresh()))->response();
+        return (new ApplicantResource($applicant->fresh(['statusHistory'])))->response();
     }
 
     public function destroyApplicant(Request $request, int $id): JsonResponse

@@ -92,6 +92,7 @@ final class UserCandidateApplicationController extends Controller
                 return Applicant::query()
                     ->where('user_id', $user->id)
                     ->where('company_id', $company->id)
+                    ->with(['jobPosting:id,title', 'statusHistory'])
                     ->select(['id', 'job_posting_id', 'company_id', 'status', 'applied_at', 'created_at'])
                     ->latest('applied_at')
                     ->limit(100)
@@ -103,6 +104,15 @@ final class UserCandidateApplicationController extends Controller
                         'status' => $application->status,
                         'applied_at' => $application->applied_at?->toIso8601String(),
                         'created_at' => $application->created_at?->toIso8601String(),
+                        'job' => ['id' => $application->jobPosting?->id, 'title' => $application->jobPosting?->title],
+                        'status_history' => $application->statusHistory->map(fn ($event) => [
+                            'id' => $event->id,
+                            'from_status' => $event->from_status,
+                            'to_status' => $event->to_status,
+                            'note' => $event->note,
+                            'actor_type' => $event->actor_type,
+                            'changed_at' => $event->changed_at?->toIso8601String(),
+                        ])->values()->all(),
                     ])
                     ->all();
             });

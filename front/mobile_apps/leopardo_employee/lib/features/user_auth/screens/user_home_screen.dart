@@ -195,6 +195,18 @@ class UserHomeScreen extends ConsumerWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _QuickActionCard(
+                icon: Icons.assignment_outlined,
+                label: 'Mes candidatures',
+                color: AppColors.cabinet,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  context.push('/job-applications');
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _QuickActionCard(
                 icon: Icons.business_outlined,
                 label: 'Creer entreprise',
                 color: AppColors.ia,

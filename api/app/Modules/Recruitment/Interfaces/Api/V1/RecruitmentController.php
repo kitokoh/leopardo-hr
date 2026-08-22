@@ -9,6 +9,7 @@ use App\Http\Resources\Api\V1\ApplicantResource;
 use App\Http\Resources\Api\V1\InterviewResource;
 use App\Http\Resources\Api\V1\JobPostingResource;
 use App\Modules\Recruitment\Domain\Models\Applicant;
+use App\Modules\Recruitment\Domain\Models\ApplicantStatusHistory;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Recruitment\Domain\Models\Interview;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
@@ -236,9 +237,21 @@ class RecruitmentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        $fromStatus = (string) $applicant->status;
         $applicant->update($validated);
+        if (isset($validated['status']) && ($fromStatus !== $validated['status'] || ! empty($validated['notes']))) {
+            ApplicantStatusHistory::create([
+                'applicant_id' => $applicant->id,
+                'from_status' => $fromStatus,
+                'to_status' => $validated['status'],
+                'changed_by' => $actor->id,
+                'actor_type' => 'company',
+                'note' => $validated['notes'] ?? null,
+                'changed_at' => now(),
+            ]);
+        }
 
-        return (new ApplicantResource($applicant->fresh()))->response();
+        return (new ApplicantResource($applicant->fresh(['statusHistory'])))->response();
     }
 
     // ── Interviews ──────────────────────────────────────────────────────────

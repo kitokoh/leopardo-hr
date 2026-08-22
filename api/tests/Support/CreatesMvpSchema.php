@@ -1703,6 +1703,22 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('applicant_status_histories'))) {
+            Schema::create($this->moduleTable('applicant_status_histories'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('applicant_id');
+                $table->string('from_status')->nullable();
+                $table->string('to_status');
+                $table->unsignedBigInteger('changed_by')->nullable();
+                $table->string('actor_type')->default('company');
+                $table->text('note')->nullable();
+                $table->timestamp('changed_at')->useCurrent();
+                $table->timestamps();
+                $table->foreign('applicant_id')->references('id')->on($this->moduleTable('applicants'))->cascadeOnDelete();
+                $table->index(['applicant_id', 'changed_at']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('interviews'))) {
             Schema::create($this->moduleTable('interviews'), function (Blueprint $table): void {
                 $table->id();
