@@ -15,6 +15,7 @@ use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
@@ -84,7 +85,7 @@ class AccountingDataModelTest extends TestCase
         ]);
         $this->assertSame($this->company->id, $first->company_id);
 
-        $this->expectException(\Illuminate\Database\QueryException::class);
+        $this->expectException(QueryException::class);
 
         // Deuxième ligne pour le MÊME tenant → violation d'unicité company_id.
         DB::table('accounting_settings')->insert([

@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property string $document_language
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @mixin Builder<static>
  */
 class AccountingSettings extends Model

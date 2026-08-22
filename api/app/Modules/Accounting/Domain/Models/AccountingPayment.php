@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read AccountingDocument $document
+ *
  * @mixin Builder<static>
  */
 class AccountingPayment extends Model
