@@ -141,7 +141,7 @@ Schedule::command('smart-attendance:auto-close --hours=14')
 // les environnements où un scheduler tourne (worker dédié, local).
 Schedule::command('queue:health-check')
     ->everyFiveMinutes()
-    ->when(fn (): bool => in_array((string) config('queue.default'), ['redis', 'database'], true))
+    ->when(fn (): bool => in_array(config('queue.default'), ['redis', 'database'], true))
     ->withoutOverlapping();
 
 Schedule::command('growth:approve-commissions')
