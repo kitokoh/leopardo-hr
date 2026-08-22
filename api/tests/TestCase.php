@@ -141,7 +141,23 @@ abstract class TestCase extends BaseTestCase
             }
         }
 
-        $this->ensureWorkerPublicSchema($database);
+        $connection = DB::getDefaultConnection();
+        $originalDatabase = config("database.connections.{$connection}.database");
+
+        // La base worker doit être sélectionnée AVANT les migrations. Sinon
+        // plusieurs processus migrent la base commune `leopardo_test`, ce qui
+        // produit à la fois des colonnes dupliquées et des workers incomplets.
+        config(["database.connections.{$connection}.database" => $database]);
+        DB::purge($connection);
+        DB::reconnect($connection);
+
+        try {
+            $this->ensureWorkerPublicSchema($database);
+        } finally {
+            config(["database.connections.{$connection}.database" => $originalDatabase]);
+            DB::purge($connection);
+            DB::reconnect($connection);
+        }
     }
 
     /**
