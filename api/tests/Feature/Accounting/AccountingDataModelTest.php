@@ -197,8 +197,12 @@ class AccountingDataModelTest extends TestCase
         $this->assertNotSame('CHQ-00001234', $rawPayment->reference, 'La référence de paiement ne doit pas être stockée en clair.');
 
         // Round-trip : le modèle déchiffre à la lecture.
-        $this->assertSame('NIF-SENSIBLE-777', $contact->fresh()->tax_id);
-        $this->assertSame('CHQ-00001234', $payment->fresh()->reference);
+        $freshContact = $contact->fresh();
+        $freshPayment = $payment->fresh();
+        $this->assertNotNull($freshContact);
+        $this->assertNotNull($freshPayment);
+        $this->assertSame('NIF-SENSIBLE-777', $freshContact->tax_id);
+        $this->assertSame('CHQ-00001234', $freshPayment->reference);
     }
 
     public function test_enum_values_match_domain_contract(): void
