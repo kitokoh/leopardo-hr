@@ -85,6 +85,8 @@ test.describe('Marketing funnel preview', () => {
     await signupForm.getByLabel(/entreprise|company/i).fill('Leopardo Trial Co');
     await signupForm.getByLabel(/votre role|your role/i).selectOption('manager');
     await signupForm.getByLabel(/taille equipe|team size/i).selectOption('11-50');
+    await expect(signupForm.getByRole('option', { name: /algérie|algeria/i })).toBeAttached();
+    await signupForm.getByLabel(/pays|country/i).selectOption('DZ');
     await signupForm.locator('input[type="checkbox"]').check();
     const submitButton = signupForm.locator('button[type="submit"]');
     await expect(submitButton).toBeVisible();
