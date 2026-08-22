@@ -33,9 +33,9 @@ class InternalCameraTokenController extends Controller
         $clientIpInput = $request->query('client_ip');
 
         $token = is_string($tokenInput) ? trim($tokenInput) : '';
-        $cameraId = is_int($cameraIdInput)
-            ? $cameraIdInput
-            : (is_string($cameraIdInput) && ctype_digit($cameraIdInput) ? (int) $cameraIdInput : 0);
+        $cameraId = is_string($cameraIdInput) && ctype_digit($cameraIdInput)
+            ? (int) $cameraIdInput
+            : 0;
         $clientIp = is_string($clientIpInput) ? trim($clientIpInput) : null;
 
         if (
