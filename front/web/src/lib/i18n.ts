@@ -12,6 +12,12 @@ export type StoredAuthUser = {
   account_type?: string | null;
   personal_statuses?: string[] | null;
   personal_onboarding_completed?: boolean;
+  job_search_preferences?: {
+    resume_name?: string | null;
+    resume_url?: string | null;
+    resume_path?: string | null;
+    [key: string]: unknown;
+  } | null;
   manager_role?: string | null;
   capabilities?: Record<string, unknown> | null;
   // Features tenant (FeatureFlag::for) renvoyées au niveau racine par

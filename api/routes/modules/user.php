@@ -27,6 +27,7 @@ Route::middleware(['throttle:api', 'auth:user_api'])->prefix('user')->group(func
     Route::get('/personal-onboarding', [UserAuthController::class, 'personalOnboarding']);
     Route::put('/personal-onboarding', [UserAuthController::class, 'updatePersonalOnboarding']);
     Route::put('/job-search-profile', [UserAuthController::class, 'updateJobSearchProfile']);
+    Route::post('/job-search-profile/resume', [UserAuthController::class, 'uploadResume']);
     Route::get('/job-recommendations', [UserAuthController::class, 'jobRecommendations']);
     Route::get('/job-applications', [UserCandidateApplicationController::class, 'index']);
     Route::get('/job-application-notifications', [UserAuthController::class, 'applicationNotifications']);

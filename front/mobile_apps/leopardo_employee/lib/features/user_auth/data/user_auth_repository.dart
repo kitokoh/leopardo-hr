@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
@@ -142,6 +145,21 @@ class UserAuthRepository {
     );
     final data = response.data is Map ? (response.data['data'] as List<dynamic>? ?? const []) : const [];
     return data.whereType<Map>().map((item) => item.cast<String, dynamic>()).toList();
+  }
+
+  Future<Map<String, dynamic>> uploadResume(String filePath) async {
+    final file = File(filePath);
+    final response = await apiClient.requestWithRetry(
+      '/user/job-search-profile/resume',
+      method: 'POST',
+      useUserSession: true,
+      data: FormData.fromMap({
+        'resume': await MultipartFile.fromFile(file.path, filename: file.uri.pathSegments.last),
+      }),
+      maxRetriesOverride: 0,
+      timeoutOverride: const Duration(seconds: 30),
+    );
+    return response.data is Map ? (response.data['data'] as Map).cast<String, dynamic>() : <String, dynamic>{};
   }
 
   Future<List<Map<String, dynamic>>> getJobApplications() async {

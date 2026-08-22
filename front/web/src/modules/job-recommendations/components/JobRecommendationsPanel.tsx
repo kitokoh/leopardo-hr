@@ -32,6 +32,8 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
   const [coverLetters, setCoverLetters] = useState<Record<number, string>>({});
   const [applications, setApplications] = useState<Application[]>([]);
   const [notifications, setNotifications] = useState<ApplicationNotification[]>([]);
+  const [resumeName, setResumeName] = useState<string | null>((user.job_search_preferences as { resume_name?: string } | undefined)?.resume_name ?? null);
+  const [uploadingResume, setUploadingResume] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -58,6 +60,26 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
   }, []);
 
   if (!user.personal_statuses?.includes('job_seeker')) return null;
+
+  const uploadResume = async (file: File) => {
+    if (!['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+      setError('Le CV doit être un fichier PDF, DOC ou DOCX de 5 Mo maximum.');
+      return;
+    }
+    setUploadingResume(true);
+    try {
+      const form = new FormData();
+      form.set('resume', file);
+      const response = await apiFetch('/user/job-search-profile/resume', { method: 'POST', body: form });
+      const payload = await response.json() as { data?: { resume_name?: string } };
+      if (!response.ok) throw new Error('Téléversement du CV impossible.');
+      setResumeName(payload.data?.resume_name ?? file.name);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Téléversement du CV impossible.');
+    } finally {
+      setUploadingResume(false);
+    }
+  };
 
   const apply = async (job: Recommendation) => {
     const companySlug = job.company?.slug;
@@ -89,6 +111,7 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
           <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-indigo-700"><Sparkles className="h-4 w-4" aria-hidden="true" /> Recherche active</p>
           <h2 id="job-recommendations-title" className="mt-2 text-2xl font-black text-slate-950">Des offres qui correspondent à votre profil</h2>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">Les offres sont d’abord filtrées par vos préférences, puis l’IA peut affiner le classement. Les raisons affichées restent liées aux informations du profil et de l’offre.</p>
+          <div className="mt-4 flex flex-wrap items-center gap-3"><label className="cursor-pointer rounded-lg border border-indigo-200 bg-white px-3 py-2 text-sm font-bold text-indigo-800 hover:bg-indigo-50"><input type="file" accept=".pdf,.doc,.docx" className="sr-only" disabled={uploadingResume} onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadResume(file); event.currentTarget.value = ''; }} />{uploadingResume ? 'Téléversement…' : 'Téléverser mon CV'}</label>{resumeName && <span className="text-xs font-semibold text-slate-500">CV actif : {resumeName}</span>}</div>
         </div>
         <BriefcaseBusiness className="h-8 w-8 text-indigo-600" aria-hidden="true" />
       </div>

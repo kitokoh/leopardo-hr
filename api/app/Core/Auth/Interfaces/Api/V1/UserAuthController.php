@@ -11,6 +11,7 @@ use App\Modules\Recruitment\Application\Services\JobRecommendationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rule;
 
@@ -149,6 +150,32 @@ class UserAuthController extends Controller
         return new JsonResponse([
             'data' => $this->personalOnboardingPayload($user),
         ]);
+    }
+
+    public function uploadResume(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'resume' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
+        ]);
+        /** @var User $user */
+        $user = $request->user('user_api');
+        $preferences = is_array($user->job_search_preferences) ? $user->job_search_preferences : [];
+        if (! empty($preferences['resume_path'])) {
+            Storage::disk('local')->delete($preferences['resume_path']);
+        }
+        $path = $validated['resume']->store('user-resumes/'.$user->id, 'local');
+        $preferences['resume_path'] = $path;
+        $preferences['resume_url'] = $path;
+        $preferences['resume_name'] = $validated['resume']->getClientOriginalName();
+        $preferences['resume_uploaded_at'] = now()->toIso8601String();
+        $user->forceFill([
+            'job_search_preferences' => $preferences,
+            'job_search_profile_updated_at' => now(),
+        ])->save();
+        return new JsonResponse(['data' => [
+            'resume_name' => $preferences['resume_name'],
+            'uploaded_at' => $preferences['resume_uploaded_at'],
+        ]], 201);
     }
 
     public function updateJobSearchProfile(Request $request): JsonResponse
