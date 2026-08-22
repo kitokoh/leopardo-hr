@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Billing;
 
 use App\Core\Tenant\Domain\Models\Company;
+use Illuminate\Testing\PendingCommand;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -30,22 +31,27 @@ class PilotReportCommandTest extends TestCase
 
     public function test_resolves_companies_marked_pilot_in_metadata(): void
     {
+        /** @var Company $pilot */
         $pilot = Company::factory()->create(['metadata' => ['pilot' => true]]);
+        /** @var Company $other */
         $other = Company::factory()->create(['metadata' => ['pilot' => false]]);
 
-        $this->artisan('pilot:report')
-            ->expectsOutputToContain($pilot->name)
+        /** @var PendingCommand $command */
+        $command = $this->artisan('pilot:report');
+        $command->expectsOutputToContain($pilot->name)
             ->doesntExpectOutputToContain($other->name ?? '')
             ->assertExitCode(0);
     }
 
     public function test_targets_specific_company_with_company_option(): void
     {
+        /** @var Company $pilot */
         $pilot = Company::factory()->create(['metadata' => ['pilot' => true]]);
         Company::factory()->create(['metadata' => ['pilot' => true]]);
 
-        $this->artisan('pilot:report', ['--company' => [$pilot->slug]])
-            ->expectsOutputToContain($pilot->name)
+        /** @var PendingCommand $command */
+        $command = $this->artisan('pilot:report', ['--company' => [$pilot->slug]]);
+        $command->expectsOutputToContain($pilot->name)
             ->assertExitCode(0);
     }
 
@@ -53,17 +59,20 @@ class PilotReportCommandTest extends TestCase
     {
         Company::factory()->create(['metadata' => ['pilot' => false]]);
 
-        $this->artisan('pilot:report')
-            ->expectsOutputToContain('Aucune compagnie pilote')
+        /** @var PendingCommand $command */
+        $command = $this->artisan('pilot:report');
+        $command->expectsOutputToContain('Aucune compagnie pilote')
             ->assertExitCode(1);
     }
 
     public function test_json_output_contains_company_slug(): void
     {
+        /** @var Company $pilot */
         $pilot = Company::factory()->create(['metadata' => ['is_pilot' => true]]);
 
-        $this->artisan('pilot:report', ['--json' => true])
-            ->expectsOutputToContain($pilot->slug)
+        /** @var PendingCommand $command */
+        $command = $this->artisan('pilot:report', ['--json' => true]);
+        $command->expectsOutputToContain($pilot->slug)
             ->assertExitCode(0);
     }
 }
