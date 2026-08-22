@@ -47,7 +47,7 @@ use Illuminate\Support\Carbon;
  * @property-read Department|null $toDepartment
  * @property-read Employee|null $approver
  *
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ * @mixin Builder<static>
  */
 class CareerEvent extends Model
 {
