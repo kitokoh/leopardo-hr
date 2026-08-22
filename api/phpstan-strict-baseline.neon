@@ -4894,13 +4894,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 6
 			path: tests/Feature/CompanyBrandingControllerTest.php
 
 		-
 			message: '#^Parameter \#1 \$user of method Illuminate\\Foundation\\Testing\\TestCase\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 4
+			count: 6
 			path: tests/Feature/CompanyBrandingControllerTest.php
 
 		-
@@ -6688,7 +6688,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 9
+			count: 12
 			path: tests/Feature/OnboardingStepControllerTest.php
 
 		-
@@ -6698,15 +6698,21 @@ parameters:
 			path: tests/Feature/OnboardingStepControllerTest.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/OnboardingStepControllerTest.php
+
+		-
 			message: '#^Parameter \#1 \$company of method Tests\\Feature\\OnboardingStepControllerTest\:\:step\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 9
+			count: 10
 			path: tests/Feature/OnboardingStepControllerTest.php
 
 		-
 			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 6
+			count: 8
 			path: tests/Feature/OnboardingStepControllerTest.php
 
 		-
@@ -6714,6 +6720,12 @@ parameters:
 			identifier: property.notFound
 			count: 4
 			path: tests/Feature/OrgChartControllerTest.php
+
+		-
+			message: '#^Call to an undefined static method Illuminate\\Support\\Facades\\Log\:\:shouldHaveReceived\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: tests/Feature/OnboardingStepControllerTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -7690,7 +7702,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 7
 			path: tests/Feature/Security/WebhookSsrfGuardTest.php
 
 		-
@@ -7702,7 +7714,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 4
 			path: tests/Feature/Security/WebhookSsrfGuardTest.php
 
 		-
