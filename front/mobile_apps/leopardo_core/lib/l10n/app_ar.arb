@@ -1286,6 +1286,7 @@
   "billingCheckoutSandboxMessage": "دفع محاكى (وضع الاختبار). لن يتم خصم أي بطاقة.",
   "billingCheckoutUnavailable": "الدفع عبر الإنترنت غير متاح مؤقتاً. تواصل مع الدعم على support@leopardo-rh.com.",
   "billingCheckoutFailed": "تعذر إنشاء جلسة الدفع.",
+  "billingRedirectUrlInvalid": "يجب أن تنتمي عناوين إعادة التوجيه إلى الموقع المسموح به.",
   "contractsListSubtitle": "إدارة عقود الموظفين: تتبع الحالات والاستحقاقات وتصدير PDF، مرتبطة مباشرة بواجهة برمجة تطبيقات الموارد البشرية.",
   "contractsSearchplaceholder": "ابحث عن موظف أو نوع عقد...",
   "contractsAllstatuses": "كل الحالات",

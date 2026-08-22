@@ -1286,6 +1286,7 @@
   "billingCheckoutSandboxMessage": "Paiement simulé (mode sandbox). Aucune carte débitée.",
   "billingCheckoutUnavailable": "Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.",
   "billingCheckoutFailed": "Impossible de créer la session de paiement.",
+  "billingRedirectUrlInvalid": "Les URLs de redirection doivent appartenir au site autorisé.",
   "contractsListSubtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
   "contractsSearchplaceholder": "Rechercher un employe ou un type de contrat...",
   "contractsAllstatuses": "Tous les statuts",
