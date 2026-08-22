@@ -1,33 +1,52 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { resolveBackendBaseUrl } from '@/lib/backend-url';
-import { z } from 'zod';
-import { t as i18nT } from '@/lib/i18n/locale-catalog';
-import { normalizeLocale } from '@/lib/i18n';
+import { NextRequest, NextResponse } from "next/server";
+import { resolveBackendBaseUrl } from "@/lib/backend-url";
+import { z } from "zod";
+import { t as i18nT } from "@/lib/i18n/locale-catalog";
+import { normalizeLocale } from "@/lib/i18n";
 
 const checkoutSchema = z.object({
-  plan: z.enum(['free', 'pilot', 'operations', 'enterprise']),
-  billing: z.enum(['monthly', 'annual']).default('monthly'),
+  plan: z.enum(["free", "pilot", "operations", "enterprise"]),
+  billing: z.enum(["monthly", "annual"]).default("monthly"),
   email: z.string().email().max(255),
   company: z.string().min(2).max(120),
-  first_name: z.string().max(80).optional().or(z.literal('')),
-  last_name: z.string().max(80).optional().or(z.literal('')),
+  first_name: z.string().max(80).optional().or(z.literal("")),
+  last_name: z.string().max(80).optional().or(z.literal("")),
   employees: z.string().max(20).optional(),
-  locale: z.enum(['fr', 'en', 'ar', 'tr']).default('fr'),
+  locale: z.enum(["fr", "en", "ar", "tr"]).default("fr"),
   success_url: z.string().url().max(500),
   cancel_url: z.string().url().max(500),
 });
 
 const LEOPARDO_API_URL =
   process.env.LEOPARDO_API_URL ||
-  resolveBackendBaseUrl().replace(/\/api\/v1$/, '');
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
+  resolveBackendBaseUrl().replace(/\/api\/v1$/, "");
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
 
 /**
  * Sandbox checkout is an explicit opt-in (dev/staging only):
  * SANDBOX_CHECKOUT=true. It is NEVER inferred from a missing Stripe key,
  * otherwise production would silently simulate payments (see #2628).
  */
-const SANDBOX_CHECKOUT = process.env.SANDBOX_CHECKOUT === 'true';
+const SANDBOX_CHECKOUT = process.env.SANDBOX_CHECKOUT === "true";
+
+function isAllowedRedirectUrl(value: string, request: NextRequest): boolean {
+  try {
+    const target = new URL(value);
+    const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    const allowedOrigin = configuredSiteUrl
+      ? new URL(configuredSiteUrl).origin
+      : new URL(request.url).origin;
+
+    const allowedProtocol =
+      process.env.NODE_ENV === "production"
+        ? target.protocol === "https:"
+        : target.protocol === "https:" || target.protocol === "http:";
+
+    return target.origin === allowedOrigin && allowedProtocol;
+  } catch {
+    return false;
+  }
+}
 
 /** Sandbox plan prices (EUR cents) — used when Stripe is not configured or in test mode */
 const SANDBOX_PRICES: Record<string, Record<string, number>> = {
@@ -38,10 +57,10 @@ const SANDBOX_PRICES: Record<string, Record<string, number>> = {
 };
 
 const PLAN_LABELS: Record<string, string> = {
-  free: 'Free',
-  pilot: 'Pilot',
-  operations: 'Operations',
-  enterprise: 'Enterprise',
+  free: "Free",
+  pilot: "Pilot",
+  operations: "Operations",
+  enterprise: "Enterprise",
 };
 
 /**
@@ -53,24 +72,46 @@ const PLAN_LABELS: Record<string, string> = {
  *      (redirects to /checkout/success?sandbox=1&session_id=sandbox_xxx)
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const locale = normalizeLocale(request.headers.get('Accept-Language'));
+  const locale = normalizeLocale(request.headers.get("Accept-Language"));
   try {
     const body = await request.json();
     const data = checkoutSchema.parse(body);
+
+    if (
+      !isAllowedRedirectUrl(data.success_url, request) ||
+      !isAllowedRedirectUrl(data.cancel_url, request)
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "VALIDATION_ERROR",
+          message:
+            "Les URLs de redirection doivent appartenir au site autorisé.",
+        },
+        { status: 400 },
+      );
+    }
 
     // Sandbox ONLY when explicitly enabled (dev/staging). In production, a
     // missing/live-invalid Stripe key must fail loudly, never fake a payment.
     const isSandbox = SANDBOX_CHECKOUT;
 
     /* ── NO PAYMENT PATH CONFIGURED ─────────────────────────── */
-    if (!isSandbox && (!STRIPE_SECRET_KEY || STRIPE_SECRET_KEY.startsWith('sk_test_'))) {
+    if (
+      !isSandbox &&
+      (!STRIPE_SECRET_KEY || STRIPE_SECRET_KEY.startsWith("sk_test_"))
+    ) {
       return NextResponse.json(
         {
           success: false,
-          error: 'CHECKOUT_UNAVAILABLE',
-          message: i18nT(locale, 'billing.checkout_unavailable', 'Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.'),
+          error: "CHECKOUT_UNAVAILABLE",
+          message: i18nT(
+            locale,
+            "billing.checkout_unavailable",
+            "Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.",
+          ),
         },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
@@ -84,8 +125,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       let provisionResult = null;
       try {
         const r = await fetch(`${LEOPARDO_API_URL}/api/v1/trial/signup`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: data.email,
             company: data.company,
@@ -93,7 +134,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             last_name: data.last_name || undefined,
             employees: data.employees || undefined,
             plan: data.plan,
-            source: 'checkout_sandbox',
+            source: "checkout_sandbox",
           }),
           signal: AbortSignal.timeout(12000),
         });
@@ -106,57 +147,72 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
 
       const successUrl = new URL(data.success_url);
-      successUrl.searchParams.set('sandbox', '1');
-      successUrl.searchParams.set('session_id', sandboxSessionId);
-      successUrl.searchParams.set('plan', planLabel);
-      successUrl.searchParams.set('billing', data.billing);
-      successUrl.searchParams.set('amount', String(priceAmount));
-      successUrl.searchParams.set('email', data.email);
-      successUrl.searchParams.set('company', data.company);
+      successUrl.searchParams.set("sandbox", "1");
+      successUrl.searchParams.set("session_id", sandboxSessionId);
+      successUrl.searchParams.set("plan", planLabel);
+      successUrl.searchParams.set("billing", data.billing);
+      successUrl.searchParams.set("amount", String(priceAmount));
 
       return NextResponse.json({
         success: true,
         sandbox: true,
-        mode: 'sandbox',
+        mode: "sandbox",
         checkout_url: successUrl.toString(),
         session_id: sandboxSessionId,
         plan: planLabel,
         amount: priceAmount,
         provisioned: !!provisionResult,
         provisioning: provisionResult,
-        message: i18nT(locale, 'billing.checkout_sandbox_message', 'Paiement simulé (mode sandbox). Aucune carte débitée.'),
+        message: i18nT(
+          locale,
+          "billing.checkout_sandbox_message",
+          "Paiement simulé (mode sandbox). Aucune carte débitée.",
+        ),
       });
     }
 
     /* ── REAL STRIPE MODE (via backend) ──────────── */
-    const response = await fetch(`${LEOPARDO_API_URL}/api/v1/billing/checkout`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        // Manager auth would normally come from a session cookie here
-        // For now we bootstrap via the backend API key if provided
-        ...(process.env.LEOPARDO_INTERNAL_TOKEN
-          ? { Authorization: `Bearer ${process.env.LEOPARDO_INTERNAL_TOKEN}` }
-          : {}),
+    const response = await fetch(
+      `${LEOPARDO_API_URL}/api/v1/billing/checkout`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          // Manager auth would normally come from a session cookie here
+          // For now we bootstrap via the backend API key if provided
+          ...(process.env.LEOPARDO_INTERNAL_TOKEN
+            ? { Authorization: `Bearer ${process.env.LEOPARDO_INTERNAL_TOKEN}` }
+            : {}),
+        },
+        body: JSON.stringify({
+          plan: data.plan,
+          email: data.email,
+          company: data.company,
+          success_url: data.success_url,
+          cancel_url: data.cancel_url,
+          billing: data.billing,
+        }),
+        signal: AbortSignal.timeout(15000),
       },
-      body: JSON.stringify({
-        plan: data.plan,
-        email: data.email,
-        company: data.company,
-        success_url: data.success_url,
-        cancel_url: data.cancel_url,
-        billing: data.billing,
-      }),
-      signal: AbortSignal.timeout(15000),
-    });
+    );
 
     const json = await response.json();
 
     if (!response.ok || !json.data?.checkout_url) {
       return NextResponse.json(
-        { success: false, error: json.error || 'CHECKOUT_FAILED', message: json.message || i18nT(locale, 'billing.checkout_failed', 'Impossible de créer la session de paiement.') },
-        { status: response.status || 500 }
+        {
+          success: false,
+          error: json.error || "CHECKOUT_FAILED",
+          message:
+            json.message ||
+            i18nT(
+              locale,
+              "billing.checkout_failed",
+              "Impossible de créer la session de paiement.",
+            ),
+        },
+        { status: response.status || 500 },
       );
     }
 
@@ -169,13 +225,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   } catch (err) {
     if (err instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: 'VALIDATION_ERROR', details: err.issues },
-        { status: 400 }
+        { success: false, error: "VALIDATION_ERROR", details: err.issues },
+        { status: 400 },
       );
     }
     return NextResponse.json(
-      { success: false, error: 'INTERNAL_ERROR', message: 'Erreur serveur' },
-      { status: 500 }
+      { success: false, error: "INTERNAL_ERROR", message: "Erreur serveur" },
+      { status: 500 },
     );
   }
 }
