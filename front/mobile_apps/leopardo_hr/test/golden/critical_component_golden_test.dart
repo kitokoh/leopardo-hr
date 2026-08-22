@@ -74,7 +74,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(AbsenceListScreen), findsOneWidget);
-    expect(find.text('Mes Absences'), findsOneWidget);
+    expect(find.text('Mes absences'), findsOneWidget);
     expect(find.byIcon(Icons.calendar_today), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

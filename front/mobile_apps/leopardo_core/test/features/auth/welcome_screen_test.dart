@@ -25,7 +25,7 @@ void main() {
     // Brand header.
     expect(find.text('Leopardo RH'), findsOneWidget);
     expect(
-      find.text('Votre journee commence ici, pas dans un back-office.'),
+      find.text('Votre journée commence ici, pas dans un back-office.'),
       findsOneWidget,
     );
 

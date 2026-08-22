@@ -54,7 +54,7 @@ void main() {
       surfaceSize: const Size(430, 1000),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Mes Absences'), findsOneWidget);
+    expect(find.text('Mes absences'), findsOneWidget);
     expect(find.textContaining('Conge annuel'), findsOneWidget);
     expect(find.text('Approuver'), findsOneWidget);
     expect(find.text('Refuser'), findsOneWidget);
