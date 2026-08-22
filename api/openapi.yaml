@@ -28,8 +28,6 @@ servers:
     description: "Staging/production Render actuel"
   - url: "https://api.leopardo-rh.com/api/v1"
     description: "Production future domaine dedie"
-  - url: "http://localhost:8000/api/v1"
-    description: "Local Docker"
 
 security:
   - BearerAuth: []
@@ -854,6 +852,218 @@ paths:
           description: "Non authentifié"
         "422":
           $ref: "#/components/responses/Validation422"
+
+  /user/personal-onboarding:
+    get:
+      tags: ["User"]
+      summary: "Lit l’onboarding personnel de l’utilisateur"
+      security:
+        - BearerAuth: []
+      responses:
+        "200": { description: "Statuts personnels et accès professionnels" }
+        "401": { description: "Non authentifié" }
+    put:
+      tags: ["User"]
+      summary: "Enregistre les statuts personnels cumulables"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [statuses]
+              properties:
+                statuses:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    enum: [student, employee, entrepreneur, job_seeker]
+      responses:
+        "200": { description: "Onboarding enregistré" }
+        "401": { description: "Non authentifié" }
+        "422": { $ref: "#/components/responses/Validation422" }
+
+  /user/job-search-profile:
+    put:
+      tags: ["User"]
+      summary: "Met à jour les préférences de recherche d’emploi"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target_titles: { type: array, items: { type: string } }
+                skills: { type: array, items: { type: string } }
+                locations: { type: array, items: { type: string } }
+                contract_types: { type: array, items: { type: string, enum: [cdi, cdd, stage, freelance] } }
+                remote_only: { type: boolean }
+                min_salary: { type: number, minimum: 0 }
+                resume_id: { type: string }
+      responses:
+        "200": { description: "Préférences enregistrées" }
+        "401": { description: "Non authentifié" }
+        "422": { $ref: "#/components/responses/Validation422" }
+
+  /user/job-search-profile/resume:
+    post:
+      tags: ["User"]
+      summary: "Téléverse une version privée du CV"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [resume]
+              properties:
+                resume: { type: string, format: binary }
+      responses:
+        "201": { description: "CV téléversé" }
+        "401": { description: "Non authentifié" }
+        "422": { $ref: "#/components/responses/Validation422" }
+
+  /user/job-recommendations:
+    get:
+      tags: ["User"]
+      summary: "Retourne les offres recommandées au candidat"
+      security:
+        - BearerAuth: []
+      parameters:
+        - { name: q, in: query, required: false, schema: { type: string } }
+        - { name: limit, in: query, required: false, schema: { type: integer, minimum: 1, maximum: 50 } }
+      responses:
+        "200": { description: "Offres classées par pertinence" }
+        "401": { description: "Non authentifié" }
+        "403": { description: "Statut job_seeker requis" }
+
+  /user/job-applications:
+    get:
+      tags: ["User"]
+      summary: "Liste l’historique des candidatures de l’utilisateur"
+      security:
+        - BearerAuth: []
+      responses:
+        "200": { description: "Candidatures et timelines" }
+        "401": { description: "Non authentifié" }
+
+  /user/job-applications/{companySlug}/{jobPosting}:
+    post:
+      tags: ["User"]
+      summary: "Dépose une candidature authentifiée"
+      security:
+        - BearerAuth: []
+      parameters:
+        - { name: companySlug, in: path, required: true, schema: { type: string } }
+        - { name: jobPosting, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resume_id: { type: string }
+                cover_letter: { type: string }
+      responses:
+        "201": { description: "Candidature créée" }
+        "401": { description: "Non authentifié" }
+        "409": { description: "Candidature déjà déposée" }
+        "422": { $ref: "#/components/responses/Validation422" }
+
+  /user/job-application-notifications:
+    get:
+      tags: ["User"]
+      summary: "Liste les notifications de candidature"
+      security:
+        - BearerAuth: []
+      responses:
+        "200": { description: "Notifications personnelles" }
+        "401": { description: "Non authentifié" }
+
+  /user/job-application-notifications/read:
+    patch:
+      tags: ["User"]
+      summary: "Marque comme lues les notifications de candidature"
+      security:
+        - BearerAuth: []
+      responses:
+        "200": { description: "Notifications marquées comme lues" }
+        "401": { description: "Non authentifié" }
+
+  /user/employee-join-requests:
+    get:
+      tags: ["User"]
+      summary: "Liste les demandes d’intégration de l’utilisateur"
+      security:
+        - BearerAuth: []
+      responses:
+        "200": { description: "Demandes d’intégration" }
+        "401": { description: "Non authentifié" }
+    post:
+      tags: ["User"]
+      summary: "Demande à rejoindre une entreprise"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [company_id]
+              properties:
+                company_id: { type: integer }
+      responses:
+        "201": { description: "Demande créée" }
+        "401": { description: "Non authentifié" }
+        "422": { $ref: "#/components/responses/Validation422" }
+
+  /user/companies/directory:
+    get:
+      tags: ["User"]
+      summary: "Recherche les entreprises accessibles"
+      security:
+        - BearerAuth: []
+      parameters:
+        - { name: q, in: query, required: false, schema: { type: string } }
+        - { name: city, in: query, required: false, schema: { type: string } }
+        - { name: sector, in: query, required: false, schema: { type: string } }
+      responses:
+        "200": { description: "Annuaire des entreprises" }
+        "401": { description: "Non authentifié" }
+
+  /employee-join-requests/{joinRequest}/approve:
+    post:
+      tags: ["HR App"]
+      summary: "Approuve une demande d’intégration"
+      security:
+        - BearerAuth: []
+      parameters:
+        - { name: joinRequest, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [employee_id]
+              properties:
+                employee_id: { type: integer }
+      responses:
+        "200": { description: "Demande approuvée et lien employé activé" }
+        "401": { description: "Non authentifié" }
+        "403": { description: "Manager requis" }
+        "404": { description: "Employé introuvable dans l’entreprise" }
+        "422": { $ref: "#/components/responses/Validation422" }
 
   /user/change-password:
     post:
@@ -1796,6 +2006,12 @@ paths:
         required: true
         schema:
           type: integer
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Détail d'un planning"
+      responses:
+        "200": { description: "Planning" }
+        "401": { $ref: "#/components/responses/Error401" }
     put:
       tags: ["Schedules"]
       summary: "Modifier un horaire"
@@ -1821,6 +2037,18 @@ paths:
           $ref: "#/components/responses/Error403"
         "422":
           $ref: "#/components/responses/Validation422"
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un planning (manager)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        "200": { description: "Planning mis à jour" }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { description: "Non-manager" }
     delete:
       tags: ["Schedules"]
       summary: "Supprimer un horaire non defaut"
@@ -6066,6 +6294,15 @@ paths:
           $ref: "#/components/responses/Error404"
 
   /tasks/{task}/comments:
+    get:
+      tags: ["Tasks"]
+      summary: "Lister les commentaires d'une tâche"
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      responses:
+        "200": { description: "Commentaires" }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
     post:
       tags: ["Tasks"]
       summary: "Ajouter un commentaire sur une tache"
@@ -9515,6 +9752,22 @@ paths:
                     $ref: "#/components/schemas/Position"
         "401":
           $ref: "#/components/responses/Error401"
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un poste (manager)"
+      parameters:
+        - name: position
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        "200": { description: "Poste mis à jour" }
+        "401": { $ref: "#/components/responses/Error401" }
     delete:
       tags: ["Referentials"]
       summary: "Supprimer un poste"
@@ -9667,6 +9920,22 @@ paths:
                     $ref: "#/components/schemas/Site"
         "401":
           $ref: "#/components/responses/Error401"
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un site (manager)"
+      parameters:
+        - name: site
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        "200": { description: "Site mis à jour" }
+        "401": { $ref: "#/components/responses/Error401" }
     delete:
       tags: ["Referentials"]
       summary: "Supprimer un site"
@@ -12780,8 +13049,19 @@ paths:
                     $ref: "#/components/schemas/JobPosting"
         "401":
           $ref: "#/components/responses/Error401"
-
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer une offre d'emploi (manager)"
+      parameters:
+        - name: jobPosting
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: "Offre supprimée" }
+        "401": { $ref: "#/components/responses/Error401" }
   /recruitment/jobs/{jobPosting}/publish:
+
     post:
       tags: ["Recruitment"]
       summary: "Publier une offre"
@@ -12870,6 +13150,17 @@ paths:
           $ref: "#/components/responses/Validation422"
 
   /recruitment/applicants/{applicant}:
+    get:
+      tags: ["Recruitment"]
+      summary: "Détail d'une candidature (manager)"
+      parameters:
+        - name: applicant
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: "Candidature" }
+        "401": { $ref: "#/components/responses/Error401" }
     put:
       tags: ["Recruitment"]
       summary: "Modifier un candidat"
@@ -12906,8 +13197,19 @@ paths:
                     $ref: "#/components/schemas/Applicant"
         "401":
           $ref: "#/components/responses/Error401"
-
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer une candidature (manager)"
+      parameters:
+        - name: applicant
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: "Candidature supprimée" }
+        "401": { $ref: "#/components/responses/Error401" }
   /recruitment/applicants/{applicant}/interviews:
+
     post:
       tags: ["Recruitment"]
       summary: "Planifier un entretien"
@@ -12979,8 +13281,19 @@ paths:
           description: "Entretien modifie"
         "401":
           $ref: "#/components/responses/Error401"
-
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer un entretien (manager)"
+      parameters:
+        - name: interview
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: "Entretien supprimé" }
+        "401": { $ref: "#/components/responses/Error401" }
   # --- Training ---
+
   /training/courses:
     get:
       tags: ["Training"]
@@ -13895,8 +14208,8 @@ paths:
                         level: { type: integer }
                         approver_id: { type: integer }
                         decision: { type: string, enum: [approved, rejected] }
-                        comment: { type: [string, "null"] }
-                        decided_at: { type: [string, "null"], format: date-time }
+                        comment: { type: string, nullable: true }
+                        decided_at: { type: string, nullable: true, format: date-time }
                         request:
                           type: object
                           properties:
@@ -13906,28 +14219,29 @@ paths:
                             approvable_id: { type: integer }
                             requester_id: { type: integer }
                             requester:
-                              type: [object, "null"]
+                              type: object
+                              nullable: true
                               properties:
                                 id: { type: integer }
                                 first_name: { type: string }
                                 last_name: { type: string }
-                        created_at: { type: [string, "null"], format: date-time }
+                        created_at: { type: string, nullable: true, format: date-time }
                   links:
                     type: object
                     properties:
-                      first: { type: [string, "null"] }
-                      last: { type: [string, "null"] }
-                      prev: { type: [string, "null"] }
-                      next: { type: [string, "null"] }
+                      first: { type: string, nullable: true }
+                      last: { type: string, nullable: true }
+                      prev: { type: string, nullable: true }
+                      next: { type: string, nullable: true }
                   meta:
                     type: object
                     properties:
                       current_page: { type: integer }
-                      from: { type: [integer, "null"] }
+                      from: { type: integer, nullable: true }
                       last_page: { type: integer }
                       path: { type: string }
                       per_page: { type: integer }
-                      to: { type: [integer, "null"] }
+                      to: { type: integer, nullable: true }
                       total: { type: integer }
         "401":
           $ref: "#/components/responses/Error401"
@@ -16553,83 +16867,7 @@ paths:
         "404":
           description: "Introuvable"
 
-  /positions/{position}:
-    patch:
-      tags: ["Payroll Engine"]
-      summary: "Mettre à jour un poste (manager)"
-      parameters:
-        - name: position
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          description: "Poste mis à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
 
-  /sites/{site}:
-    patch:
-      tags: ["Payroll Engine"]
-      summary: "Mettre à jour un site (manager)"
-      parameters:
-        - name: site
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          description: "Site mis à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /schedules/{schedule}:
-    get:
-      tags: ["Payroll Engine"]
-      summary: "Détail d'un planning"
-      parameters:
-        - name: schedule
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Planning"
-        "401":
-          $ref: "#/components/responses/Error401"
-    patch:
-      tags: ["Payroll Engine"]
-      summary: "Mettre à jour un planning (manager — sécurité #2217)"
-      parameters:
-        - name: schedule
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          description: "Planning mis à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          description: "Non-manager"
 
   /notifications/stream:
     get:
@@ -16655,22 +16893,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /tasks/{task}/comments:
-    get:
-      tags: ["Tasks"]
-      summary: "Commentaires d'une tâche (auteur + employés liés)"
-      parameters:
-        - name: task
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Commentaires"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          description: "Non autorisé (hors périmètre)"
 
   /me/contract:
     get:
@@ -16684,48 +16906,7 @@ paths:
         "404":
           description: "Aucun contrat actif"
 
-  /recruitment/jobs/{id}:
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer une offre d'emploi (manager)"
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Offre supprimée"
-        "401":
-          $ref: "#/components/responses/Error401"
 
-  /recruitment/applicants/{id}:
-    get:
-      tags: ["Recruitment"]
-      summary: "Détail d'une candidature (manager)"
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Candidature"
-        "401":
-          $ref: "#/components/responses/Error401"
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer une candidature (manager)"
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Candidature supprimée"
-        "401":
-          $ref: "#/components/responses/Error401"
 
   /recruitment/applicants/{id}/status:
     patch:
@@ -16785,20 +16966,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /recruitment/interviews/{id}:
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer un entretien (manager)"
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Entretien supprimé"
-        "401":
-          $ref: "#/components/responses/Error401"
 
   /smart-attendance/config:
     get:
