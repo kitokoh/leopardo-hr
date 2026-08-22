@@ -6,7 +6,7 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 ## [Unreleased]
 
 ### Fixed
-- **Planning authorization scenarios match RBAC #2217.** The successful weekly optimization and shift rebalancing cases now authenticate as a manager, while employee denial remains covered by the `api.manager` middleware.
+- **Planning authorization scenarios match RBAC #2217.** The successful weekly optimization and shift rebalancing cases now authenticate as a manager, while unauthenticated denial remains covered by the `api.manager` middleware; the unused employee fixture was removed so PHPStan strict remains clean.
 
 - **RefreshTenantDatabase detects missing `shared_tenants.employees`.** The canonical-schema probe now forces tenant migrations after MVP fixtures remove the employees table, preventing cascading `42P01` failures in `TrackingSyncTripsDateRangeTest`.
 
