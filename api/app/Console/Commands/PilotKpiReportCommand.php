@@ -101,7 +101,7 @@ class PilotKpiReportCommand extends Command
         ];
 
         if ($this->option('json')) {
-            $this->line(json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+            $this->line(json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) ?: '{}');
         } else {
             $this->info("KPI-1 conversion signup→dashboard ({$days} j) : {$converted}/{$signups} = ".($conversionRate ?? 'n/a').' % (cible ≥ 30 %)');
             $this->info('KPI-2 provisioning : '.($provisioning['p50_seconds'] ?? 'n/a').' s (p50), '.($provisioning['p95_seconds'] ?? 'n/a').' s (p95), '.($provisioning['share_under_120s'] ?? 'n/a').' % < 2 min (cible < 30 s)');

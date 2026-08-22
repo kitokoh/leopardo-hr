@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Rules;
 
 use Closure;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 /**
@@ -71,10 +72,23 @@ class NotPrivateUrl implements ValidationRule
         // IP privée/réservée (zéro risque SSRF) et les fixtures utilisent ces
         // hôtes fictifs (ex. `idp.example.com`, `app.leopardo.test`). En
         // production, ils restent refusés (fail-closed, inchangé).
-        // Sans bootstrap Laravel, le helper `app` est absent : le comportement
-        // reste donc fail-closed pour les tests unitaires purs.
-        $isTesting = \function_exists('app')
-            && app()->environment('testing');
+        // `function_exists('app')` : les tests unitaires purs (sans bootstrap
+        // Laravel) doivent conserver le comportement historique (fail-closed).
+        // app() en contexte de test UNITAIRE pur renvoie le Container brut
+        // (pas l'Application) : n'appeler environment() que sur une vraie
+        // Application Laravel (fail-closed sinon, comportement historique).
+        //
+        // Garde `bound('env')` (issue #5201) : le TestCase de Laravel appelle
+        // `$this->app->flush()` en tearDown, ce qui vide TOUTES les liaisons de
+        // l'application qui est l'instance globale du Container. Un test
+        // unitaire pur exécuté juste après voit alors une Application « morte »
+        // (instances vidées) : `app()->environment()` → `$this['env']` →
+        // `make('env')` → BindingResolutionException « Target class [env] does
+        // not exist ». `bound('env')` ne construit rien et court-circuite.
+        $app = \function_exists('app') ? app() : null;
+        $isTesting = $app instanceof Application
+            && $app->bound('env')
+            && $app->environment('testing');
         if ($isTesting
             && (str_ends_with($host, '.test')
                 || str_ends_with($host, '.example')

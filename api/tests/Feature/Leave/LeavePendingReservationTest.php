@@ -11,6 +11,8 @@ use App\Modules\Planning\Domain\Models\LeaveAccrual;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeavePolicy;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\PendingCommand;
+use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -24,13 +26,13 @@ class LeavePendingReservationTest extends TestCase
     use RefreshTenantDatabase;
 
     /**
-     * @return array{0: \App\Core\Tenant\Domain\Models\Company, 1: \App\Core\Auth\Domain\Models\Employee, 2: AbsenceType, 3: LeavePolicy}
+     * @return array{0: Company, 1: Employee, 2: AbsenceType, 3: LeavePolicy}
      */
     private function context(): array
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         /** @var AbsenceType $type */
@@ -71,8 +73,13 @@ class LeavePendingReservationTest extends TestCase
         ]);
 
         $carry = $this->artisan('leave:carry-forward', ['--year' => now()->year - 1]);
-        $this->assertInstanceOf(\Illuminate\Testing\PendingCommand::class, $carry);
+        $this->assertInstanceOf(PendingCommand::class, $carry);
+        // PendingCommand::assertExitCode() ne fait que POSER l'attente : la
+        // commande ne s'exécute qu'au run() (ou au destructeur sinon) — sans
+        // run() explicite, les assertions DB ci-dessous tournent AVANT la
+        // commande (issue #5201).
         $carry->assertExitCode(0);
+        $carry->run();
 
         // Reporté = 10 − 0 − 5 = 5 (et non 10 avant #2416).
         $carried = LeaveAccrual::withoutGlobalScopes()
@@ -107,8 +114,13 @@ class LeavePendingReservationTest extends TestCase
         ]);
 
         $carry = $this->artisan('leave:carry-forward', ['--year' => now()->year - 1]);
-        $this->assertInstanceOf(\Illuminate\Testing\PendingCommand::class, $carry);
+        $this->assertInstanceOf(PendingCommand::class, $carry);
+        // PendingCommand::assertExitCode() ne fait que POSER l'attente : la
+        // commande ne s'exécute qu'au run() (ou au destructeur sinon) — sans
+        // run() explicite, les assertions DB ci-dessous tournent AVANT la
+        // commande (issue #5201).
         $carry->assertExitCode(0);
+        $carry->run();
 
         $carried = LeaveAccrual::withoutGlobalScopes()
             ->where('employee_id', $employee->id)
@@ -135,7 +147,7 @@ class LeavePendingReservationTest extends TestCase
             'year' => now()->year,
         ]);
 
-        \Laravel\Sanctum\Sanctum::actingAs($employee);
+        Sanctum::actingAs($employee);
 
         $firstDate = now()->addMonths(2)->nextWeekday();
         $secondDate = $firstDate->copy()->addWeekday();

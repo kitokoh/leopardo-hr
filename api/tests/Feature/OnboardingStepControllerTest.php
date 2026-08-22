@@ -2,10 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -30,7 +31,9 @@ class OnboardingStepControllerTest extends TestCase
 
     public function test_checklist_auto_seeds_default_steps_for_company(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
@@ -54,7 +57,9 @@ class OnboardingStepControllerTest extends TestCase
 
     public function test_progress_counts_completed_and_skipped_steps(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $this->step($company, 'company_info', 'completed', required: true);
@@ -78,9 +83,13 @@ class OnboardingStepControllerTest extends TestCase
     {
         // T118 (QA 2026-08-15) : les routes onboarding-setup vivent dans le
         // groupe authentifié du tenant (auth:sanctum + tenant) — un employé
-        // non-manager doit pouvoir compléter son onboarding (plus de 403
-        // api.manager).
+        // non-manager peut LIRE sa checklist (plus de 403 api.manager).
+        // Les écritures d'état company-level (complete) restent réservées
+        // aux managers (#3430 — un employé ne peut pas falsifier le progrès
+        // d'onboarding de l'entreprise) : PATCH → 403 pour un simple employé.
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -93,13 +102,14 @@ class OnboardingStepControllerTest extends TestCase
         $this->getJson('/api/v1/onboarding-setup/progress')->assertOk();
 
         $this->patchJson('/api/v1/onboarding-setup/company_info/complete')
-            ->assertOk()
-            ->assertJsonPath('data.status', 'completed');
+            ->assertForbidden();
     }
 
     public function test_manager_can_complete_own_company_step(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $this->step($company, 'company_info', 'pending', required: true);
 
@@ -115,7 +125,9 @@ class OnboardingStepControllerTest extends TestCase
 
     public function test_manager_can_skip_optional_step_but_not_required_step(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $this->step($company, 'first_report', 'pending');
@@ -134,16 +146,23 @@ class OnboardingStepControllerTest extends TestCase
 
     public function test_company_cannot_complete_another_company_step(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $otherStep = $this->step($otherCompany, 'company_info', 'pending', required: true);
 
         Sanctum::actingAs($manager);
 
+        // #4929 : seed paresseux — la société du manager n'a aucune étape, le
+        // PATCH la seede puis complète SA PROPRE étape (200) ; l'étape de
+        // l'AUTRE société reste intouchée (l'isolation tenant est préservée :
+        // la requête est scopée sur company_id du manager).
         $this->patchJson('/api/v1/onboarding-setup/company_info/complete')
-            ->assertNotFound();
+            ->assertOk();
         $this->assertSame('pending', $otherStep->fresh()->status);
     }
 
@@ -152,7 +171,9 @@ class OnboardingStepControllerTest extends TestCase
         // #5151 — instrumentation légère (pas d'outil externe) : la checklist
         // expose l'horodatage du parcours pilote (création société + minutes
         // écoulées) pour mesurer l'objectif « onboarding < 30 min ».
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
@@ -160,7 +181,7 @@ class OnboardingStepControllerTest extends TestCase
         $response = $this->getJson('/api/v1/onboarding-setup/checklist');
 
         $response->assertOk();
-        $response->assertJsonPath('data.company_created_at', $company->created_at->toIso8601String());
+        $response->assertJsonPath('data.company_created_at', $company->created_at?->toIso8601String());
         $this->assertIsInt($response->json('data.elapsed_since_company_creation_minutes'));
         $this->assertGreaterThanOrEqual(0, $response->json('data.elapsed_since_company_creation_minutes'));
     }
@@ -170,22 +191,31 @@ class OnboardingStepControllerTest extends TestCase
         // #5151 — chaque étape complétée produit un log structuré
         // onboarding.step_completed avec horodatage + minutes écoulées depuis
         // la création de la société (preuve « < 30 min » sans télémétrie).
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $this->step($company, 'company_info', 'pending', required: true);
 
-        \Illuminate\Support\Facades\Log::spy();
+        // Log::spy() remplace le LogManager par un mock où
+        // Log::channel('structured')->info(...) (middleware StructuredLogging)
+        // renvoie null → 500. On capture le message via Log::listen sur le
+        // VRAI manager (issue #5201).
+        $captured = [];
+        Log::listen(function ($message) use (&$captured): void {
+            if (($message->message ?? null) === 'onboarding.step_completed') {
+                $captured[] = (array) ($message->context ?? []);
+            }
+        });
 
         Sanctum::actingAs($manager);
 
         $this->patchJson('/api/v1/onboarding-setup/company_info/complete')->assertOk();
 
-        \Illuminate\Support\Facades\Log::shouldHaveReceived('info')
-            ->once()
-            ->withArgs(fn (string $channel, array $context): bool => $channel === 'onboarding.step_completed'
-                && ($context['step_key'] ?? null) === 'company_info'
-                && ($context['company_id'] ?? null) === $company->id
-                && isset($context['elapsed_minutes_since_company_creation']));
+        $this->assertNotEmpty($captured, 'le log onboarding.step_completed doit être émis');
+        $this->assertSame('company_info', $captured[0]['step_key'] ?? null);
+        $this->assertSame($company->id, $captured[0]['company_id'] ?? null);
+        $this->assertArrayHasKey('elapsed_minutes_since_company_creation', $captured[0]);
     }
 
     private function step(
@@ -229,4 +259,3 @@ class OnboardingStepControllerTest extends TestCase
         });
     }
 }
-

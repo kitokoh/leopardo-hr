@@ -33,6 +33,11 @@ class EmailBounceWebhookControllerTest extends TestCase
         // secret; the fail-closed unconfigured case is covered by
         // EmailBounceWebhookTest.
         config()->set('services.mail_bounce_webhook.secret', 'test-bounce-secret');
+        // Le contrôleur exige le header X-Bounce-Webhook-Secret (fail-closed,
+        // #2616) : sans lui, les scénarios « succès » recevaient 400 au lieu
+        // de 200 (régression vue en CI, issue #5201). Les tests de secret
+        // invalide/valide surchargent le header explicitement.
+        $this->withHeader('X-Bounce-Webhook-Secret', 'test-bounce-secret');
     }
 
     protected function tearDown(): void

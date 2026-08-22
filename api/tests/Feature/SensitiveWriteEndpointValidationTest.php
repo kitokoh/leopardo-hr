@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -29,22 +30,40 @@ class SensitiveWriteEndpointValidationTest extends TestCase
 
     protected Employee $employee;
 
+    protected SuperAdmin $superAdmin;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->setUpMvpSchema();
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
         $this->company = $company;
-        /** @var \App\Core\Tenant\Domain\Models\Company $otherCompany */
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
         $this->otherCompany = $otherCompany;
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
         $this->manager = $manager;
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
         $this->employee = $employee;
+
+        /** @var SuperAdmin $superAdmin */
+        $superAdmin = new SuperAdmin([
+            'name' => 'Super Admin Edge Test',
+            'email' => 'sa-edge-test@leopardo-rh.com',
+        ]);
+        $superAdmin->forceFill(['password_hash' => bcrypt('secret123')])->save();
+        $this->superAdmin = $superAdmin;
+    }
+
+    private function actingAsSuperAdmin(): void
+    {
+        // Les routes /platform/edge/nodes et /admin/edge-nodes vivent dans les
+        // groupes super-admin (auth:super_admin_api) — un manager Sanctum y
+        // reçoit 401, pas la validation 422 attendue (issue #5201).
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
     }
 
     protected function tearDown(): void
@@ -86,7 +105,7 @@ class SensitiveWriteEndpointValidationTest extends TestCase
     /** @test */
     public function edge_force_sync_rejects_non_uuid_node(): void
     {
-        Sanctum::actingAs($this->manager);
+        $this->actingAsSuperAdmin();
 
         $this->postJson('/api/v1/platform/edge/nodes/not-a-uuid/sync')
             ->assertStatus(422)
@@ -96,7 +115,7 @@ class SensitiveWriteEndpointValidationTest extends TestCase
     /** @test */
     public function edge_revoke_rejects_non_uuid_node(): void
     {
-        Sanctum::actingAs($this->manager);
+        $this->actingAsSuperAdmin();
 
         $this->deleteJson('/api/v1/platform/edge/nodes/12345')
             ->assertStatus(422)
@@ -106,7 +125,7 @@ class SensitiveWriteEndpointValidationTest extends TestCase
     /** @test */
     public function edge_admin_sync_alias_rejects_non_uuid_node(): void
     {
-        Sanctum::actingAs($this->manager);
+        $this->actingAsSuperAdmin();
 
         $this->postJson('/api/v1/admin/edge-nodes/xyz/sync')
             ->assertStatus(422)

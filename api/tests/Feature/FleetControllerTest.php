@@ -248,6 +248,26 @@ class FleetControllerTest extends TestCase
             {
                 return $this->positions[$deviceId] ?? null;
             }
+
+            /**
+             * getLastPositions() a été ajoutée au service par e3525f078
+             * (#3148, N+1 live-map) — sans override, le fake hérite de la
+             * méthode réelle qui lit $this->token (jamais initialisé : le
+             * constructeur du fake ne touche pas parent::__construct) →
+             * 500 « must not be accessed before initialization » (issue #5201).
+             *
+             * @param  list<int>  $deviceIds
+             * @return array<int, array<string, mixed>|null>
+             */
+            public function getLastPositions(array $deviceIds): array
+            {
+                $result = [];
+                foreach ($deviceIds as $deviceId) {
+                    $result[$deviceId] = $this->positions[$deviceId] ?? null;
+                }
+
+                return $result;
+            }
         });
     }
 

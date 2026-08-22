@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Http;
 
 class TraccarService
 {
-    private string $baseUrl;
+    private string $baseUrl = '';
 
-    private string $token;
+    private string $token = '';
 
     public function __construct()
     {
@@ -21,13 +21,13 @@ class TraccarService
         // /fleet/live-map et /vehicles/{id}/position|trips. Le tracking est
         // optionnel (fail-open : données vides quand non configuré).
         $url = config('tracking.traccar_url', 'http://localhost:8082');
-        $this->baseUrl = rtrim((string) $url, '/');
-
-        $this->token = (string) config('tracking.traccar_token', '');
+        $token = config('tracking.traccar_token', '');
+        $this->baseUrl = rtrim(is_string($url) ? $url : '', '/');
+        $this->token = is_string($token) ? $token : '';
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return array<int|string, mixed>
      */
     public function getDevices(): array
     {
@@ -60,7 +60,7 @@ class TraccarService
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return array<int|string, mixed>
      */
     public function getPositions(int $deviceId, ?Carbon $from = null, ?Carbon $to = null): array
     {
@@ -83,7 +83,10 @@ class TraccarService
     {
         $positions = $this->get('/api/positions', ['deviceId' => $deviceId]);
 
-        return count($positions) > 0 ? $positions[0] : null;
+        /** @var array<string, mixed>|null $position */
+        $position = count($positions) > 0 ? $positions[0] : null;
+
+        return $position;
     }
 
     /**
@@ -92,7 +95,7 @@ class TraccarService
      * de FleetController::liveMap (issue #3148).
      *
      * @param  list<int>  $deviceIds
-     * @return array<int, array<string, mixed>|null>  deviceId => position|null
+     * @return array<int, array<string, mixed>|null> deviceId => position|null
      */
     public function getLastPositions(array $deviceIds): array
     {
@@ -107,7 +110,13 @@ class TraccarService
 
         $byDevice = [];
         foreach ($positions as $position) {
-            $deviceId = (int) ($position['deviceId'] ?? 0);
+            if (! is_array($position)) {
+                continue;
+            }
+            /** @var array<string, mixed> $position */
+            /** @var int $deviceIdRaw */
+            $deviceIdRaw = $position['deviceId'] ?? 0;
+            $deviceId = (int) $deviceIdRaw;
             if ($deviceId > 0 && ! isset($byDevice[$deviceId])) {
                 $byDevice[$deviceId] = $position;
             }
@@ -122,7 +131,7 @@ class TraccarService
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return array<int|string, mixed>
      */
     public function getTrips(int $deviceId, Carbon $from, Carbon $to): array
     {
@@ -134,7 +143,7 @@ class TraccarService
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return array<int|string, mixed>
      */
     public function getGeofences(): array
     {
@@ -161,7 +170,7 @@ class TraccarService
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return array<int|string, mixed>
      */
     public function getEvents(int $deviceId, ?Carbon $from = null, ?Carbon $to = null): array
     {
@@ -195,7 +204,10 @@ class TraccarService
             return [];
         }
 
-        return $response->json() ?? [];
+        /** @var array<int|string, mixed> $data */
+        $data = $response->json() ?? [];
+
+        return $data;
     }
 
     /**
@@ -212,7 +224,10 @@ class TraccarService
             ->timeout(15)
             ->post("{$this->baseUrl}{$path}", $data);
 
-        return $response->json() ?? [];
+        /** @var array<string, mixed> $payload */
+        $payload = $response->json() ?? [];
+
+        return $payload;
     }
 
     /**
@@ -229,7 +244,10 @@ class TraccarService
             ->timeout(15)
             ->put("{$this->baseUrl}{$path}", $data);
 
-        return $response->json() ?? [];
+        /** @var array<string, mixed> $payload */
+        $payload = $response->json() ?? [];
+
+        return $payload;
     }
 
     private function delete(string $path): void

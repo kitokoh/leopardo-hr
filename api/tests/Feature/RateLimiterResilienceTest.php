@@ -137,6 +137,10 @@ class RateLimiterResilienceTest extends TestCase
         // Route throttle:10,1 (anonyme) — déterministe : /api/v1/i18n/catalog
         // utilise public-registry 60/min (#4501), 11 requêtes n'atteignaient
         // jamais le quota (#5034 : test cassé pré-existant).
+        // /demo-users renvoie 404 tant que app.demo_mode_enabled est false
+        // (hard gate anti-reconnaissance, docs/security/AUDIT_API) — on
+        // active le mode démo pour que la route réponde 200 (issue #5201).
+        config()->set('app.demo_mode_enabled', true);
         $route = '/api/v1/demo-users';
 
         for ($i = 0; $i < 10; $i++) {

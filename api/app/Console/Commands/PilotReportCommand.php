@@ -68,7 +68,7 @@ class PilotReportCommand extends Command
         }
 
         if ($this->option('json')) {
-            $this->line(json_encode(['generated_at' => Carbon::now()->toIso8601String(), 'window_days' => $days, 'companies' => $rows], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+            $this->line(json_encode(['generated_at' => Carbon::now()->toIso8601String(), 'window_days' => $days, 'companies' => $rows], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) ?: '{}');
         } else {
             $this->renderMarkdown($rows, $days);
         }
