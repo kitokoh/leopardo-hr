@@ -88,6 +88,7 @@ final class UserCandidateApplicationController extends Controller
                 'job_id' => $job->id,
                 'company' => $company->name,
                 'status' => $applicant->status,
+                'resume_name' => $resumeUrl === ($preferences['resume_path'] ?? null) ? ($preferences['resume_name'] ?? null) : null,
                 'applied_at' => $applicant->applied_at?->toIso8601String(),
             ]], 201);
         });
@@ -113,6 +114,7 @@ final class UserCandidateApplicationController extends Controller
                         'job_posting_id' => $application->job_posting_id,
                         'company_id' => $application->company_id,
                         'status' => $application->status,
+                        'resume_name' => $application->resume_path ? basename((string) $application->resume_path) : null,
                         'applied_at' => $application->applied_at?->toIso8601String(),
                         'created_at' => $application->created_at?->toIso8601String(),
                         'job' => ['id' => $application->jobPosting?->id, 'title' => $application->jobPosting?->title],

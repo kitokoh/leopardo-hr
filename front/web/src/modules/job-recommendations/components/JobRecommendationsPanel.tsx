@@ -7,7 +7,8 @@ import type { StoredAuthUser } from '@/lib/i18n';
 
 type ApplicationEvent = { to_status: string; note?: string | null; changed_at?: string | null };
 type ApplicationNotification = { id: string; message: string; status: string; read?: boolean; created_at?: string };
-type Application = { id: number; job?: { title?: string | null }; status: string; applied_at?: string | null; status_history?: ApplicationEvent[] };
+type Application = { id: number; job?: { title?: string | null }; status: string; resume_name?: string | null; applied_at?: string | null; status_history?: ApplicationEvent[] };
+type ResumeVersion = { id: string; name: string; uploaded_at?: string };
 
 type Recommendation = {
   id: number;
@@ -34,6 +35,8 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
   const [notifications, setNotifications] = useState<ApplicationNotification[]>([]);
   const [resumeName, setResumeName] = useState<string | null>((user.job_search_preferences as { resume_name?: string } | undefined)?.resume_name ?? null);
   const [uploadingResume, setUploadingResume] = useState(false);
+  const resumeVersions = user.job_search_preferences?.resumes as ResumeVersion[] | undefined;
+  const [selectedResumeId, setSelectedResumeId] = useState<string | null>(user.job_search_preferences?.resume_id as string | null ?? null);
 
   useEffect(() => {
     let cancelled = false;
@@ -88,7 +91,7 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
     try {
       const response = await apiFetch(`/user/job-applications/${encodeURIComponent(companySlug)}/${job.id}`, {
         method: 'POST',
-        body: JSON.stringify({ cover_letter: coverLetters[job.id] ?? '' }),
+        body: JSON.stringify({ cover_letter: coverLetters[job.id] ?? '', ...(selectedResumeId ? { resume_id: selectedResumeId } : {}) }),
         headers: { 'Content-Type': 'application/json' },
       });
       const payload = await response.json() as { error?: string };
@@ -111,7 +114,7 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
           <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-indigo-700"><Sparkles className="h-4 w-4" aria-hidden="true" /> Recherche active</p>
           <h2 id="job-recommendations-title" className="mt-2 text-2xl font-black text-slate-950">Des offres qui correspondent à votre profil</h2>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">Les offres sont d’abord filtrées par vos préférences, puis l’IA peut affiner le classement. Les raisons affichées restent liées aux informations du profil et de l’offre.</p>
-          <div className="mt-4 flex flex-wrap items-center gap-3"><label className="cursor-pointer rounded-lg border border-indigo-200 bg-white px-3 py-2 text-sm font-bold text-indigo-800 hover:bg-indigo-50"><input type="file" accept=".pdf,.doc,.docx" className="sr-only" disabled={uploadingResume} onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadResume(file); event.currentTarget.value = ''; }} />{uploadingResume ? 'Téléversement…' : 'Téléverser mon CV'}</label>{resumeName && <span className="text-xs font-semibold text-slate-500">CV actif : {resumeName}</span>}</div>
+          <div className="mt-4 flex flex-wrap items-center gap-3"><label className="cursor-pointer rounded-lg border border-indigo-200 bg-white px-3 py-2 text-sm font-bold text-indigo-800 hover:bg-indigo-50"><input type="file" accept=".pdf,.doc,.docx" className="sr-only" disabled={uploadingResume} onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadResume(file); event.currentTarget.value = ''; }} />{uploadingResume ? 'Téléversement…' : 'Téléverser mon CV'}</label>{resumeVersions && resumeVersions.length > 0 && <select aria-label="Version du CV utilisée pour les candidatures" value={selectedResumeId ?? ''} onChange={(event) => setSelectedResumeId(event.target.value || null)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700"><option value="">CV actif</option>{resumeVersions.map((resume) => <option key={resume.id} value={resume.id}>{resume.name}</option>)}</select>}{resumeName && <span className="text-xs font-semibold text-slate-500">CV actif : {resumeName}</span>}</div>
         </div>
         <BriefcaseBusiness className="h-8 w-8 text-indigo-600" aria-hidden="true" />
       </div>
@@ -131,7 +134,7 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
                 <div key={application.id} className="rounded-xl border border-slate-100 p-3">
                   <div className="flex items-center justify-between gap-3"><span className="text-sm font-bold text-slate-900">{application.job?.title ?? `Candidature #${application.id}`}</span><span className="text-xs font-black uppercase text-indigo-700">{currentStatus}</span></div>
                   <div className="mt-3 grid grid-cols-5 gap-1">{stages.map((stage, index) => <span key={stage} className={`h-1.5 rounded-full ${index <= currentIndex ? 'bg-emerald-500' : 'bg-slate-200'}`} title={stage} />)}</div>
-                  <p className="mt-2 text-xs text-slate-500">{history.length > 0 ? (history[history.length - 1]?.note ?? 'Dernière mise à jour du dossier.') : 'Candidature envoyée.'}</p>
+                  <p className="mt-2 text-xs text-slate-500">{history.length > 0 ? (history[history.length - 1]?.note ?? 'Dernière mise à jour du dossier.') : 'Candidature envoyée.'}{application.resume_name ? ` · CV : ${application.resume_name}` : ''}</p>
                 </div>
               );
             })}
