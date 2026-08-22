@@ -13,6 +13,8 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 - **Add composite index for payroll leave-balance lookup.** Added PostgreSQL index `idx_leave_balances_company_employee_year_type` on `(company_id, employee_id, year, absence_type_id)` to match `PayrollCalculator::accruedLeaveDays()` filters; created concurrently and guarded for non-PostgreSQL or missing-table environments. No other payroll index candidate was changed.
 
 ### Fixed
+- **FamilyPartsRicfTest uses a deterministic contract period.** The three employee fixtures now start before the July 2026 payroll period, preventing factory randomness from prorating the expected 300,000 XOF gross and making the RICF assertions stable.
+
 - **PayrollAuditTest uses a deterministic manager contract period.** The manager fixture now starts before the July 2026 audit period, preventing random contract proration and preserving the expected aggregate gross of two complete 60,000 bulletins.
 
 - **NotPrivateUrl is safe in unbootstrapped unit tests.** The testing-environment check now confirms that `environment()` is callable before invoking it, preserving fail-closed SSRF behavior outside a Laravel application.
