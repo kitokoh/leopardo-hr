@@ -51,7 +51,12 @@ class PayrollAuditTest extends TestCase
         $this->companyB = $companyB;
 
         /** @var Employee $managerA */
-        $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
+        $managerA = Employee::factory()->manager()->create([
+            'company_id' => $companyA->id,
+            // Contrat antérieur à la période d’audit : aucun prorata aléatoire.
+            'contract_start' => '2026-01-01',
+            'contract_end' => null,
+        ]);
         $this->managerA = $managerA;
     }
 
@@ -306,7 +311,7 @@ class PayrollAuditTest extends TestCase
         // (y compris Log::withContext) est vérifié — aucun secret ne doit
         // apparaître dans les messages ni les contextes.
         $log = Log::spy();
-        /** @var \Mockery\Expectation $channelExpectation */
+        /** @var Expectation $channelExpectation */
         $channelExpectation = $log->shouldReceive('channel');
         $channelExpectation->andReturn($log);
 

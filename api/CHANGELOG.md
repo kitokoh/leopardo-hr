@@ -6,6 +6,8 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 ## [Unreleased]
 
 ### Fixed
+- **PayrollAuditTest uses a deterministic manager contract period.** The manager fixture now starts before the July 2026 audit period, preventing random contract proration and preserving the expected aggregate gross of two complete 60,000 bulletins.
+
 - **NotPrivateUrl is safe in unbootstrapped unit tests.** The testing-environment check now confirms that `environment()` is callable before invoking it, preserving fail-closed SSRF behavior outside a Laravel application.
 
 - **Planning authorization scenarios match RBAC #2217.** The successful weekly optimization and shift rebalancing cases authenticate as a manager, while employee denial remains covered by explicit 403 assertions; the required employee fixture is typed so PHPStan strict remains clean.
