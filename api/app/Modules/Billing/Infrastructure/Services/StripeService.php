@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Infrastructure\Services;
 
-use App\Events\SubscriptionPaid;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Events\SubscriptionPaid;
 use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Models\Invoice;
-use App\Modules\Payroll\Domain\Models\Payment;
 use App\Modules\Billing\Domain\Models\Subscription;
-use App\Modules\Billing\Infrastructure\Services\PartnerService;
+use App\Modules\Payroll\Domain\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -398,4 +397,3 @@ class StripeService
         }
     }
 }
-
