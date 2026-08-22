@@ -121,8 +121,33 @@ Endpoints : `/api/v1/accounting/contacts` · `/accounting/documents` (+ `/docume
 | Notification | envoi email des documents, alertes impayés | A |
 | Cabinet | rangement des PDFs dans les dossiers partagés | B |
 | Expense | notes de frais → écritures comptables | C |
-| Payroll | paie validée → écritures salariales (journal) | C |
+| Payroll | paie validée → écritures salariales (641/645/421/431/4421) + ordre de virement exécuté par le comptable + rapprochement (cf. §6.3) | C |
 | Platform (admin) | vue consolidée des comptabilités (lecture) | C |
+
+### 6.3 Flux RH/Paie ↔ Comptabilité (séparation des fonctions)
+
+**Principe (confirmé fondateur 2026-08-21)** : le module Payroll **reste maître du calcul** (règles pays, IRG/CNAS, bulletins, exports). Le module Accounting **consomme** la paie validée — jamais de double saisie, jamais de modification du moteur Payroll (FOCUS intact).
+
+```
+PayrollRun validé (RH)
+   │  (lecture seule — le run est la source de vérité)
+   ▼
+Journal de paie par employé (brut, cotisations salariales/patronales, IR, net)
+   │
+   ├─► [Comptabilité] Écritures automatiques :
+   │      D 641  Salaires bruts              C 421  Salaires à payer (net)
+   │      D 645  Charges patronales          C 431  Cotisations (CNAS/CNSS…)
+   │                                          C 4421 IR retenu à la source
+   │   (plan comptable paramétrable par entreprise)
+   │
+   ├─► [Comptabilité] Ordre de virement : net par employé
+   │      → export banque existant (formats CNEP/SEPA…) préparé par le comptable
+   │      → statut « exécuté » + référence banque + rapprochement
+   │
+   └─► [Comptabilité] Déclarations sociales (CNAS/DSN…) — documentées, non bloquantes
+```
+
+Rôles : **RH** (ou responsable paie) valide le run · **Comptable** enregistre les écritures, exécute le virement, rapproche · **Principal** voit tout en lecture. En petite structure les deux rôles peuvent être tenus par la même personne, mais le système garde la séparation (audit trail).
 
 ### 6.3 Mobile
 - **Phase A/B** : surfaces web uniquement (dashboard + portail client web).
@@ -135,7 +160,7 @@ Endpoints : `/api/v1/accounting/contacts` · `/accounting/documents` (+ `/docume
 |---|---|---|---|
 | **A — Documents** (sem. 1-6) | Contacts + documents (facture, proforma, devis, avoir, irsaliye, reçu) + numérotation + PDF + email + statuts + RBAC + i18n + tests | 3 pilotes émettent une facture réelle | #5222→#5230 |
 | **B — Trésorerie & Marketing** (sem. 7-12) | Paiements + rapprochement + relances + TVA + tableaux de bord + **intégration lead qualifié → contact** + portail client | Contact qualifié marketing → facture en < 5 min | #5231→#5235 |
-| **C — Comptabilité & mobile** (sem. 13-20) | Journal/écritures + exports expert-comptable + Expense/Payroll → écritures + app mobile `leopardo_accounting` | Export du mois exploitable par un expert-comptable | #5236→#5239 |
+| **C — Comptabilité & mobile** (sem. 13-20) | Journal/écritures + exports expert-comptable + Expense/Payroll → écritures + **virement masse salariale (comptable exécute)** + app mobile `leopardo_accounting` | Export du mois exploitable par un expert-comptable + virement d'un pilote exécuté/rapproché | #5236→#5240 |
 
 **Garde** : chaque phase démarre après gate CI verte (#5201) et ne gêne pas le programme FOCUS (ressources allouées : max 1 agent feature comptabilité en parallèle, budget #5148).
 
