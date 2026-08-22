@@ -88,13 +88,18 @@ class AccountingDataModelTest extends TestCase
         $this->expectException(QueryException::class);
 
         // Deuxième ligne pour le MÊME tenant → violation d'unicité company_id.
-        DB::table('accounting_settings')->insert([
-            'company_id' => $this->company->id,
-            'currency' => 'DZD',
-            'document_language' => 'fr',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // La transaction imbriquée crée un savepoint (savepoints => true,
+        // pattern #4978) : le RAISE PostgreSQL n'empoisonne pas la transaction
+        // RefreshDatabase du test (sinon 25P02 en cascade sur le tearDown).
+        DB::transaction(function (): void {
+            DB::table('accounting_settings')->insert([
+                'company_id' => $this->company->id,
+                'currency' => 'DZD',
+                'document_language' => 'fr',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
     }
 
     public function test_contact_document_line_payment_relations_round_trip(): void
