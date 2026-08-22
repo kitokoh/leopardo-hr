@@ -1165,7 +1165,9 @@ class PayrollCalculator
             return $baseSalary * 12.0;
         }
 
-        $gross = (float) $slips->sum('gross_salary');
+        $gross = $slips->sum(
+            fn (PaySlip $slip): float => (float) $slip->gross_salary
+        );
 
         // Période partielle (embauche en cours d'année) : on normalise sur 12
         // mois pour ne pas sous-évaluer le 1/10ᵉ (ex. 3 bulletins → gross × 12/3).
@@ -1201,7 +1203,8 @@ class PayrollCalculator
             ->selectRaw('SUM(balance + used + pending) as acquired')
             ->first();
 
-        $days = $row !== null ? (float) $row->getAttribute('acquired') : 0.0;
+        $acquired = $row?->getAttribute('acquired');
+        $days = is_numeric($acquired) ? (float) $acquired : 0.0;
 
         return $days > 0.0 ? $days : 30.0;
     }
@@ -1325,8 +1328,8 @@ class PayrollCalculator
             $absences = Absence::query()
                 ->where('company_id', $run->company_id)
                 ->where('status', 'approved')
-                ->whereDate('start_date', '<=', $run->period_end)
-                ->whereDate('end_date', '>=', $run->period_start)
+                ->where('start_date', '<=', $run->period_end)
+                ->where('end_date', '>=', $run->period_start)
                 ->with('absenceType:id,is_paid')
                 ->get(['id', 'employee_id', 'absence_type_id', 'start_date', 'end_date', 'days_count']);
 
@@ -1383,8 +1386,8 @@ class PayrollCalculator
             ->where('company_id', $run->company_id)
             ->where('employee_id', $employee->id)
             ->where('status', 'approved')
-            ->whereDate('start_date', '<=', $run->period_end)
-            ->whereDate('end_date', '>=', $run->period_start)
+            ->where('start_date', '<=', $run->period_end)
+            ->where('end_date', '>=', $run->period_start)
             ->whereHas('absenceType', function (Builder $q) use ($paid): void {
                 $q->where('is_paid', $paid);
             })

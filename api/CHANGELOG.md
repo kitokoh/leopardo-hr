@@ -5,6 +5,13 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
 
+### Performance
+- **PayrollCalculator mixed-value handling is explicit.** Normalized the historical gross aggregation through a typed `PaySlip` callback and validated the nullable aggregate result from `leave_balances` before casting, removing the two residual PHPStan level-8 errors without changing payroll formulas.
+
+- **Payroll absence overlap predicates use direct date comparisons.** Replaced the four payroll `whereDate()` predicates on `absences.start_date` and `absences.end_date` with direct `where()` comparisons, preserving the overlap semantics while keeping the date columns directly usable by PostgreSQL indexes. No additional `absences` index was added before a staging plan comparison.
+
+- **Add composite index for payroll leave-balance lookup.** Added PostgreSQL index `idx_leave_balances_company_employee_year_type` on `(company_id, employee_id, year, absence_type_id)` to match `PayrollCalculator::accruedLeaveDays()` filters; created concurrently and guarded for non-PostgreSQL or missing-table environments. No other payroll index candidate was changed.
+
 ### Fixed
 - **PayrollAuditTest uses a deterministic manager contract period.** The manager fixture now starts before the July 2026 audit period, preventing random contract proration and preserving the expected aggregate gross of two complete 60,000 bulletins.
 
