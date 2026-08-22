@@ -8,6 +8,8 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 ### Fixed
 - **OIDC public endpoints use the explicit `throttle:10,1` limiter.** The authorize and callback routes now match the anti-abuse contract asserted by `SsoCallbackThrottleTest` instead of inheriting the generic `throttle:api` limiter.
 
+- **OpenAPI contract is Redocly-parseable.** Duplicate path definitions for positions, sites, schedules, task comments, and recruitment were merged; nullable schemas and recruitment path parameters now follow the OpenAPI 3.0 contract. Redocly reports validation success with historical completeness warnings only.
+
 - **LeaveCarryForward processes all tenants explicitly.** The annual carry-forward command now disables tenant global scopes for policies, balances, accrual expiration queries, and write builders while retaining explicit company filters, so console execution cannot inherit a stale `current_company` or `search_path` context; per-employee failures remain isolated and logged without poisoning the command transaction.
 
 - **Leave carry-forward assertions are tenant-independent.** The regression test reads generated accruals and balances without reapplying the current-company global scope after the global console command runs.
