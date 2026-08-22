@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Infrastructure\Services;
 
+use App\Events\SubscriptionPaid;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Models\Invoice;
@@ -280,7 +281,7 @@ class StripeService
             );
 
             // GROWTH MODULE: Dispatch SubscriptionPaid event
-            event(new \App\Events\SubscriptionPaid($payment));
+            event(new SubscriptionPaid($payment));
 
             if ($invoiceModel->subscription) {
                 $invoiceModel->subscription->update(['status' => 'active']);
