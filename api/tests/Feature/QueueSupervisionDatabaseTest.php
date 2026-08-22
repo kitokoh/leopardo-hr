@@ -45,7 +45,7 @@ class QueueSupervisionDatabaseTest extends TestCase
         $now = now()->timestamp;
 
         for ($i = 0; $i < 3; $i++) {
-            $this->insertJob('default', $now, null);
+            $this->insertJob('default', (int) $now, null);
         }
 
         $exitCode = Artisan::call('queue:health-check', ['--max-pending' => '2']);
@@ -59,7 +59,7 @@ class QueueSupervisionDatabaseTest extends TestCase
         $now = now()->timestamp;
 
         for ($i = 0; $i < 5; $i++) {
-            $this->insertJob('notifications', $now, null);
+            $this->insertJob('notifications', (int) $now, null);
         }
 
         $exitCode = Artisan::call('queue:health-check', ['--max-pending' => '50']);
@@ -72,7 +72,7 @@ class QueueSupervisionDatabaseTest extends TestCase
     {
         // Un job réservé depuis 30 min = worker mort en plein traitement
         // (le drain libère la réservation au pire après quelques minutes).
-        $this->insertJob('pdf', now()->subMinutes(40)->timestamp, now()->subMinutes(30)->timestamp);
+        $this->insertJob('pdf', (int) now()->subMinutes(40)->timestamp, (int) now()->subMinutes(30)->timestamp);
 
         $exitCode = Artisan::call('queue:health-check', ['--max-stale-minutes' => '10']);
 
@@ -83,7 +83,7 @@ class QueueSupervisionDatabaseTest extends TestCase
     public function test_recently_reserved_job_is_not_stale(): void
     {
         // Un job réservé il y a 2 min est en cours de traitement — pas d'alerte.
-        $this->insertJob('default', now()->subMinutes(5)->timestamp, now()->subMinutes(2)->timestamp);
+        $this->insertJob('default', (int) now()->subMinutes(5)->timestamp, (int) now()->subMinutes(2)->timestamp);
 
         $exitCode = Artisan::call('queue:health-check', ['--max-stale-minutes' => '10']);
 

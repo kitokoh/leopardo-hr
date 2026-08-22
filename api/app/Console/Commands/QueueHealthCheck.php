@@ -227,6 +227,9 @@ class QueueHealthCheck extends Command
             ->count();
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     private function outputResult(array $data): void
     {
         $this->line(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '{}');
@@ -299,6 +302,7 @@ class QueueHealthCheck extends Command
     }
 
     /**
+     * @param  array<string, mixed>  $result
      * @return array<string, mixed>
      */
     private function thresholdsExceeded(array $result, int $maxPending, int $maxFailed): bool
