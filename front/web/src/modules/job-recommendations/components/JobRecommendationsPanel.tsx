@@ -6,6 +6,7 @@ import { apiFetch } from '@/lib/api-client';
 import type { StoredAuthUser } from '@/lib/i18n';
 
 type ApplicationEvent = { to_status: string; note?: string | null; changed_at?: string | null };
+type ApplicationNotification = { id: string; message: string; status: string; read?: boolean; created_at?: string };
 type Application = { id: number; job?: { title?: string | null }; status: string; applied_at?: string | null; status_history?: ApplicationEvent[] };
 
 type Recommendation = {
@@ -30,6 +31,7 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
   const [applied, setApplied] = useState<number[]>([]);
   const [coverLetters, setCoverLetters] = useState<Record<number, string>>({});
   const [applications, setApplications] = useState<Application[]>([]);
+  const [notifications, setNotifications] = useState<ApplicationNotification[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -42,6 +44,9 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
         const applicationsResponse = await apiFetch('/user/job-applications');
         const applicationsPayload = await applicationsResponse.json() as { data?: Application[] };
         if (!cancelled && applicationsResponse.ok) setApplications(applicationsPayload.data ?? []);
+        const notificationsResponse = await apiFetch('/user/job-application-notifications');
+        const notificationsPayload = await notificationsResponse.json() as { data?: ApplicationNotification[] };
+        if (!cancelled && notificationsResponse.ok) setNotifications((notificationsPayload.data ?? []).filter((notification) => !notification.read));
       } catch (cause) {
         if (!cancelled) setError(cause instanceof Error ? cause.message : 'Recommandations indisponibles.');
       } finally {
@@ -108,6 +113,12 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
               );
             })}
           </div>
+        </div>
+      )}
+      {notifications.length > 0 && (
+        <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+          <div className="flex items-center justify-between gap-3"><h3 className="font-bold text-amber-950">Nouvelles mises à jour</h3><button type="button" onClick={async () => { await apiFetch('/user/job-application-notifications/read', { method: 'PATCH' }); setNotifications([]); }} className="text-xs font-bold text-amber-800 underline">Tout marquer comme lu</button></div>
+          <div className="mt-2 space-y-1">{notifications.slice(0, 3).map((notification) => <p key={notification.id} className="text-sm text-amber-900">{notification.message}</p>)}</div>
         </div>
       )}
       <div className="mt-5 grid gap-3 lg:grid-cols-2">

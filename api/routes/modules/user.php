@@ -29,6 +29,8 @@ Route::middleware(['throttle:api', 'auth:user_api'])->prefix('user')->group(func
     Route::put('/job-search-profile', [UserAuthController::class, 'updateJobSearchProfile']);
     Route::get('/job-recommendations', [UserAuthController::class, 'jobRecommendations']);
     Route::get('/job-applications', [UserCandidateApplicationController::class, 'index']);
+    Route::get('/job-application-notifications', [UserAuthController::class, 'applicationNotifications']);
+    Route::patch('/job-application-notifications/read', [UserAuthController::class, 'markApplicationNotificationsRead']);
     Route::post('/job-applications/{companySlug}/{jobPosting}', [UserCandidateApplicationController::class, 'store'])
         ->whereNumber('jobPosting');
     Route::post('/change-password', [UserAuthController::class, 'changePassword']);

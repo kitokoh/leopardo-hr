@@ -57,6 +57,8 @@ final class UserCandidateApplicationController extends Controller
                 ], 409);
             }
 
+            $preferences = is_array($user->job_search_preferences) ? $user->job_search_preferences : [];
+            $resumeUrl = $validated['resume_url'] ?? ($preferences['resume_url'] ?? null);
             $applicant = Applicant::create([
                 'company_id' => $company->id,
                 'user_id' => $user->id,
@@ -65,7 +67,7 @@ final class UserCandidateApplicationController extends Controller
                 'last_name' => $user->last_name,
                 'email' => $user->email,
                 'phone' => $user->phone,
-                'resume_path' => $validated['resume_url'] ?? null,
+                'resume_path' => $resumeUrl,
                 'cover_letter' => $validated['cover_letter'] ?? null,
                 'source' => 'website',
                 'status' => 'new',
@@ -92,7 +94,7 @@ final class UserCandidateApplicationController extends Controller
                 return Applicant::query()
                     ->where('user_id', $user->id)
                     ->where('company_id', $company->id)
-                    ->with(['jobPosting:id,title', 'statusHistory'])
+                    ->with(['jobPosting:id,title', 'statusHistory', 'interviews'])
                     ->select(['id', 'job_posting_id', 'company_id', 'status', 'applied_at', 'created_at'])
                     ->latest('applied_at')
                     ->limit(100)
@@ -105,6 +107,14 @@ final class UserCandidateApplicationController extends Controller
                         'applied_at' => $application->applied_at?->toIso8601String(),
                         'created_at' => $application->created_at?->toIso8601String(),
                         'job' => ['id' => $application->jobPosting?->id, 'title' => $application->jobPosting?->title],
+                        'interviews' => $application->interviews->map(fn ($interview) => [
+                            'id' => $interview->id,
+                            'type' => $interview->type,
+                            'scheduled_at' => $interview->scheduled_at?->toIso8601String(),
+                            'duration_minutes' => $interview->duration_minutes,
+                            'status' => $interview->status,
+                            'feedback' => $interview->feedback,
+                        ])->values()->all(),
                         'status_history' => $application->statusHistory->map(fn ($event) => [
                             'id' => $event->id,
                             'from_status' => $event->from_status,

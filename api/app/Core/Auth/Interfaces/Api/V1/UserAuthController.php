@@ -164,6 +164,7 @@ class UserAuthController extends Controller
             'contract_types.*' => ['string', Rule::in(['cdi', 'cdd', 'stage', 'freelance'])],
             'remote_only' => ['sometimes', 'boolean'],
             'min_salary' => ['nullable', 'numeric', 'min:0'],
+            'resume_url' => ['nullable', 'url', 'max:500'],
         ]);
 
         /** @var User $user */
@@ -200,6 +201,26 @@ class UserAuthController extends Controller
             $validated['q'] ?? null,
             (int) ($validated['limit'] ?? 20),
         ));
+    }
+
+    public function applicationNotifications(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user('user_api');
+        $notifications = is_array($user->job_application_notifications) ? $user->job_application_notifications : [];
+        return new JsonResponse(['data' => array_values(array_reverse($notifications))]);
+    }
+
+    public function markApplicationNotificationsRead(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user('user_api');
+        $notifications = is_array($user->job_application_notifications) ? $user->job_application_notifications : [];
+        $user->forceFill(['job_application_notifications' => array_map(
+            fn (array $notification): array => [...$notification, 'read' => true],
+            $notifications,
+        )])->save();
+        return new JsonResponse(['status' => 'ok']);
     }
 
     public function changePassword(Request $request): JsonResponse
@@ -273,6 +294,7 @@ class UserAuthController extends Controller
             'account_type' => 'user',
             'job_search_preferences' => is_array($user->job_search_preferences) ? $user->job_search_preferences : [],
             'job_search_profile_updated_at' => $user->job_search_profile_updated_at?->toIso8601String(),
+            'unread_job_application_notifications' => collect(is_array($user->job_application_notifications) ? $user->job_application_notifications : [])->where('read', false)->count(),
             'has_company' => $user->employeeLinks()->where('status', 'active')->exists(),
             'company_requests' => $user->companyRequests()
                 ->select(['id', 'company_name', 'status', 'created_at'])

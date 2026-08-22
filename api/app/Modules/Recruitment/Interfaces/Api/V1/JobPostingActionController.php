@@ -11,6 +11,7 @@ use App\Http\Resources\Api\V1\JobPostingResource;
 use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Recruitment\Domain\Models\ApplicantStatusHistory;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Models\User;
 use App\Modules\Recruitment\Domain\Models\Interview;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
 use Illuminate\Http\JsonResponse;
@@ -119,6 +120,13 @@ class JobPostingActionController extends Controller
                 'note' => $validated['note'] ?? null,
                 'changed_at' => now(),
             ]);
+            if ($applicant->user_id) {
+                User::query()->find($applicant->user_id)?->addJobApplicationNotification(
+                    $applicant->id,
+                    $validated['status'],
+                    'Le statut de votre candidature a été mis à jour : '.$validated['status'].'.',
+                );
+            }
         }
 
         return (new ApplicantResource($applicant->fresh(['statusHistory'])))->response();

@@ -28,6 +28,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $personal_onboarding_completed_at
  * @property array<string, mixed>|null $job_search_preferences
  * @property Carbon|null $job_search_profile_updated_at
+ * @property array<int, array<string, mixed>>|null $job_application_notifications
  * @property Carbon|null $email_verified_at
  * @property Carbon|null $last_login_at
  * @property int $failed_login_attempts
@@ -82,6 +83,7 @@ class User extends Authenticatable
         'personal_onboarding_completed_at' => 'datetime',
         'job_search_preferences' => 'array',
         'job_search_profile_updated_at' => 'datetime',
+        'job_application_notifications' => 'array',
         'locked_until' => 'datetime',
         'failed_login_attempts' => 'integer',
     ];
@@ -89,6 +91,20 @@ class User extends Authenticatable
     public function getAuthPassword(): string
     {
         return $this->password_hash ?? '';
+    }
+
+    public function addJobApplicationNotification(int $applicationId, string $status, string $message): void
+    {
+        $notifications = is_array($this->job_application_notifications) ? $this->job_application_notifications : [];
+        $notifications[] = [
+            'id' => (string) str()->uuid(),
+            'application_id' => $applicationId,
+            'status' => $status,
+            'message' => $message,
+            'read' => false,
+            'created_at' => now()->toIso8601String(),
+        ];
+        $this->forceFill(['job_application_notifications' => array_slice($notifications, -50)])->save();
     }
 
     public function fullName(): string
