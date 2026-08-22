@@ -12,4 +12,8 @@ return [
     'too_many_requests' => 'You already have 3 pending requests.',
     'user_not_found' => 'No ordinary account found with this email.',
     'already_linked' => 'This user is already linked to your company.',
+    'job_seeker_required' => 'Activate the job-seeker status to receive recommendations.',
+    'application_status_updated' => 'Your application status was updated: :status.',
+    'already_applied' => 'You have already applied for this position.',
+    'resume_not_found' => 'The selected resume version could not be found.',
 ];

@@ -25,7 +25,7 @@ final class UserCandidateApplicationController extends Controller
         if (! in_array('job_seeker', $statuses, true)) {
             return new JsonResponse([
                 'error' => 'JOB_SEARCH_STATUS_REQUIRED',
-                'message' => 'Activez le statut de recherche d’emploi avant de postuler.',
+                'message' => __('user.job_seeker_required'),
             ], 403);
         }
 
@@ -54,7 +54,7 @@ final class UserCandidateApplicationController extends Controller
             if ($alreadyApplied) {
                 return new JsonResponse([
                     'error' => 'ALREADY_APPLIED',
-                    'message' => 'Vous avez déjà postulé à cette offre.',
+                    'message' => __('user.already_applied'),
                 ], 409);
             }
 
@@ -64,7 +64,7 @@ final class UserCandidateApplicationController extends Controller
                 $selectedResume = collect(is_array($preferences['resumes'] ?? null) ? $preferences['resumes'] : [])
                     ->firstWhere('id', $validated['resume_id']);
                 if (! is_array($selectedResume) || empty($selectedResume['path'])) {
-                    return new JsonResponse(['error' => 'RESUME_NOT_FOUND', 'message' => 'La version de CV sélectionnée est introuvable.'], 422);
+                    return new JsonResponse(['error' => 'RESUME_NOT_FOUND', 'message' => __('user.resume_not_found')], 422);
                 }
                 $resumeUrl = $selectedResume['path'];
             }

@@ -4,6 +4,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **feat(recruitment): onboarding personnel et candidature authentifiée.** Ajout des statuts personnels cumulables, recommandations d’offres, versions multiples de CV, candidature avec CV sélectionné, timeline des étapes, notifications candidat et demandes d’intégration entreprise. PR #5296.
 - **docs(plan): PLAN_100PCT — programme 100 % multi-modules (waves W0-W6).** Carte de propriété des modules (anti-collision : 1 agent = 1 module), définition prod-ready, séquençage en waves parallèles, index des 66 issues du programme (paie DZ + 9 packs pays, HR, pointage, comptabilité, cross-cutting).
 - **docs(architecture): module Comptabilité — conception v1 (EPIC #5219).** `docs/architecture/COMPTABILITE_CONCEPTION.md` : vision Company OS, vocabulaire ×4 (facture, proforma, devis, avoir, irsaliye, reçu), modèle de domaine, architecture DDD 19e module, intégration Marketing (lead qualifié → contact) / Billing / Expense / Payroll, mobile `leopardo_accounting` (Phase C), planification A/B/C. Zéro impact FOCUS. Issues #5219→#5237.
 - **docs(readme): corriger le diagramme mermaid « Architecture at a glance ».** Le label `Workers[Workers : web (Render) + drain GH Actions]` cassait le parse mermaid (parenthèses) — diagramme affiché en erreur sur GitHub. Labels sans parenthèses ni backticks ; rendu vérifié (mermaid.ink HTTP 200).

@@ -254,7 +254,7 @@ class RecruitmentController extends Controller
                 User::query()->find($applicant->user_id)?->addJobApplicationNotification(
                     $applicant->id,
                     $validated['status'],
-                    'Le statut de votre candidature a été mis à jour : '.$validated['status'].'.',
+                    __('user.application_status_updated', ['status' => $validated['status']]),
                 );
             }
         }

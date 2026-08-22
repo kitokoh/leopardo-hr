@@ -224,7 +224,7 @@ class UserAuthController extends Controller
         if (! in_array('job_seeker', $statuses, true)) {
             return new JsonResponse([
                 'error' => 'JOB_SEARCH_STATUS_REQUIRED',
-                'message' => 'Activez le statut « à la recherche d’emploi » pour recevoir des recommandations.',
+                'message' => __('user.job_seeker_required'),
             ], 403);
         }
 
