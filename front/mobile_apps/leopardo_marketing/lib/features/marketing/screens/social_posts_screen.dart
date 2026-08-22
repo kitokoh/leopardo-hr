@@ -15,8 +15,10 @@ final socialPostRepositoryProvider = Provider<SocialPostRepository>((ref) {
   return SocialPostRepository(ref.watch(apiClientProvider));
 });
 
-final socialPostsProvider =
-    FutureProvider.family<List<SocialPost>, String?>((ref, status) {
+final socialPostsProvider = FutureProvider.family<List<SocialPost>, String?>((
+  ref,
+  status,
+) {
   return ref.watch(socialPostRepositoryProvider).listPosts(status: status);
 });
 
@@ -76,8 +78,9 @@ class SocialPostsScreen extends ConsumerWidget {
                     labelStyle: TextStyle(
                       color: selected ? AppColors.rh : Colors.white70,
                       fontSize: 12,
-                      fontWeight:
-                          selected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: selected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                     backgroundColor: Colors.white10,
                     onSelected: (_) =>
@@ -120,8 +123,11 @@ class SocialPostsScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.error_outline,
-                          color: Colors.red, size: 48),
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                        size: 48,
+                      ),
                       const SizedBox(height: 12),
                       Text(
                         e.toString(),
@@ -152,11 +158,11 @@ class _PostCard extends ConsumerWidget {
   final SocialPost post;
 
   Color get _statusColor => switch (post.status) {
-        'published' => AppColors.success,
-        'scheduled' => AppColors.warning,
-        'failed' => AppColors.danger,
-        _ => Colors.blueGrey,
-      };
+    'published' => AppColors.success,
+    'scheduled' => AppColors.warning,
+    'failed' => AppColors.danger,
+    _ => Colors.blueGrey,
+  };
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -176,8 +182,10 @@ class _PostCard extends ConsumerWidget {
               Row(
                 children: [
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: _statusColor.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(6),
@@ -196,9 +204,11 @@ class _PostCard extends ConsumerWidget {
                   // Platforms
                   Expanded(
                     child: Text(
-                      post.targetPlatforms.map((p) {
-                        return SocialPost.platformIcons[p] ?? p;
-                      }).join(' '),
+                      post.targetPlatforms
+                          .map((p) {
+                            return SocialPost.platformIcons[p] ?? p;
+                          })
+                          .join(' '),
                       style: const TextStyle(fontSize: 14),
                     ),
                   ),
@@ -206,7 +216,10 @@ class _PostCard extends ConsumerWidget {
                   if (post.isDraft)
                     TextButton.icon(
                       icon: const Icon(Icons.send_rounded, size: 14),
-                      label: const Text('Publier', style: TextStyle(fontSize: 12)),
+                      label: const Text(
+                        'Publier',
+                        style: TextStyle(fontSize: 12),
+                      ),
                       onPressed: () => _publishNow(context, ref),
                       style: TextButton.styleFrom(
                         foregroundColor: AppColors.rh,
@@ -221,30 +234,40 @@ class _PostCard extends ConsumerWidget {
                 post.content,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style:
-                    const TextStyle(color: Colors.white, fontSize: 13, height: 1.4),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  height: 1.4,
+                ),
               ),
               const SizedBox(height: 8),
               // Footer
               Row(
                 children: [
-                  const Icon(Icons.schedule_rounded,
-                      size: 12, color: Colors.white38),
+                  const Icon(
+                    Icons.schedule_rounded,
+                    size: 12,
+                    color: Colors.white38,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     _formatDate(post.scheduledAt ?? post.createdAt),
-                    style:
-                        const TextStyle(color: Colors.white38, fontSize: 11),
+                    style: const TextStyle(color: Colors.white38, fontSize: 11),
                   ),
                   if (post.providerPostRef != null) ...[
                     const Spacer(),
-                    const Icon(Icons.check_circle_outline_rounded,
-                        size: 12, color: Colors.green),
+                    const Icon(
+                      Icons.check_circle_outline_rounded,
+                      size: 12,
+                      color: Colors.green,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       post.providerPostRef!,
                       style: const TextStyle(
-                          color: Colors.white38, fontSize: 10),
+                        color: Colors.white38,
+                        fontSize: 10,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -263,9 +286,8 @@ class _PostCard extends ConsumerWidget {
       await ref.read(socialPostRepositoryProvider).publishPost(post.id);
       ref.invalidate(socialPostsProvider(null));
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Post publié !')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Post publié !')));
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context)
