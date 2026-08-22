@@ -46,17 +46,25 @@ jobs:
           echo "Probing ${ADMIN_URL}/login for the CSP header served by Cloudflare Pages..."
           HEADERS="$(curl -sI --max-time 30 "${ADMIN_URL}/login" || true)"
 
-          SERVED_CSP="$(echo "${HEADERS}" | tr -d '\r' | sed -n 's/^content-security-policy-report-only: //Ip' || true)"
+          # #4804 : la CSP est ENFORCÉE (header Content-Security-Policy) dans le
+          # repo depuis e6a855399 (#4830) — le header report-only n'existe plus.
+          # Le garde accepte l'enforcée en priorité et tolère une éventuelle
+          # report-only résiduelle, mais exige qu'au moins l'une des deux soit
+          # servie (sinon le déploiement CF Pages est absent ou bloqué).
+          SERVED_CSP="$(echo "${HEADERS}" | tr -d '\r' | sed -n 's/^content-security-policy: //Ip' || true)"
           if [[ -z "${SERVED_CSP}" ]]; then
-            echo "::error::Aucun header Content-Security-Policy-Report-Only servi par ${ADMIN_URL} — déploiement CF Pages absent ou bloqué (issue #1834)."
+            SERVED_CSP="$(echo "${HEADERS}" | tr -d '\r' | sed -n 's/^content-security-policy-report-only: //Ip' || true)"
+          fi
+          if [[ -z "${SERVED_CSP}" ]]; then
+            echo "::error::Aucun header Content-Security-Policy servi par ${ADMIN_URL} — déploiement CF Pages absent ou bloqué (issue #1834, #4804)."
             exit 1
           fi
 
           # Le fichier _headers du repo ne contient plus upgrade-insecure-requests
-          # (fix #1783) : si le header servi le contient encore, l'intégration Git
-          # Cloudflare Pages n'a pas redéployé main.
+          # (fix #1783, cf. #4804) : si le header servi le contient encore,
+          # l'intégration Git Cloudflare Pages n'a pas redéployé main.
           if echo "${SERVED_CSP}" | grep -q "upgrade-insecure-requests"; then
-            echo "::error::Header CSP servi obsolète : contient encore upgrade-insecure-requests (issue #1834)."
+            echo "::error::Header CSP servi obsolète : contient encore upgrade-insecure-requests (issue #1834, #4804)."
             echo "L'intégration Git Cloudflare Pages (leo-admin) ne redéploie pas main — vérifier le dashboard CF (branche de production = main, build command, logs de build)."
             exit 1
           fi
