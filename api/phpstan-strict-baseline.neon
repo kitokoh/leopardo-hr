@@ -6686,27 +6686,15 @@ parameters:
 			path: tests/Feature/OnboardingChecklistTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 9
-			path: tests/Feature/OnboardingStepControllerTest.php
-
-		-
 			message: '#^Cannot access property \$status on App\\Modules\\HR\\Domain\\Models\\OnboardingStep\|null\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: tests/Feature/OnboardingStepControllerTest.php
 
 		-
-			message: '#^Parameter \#1 \$company of method Tests\\Feature\\OnboardingStepControllerTest\:\:step\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 9
-			path: tests/Feature/OnboardingStepControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 6
+			message: '#^Cannot access property \$status on App\\Modules\\HR\\Domain\\Models\\OnboardingStep\|null\.$#'
+			identifier: property.nonObject
+			count: 1
 			path: tests/Feature/OnboardingStepControllerTest.php
 
 		-
@@ -7688,21 +7676,15 @@ parameters:
 			path: tests/Feature/Security/TenantScopeFailClosedTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Security/WebhookSsrfGuardTest.php
-
-		-
 			message: '#^Cannot access property \$url on App\\Modules\\Billing\\Domain\\Models\\WebhookEndpoint\|null\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: tests/Feature/Security/WebhookSsrfGuardTest.php
 
 		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 3
+			message: '#^Cannot access property \$url on App\\Modules\\Billing\\Domain\\Models\\WebhookEndpoint\|null\.$#'
+			identifier: property.nonObject
+			count: 1
 			path: tests/Feature/Security/WebhookSsrfGuardTest.php
 
 		-

@@ -31,7 +31,9 @@ class OnboardingStepControllerTest extends TestCase
 
     public function test_checklist_auto_seeds_default_steps_for_company(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
@@ -55,7 +57,9 @@ class OnboardingStepControllerTest extends TestCase
 
     public function test_progress_counts_completed_and_skipped_steps(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $this->step($company, 'company_info', 'completed', required: true);
@@ -83,7 +87,9 @@ class OnboardingStepControllerTest extends TestCase
         // Les écritures d'état company-level (complete) restent réservées
         // aux managers (#3430 — un employé ne peut pas falsifier le progrès
         // d'onboarding de l'entreprise) : PATCH → 403 pour un simple employé.
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -101,7 +107,9 @@ class OnboardingStepControllerTest extends TestCase
 
     public function test_manager_can_complete_own_company_step(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $this->step($company, 'company_info', 'pending', required: true);
 
@@ -117,7 +125,9 @@ class OnboardingStepControllerTest extends TestCase
 
     public function test_manager_can_skip_optional_step_but_not_required_step(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $this->step($company, 'first_report', 'pending');
@@ -136,8 +146,11 @@ class OnboardingStepControllerTest extends TestCase
 
     public function test_company_cannot_complete_another_company_step(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $otherStep = $this->step($otherCompany, 'company_info', 'pending', required: true);
@@ -158,7 +171,9 @@ class OnboardingStepControllerTest extends TestCase
         // #5151 — instrumentation légère (pas d'outil externe) : la checklist
         // expose l'horodatage du parcours pilote (création société + minutes
         // écoulées) pour mesurer l'objectif « onboarding < 30 min ».
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
@@ -166,7 +181,7 @@ class OnboardingStepControllerTest extends TestCase
         $response = $this->getJson('/api/v1/onboarding-setup/checklist');
 
         $response->assertOk();
-        $response->assertJsonPath('data.company_created_at', $company->created_at->toIso8601String());
+        $response->assertJsonPath('data.company_created_at', $company->created_at?->toIso8601String());
         $this->assertIsInt($response->json('data.elapsed_since_company_creation_minutes'));
         $this->assertGreaterThanOrEqual(0, $response->json('data.elapsed_since_company_creation_minutes'));
     }
@@ -176,7 +191,9 @@ class OnboardingStepControllerTest extends TestCase
         // #5151 — chaque étape complétée produit un log structuré
         // onboarding.step_completed avec horodatage + minutes écoulées depuis
         // la création de la société (preuve « < 30 min » sans télémétrie).
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $this->step($company, 'company_info', 'pending', required: true);
 

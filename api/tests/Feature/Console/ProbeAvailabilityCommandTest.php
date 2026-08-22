@@ -16,17 +16,26 @@ class ProbeAvailabilityCommandTest extends TestCase
 {
     public function test_json_format_returns_success(): void
     {
-        $this->artisan('infra:probe-availability')
-            ->assertExitCode(0);
+        // `$this->artisan()` renvoie PendingCommand|int et n'exécute la
+        // commande qu'au destructeur (assertions sur un mock de sortie vide)
+        // → Artisan::call pour une exécution synchrone fiable (issue #5201).
+        $exit = Artisan::call('infra:probe-availability');
+
+        $this->assertSame(0, $exit);
     }
 
     public function test_env_format_pins_database_queue(): void
     {
         // La queue est volontairement FIXE sur database : c'est le « meilleur »
         // choix à vie (pas de quota, drainable par le worker GH Actions).
-        $this->artisan('infra:probe-availability', ['--format' => 'env'])
-            ->expectsOutputToContain('QUEUE_CONNECTION=database')
-            ->assertExitCode(0);
+        $exit = Artisan::call('infra:probe-availability', ['--format' => 'env']);
+
+        $this->assertSame(0, $exit);
+        $this->assertStringContainsString(
+            'QUEUE_CONNECTION=database',
+            Artisan::output(),
+            'La queue doit rester sur database (drain GH Actions #5204).'
+        );
     }
 
     public function test_env_format_recommends_redis_or_file_for_cache(): void
