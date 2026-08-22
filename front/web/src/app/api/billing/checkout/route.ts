@@ -85,8 +85,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         {
           success: false,
           error: "VALIDATION_ERROR",
-          message:
+          message: i18nT(
+            locale,
+            "billing.redirect_url_invalid",
             "Les URLs de redirection doivent appartenir au site autorisé.",
+          ),
         },
         { status: 400 },
       );
