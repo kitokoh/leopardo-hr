@@ -144,6 +144,16 @@ class UserAuthRepository {
     return data.whereType<Map>().map((item) => item.cast<String, dynamic>()).toList();
   }
 
+  Future<List<Map<String, dynamic>>> getJobRecommendations() async {
+    final response = await apiClient.requestWithRetry(
+      '/user/job-recommendations?limit=20',
+      useUserSession: true,
+      timeoutOverride: const Duration(seconds: 15),
+    );
+    final data = response.data is Map ? (response.data['data'] as List<dynamic>? ?? const []) : const [];
+    return data.whereType<Map>().map((item) => item.cast<String, dynamic>()).toList();
+  }
+
   Future<void> requestToJoinCompany({required String companyId, String? message}) async {
     await apiClient.requestWithRetry(
       '/user/employee-join-requests',

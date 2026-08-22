@@ -26,6 +26,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $status
  * @property array<int, string>|null $personal_statuses
  * @property Carbon|null $personal_onboarding_completed_at
+ * @property array<string, mixed>|null $job_search_preferences
+ * @property Carbon|null $job_search_profile_updated_at
  * @property Carbon|null $email_verified_at
  * @property Carbon|null $last_login_at
  * @property int $failed_login_attempts
@@ -78,6 +80,8 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
         'personal_statuses' => 'array',
         'personal_onboarding_completed_at' => 'datetime',
+        'job_search_preferences' => 'array',
+        'job_search_profile_updated_at' => 'datetime',
         'locked_until' => 'datetime',
         'failed_login_attempts' => 'integer',
     ];

@@ -7,6 +7,7 @@ namespace App\Core\Auth\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\User;
 use App\Core\Auth\Infrastructure\Services\UserAuthService;
+use App\Modules\Recruitment\Application\Services\JobRecommendationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -17,6 +18,7 @@ class UserAuthController extends Controller
 {
     public function __construct(
         private readonly UserAuthService $userAuthService,
+        private readonly JobRecommendationService $jobRecommendationService,
     ) {}
 
     public function register(Request $request): JsonResponse
@@ -149,6 +151,57 @@ class UserAuthController extends Controller
         ]);
     }
 
+    public function updateJobSearchProfile(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'target_titles' => ['sometimes', 'array', 'max:20'],
+            'target_titles.*' => ['string', 'max:120'],
+            'skills' => ['sometimes', 'array', 'max:50'],
+            'skills.*' => ['string', 'max:80'],
+            'locations' => ['sometimes', 'array', 'max:20'],
+            'locations.*' => ['string', 'max:120'],
+            'contract_types' => ['sometimes', 'array', 'max:10'],
+            'contract_types.*' => ['string', Rule::in(['cdi', 'cdd', 'stage', 'freelance'])],
+            'remote_only' => ['sometimes', 'boolean'],
+            'min_salary' => ['nullable', 'numeric', 'min:0'],
+        ]);
+
+        /** @var User $user */
+        $user = $request->user('user_api');
+        $user->forceFill([
+            'job_search_preferences' => $validated,
+            'job_search_profile_updated_at' => now(),
+        ])->save();
+
+        return new JsonResponse(['data' => [
+            'preferences' => $user->fresh()->job_search_preferences ?? [],
+            'updated_at' => $user->fresh()->job_search_profile_updated_at?->toIso8601String(),
+        ]]);
+    }
+
+    public function jobRecommendations(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user('user_api');
+        $statuses = is_array($user->personal_statuses) ? $user->personal_statuses : [];
+        if (! in_array('job_seeker', $statuses, true)) {
+            return new JsonResponse([
+                'error' => 'JOB_SEARCH_STATUS_REQUIRED',
+                'message' => 'Activez le statut « à la recherche d’emploi » pour recevoir des recommandations.',
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'q' => ['nullable', 'string', 'max:120'],
+            'limit' => ['sometimes', 'integer', 'min:1', 'max:50'],
+        ]);
+        return new JsonResponse($this->jobRecommendationService->recommend(
+            $user,
+            $validated['q'] ?? null,
+            (int) ($validated['limit'] ?? 20),
+        ));
+    }
+
     public function changePassword(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -218,6 +271,8 @@ class UserAuthController extends Controller
             'personal_statuses' => is_array($user->personal_statuses) ? array_values($user->personal_statuses) : [],
             'personal_onboarding_completed' => $user->personal_onboarding_completed_at !== null,
             'account_type' => 'user',
+            'job_search_preferences' => is_array($user->job_search_preferences) ? $user->job_search_preferences : [],
+            'job_search_profile_updated_at' => $user->job_search_profile_updated_at?->toIso8601String(),
             'has_company' => $user->employeeLinks()->where('status', 'active')->exists(),
             'company_requests' => $user->companyRequests()
                 ->select(['id', 'company_name', 'status', 'created_at'])

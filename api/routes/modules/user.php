@@ -25,6 +25,8 @@ Route::middleware(['throttle:api', 'auth:user_api'])->prefix('user')->group(func
     Route::patch('/profile', [UserAuthController::class, 'updateProfile']);
     Route::get('/personal-onboarding', [UserAuthController::class, 'personalOnboarding']);
     Route::put('/personal-onboarding', [UserAuthController::class, 'updatePersonalOnboarding']);
+    Route::put('/job-search-profile', [UserAuthController::class, 'updateJobSearchProfile']);
+    Route::get('/job-recommendations', [UserAuthController::class, 'jobRecommendations']);
     Route::post('/change-password', [UserAuthController::class, 'changePassword']);
     Route::post('/logout', [UserAuthController::class, 'logout']);
 

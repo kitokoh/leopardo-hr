@@ -183,6 +183,18 @@ class UserHomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _QuickActionCard(
+                icon: Icons.auto_awesome_outlined,
+                label: 'Offres recommandées',
+                color: AppColors.info,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  context.push('/job-recommendations');
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _QuickActionCard(
                 icon: Icons.business_outlined,
                 label: 'Creer entreprise',
                 color: AppColors.ia,

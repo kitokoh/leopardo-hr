@@ -21,6 +21,7 @@ import {
 } from '@/lib/i18n';
 import { OnboardingWizard } from '@/modules/onboarding/components/OnboardingWizard';
 import { PersonalOnboardingWizard } from '@/modules/personal-onboarding/components/PersonalOnboardingWizard';
+import { JobRecommendationsPanel } from '@/modules/job-recommendations/components/JobRecommendationsPanel';
 
 export default function DashboardLayout({
   children,
@@ -373,6 +374,9 @@ export default function DashboardLayout({
           </div>
         </header>
         <main className="mx-auto w-full max-w-7xl p-8">
+          {user?.account_type === 'user' && user.personal_statuses?.includes('job_seeker') ? (
+            <JobRecommendationsPanel user={user} />
+          ) : null}
           {currentModule && !currentModule.enabled ? (
             <FeatureLockedPanel module={currentModule} labels={labels} />
           ) : (

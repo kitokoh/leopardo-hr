@@ -32,6 +32,7 @@ import 'package:leopardo_employee/features/user_auth/screens/user_login_screen.d
 import 'package:leopardo_employee/features/user_auth/screens/user_home_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/personal_onboarding_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/company_directory_screen.dart';
+import 'package:leopardo_employee/features/job_recommendations/screens/job_recommendations_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/company_request_screen.dart';
 import 'package:leopardo_employee/features/onboarding/screens/onboarding_screen.dart';
 import 'package:leopardo_employee/features/smart_attendance/screens/smart_attendance_screen.dart';
@@ -104,6 +105,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/user-home',
         '/personal-onboarding',
         '/company-directory',
+        '/job-recommendations',
         '/company-request',
       };
       final onPublic = publicRoutes.contains(location);
@@ -142,6 +144,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/company-directory',
         builder: (context, state) => const CompanyDirectoryScreen(),
+      ),
+      GoRoute(
+        path: '/job-recommendations',
+        builder: (context, state) => const JobRecommendationsScreen(),
       ),
       GoRoute(
         path: '/company-request',

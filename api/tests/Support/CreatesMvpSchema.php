@@ -87,6 +87,8 @@ trait CreatesMvpSchema
             $table->string('status')->default('active');
             $table->json('personal_statuses')->nullable();
             $table->timestamp('personal_onboarding_completed_at')->nullable();
+            $table->json('job_search_preferences')->nullable();
+            $table->timestamp('job_search_profile_updated_at')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             // Colonnes de gestion plateforme (issue #2269) — miroir de la
             // migration publique 2026_05_02_100001.
