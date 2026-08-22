@@ -6,6 +6,8 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 ## [Unreleased]
 
 ### Fixed
+- **OIDC public endpoints use the explicit `throttle:10,1` limiter.** The authorize and callback routes now match the anti-abuse contract asserted by `SsoCallbackThrottleTest` instead of inheriting the generic `throttle:api` limiter.
+
 - **LeaveCarryForward processes all tenants explicitly.** The annual carry-forward command now disables tenant global scopes for policies, balances, accrual expiration queries, and write builders while retaining explicit company filters, so console execution cannot inherit a stale `current_company` or `search_path` context; per-employee failures remain isolated and logged without poisoning the command transaction.
 
 - **Leave carry-forward assertions are tenant-independent.** The regression test reads generated accruals and balances without reapplying the current-company global scope after the global console command runs.
