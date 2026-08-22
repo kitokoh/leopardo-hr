@@ -50,7 +50,7 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
         );
 
     if (ok && mounted) {
-      context.go('/user-home');
+      context.go('/personal-onboarding');
     }
   }
 
@@ -67,7 +67,7 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
           );
 
       if (ok && mounted) {
-        context.go('/user-home');
+        context.go('/personal-onboarding');
       }
     } catch (e) {
       if (mounted) {

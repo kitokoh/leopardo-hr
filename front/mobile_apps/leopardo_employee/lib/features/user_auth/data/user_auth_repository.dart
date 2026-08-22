@@ -134,6 +134,41 @@ class UserAuthRepository {
     return extractDataMap(response.data);
   }
 
+  Future<List<Map<String, dynamic>>> searchCompanies(String search) async {
+    final response = await apiClient.requestWithRetry(
+      '/user/companies/directory?search=${Uri.encodeQueryComponent(search)}',
+      useUserSession: true,
+      timeoutOverride: const Duration(seconds: 12),
+    );
+    final data = response.data is Map ? (response.data['data'] as List<dynamic>? ?? const []) : const [];
+    return data.whereType<Map>().map((item) => item.cast<String, dynamic>()).toList();
+  }
+
+  Future<void> requestToJoinCompany({required String companyId, String? message}) async {
+    await apiClient.requestWithRetry(
+      '/user/employee-join-requests',
+      method: 'POST',
+      useUserSession: true,
+      timeoutOverride: const Duration(seconds: 12),
+      data: {
+        'company_id': companyId,
+        if (message != null && message.trim().isNotEmpty) 'message': message.trim(),
+      },
+    );
+  }
+
+  Future<AppUser> savePersonalStatuses(List<String> statuses) async {
+    final response = await apiClient.requestWithRetry(
+      '/user/personal-onboarding',
+      method: 'PUT',
+      useUserSession: true,
+      timeoutOverride: const Duration(seconds: 12),
+      data: {'statuses': statuses},
+    );
+
+    return AppUser.fromJson(_userPayload(extractDataMap(response.data)));
+  }
+
   Future<AppUser> updateProfile({
     String? firstName,
     String? lastName,

@@ -10,6 +10,8 @@ class AppUser {
   final String status;
   final String accountType;
   final bool hasCompany;
+  final List<String> personalStatuses;
+  final bool personalOnboardingCompleted;
   final List<CompanyRequestSummary> companyRequests;
   final List<EmployeeLinkSummary> employeeLinks;
 
@@ -25,6 +27,8 @@ class AppUser {
     this.status = 'active',
     this.accountType = 'user',
     this.hasCompany = false,
+    this.personalStatuses = const [],
+    this.personalOnboardingCompleted = false,
     this.companyRequests = const [],
     this.employeeLinks = const [],
   });
@@ -44,6 +48,12 @@ class AppUser {
       status: json['status'] as String? ?? 'active',
       accountType: json['account_type'] as String? ?? 'user',
       hasCompany: json['has_company'] as bool? ?? false,
+      personalStatuses: (json['personal_statuses'] as List<dynamic>?)
+              ?.whereType<String>()
+              .toList() ??
+          const [],
+      personalOnboardingCompleted:
+          json['personal_onboarding_completed'] as bool? ?? false,
       companyRequests:
           (json['company_requests'] as List<dynamic>?)
               ?.map(

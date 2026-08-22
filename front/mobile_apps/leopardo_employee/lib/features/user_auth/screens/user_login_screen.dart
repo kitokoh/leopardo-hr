@@ -41,7 +41,10 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
         .login(_emailCtrl.text.trim(), _passwordCtrl.text);
 
     if (ok && mounted) {
-      context.go('/user-home');
+      final user = ref.read(userAuthProvider).user;
+      context.go(user?.personalOnboardingCompleted == true
+          ? '/user-home'
+          : '/personal-onboarding');
     }
   }
 
@@ -58,7 +61,10 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
           );
 
       if (ok && mounted) {
-        context.go('/user-home');
+        final user = ref.read(userAuthProvider).user;
+        context.go(user?.personalOnboardingCompleted == true
+            ? '/user-home'
+            : '/personal-onboarding');
       }
     } catch (e) {
       if (mounted) {

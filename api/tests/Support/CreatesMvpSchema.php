@@ -85,6 +85,8 @@ trait CreatesMvpSchema
             $table->string('provider')->default('local');
             $table->string('preferred_language')->default('fr');
             $table->string('status')->default('active');
+            $table->json('personal_statuses')->nullable();
+            $table->timestamp('personal_onboarding_completed_at')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             // Colonnes de gestion plateforme (issue #2269) — miroir de la
             // migration publique 2026_05_02_100001.
@@ -92,6 +94,18 @@ trait CreatesMvpSchema
             $table->timestamp('last_login_at')->nullable();
             $table->integer('failed_login_attempts')->default(0);
             $table->timestamp('locked_until')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('employee_join_requests', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignUuid('company_id')->constrained('companies')->cascadeOnDelete();
+            $table->text('message')->nullable();
+            $table->string('status')->default('pending');
+            $table->unsignedBigInteger('approved_employee_id')->nullable();
+            $table->unsignedBigInteger('reviewed_by')->nullable();
+            $table->timestamp('reviewed_at')->nullable();
             $table->timestamps();
         });
 

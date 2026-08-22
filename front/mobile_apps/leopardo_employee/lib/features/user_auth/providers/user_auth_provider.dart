@@ -93,6 +93,19 @@ class UserAuthNotifier extends StateNotifier<UserAuthState> {
     }
   }
 
+  Future<bool> savePersonalStatuses(List<String> statuses) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final user = await _repository.savePersonalStatuses(statuses);
+      state = state.copyWith(isLoading: false, user: user);
+      return true;
+    } catch (e) {
+      final msg = e is ApiException ? e.message : 'Impossible d’enregistrer votre profil';
+      state = state.copyWith(isLoading: false, error: msg);
+      return false;
+    }
+  }
+
   Future<void> logout() async {
     await _repository.logout();
     state = UserAuthState();

@@ -9,6 +9,9 @@ export type StoredAuthUser = {
   language?: string | null;
   is_rtl?: boolean;
   role?: string | null;
+  account_type?: string | null;
+  personal_statuses?: string[] | null;
+  personal_onboarding_completed?: boolean;
   manager_role?: string | null;
   capabilities?: Record<string, unknown> | null;
   // Features tenant (FeatureFlag::for) renvoyées au niveau racine par

@@ -23,6 +23,8 @@ Route::middleware(['throttle:auth-sensitive'])->prefix('user')->group(function (
 Route::middleware(['throttle:api', 'auth:user_api'])->prefix('user')->group(function (): void {
     Route::get('/me', [UserAuthController::class, 'me']);
     Route::patch('/profile', [UserAuthController::class, 'updateProfile']);
+    Route::get('/personal-onboarding', [UserAuthController::class, 'personalOnboarding']);
+    Route::put('/personal-onboarding', [UserAuthController::class, 'updatePersonalOnboarding']);
     Route::post('/change-password', [UserAuthController::class, 'changePassword']);
     Route::post('/logout', [UserAuthController::class, 'logout']);
 
@@ -30,6 +32,11 @@ Route::middleware(['throttle:api', 'auth:user_api'])->prefix('user')->group(func
     Route::get('/company-requests', [CompanyRequestController::class, 'index']);
     Route::post('/company-requests', [CompanyRequestController::class, 'store']);
     Route::get('/company-requests/{id}', [CompanyRequestController::class, 'show'])->whereNumber('id');
+
+    // Annuaire et demandes d’integration employe
+    Route::get('/companies/directory', [UserEmployeeLinkController::class, 'companyDirectory']);
+    Route::get('/employee-join-requests', [UserEmployeeLinkController::class, 'myJoinRequests']);
+    Route::post('/employee-join-requests', [UserEmployeeLinkController::class, 'requestToJoin']);
 
     // Liens employe
     Route::get('/employee-links', [UserEmployeeLinkController::class, 'myLinks']);
@@ -40,4 +47,6 @@ Route::middleware(['throttle:api', 'auth:user_api'])->prefix('user')->group(func
 // garde isManager() du contrôleur reste en second rideau.
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager'])->group(function (): void {
     Route::post('/employees/link-user', [UserEmployeeLinkController::class, 'linkByEmail']);
+    Route::post('/employee-join-requests/{joinRequest}/approve', [UserEmployeeLinkController::class, 'approveJoinRequest'])
+        ->whereNumber('joinRequest');
 });

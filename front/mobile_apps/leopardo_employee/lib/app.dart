@@ -30,6 +30,8 @@ import 'package:leopardo_employee/features/profile/screens/profile_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/user_register_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/user_login_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/user_home_screen.dart';
+import 'package:leopardo_employee/features/user_auth/screens/personal_onboarding_screen.dart';
+import 'package:leopardo_employee/features/user_auth/screens/company_directory_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/company_request_screen.dart';
 import 'package:leopardo_employee/features/onboarding/screens/onboarding_screen.dart';
 import 'package:leopardo_employee/features/smart_attendance/screens/smart_attendance_screen.dart';
@@ -100,6 +102,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/user-register',
         '/user-login',
         '/user-home',
+        '/personal-onboarding',
+        '/company-directory',
         '/company-request',
       };
       final onPublic = publicRoutes.contains(location);
@@ -130,6 +134,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/user-home',
         builder: (context, state) => const UserHomeScreen(),
+      ),
+      GoRoute(
+        path: '/personal-onboarding',
+        builder: (context, state) => const PersonalOnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/company-directory',
+        builder: (context, state) => const CompanyDirectoryScreen(),
       ),
       GoRoute(
         path: '/company-request',

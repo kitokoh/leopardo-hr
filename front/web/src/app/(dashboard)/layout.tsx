@@ -20,6 +20,7 @@ import {
   type StoredAuthUser,
 } from '@/lib/i18n';
 import { OnboardingWizard } from '@/modules/onboarding/components/OnboardingWizard';
+import { PersonalOnboardingWizard } from '@/modules/personal-onboarding/components/PersonalOnboardingWizard';
 
 export default function DashboardLayout({
   children,
@@ -132,9 +133,15 @@ export default function DashboardLayout({
   };
 
   const [showWizard, setShowWizard] = useState(false);
+  const [showPersonalOnboarding, setShowPersonalOnboarding] = useState(false);
 
   useEffect(() => {
-    if (user && user.role === 'manager' && user.company?.metadata?.onboarding_completed !== true) {
+    if (!user) return;
+    if (user.account_type === 'user' && user.personal_onboarding_completed !== true) {
+      setShowPersonalOnboarding(true);
+      return;
+    }
+    if (user.role === 'manager' && user.company?.metadata?.onboarding_completed !== true) {
       setShowWizard(true);
     }
   }, [user]);
@@ -372,6 +379,9 @@ export default function DashboardLayout({
             children
           )}
         </main>
+        {showPersonalOnboarding && user && (
+          <PersonalOnboardingWizard user={user} onComplete={() => setShowPersonalOnboarding(false)} />
+        )}
         {showWizard && user && <OnboardingWizard user={user} onComplete={() => setShowWizard(false)} />}
       </div>
     </div>

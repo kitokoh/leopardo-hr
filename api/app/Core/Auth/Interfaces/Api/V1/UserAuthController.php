@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rule;
 
 class UserAuthController extends Controller
 {
@@ -115,6 +116,39 @@ class UserAuthController extends Controller
         ]);
     }
 
+    public function updatePersonalOnboarding(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'statuses' => ['required', 'array', 'min:1'],
+            'statuses.*' => [
+                'string',
+                Rule::in(['student', 'employee', 'entrepreneur', 'job_seeker']),
+            ],
+        ]);
+
+        /** @var User $user */
+        $user = $request->user('user_api');
+        $statuses = array_values(array_unique($validated['statuses']));
+        $user->forceFill([
+            'personal_statuses' => $statuses,
+            'personal_onboarding_completed_at' => now(),
+        ])->save();
+
+        return new JsonResponse([
+            'data' => $this->personalOnboardingPayload($user->fresh()),
+        ]);
+    }
+
+    public function personalOnboarding(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user('user_api');
+
+        return new JsonResponse([
+            'data' => $this->personalOnboardingPayload($user),
+        ]);
+    }
+
     public function changePassword(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -148,6 +182,23 @@ class UserAuthController extends Controller
     /**
      * @return array<string, mixed>
      */
+    private function personalOnboardingPayload(User $user): array
+    {
+        $statuses = is_array($user->personal_statuses) ? $user->personal_statuses : [];
+
+        return [
+            'statuses' => array_values($statuses),
+            'completed' => $user->personal_onboarding_completed_at !== null,
+            'employee_access' => [
+                'linked' => $user->employeeLinks()->where('status', 'active')->exists(),
+                'pointage_enabled' => $user->employeeLinks()->where('status', 'active')->exists(),
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     private function formatUser(?User $user): array
     {
         if (! $user) {
@@ -164,6 +215,8 @@ class UserAuthController extends Controller
             'provider' => $user->provider,
             'preferred_language' => $user->preferred_language,
             'status' => $user->status,
+            'personal_statuses' => is_array($user->personal_statuses) ? array_values($user->personal_statuses) : [],
+            'personal_onboarding_completed' => $user->personal_onboarding_completed_at !== null,
             'account_type' => 'user',
             'has_company' => $user->employeeLinks()->where('status', 'active')->exists(),
             'company_requests' => $user->companyRequests()

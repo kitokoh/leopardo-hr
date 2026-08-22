@@ -167,6 +167,22 @@ class UserHomeScreen extends ConsumerWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _QuickActionCard(
+                icon: Icons.person_search_outlined,
+                label: 'Rejoindre une entreprise',
+                color: AppColors.rh,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  context.push('/company-directory');
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _QuickActionCard(
                 icon: Icons.business_outlined,
                 label: 'Creer entreprise',
                 color: AppColors.ia,
