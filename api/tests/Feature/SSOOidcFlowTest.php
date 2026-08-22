@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -35,11 +34,11 @@ class SSOOidcFlowTest extends TestCase
         $this->setUpMvpSchema();
         Cache::flush();
 
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
         $this->company = $company;
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->create([
             'company_id' => $this->company->id,
             'role' => 'manager',
@@ -165,7 +164,10 @@ class SSOOidcFlowTest extends TestCase
         $response = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?code=abc&state=forged-state');
 
         $response->assertStatus(422);
-        $this->assertStringContainsString('SSO_STATE_INVALID', (string) $response->json('error'));
+        // #3810 : l'API expose un code STABLE (OIDC_CALLBACK_FAILED) au lieu du
+        // message d'exception brut — le détail (état inconnu/expiré/consommé)
+        // reste en logs pour ne pas fuiter d'information sur un endpoint public.
+        $this->assertSame('OIDC_CALLBACK_FAILED', $response->json('error'));
     }
 
     public function test_callback_rejects_bad_signature(): void
@@ -256,7 +258,9 @@ class SSOOidcFlowTest extends TestCase
 
         $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
             ->assertStatus(422)
-            ->assertJsonPath('error', 'SSO_USER_NOT_FOUND: aucun employé actif avec cet email (ghost@example.com).');
+            // #3810 : code stable — le détail SSO_USER_NOT_FOUND reste en logs
+            // (ne pas exposer l'existence d'un email sur un endpoint public).
+            ->assertJsonPath('error', 'OIDC_CALLBACK_FAILED');
     }
 
     public function test_callback_rejects_employee_of_another_company(): void
@@ -288,7 +292,8 @@ class SSOOidcFlowTest extends TestCase
 
         $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
             ->assertStatus(422)
-            ->assertJsonPath('error', 'SSO_TENANT_MISMATCH: l\'email SSO appartient à une autre entreprise.');
+            // #3810 : code stable — le détail SSO_TENANT_MISMATCH reste en logs.
+            ->assertJsonPath('error', 'OIDC_CALLBACK_FAILED');
     }
 
     public function test_oidc_not_configured_returns_422(): void

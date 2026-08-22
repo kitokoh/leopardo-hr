@@ -7,8 +7,6 @@ namespace Tests\Feature\Notification;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Notification\Domain\Models\AppNotification;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -26,22 +24,9 @@ class AppNotificationRelationTest extends TestCase
     {
         parent::setUp();
 
-        // La table app_notifications arrive via la PR de migration (#2395) —
-        // créée ici inline (même pattern que TaxSlabValidationWorkflowTest).
-        if (! Schema::hasTable('app_notifications')) {
-            Schema::create('app_notifications', function (Blueprint $table): void {
-                $table->id();
-                $table->unsignedInteger('user_id')->index();
-                $table->string('type', 80);
-                $table->string('title');
-                $table->text('body')->nullable();
-                $table->jsonb('data')->nullable();
-                $table->boolean('read')->default(false);
-                $table->timestamp('read_at')->nullable();
-                $table->string('action_url')->nullable();
-                $table->timestamps();
-            });
-        }
+        // La table app_notifications est créée par la migration tenant
+        // 2026_08_15_000002 (#2395/#1813) — le create inline historique est
+        // retiré : RefreshTenantDatabase migre le schéma complet (issue #5201).
     }
 
     public function test_user_relation_resolves_to_tenant_employee(): void

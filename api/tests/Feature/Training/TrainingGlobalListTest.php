@@ -25,28 +25,32 @@ class TrainingGlobalListTest extends TestCase
     use CreatesMvpSchema;
 
     protected Company $company;
+
     protected Company $otherCompany;
+
     protected Employee $manager;
+
     protected Employee $employee;
+
     protected Employee $otherManager;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->setUpMvpSchema();
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
         $this->company = $company;
-        /** @var \App\Core\Tenant\Domain\Models\Company $otherCompany */
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
         $this->otherCompany = $otherCompany;
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
         $this->manager = $manager;
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
         $this->employee = $employee;
-        /** @var \App\Core\Auth\Domain\Models\Employee $otherManager */
+        /** @var Employee $otherManager */
         $otherManager = Employee::factory()->manager()->create(['company_id' => $this->otherCompany->id]);
         $this->otherManager = $otherManager;
     }
@@ -194,7 +198,7 @@ class TrainingGlobalListTest extends TestCase
             'title' => 'Autre tenant',
             'type' => 'internal',
         ]);
-        TrainingSession::query()->create([
+        $otherSession = TrainingSession::query()->create([
             'company_id' => $this->otherCompany->id,
             'training_course_id' => $otherCourse->id,
             'start_date' => '2026-11-01',
@@ -206,8 +210,11 @@ class TrainingGlobalListTest extends TestCase
 
         $response = $this->getJson('/api/v1/training/sessions');
 
+        // La ressource ne sérialise PAS company_id (isolation tenant — l'id
+        // interne du tenant ne fuite jamais côté client) : on identifie la
+        // session retournée par son id (issue #5201).
         $response->assertOk();
         $this->assertCount(1, $response->json('data'));
-        $response->assertJsonPath('data.0.company_id', $this->otherCompany->id);
+        $response->assertJsonPath('data.0.id', $otherSession->id);
     }
 }

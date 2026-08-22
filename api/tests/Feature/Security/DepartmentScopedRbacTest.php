@@ -60,15 +60,17 @@ class DepartmentScopedRbacTest extends TestCase
             'status' => 'active',
         ]);
 
-        $deptA = Department::query()->create([
-            'company_id' => $company->id,
-            'name' => 'Department A',
-        ]);
+        // company_id n'est PAS mass-assignable sur Department (#3597, garde
+        // anti-dépassement de tenant) : create([...'company_id'...]) le
+        // dropperait silencieusement → department.company_id = null → le
+        // policy view() refuse (403). Assignation explicite (issue #5201).
+        $deptA = Department::query()->create(['name' => 'Department A']);
+        $deptA->company_id = $company->id;
+        $deptA->save();
 
-        $deptB = Department::query()->create([
-            'company_id' => $company->id,
-            'name' => 'Department B',
-        ]);
+        $deptB = Department::query()->create(['name' => 'Department B']);
+        $deptB->company_id = $company->id;
+        $deptB->save();
 
         $managerA = new Employee([
             'department_id' => $deptA->id,

@@ -77,9 +77,18 @@ class NotPrivateUrl implements ValidationRule
         // app() en contexte de test UNITAIRE pur renvoie le Container brut
         // (pas l'Application) : n'appeler environment() que sur une vraie
         // Application Laravel (fail-closed sinon, comportement historique).
-        $isTesting = \function_exists('app')
-            && app() instanceof Application
-            && app()->environment('testing');
+        //
+        // Garde `bound('env')` (issue #5201) : le TestCase de Laravel appelle
+        // `$this->app->flush()` en tearDown, ce qui vide TOUTES les liaisons de
+        // l'application qui est l'instance globale du Container. Un test
+        // unitaire pur exécuté juste après voit alors une Application « morte »
+        // (instances vidées) : `app()->environment()` → `$this['env']` →
+        // `make('env')` → BindingResolutionException « Target class [env] does
+        // not exist ». `bound('env')` ne construit rien et court-circuite.
+        $app = \function_exists('app') ? app() : null;
+        $isTesting = $app instanceof Application
+            && $app->bound('env')
+            && $app->environment('testing');
         if ($isTesting
             && (str_ends_with($host, '.test')
                 || str_ends_with($host, '.example')
