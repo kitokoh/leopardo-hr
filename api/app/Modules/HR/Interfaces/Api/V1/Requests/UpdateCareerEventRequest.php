@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Requests;
 
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,7 +17,10 @@ class UpdateCareerEventRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->isManager() ?? false;
+        /** @var Employee|null $user */
+        $user = $this->user();
+
+        return $user?->isManager() ?? false;
     }
 
     /**
@@ -24,7 +28,9 @@ class UpdateCareerEventRequest extends FormRequest
      */
     public function rules(): array
     {
-        $companyId = $this->user()?->company_id;
+        /** @var Employee|null $user */
+        $user = $this->user();
+        $companyId = $user?->company_id;
 
         return [
             'type' => ['sometimes', 'in:promotion,raise,transfer,title_change'],
