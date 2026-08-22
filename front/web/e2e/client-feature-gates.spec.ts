@@ -1,5 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
-import { setSessionCookie } from './session-helpers';
+import { expect, installAuthenticatedSession, test, type AuthenticatedUser } from './fixtures/authenticated';
+import type { Page } from '@playwright/test';
 
 type AnalyticsWindow = Window & {
   __LEOPARDO_ANALYTICS_EVENTS__?: Array<{
@@ -9,7 +9,7 @@ type AnalyticsWindow = Window & {
   }>;
 };
 
-const baseUser = {
+const baseUser: AuthenticatedUser = {
   id: 101,
   first_name: 'Fatima',
   last_name: 'Meziane',
@@ -25,9 +25,8 @@ async function seedSession(page: Page, overrides: Record<string, unknown> = {}) 
     (window as AnalyticsWindow).__LEOPARDO_ANALYTICS_EVENTS__ = [];
   });
 
-  await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
   const companyMetadata = { onboarding_completed: true };
-  const userToStore = {
+  const userToStore: Partial<AuthenticatedUser> = {
     ...baseUser,
     ...overrides,
     company: overrides.company
@@ -43,28 +42,7 @@ async function seedSession(page: Page, overrides: Record<string, unknown> = {}) 
         },
   };
 
-  // Audit #1699 : le token vit dans le cookie httpOnly `leopardo_token` —
-  // l'app n'attache plus de Bearer depuis localStorage. Le layout dashboard
-  // appelle /notifications au mount : sans mock, la requête part vers le
-  // backend réel sans cookie → 401 → redirection /auth/login (course flaky,
-  // cf. manager-workday-smoke qui mocke déjà notifications**).
-  await page.route('**/api/v1/notifications**', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ data: [], meta: { total: 0 } }),
-    });
-  });
-
-  await page.evaluate((user) => {
-    window.localStorage.removeItem('auth_token');
-    window.localStorage.setItem('auth_user', JSON.stringify(user));
-  }, userToStore);
-
-  // Issue #2746 — le middleware serveur exige le cookie httpOnly
-  // `leopardo_token` pour la zone dashboard : les sessions mockées doivent
-  // le poser (comme le proxy Next après un vrai login).
-  await setSessionCookie(page);
+  await installAuthenticatedSession(page, { user: userToStore });
 }
 
 async function analyticsEvents(page: Page) {

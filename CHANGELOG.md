@@ -4,6 +4,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **test(web/e2e): fixture authentifiée commune pour les smoke tests protégés.** Les scénarios feature-gates, manager workday et payroll réutilisent désormais une session déterministe avec cookie `leopardo_token`, `auth/me`, notifications et annonces mockées ; l’assertion Absences obsolète a été alignée sur le rendu actuel.
 - **test(web/e2e): scénario `/signup` complété avec le pays obligatoire.** Le test attend désormais le chargement des pays puis sélectionne `DZ`, ce qui permet d’atteindre le mock `/api/forms/signup` au lieu de rester bloqué par la validation client.
 - **fix(mobile/l10n): fichiers `AppLocalizations` régénérés avec Flutter 3.47.1.** Les sorties générées désynchronisées des ARB contenaient des fragments Dart invalides et bloquaient les builds debug ; les six applications passent désormais `flutter analyze` sans erreur.
 - **fix(tests/mobile): assertions l10n alignées sur les libellés français générés.** Les suites Core, HR et Manager attendaient d’anciens textes non accentués ou une casse obsolète (`Votre journee…`, `Mes Absences`) ; elles vérifient désormais les chaînes réellement servies par `AppLocalizations`.

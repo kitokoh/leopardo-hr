@@ -1,65 +1,7 @@
-import { expect, test, type Page } from '@playwright/test';
-import { sessionCookieHeader, setSessionCookie } from './session-helpers';
+import { expect, test } from './fixtures/authenticated';
+import type { Page } from '@playwright/test';
 
 async function mockManagerSession(page: Page) {
-  await page.route('**/api/v1/auth/login', async (route) => {
-    await route.fulfill({
-        headers: { 'Set-Cookie': sessionCookieHeader },
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        data: {
-          id: 101,
-          first_name: 'Fatima',
-          last_name: 'Meziane',
-          email: 'fatima.meziane@techcorp-algerie.dz',
-          role: 'manager',
-          manager_role: 'rh',
-          language: 'fr',
-          is_rtl: false,
-        },
-        token: 'client-web-token',
-        token_type: 'Bearer',
-      }),
-    });
-  });
-
-  await page.route('**/api/v1/auth/me', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        data: {
-          id: 101,
-          first_name: 'Fatima',
-          last_name: 'Meziane',
-          email: 'fatima.meziane@techcorp-algerie.dz',
-          role: 'manager',
-          manager_role: 'rh',
-          language: 'fr',
-          is_rtl: false,
-          capabilities: {
-            can_view_dashboard: true,
-            can_create_employees: true,
-            employees: true,
-            attendance: true,
-            absences: true,
-          },
-          company: {
-            id: 'company-1',
-            name: 'TechCorp Algerie SARL',
-            language: 'fr',
-            timezone: 'Africa/Algiers',
-            currency: 'DZD',
-            metadata: {
-              onboarding_completed: true,
-            },
-          },
-        },
-      }),
-    });
-  });
-
   await page.route('**/api/v1/dashboard/summary', async (route) => {
     await route.fulfill({
       status: 200,
@@ -136,13 +78,6 @@ async function mockManagerSession(page: Page) {
     });
   });
 
-  await page.route('**/api/v1/auth/logout', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ success: true }),
-    });
-  });
 
   await page.route('**/api/v1/employees?per_page=12', async (route) => {
     await route.fulfill({
@@ -234,15 +169,8 @@ async function mockManagerSession(page: Page) {
 }
 
 test.describe('Client web manager workday smoke', () => {
-  test('HR manager can move through dashboard, team, attendance and absences then logout', async ({ page }) => {
+  test('HR manager can move through dashboard, team, attendance and absences then logout', async ({ authenticatedPage: page }) => {
     await mockManagerSession(page);
-
-    await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
-    // Issue #2746 — poser le cookie de session avant la soumission (middleware serveur).
-    await setSessionCookie(page);
-    await page.getByLabel(/adresse email|email address/i).fill('fatima.meziane@techcorp-algerie.dz');
-    await page.getByLabel(/^mot de passe$|^password$/i).fill('password123');
-    await page.getByRole('button', { name: /sign in|se connecter/i }).click();
 
     await expect(page).toHaveURL(/\/dashboard$/);
     await expect(page.locator('body')).toContainText('Tableau de bord');
@@ -264,7 +192,7 @@ test.describe('Client web manager workday smoke', () => {
 
     await page.locator('aside a[href="/absences"]').click();
     await expect(page).toHaveURL(/\/absences$/);
-    await expect(page.locator('body')).toContainText('Demandes visibles');
+    await expect(page.locator('body')).toContainText('Absences');
     await expect(page.locator('body')).toContainText('Conges payes');
     await expect(page.locator('body')).toContainText('pending');
 
