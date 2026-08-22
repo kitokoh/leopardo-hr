@@ -303,7 +303,6 @@ class QueueHealthCheck extends Command
 
     /**
      * @param  array<string, mixed>  $result
-     * @return array<string, mixed>
      */
     private function thresholdsExceeded(array $result, int $maxPending, int $maxFailed): bool
     {
