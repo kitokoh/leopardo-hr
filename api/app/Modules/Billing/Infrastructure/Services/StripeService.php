@@ -13,8 +13,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use InvalidArgumentException;
-use RuntimeException;
 
 /**
  * Stripe integration service for subscription management.
@@ -51,7 +49,7 @@ class StripeService
     {
         $priceId = $this->priceIds[$plan] ?? null;
         if (!$priceId) {
-            throw new InvalidArgumentException("Unknown plan: {$plan}");
+            throw new \InvalidArgumentException("Unknown plan: {$plan}");
         }
 
         $response = Http::withToken($this->secretKey, 'Bearer')
@@ -79,7 +77,7 @@ class StripeService
                 'body' => $response->json(),
                 'company_id' => $company->id,
             ]);
-            throw new RuntimeException('Failed to create Stripe checkout session.');
+            throw new \RuntimeException('Failed to create Stripe checkout session.');
         }
 
         $data = $response->json();
@@ -107,7 +105,7 @@ class StripeService
                 'status' => $response->status(),
                 'customer' => $stripeCustomerId,
             ]);
-            throw new RuntimeException('Failed to create Stripe portal session.');
+            throw new \RuntimeException('Failed to create portal session.');
         }
 
         return $response->json('url');
