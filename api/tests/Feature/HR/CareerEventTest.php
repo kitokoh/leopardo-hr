@@ -328,8 +328,8 @@ class CareerEventTest extends TestCase
     {
         [$companyA, $managerA] = $this->createCompanyActors();
         [, , $employeeB] = $this->createCompanyActors('Company B', 'company-b', 'manager.b@a.test', 'employee.b@a.test');
-        $departmentB = $this->createDepartmentForCompany($employeeB->company_id, 'Ops B', null);
-        $positionB = $this->createPositionForCompany($employeeB->company_id, 'Poste B', $departmentB);
+        $departmentB = $this->createDepartmentForCompany((string) $employeeB->company_id, 'Ops B', null);
+        $positionB = $this->createPositionForCompany((string) $employeeB->company_id, 'Poste B', $departmentB->id);
 
         Sanctum::actingAs($managerA);
 
@@ -479,8 +479,10 @@ class CareerEventTest extends TestCase
     private function createPositionForCompany(string $companyId, string $name, int $departmentId): Position
     {
         $position = Position::create(['name' => $name, 'department_id' => $departmentId]);
-        $position->company_id = $companyId;
-        $position->save();
+        // forceFill : company_id est un UUID (string) — le docblock @property de
+        // Position (int|null) est erroné mais baseliné ; forceFill évite le
+        // finding PHPStan sur la nouvelle fixture.
+        $position->forceFill(['company_id' => $companyId])->save();
 
         return $position;
     }

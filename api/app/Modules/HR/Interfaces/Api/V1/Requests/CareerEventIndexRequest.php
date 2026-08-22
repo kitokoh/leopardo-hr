@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Requests;
 
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,7 +25,9 @@ class CareerEventIndexRequest extends FormRequest
      */
     public function rules(): array
     {
-        $companyId = $this->user()?->company_id;
+        /** @var Employee|null $user */
+        $user = $this->user();
+        $companyId = $user?->company_id;
 
         return [
             'employee_id' => [
