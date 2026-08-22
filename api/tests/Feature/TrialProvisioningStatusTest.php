@@ -69,13 +69,15 @@ class TrialProvisioningStatusTest extends TestCase
 
     public function test_status_returns_ready_with_login_url(): void
     {
+        $provisionedAt = now();
+
         DB::table('trial_provisionings')->insert([
             'email' => 'prospect@demo.com',
             'provisioning_token' => str_repeat('b', 64),
             'status' => 'ready',
             'company_id' => '00000000-0000-0000-0000-000000000001',
             'login_url' => '/auth/login',
-            'provisioned_at' => now(),
+            'provisioned_at' => $provisionedAt,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -84,7 +86,7 @@ class TrialProvisioningStatusTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.status', 'ready')
             ->assertJsonPath('data.login_url', '/auth/login')
-            ->assertJsonPath('data.provisioned_at', now()->toIso8601String());
+            ->assertJsonPath('data.provisioned_at', $provisionedAt->toIso8601String());
     }
 
     public function test_status_returns_failed_with_generic_message(): void
