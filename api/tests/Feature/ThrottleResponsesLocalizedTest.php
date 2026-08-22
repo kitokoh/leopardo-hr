@@ -16,7 +16,10 @@ class ThrottleResponsesLocalizedTest extends TestCase
 {
     public function test_throttled_route_returns_localized_429(): void
     {
-        Route::middleware('throttle:2,1')->get('/api/v1/_test-throttle-localized', fn () => response()->json(['ok' => true]));
+        // Les routes réelles portent le groupe `api` (SetLocale s'y exécute
+        // AVANT le throttle) : sans lui, l'Accept-Language fr était ignoré et
+        // le 429 rendu en anglais (issue #5201).
+        Route::middleware(['api', 'throttle:2,1'])->get('/api/v1/_test-throttle-localized', fn () => response()->json(['ok' => true]));
 
         $this->getJson('/api/v1/_test-throttle-localized')->assertOk();
         $this->getJson('/api/v1/_test-throttle-localized')->assertOk();
@@ -34,7 +37,7 @@ class ThrottleResponsesLocalizedTest extends TestCase
 
     public function test_throttled_route_localizes_english(): void
     {
-        Route::middleware('throttle:2,1')->get('/api/v1/_test-throttle-localized-en', fn () => response()->json(['ok' => true]));
+        Route::middleware(['api', 'throttle:2,1'])->get('/api/v1/_test-throttle-localized-en', fn () => response()->json(['ok' => true]));
 
         $this->getJson('/api/v1/_test-throttle-localized-en')->assertOk();
         $this->getJson('/api/v1/_test-throttle-localized-en')->assertOk();

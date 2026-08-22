@@ -112,14 +112,23 @@ trait RefreshTenantDatabase
         // tenant fixture and make a healthy canonical database look missing;
         // that would remigrate before every test and exhaust Coverage timeout.
         $row = DB::selectOne(
-            "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history,\n                    to_regclass('shared_tenants.onboarding_steps') AS onboarding_steps,\n                    to_regclass('shared_tenants.social_contributions') AS social_contributions"
+            "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history,\n                    to_regclass('shared_tenants.onboarding_steps') AS onboarding_steps,\n                    to_regclass('shared_tenants.social_contributions') AS social_contributions,\n                    to_regclass('shared_tenants.employees') AS employees,\n                    to_regclass('shared_tenants.app_notifications') AS app_notifications"
         );
 
         return $row !== null
             && $row->companies !== null
             && $row->export_history !== null
             && $row->onboarding_steps !== null
-            && $row->social_contributions !== null;
+            && $row->social_contributions !== null
+            // Issue #5201 : une fixture MVP partielle (CreatesMvpSchema) peut
+            // laisser un schéma tenant avec ces tables mais SANS `employees`
+            // et/ou avec une `app_notifications` d'ancienne génération (create
+            // inline #2395 : user_id unsignedInteger, pas d'action_url) — la
+            // garde détecte l'état incomplet et force la re-migration (sinon :
+            // « relation "employees" does not exist » / 25P02 dans le test
+            // suivant du worker, observés en CI workers 3-4).
+            && $row->employees !== null
+            && $row->app_notifications !== null;
     }
 
     /**

@@ -119,7 +119,12 @@ class TrialProvisioningStatusTest extends TestCase
 
     public function test_status_requires_token(): void
     {
+        // #4931 : token absent ou malformé → 404 PROVISIONING_TOKEN_INVALID
+        // (jamais 422 : l'endpoint ne doit pas révéler l'existence d'un token,
+        // et le contrat d'erreur est unique) — aligné sur
+        // test_status_rejects_invalid_token (issue #5201).
         $this->getJson('/api/v1/trial/status')
-            ->assertStatus(422);
+            ->assertStatus(404)
+            ->assertJsonPath('error', 'PROVISIONING_TOKEN_INVALID');
     }
 }

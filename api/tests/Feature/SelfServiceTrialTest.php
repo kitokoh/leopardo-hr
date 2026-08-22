@@ -18,6 +18,16 @@ class SelfServiceTrialTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // Les réponses du funnel self-service sont localisées via le header
+        // Accept-Language (middleware SetLocale) ; le client de test envoie
+        // `en-us,en;q=0.5` par défaut. Le funnel prospect étant FR (vitrine
+        // DZ), on force la locale fr pour les assertions de messages.
+        $this->withHeader('Accept-Language', 'fr');
+    }
+
     public function test_signup_sends_otp_and_creates_pending_request()
     {
         Mail::fake();
