@@ -65,4 +65,11 @@ return [
     'departure_notice_rule_reference' => 'Référence de la règle',
     'departure_notice_confidence_level' => 'Niveau de confiance',
     'departure_notice_not_available' => 'Aucun préavis légal par défaut pour ce pays (le contrat décide).',
+    'career_event_employee_not_found' => 'Employé introuvable dans votre entreprise.',
+    'career_event_position_not_found' => 'Poste introuvable dans votre entreprise.',
+    'career_event_department_not_found' => 'Département introuvable dans votre entreprise.',
+    'career_event_effective_date_required' => 'La date d\u{2019}effet est requise.',
+    'career_event_reason_required' => 'Le motif est requis.',
+    'career_event_nothing_to_apply' => 'Rien à appliquer : l\u{2019}événement n\u{2019}a ni poste, ni département, ni salaire cible.',
+    'career_event_deleted' => 'Événement de carrière supprimé.',
 ];

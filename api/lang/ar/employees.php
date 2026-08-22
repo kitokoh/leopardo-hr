@@ -65,4 +65,11 @@ return [
     'departure_notice_rule_reference' => 'مرجع القاعدة',
     'departure_notice_confidence_level' => 'مستوى الثقة',
     'departure_notice_not_available' => 'لا توجد مهلة إشعار قانونية افتراضية لهذه الدولة (يحددها العقد).',
+    'career_event_employee_not_found' => 'الموظف غير موجود في شركتك.',
+    'career_event_position_not_found' => 'المنصب غير موجود في شركتك.',
+    'career_event_department_not_found' => 'القسم غير موجود في شركتك.',
+    'career_event_effective_date_required' => 'تاريخ السريان مطلوب.',
+    'career_event_reason_required' => 'السبب مطلوب.',
+    'career_event_nothing_to_apply' => 'لا شيء للتطبيق: الحدث لا يحتوي على منصب أو قسم أو راتب مستهدف.',
+    'career_event_deleted' => 'تم حذف حدث المسار المهني.',
 ];

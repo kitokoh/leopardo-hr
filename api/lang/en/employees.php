@@ -65,4 +65,11 @@ return [
     'departure_notice_rule_reference' => 'Rule reference',
     'departure_notice_confidence_level' => 'Confidence level',
     'departure_notice_not_available' => 'No default legal notice period for this country (the contract decides).',
+    'career_event_employee_not_found' => 'Employee not found in your company.',
+    'career_event_position_not_found' => 'Position not found in your company.',
+    'career_event_department_not_found' => 'Department not found in your company.',
+    'career_event_effective_date_required' => 'The effective date is required.',
+    'career_event_reason_required' => 'The reason is required.',
+    'career_event_nothing_to_apply' => 'Nothing to apply: the event has no target position, department or salary.',
+    'career_event_deleted' => 'Career event deleted.',
 ];
