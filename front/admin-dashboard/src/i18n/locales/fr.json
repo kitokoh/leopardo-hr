@@ -1780,7 +1780,8 @@
     "period_label": "Période",
     "checkout_sandbox_message": "Paiement simulé (mode sandbox). Aucune carte débitée.",
     "checkout_unavailable": "Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.",
-    "checkout_failed": "Impossible de créer la session de paiement."
+    "checkout_failed": "Impossible de créer la session de paiement.",
+    "redirect_url_invalid": "Les URLs de redirection doivent appartenir au site autorisé."
   },
   "contracts": {
     "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
