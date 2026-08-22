@@ -78,9 +78,8 @@ class SocialPostsScreen extends ConsumerWidget {
                     labelStyle: TextStyle(
                       color: selected ? AppColors.rh : Colors.white70,
                       fontSize: 12,
-                      fontWeight: selected
-                          ? FontWeight.bold
-                          : FontWeight.normal,
+                      fontWeight:
+                          selected ? FontWeight.bold : FontWeight.normal,
                     ),
                     backgroundColor: Colors.white10,
                     onSelected: (_) =>
@@ -158,11 +157,11 @@ class _PostCard extends ConsumerWidget {
   final SocialPost post;
 
   Color get _statusColor => switch (post.status) {
-    'published' => AppColors.success,
-    'scheduled' => AppColors.warning,
-    'failed' => AppColors.danger,
-    _ => Colors.blueGrey,
-  };
+        'published' => AppColors.success,
+        'scheduled' => AppColors.warning,
+        'failed' => AppColors.danger,
+        _ => Colors.blueGrey,
+      };
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -204,11 +203,9 @@ class _PostCard extends ConsumerWidget {
                   // Platforms
                   Expanded(
                     child: Text(
-                      post.targetPlatforms
-                          .map((p) {
-                            return SocialPost.platformIcons[p] ?? p;
-                          })
-                          .join(' '),
+                      post.targetPlatforms.map((p) {
+                        return SocialPost.platformIcons[p] ?? p;
+                      }).join(' '),
                       style: const TextStyle(fontSize: 14),
                     ),
                   ),
