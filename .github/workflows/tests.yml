@@ -17,8 +17,10 @@ on:
       - '.github/workflows/tests.yml'
       - '.github/workflows/phpstan-baseline.yml'
 
+# Least privilege: tests only need to read the repository by default.
+# Jobs requiring additional access must declare it locally.
 permissions:
-  contents: write
+  contents: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -224,6 +226,10 @@ jobs:
         run: composer audit --locked --no-dev
 
   backend-quality:
+    # This job may push an explicitly generated Pint formatting commit on
+    # same-repository pull requests; keep the permission job-scoped.
+    permissions:
+      contents: write
     timeout-minutes: 45
     name: Backend Quality (Pint + PHP Syntax + PHPStan/Larastan)
     runs-on: ubuntu-latest

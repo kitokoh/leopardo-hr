@@ -131,8 +131,16 @@ class StripeService
 
         $elements = [];
         foreach (explode(',', $sigHeader) as $part) {
-            [$key, $value] = explode('=', trim($part), 2);
-            $elements[$key] = $value;
+            $parts = explode('=', trim($part), 2);
+            if (count($parts) !== 2 || $parts[0] === '' || $parts[1] === '') {
+                // En-tête malformé : rejet fail-closed, sans laisser remonter
+                // une exception de parsing vers le endpoint public.
+                Log::warning('Stripe: Malformed webhook signature header');
+
+                return null;
+            }
+
+            $elements[$parts[0]] = $parts[1];
         }
 
         $timestamp = $elements['t'] ?? null;
