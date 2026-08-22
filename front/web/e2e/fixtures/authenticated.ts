@@ -59,6 +59,7 @@ export const managerUser: AuthenticatedUser = {
     employees: true,
     attendance: true,
     absences: true,
+    payroll: true,
   },
   company: {
     id: 'company-1',

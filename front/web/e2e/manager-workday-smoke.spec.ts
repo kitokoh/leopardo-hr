@@ -172,6 +172,7 @@ test.describe('Client web manager workday smoke', () => {
   test('HR manager can move through dashboard, team, attendance and absences then logout', async ({ authenticatedPage: page }) => {
     await mockManagerSession(page);
 
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(/\/dashboard$/);
     await expect(page.locator('body')).toContainText('Tableau de bord');
     await expect(page.locator('body')).toContainText('TechCorp Algerie SARL');

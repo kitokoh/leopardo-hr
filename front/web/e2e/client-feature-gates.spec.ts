@@ -116,7 +116,7 @@ test.describe('Client web feature gates', () => {
     await expect(page.getByTestId('feature-locked-panel')).toBeVisible();
     await expect(page.getByText('Module non inclus').first()).toBeVisible();
     await expect(page.locator('body')).toContainText("Ce module n'est pas inclus dans votre plan actuel.");
-    await expect(page.locator('body')).toContainText('Demander l activation');
+    await expect(page.locator('body')).toContainText("Demander l'activation");
     await expect(page.locator('body')).not.toContainText('Gestion des bulletins de paie et cycles de paie');
 
     const events = await analyticsEvents(page);
