@@ -24,6 +24,12 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - `GenerateDocumentPdf` queued job archives to the private disk (`accounting/documents/{company}/{id}.pdf`) and sets `pdf_path`; idempotent; `TenantScopedJob` + `EnsureTenantContext`
   - Binding registered in `AccountingServiceProvider`
   - Tests: `DocumentPdfRendererTest` — 24 renders (6×4) without error, golden amounts (2×1000 − 100 discount → HT 1900 / tax 361 / TTC 2261), Arabic RTL flag, mentions priority, idempotent archiving
+- **Accounting treasury Phase B — payments + reconciliation + reminders (issue #5229)**:
+  - `PaymentRegistrationService`: register (never paid > total — 422 `PAYMENT_EXCEEDS_TOTAL`; issued documents only — 422 `PAYMENT_ON_UNSENT_DOCUMENT`), update `paid_amount` + document status (partially_paid/paid), idempotent reconcile (`matched` + `reconciled_at`)
+  - `PaymentReminderService` + `accounting:send-payment-reminders` command: J+7/J+15/J+30 configurable (`accounting_settings.payment_reminder_days`), `accounting_payment_reminders` unique (document, stage) — zero duplicates, Notification to principal/comptable managers (template `accounting_payment_reminder`, i18n ×4)
+  - API (RBAC principal/comptable): `GET /accounting/payments`, `POST /accounting/documents/{document}/payments`, `POST /accounting/payments/{payment}/reconcile`, `POST /accounting/reminders/run`
+  - OpenAPI: 4 paths documented + mirror/SDK regenerated (750 ops, route coverage 754/754)
+  - Tests: `AccountingPaymentTest` (14) — suite `tests/Feature/Accounting` 23/23
 
 ### Added
 - **Attendance reports by period (issue #5268)** — the monthly report endpoint `GET /attendance/monthly-report` is now a full report engine:

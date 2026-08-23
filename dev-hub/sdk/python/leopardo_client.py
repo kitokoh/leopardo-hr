@@ -183,6 +183,21 @@ class LeopardoClient:
     def get_accounting_documents_next_number(self, **kwargs):
         """Apercu du prochain numero de la serie configuree (#5223)"""
         return self.request("GET", "/accounting/documents/next-number", **kwargs)
+    def post_accounting_documents_by_document_payments(self, **kwargs):
+        """Enregistrer un paiement"""
+        return self.request("POST", "/accounting/documents/{document}/payments", **kwargs)
+
+    def get_accounting_payments(self, **kwargs):
+        """Lister les paiements"""
+        return self.request("GET", "/accounting/payments", **kwargs)
+
+    def post_accounting_payments_by_payment_reconcile(self, **kwargs):
+        """Rapprocher un paiement"""
+        return self.request("POST", "/accounting/payments/{payment}/reconcile", **kwargs)
+
+    def post_accounting_reminders_run(self, **kwargs):
+        """Declencher les relances de paiement"""
+        return self.request("POST", "/accounting/reminders/run", **kwargs)
 
     def post_admin_ai_chat(self, **kwargs):
         """Envoyer un message a l'assistant IA (super-admin)"""
