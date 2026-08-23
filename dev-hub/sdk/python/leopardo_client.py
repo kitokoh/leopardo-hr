@@ -132,6 +132,26 @@ class LeopardoClient:
         """Refuser une absence (déprécié — utiliser POST)"""
         return self.request("PUT", "/absences/{absence}/reject", **kwargs)
 
+    def get_accounting_contacts(self, **kwargs):
+        """Lister les contacts client/fournisseur"""
+        return self.request("GET", "/accounting/contacts", **kwargs)
+
+    def post_accounting_contacts(self, **kwargs):
+        """Creer un contact client/fournisseur"""
+        return self.request("POST", "/accounting/contacts", **kwargs)
+
+    def delete_accounting_contacts_by_contact(self, **kwargs):
+        """Supprimer un contact client/fournisseur"""
+        return self.request("DELETE", "/accounting/contacts/{contact}", **kwargs)
+
+    def get_accounting_contacts_by_contact(self, **kwargs):
+        """Detail d'un contact client/fournisseur"""
+        return self.request("GET", "/accounting/contacts/{contact}", **kwargs)
+
+    def put_accounting_contacts_by_contact(self, **kwargs):
+        """Mettre a jour un contact client/fournisseur"""
+        return self.request("PUT", "/accounting/contacts/{contact}", **kwargs)
+
     def post_admin_ai_chat(self, **kwargs):
         """Envoyer un message a l'assistant IA (super-admin)"""
         return self.request("POST", "/admin/ai/chat", **kwargs)
