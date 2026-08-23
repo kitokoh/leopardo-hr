@@ -97,7 +97,7 @@ class CareerEventController extends Controller
             abort(403);
         }
 
-        $event = CareerEvent::create([
+        $careerEvent = CareerEvent::create([
             'company_id' => $actor->company_id,
             'employee_id' => $target->id,
             'type' => $data['type'],
@@ -115,7 +115,7 @@ class CareerEventController extends Controller
             'notes' => $data['notes'] ?? null,
         ]);
 
-        return (new CareerEventResource($event->load(
+        return (new CareerEventResource($careerEvent->load(
             'employee:id,first_name,last_name',
             'fromPosition:id,name',
             'toPosition:id,name',
@@ -126,11 +126,11 @@ class CareerEventController extends Controller
             ->setStatusCode(201);
     }
 
-    public function show(Request $request, CareerEvent $event): CareerEventResource
+    public function show(Request $request, CareerEvent $careerEvent): CareerEventResource
     {
-        $this->authorize('view', $event);
+        $this->authorize('view', $careerEvent);
 
-        return new CareerEventResource($event->load(
+        return new CareerEventResource($careerEvent->load(
             'employee:id,first_name,last_name,email',
             'fromPosition:id,name',
             'toPosition:id,name',
@@ -140,19 +140,19 @@ class CareerEventController extends Controller
         ));
     }
 
-    public function update(UpdateCareerEventRequest $request, CareerEvent $event): CareerEventResource
+    public function update(UpdateCareerEventRequest $request, CareerEvent $careerEvent): CareerEventResource
     {
-        $this->authorize('update', $event);
+        $this->authorize('update', $careerEvent);
 
         $data = $request->validated();
 
         // Whitelist explicite : l'employé et le snapshot from_* sont immuables.
-        $event->update(collect($data)->only([
+        $careerEvent->update(collect($data)->only([
             'type', 'to_position_id', 'to_department_id',
             'to_salary', 'effective_date', 'reason', 'notes',
         ])->all());
 
-        return new CareerEventResource($event->refresh()->load(
+        return new CareerEventResource($careerEvent->refresh()->load(
             'employee:id,first_name,last_name',
             'fromPosition:id,name',
             'toPosition:id,name',
@@ -161,86 +161,86 @@ class CareerEventController extends Controller
         ));
     }
 
-    public function approve(Request $request, CareerEvent $event): CareerEventResource
+    public function approve(Request $request, CareerEvent $careerEvent): CareerEventResource
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $this->authorize('approve', $event);
+        $this->authorize('approve', $careerEvent);
 
-        $event->update([
+        $careerEvent->update([
             'status' => 'approved',
             'approved_by' => $actor->id,
             'approved_at' => Carbon::now(),
         ]);
 
-        return new CareerEventResource($event->refresh()->load(
+        return new CareerEventResource($careerEvent->refresh()->load(
             'employee:id,first_name,last_name',
             'approver:id,first_name,last_name',
         ));
     }
 
-    public function reject(RejectCareerEventRequest $request, CareerEvent $event): CareerEventResource
+    public function reject(RejectCareerEventRequest $request, CareerEvent $careerEvent): CareerEventResource
     {
-        $this->authorize('reject', $event);
+        $this->authorize('reject', $careerEvent);
 
         $data = $request->validated();
 
-        $notes = $event->notes;
+        $notes = $careerEvent->notes;
         if (! empty($data['reason'])) {
             $notes = trim(($notes !== null && $notes !== '' ? $notes."\n" : '').'Rejet — '.$data['reason']);
         }
 
-        $event->update(['status' => 'rejected', 'notes' => $notes]);
+        $careerEvent->update(['status' => 'rejected', 'notes' => $notes]);
 
-        return new CareerEventResource($event->refresh()->load(
+        return new CareerEventResource($careerEvent->refresh()->load(
             'employee:id,first_name,last_name',
         ));
     }
 
-    public function apply(Request $request, CareerEvent $event): JsonResponse
+    public function apply(Request $request, CareerEvent $careerEvent): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $this->authorize('apply', $event);
+        $this->authorize('apply', $careerEvent);
 
-        if ($event->to_position_id === null && $event->to_department_id === null && $event->to_salary === null) {
+        if ($careerEvent->to_position_id === null && $careerEvent->to_department_id === null && $careerEvent->to_salary === null) {
             return response()->json(['error' => ['code' => 'CAREER_EVENT_NOTHING_TO_APPLY', 'message' => __('employees.career_event_nothing_to_apply')]], 422);
         }
 
         /** @var Employee $target */
         $target = Employee::query()
             ->where('company_id', $actor->company_id)
-            ->findOrFail($event->employee_id);
+            ->findOrFail($careerEvent->employee_id);
 
         // #4978 : transaction imbriquée/savepoint — la mise à jour employé et
         // le passage à `applied` sont atomiques (jamais d'état à moitié).
-        $event = DB::transaction(function () use ($event, $target): CareerEvent {
+        $careerEvent = DB::transaction(function () use ($careerEvent, $target): CareerEvent {
             /** @var Employee $target */
             $changes = [];
-            if ($event->to_position_id !== null) {
-                $changes['position_id'] = $event->to_position_id;
+            if ($careerEvent->to_position_id !== null) {
+                $changes['position_id'] = $careerEvent->to_position_id;
             }
-            if ($event->to_department_id !== null) {
-                $changes['department_id'] = $event->to_department_id;
+            if ($careerEvent->to_department_id !== null) {
+                $changes['department_id'] = $careerEvent->to_department_id;
             }
-            if ($event->to_salary !== null) {
+            if ($careerEvent->to_salary !== null) {
                 // Impact paie : le prochain run consomme salary_base
                 // (spec #5259 §5 — pas de changement moteur).
-                $changes['salary_base'] = $event->to_salary;
+                $changes['salary_base'] = $careerEvent->to_salary;
             }
             $target->update($changes);
 
-            $event->update(['status' => 'applied', 'applied_at' => Carbon::now()]);
+            $careerEvent->update(['status' => 'applied', 'applied_at' => Carbon::now()]);
 
             /** @var CareerEvent $fresh */
-            $fresh = $event->fresh();
+            $fresh = $careerEvent->fresh();
 
             return $fresh;
         });
 
-        return (new CareerEventResource($event->load(
+        return (new CareerEventResource($careerEvent->load(
             'employee:id,first_name,last_name',
             'fromPosition:id,name',
             'toPosition:id,name',
@@ -249,11 +249,11 @@ class CareerEventController extends Controller
         )))->response();
     }
 
-    public function destroy(Request $request, CareerEvent $event): JsonResponse
+    public function destroy(Request $request, CareerEvent $careerEvent): JsonResponse
     {
-        $this->authorize('delete', $event);
+        $this->authorize('delete', $careerEvent);
 
-        $event->delete();
+        $careerEvent->delete();
 
         return response()->json(['message' => __('employees.career_event_deleted')]);
     }
