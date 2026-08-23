@@ -90,7 +90,7 @@ class ContractStatusOrchestrationTest extends TestCase
 
     public function test_activate_sets_employee_active(): void
     {
-        $this->employee->update(['status' => 'suspended']);
+        $this->employee->forceFill(['status' => 'suspended'])->save();
         $contract = $this->createContract('draft');
 
         app(ContractLifecycleAction::class)->activate($contract);
@@ -101,7 +101,7 @@ class ContractStatusOrchestrationTest extends TestCase
 
     public function test_suspend_sets_employee_suspended(): void
     {
-        $this->employee->update(['status' => 'active']);
+        $this->employee->forceFill(['status' => 'active'])->save();
         $contract = $this->createContract('active');
 
         app(ContractLifecycleAction::class)->suspend($contract);
@@ -113,7 +113,7 @@ class ContractStatusOrchestrationTest extends TestCase
     public function test_activate_on_archived_employee_is_rejected(): void
     {
         // Invariant G4 : jamais de contrat actif sur un employé archivé.
-        $this->employee->update(['status' => 'archived']);
+        $this->employee->forceFill(['status' => 'archived'])->save();
         $contract = $this->createContract('draft');
 
         $this->expectException(InvalidContractTransitionException::class);
@@ -122,7 +122,7 @@ class ContractStatusOrchestrationTest extends TestCase
 
     public function test_suspend_on_archived_employee_is_rejected(): void
     {
-        $this->employee->update(['status' => 'archived']);
+        $this->employee->forceFill(['status' => 'archived'])->save();
         $contract = $this->createContract('active');
 
         $this->expectException(InvalidContractTransitionException::class);
@@ -162,7 +162,7 @@ class ContractStatusOrchestrationTest extends TestCase
 
     public function test_terminate_on_archived_employee_is_rejected(): void
     {
-        $this->employee->update(['status' => 'archived']);
+        $this->employee->forceFill(['status' => 'archived'])->save();
         $contract = $this->createContract('active');
 
         $this->expectException(InvalidContractTransitionException::class);

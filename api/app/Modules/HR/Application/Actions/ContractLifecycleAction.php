@@ -38,7 +38,10 @@ final class ContractLifecycleAction
         $this->assertEmployeeNotArchived($employee);
 
         $contract->update(['status' => 'active', 'signed_at' => now()]);
-        $employee->update(['status' => 'active']);
+        // `status` n'est pas mass-assignable (Employee::$fillable) → assignation
+        // directe, même pattern que EmployeeService::archive (#5327).
+        $employee->status = 'active';
+        $employee->save();
 
         return $contract->fresh() ?? $contract;
     }
@@ -53,7 +56,8 @@ final class ContractLifecycleAction
         $this->assertEmployeeNotArchived($employee);
 
         $contract->update(['status' => 'suspended']);
-        $employee->update(['status' => 'suspended']);
+        $employee->status = 'suspended';
+        $employee->save();
 
         return $contract->fresh() ?? $contract;
     }
