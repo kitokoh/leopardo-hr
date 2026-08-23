@@ -1410,6 +1410,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/employees/{employee}/daily-summary", options);
     },
 
+    /** Récapitulatif du préavis légal (issue #5325, G2) */
+    getEmployeesByEmployeeDepartureNotice(options = {}) {
+      return request("GET", "/employees/{employee}/departure/notice", options);
+    },
+
     /** Solde de tout compte (fin de contrat, F-08) */
     getEmployeesByEmployeeEndOfContract(options = {}) {
       return request("GET", "/employees/{employee}/end-of-contract", options);

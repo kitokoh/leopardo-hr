@@ -1148,6 +1148,10 @@ class LeopardoClient:
         """Resume journalier d'un employe"""
         return self.request("GET", "/employees/{employee}/daily-summary", **kwargs)
 
+    def get_employees_by_employee_departure_notice(self, **kwargs):
+        """Récapitulatif du préavis légal (issue #5325, G2)"""
+        return self.request("GET", "/employees/{employee}/departure/notice", **kwargs)
+
     def get_employees_by_employee_end_of_contract(self, **kwargs):
         """Solde de tout compte (fin de contrat, F-08)"""
         return self.request("GET", "/employees/{employee}/end-of-contract", **kwargs)
