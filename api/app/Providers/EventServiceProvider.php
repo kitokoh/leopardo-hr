@@ -13,12 +13,14 @@ use App\Events\CompanyCreated;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Events\EmployeeRoleAssigned;
+use App\Events\MarketingLeadQualified;
 use App\Events\PayrollValidated;
 use App\Events\SubscriptionPaid;
 use App\Events\TaxRateApproved;
 use App\Events\TaxRateRejected;
 use App\Events\TaxRateSubmitted;
 use App\Listeners\AuditLogger;
+use App\Listeners\ConvertMarketingLeadToContact;
 use App\Listeners\LinkPartnerToNewCompany;
 use App\Listeners\NotifyTaxRateValidation;
 use App\Listeners\ProcessCommissionOnPayment;
@@ -50,5 +52,6 @@ class EventServiceProvider extends ServiceProvider
         TaxRateSubmitted::class => [NotifyTaxRateValidation::class.'@handleTaxRateSubmitted'],
         TaxRateApproved::class => [NotifyTaxRateValidation::class.'@handleTaxRateApproved'],
         TaxRateRejected::class => [NotifyTaxRateValidation::class.'@handleTaxRateRejected'],
+        MarketingLeadQualified::class => [ConvertMarketingLeadToContact::class.'@handleMarketingLeadQualified'],
     ];
 }

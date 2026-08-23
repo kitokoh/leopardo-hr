@@ -16520,6 +16520,84 @@ paths:
                 format: binary
         "401":
           $ref: "#/components/responses/Error401"
+  /marketing/leads/{lead}/contact:
+    get:
+      tags: ["Marketing"]
+      summary: "Lire le contact comptabilite cree depuis un lead qualifie"
+      parameters:
+        - name: lead
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Contact de facturation associe au lead (read-only marketing)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/MarketingLeadContact"
+        "404":
+          description: "Lead non converti ou contact d'un autre tenant"
+        "403":
+          $ref: "#/components/responses/Error401"
+
+  /marketing/leads/{lead}/qualify:
+    post:
+      tags: ["Marketing"]
+      summary: "Qualifier un lead et creer le contact comptabilite associe"
+      description: "RBAC marketing/principal. Claim exclusif : 409 si le lead est deja converti ou rejete."
+      parameters:
+        - name: lead
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: "Lead qualifie et contact cree (source=marketing_lead)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      lead:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          external_id:
+                            type: string
+                          status:
+                            type: string
+                          converted_company_id:
+                            type: string
+                            nullable: true
+                      contact:
+                        $ref: "#/components/schemas/MarketingLeadContact"
+                        nullable: true
+        "409":
+          description: "LEAD_ALREADY_CLAIMED — deja converti/reclame"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+        "403":
+          $ref: "#/components/responses/Error401"
+        "404":
+          description: "Lead introuvable"
+
   /marketing/leads:
     post:
       tags: ["Marketing"]
@@ -21640,6 +21718,27 @@ components:
           type: object
           nullable: true
           additionalProperties: true
+
+    MarketingLeadContact:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        source:
+          type: string
+        marketing_lead_id:
+          type: integer
+          nullable: true
 
     AttendanceCorrectionRequest:
       type: object

@@ -1544,6 +1544,14 @@ class LeopardoClient:
         """Persister un lead marketing (vitrine)"""
         return self.request("POST", "/marketing/leads", **kwargs)
 
+    def get_marketing_leads_by_lead_contact(self, **kwargs):
+        """Lire le contact comptabilite cree depuis un lead qualifie"""
+        return self.request("GET", "/marketing/leads/{lead}/contact", **kwargs)
+
+    def post_marketing_leads_by_lead_qualify(self, **kwargs):
+        """Qualifier un lead et creer le contact comptabilite associe"""
+        return self.request("POST", "/marketing/leads/{lead}/qualify", **kwargs)
+
     def get_marketing_posts(self, **kwargs):
         """Lister les publications (alias court de /social-posts)"""
         return self.request("GET", "/marketing/posts", **kwargs)
