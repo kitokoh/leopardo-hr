@@ -241,6 +241,7 @@ class ContractByCountryTest extends TestCase
      */
     private function createActors(string $country = 'DZ'): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'schema_name' => 'shared_tenants',
             'country' => $country,
