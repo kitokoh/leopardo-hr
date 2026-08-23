@@ -92,8 +92,11 @@ class OrgReferentialCrudTest extends TestCase
 
         Sanctum::actingAs($managerA);
 
-        $this->getJson("/api/v1/departments/{$departmentB->id}")->assertNotFound();
-        $this->putJson("/api/v1/departments/{$departmentB->id}", ['name' => 'Intrusion'])->assertNotFound();
+        // Convention repo (EvaluationSecurityTest) : sans current_company
+        // liée en test, le scope global n'est pas actif → la ressource est
+        // trouvée et la POLICY refuse → 403 fail-closed (jamais de fuite).
+        $this->getJson("/api/v1/departments/{$departmentB->id}")->assertForbidden();
+        $this->putJson("/api/v1/departments/{$departmentB->id}", ['name' => 'Intrusion'])->assertForbidden();
     }
 
     // ── Fixtures ────────────────────────────────────────────────────────────
