@@ -12,6 +12,7 @@ import 'package:leopardo_employee/core/providers/core_providers.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/location/attendance_location_context.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 class AttendanceState {
   final bool isLoading;
@@ -101,8 +102,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         state = state.copyWith(
           isLoading: false,
           context: {...?state.context, 'load_degraded': true},
-          notice:
-              'Les donnees du jour prennent plus de temps que prevu. L\'ecran reste utilisable, vous pouvez actualiser.',
+          notice: deviceL10n.attendanceLoadDegradedNotice,
         );
         return;
       }
@@ -153,8 +153,8 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         notice: _successNotice(
           log: log,
           fallback: workType == 'overtime'
-              ? 'Heures supplementaires demarrees.'
-              : 'Arrivee enregistree a l instant.',
+              ? deviceL10n.attendanceOvertimeSuccess
+              : deviceL10n.attendanceCheckinRegistered,
           location: location,
         ),
       );
@@ -196,8 +196,8 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         notice: _successNotice(
           log: log,
           fallback: workType == 'break'
-              ? 'Pause enregistree.'
-              : 'Depart enregistre a l instant.',
+              ? deviceL10n.attendanceBreakRegistered
+              : deviceL10n.attendanceCheckoutRegistered,
           location: location,
         ),
       );
@@ -298,11 +298,11 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         return error.message;
       }
       if (error.statusCode == 403) {
-        return 'Votre role ne permet pas cette action de pointage.';
+        return deviceL10n.attendanceRoleForbidden;
       }
     }
 
-    return 'Le pointage n a pas pu etre confirme. Verifiez la connexion puis reessayez.';
+    return deviceL10n.attendancePunchFailed;
   }
 
   Future<AttendanceLocationContext> _attendanceLocation() {
@@ -318,7 +318,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
   }) {
     final geofence = log.geofence;
     if (geofence != null && geofence['inside'] == false) {
-      return '$fallback Vous semblez hors de la zone autorisee; votre manager sera notifie si la regle entreprise l exige.';
+      return deviceL10n.attendanceOutsideZoneNotice(fallback);
     }
 
     if (!location.hasCoordinates && location.message != null) {

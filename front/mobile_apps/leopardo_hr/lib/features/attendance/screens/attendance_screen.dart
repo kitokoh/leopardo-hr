@@ -556,7 +556,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                         Text(
                           day.isAbsent
                               ? context.l10n.attendanceAbsent
-                              : '${day.checkInFormatted} -> ${day.checkOutFormatted}'
+                              : '${context.l10n.attendanceSessionRange(day.checkInFormatted, day.checkOutFormatted)}'
                                   '${day.lateMinutes > 0 ? ' · +${day.lateMinutes} min' : ''}',
                           style: const TextStyle(fontSize: 10, color: _soft),
                         ),
@@ -662,8 +662,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             color: AppColors.rh,
           ),
           _WeekStat(
-            value:
-                totalLate > 0 ? '$totalLate min' : context.l10n.attendanceNone,
+            value: totalLate > 0
+                ? context.l10n.attendanceLateMinutes(totalLate)
+                : context.l10n.attendanceNone,
             label: context.l10n.attendanceWeekLate,
             color: totalLate > 0 ? AppColors.warning : AppColors.rh,
           ),
@@ -718,9 +719,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       final date = today.subtract(Duration(days: index));
       final log = byDay[_dateKey(date)];
       final labelPrefix = index == 0
-          ? 'Aujourd hui'
+          ? context.l10n.attendanceDayTodayLabel
           : index == 1
-              ? 'Hier'
+              ? context.l10n.attendanceDayYesterdayLabel
               : _capitalize(
                   DateFormat('EEE', deviceIntlDateLocale).format(date));
       final label =
@@ -822,8 +823,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
-      helpText:
-          isCheckIn ? 'Heure d\'arrivee reelle' : 'Heure de depart reelle',
+      helpText: isCheckIn
+          ? context.l10n.attendanceCorrectionCheckinTime
+          : context.l10n.attendanceCorrectionCheckoutTime,
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
         child: child!,
@@ -849,7 +851,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (!_formKey.currentState!.validate()) return;
     if (_checkIn == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Saisir l\'heure d\'arrivee reelle')),
+        SnackBar(
+            content: Text(context.l10n.attendanceCorrectionCheckinRequired)),
       );
       return;
     }
@@ -893,7 +896,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     setState(() => _submitting = false);
     if (!success) {
       final message = ref.read(attendanceProvider).error ??
-          'Impossible d envoyer la modification pour le moment.';
+          context.l10n.attendanceCorrectionSubmitError;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: AppColors.danger),
       );
@@ -904,8 +907,12 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
       SnackBar(
         content: Text(
           widget.canDirectEdit
-              ? 'Pointage du ${DateFormat('d MMM', deviceIntlDateLocale).format(widget.targetDate)} modifie.'
-              : 'Demande du ${DateFormat('d MMM', deviceIntlDateLocale).format(widget.targetDate)} soumise au RH - vous serez notifie de la decision.',
+              ? context.l10n.attendanceCorrectionDirectSnack(
+                  DateFormat('d MMM', deviceIntlDateLocale)
+                      .format(widget.targetDate))
+              : context.l10n.attendanceCorrectionRequestSnack(
+                  DateFormat('d MMM', deviceIntlDateLocale)
+                      .format(widget.targetDate)),
         ),
         backgroundColor: AppColors.rh,
         duration: const Duration(seconds: 4),
@@ -944,7 +951,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Modifier le ${DateFormat('EEEE d MMMM', deviceIntlDateLocale).format(widget.targetDate)}',
+              context.l10n.attendanceCorrectionEditDateTitle(
+                  DateFormat('EEEE d MMMM', deviceIntlDateLocale)
+                      .format(widget.targetDate)),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
