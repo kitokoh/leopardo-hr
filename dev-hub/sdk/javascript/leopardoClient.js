@@ -1460,6 +1460,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/edge/readiness", options);
     },
 
+    /** Lister les documents des dossiers employes (checklist G3) */
+    getEmployeeDocuments(options = {}) {
+      return request("GET", "/employee-documents", options);
+    },
+
+    /** Enregistrer un document du dossier employe */
+    postEmployeeDocuments(options = {}) {
+      return request("POST", "/employee-documents", options);
+    },
+
+    /** Supprimer un document du dossier employe */
+    deleteEmployeeDocumentsByEmployeeDocument(options = {}) {
+      return request("DELETE", "/employee-documents/{employeeDocument}", options);
+    },
+
+    /** Lire un document du dossier employe */
+    getEmployeeDocumentsByEmployeeDocument(options = {}) {
+      return request("GET", "/employee-documents/{employeeDocument}", options);
+    },
+
+    /** Patch un document du dossier employe */
+    patchEmployeeDocumentsByEmployeeDocument(options = {}) {
+      return request("PATCH", "/employee-documents/{employeeDocument}", options);
+    },
+
+    /** Mettre a jour un document du dossier employe */
+    putEmployeeDocumentsByEmployeeDocument(options = {}) {
+      return request("PUT", "/employee-documents/{employeeDocument}", options);
+    },
+
     /** Lister les employes */
     getEmployees(options = {}) {
       return request("GET", "/employees", options);
@@ -2113,6 +2143,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Resume journalier utilisateur courant */
     getMeDailySummary(options = {}) {
       return request("GET", "/me/daily-summary", options);
+    },
+
+    /** Lire les documents de SON dossier employe (self-service) */
+    getMeDocuments(options = {}) {
+      return request("GET", "/me/documents", options);
     },
 
     /** Mes soldes de conges */

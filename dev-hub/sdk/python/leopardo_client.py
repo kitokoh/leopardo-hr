@@ -1188,6 +1188,30 @@ class LeopardoClient:
         """Readiness probe du nœud edge (schéma SQLite)"""
         return self.request("GET", "/edge/readiness", **kwargs)
 
+    def get_employee_documents(self, **kwargs):
+        """Lister les documents des dossiers employes (checklist G3)"""
+        return self.request("GET", "/employee-documents", **kwargs)
+
+    def post_employee_documents(self, **kwargs):
+        """Enregistrer un document du dossier employe"""
+        return self.request("POST", "/employee-documents", **kwargs)
+
+    def delete_employee_documents_by_employeedocument(self, **kwargs):
+        """Supprimer un document du dossier employe"""
+        return self.request("DELETE", "/employee-documents/{employeeDocument}", **kwargs)
+
+    def get_employee_documents_by_employeedocument(self, **kwargs):
+        """Lire un document du dossier employe"""
+        return self.request("GET", "/employee-documents/{employeeDocument}", **kwargs)
+
+    def patch_employee_documents_by_employeedocument(self, **kwargs):
+        """Patch un document du dossier employe"""
+        return self.request("PATCH", "/employee-documents/{employeeDocument}", **kwargs)
+
+    def put_employee_documents_by_employeedocument(self, **kwargs):
+        """Mettre a jour un document du dossier employe"""
+        return self.request("PUT", "/employee-documents/{employeeDocument}", **kwargs)
+
     def get_employees(self, **kwargs):
         """Lister les employes"""
         return self.request("GET", "/employees", **kwargs)
@@ -1711,6 +1735,10 @@ class LeopardoClient:
     def get_me_daily_summary(self, **kwargs):
         """Resume journalier utilisateur courant"""
         return self.request("GET", "/me/daily-summary", **kwargs)
+
+    def get_me_documents(self, **kwargs):
+        """Lire les documents de SON dossier employe (self-service)"""
+        return self.request("GET", "/me/documents", **kwargs)
 
     def get_me_leave_balances(self, **kwargs):
         """Mes soldes de conges"""

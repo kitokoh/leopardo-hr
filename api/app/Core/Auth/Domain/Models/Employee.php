@@ -10,6 +10,7 @@ use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Cabinet\Domain\Models\CabinetFolder;
 use App\Modules\HR\Domain\Models\Department;
+use App\Modules\HR\Domain\Models\EmployeeDocument;
 use App\Modules\HR\Domain\Models\OnboardingProgress;
 use App\Modules\HR\Domain\Models\Position;
 use App\Modules\HR\Domain\Models\PrivacyRequest;
@@ -107,6 +108,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Position|null $position
  * @property-read Schedule|null $schedule
  * @property-read Site|null $site
+ * @property-read \Illuminate\Support\Collection<int, \App\Modules\HR\Domain\Models\EmployeeDocument>|null $employeeDocuments
  *
  * @mixin Builder
  *
@@ -519,6 +521,12 @@ class Employee extends Authenticatable implements HasApiTokensContract
     public function cabinetDocuments(): HasMany
     {
         return $this->hasMany(CabinetDocument::class, 'employee_id');
+    }
+
+    /** @return HasMany<EmployeeDocument, $this> */
+    public function employeeDocuments(): HasMany
+    {
+        return $this->hasMany(EmployeeDocument::class, 'employee_id');
     }
 
     /** @return HasMany<Notification, $this> */
