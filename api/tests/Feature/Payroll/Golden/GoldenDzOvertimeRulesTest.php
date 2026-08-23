@@ -52,7 +52,7 @@ class GoldenDzOvertimeRulesTest extends TestCase
     }
 
     /**
-     * @return array<string, array{float, float, float}>  base, heures, attendu
+     * @return array<string, array{float, float, float}>
      */
     public static function overtimePayProvider(): array
     {
