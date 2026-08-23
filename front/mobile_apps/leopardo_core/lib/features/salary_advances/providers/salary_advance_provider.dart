@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:leopardo_hr/core/providers/core_providers.dart';
+import 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:leopardo_core/models/salary_advance.dart';
 
 final salaryAdvancesProvider = FutureProvider<List<SalaryAdvance>>((ref) async {

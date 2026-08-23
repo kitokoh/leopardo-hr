@@ -19,14 +19,14 @@ import 'package:leopardo_hr/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_hr/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_hr/features/attendance/screens/monthly_summary_screen.dart';
 import 'package:leopardo_hr/features/evaluations/screens/evaluation_list_screen.dart';
-import 'package:leopardo_hr/features/notifications/screens/notification_list_screen.dart';
+import 'package:leopardo_core/features/notifications/screens/notification_list_screen.dart';
 import 'package:leopardo_hr/features/home/screens/home_screen.dart';
 import 'package:leopardo_hr/features/home/screens/hr_main_shell.dart';
 import 'package:leopardo_hr/features/home/screens/modules_hub_screen.dart';
 import 'package:leopardo_hr/features/absences/screens/absence_list_screen.dart';
 import 'package:leopardo_hr/features/salary_advances/screens/salary_advance_list_screen.dart';
 import 'package:leopardo_hr/features/payrolls/screens/payroll_list_screen.dart';
-import 'package:leopardo_hr/features/cabinet/screens/cabinet_screen.dart';
+import 'package:leopardo_core/features/cabinet/screens/cabinet_screen.dart';
 import 'package:leopardo_hr/features/settings/screens/settings_screen.dart';
 import 'package:leopardo_hr/features/team/screens/team_screen.dart';
 import 'package:leopardo_hr/features/user_auth/screens/user_register_screen.dart';
@@ -269,10 +269,8 @@ class LeopardoApp extends ConsumerWidget {
 
   Locale _resolveLocale(String rawLocale) {
     final normalized = rawLocale.trim().replaceAll('_', '-');
-    final parts = normalized
-        .split('-')
-        .where((part) => part.isNotEmpty)
-        .toList();
+    final parts =
+        normalized.split('-').where((part) => part.isNotEmpty).toList();
 
     if (parts.isEmpty) {
       return const Locale('fr');
@@ -313,11 +311,9 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final deviceLanguage = PlatformDispatcher.instance.locale
-        .toLanguageTag()
-        .toLowerCase();
-    final languageCode =
-        authState.employee?.language ??
+    final deviceLanguage =
+        PlatformDispatcher.instance.locale.toLanguageTag().toLowerCase();
+    final languageCode = authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);

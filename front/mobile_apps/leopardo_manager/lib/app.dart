@@ -23,9 +23,9 @@ import 'package:leopardo_manager/features/home/screens/modules_hub_screen.dart';
 import 'package:leopardo_manager/features/absences/screens/absence_list_screen.dart';
 import 'package:leopardo_manager/features/salary_advances/screens/salary_advance_list_screen.dart';
 import 'package:leopardo_manager/features/payrolls/screens/payroll_list_screen.dart';
-import 'package:leopardo_manager/features/notifications/screens/notification_list_screen.dart';
+import 'package:leopardo_core/features/notifications/screens/notification_list_screen.dart';
 import 'package:leopardo_manager/features/evaluations/screens/evaluation_list_screen.dart';
-import 'package:leopardo_manager/features/cabinet/screens/cabinet_screen.dart';
+import 'package:leopardo_core/features/cabinet/screens/cabinet_screen.dart';
 import 'package:leopardo_manager/features/settings/screens/settings_screen.dart';
 import 'package:leopardo_manager/features/team/screens/team_screen.dart';
 import 'package:leopardo_manager/features/tasks/screens/task_list_screen.dart';
@@ -75,7 +75,8 @@ final routerProvider = Provider<GoRouter>((ref) {
               const SizedBox(height: 12),
               Text(
                 context.l10n.errorUnexpected,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               Text(context.l10n.pageNotFound, textAlign: TextAlign.center),
@@ -288,10 +289,8 @@ class LeopardoApp extends ConsumerWidget {
 
   Locale _resolveLocale(String rawLocale) {
     final normalized = rawLocale.trim().replaceAll('_', '-');
-    final parts = normalized
-        .split('-')
-        .where((part) => part.isNotEmpty)
-        .toList();
+    final parts =
+        normalized.split('-').where((part) => part.isNotEmpty).toList();
 
     if (parts.isEmpty) {
       return const Locale('fr');
@@ -332,11 +331,9 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final deviceLanguage = PlatformDispatcher.instance.locale
-        .toLanguageTag()
-        .toLowerCase();
-    final languageCode =
-        authState.employee?.language ??
+    final deviceLanguage =
+        PlatformDispatcher.instance.locale.toLanguageTag().toLowerCase();
+    final languageCode = authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);

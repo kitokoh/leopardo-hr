@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:leopardo_hr/core/providers/core_providers.dart';
+import 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:leopardo_core/features/company_branding/data/company_branding_repository.dart';
 
 final companyBrandingProvider = FutureProvider<CompanyBrandingResponse>((ref) {

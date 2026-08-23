@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:leopardo_manager/core/providers/core_providers.dart';
+import 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:leopardo_core/models/notification.dart';
 
 final notificationsProvider = FutureProvider<List<AppNotification>>((
