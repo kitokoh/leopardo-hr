@@ -134,7 +134,7 @@ class GoldenDzOvertimeRulesTest extends TestCase
             'status' => 'draft',
         ]);
 
-        (new PayrollCalculator())->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
         $slip = $run->paySlips()->first();
         $this->assertNotNull($slip);

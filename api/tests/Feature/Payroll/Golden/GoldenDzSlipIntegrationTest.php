@@ -120,7 +120,7 @@ class GoldenDzSlipIntegrationTest extends TestCase
         $this->makeEmployee($company, $structure->id);
 
         $run = $this->makeRun($company);
-        (new PayrollCalculator())->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
         $slip = $run->paySlips()->first();
         $this->assertNotNull($slip);
@@ -166,7 +166,7 @@ class GoldenDzSlipIntegrationTest extends TestCase
         }
 
         $run = $this->makeRun($company);
-        (new PayrollCalculator())->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
         $slip = $run->paySlips()->first();
         $this->assertNotNull($slip);
@@ -261,7 +261,7 @@ class GoldenDzSlipIntegrationTest extends TestCase
         ]);
 
         $run = $this->makeRun($company);
-        (new PayrollCalculator())->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
         $slip = $run->paySlips()->first();
         $this->assertNotNull($slip);
@@ -314,7 +314,7 @@ class GoldenDzSlipIntegrationTest extends TestCase
         ]);
 
         $run = $this->makeRun($company);
-        (new PayrollCalculator())->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
         $slip = $run->paySlips()->first();
         $this->assertNotNull($slip);
@@ -351,7 +351,7 @@ class GoldenDzSlipIntegrationTest extends TestCase
         ]);
 
         $run = $this->makeRun($company);
-        (new PayrollCalculator())->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
         $slip = $run->paySlips()->first();
         $this->assertNotNull($slip);
