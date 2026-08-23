@@ -78,7 +78,7 @@ class PrivacyController extends Controller
                 'id' => $privacyRequest->id,
                 'type' => $privacyRequest->type,
                 'status' => $privacyRequest->status,
-                'message' => 'Deletion request received for HR/legal review.',
+                'message' => __('errors.DELETION_REQUEST_RECEIVED'),
             ],
         ], 202);
     }

@@ -74,7 +74,7 @@ class PositionController extends Controller
 
         $position->delete();
 
-        return response()->json(['message' => 'Position deleted successfully']);
+        return response()->json(['message' => __('errors.POSITION_DELETED')]);
     }
 }
 

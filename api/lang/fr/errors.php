@@ -228,4 +228,13 @@ return [
     // Plateforme — RTMX (#5277) : rejeu idempotent des écritures mobiles
     'INVALID_IDEMPOTENCY_KEY' => "Clé d'idempotence invalide.",
     'IDEMPOTENCY_IN_PROGRESS' => 'Une requête identique est déjà en cours. Réessayez dans un instant.',
+    'DEPARTMENT_DELETED' => 'Département supprimé.',
+    'POSITION_DELETED' => 'Poste supprimé.',
+    'SITE_DELETED' => 'Site supprimé.',
+    'EVALUATION_DELETED' => 'Évaluation supprimée.',
+    'EMPLOYEE_CREATED' => 'Employé créé avec succès.',
+    'EMPLOYEE_UPDATED' => 'Employé mis à jour avec succès.',
+    'CONTRACT_NOT_FOUND_EMPLOYEE' => 'Aucun contrat trouvé pour cet employé.',
+    'ALREADY_ENROLLED_SESSION' => 'Déjà inscrit à cette session.',
+    'DELETION_REQUEST_RECEIVED' => 'Demande de suppression reçue pour revue RH/juridique.',
 ];

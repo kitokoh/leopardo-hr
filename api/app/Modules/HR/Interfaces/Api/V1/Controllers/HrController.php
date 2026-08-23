@@ -195,7 +195,7 @@ class HrController extends Controller
         $actor = $request->user();
 
         if ($actor->company_id !== $employee->company_id) {
-            return response()->json(['message' => 'Employee not found.'], 404);
+            return response()->json(['message' => __('errors.EMPLOYEE_NOT_FOUND')], 404);
         }
 
         $employee->load(['department', 'position', 'schedule', 'site', 'company']);
@@ -215,7 +215,7 @@ class HrController extends Controller
         $actor = $request->user();
 
         if ($actor->company_id !== $employee->company_id) {
-            return response()->json(['message' => 'Employee not found.'], 404);
+            return response()->json(['message' => __('errors.EMPLOYEE_NOT_FOUND')], 404);
         }
 
         $validated = $request->validate([

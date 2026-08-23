@@ -453,7 +453,7 @@ class ContractController extends Controller
         }
 
         if ($contract === null) {
-            return response()->json(['message' => 'No contract found for this employee.'], 404);
+            return response()->json(['message' => __('errors.CONTRACT_NOT_FOUND_EMPLOYEE')], 404);
         }
 
         return (new ContractResource($contract))->response();
