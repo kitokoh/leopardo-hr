@@ -15,6 +15,7 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
+use Carbon\Carbon;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -228,7 +229,7 @@ class GoldenDzSlipIntegrationTest extends TestCase
         // Référence 12 mois réelle : 12 bulletins validés à 100 000 DZD
         // (2025-07 → 2026-06, les 12 mois précédant la période du run).
         for ($m = 0; $m < 12; $m++) {
-            $ref = \Carbon\Carbon::parse('2025-07-01')->addMonths($m);
+            $ref = Carbon::parse('2025-07-01')->addMonths($m);
             /** @var PayrollRun $historyRun */
             $historyRun = PayrollRun::create([
                 'company_id' => $company->id,
