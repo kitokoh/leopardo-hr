@@ -53,6 +53,16 @@
         <p>{!! __('pdf.contract_article3_body', ['hours' => '<strong>'.($contract->work_hours_per_week ?? '40').'</strong>']) !!}</p>
     </div>
 
+    @if (! empty($contract->clauses))
+        <div class="section">
+            <div class="section-title">{{ __('pdf.contract_legal_clauses_title') }}</div>
+            @foreach ($contract->clauses as $clause)
+                <p><strong>{{ $clause['title'] ?? '' }}</strong></p>
+                <p>{{ $clause['body'] ?? '' }}</p>
+            @endforeach
+        </div>
+    @endif
+
     <table class="signatures">
         <tr>
             <td>
