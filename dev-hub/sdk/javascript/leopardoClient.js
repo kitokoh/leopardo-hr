@@ -2865,6 +2865,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/push-notifications/send", options);
     },
 
+    /** Supprimer une candidature (manager) */
+    deleteRecruitmentApplicantsByApplicant(options = {}) {
+      return request("DELETE", "/recruitment/applicants/{applicant}", options);
+    },
+
+    /** Détail d'une candidature (manager) */
+    getRecruitmentApplicantsByApplicant(options = {}) {
+      return request("GET", "/recruitment/applicants/{applicant}", options);
+    },
+
     /** Modifier un candidat */
     putRecruitmentApplicantsByApplicant(options = {}) {
       return request("PUT", "/recruitment/applicants/{applicant}", options);
@@ -2875,29 +2885,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/recruitment/applicants/{applicant}/interviews", options);
     },
 
-    /** Supprimer une candidature (manager) */
-    deleteRecruitmentApplicantsById(options = {}) {
-      return request("DELETE", "/recruitment/applicants/{id}", options);
-    },
-
-    /** Détail d'une candidature (manager) */
-    getRecruitmentApplicantsById(options = {}) {
-      return request("GET", "/recruitment/applicants/{id}", options);
-    },
-
     /** Changer le statut d'une candidature (principal/rh) */
     patchRecruitmentApplicantsByIdStatus(options = {}) {
       return request("PATCH", "/recruitment/applicants/{id}/status", options);
     },
 
-    /** Supprimer un entretien (manager) */
-    deleteRecruitmentInterviewsById(options = {}) {
-      return request("DELETE", "/recruitment/interviews/{id}", options);
-    },
-
     /** Saisir le feedback d'un entretien (le clôture) */
     patchRecruitmentInterviewsByIdFeedback(options = {}) {
       return request("PATCH", "/recruitment/interviews/{id}/feedback", options);
+    },
+
+    /** Supprimer un entretien (manager) */
+    deleteRecruitmentInterviewsByInterview(options = {}) {
+      return request("DELETE", "/recruitment/interviews/{interview}", options);
     },
 
     /** Modifier un entretien */
@@ -2916,8 +2916,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Supprimer une offre d'emploi (manager) */
-    deleteRecruitmentJobsById(options = {}) {
-      return request("DELETE", "/recruitment/jobs/{id}", options);
+    deleteRecruitmentJobsByJobPosting(options = {}) {
+      return request("DELETE", "/recruitment/jobs/{jobPosting}", options);
     },
 
     /** Voir une offre */

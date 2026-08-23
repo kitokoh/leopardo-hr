@@ -2312,6 +2312,14 @@ class LeopardoClient:
         """Envoyer une notification push de test a un employe"""
         return self.request("POST", "/push-notifications/send", **kwargs)
 
+    def delete_recruitment_applicants_by_applicant(self, **kwargs):
+        """Supprimer une candidature (manager)"""
+        return self.request("DELETE", "/recruitment/applicants/{applicant}", **kwargs)
+
+    def get_recruitment_applicants_by_applicant(self, **kwargs):
+        """Détail d'une candidature (manager)"""
+        return self.request("GET", "/recruitment/applicants/{applicant}", **kwargs)
+
     def put_recruitment_applicants_by_applicant(self, **kwargs):
         """Modifier un candidat"""
         return self.request("PUT", "/recruitment/applicants/{applicant}", **kwargs)
@@ -2320,25 +2328,17 @@ class LeopardoClient:
         """Planifier un entretien"""
         return self.request("POST", "/recruitment/applicants/{applicant}/interviews", **kwargs)
 
-    def delete_recruitment_applicants_by_id(self, **kwargs):
-        """Supprimer une candidature (manager)"""
-        return self.request("DELETE", "/recruitment/applicants/{id}", **kwargs)
-
-    def get_recruitment_applicants_by_id(self, **kwargs):
-        """Détail d'une candidature (manager)"""
-        return self.request("GET", "/recruitment/applicants/{id}", **kwargs)
-
     def patch_recruitment_applicants_by_id_status(self, **kwargs):
         """Changer le statut d'une candidature (principal/rh)"""
         return self.request("PATCH", "/recruitment/applicants/{id}/status", **kwargs)
 
-    def delete_recruitment_interviews_by_id(self, **kwargs):
-        """Supprimer un entretien (manager)"""
-        return self.request("DELETE", "/recruitment/interviews/{id}", **kwargs)
-
     def patch_recruitment_interviews_by_id_feedback(self, **kwargs):
         """Saisir le feedback d'un entretien (le clôture)"""
         return self.request("PATCH", "/recruitment/interviews/{id}/feedback", **kwargs)
+
+    def delete_recruitment_interviews_by_interview(self, **kwargs):
+        """Supprimer un entretien (manager)"""
+        return self.request("DELETE", "/recruitment/interviews/{interview}", **kwargs)
 
     def put_recruitment_interviews_by_interview(self, **kwargs):
         """Modifier un entretien"""
@@ -2352,9 +2352,9 @@ class LeopardoClient:
         """Creer une offre d'emploi"""
         return self.request("POST", "/recruitment/jobs", **kwargs)
 
-    def delete_recruitment_jobs_by_id(self, **kwargs):
+    def delete_recruitment_jobs_by_jobposting(self, **kwargs):
         """Supprimer une offre d'emploi (manager)"""
-        return self.request("DELETE", "/recruitment/jobs/{id}", **kwargs)
+        return self.request("DELETE", "/recruitment/jobs/{jobPosting}", **kwargs)
 
     def get_recruitment_jobs_by_jobposting(self, **kwargs):
         """Voir une offre"""
