@@ -64,7 +64,7 @@ class PayrollAnomalyService
             'type'        => 'duplicate_slip',
             'severity'    => 'high',
             'employee_id' => (int) $row->employee_id,
-            'message'     => "Employé #{$row->employee_id} : {$row->slip_count} bulletins dans le même run",
+            'message'     => __('payroll.anomaly_multiple_slips_same_run', ['employee' => $row->employee_id, 'count' => $row->slip_count]),
         ])->all();
     }
 

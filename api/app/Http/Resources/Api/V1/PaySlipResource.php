@@ -58,7 +58,11 @@ class PaySlipResource extends JsonResource
             'overtime_hours' => $this->overtime_hours,
             'status' => $this->status,
             'employee' => $this->whenLoaded('employee'),
-            'lines' => $this->whenLoaded('lines'),
+            'lines' => $this->whenLoaded('lines', fn (): \Illuminate\Support\Collection => $this->lines
+                ->map(fn (\App\Modules\Payroll\Domain\Models\PaySlipLine $line): array => array_merge(
+                    $line->toArray(),
+                    ['label' => $line->label],
+                ))),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

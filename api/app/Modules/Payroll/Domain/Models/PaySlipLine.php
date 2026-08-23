@@ -46,4 +46,15 @@ class PaySlipLine extends Model
     {
         return $this->belongsTo(SalaryComponent::class, 'salary_component_id');
     }
+
+    /**
+     * Issue #5257 — libellé localisé de la ligne (i18n ×4) : les noms de
+     * lignes sont persistés en FR par le moteur ; ce accessor expose le
+     * libellé traduit (locale courante) via PayrollLineLabels, avec repli sur
+     * le libellé brut pour les composants personnalisés.
+     */
+    public function getLabelAttribute(): string
+    {
+        return PayrollLineLabels::label((string) $this->name);
+    }
 }

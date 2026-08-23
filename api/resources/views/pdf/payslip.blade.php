@@ -78,7 +78,7 @@
         <tbody>
             @foreach($lines->where('type', 'earning') as $line)
             <tr>
-                <td>{{ $line->name }}</td>
+                <td>{{ $line->label }}</td>
                 <td>{{ number_format($line->base_amount, 2, ',', ' ') }}</td>
                 <td>{{ $line->rate ? number_format($line->rate, 2).'%' : '—' }}</td>
                 <td class="amount">{{ number_format($line->amount, 2, ',', ' ') }}</td>
@@ -101,7 +101,7 @@
         <tbody>
             @foreach($lines->where('type', 'deduction') as $line)
             <tr>
-                <td>{{ $line->name }}</td>
+                <td>{{ $line->label }}</td>
                 <td>{{ number_format($line->base_amount, 2, ',', ' ') }}</td>
                 <td>{{ $line->rate ? number_format($line->rate, 2).'%' : '—' }}</td>
                 <td class="amount">{{ number_format($line->amount, 2, ',', ' ') }}</td>
@@ -116,7 +116,7 @@
         <tbody>
             @foreach($lines->where('type', 'employer_contribution') as $line)
             <tr>
-                <td>{{ $line->name }}</td>
+                <td>{{ $line->label }}</td>
                 <td>{{ number_format($line->base_amount, 2, ',', ' ') }}</td>
                 <td>{{ $line->rate ? number_format($line->rate, 2).'%' : '—' }}</td>
                 <td class="amount">{{ number_format($line->amount, 2, ',', ' ') }}</td>

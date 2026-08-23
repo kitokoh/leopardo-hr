@@ -138,7 +138,7 @@ class BankExportContractApiTest extends TestCase
             'payroll_run_id' => 999_999,
             'format' => 'csv_generic',
         ])->assertStatus(422)
-            ->assertJsonPath('message', 'Payroll run not found.');
+            ->assertJsonPath('message', 'Run de paie introuvable.');
     }
 
     /**

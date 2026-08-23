@@ -138,7 +138,7 @@ class SocialContributionController extends Controller
 
         $socialContribution->delete();
 
-        return response()->json(['message' => 'Social contribution deleted successfully.']);
+        return response()->json(['message' => __('payroll.social_contribution_deleted')]);
     }
 
     /**

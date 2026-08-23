@@ -41,7 +41,7 @@ class BulkPaymentController extends Controller
         }
         if (! in_array($payrollRun->status, ['validated', 'locked'], true)) {
             return response()->json([
-                'message' => 'PayrollRun must be validated (or locked) before bulk payment.',
+                'message' => __('payroll.bulk_run_must_be_validated'),
             ], 422);
         }
 
@@ -74,7 +74,7 @@ class BulkPaymentController extends Controller
                 $progress = $existing ? json_decode($existing, true) : [];
                 if (in_array($progress['status'] ?? '', ['starting', 'processing'], true)) {
                     return response()->json([
-                        'message' => 'Bulk payment already in progress.',
+                        'message' => __('payroll.bulk_already_in_progress'),
                         'progress' => $progress,
                     ], 409);
                 }
@@ -96,7 +96,7 @@ class BulkPaymentController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Bulk payment is temporarily unavailable (payment coordinator offline). Please retry in a few seconds.',
+                'message' => __('payroll.bulk_temporarily_unavailable'),
                 'error' => 'BULK_PAYMENT_COORDINATOR_UNAVAILABLE',
             ], 503);
         }
@@ -104,7 +104,7 @@ class BulkPaymentController extends Controller
         ProcessBulkPaymentJob::dispatch($payrollRun->id, $actor->id, $paySlipIds);
 
         return response()->json([
-            'message' => 'Bulk payment processing started.',
+            'message' => __('payroll.bulk_started'),
             'payroll_run_id' => $payrollRun->id,
             'selected_pay_slip_count' => $paySlipIds !== null ? count($paySlipIds) : null,
             'status' => 'accepted',
@@ -149,7 +149,7 @@ class BulkPaymentController extends Controller
             return response()->json([
                 'payroll_run_id' => $payrollRun->id,
                 'status' => 'not_started',
-                'message' => 'No bulk payment job found for this run.',
+                'message' => __('payroll.bulk_no_job_found'),
             ]);
         }
 

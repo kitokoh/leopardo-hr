@@ -78,13 +78,13 @@ class BankExportController extends Controller
 
         if ($payrollRun === null) {
             return response()->json([
-                'message' => 'Payroll run not found.',
+                'message' => __('payroll.run_not_found'),
                 'errors' => ['payroll_run_id' => ['Payroll run not found.']],
             ], 422);
         }
 
         if (! in_array($payrollRun->status, ['validated', 'paid'])) {
-            return response()->json(['message' => 'Payroll run must be validated before generating bank export.'], 422);
+            return response()->json(['message' => __('payroll.run_must_be_validated_export')], 422);
         }
 
         $export = BankExport::create([
@@ -116,7 +116,7 @@ class BankExportController extends Controller
         }
 
         if (! in_array($payrollRun->status, ['validated', 'paid'])) {
-            return response()->json(['message' => 'Payroll run must be validated before generating bank export.'], 422);
+            return response()->json(['message' => __('payroll.run_must_be_validated_export')], 422);
         }
 
         $validated = $request->validate([
@@ -133,7 +133,7 @@ class BankExportController extends Controller
 
             if ($companyBank['iban'] === null) {
                 return response()->json([
-                    'message' => 'Company IBAN is required for SEPA export. Set companies.metadata.company_iban.',
+                    'message' => __('payroll.company_iban_required_sepa'),
                     'error' => 'MISSING_COMPANY_IBAN',
                 ], 422);
             }
