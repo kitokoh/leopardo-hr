@@ -132,13 +132,20 @@ abstract class TestCase extends BaseTestCase
             return;
         }
 
+        $lockKey = 'leopardo_test_database_creation_'.$database;
+        DB::select('SELECT pg_advisory_lock(hashtext(?))', [$lockKey]);
+
         try {
-            Schema::createDatabase($database);
-        } catch (QueryException $exception) {
-            // 42P04 duplicate_database → base déjà créée par un test précédent.
-            if (! str_contains($exception->getMessage(), '42P04')) {
-                throw $exception;
+            try {
+                Schema::createDatabase($database);
+            } catch (QueryException $exception) {
+                // 42P04 duplicate_database → base déjà créée par un test précédent.
+                if (! str_contains($exception->getMessage(), '42P04')) {
+                    throw $exception;
+                }
             }
+        } finally {
+            DB::select('SELECT pg_advisory_unlock(hashtext(?))', [$lockKey]);
         }
 
         $connection = DB::getDefaultConnection();
