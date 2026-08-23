@@ -25,12 +25,12 @@
   },
   "locales": {
     "fr": {
-      "checksum": "50a5c78d9d064232dbb25f15ff32586899711d1f7e332485217100a08a6ce69f",
+      "checksum": "cf784ab77a414e628b9997bc02886afe4422e7aebd8576f099b535bfc269ac3a",
       "version": "1.0.0",
       "updated_at": "2026-08-20T00:00:00Z"
     },
     "ar": {
-      "checksum": "988aa1754cf215c29057d91897865b855ff3daefd8e541e3edd176c131d046fc",
+      "checksum": "bf54dd152798c7a7310951f66c44a3f3ba0b504fdb61e72a7f8a90485a7e6f14",
       "version": "1.0.0",
       "updated_at": "2026-08-20T00:00:00Z"
     },

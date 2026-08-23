@@ -5605,7 +5605,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get attendanceTaskNote => 'Note de réalisation';
 
   @override
-  String get attendanceTasksSectionTitle => 'TÂCHES DU JOUR';
+  String get attendanceTasksSectionTitle => 'TACHES DU JOUR';
 
   @override
   String get attendanceTasksSyncing => 'Synchronisation des tâches du jour...';

@@ -5464,7 +5464,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String attendanceSessionRange(Object from, Object to) {
-    return '$from ← $to';
+    return 'من $from إلى $to';
   }
 
   @override
@@ -5581,7 +5581,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String payrollPeriodRange(Object end, Object start) {
-    return '$start - $end';
+    return 'من $start إلى $end';
   }
 
   @override

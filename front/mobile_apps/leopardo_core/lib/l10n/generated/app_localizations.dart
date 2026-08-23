@@ -10360,7 +10360,7 @@ abstract class AppLocalizations {
   /// No description provided for @attendanceTasksSectionTitle.
   ///
   /// In fr, this message translates to:
-  /// **'TÂCHES DU JOUR'**
+  /// **'TACHES DU JOUR'**
   String get attendanceTasksSectionTitle;
 
   /// No description provided for @attendanceTasksSyncing.

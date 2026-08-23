@@ -2728,7 +2728,7 @@
   "attendanceTaskDone": "Tâche terminée.",
   "attendanceTaskFailed": "Échec : {error}",
   "attendanceTaskNote": "Note de réalisation",
-  "attendanceTasksSectionTitle": "TÂCHES DU JOUR",
+  "attendanceTasksSectionTitle": "TACHES DU JOUR",
   "attendanceTasksSyncing": "Synchronisation des tâches du jour...",
   "attendanceToPunch": "À pointer",
   "attendanceTotalDays": "Total jours",
