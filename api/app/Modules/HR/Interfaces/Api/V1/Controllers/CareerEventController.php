@@ -230,7 +230,11 @@ class CareerEventController extends Controller
                 // (spec #5259 §5 — pas de changement moteur).
                 $changes['salary_base'] = $careerEvent->to_salary;
             }
-            $target->update($changes);
+            // salary_base est un champ SENSIBLE hors $fillable (garde
+            // SensitiveFillableGuard) : update() l'ignorerait silencieusement
+            // (constaté en CI : 80000 au lieu de 120000). Pattern repo :
+            // EmployeeService::create utilise forceFill pour ces champs.
+            $target->forceFill($changes)->save();
 
             $careerEvent->update(['status' => 'applied', 'applied_at' => Carbon::now()]);
 
