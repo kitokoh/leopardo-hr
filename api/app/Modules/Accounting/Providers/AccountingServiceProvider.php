@@ -9,6 +9,8 @@ use App\Modules\Accounting\Application\Listeners\ProvisionAccountingSettings;
 use Illuminate\Support\Facades\Event;
 use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
 use App\Modules\Accounting\Infrastructure\Services\DocumentPdfRenderer;
+use App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface;
+use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -23,6 +25,13 @@ class AccountingServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(PdfRendererInterface::class, DocumentPdfRenderer::class);
+        // #5223 — numérotation paramétrable des documents comptables.
+        $this->app->bind(
+            DocumentNumberingInterface::class,
+            DocumentNumberingService::class,
+        );
+
+        // #5224 — rendu PDF (fr + ar RTL) fourni par l'issue #5224.
     }
 
     public function boot(): void
