@@ -102,3 +102,8 @@ signup → provision → employés → paie → bulletin**.
 - [x] Parcours 2 documenté comme bloqué par le greenfield Comptabilité
       (issue #5285, cohérent avec le tracker §6.3)
 - [x] Entrée CHANGELOG `[Unreleased]` + PR avec `Closes #5285`
+
+> **Note CI (2026-08-23)** : sous rafale de pushes agents, GH Actions peut
+> ne pas créer les runs `pull_request` (leçon swe-qa-360) — les workflows
+> `Tests` + `Backend Coverage Gate` sont déclenchés manuellement
+> (`workflow_dispatch`) sur le SHA final avant merge.
