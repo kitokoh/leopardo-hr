@@ -12,6 +12,7 @@ use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -44,10 +45,13 @@ class TrialSignupSlugRaceTest extends TestCase
         Mail::fake();
         DB::statement('SET search_path TO public');
 
-        // Le slug « collision-co » est déjà pris (autre signup concurrent).
+        // Un slug unique évite qu’un autre worker de tests ne réutilise la
+        // fixture avant ce scénario; l’action simulera ensuite la collision
+        // sur cette valeur précise.
+        $collisionSlug = 'collision-co-'.Str::lower(Str::random(8));
         Company::create([
             'name' => 'Collision Co',
-            'slug' => 'collision-co',
+            'slug' => $collisionSlug,
             'sector' => 'RH',
             'country' => 'DZ',
             'city' => 'Alger',
@@ -82,10 +86,11 @@ class TrialSignupSlugRaceTest extends TestCase
         ]);
 
         $action = $this->actionWithCollision();
+        $action->collisionSlug = $collisionSlug;
         $result = $action->execute('founder@collision.dz', '123456');
 
         $this->assertTrue($result['success'], 'Le signup aurait dû réussir après retry.');
-        $this->assertSame('collision-co-1', $result['company']->slug);
+        $this->assertSame($collisionSlug.'-1', $result['company']->slug);
         $this->assertGreaterThanOrEqual(2, $action->calls, 'Le retry sur collision 23505 aurait dû être déclenché.');
 
         $fresh = $request->fresh();
@@ -104,10 +109,12 @@ class CollidingVerifyTrialSignup extends VerifyTrialSignup
 {
     public int $calls = 0;
 
+    public string $collisionSlug = 'collision-co';
+
     protected function resolveUniqueSlug(string $baseSlug): string
     {
         $this->calls++;
 
-        return $this->calls === 1 ? 'collision-co' : 'collision-co-1';
+        return $this->calls === 1 ? $this->collisionSlug : $this->collisionSlug.'-1';
     }
 }

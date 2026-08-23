@@ -96,6 +96,43 @@ paths:
         "404":
           description: "Employe introuvable (isolation tenant)"
 
+  /employees/{employee}/departure/notice:
+    get:
+      tags: ["HR"]
+      summary: "Récapitulatif du préavis légal (issue #5325, G2)"
+      description: "Affiche la durée légale de préavis par pays/ancienneté (règle Payroll consommee, jamais recalculée) et le statut de service (employee_departures, workflow #5324). Reserve aux managers, isole par tenant."
+      parameters:
+        - name: employee
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Recapitulatif du preavis legal"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      country_code: { type: string }
+                      years_of_service: { type: number }
+                      notice_days: { type: number }
+                      notice_status: { type: string, enum: [served, not_served, unknown] }
+                      notice_days_served: { type: integer, nullable: true }
+                      rule_reference: { type: string }
+                      confidence_level: { type: string }
+                      compliance_source: { type: string, nullable: true }
+                      rules_version: { type: string }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager role required"
+        "404":
+          description: "Employe introuvable (isolation tenant)"
+
   /employees/{employee}/end-of-contract:
     get:
       tags: ["Payroll"]
@@ -1833,6 +1870,41 @@ paths:
           $ref: "#/components/responses/Error403"
         "422":
           $ref: "#/components/responses/Validation422"
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Détail d'un planning"
+      parameters:
+        - name: schedule
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Planning"
+        "401":
+          $ref: "#/components/responses/Error401"
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un planning (manager — sécurité #2217)"
+      parameters:
+        - name: schedule
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Planning mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non-manager"
+
 
   /schedules/{schedule}/assign-employees:
     parameters:
@@ -6093,6 +6165,21 @@ paths:
           $ref: "#/components/responses/Error404"
         "422":
           $ref: "#/components/responses/Validation422"
+    get:
+      tags: ["Tasks"]
+      summary: "Commentaires d'une tâche (auteur + employés liés)"
+      parameters:
+        - name: task
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Commentaires"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé (hors périmètre)"
 
   /evaluations:
     get:
@@ -9072,6 +9159,72 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /contracts/templates:
+    get:
+      tags: ["Contracts"]
+      summary: "Modeles legaux de contrat par pays (issue #5260) — DZ/MA/TN/SN"
+      parameters:
+        - name: country
+          in: query
+          required: true
+          schema:
+            type: string
+            example: DZ
+        - name: contract_type
+          in: query
+          schema:
+            type: string
+            enum: ["cdi", "cdd", "stage", "freelance", "interim"]
+            default: cdi
+      responses:
+        "200":
+          description: "Bundle legal du pays (references, probation, preavis, conges, HS, SMIG, cotisations, clauses CDI/CDD)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      country:
+                        type: string
+                      contract_type:
+                        type: string
+                      legal_references:
+                        type: object
+                      probation:
+                        type: string
+                      notice_period:
+                        type: string
+                      annual_leave:
+                        type: string
+                      overtime:
+                        type: string
+                      minimum_wage:
+                        type: string
+                      social_security:
+                        type: string
+                      clauses:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            title:
+                              type: string
+                            body:
+                              type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          description: "Pays non supporte (CONTRACT_TEMPLATE_NOT_FOUND)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /contracts/{contract}:
     get:
       tags: ["Contracts"]
@@ -9147,6 +9300,42 @@ paths:
           $ref: "#/components/responses/Error401"
         "422":
           description: "Only draft contracts can be activated"
+
+  /contracts/{contract}/sign:
+    post:
+      tags: ["Contracts"]
+      summary: "Signer explicitement un contrat (issue #5260) — idempotent"
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                signed_document_path:
+                  type: string
+                  maxLength: 500
+      responses:
+        "200":
+          description: "Contrat signe (signed_at pose) — idempotent"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Contract"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
 
   /contracts/{contract}/suspend:
     post:
@@ -9530,6 +9719,25 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un poste (manager)"
+      parameters:
+        - name: position
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Poste mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
 
   /sites:
     get:
@@ -9680,6 +9888,25 @@ paths:
           description: "Site supprime"
         "401":
           $ref: "#/components/responses/Error401"
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un site (manager)"
+      parameters:
+        - name: site
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Site mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
 
   /attendance/anomalies:
     get:
@@ -9701,20 +9928,40 @@ paths:
   /attendance/monthly-report:
     get:
       tags: ["Attendance"]
-      summary: "Rapport mensuel de pointage"
+      summary: "Rapport de pointage (journalier, hebdomadaire ou mensuel)"
+      description: "Rapport de presence par periode (issue #5268) : period=day|week|month (defaut month), ancres date/week/month, filtres department_id/employee_id, export json/csv/pdf."
       parameters:
+        - name: period
+          in: query
+          description: "Periode du rapport : day, week ou month (defaut month)."
+          schema: { type: string, enum: [day, week, month] }
+        - name: date
+          in: query
+          description: "Jour cible (Y-m-d) pour period=day."
+          schema: { type: string, format: date }
+        - name: week
+          in: query
+          description: "N'importe quel jour (Y-m-d) de la semaine ISO ciblee (lundi -> dimanche)."
+          schema: { type: string, format: date }
         - name: month
           in: query
-          schema: { type: integer }
-        - name: year
+          description: "Mois cible (Y-m)."
+          schema: { type: string, pattern: "^\\d{4}-\\d{2}$" }
+        - name: department_id
           in: query
+          description: "Filtre equipe (departement)."
           schema: { type: integer }
         - name: employee_id
           in: query
+          description: "Filtre fiche de pointage individuelle."
           schema: { type: integer }
+        - name: format
+          in: query
+          description: "Format de sortie : json, csv ou pdf (defaut json)."
+          schema: { type: string, enum: [json, csv, pdf] }
       responses:
         "200":
-          description: "Rapport mensuel"
+          description: "Rapport de pointage"
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -12780,6 +13027,19 @@ paths:
                     $ref: "#/components/schemas/JobPosting"
         "401":
           $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer une offre d'emploi (manager)"
+      parameters:
+        - name: jobPosting
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Offre supprimée"
+        "401":
+          $ref: "#/components/responses/Error401"
 
   /recruitment/jobs/{jobPosting}/publish:
     post:
@@ -12906,6 +13166,32 @@ paths:
                     $ref: "#/components/schemas/Applicant"
         "401":
           $ref: "#/components/responses/Error401"
+    get:
+      tags: ["Recruitment"]
+      summary: "Détail d'une candidature (manager)"
+      parameters:
+        - name: applicant
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Candidature"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer une candidature (manager)"
+      parameters:
+        - name: applicant
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Candidature supprimée"
+        "401":
+          $ref: "#/components/responses/Error401"
 
   /recruitment/applicants/{applicant}/interviews:
     post:
@@ -12977,6 +13263,19 @@ paths:
       responses:
         "200":
           description: "Entretien modifie"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer un entretien (manager)"
+      parameters:
+        - name: interview
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Entretien supprimé"
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -13895,8 +14194,8 @@ paths:
                         level: { type: integer }
                         approver_id: { type: integer }
                         decision: { type: string, enum: [approved, rejected] }
-                        comment: { type: [string, "null"] }
-                        decided_at: { type: [string, "null"], format: date-time }
+                        comment: { type: string, nullable: true }
+                        decided_at: { type: string, nullable: true, format: date-time }
                         request:
                           type: object
                           properties:
@@ -13906,28 +14205,29 @@ paths:
                             approvable_id: { type: integer }
                             requester_id: { type: integer }
                             requester:
-                              type: [object, "null"]
+                              type: object
+                              nullable: true
                               properties:
                                 id: { type: integer }
                                 first_name: { type: string }
                                 last_name: { type: string }
-                        created_at: { type: [string, "null"], format: date-time }
+                        created_at: { type: string, nullable: true, format: date-time }
                   links:
                     type: object
                     properties:
-                      first: { type: [string, "null"] }
-                      last: { type: [string, "null"] }
-                      prev: { type: [string, "null"] }
-                      next: { type: [string, "null"] }
+                      first: { type: string, nullable: true }
+                      last: { type: string, nullable: true }
+                      prev: { type: string, nullable: true }
+                      next: { type: string, nullable: true }
                   meta:
                     type: object
                     properties:
                       current_page: { type: integer }
-                      from: { type: [integer, "null"] }
+                      from: { type: integer, nullable: true }
                       last_page: { type: integer }
                       path: { type: string }
                       per_page: { type: integer }
-                      to: { type: [integer, "null"] }
+                      to: { type: integer, nullable: true }
                       total: { type: integer }
         "401":
           $ref: "#/components/responses/Error401"
@@ -16553,83 +16853,6 @@ paths:
         "404":
           description: "Introuvable"
 
-  /positions/{position}:
-    patch:
-      tags: ["Payroll Engine"]
-      summary: "Mettre à jour un poste (manager)"
-      parameters:
-        - name: position
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          description: "Poste mis à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /sites/{site}:
-    patch:
-      tags: ["Payroll Engine"]
-      summary: "Mettre à jour un site (manager)"
-      parameters:
-        - name: site
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          description: "Site mis à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /schedules/{schedule}:
-    get:
-      tags: ["Payroll Engine"]
-      summary: "Détail d'un planning"
-      parameters:
-        - name: schedule
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Planning"
-        "401":
-          $ref: "#/components/responses/Error401"
-    patch:
-      tags: ["Payroll Engine"]
-      summary: "Mettre à jour un planning (manager — sécurité #2217)"
-      parameters:
-        - name: schedule
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          description: "Planning mis à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          description: "Non-manager"
 
   /notifications/stream:
     get:
@@ -16655,22 +16878,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /tasks/{task}/comments:
-    get:
-      tags: ["Tasks"]
-      summary: "Commentaires d'une tâche (auteur + employés liés)"
-      parameters:
-        - name: task
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Commentaires"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          description: "Non autorisé (hors périmètre)"
 
   /me/contract:
     get:
@@ -16684,48 +16891,6 @@ paths:
         "404":
           description: "Aucun contrat actif"
 
-  /recruitment/jobs/{id}:
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer une offre d'emploi (manager)"
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Offre supprimée"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /recruitment/applicants/{id}:
-    get:
-      tags: ["Recruitment"]
-      summary: "Détail d'une candidature (manager)"
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Candidature"
-        "401":
-          $ref: "#/components/responses/Error401"
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer une candidature (manager)"
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Candidature supprimée"
-        "401":
-          $ref: "#/components/responses/Error401"
 
   /recruitment/applicants/{id}/status:
     patch:
@@ -16785,20 +16950,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /recruitment/interviews/{id}:
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer un entretien (manager)"
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Entretien supprimé"
-        "401":
-          $ref: "#/components/responses/Error401"
 
   /smart-attendance/config:
     get:
@@ -22376,6 +22527,10 @@ components:
         clauses:
           type: object
           nullable: true
+        apply_legal_template:
+          type: boolean
+          nullable: true
+          description: "Issue #5260 — semer les clauses legales du pays de l'entreprise quand clauses est absent (defaut : true si clauses vide)"
 
     UpdateContractRequest:
       type: object

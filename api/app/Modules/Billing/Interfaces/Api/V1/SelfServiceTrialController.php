@@ -13,6 +13,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -328,6 +329,13 @@ class SelfServiceTrialController extends Controller
                 'message' => $result['message'],
             ], $result['status']);
         }
+
+        // La locale HTTP peut rester sur la valeur par défaut (souvent `en`)
+        // puisque `/trial/verify` ne reçoit pas le pays. Le provisioning a
+        // toutefois résolu et persisté la langue depuis le pays du signup;
+        // utiliser cette langue pour le message de succès garantit un contrat
+        // cohérent avec la société créée.
+        App::setLocale((string) ($result['company']->language ?? config('app.locale', 'en')));
 
         return new JsonResponse([
             'success' => true,
