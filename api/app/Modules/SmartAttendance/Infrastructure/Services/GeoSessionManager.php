@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\SmartAttendance\Infrastructure\Services;
 
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Tenant\Domain\Models\Site;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Attendance\Infrastructure\Services\AttendanceGeofenceService;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Infrastructure\Services\GeofenceZoneService;
 use App\Modules\SmartAttendance\Application\DTOs\GeoEventDTO;
 use App\Modules\SmartAttendance\Domain\Exceptions\OutsideGeofenceException;
 use App\Modules\SmartAttendance\Domain\Exceptions\SessionAlreadyOpenException;
@@ -19,13 +18,13 @@ use Illuminate\Support\Facades\Log;
 /**
  * Gestion du cycle de vie des sessions GPS.
  *
- * Réutilise AttendanceGeofenceService existant pour le calcul de zone —
+ * Chemin d'usage unique de la géofence via GeofenceZoneService (ADR-0016 Phase 2, #5353) —
  * pas de duplication de la logique Haversine.
  */
 class GeoSessionManager
 {
     public function __construct(
-        private readonly AttendanceGeofenceService $geofenceService,
+        private readonly GeofenceZoneService $zoneService,
     ) {}
 
     /**
@@ -37,7 +36,7 @@ class GeoSessionManager
     public function openSession(GeoEventDTO $dto): GeoAttendanceSession
     {
         $employee = Employee::findOrFail($dto->employeeId);
-        $company  = currentCompany();
+        $company = currentCompany();
 
         // ── 1. Re-vérifier la zone côté serveur (anti-spoofing) ──────────────
         // #4255 : cette vérification est HORS transaction. Avant, logEvent()
@@ -46,21 +45,18 @@ class GeoSessionManager
         // suspect (spec #3887 « hors géofence → 422 + event outside_zone loggé »)
         // n'était JAMAIS persisté. Loggé avant la transaction, il est committé
         // indépendamment du 422.
-        $geo = $this->geofenceService->evaluate($company, $employee, $dto->latitude, $dto->longitude);
-
-        if ($geo['configured'] && $geo['inside'] === false) {
+        try {
+            $this->zoneService->assertInsideZone($company, $employee, $dto->latitude, $dto->longitude);
+        } catch (OutsideGeofenceException $e) {
             $this->logEvent($dto, null, EmployeeLocationEvent::TYPE_OUTSIDE_ZONE);
 
-            throw new OutsideGeofenceException(
-                (float) $geo['distance_meters'],
-                (float) $geo['radius_meters']
-            );
+            throw $e;
         }
 
         return DB::transaction(function () use ($dto): GeoAttendanceSession {
 
             $employee = Employee::findOrFail($dto->employeeId);
-            $company  = currentCompany();
+            $company = currentCompany();
 
             // ── 2. Vérifier qu'aucune session n'est déjà ouverte ─────────────
             $existing = GeoAttendanceSession::query()
@@ -77,7 +73,7 @@ class GeoSessionManager
                 // Log l'événement dupliqué mais ne plante pas
                 Log::info('[SmartAttendance] Duplicate zone_enter ignored', [
                     'employee_id' => $dto->employeeId,
-                    'session_id'  => $existing->id,
+                    'session_id' => $existing->id,
                 ]);
                 throw new SessionAlreadyOpenException($dto->employeeId, $existing->id);
             }
@@ -88,14 +84,14 @@ class GeoSessionManager
             // ── 4. Créer la session ───────────────────────────────────────────
             /** @var GeoAttendanceSession $session */
             $session = GeoAttendanceSession::create([
-                'employee_id'              => $dto->employeeId,
-                'company_id'               => $dto->companyId,
-                'site_id'                  => $siteId,
-                'started_at'               => now(),
-                'check_in_lat'             => $dto->latitude,
-                'check_in_lng'             => $dto->longitude,
+                'employee_id' => $dto->employeeId,
+                'company_id' => $dto->companyId,
+                'site_id' => $siteId,
+                'started_at' => now(),
+                'check_in_lat' => $dto->latitude,
+                'check_in_lng' => $dto->longitude,
                 'check_in_accuracy_meters' => $dto->accuracyMeters,
-                'status'                   => GeoAttendanceSession::STATUS_DETECTED,
+                'status' => GeoAttendanceSession::STATUS_DETECTED,
             ]);
 
             // ── 5. Logger l'événement ────────────────────────────────────────
@@ -132,20 +128,21 @@ class GeoSessionManager
                 Log::info('[SmartAttendance] zone_exit received with no open session', [
                     'employee_id' => $dto->employeeId,
                 ]);
+
                 return null;
             }
 
             // ── 2. Fermer la session ─────────────────────────────────────────
-            $endedAt         = now();
+            $endedAt = now();
             $durationSeconds = (int) $session->started_at->diffInSeconds($endedAt);
 
             $session->update([
-                'ended_at'                  => $endedAt,
-                'duration_seconds'          => $durationSeconds,
-                'check_out_lat'             => $dto->latitude,
-                'check_out_lng'             => $dto->longitude,
+                'ended_at' => $endedAt,
+                'duration_seconds' => $durationSeconds,
+                'check_out_lat' => $dto->latitude,
+                'check_out_lng' => $dto->longitude,
                 'check_out_accuracy_meters' => $dto->accuracyMeters,
-                'status'                    => GeoAttendanceSession::STATUS_PENDING_VALIDATION,
+                'status' => GeoAttendanceSession::STATUS_PENDING_VALIDATION,
             ]);
 
             // ── 3. Logger l'événement ────────────────────────────────────────
@@ -160,15 +157,15 @@ class GeoSessionManager
     private function logEvent(GeoEventDTO $dto, ?int $sessionId, string $eventType): void
     {
         EmployeeLocationEvent::create([
-            'employee_id'       => $dto->employeeId,
-            'company_id'        => $dto->companyId,
-            'geo_session_id'    => $sessionId,
-            'event_type'        => $eventType,
-            'latitude'          => $dto->latitude,
-            'longitude'         => $dto->longitude,
-            'accuracy_meters'   => $dto->accuracyMeters,
-            'device_timestamp'  => $dto->deviceTimestamp,
-            'metadata'          => $dto->metadata,
+            'employee_id' => $dto->employeeId,
+            'company_id' => $dto->companyId,
+            'geo_session_id' => $sessionId,
+            'event_type' => $eventType,
+            'latitude' => $dto->latitude,
+            'longitude' => $dto->longitude,
+            'accuracy_meters' => $dto->accuracyMeters,
+            'device_timestamp' => $dto->deviceTimestamp,
+            'metadata' => $dto->metadata,
         ]);
     }
 
@@ -178,22 +175,8 @@ class GeoSessionManager
         float $lat,
         float $lng
     ): ?int {
-        // Priorité : site assigné à l'employé
-        if ($employee->site_id) {
-            $site = Site::where('company_id', $employee->company_id)
-                ->find($employee->site_id);
-
-            if ($site && $site->gps_lat !== null) {
-                $distance = $this->geofenceService->distanceMeters(
-                    $lat, $lng, (float) $site->gps_lat, (float) $site->gps_lng
-                );
-                if ($distance <= (float) $site->gps_radius_m) {
-                    return $site->id;
-                }
-            }
-        }
-
-        return null;
+        // Priorité : site assigné à l'employé — résolution centralisée dans le
+        // chemin d'usage unique de la géofence (ADR-0016 Phase 2, #5353).
+        return $this->zoneService->resolveSiteId($employee, $company, $lat, $lng);
     }
 }
-
