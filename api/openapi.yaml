@@ -22718,58 +22718,6 @@ components:
           type: number
         total_contributions:
           type: number
-        working_days:
-          type: number
-          description: Jours ouvrés standards de la période (issue #5245)
-        actual_days_worked:
-          type: number
-          description: Jours effectivement travaillés (logs ou prorata contrat)
-        overtime_hours:
-          type: number
-          description: Heures supplémentaires intégrées au bulletin
-        attendance:
-          type: object
-          description: >-
-            Détail des entrées de travail par employé (issue #5245) — congés
-            payés pris, congés sans solde, jours fériés payés, prorata et
-            soldes de congés annuels. Bloc additif (rétro-compatible).
-          properties:
-            working_days:
-              type: number
-            actual_days_worked:
-              type: number
-            prorata_rate:
-              type: number
-              description: Ratio jours travaillés / jours ouvrés (arrondi 4 décimales)
-            paid_leave_days:
-              type: number
-              description: Jours de congé payé approuvés pris sur la période
-            unpaid_leave_days:
-              type: number
-              description: Jours de congé sans solde approuvés sur la période
-            public_holiday_days:
-              type: number
-              description: Jours fériés payés tombant dans la période du run
-            overtime_hours:
-              type: number
-            has_attendance_data:
-              type: boolean
-              description: true quand actual_days_worked provient des logs de pointage
-            leave_balance:
-              type: object
-              nullable: true
-              description: >-
-                Soldes de congés annuels (types payés) agrégés sur l'année du
-                bulletin — null si non attaché (endpoint show) ou sans solde.
-              properties:
-                acquired:
-                  type: number
-                used:
-                  type: number
-                pending:
-                  type: number
-                remaining:
-                  type: number
         lines:
           type: array
           items:
