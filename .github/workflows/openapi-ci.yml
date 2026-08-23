@@ -1,16 +1,11 @@
 name: OpenAPI CI
 
 on:
+  # DoD #5280 — le contrat OpenAPI est vérifié sur CHAQUE pull request :
+  # une PR qui ajoute une route, dégrade la spec ou laisse le miroir/SDK
+  # périmé est bloquée immédiatement, même si elle ne touche ni api/routes/**
+  # ni api/openapi.yaml directement (dérive possible via schemas/refs).
   pull_request:
-    paths:
-      - "api/openapi.yaml"
-      - "api/routes/**"
-      - "dev-hub/openapi/v1.yaml"
-      - "dev-hub/sdk/**"
-      - "dev-hub/tools/generate-openapi-sdk.mjs"
-      - "dev-hub/tools/check-openapi-route-coverage.py"
-      - "dev-hub/tools/openapi-coverage-allowlist.txt"
-      - ".github/workflows/openapi-ci.yml"
   push:
     branches:
       - main
