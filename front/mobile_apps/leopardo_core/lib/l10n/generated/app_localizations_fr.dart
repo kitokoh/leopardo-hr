@@ -5306,56 +5306,74 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get attendanceLoadDegradedNotice =>
-      'Les données du jour prennent plus de temps que prévu. L\'écran reste utilisable, vous pouvez actualiser.';
+  String get attendanceAccountSuspended => 'Compte suspendu ou accès refusé.';
 
   @override
-  String get attendanceCheckinRegistered => 'Arrivée enregistrée à l\'instant.';
-
-  @override
-  String get attendanceCheckoutRegistered => 'Départ enregistré à l\'instant.';
+  String get attendanceBeforeDeductions => 'Avant déductions légales';
 
   @override
   String get attendanceBreakRegistered => 'Pause enregistrée.';
 
   @override
-  String get attendanceRoleForbidden =>
-      'Votre rôle ne permet pas cette action de pointage.';
+  String get attendanceCheckinConfirmed => 'Arrivée confirmée.';
 
   @override
-  String get attendancePunchFailed =>
-      'Le pointage n\'a pas pu être confirmé. Vérifiez la connexion puis réessayez.';
+  String get attendanceCheckinNormal => 'Arrivée normale';
 
   @override
-  String attendanceOutsideZoneNotice(Object fallback) {
-    return '$fallback Vous semblez hors de la zone autorisée; votre manager sera notifié si la règle entreprise l\'exige.';
+  String get attendanceCheckinNotConfirmed => 'Arrivée non confirmée';
+
+  @override
+  String get attendanceCheckinRegistered => 'Arrivée enregistrée à l\'instant.';
+
+  @override
+  String get attendanceCheckoutConfirmed => 'Départ confirmé.';
+
+  @override
+  String get attendanceCheckoutNotConfirmed => 'Départ non confirmé';
+
+  @override
+  String get attendanceCheckoutRegistered => 'Départ enregistré à l\'instant.';
+
+  @override
+  String get attendanceCloseTask => 'Clôturer la tâche';
+
+  @override
+  String get attendanceCorrectionApplied =>
+      'La correction sera appliquée au dossier de pointage.';
+
+  @override
+  String get attendanceCorrectionDirectBody =>
+      'Corriger directement cette ligne de pointage.';
+
+  @override
+  String attendanceCorrectionDirectSnack(Object date) {
+    return 'Pointage du $date modifié.';
   }
 
   @override
-  String attendanceOutsideZoneManagerNotice(Object fallback) {
-    return '$fallback Pointage hors zone détecté; contrôlez le contexte avant validation RH.';
+  String attendanceCorrectionEditDateTitle(Object date) {
+    return 'Modifier le $date';
   }
 
   @override
-  String get attendanceInvalidPayload => 'Données de pointage invalides.';
+  String get attendanceCorrectionRequestBody =>
+      'Soumettre une correction au RH pour validation.';
 
   @override
-  String get attendanceTasksSyncing => 'Synchronisation des tâches du jour...';
-
-  @override
-  String get attendanceEstimatedEarnings => 'Gain estimé';
-
-  @override
-  String get attendanceTotalLate => 'Retard cumulé';
-
-  @override
-  String attendanceLateMinutes(Object minutes) {
-    return '$minutes min';
+  String attendanceCorrectionRequestSnack(Object date) {
+    return 'Demande du $date soumise au RH - vous serez notifié de la décision.';
   }
 
   @override
-  String get attendanceNoPunchForDay =>
-      'Aucun pointage enregistré pour cette journée.';
+  String get attendanceCorrectionSentToHr =>
+      'La demande sera transmise au RH pour validation.';
+
+  @override
+  String get attendanceCurrentMonth => 'Mois actuel';
+
+  @override
+  String get attendanceDayDetail => 'Détail par jour';
 
   @override
   String get attendanceDayDetails => 'Détails de la journée';
@@ -5365,62 +5383,201 @@ class AppLocalizationsFr extends AppLocalizations {
       'Voir les pointages, pauses, heures supp et temps réel.';
 
   @override
-  String get attendanceRequestCorrection => 'Demander une modification';
+  String get attendanceDayNoSessionsYet =>
+      'Cette journée ne contient pas encore de pointage.';
 
   @override
-  String get attendanceCorrectionDirectBody =>
-      'Corriger directement cette ligne de pointage.';
+  String attendanceDaySessionsSummary(Object hours, Object sessions) {
+    return '$sessions session(s) - $hours travaillées.';
+  }
 
   @override
-  String get attendanceCorrectionRequestBody =>
-      'Soumettre une correction au RH pour validation.';
+  String get attendanceDayTodayLabel => 'Aujourd\'hui';
 
   @override
-  String get attendanceWorkedTime => 'Temps travaillé';
+  String get attendanceDayYesterdayLabel => 'Hier';
 
   @override
-  String get attendanceOvertimeShortLabel => 'Heures supp';
+  String attendanceDaysAbsentShort(Object count) {
+    return '$count abs.';
+  }
+
+  @override
+  String attendanceDaysPresentRatio(Object present, Object working) {
+    return '$present jours présents / $working ouvrés';
+  }
+
+  @override
+  String get attendanceDeductionsLabel => 'Retenues';
+
+  @override
+  String attendanceDeductionsSub(Object amount) {
+    return 'Déductions : $amount';
+  }
+
+  @override
+  String get attendanceEndWork => 'Terminer le travail';
+
+  @override
+  String get attendanceEstimateDisclaimer =>
+      'Estimation non officielle. Le bulletin de paie fait foi.';
+
+  @override
+  String get attendanceEstimatedEarnings => 'Gain estimé';
+
+  @override
+  String get attendanceFinish => 'Terminer';
+
+  @override
+  String get attendanceGrossEstimate => 'Gain brut estimé';
+
+  @override
+  String get attendanceGrossLabel => 'Brut';
+
+  @override
+  String get attendanceHistoryEmpty =>
+      'Rien ici pour le moment. Vos pointages apparaîtront au fur et à mesure.';
+
+  @override
+  String get attendanceHoursLabel => 'Heures';
+
+  @override
+  String get attendanceHoursWorkedLabel => 'Heures travaillées';
+
+  @override
+  String get attendanceIncludedGross => 'Incluses dans le gain brut';
+
+  @override
+  String get attendanceIncludedGrossShort => 'Incluses brut';
+
+  @override
+  String get attendanceInvalidDuration => 'Durée invalide';
+
+  @override
+  String get attendanceInvalidPayload => 'Données de pointage invalides.';
+
+  @override
+  String attendanceLateMinutes(Object minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get attendanceLoadDegradedNotice =>
+      'Les données du jour prennent plus de temps que prévu. L\'écran reste utilisable, vous pouvez actualiser.';
+
+  @override
+  String attendanceLoadFailed(Object error) {
+    return 'Impossible de charger les données : $error';
+  }
+
+  @override
+  String get attendanceMarkDone => 'Marquer terminée';
+
+  @override
+  String get attendanceMonthEmptyHint =>
+      'Si aucune donnée n\'existe encore, un résumé vide sera affiché.';
+
+  @override
+  String get attendanceMonthLoadedHint =>
+      'Le mois est bien chargé. Les gains et heures resteront à zéro tant qu\'aucun pointage valide n\'existe.';
+
+  @override
+  String get attendanceMonthSyncing => 'Synchronisation du mois...';
+
+  @override
+  String get attendanceMyMonth => 'Mon mois';
+
+  @override
+  String get attendanceNetEstimate => 'Net estimé';
+
+  @override
+  String get attendanceNextMonth => 'Mois suivant';
+
+  @override
+  String get attendanceNoHistory => 'Aucun historique';
+
+  @override
+  String get attendanceNoLogToEdit =>
+      'Aucune ligne de pointage existante à modifier pour ce jour.';
+
+  @override
+  String get attendanceNoPunchForDay =>
+      'Aucun pointage enregistré pour cette journée.';
 
   @override
   String get attendanceNoSession => 'Aucune session';
 
   @override
-  String get attendanceDayNoSessionsYet =>
-      'Cette journée ne contient pas encore de pointage.';
+  String attendanceOutsideZoneManagerNotice(Object fallback) {
+    return '$fallback Pointage hors zone détecté; contrôlez le contexte avant validation RH.';
+  }
 
   @override
-  String get attendanceToPunch => 'À pointer';
+  String attendanceOutsideZoneNotice(Object fallback) {
+    return '$fallback Vous semblez hors de la zone autorisée; votre manager sera notifié si la règle entreprise l\'exige.';
+  }
 
   @override
-  String get attendanceCheckinNormal => 'Arrivée normale';
+  String get attendanceOvertimeLabel => 'Heures supplémentaires';
 
   @override
-  String get attendanceStartDay => 'Démarrer la journée';
+  String get attendanceOvertimeShortLabel => 'Heures supp';
 
   @override
-  String get attendanceSendCheckin => 'Envoi de l\'arrivée';
+  String get attendancePersonalTracking => 'Suivi personnel';
 
   @override
-  String get attendanceCheckinConfirmed => 'Arrivée confirmée.';
+  String get attendancePresence => 'Présence';
 
   @override
-  String get attendanceCheckinNotConfirmed => 'Arrivée non confirmée';
+  String get attendancePreviousMonth => 'Mois précédent';
 
   @override
-  String get attendanceEndWork => 'Terminer le travail';
+  String get attendancePunchFailed =>
+      'Le pointage n\'a pas pu être confirmé. Vérifiez la connexion puis réessayez.';
+
+  @override
+  String get attendanceRealCheckinRequired => 'Arrivée réelle *';
+
+  @override
+  String get attendanceRealCheckout => 'Départ réel';
+
+  @override
+  String get attendanceRealTime => 'Temps réel';
+
+  @override
+  String get attendanceRealTimeHint =>
+      'Indiquez le temps réel et une note courte avant le départ.';
+
+  @override
+  String get attendanceRefresh => 'Actualiser';
+
+  @override
+  String get attendanceRequestCorrection => 'Demander une modification';
+
+  @override
+  String get attendanceRetry => 'Réessayer';
+
+  @override
+  String get attendanceRoleForbidden =>
+      'Votre rôle ne permet pas cette action de pointage.';
 
   @override
   String get attendanceSaveDeparture =>
       'Enregistrer le départ de cette session';
 
   @override
+  String get attendanceSeeHistory => 'Voir l\'historique';
+
+  @override
+  String get attendanceSendCheckin => 'Envoi de l\'arrivée';
+
+  @override
   String get attendanceSendCheckout => 'Envoi du départ';
 
   @override
-  String get attendanceCheckoutConfirmed => 'Départ confirmé.';
-
-  @override
-  String get attendanceCheckoutNotConfirmed => 'Départ non confirmé';
+  String get attendanceSendModificationFailed =>
+      'Impossible d\'envoyer la modification pour le moment.';
 
   @override
   String attendanceSessionRange(Object from, Object to) {
@@ -5428,23 +5585,13 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get attendanceCloseTask => 'Clôturer la tâche';
+  String get attendanceStartDay => 'Démarrer la journée';
 
   @override
-  String get attendanceRealTimeHint =>
-      'Indiquez le temps réel et une note courte avant le départ.';
+  String get attendanceSummaryUnavailable => 'Résumé indisponible';
 
   @override
-  String get attendanceRealTime => 'Temps réel';
-
-  @override
-  String get attendanceInvalidDuration => 'Durée invalide';
-
-  @override
-  String get attendanceTaskNote => 'Note de réalisation';
-
-  @override
-  String get attendanceMarkDone => 'Marquer terminée';
+  String get attendanceTask => 'Tâche';
 
   @override
   String get attendanceTaskDone => 'Tâche terminée.';
@@ -5455,42 +5602,16 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get attendanceNoLogToEdit =>
-      'Aucune ligne de pointage existante à modifier pour ce jour.';
+  String get attendanceTaskNote => 'Note de réalisation';
 
   @override
-  String get attendanceSendModificationFailed =>
-      'Impossible d\'envoyer la modification pour le moment.';
+  String get attendanceTasksSectionTitle => 'TÂCHES DU JOUR';
 
   @override
-  String get attendanceCorrectionApplied =>
-      'La correction sera appliquée au dossier de pointage.';
+  String get attendanceTasksSyncing => 'Synchronisation des tâches du jour...';
 
   @override
-  String get attendanceCorrectionSentToHr =>
-      'La demande sera transmise au RH pour validation.';
-
-  @override
-  String get attendanceRealCheckinRequired => 'Arrivée réelle *';
-
-  @override
-  String get attendanceRealCheckout => 'Départ réel';
-
-  @override
-  String get attendanceDayTodayLabel => 'Aujourd\'hui';
-
-  @override
-  String get attendanceDayYesterdayLabel => 'Hier';
-
-  @override
-  String get attendanceAccountSuspended => 'Compte suspendu ou accès refusé.';
-
-  @override
-  String get attendanceHistoryEmpty =>
-      'Rien ici pour le moment. Vos pointages apparaîtront au fur et à mesure.';
-
-  @override
-  String get attendanceCurrentMonth => 'Mois actuel';
+  String get attendanceToPunch => 'À pointer';
 
   @override
   String get attendanceTotalDays => 'Total jours';
@@ -5499,111 +5620,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get attendanceTotalHours => 'Total heures';
 
   @override
-  String get attendanceNoHistory => 'Aucun historique';
+  String get attendanceTotalLate => 'Retard cumulé';
 
   @override
-  String get attendanceMyMonth => 'Mon mois';
-
-  @override
-  String get attendancePersonalTracking => 'Suivi personnel';
-
-  @override
-  String get attendancePreviousMonth => 'Mois précédent';
-
-  @override
-  String get attendanceNextMonth => 'Mois suivant';
-
-  @override
-  String get attendanceMonthSyncing => 'Synchronisation du mois...';
-
-  @override
-  String get attendanceMonthEmptyHint =>
-      'Si aucune donnée n\'existe encore, un résumé vide sera affiché.';
-
-  @override
-  String get attendanceSummaryUnavailable => 'Résumé indisponible';
-
-  @override
-  String get attendanceHoursWorkedLabel => 'Heures travaillées';
-
-  @override
-  String get attendanceOvertimeLabel => 'Heures supplémentaires';
-
-  @override
-  String get attendanceIncludedGross => 'Incluses dans le gain brut';
-
-  @override
-  String get attendanceGrossEstimate => 'Gain brut estimé';
-
-  @override
-  String get attendanceBeforeDeductions => 'Avant déductions légales';
-
-  @override
-  String get attendanceNetEstimate => 'Net estimé';
-
-  @override
-  String get attendanceDayDetail => 'Détail par jour';
-
-  @override
-  String get attendanceEstimateDisclaimer =>
-      'Estimation non officielle. Le bulletin de paie fait foi.';
-
-  @override
-  String get attendanceSeeHistory => 'Voir l\'historique';
-
-  @override
-  String get attendanceMonthLoadedHint =>
-      'Le mois est bien chargé. Les gains et heures resteront à zéro tant qu\'aucun pointage valide n\'existe.';
-
-  @override
-  String attendanceLoadFailed(Object error) {
-    return 'Impossible de charger les données : $error';
-  }
-
-  @override
-  String get payrollTitle => 'Paie et solde';
-
-  @override
-  String get payrollSubtitle => 'Solde courant, avances et bulletins';
-
-  @override
-  String payrollPdfDownloaded(Object path) {
-    return 'PDF téléchargé : $path';
-  }
-
-  @override
-  String payrollDocumentDownloaded(Object path) {
-    return 'Document téléchargé : $path';
-  }
-
-  @override
-  String get payrollEmptyHint =>
-      'Vos fiches de paie apparaîtront ici dès qu\'elles seront validées.';
-
-  @override
-  String get payrollDownloading => 'Téléchargement en cours';
-
-  @override
-  String get payrollDownloadPayslip => 'Télécharger le bulletin PDF';
-
-  @override
-  String get payrollLoading => 'Chargement des fiches de paie';
-
-  @override
-  String get payrollPaymentDocuments => 'Documents paiement';
-
-  @override
-  String get payrollNoReceipts =>
-      'Aucun reçu ou bordereau disponible pour le moment.';
-
-  @override
-  String get payrollDocsUnavailable => 'Documents temporairement indisponibles';
-
-  @override
-  String get payrollMyBalance => 'Mon solde';
-
-  @override
-  String get payrollRemainingToReceive => 'Reste à recevoir';
+  String get attendanceWorkedTime => 'Temps travaillé';
 
   @override
   String get payrollAdvancesDeducted => 'Avances déduites';
@@ -5615,40 +5635,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get payrollBalanceUnavailable => 'Solde temporairement indisponible';
 
   @override
-  String get payrollTeamTitle => 'Paie équipe';
+  String get payrollDocsUnavailable => 'Documents temporairement indisponibles';
 
   @override
-  String get payrollTeamSubtitle => 'Soldes, avances et bulletins';
+  String payrollDocumentDownloaded(Object path) {
+    return 'Document téléchargé : $path';
+  }
 
   @override
-  String get payrollRecentPayslips => 'Bulletins récents';
+  String get payrollDownloadPayslip => 'Télécharger le bulletin PDF';
 
   @override
-  String get payrollNoPayslips => 'Aucune fiche de paie';
+  String get payrollDownloading => 'Téléchargement en cours';
 
   @override
-  String get payrollValidatedHint =>
-      'Les bulletins valides apparaîtront ici après traitement.';
-
-  @override
-  String get payrollPaymentDocumentsTitle => 'Documents de paiement';
-
-  @override
-  String get payrollNoCycleDocuments =>
-      'Aucun document généré pour ce cycle. Les reçus apparaîtront après paiement.';
-
-  @override
-  String get payrollTeamBalance => 'Solde équipe';
-
-  @override
-  String get payrollRemainingToPay => 'Reste à payer';
-
-  @override
-  String get payrollOvertimeLabel => 'heures supp';
-
-  @override
-  String get payrollSummaryUnavailable =>
-      'Résumé paie temporairement indisponible';
+  String get payrollEmptyHint =>
+      'Vos fiches de paie apparaîtront ici dès qu\'elles seront validées.';
 
   @override
   String payrollError(Object error) {
@@ -5656,144 +5658,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get smartAttendanceTitle => 'Smart Attendance';
-
-  @override
-  String get smartAttendanceGpsTitle => 'Smart Attendance — GPS';
-
-  @override
-  String get smartAttendanceGpsAuto => 'GPS Automatique';
-
-  @override
-  String get smartAttendanceQr => 'QR Code';
-
-  @override
-  String get smartAttendanceSmart => 'Pointage Intelligent';
-
-  @override
-  String get smartAttendanceActiveMode => 'Mode actif';
-
-  @override
-  String get smartAttendanceForced => 'Imposé';
-
-  @override
-  String get smartAttendanceChangeMode => 'Changer mon mode de pointage';
-
-  @override
-  String get smartAttendanceZoneSurveillance => 'Surveillance de zone';
-
-  @override
-  String get smartAttendanceSurveillanceActive => 'Surveillance active';
-
-  @override
-  String get smartAttendanceSurveillanceInactive => 'Surveillance inactive';
-
-  @override
-  String get smartAttendanceNoGpsSessions =>
-      'Aucune session GPS pour le moment.';
-
-  @override
-  String get smartAttendanceDashboardTitle => 'Pointage GPS — tableau de bord';
-
-  @override
-  String get smartAttendanceSessionsTitle => 'Sessions Smart Attendance';
-
-  @override
-  String get smartAttendancePending => 'En attente';
-
-  @override
-  String get smartAttendanceNoPendingSessions =>
-      'Aucune session en attente de validation';
-
-  @override
-  String get smartAttendanceNoPending => 'Aucune session en attente';
-
-  @override
-  String smartAttendancePendingCount(Object count) {
-    return '$count en attente';
-  }
-
-  @override
-  String get smartAttendanceTapToReview => 'Appuyez pour valider ou rejeter';
-
-  @override
-  String get smartAttendanceRejectReason => 'Motif du rejet';
-
-  @override
-  String get smartAttendanceRejectHint => 'Expliquez la raison du rejet...';
-
-  @override
-  String smartAttendanceError(Object message) {
-    return 'Erreur : $message';
-  }
-
-  @override
-  String get smartAttendanceDashboard => 'Pointage GPS — tableau de bord';
-
-  @override
-  String get attendanceTasksSectionTitle => 'TÂCHES DU JOUR';
-
-  @override
-  String attendanceCorrectionDirectSnack(Object date) {
-    return 'Pointage du $date modifié.';
-  }
-
-  @override
-  String attendanceCorrectionRequestSnack(Object date) {
-    return 'Demande du $date soumise au RH - vous serez notifié de la décision.';
-  }
-
-  @override
-  String attendanceCorrectionEditDateTitle(Object date) {
-    return 'Modifier le $date';
-  }
-
-  @override
-  String get attendanceTask => 'Tâche';
-
-  @override
-  String get attendanceFinish => 'Terminer';
-
-  @override
-  String attendanceDaySessionsSummary(Object hours, Object sessions) {
-    return '$sessions session(s) - $hours travaillées.';
-  }
-
-  @override
-  String get attendanceRefresh => 'Actualiser';
-
-  @override
-  String get attendancePresence => 'Présence';
-
-  @override
-  String attendanceDaysAbsentShort(Object count) {
-    return '$count abs.';
-  }
-
-  @override
-  String get attendanceIncludedGrossShort => 'Incluses brut';
-
-  @override
-  String get attendanceHoursLabel => 'Heures';
-
-  @override
-  String get attendanceGrossLabel => 'Brut';
-
-  @override
-  String get attendanceDeductionsLabel => 'Retenues';
-
-  @override
-  String attendanceDaysPresentRatio(Object present, Object working) {
-    return '$present jours présents / $working ouvrés';
-  }
-
-  @override
-  String attendanceDeductionsSub(Object amount) {
-    return 'Déductions : $amount';
-  }
-
-  @override
-  String get attendanceRetry => 'Réessayer';
+  String get payrollLoading => 'Chargement des fiches de paie';
 
   @override
   String payrollMonthLabel(Object month, Object year) {
@@ -5801,8 +5666,36 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get payrollMyBalance => 'Mon solde';
+
+  @override
   String payrollNextPayment(Object date) {
     return 'Prochaine paie prévue le $date';
+  }
+
+  @override
+  String get payrollNoCycleDocuments =>
+      'Aucun document généré pour ce cycle. Les reçus apparaîtront après paiement.';
+
+  @override
+  String get payrollNoPayslips => 'Aucune fiche de paie';
+
+  @override
+  String get payrollNoReceipts =>
+      'Aucun reçu ou bordereau disponible pour le moment.';
+
+  @override
+  String get payrollOvertimeLabel => 'heures supp';
+
+  @override
+  String get payrollPaymentDocuments => 'Documents paiement';
+
+  @override
+  String get payrollPaymentDocumentsTitle => 'Documents de paiement';
+
+  @override
+  String payrollPdfDownloaded(Object path) {
+    return 'PDF téléchargé : $path';
   }
 
   @override
@@ -5811,20 +5704,110 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get payrollRecentPayslips => 'Bulletins récents';
+
+  @override
+  String get payrollRemainingToPay => 'Reste à payer';
+
+  @override
+  String get payrollRemainingToReceive => 'Reste à recevoir';
+
+  @override
+  String get payrollSubtitle => 'Solde courant, avances et bulletins';
+
+  @override
+  String get payrollSummaryUnavailable =>
+      'Résumé paie temporairement indisponible';
+
+  @override
+  String get payrollTeamBalance => 'Solde équipe';
+
+  @override
   String payrollTeamMembers(Object count) {
     return '$count collaborateur(s)';
   }
 
   @override
-  String get smartAttendanceManual => 'Manuel';
+  String get payrollTeamSubtitle => 'Soldes, avances et bulletins';
+
+  @override
+  String get payrollTeamTitle => 'Paie équipe';
+
+  @override
+  String get payrollTitle => 'Paie et solde';
+
+  @override
+  String get payrollValidatedHint =>
+      'Les bulletins valides apparaîtront ici après traitement.';
+
+  @override
+  String get smartAttendanceActiveMode => 'Mode actif';
+
+  @override
+  String get smartAttendanceApprove => 'Approuver';
+
+  @override
+  String get smartAttendanceCancel => 'Annuler';
+
+  @override
+  String get smartAttendanceChangeMode => 'Changer mon mode de pointage';
 
   @override
   String get smartAttendanceConfirm => 'Confirmer';
 
   @override
-  String smartAttendanceTodayTitle(Object date) {
-    return 'Aujourd\'hui — $date';
+  String get smartAttendanceDashboard => 'Pointage GPS — tableau de bord';
+
+  @override
+  String get smartAttendanceDashboardTitle => 'Pointage GPS — tableau de bord';
+
+  @override
+  String smartAttendanceError(Object message) {
+    return 'Erreur : $message';
   }
+
+  @override
+  String get smartAttendanceForced => 'Imposé';
+
+  @override
+  String get smartAttendanceGpsAuto => 'GPS Automatique';
+
+  @override
+  String get smartAttendanceGpsTitle => 'Smart Attendance — GPS';
+
+  @override
+  String get smartAttendanceManual => 'Manuel';
+
+  @override
+  String get smartAttendanceNoGpsSessions =>
+      'Aucune session GPS pour le moment.';
+
+  @override
+  String get smartAttendanceNoPending => 'Aucune session en attente';
+
+  @override
+  String get smartAttendanceNoPendingSessions =>
+      'Aucune session en attente de validation';
+
+  @override
+  String get smartAttendancePending => 'En attente';
+
+  @override
+  String smartAttendancePendingCount(Object count) {
+    return '$count en attente';
+  }
+
+  @override
+  String get smartAttendanceQr => 'QR Code';
+
+  @override
+  String get smartAttendanceReject => 'Rejeter';
+
+  @override
+  String get smartAttendanceRejectHint => 'Expliquez la raison du rejet...';
+
+  @override
+  String get smartAttendanceRejectReason => 'Motif du rejet';
 
   @override
   String smartAttendanceSessionExit(Object duration, Object time) {
@@ -5832,11 +5815,28 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get smartAttendanceCancel => 'Annuler';
+  String get smartAttendanceSessionsTitle => 'Sessions Smart Attendance';
 
   @override
-  String get smartAttendanceReject => 'Rejeter';
+  String get smartAttendanceSmart => 'Pointage Intelligent';
 
   @override
-  String get smartAttendanceApprove => 'Approuver';
+  String get smartAttendanceSurveillanceActive => 'Surveillance active';
+
+  @override
+  String get smartAttendanceSurveillanceInactive => 'Surveillance inactive';
+
+  @override
+  String get smartAttendanceTapToReview => 'Appuyez pour valider ou rejeter';
+
+  @override
+  String get smartAttendanceTitle => 'Smart Attendance';
+
+  @override
+  String smartAttendanceTodayTitle(Object date) {
+    return 'Aujourd\'hui — $date';
+  }
+
+  @override
+  String get smartAttendanceZoneSurveillance => 'Surveillance de zone';
 }
