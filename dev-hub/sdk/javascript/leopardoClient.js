@@ -640,7 +640,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/attendance/corrections/{correction}/reject", options);
     },
 
-    /** Rapport mensuel de pointage */
+    /** Rapport de pointage (journalier, hebdomadaire ou mensuel) */
     getAttendanceMonthlyReport(options = {}) {
       return request("GET", "/attendance/monthly-report", options);
     },

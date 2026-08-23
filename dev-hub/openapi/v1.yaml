@@ -1844,7 +1844,6 @@ paths:
           $ref: "#/components/responses/Error403"
         "422":
           $ref: "#/components/responses/Validation422"
-
     get:
       tags: ["Payroll Engine"]
       summary: "Détail d'un planning"
@@ -1879,6 +1878,7 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           description: "Non-manager"
+
 
   /schedules/{schedule}/assign-employees:
     parameters:
@@ -6139,7 +6139,6 @@ paths:
           $ref: "#/components/responses/Error404"
         "422":
           $ref: "#/components/responses/Validation422"
-
     get:
       tags: ["Tasks"]
       summary: "Commentaires d'une tâche (auteur + employés liés)"
@@ -9694,7 +9693,6 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
-
     patch:
       tags: ["Payroll Engine"]
       summary: "Mettre à jour un poste (manager)"
@@ -9864,7 +9862,6 @@ paths:
           description: "Site supprime"
         "401":
           $ref: "#/components/responses/Error401"
-
     patch:
       tags: ["Payroll Engine"]
       summary: "Mettre à jour un site (manager)"
@@ -9905,20 +9902,40 @@ paths:
   /attendance/monthly-report:
     get:
       tags: ["Attendance"]
-      summary: "Rapport mensuel de pointage"
+      summary: "Rapport de pointage (journalier, hebdomadaire ou mensuel)"
+      description: "Rapport de presence par periode (issue #5268) : period=day|week|month (defaut month), ancres date/week/month, filtres department_id/employee_id, export json/csv/pdf."
       parameters:
+        - name: period
+          in: query
+          description: "Periode du rapport : day, week ou month (defaut month)."
+          schema: { type: string, enum: [day, week, month] }
+        - name: date
+          in: query
+          description: "Jour cible (Y-m-d) pour period=day."
+          schema: { type: string, format: date }
+        - name: week
+          in: query
+          description: "N'importe quel jour (Y-m-d) de la semaine ISO ciblee (lundi -> dimanche)."
+          schema: { type: string, format: date }
         - name: month
           in: query
-          schema: { type: integer }
-        - name: year
+          description: "Mois cible (Y-m)."
+          schema: { type: string, pattern: "^\\d{4}-\\d{2}$" }
+        - name: department_id
           in: query
+          description: "Filtre equipe (departement)."
           schema: { type: integer }
         - name: employee_id
           in: query
+          description: "Filtre fiche de pointage individuelle."
           schema: { type: integer }
+        - name: format
+          in: query
+          description: "Format de sortie : json, csv ou pdf (defaut json)."
+          schema: { type: string, enum: [json, csv, pdf] }
       responses:
         "200":
-          description: "Rapport mensuel"
+          description: "Rapport de pointage"
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -12984,7 +13001,6 @@ paths:
                     $ref: "#/components/schemas/JobPosting"
         "401":
           $ref: "#/components/responses/Error401"
-
     delete:
       tags: ["Recruitment"]
       summary: "Supprimer une offre d'emploi (manager)"
@@ -13124,7 +13140,6 @@ paths:
                     $ref: "#/components/schemas/Applicant"
         "401":
           $ref: "#/components/responses/Error401"
-
     get:
       tags: ["Recruitment"]
       summary: "Détail d'une candidature (manager)"
@@ -13224,8 +13239,6 @@ paths:
           description: "Entretien modifie"
         "401":
           $ref: "#/components/responses/Error401"
-
-  # --- Training ---
     delete:
       tags: ["Recruitment"]
       summary: "Supprimer un entretien (manager)"
@@ -13240,6 +13253,7 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  # --- Training ---
   /training/courses:
     get:
       tags: ["Training"]
@@ -16813,6 +16827,7 @@ paths:
         "404":
           description: "Introuvable"
 
+
   /notifications/stream:
     get:
       tags: ["Notifications"]
@@ -16837,6 +16852,7 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+
   /me/contract:
     get:
       tags: ["Me"]
@@ -16848,6 +16864,7 @@ paths:
           $ref: "#/components/responses/Error401"
         "404":
           description: "Aucun contrat actif"
+
 
   /recruitment/applicants/{id}/status:
     patch:
@@ -16906,6 +16923,7 @@ paths:
           description: "Entretien clôturé (status=completed)"
         "401":
           $ref: "#/components/responses/Error401"
+
 
   /smart-attendance/config:
     get:

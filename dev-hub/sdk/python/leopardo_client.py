@@ -533,7 +533,7 @@ class LeopardoClient:
         return self.request("PUT", "/attendance/corrections/{correction}/reject", **kwargs)
 
     def get_attendance_monthly_report(self, **kwargs):
-        """Rapport mensuel de pointage"""
+        """Rapport de pointage (journalier, hebdomadaire ou mensuel)"""
         return self.request("GET", "/attendance/monthly-report", **kwargs)
 
     def get_attendance_regularity(self, **kwargs):
