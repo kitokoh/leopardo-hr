@@ -4680,6 +4680,76 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /employees/{employee}/departure:
+    post:
+      tags: ["Employees"]
+      summary: "Enregistrer le depart d'un employe (offboarding, issue #5324)"
+      parameters:
+        - $ref: "#/components/parameters/EmployeeId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreDepartureRequest"
+      responses:
+        "201":
+          description: "Depart enregistre — statut employe departed, acces revoque"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeDeparturePayload"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    get:
+      tags: ["Employees"]
+      summary: "Lire le depart d'un employe (manager : entreprise ; employe : le sien)"
+      parameters:
+        - $ref: "#/components/parameters/EmployeeId"
+      responses:
+        "200":
+          description: "Depart (ou null si aucun)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    nullable: true
+                    allOf:
+                      - $ref: "#/components/schemas/EmployeeDeparturePayload"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+  /me/departure:
+    get:
+      tags: ["SelfService"]
+      summary: "Mon depart (self-service, issue #5324)"
+      responses:
+        "200":
+          description: "Dernier enregistrement de depart de l'employe connecte (ou null)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    nullable: true
+                    allOf:
+                      - $ref: "#/components/schemas/EmployeeDeparturePayload"
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /employees/{employee}/archive:
     post:
       tags: ["Employees"]
@@ -21537,6 +21607,67 @@ components:
           type: string
           nullable: true
 
+    EmployeeDeparturePayload:
+      type: object
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        employee_status:
+          type: string
+          enum: ["active", "suspended", "archived", "departed"]
+        departure_type:
+          type: string
+          enum: ["resignation", "termination", "end_of_contract", "retirement"]
+        reason:
+          type: string
+          nullable: true
+        last_work_day:
+          type: string
+          format: date
+          nullable: true
+        notice_served:
+          type: boolean
+        notice_days_served:
+          type: integer
+          nullable: true
+        departed_at:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    StoreDepartureRequest:
+      type: object
+      required:
+        - departure_type
+        - last_work_day
+      properties:
+        departure_type:
+          type: string
+          enum: ["resignation", "termination", "end_of_contract", "retirement"]
+        reason:
+          type: string
+          maxLength: 500
+          nullable: true
+        last_work_day:
+          type: string
+          format: date
+        notice_served:
+          type: boolean
+          default: false
+        notice_days_served:
+          type: integer
+          minimum: 0
+          maximum: 365
+          nullable: true
+        departed_at:
+          type: string
+          format: date
+          nullable: true
     EmployeeDetail:
       type: object
       properties:

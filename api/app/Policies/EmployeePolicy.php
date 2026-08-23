@@ -67,6 +67,24 @@ class EmployeePolicy
         return $actor->hasManagerRole('principal', 'rh');
     }
 
+    /**
+     * Issue #5324 — enregistrement d'un départ (offboarding).
+     * Mêmes règles que l'archivage : intra-tenant, jamais soi-même,
+     * principal/rh uniquement.
+     */
+    public function departure(Employee $actor, Employee $employee): bool
+    {
+        if ($employee->company_id !== $actor->company_id) {
+            return false;
+        }
+
+        if ($actor->id === $employee->id) {
+            return false;
+        }
+
+        return $actor->hasManagerRole('principal', 'rh');
+    }
+
     public function manageInvitations(Employee $actor): bool
     {
         return $actor->hasManagerRole('principal', 'rh');

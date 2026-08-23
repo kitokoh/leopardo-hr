@@ -72,4 +72,14 @@ return [
     'career_event_reason_required' => 'السبب مطلوب.',
     'career_event_nothing_to_apply' => 'لا شيء للتطبيق: الحدث لا يحتوي على منصب أو قسم أو راتب مستهدف.',
     'career_event_deleted' => 'تم حذف حدث المسار المهني.',
+
+    // ── Départ (offboarding, issue #5324) ───────────────────────────────
+    'departure_registered' => "تم تسجيل المغادرة. الحالة: غادر — تم إلغاء الوصول.",
+    'already_departed' => "هذا الموظف غادر الشركة بالفعل (أو مؤرشَف).",
+    'departure_type_invalid' => "نوع المغادرة غير صالح.",
+    'departure_not_created' => "تعذر تسجيل المغادرة (تم التراجع عن العملية).",
+    'departure_type_resignation' => "استقالة",
+    'departure_type_termination' => "إنهاء الخدمة",
+    'departure_type_end_of_contract' => "نهاية العقد",
+    'departure_type_retirement' => "تقاعد",
 ];
