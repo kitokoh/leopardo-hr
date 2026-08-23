@@ -177,6 +177,7 @@ class RbacMatrixTest extends TestCase
      */
     private function createActors(): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'schema_name' => 'shared_tenants',
             'country' => 'DZ',
