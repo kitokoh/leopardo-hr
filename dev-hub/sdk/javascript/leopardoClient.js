@@ -635,6 +635,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/attendance/check-out", options);
     },
 
+    /** Lire la configuration de mode active pour l'employe connecte */
+    getAttendanceConfig(options = {}) {
+      return request("GET", "/attendance/config", options);
+    },
+
     /** Lister les demandes de correction de pointage */
     getAttendanceCorrections(options = {}) {
       return request("GET", "/attendance/corrections", options);
@@ -665,9 +670,64 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/attendance/corrections/{correction}/reject", options);
     },
 
+    /** Statistiques du jour — Smart Attendance (manager/RH) */
+    getAttendanceDashboard(options = {}) {
+      return request("GET", "/attendance/dashboard", options);
+    },
+
+    /** Préférence mode géolocalisation d'un employé (manager/RH) */
+    getAttendanceEmployeesByEmployeeIdPreference(options = {}) {
+      return request("GET", "/attendance/employees/{employeeId}/preference", options);
+    },
+
+    /** Envoyer un événement géographique (entrée/sortie de zone) */
+    postAttendanceGeoEvents(options = {}) {
+      return request("POST", "/attendance/geo-events", options);
+    },
+
+    /** Lister les sessions GPS */
+    getAttendanceGeoSessions(options = {}) {
+      return request("GET", "/attendance/geo-sessions", options);
+    },
+
+    /** Détail d'une session GPS */
+    getAttendanceGeoSessionsById(options = {}) {
+      return request("GET", "/attendance/geo-sessions/{id}", options);
+    },
+
+    /** Approuver une session GPS (manager/RH) */
+    postAttendanceGeoSessionsByIdApprove(options = {}) {
+      return request("POST", "/attendance/geo-sessions/{id}/approve", options);
+    },
+
+    /** Rejeter une session GPS (manager/RH) */
+    postAttendanceGeoSessionsByIdReject(options = {}) {
+      return request("POST", "/attendance/geo-sessions/{id}/reject", options);
+    },
+
+    /** Parametres du mode de pointage de l'entreprise */
+    getAttendanceModeSettings(options = {}) {
+      return request("GET", "/attendance/mode-settings", options);
+    },
+
+    /** Configurer le mode de pointage (principal) */
+    putAttendanceModeSettings(options = {}) {
+      return request("PUT", "/attendance/mode-settings", options);
+    },
+
     /** Rapport de pointage (journalier, hebdomadaire ou mensuel) */
     getAttendanceMonthlyReport(options = {}) {
       return request("GET", "/attendance/monthly-report", options);
+    },
+
+    /** Sessions GPS de l'employé courant */
+    getAttendanceMySessions(options = {}) {
+      return request("GET", "/attendance/my-sessions", options);
+    },
+
+    /** Mettre à jour les préférences de pointage */
+    putAttendancePreferences(options = {}) {
+      return request("PUT", "/attendance/preferences", options);
     },
 
     /** Régularité de présence (manager/RH) */
