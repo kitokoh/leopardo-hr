@@ -29,6 +29,7 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 - **OpenAPI contract is Redocly-parseable.** Duplicate path definitions for positions, sites, schedules, task comments, and recruitment were merged; nullable schemas and recruitment path parameters now follow the OpenAPI 3.0 contract. Redocly reports validation success with historical completeness warnings only.
 
+- **Trial signup slug-collision retries preserve PostgreSQL transactions.** Each bounded retry now uses an explicit savepoint when invoked inside an existing transaction, so an expected `23505` collision cannot poison subsequent queries or unrelated tests.
 - **LeaveCarryForward processes all tenants explicitly.** The annual carry-forward command now disables tenant global scopes for policies, balances, accrual expiration queries, and write builders while retaining explicit company filters, so console execution cannot inherit a stale `current_company` or `search_path` context; per-employee failures remain isolated and logged without poisoning the command transaction.
 
 - **Leave carry-forward assertions are tenant-independent.** The regression test reads generated accruals and balances without reapplying the current-company global scope after the global console command runs.

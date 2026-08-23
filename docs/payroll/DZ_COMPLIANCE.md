@@ -3,6 +3,7 @@
 > **Programme FOCUS (F-02)** — Référentiel légal versionné du moteur de paie algérien.
 > ✅ **Validé par expert comptable DZ — 2026-08-08** (IRG barème + abattement, CNAS 9 %/26 %, SMIG 20 000 DZD).
 > Sources : loi de finances en vigueur, CNAS. Toute évolution des taux = procédure de mise à jour ci-dessous.
+> 📋 **Audit légal + spec des règles** : `.specify/features/payroll-dz-100/spec.md` (issue #5240) — inventaire règle → texte légal → implémentation → statut + écarts E1-E6.
 
 ## Statut
 
