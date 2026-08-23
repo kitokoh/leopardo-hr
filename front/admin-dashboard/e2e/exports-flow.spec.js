@@ -59,6 +59,6 @@ test.describe('Exports page structure', () => {
     await page.goto('/exports')
 
     await expect(page).toHaveURL(/\/exports$/, { timeout: 10_000 })
-    await expect(page.locator('main')).toContainText(/Disponible dans l.space client/i)
+    await expect(page.locator('main')).toContainText(/Disponible dans l.?espace client/i)
   })
 })
