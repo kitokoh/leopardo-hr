@@ -82,9 +82,12 @@ class DocumentShareEmailTest extends TestCase
 
         // Email envoyé au bon destinataire, avec PDF en pièce jointe + lien.
         Mail::assertSent(DocumentShareMail::class, function (DocumentShareMail $mail) use ($document, $token): bool {
-            $mail->assertHasAttachment($document->type.'-'.$document->number.'.pdf');
+            $attachmentNames = collect($mail->attachments())
+                ->map(fn ($attachment): ?string => $attachment->as ?? $attachment->name ?? null)
+                ->all();
 
             return $mail->hasTo('client@exemple.dz')
+                && in_array($document->type.'-'.$document->number.'.pdf', $attachmentNames, true)
                 && str_contains($mail->portalUrl, '/documents/shared/'.$token);
         });
 

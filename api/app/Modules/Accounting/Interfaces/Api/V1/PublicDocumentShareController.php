@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Accounting\Interfaces\Api\V1;
 
-use App\Core\Tenant\TenantManager;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
+use App\Modules\Accounting\Application\Jobs\GenerateDocumentPdf;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentShare;
 use App\Modules\Accounting\Infrastructure\Services\DocumentShareService;
-use App\Modules\Accounting\Infrastructure\Services\GenerateDocumentPdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -43,7 +43,7 @@ final class PublicDocumentShareController
                 'type' => $document->type,
                 'type_label' => __('accounting.document_type_'.$document->type),
                 'status' => $document->status,
-                'issue_date' => $document->issue_date?->toDateString(),
+                'issue_date' => $document->issue_date->toDateString(),
                 'currency' => $document->currency,
                 'total_ttc' => round((float) $document->total_ttc, 2),
                 'expires_at' => $share->expires_at?->toIso8601String(),

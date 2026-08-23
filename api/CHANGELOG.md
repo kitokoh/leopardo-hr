@@ -17,6 +17,14 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - `accounting:benchmark` command (F-12 protocol): seeds 10k realistic documents (dedicated company, chunked inserts) + measures paginated eager list (N+1 barrier ≤ 5 queries), reminder query (J+7), monthly aggregation
   - Measured: 10k-document list 0.01 s (< 200 ms target), 1,763 reminder-eligible, 13 months
   - `AccountingPerformanceTest` (3 tests) + `docs/accounting/BENCHMARK.md` (protocol, targets, index map, reference results)
+- **Accounting document email + secure client portal (issue #5225)**:
+  - Tokenized per-document shares (`accounting_document_shares`: 64-char token, expiry, recipient email) — RGPD-limited access (CabinetShare #1817 pattern)
+  - `DocumentShareService` (create/resolve + URLs); public endpoints `GET /api/v1/accounting/documents/shared/{token}` (metadata) and `/download` (PDF from private disk, throttled)
+  - `DocumentShareMail` (PDF attachment + portal link, `emails.document-share` view); `SendDocumentEmail` action (ensures PDF via #5224 job, share, send, `sent_at` + `sent` status); artisan `accounting:send-document` command; i18n ×4 (email keys)
+  - OpenAPI: 2 public routes documented + mirror regenerated
+  - Tests: `DocumentShareEmailTest` (6) — send with attachment + link, public metadata, PDF download, expired/unknown token rejected, access limited to the shared document
+
+### Added
 - **Accounting document PDF rendering ×4 locales (issue #5224)** — implements `PdfRendererInterface`:
   - `DocumentPdfRenderer` (dompdf) renders all 6 `DocumentType` values (invoice, proforma, quote, credit_note, delivery_note, receipt) in fr/en/tr/ar (RTL via `I18nCatalog::isRtl`)
   - Company header, parties, line table (description/qty/unit price/discount/amount), totals (HT/TVA/TTC/paid/remaining), legal mentions (`AccountingSettings.legal_mentions` → `footer_mentions` fallback)

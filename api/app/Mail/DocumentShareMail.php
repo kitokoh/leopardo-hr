@@ -34,7 +34,7 @@ class DocumentShareMail extends Mailable
     ) {
         $this->portalUrl = rtrim((string) (config('app.frontend_url') ?? config('app.url') ?? ''), '/')
             .'/documents/shared/'.$share->share_token;
-        $this->documentName = $pdfName ?? $share->document?->number ?? '';
+        $this->documentName = $pdfName ?? $share->document->number ?? '';
     }
 
     public function envelope(): Envelope
