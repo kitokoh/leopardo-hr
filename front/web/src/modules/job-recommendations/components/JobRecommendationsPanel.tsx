@@ -61,7 +61,7 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
     }
     void load();
     return () => { cancelled = true; };
-  }, []);
+  }, [copy.unavailable]);
 
   if (!user.personal_statuses?.includes('job_seeker')) return null;
 

@@ -34,6 +34,7 @@ abstract class TestCase extends BaseTestCase
         $this->configureTestingDatabaseConnection();
 
         parent::setUp();
+        $this->ensurePersonalOnboardingColumns();
         $this->resetTestSearchPath();
     }
 
