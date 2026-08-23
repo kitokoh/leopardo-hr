@@ -39,8 +39,8 @@ class RbacMatrixTest extends TestCase
         $response = $this->getJson("/api/v1/employees/{$employee->id}");
 
         $response->assertOk()
-            ->assertJsonPath('data.id', $employee->id)
-            ->assertJsonPath('data.salary_base', 60000);
+            ->assertJsonPath('data.id', $employee->id);
+        $this->assertSame(60000.0, (float) $response->json('data.salary_base'));
     }
 
     public function test_employee_cannot_view_another_employee_record(): void
@@ -108,14 +108,16 @@ class RbacMatrixTest extends TestCase
         $list = $this->getJson('/api/v1/employees');
         $list->assertOk();
 
-        $ids = collect($list->json('data'))->pluck('id')->all();
+        /** @var array<int, array{id: int}> $data */
+        $data = $list->json('data');
+        $ids = array_column($data, 'id');
         $this->assertContains($inScope->id, $ids);
         $this->assertNotContains($outOfScope->id, $ids);
 
         // Salaire visible dans le périmètre (PA2-SEC-002).
-        $this->getJson("/api/v1/employees/{$inScope->id}")
-            ->assertOk()
-            ->assertJsonPath('data.salary_base', 60000);
+        $inScopeShow = $this->getJson("/api/v1/employees/{$inScope->id}");
+        $inScopeShow->assertOk();
+        $this->assertSame(60000.0, (float) $inScopeShow->json('data.salary_base'));
 
         // Hors périmètre → 403 (policy EmployeePolicy::view).
         $this->getJson("/api/v1/employees/{$outOfScope->id}")->assertForbidden();
@@ -130,9 +132,9 @@ class RbacMatrixTest extends TestCase
 
         // Lecture des salaires OK.
         $this->getJson('/api/v1/employees')->assertOk();
-        $this->getJson("/api/v1/employees/{$employee->id}")
-            ->assertOk()
-            ->assertJsonPath('data.salary_base', 60000);
+        $comptableView = $this->getJson("/api/v1/employees/{$employee->id}");
+        $comptableView->assertOk();
+        $this->assertSame(60000.0, (float) $comptableView->json('data.salary_base'));
 
         // Édition dossier → 403 (pas principal/rh).
         $this->patchJson("/api/v1/employees/{$employee->id}", ['phone' => '0699000000'])->assertForbidden();
@@ -184,8 +186,9 @@ class RbacMatrixTest extends TestCase
             'timezone' => 'UTC',
         ]);
 
-        $manager = $this->createEmployee($company, 'manager.rbac@a.test', 'manager', 'principal');
-        $employee = $this->createEmployee($company, 'employee.rbac@a.test', 'employee', null);
+        $suffix = substr((string) $company->id, 0, 8);
+        $manager = $this->createEmployee($company, 'manager.'.$suffix.'@a.test', 'manager', 'principal');
+        $employee = $this->createEmployee($company, 'employee.'.$suffix.'@a.test', 'employee', null);
 
         return [$company, $manager, $employee];
     }

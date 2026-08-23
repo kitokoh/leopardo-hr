@@ -5,6 +5,7 @@ namespace App\Http\Resources\Api\V1;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Modules\HR\Infrastructure\Services\MobileExperienceService;
+use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
 use App\Shared\Models\Language;
 use DateTimeInterface;
 use Illuminate\Http\Request;
@@ -97,7 +98,7 @@ class EmployeeResource extends JsonResource
             'features' => FeatureFlag::for($company),
             'mobile_experience' => app(MobileExperienceService::class)->for($employee),
             'suggested_home_route' => $this->homeRoute(),
-            'app_links' => \App\Modules\HR\Infrastructure\Services\RoleInvitationService::getAppDownloadLink(
+            'app_links' => RoleInvitationService::getAppDownloadLink(
                 $this->role,
                 $this->manager_role ?? 'employee'
             ),
