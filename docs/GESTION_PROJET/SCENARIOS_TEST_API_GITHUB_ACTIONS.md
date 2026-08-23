@@ -1421,3 +1421,11 @@ Note 2026-08-22 (issue #5259) : plans de carrière — événements de carrière
 - `GET|POST /api/v1/career-events`, `GET|PUT|PATCH|DELETE /api/v1/career-events/{id}` (édit/suppression `pending` uniquement), `PUT /api/v1/career-events/{id}/approve|reject|apply`. Workflow `pending → approved → applied` (ou `rejected`) ; `apply` met à jour l'employé (position_id, department_id, salary_base) en transaction → impact paie au run suivant.
 - Scénarios à vérifier : création manager avec snapshot `from_*` (poste/département/salaire courants de l'employé), employé → 403 sur create et lecture limitée à son propre parcours, manager `dept` scopé (PA2-SEC-002) / `superviseur` (PA2-SEC-003), isolation tenant (ressource d'une autre société → 404, cible poste/département cross-tenant → 422), transitions invalides (apply sur `pending` → 403, apply sans cible → 422 CAREER_EVENT_NOTHING_TO_APPLY, edit/delete hors `pending` → 403), `GET /me/career` expose `data.career_events` (parcours complet contrats + événements).
 - Couverture : `tests/Feature/HR/CareerEventTest.php` (12 tests) — contrat OpenAPI documenté (9 opérations, 753/753 routes couvertes).
+## Corrections de pointage — workflow complet (issue #5267, 2026-08-23)
+
+- `POST /attendance/corrections` — demande avec justificatif optionnel (`proof`, multipart ≤ 5 Mo, jpg/jpeg/png/pdf/heic) ; refusée (422 `ATTENDANCE_PERIOD_CLOSED`) si la date est dans une période clôturée (`attendance_period_closures`).
+- `GET /attendance/corrections` — file de corrections (manager/RH) avec `proof_url` + flag `anomaly` (conflit session géo validée > 15 min).
+- `GET /attendance/corrections/{correction}/proof` — téléchargement du justificatif (propriétaire + managers ; 404 cross-tenant / sans pièce).
+- `POST|PUT /attendance/corrections/{correction}/approve|reject` — décisions tracées `AuditLog` (requested/approved/rejected) ; bloquées sur période close (422).
+- Commande `attendance:close-period --company=<slug> --month=YYYY-MM` — clôture idempotente et tracée.
+- Couvert par `tests/Feature/Attendance/CorrectionWorkflowV2Test` (7 tests), `CorrectionWorkflowTest`.
