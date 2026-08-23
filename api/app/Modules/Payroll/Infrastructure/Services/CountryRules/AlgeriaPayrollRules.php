@@ -130,11 +130,21 @@ class AlgeriaPayrollRules extends AbstractCountryRules
     }
 
     /**
-     * PA2-COUNTRY-004: loi 90-11 art. 33 majore les heures supplementaires
-     * d'au moins 50% du salaire horaire normal, sans distinction de palier
-     * dans le texte general (contrairement a la France). Modelise ici comme
-     * un palier unique et illimite a titre pilote (confidenceLevel='pilot'),
-     * a valider legalement avant usage paie reel.
+     * PA2-COUNTRY-004 (arbitré par l'issue #5266 — écart E2 de la spec
+     * `payroll-dz-100`) : loi 90-11 art. 32 (version consolidée JORA — le
+     * référentiel du repo citait « art. 33 », référence historique de la
+     * version amendée) : les heures supplémentaires donnent lieu à une
+     * majoration « qui ne peut en aucun cas être inférieure à 50 % du
+     * salaire horaire normal ». Aucun barème 25 %/50 %/100 % dans le texte
+     * général (contrairement à la France) — le palier 25 % jusqu'à 10 h/mois
+     * de l'ancien §5 de DZ_COMPLIANCE était un usage conventionnel non
+     * confirmé. Modélisé comme un palier unique illimité × 1,5, désormais
+     * CONSOMMÉ par PayrollCalculator::computeOvertimePay() (#5266) pour tout
+     * run de paie DZ (DoD : les HS sont intégrées sans intervention
+     * manuelle). Loi 90-11 art. 36 : le travail un jour de repos légal
+     * ouvre droit à un repos compensateur d'égale durée en plus de la
+     * majoration — règle documentée (DZ_COMPLIANCE §5), le suivi du repos
+     * compensateur reste un acte RH hors moteur de paie.
      *
      * @return array<int, array{up_to_hours: float|null, multiplier: float}>
      */
