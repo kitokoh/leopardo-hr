@@ -117,7 +117,6 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
-
             public function combineMinimumFiscalTax(float $incomeTax, float $bracketTax): float
             {
                 return $incomeTax + $bracketTax;
@@ -289,7 +288,6 @@ class CountryRulesResolverTest extends TestCase
             {
                 return $this;
             }
-
         };
 
         $resolver = new CountryRulesResolver([$base]);
@@ -329,7 +327,6 @@ class CountryRulesResolverTest extends TestCase
             {
                 return [];
             }
-
 
             public function combineMinimumFiscalTax(float $incomeTax, float $bracketTax): float
             {
