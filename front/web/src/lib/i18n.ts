@@ -2940,3 +2940,171 @@ export function getApiErrorMessage(payload: unknown, fallback: string): string {
 
   return fallback;
 }
+
+
+export type JobRecommendationsCopy = {
+  unavailable: string;
+  resumeFormatError: string;
+  resumeUploadError: string;
+  applicationAlreadySent: string;
+  applicationError: string;
+  activeSearch: string;
+  heading: string;
+  description: string;
+  uploadResume: string;
+  uploadingResume: string;
+  resumeVersionLabel: string;
+  activeResume: string;
+  activeResumePrefix: string;
+  resumePrefix: string;
+  searching: string;
+  empty: string;
+  applicationsTitle: string;
+  applicationFallback: (id: number) => string;
+  lastUpdate: string;
+  applicationSent: string;
+  notificationsTitle: string;
+  markAllRead: string;
+  companyFallback: string;
+  locationFallback: string;
+  messagePlaceholder: string;
+  contractFallback: string;
+  viewOffer: string;
+  apply: string;
+  sending: string;
+};
+
+const jobRecommendationsCopy: Record<AppLocale, JobRecommendationsCopy> = {
+  fr: {
+    unavailable: 'Recommandations indisponibles.',
+    resumeFormatError: 'Le CV doit être un fichier PDF, DOC ou DOCX de 5 Mo maximum.',
+    resumeUploadError: 'Téléversement du CV impossible.',
+    applicationAlreadySent: 'Vous avez déjà postulé à cette offre.',
+    applicationError: 'Candidature impossible.',
+    activeSearch: 'Recherche active',
+    heading: 'Des offres qui correspondent à votre profil',
+    description: 'Les offres sont d’abord filtrées par vos préférences, puis l’IA peut affiner le classement. Les raisons affichées restent liées aux informations du profil et de l’offre.',
+    uploadResume: 'Téléverser mon CV',
+    uploadingResume: 'Téléversement…',
+    resumeVersionLabel: 'Version du CV utilisée pour les candidatures',
+    activeResume: 'CV actif',
+    activeResumePrefix: 'CV actif :',
+    resumePrefix: 'CV :',
+    searching: 'Recherche des offres…',
+    empty: 'Aucune offre publiée ne correspond encore à vos préférences.',
+    applicationsTitle: 'Suivi de mes candidatures',
+    applicationFallback: (id) => `Candidature #${id}`,
+    lastUpdate: 'Dernière mise à jour du dossier.',
+    applicationSent: 'Candidature envoyée.',
+    notificationsTitle: 'Nouvelles mises à jour',
+    markAllRead: 'Tout marquer comme lu',
+    companyFallback: 'Entreprise',
+    locationFallback: 'Localisation non précisée',
+    messagePlaceholder: 'Ajouter un message (facultatif)',
+    contractFallback: 'Contrat',
+    viewOffer: 'Voir l’offre',
+    apply: 'Postuler',
+    sending: 'Envoi…',
+  },
+  en: {
+    unavailable: 'Recommendations are unavailable.',
+    resumeFormatError: 'The resume must be a PDF, DOC or DOCX file of up to 5 MB.',
+    resumeUploadError: 'Unable to upload the resume.',
+    applicationAlreadySent: 'You have already applied for this offer.',
+    applicationError: 'Unable to submit the application.',
+    activeSearch: 'Active search',
+    heading: 'Offers matching your profile',
+    description: 'Offers are first filtered by your preferences, then AI can refine the ranking. Displayed reasons remain linked to profile and offer information.',
+    uploadResume: 'Upload my resume',
+    uploadingResume: 'Uploading…',
+    resumeVersionLabel: 'Resume version used for applications',
+    activeResume: 'Active resume',
+    activeResumePrefix: 'Active resume:',
+    resumePrefix: 'Resume:',
+    searching: 'Searching for offers…',
+    empty: 'No published offer matches your preferences yet.',
+    applicationsTitle: 'My applications',
+    applicationFallback: (id) => `Application #${id}`,
+    lastUpdate: 'Last application update.',
+    applicationSent: 'Application sent.',
+    notificationsTitle: 'New updates',
+    markAllRead: 'Mark all as read',
+    companyFallback: 'Company',
+    locationFallback: 'Location not specified',
+    messagePlaceholder: 'Add a message (optional)',
+    contractFallback: 'Contract',
+    viewOffer: 'View offer',
+    apply: 'Apply',
+    sending: 'Sending…',
+  },
+  ar: {
+    unavailable: 'التوصيات غير متاحة.',
+    resumeFormatError: 'يجب أن تكون السيرة الذاتية بصيغة PDF أو DOC أو DOCX وبحجم أقصى 5 ميغابايت.',
+    resumeUploadError: 'تعذر رفع السيرة الذاتية.',
+    applicationAlreadySent: 'لقد تقدمت بالفعل لهذا العرض.',
+    applicationError: 'تعذر إرسال الطلب.',
+    activeSearch: 'بحث نشط',
+    heading: 'عروض تناسب ملفك الشخصي',
+    description: 'يتم أولاً تصفية العروض حسب تفضيلاتك، ثم يمكن للذكاء الاصطناعي تحسين الترتيب.',
+    uploadResume: 'رفع سيرتي الذاتية',
+    uploadingResume: 'جارٍ الرفع…',
+    resumeVersionLabel: 'نسخة السيرة الذاتية المستخدمة للطلبات',
+    activeResume: 'السيرة الذاتية النشطة',
+    activeResumePrefix: 'السيرة الذاتية النشطة:',
+    resumePrefix: 'السيرة الذاتية:',
+    searching: 'جارٍ البحث عن العروض…',
+    empty: 'لا توجد عروض منشورة تطابق تفضيلاتك حالياً.',
+    applicationsTitle: 'متابعة طلباتي',
+    applicationFallback: (id) => `الطلب رقم ${id}`,
+    lastUpdate: 'آخر تحديث للطلب.',
+    applicationSent: 'تم إرسال الطلب.',
+    notificationsTitle: 'تحديثات جديدة',
+    markAllRead: 'وضع علامة مقروء على الكل',
+    companyFallback: 'شركة',
+    locationFallback: 'الموقع غير محدد',
+    messagePlaceholder: 'إضافة رسالة (اختياري)',
+    contractFallback: 'العقد',
+    viewOffer: 'عرض الوظيفة',
+    apply: 'تقدم',
+    sending: 'جارٍ الإرسال…',
+  },
+  tr: {
+    unavailable: 'Öneriler kullanılamıyor.',
+    resumeFormatError: 'Özgeçmiş PDF, DOC veya DOCX olmalı ve 5 MB’ı geçmemelidir.',
+    resumeUploadError: 'Özgeçmiş yüklenemedi.',
+    applicationAlreadySent: 'Bu ilana zaten başvurdunuz.',
+    applicationError: 'Başvuru gönderilemedi.',
+    activeSearch: 'Aktif arama',
+    heading: 'Profilinize uygun ilanlar',
+    description: 'İlanlar önce tercihlerinize göre filtrelenir, ardından yapay zekâ sıralamayı iyileştirebilir.',
+    uploadResume: 'Özgeçmişimi yükle',
+    uploadingResume: 'Yükleniyor…',
+    resumeVersionLabel: 'Başvurularda kullanılacak özgeçmiş sürümü',
+    activeResume: 'Aktif özgeçmiş',
+    activeResumePrefix: 'Aktif özgeçmiş:',
+    resumePrefix: 'Özgeçmiş:',
+    searching: 'İlanlar aranıyor…',
+    empty: 'Henüz tercihlerinize uygun yayınlanmış ilan yok.',
+    applicationsTitle: 'Başvurularım',
+    applicationFallback: (id) => `Başvuru #${id}`,
+    lastUpdate: 'Başvurunun son güncellemesi.',
+    applicationSent: 'Başvuru gönderildi.',
+    notificationsTitle: 'Yeni güncellemeler',
+    markAllRead: 'Tümünü okundu işaretle',
+    companyFallback: 'Şirket',
+    locationFallback: 'Konum belirtilmedi',
+    messagePlaceholder: 'Mesaj ekle (isteğe bağlı)',
+    contractFallback: 'Sözleşme',
+    viewOffer: 'İlanı görüntüle',
+    apply: 'Başvur',
+    sending: 'Gönderiliyor…',
+  },
+};
+
+export function getJobRecommendationsCopy(locale: AppLocale): JobRecommendationsCopy {
+  return jobRecommendationsCopy[locale] ?? jobRecommendationsCopy.fr;
+}
+
+export function getPreferredJobRecommendationsCopy(): JobRecommendationsCopy {
+  return getJobRecommendationsCopy(getPreferredLocale());
+}

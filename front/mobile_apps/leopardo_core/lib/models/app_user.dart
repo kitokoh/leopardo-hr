@@ -48,7 +48,8 @@ class AppUser {
       status: json['status'] as String? ?? 'active',
       accountType: json['account_type'] as String? ?? 'user',
       hasCompany: json['has_company'] as bool? ?? false,
-      personalStatuses: (json['personal_statuses'] as List<dynamic>?)
+      personalStatuses:
+          (json['personal_statuses'] as List<dynamic>?)
               ?.whereType<String>()
               .toList() ??
           const [],
