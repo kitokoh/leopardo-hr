@@ -220,40 +220,56 @@ abstract class TestCase extends BaseTestCase
 
     private function ensurePersonalOnboardingColumns(): void
     {
-        if (! Schema::hasTable('users')) {
+        if (DB::getDriverName() !== 'pgsql') {
             return;
         }
 
-        $missing = [];
+        $connection = DB::getDefaultConnection();
+        $originalSearchPath = $this->configString(
+            "database.connections.{$connection}.search_path",
+            'shared_tenants,public'
+        );
 
-        foreach ([
-            'personal_statuses' => static function (Blueprint $table): void {
-                $table->json('personal_statuses')->nullable();
-            },
-            'personal_onboarding_completed_at' => static function (Blueprint $table): void {
-                $table->timestamp('personal_onboarding_completed_at')->nullable();
-            },
-            'job_search_preferences' => static function (Blueprint $table): void {
-                $table->json('job_search_preferences')->nullable();
-            },
-            'job_search_profile_updated_at' => static function (Blueprint $table): void {
-                $table->timestamp('job_search_profile_updated_at')->nullable();
-            },
-        ] as $column => $definition) {
-            if (! Schema::hasColumn('users', $column)) {
-                $missing[$column] = $definition;
+        DB::statement('SET search_path TO public');
+
+        try {
+            if (! Schema::hasTable('users')) {
+                return;
             }
-        }
 
-        if ($missing === []) {
-            return;
-        }
+            $missing = [];
 
-        Schema::table('users', function (Blueprint $table) use ($missing): void {
-            foreach ($missing as $definition) {
-                $definition($table);
+            foreach ([
+                'personal_statuses' => static function (Blueprint $table): void {
+                    $table->json('personal_statuses')->nullable();
+                },
+                'personal_onboarding_completed_at' => static function (Blueprint $table): void {
+                    $table->timestamp('personal_onboarding_completed_at')->nullable();
+                },
+                'job_search_preferences' => static function (Blueprint $table): void {
+                    $table->json('job_search_preferences')->nullable();
+                },
+                'job_search_profile_updated_at' => static function (Blueprint $table): void {
+                    $table->timestamp('job_search_profile_updated_at')->nullable();
+                },
+            ] as $column => $definition) {
+                if (! Schema::hasColumn('users', $column)) {
+                    $missing[$column] = $definition;
+                }
             }
-        });
+
+            if ($missing === []) {
+                return;
+            }
+
+            Schema::table('users', function (Blueprint $table) use ($missing): void {
+                foreach ($missing as $definition) {
+                    $definition($table);
+                }
+            });
+        } finally {
+            DB::statement('SET search_path TO '.$originalSearchPath);
+        }
     }
 
     private function envValueForTesting(string $key, string $fallback): string
