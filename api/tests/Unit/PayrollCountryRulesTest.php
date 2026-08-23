@@ -22,7 +22,9 @@ class PayrollCountryRulesTest extends TestCase
             // MA 2026 (#5248) : salarié 6,93 ‰ (CNSS 4,48 + AMO 2,26 + IPE 0,19)
             // · employeur 21,47 ‰ (CNSS 8,98 + AMO 4,11 + IPE 0,38 + AF 6,40 + TFP 1,60).
             'MA' => [new MoroccoPayrollRules, 69.3, 214.7],
-            'TN' => [new TunisiaPayrollRules, 91.8, 165.7],
+            // TN 2026 (#5249) : salarié 9,68 ‰ (CNSS 9,18 + perte d'emploi 0,50)
+            // · employeur 18,07 ‰ (CNSS 16,57 + PLE 0,50 + ASSP 1,00).
+            'TN' => [new TunisiaPayrollRules, 96.8, 180.7],
             'FR' => [new FrancePayrollRules, 170.3, 300.0],
             // TR 2026 (#5253) : salarié 15 % (SGK 14 + chômage 1), employeur
             // 23,75 % (SGK 21,75 + chômage 2) — sans teşvik. Sur 1 000 TRY :
