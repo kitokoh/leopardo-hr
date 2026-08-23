@@ -419,7 +419,11 @@ class CareerEventTest extends TestCase
         string $managerEmail = 'manager@a.test',
         string $employeeEmail = 'employee@a.test',
     ): array {
-        $company = Company::query()->create([
+        // Factory (pattern OrganigrammeTest) : remplit les champs NOT NULL du
+        // vrai schéma (plan_id, subscription_start/end, language…) — un
+        // Company::query()->create() manuel viole companies.plan_id NOT NULL
+        // (SQLSTATE 23502, vu en CI le 2026-08-22).
+        $company = Company::factory()->create([
             'name' => $name,
             'slug' => $slug,
             'sector' => 'restaurant',
