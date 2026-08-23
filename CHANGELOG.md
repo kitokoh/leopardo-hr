@@ -4,6 +4,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **ci(admin-e2e): validation backend isolé réussie.** Le run `32663872951` couvre les dix parcours activés sur le backend isolé ; les routes tenant supprimées restent en 404 authentifiée et `/exports` conserve son état tenant-only sans exposition de données.
 - **test(admin-e2e): assertions alignées sur les routes tenant réellement exposées.** `/exports` vérifie désormais son état tenant-only local ; `/recruitment`, `/leaves` et `/payroll`, absentes du routeur super-admin, vérifient une 404 authentifiée au lieu d’attendre une redirection legacy vers le dashboard.
 - **fix(test/admin-e2e): locators de connexion alignés sur le contrat d’accessibilité.** Les parcours isolés des cotisations sociales et des tranches fiscales ciblaient un libellé non associé de manière déterministe par `FormField` ; les tests utilisent désormais l’ID explicite `#email` et continuent de valider le flux réel d’authentification.
 - **fix(ci/security): CORS du preview E2E admin isolé.** L’origine loopback `http://127.0.0.1:4173` est désormais explicitement autorisée pour les appels vers l’API Laravel isolée ; l’allow-list reste stricte et le job ne dépend plus d’un échec silencieux de `/platform/auth/login` ou `/platform/auth/me`.
