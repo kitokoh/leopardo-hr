@@ -18,6 +18,7 @@ use App\Modules\Payroll\Domain\Exceptions\PayrollRunNotLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollAnomalyService;
+use App\Modules\Payroll\Infrastructure\Services\PayrollBordereauGenerator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
@@ -488,6 +489,39 @@ class PayrollRunController extends Controller
 
         return response()->streamDownload(function () use ($payrollRun): void {
             echo (new PayrollJournalGenerator)->generate($payrollRun);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    /**
+     * #5243 — Bordereau de paie d'un run (totaux par cotisation + récapitulatif) :
+     * CSV téléchargeable, réservé aux managers, garde pays DZ (422 sinon) et
+     * isolation tenant (404), comme les autres documents par run.
+     */
+    public function bordereau(Request $request, PayrollRun $payrollRun): StreamedResponse|JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+
+        if ($payrollRun->country_code !== 'DZ') {
+            return response()->json([
+                'message' => __('errors.PAYROLL_RUN_NOT_FOR_COUNTRY', ['country' => 'l’Algérie (DZ)']),
+            ], 422);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.bordereau', $payrollRun);
+
+        $filename = 'bordereau_paie_'.$payrollRun->period_start->toDateString().'_'.$payrollRun->period_end->toDateString().'.csv';
+
+        return response()->streamDownload(function () use ($payrollRun): void {
+            echo (new PayrollBordereauGenerator)->generate($payrollRun);
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);

@@ -190,6 +190,29 @@ sur base 60 000 → brut 70 000, CNAS 6 300/18 200, IRG 6 799 (assiette
 ⚠️ **À confirmer par expert** : l'exclusion de l'assiette CNAS (défaut
 conservateur = les primes exonérées d'IRG restent soumises à CNAS).
 
+## 9. Exports légaux DZ (issue #5243)
+
+Le run de paie DZ produit les documents légaux suivants (statut 2026-08-23) :
+
+| Document | Format | Source | Statut |
+|---|---|---|---|
+| Ordre de virement SEPA | `sepa_xml` (pain.001) | `BankExportGenerator` | ✅ existant |
+| Virement CCP Algérie Poste | `ccp_dz` | `BankExportGenerator` | ✅ existant |
+| Virement CPA / BNA | `cpa_dz` / `bna_dz` | `BankExportGenerator` | ✅ existant |
+| Virement CNEP Banque | `cnep_dz` (pipe-delimited H/D/F) | `BankExportGenerator` | ✅ #5243 |
+| Virement EDX (échange interbancaire) | `edx_dz` (largeur fixe H/D/F) | `BankExportGenerator` | ✅ #5243 |
+| État CNAS mensuel par run | CSV (matricule, assiette, 9 %/26 %) | `CnasDeclarationGenerator` | ✅ existant |
+| Déclaration CNAS trimestrielle | `POST /social-declarations/cnas-dz` | `SocialDeclarationGenerator` | ✅ existant |
+| Déclaration Annuelle des Salaires (DAS) | `POST /social-declarations/das-dz` (CSV annuel) | `DasDeclarationGenerator` | ✅ #5243 |
+| Bordereau de paie (totaux par cotisation) | `GET /payroll-runs/{run}/bordereau` (CSV) | `PayrollBordereauGenerator` | ✅ #5243 |
+| Export comptable | `GET /payroll-runs/{run}/export` (+ colonnes CNAS/IRG pour DZ) | `PayrollAccountingExportService` | ✅ #5243 (bridge → écritures : #5239) |
+
+⚠️ Les formats banque CNEP/EDX (comme ccp_dz/cpa_dz/bna_dz existants) sont des
+**conventions internes documentées** à valider avec la banque émettrice avant
+usage production (confidenceLevel `pilot`). La DAS agrège les bulletins
+`validated` des runs DZ de l'année ; les écritures comptables liées sont
+traitées par #5239 (Phase C).
+
 ## Procédure de mise à jour
 
 Toute modification de taux/barème = PR dédiée qui met à jour **simultanément** :
