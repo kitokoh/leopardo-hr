@@ -20,7 +20,7 @@ class PayrollI18nTest extends TestCase
     private const LANGS = ['fr', 'en', 'tr', 'ar'];
 
     /**
-     * @return array<string, array<string>>
+     * @return list<array{string}>
      */
     public static function langsProvider(): array
     {

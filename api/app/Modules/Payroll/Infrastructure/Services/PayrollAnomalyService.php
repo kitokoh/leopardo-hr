@@ -7,7 +7,6 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 /**
  * Programme FOCUS — F-28 : détection d'anomalies de paie (rapport pré-clôture).
@@ -61,10 +60,10 @@ class PayrollAnomalyService
             ->get();
 
         return $duplicates->map(fn ($row): array => [
-            'type'        => 'duplicate_slip',
-            'severity'    => 'high',
+            'type' => 'duplicate_slip',
+            'severity' => 'high',
             'employee_id' => (int) $row->employee_id,
-            'message'     => __('payroll.anomaly_multiple_slips_same_run', ['employee' => $row->employee_id, 'count' => $row->slip_count]),
+            'message' => __('payroll.anomaly_multiple_slips_same_run', ['employee' => $row->employee_id, 'count' => $row->slip_count]),
         ])->all();
     }
 
@@ -94,10 +93,10 @@ class PayrollAnomalyService
 
             if ($grossMismatch || $netMismatch) {
                 $anomalies[] = [
-                    'type'        => 'incoherent_slip',
-                    'severity'    => $grossMismatch ? 'high' : 'medium',
+                    'type' => 'incoherent_slip',
+                    'severity' => $grossMismatch ? 'high' : 'medium',
                     'employee_id' => (int) $slip->employee_id,
-                    'message'     => sprintf(
+                    'message' => sprintf(
                         'Bulletin #%d : brut %.2f vs somme lignes %.2f (%s) ; net %.2f vs brut−déductions %.2f (%s)',
                         $slip->id,
                         $slip->gross_salary,
@@ -145,10 +144,10 @@ class PayrollAnomalyService
 
             if ($variance > self::GROSS_VARIANCE_THRESHOLD) {
                 $anomalies[] = [
-                    'type'        => 'gross_variance',
-                    'severity'    => $variance > 0.5 ? 'high' : 'medium',
+                    'type' => 'gross_variance',
+                    'severity' => $variance > 0.5 ? 'high' : 'medium',
                     'employee_id' => (int) $slip->employee_id,
-                    'message'     => sprintf(
+                    'message' => sprintf(
                         'Employé #%d : brut %.2f vs %.2f le mois précédent (variation %.1f%% > 30%%)',
                         $slip->employee_id,
                         $slip->gross_salary,
@@ -202,10 +201,10 @@ class PayrollAnomalyService
 
             if ($missing > self::ATTENDANCE_OVERTIME_TOLERANCE_HOURS) {
                 $anomalies[] = [
-                    'type'        => 'attendance_vs_payroll',
-                    'severity'    => $missing > self::ATTENDANCE_OVERTIME_TOLERANCE_HOURS * 2 ? 'high' : 'medium',
+                    'type' => 'attendance_vs_payroll',
+                    'severity' => $missing > self::ATTENDANCE_OVERTIME_TOLERANCE_HOURS * 2 ? 'high' : 'medium',
                     'employee_id' => (int) $slip->employee_id,
-                    'message'     => sprintf(
+                    'message' => sprintf(
                         'Employé #%d : %.2f h sup pointées mais %.2f h intégrées à la paie (écart %.2f h) — vérifier avant clôture (F-20)',
                         $slip->employee_id,
                         $pointed,

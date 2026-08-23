@@ -6,6 +6,7 @@ namespace Tests\Feature\Payroll;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Jobs\GenerateBankExportJob;
 use App\Modules\Payroll\Domain\Models\BankExport;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Support\Facades\Queue;
@@ -105,7 +106,7 @@ class BankExportContractApiTest extends TestCase
         $response->assertStatus(202)
             ->assertJsonPath('data.status', BankExport::STATUS_PENDING);
 
-        Queue::assertPushed(\App\Jobs\GenerateBankExportJob::class);
+        Queue::assertPushed(GenerateBankExportJob::class);
     }
 
     public function test_store_rejects_unvalidated_run(): void
@@ -146,10 +147,10 @@ class BankExportContractApiTest extends TestCase
      */
     private function context(bool $manager = true): array
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = $manager
             ? Employee::factory()->manager()->create(['company_id' => $company->id])
             : Employee::factory()->create(['company_id' => $company->id]);

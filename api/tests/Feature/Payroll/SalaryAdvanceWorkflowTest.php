@@ -7,7 +7,6 @@ namespace Tests\Feature\Payroll;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
-use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
