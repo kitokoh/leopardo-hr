@@ -8,12 +8,11 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanySetting;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Exceptions\PayrollBalanceUnavailableException;
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
-use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
-use App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
@@ -320,9 +319,10 @@ class PayrollCycleService
      * indisponible, et le rapport d'anomalies reste lisible (aucune valeur
      * inventée).
      *
-     * @throws PayrollBalanceUnavailableException
      *
      * @return array<string, mixed>
+     *
+     * @throws PayrollBalanceUnavailableException
      */
     private function safeEmployeeBalance(Employee $employee): array
     {
@@ -630,7 +630,6 @@ class PayrollCycleService
 
         return $candidate;
     }
-
 
     /**
      * Vérifie l'existence d'une table indépendamment du search_path : les
