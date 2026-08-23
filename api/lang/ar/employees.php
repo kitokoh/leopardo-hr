@@ -53,4 +53,5 @@ return [
     'evaluation_not_draft_submit' => 'يمكن إرسال تقييم المسودة فقط.',
     'evaluation_not_draft_delete' => 'يمكن حذف تقييم المسودة فقط.',
     'evaluation_not_submitted' => 'يمكن استلام التقييم المُرسل فقط.',
+    'contract_template_not_found' => 'لا يوجد نموذج عقد متاح لهذا البلد (المدعومة: DZ/MA/TN/SN).',
 ];

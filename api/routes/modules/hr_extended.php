@@ -87,6 +87,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/contracts', [ContractController::class, 'index']);
         Route::post('/contracts', [ContractController::class, 'store']);
         Route::get('/contracts/expiring', [ContractController::class, 'expiring']);
+        // Issue #5260 — modèles légaux par pays + signature explicite.
+        Route::get('/contracts/templates', [ContractController::class, 'templates']);
+        Route::post('/contracts/{contract}/sign', [ContractController::class, 'sign'])->whereNumber('contract');
         Route::get('/contracts/{contract}', [ContractController::class, 'show']);
         Route::put('/contracts/{contract}', [ContractController::class, 'update']);
         Route::post('/contracts/{contract}/activate', [ContractController::class, 'activate']);
