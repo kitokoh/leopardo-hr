@@ -20207,6 +20207,63 @@ components:
                 nullable: true
               current:
                 type: boolean
+        career_history:
+          type: object
+          description: "Historique unifié paginé (issue #5328, G5) : contrats + évaluations + évolutions de carrière + départ, triés par date décroissante"
+          properties:
+            current_page:
+              type: integer
+            data:
+              type: array
+              description: "Éléments de la timeline unifiée, chaque item porte type/label/date/status/data"
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum: [contract, evaluation, career_event, departure]
+                  label:
+                    type: string
+                  date:
+                    type: string
+                    format: date
+                    nullable: true
+                  status:
+                    type: string
+                    nullable: true
+                  data:
+                    type: object
+                    additionalProperties: true
+            first_page_url:
+              type: string
+              nullable: true
+            from:
+              type: integer
+              nullable: true
+            last_page:
+              type: integer
+            last_page_url:
+              type: string
+              nullable: true
+            links:
+              type: array
+              items:
+                type: object
+            next_page_url:
+              type: string
+              nullable: true
+            path:
+              type: string
+            per_page:
+              type: integer
+            prev_page_url:
+              type: string
+              nullable: true
+            to:
+              type: integer
+              nullable: true
+            total:
+              type: integer
 
     ChangePasswordRequest:
       type: object
