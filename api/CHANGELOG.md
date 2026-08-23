@@ -24,6 +24,14 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - `GenerateDocumentPdf` queued job archives to the private disk (`accounting/documents/{company}/{id}.pdf`) and sets `pdf_path`; idempotent; `TenantScopedJob` + `EnsureTenantContext`
   - Binding registered in `AccountingServiceProvider`
   - Tests: `DocumentPdfRendererTest` — 24 renders (6×4) without error, golden amounts (2×1000 − 100 discount → HT 1900 / tax 361 / TTC 2261), Arabic RTL flag, mentions priority, idempotent archiving
+- **Accounting journal — debit/credit entries + period closure (issue #5234)**:
+  - `accounting_journal_entries` (tenant): one row per account, exclusive debit XOR credit (CHECK), unique (company, source_type, source_id, account_code) for idempotent reposting; `accounting_closed_periods` for period closure
+  - `JournalPostingService`: post document (invoice/credit_note only, status != draft/cancelled) + payment (non-pending), PCF/SYSCOHADA simplified chart (411/70/709/4457/512/53), balance invariant enforced (UnbalancedJournalEntryException), closed period -> 422 `PERIOD_CLOSED`
+  - `JournalCsvExporter`: streamed CSV (UTF-8 BOM, `;`, formula-injection guard #4169, TOTAL row)
+  - API (RBAC principal/comptable): `GET /accounting/journal`, `GET /accounting/journal/export.csv`, `POST /accounting/journal/periods/{period}/close`, `POST /accounting/documents/{document}/journal`
+  - i18n: `errors.*` ×4 gains `PERIOD_CLOSED`
+  - OpenAPI: 4 paths documented + mirror/SDK regenerated (750 ops, route coverage 751/751)
+  - Tests: `AccountingJournalTest` (15) — suite `tests/Feature/Accounting` 24/24
 
 ### Added
 - **Attendance reports by period (issue #5268)** — the monthly report endpoint `GET /attendance/monthly-report` is now a full report engine:

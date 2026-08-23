@@ -132,6 +132,22 @@ class LeopardoClient:
         """Refuser une absence (déprécié — utiliser POST)"""
         return self.request("PUT", "/absences/{absence}/reject", **kwargs)
 
+    def post_accounting_documents_by_document_journal(self, **kwargs):
+        """Poster (ou re-poster) un document au journal"""
+        return self.request("POST", "/accounting/documents/{document}/journal", **kwargs)
+
+    def get_accounting_journal(self, **kwargs):
+        """Journal comptable par periode"""
+        return self.request("GET", "/accounting/journal", **kwargs)
+
+    def get_accounting_journal_export_csv(self, **kwargs):
+        """Export CSV du journal (expert-comptable)"""
+        return self.request("GET", "/accounting/journal/export.csv", **kwargs)
+
+    def post_accounting_journal_periods_by_period_close(self, **kwargs):
+        """Cloturer une periode comptable"""
+        return self.request("POST", "/accounting/journal/periods/{period}/close", **kwargs)
+
     def post_admin_ai_chat(self, **kwargs):
         """Envoyer un message a l'assistant IA (super-admin)"""
         return self.request("POST", "/admin/ai/chat", **kwargs)

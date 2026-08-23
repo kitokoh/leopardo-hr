@@ -243,4 +243,5 @@ return [
     'CONTRACT_NOT_FOUND_EMPLOYEE' => 'No contract found for this employee.',
     'ALREADY_ENROLLED_SESSION' => 'Already enrolled in this session.',
     'DELETION_REQUEST_RECEIVED' => 'Deletion request received for HR/legal review.',
+    'PERIOD_CLOSED' => 'The accounting period is already closed — no posting allowed.',
 ];

@@ -37,3 +37,24 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
         });
     });
+declare(strict_types=1);
+
+/**
+ * Routes API du module Comptabilité — journal des écritures (issue #5234).
+ *
+ * APV L.08 — Un module = un route group Laravel. Toutes les routes sont
+ * exposées sous le préfixe /api/v1 (groupe porté par api.php).
+ *
+ * RBAC : `api.manager:principal,comptable` — le journal est réservé à la
+ * direction et aux comptables (aucun accès RH/marketing).
+ */
+
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
+    Route::get('accounting/journal', [AccountingJournalController::class, 'index']);
+    Route::get('accounting/journal/export.csv', [AccountingJournalController::class, 'export']);
+    Route::post('accounting/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
+    Route::post('accounting/documents/{document}/journal', [AccountingJournalController::class, 'postDocument']);
+});

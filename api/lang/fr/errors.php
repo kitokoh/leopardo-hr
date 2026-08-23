@@ -237,4 +237,5 @@ return [
     'CONTRACT_NOT_FOUND_EMPLOYEE' => 'Aucun contrat trouvé pour cet employé.',
     'ALREADY_ENROLLED_SESSION' => 'Déjà inscrit à cette session.',
     'DELETION_REQUEST_RECEIVED' => 'Demande de suppression reçue pour revue RH/juridique.',
+    'PERIOD_CLOSED' => 'La période comptable est déjà clôturée — aucun posting possible.',
 ];

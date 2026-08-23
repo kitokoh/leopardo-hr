@@ -236,4 +236,5 @@ return [
     'CONTRACT_NOT_FOUND_EMPLOYEE' => 'لا يوجد عقد لهذا الموظف.',
     'ALREADY_ENROLLED_SESSION' => 'مسجل بالفعل في هذه الجلسة.',
     'DELETION_REQUEST_RECEIVED' => 'تم استلام طلب الحذف للمراجعة من قبل الموارد البشرية/القانونية.',
+    'PERIOD_CLOSED' => 'الفترة المحاسبية مغلقة بالفعل — لا يمكن تمرير أي قيد.',
 ];
