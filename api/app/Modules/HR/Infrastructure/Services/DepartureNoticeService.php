@@ -102,6 +102,7 @@ class DepartureNoticeService
             return null;
         }
 
+        /** @var \stdClass|null $row */
         $row = DB::table('employee_departures')
             ->where('employee_id', $employee->id)
             ->orderByDesc('id')

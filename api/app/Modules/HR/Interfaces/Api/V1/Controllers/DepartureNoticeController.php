@@ -6,6 +6,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Http\Controllers\Controller;
 use App\Modules\HR\Infrastructure\Services\DepartureNoticeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

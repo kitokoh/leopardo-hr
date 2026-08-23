@@ -37,7 +37,7 @@ class DepartureNoticeTest extends TestCase
         $this->getJson("/api/v1/employees/{$employee->id}/departure/notice")
             ->assertOk()
             ->assertJsonPath('data.country_code', 'DZ')
-            ->assertJsonPath('data.years_of_service', 5.0)
+            ->assertJsonPath('data.years_of_service', 5)
             ->assertJsonPath('data.notice_days', 22)
             ->assertJsonPath('data.notice_status', 'unknown')
             ->assertJsonPath('data.rule_reference', 'AlgeriaPayrollRules::noticePeriodDays()');
@@ -53,7 +53,7 @@ class DepartureNoticeTest extends TestCase
 
         $this->getJson("/api/v1/employees/{$employee->id}/departure/notice")
             ->assertOk()
-            ->assertJsonPath('data.years_of_service', 12.0)
+            ->assertJsonPath('data.years_of_service', 12)
             ->assertJsonPath('data.notice_days', 44);
     }
 
@@ -104,8 +104,8 @@ class DepartureNoticeTest extends TestCase
 
     public function test_cross_tenant_notice_is_forbidden(): void
     {
-        [$companyA, $managerA] = $this->createActors('a');
-        [, , $employeeB] = $this->createActors('b');
+        [$companyA, $managerA] = $this->createActors([], 'a');
+        [, , $employeeB] = $this->createActors([], 'b');
 
         Sanctum::actingAs($managerA);
 
@@ -204,13 +204,18 @@ class DepartureNoticeTest extends TestCase
             'first_name' => 'Test',
             'last_name' => strtoupper((string) strstr($email, '@', true)),
         ])->save();
-        $employee->forceFill([
+        $employeeData = [
             'company_id' => $company->id,
             'role' => $role,
             'manager_role' => $managerRole,
             'status' => 'active',
-            'contract_start' => $contractStart,
-        ])->save();
+        ];
+        if ($contractStart !== null) {
+            // Défaut DB : CURRENT_DATE — ne pas écraser par NULL explicite
+            // (NOT NULL violation).
+            $employeeData['contract_start'] = $contractStart;
+        }
+        $employee->forceFill($employeeData)->save();
 
         /** @var Employee $employee */
         return $employee;
