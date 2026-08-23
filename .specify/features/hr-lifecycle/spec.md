@@ -117,18 +117,18 @@ Transitions (matrice RBAC existante `docs/HR/RBAC_MATRIX.md`) :
 
 | # | Gap | Livrable | Issue proposée |
 |---|---|---|---|
-| G1 | Workflow de départ formel (enregistrement, statut `departed`, ordonnancement SdC → attestation, audit, self-service) | table `employee_departures` + action + endpoints HR + i18n ×4 + tests | **#5258-A** |
-| G2 | Récapitulatif préavis (calcul par pays via Payroll, suivi servi/non servi) | endpoint HR en lecture + doc | **#5258-B** |
-| G3 | Checklist documents du dossier employé par étape (upload/liens vers générés) | table `employee_documents` + endpoints | **#5258-C** (à coordonner avec Cabinet #5223 si upload mutualisé) |
-| G4 | Cohérence contrat ↔ statut employé (orchestration dans l'action de cycle de vie) | refactor `ContractLifecycleAction` → met à jour employé | **#5258-D** |
-| G5 | Historique unifié du cycle (`/me/career` : événements + contrats + évaluations + départ) | extension `SelfServiceController` + tests | **#5258-E** (couplé à G1) |
+| G1 | Workflow de départ formel (enregistrement, statut `departed`, ordonnancement SdC → attestation, audit, self-service) | table `employee_departures` + action + endpoints HR + i18n ×4 + tests | **#5324** |
+| G2 | Récapitulatif préavis (calcul par pays via Payroll, suivi servi/non servi) | endpoint HR en lecture + doc | **#5325** |
+| G3 | Checklist documents du dossier employé par étape (upload/liens vers générés) | table `employee_documents` + endpoints | **#5326** (à coordonner avec Cabinet #5223 si upload mutualisé) |
+| G4 | Cohérence contrat ↔ statut employé (orchestration dans l'action de cycle de vie) | refactor `ContractLifecycleAction` → met à jour employé | **#5327** |
+| G5 | Historique unifié du cycle (`/me/career` : événements + contrats + évaluations + départ) | extension `SelfServiceController` + tests | **#5328** (couplé à G1) |
 | G6 | Payroll : exclure les `departed` des runs + SdC intégré au slip | **module Payroll — hors périmètre HR** | à créer par l'agent Payroll (#5246 voisin) |
 
 ## 8. DoD (issue #5258)
 
 - [x] Spec `.specify/features/hr-lifecycle/spec.md` écrite (états, transitions, documents requis) — **ce document**
 - [x] Inventaire des gaps du module HR (16 modèles audités, §1) — **§7**
-- [ ] **Spec approuvée** (fondateur) — les gaps deviennent des issues de complétion (#5258-A → E ; G6 → Payroll)
+- [ ] **Spec approuvée** (fondateur) — les gaps sont déjà créés : #5324 (G1), #5325 (G2), #5326 (G3), #5327 (G4), #5328 (G5) ; G6 (Payroll) reste à créer par l'agent Payroll
 - [ ] CHANGELOG : une ligne en tête d'`[Unreleased]` pour ce livrable spec
 - [ ] PR avec `Closes #5258` (cette spec seule — aucun code applicatif dans cette PR)
 
