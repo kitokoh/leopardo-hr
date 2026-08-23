@@ -17,6 +17,13 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - `accounting:benchmark` command (F-12 protocol): seeds 10k realistic documents (dedicated company, chunked inserts) + measures paginated eager list (N+1 barrier ≤ 5 queries), reminder query (J+7), monthly aggregation
   - Measured: 10k-document list 0.01 s (< 200 ms target), 1,763 reminder-eligible, 13 months
   - `AccountingPerformanceTest` (3 tests) + `docs/accounting/BENCHMARK.md` (protocol, targets, index map, reference results)
+- **Accounting document PDF rendering ×4 locales (issue #5224)** — implements `PdfRendererInterface`:
+  - `DocumentPdfRenderer` (dompdf) renders all 6 `DocumentType` values (invoice, proforma, quote, credit_note, delivery_note, receipt) in fr/en/tr/ar (RTL via `I18nCatalog::isRtl`)
+  - Company header, parties, line table (description/qty/unit price/discount/amount), totals (HT/TVA/TTC/paid/remaining), legal mentions (`AccountingSettings.legal_mentions` → `footer_mentions` fallback)
+  - New `api/lang/{fr,en,ar,tr}/accounting.php` catalogs (33 keys, parity ×4)
+  - `GenerateDocumentPdf` queued job archives to the private disk (`accounting/documents/{company}/{id}.pdf`) and sets `pdf_path`; idempotent; `TenantScopedJob` + `EnsureTenantContext`
+  - Binding registered in `AccountingServiceProvider`
+  - Tests: `DocumentPdfRendererTest` — 24 renders (6×4) without error, golden amounts (2×1000 − 100 discount → HT 1900 / tax 361 / TTC 2261), Arabic RTL flag, mentions priority, idempotent archiving
 
 ### Added
 - **Attendance reports by period (issue #5268)** — the monthly report endpoint `GET /attendance/monthly-report` is now a full report engine:
