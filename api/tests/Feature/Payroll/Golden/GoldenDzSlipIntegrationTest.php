@@ -138,15 +138,16 @@ class GoldenDzSlipIntegrationTest extends TestCase
 
     public function test_golden_dz_run_heures_sup_10h_from_attendance(): void
     {
-        // Calcul manuel (DZ_COMPLIANCE.md §5, F-20) :
+        // Calcul manuel (DZ_COMPLIANCE.md §5, F-20 + #5266) :
         //   22 jours pointés (mois complet) + 10 h sup sur un log
-        //   HS = 10 × (60 000/173,33) × 1,25 = 4 327,01
-        //   brut = 60 000 + 4 327,01 = 64 327,01
-        //   CNAS salariale = 64 327,01 × 9 % = 5 789,43 → assiette 58 537,58
-        //   IRG(58 537,58) : 4 600 + 18 537,58×27 % = 9 605,15
-        //     → annuel 115 261,76 → abattement plafonné 18 000 → IRG mensuel 8 105,15
-        //   net = 64 327,01 − 5 789,43 − 8 105,15 = 50 432,43
-        //   patronale = 16 725,02 → coût employeur = 81 052,03
+        //   HS = 10 × (60 000/173,33) × 1,50 = 5 192,41
+        //     (palier unique ≥ 50 %, art. 32 loi 90-11 — écart E2 arbitré #5266)
+        //   brut = 60 000 + 5 192,41 = 65 192,41
+        //   CNAS salariale = 65 192,41 × 9 % = 5 867,32 → assiette 59 325,09
+        //   IRG(59 325,09) : 4 600 + 19 325,09×27 % = 9 817,77
+        //     → annuel 117 813,24 → abattement plafonné 18 000 → IRG mensuel 8 317,77
+        //   net = 65 192,41 − 5 867,32 − 8 317,77 = 51 007,32
+        //   patronale = 16 950,03 → coût employeur = 82 142,44
         $company = $this->makeCompany();
         $structure = $this->makeStructure($company, 60000.0);
         $employee = $this->makeEmployee($company, $structure->id);
@@ -175,14 +176,14 @@ class GoldenDzSlipIntegrationTest extends TestCase
         $this->assertSame(10.0, (float) $slip->overtime_hours);
         $this->assertTrue((bool) $slip->has_attendance_data);
 
-        $this->assertSame(64327.01, (float) $slip->gross_salary);
-        $this->assertSame(50432.43, (float) $slip->net_salary);
-        $this->assertSame(16725.02, (float) $slip->employer_contributions);
-        $this->assertSame(81052.03, (float) $slip->total_cost);
+        $this->assertSame(65192.41, (float) $slip->gross_salary);
+        $this->assertSame(51007.32, (float) $slip->net_salary);
+        $this->assertSame(16950.03, (float) $slip->employer_contributions);
+        $this->assertSame(82142.44, (float) $slip->total_cost);
 
         $hsLine = $slip->lines->where('name', 'Heures supplémentaires')->first();
         $this->assertNotNull($hsLine);
-        $this->assertSame(4327.01, (float) $hsLine->amount);
+        $this->assertSame(5192.41, (float) $hsLine->amount);
     }
 
     public function test_golden_dz_run_indemnite_cp_imposable(): void
