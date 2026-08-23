@@ -45,7 +45,7 @@ class OrgReferentialCrudTest extends TestCase
     public function test_manager_principal_crud_positions(): void
     {
         [$company, $manager] = $this->createActors();
-        $department = $this->createDepartment($company, 'Prod', $manager);
+        $department = $this->createDepartment($company->id, 'Prod', $manager);
 
         Sanctum::actingAs($manager);
 
@@ -76,9 +76,11 @@ class OrgReferentialCrudTest extends TestCase
 
         Sanctum::actingAs($employee);
 
+        $department = $this->createDepartment($company->id, 'Existant', null);
+
         $this->postJson('/api/v1/departments', ['name' => 'Interdit'])->assertForbidden();
         $this->postJson('/api/v1/positions', ['name' => 'Interdit'])->assertForbidden();
-        $this->deleteJson('/api/v1/departments/1')->assertForbidden();
+        $this->deleteJson("/api/v1/departments/{$department->id}")->assertForbidden();
     }
 
     public function test_cross_tenant_department_is_404(): void
@@ -108,8 +110,9 @@ class OrgReferentialCrudTest extends TestCase
             'timezone' => 'UTC',
         ]);
 
-        $manager = $this->createEmployee($company, 'manager.org@a.test', 'manager', 'principal');
-        $employee = $this->createEmployee($company, 'employee.org@a.test', 'employee', null);
+        $suffix = substr((string) $company->id, 0, 8);
+        $manager = $this->createEmployee($company, 'manager.'.$suffix.'@a.test', 'manager', 'principal');
+        $employee = $this->createEmployee($company, 'employee.'.$suffix.'@a.test', 'employee', null);
 
         return [$company, $manager, $employee];
     }
