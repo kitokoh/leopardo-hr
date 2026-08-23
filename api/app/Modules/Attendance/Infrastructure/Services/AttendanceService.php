@@ -38,7 +38,7 @@ class AttendanceService
     private const NON_WORK_TYPES = ['break', 'resume'];
 
     public function __construct(
-        private readonly AttendanceGeofenceService $geofenceService,
+        private readonly GeofenceZoneService $zoneService,
         private readonly CommunicationService $communicationService,
     ) {}
 
@@ -504,7 +504,7 @@ class AttendanceService
     private function buildPunchMeta(Company $company, Employee $employee, CheckInDTO $dto, string $phase): array
     {
         $timezone = $dto->device_timezone ?: $this->timezoneFor($company);
-        $geofence = $this->geofenceService->evaluate($company, $employee, $dto->gps_lat, $dto->gps_lng);
+        $geofence = $this->zoneService->evaluateZone($company, $employee, $dto->gps_lat, $dto->gps_lng);
 
         return [
             'phase' => $phase,
