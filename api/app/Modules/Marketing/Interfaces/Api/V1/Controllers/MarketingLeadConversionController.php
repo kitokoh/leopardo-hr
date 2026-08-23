@@ -55,7 +55,7 @@ class MarketingLeadConversionController extends Controller
 
             // Listener synchrone : crée l'AccountingContact dans la même
             // transaction (source=marketing_lead, marketing_lead_id).
-            event(new MarketingLeadQualified($locked, $actor->company_id));
+            event(new MarketingLeadQualified($locked, (string) $actor->company_id));
 
             /** @var AccountingContact|null $contact */
             $contact = AccountingContact::query()

@@ -58,9 +58,9 @@ class AccountingContactController extends Controller
 
         $items = [];
         foreach ($paginator->items() as $contact) {
-            if ($contact instanceof AccountingContact) {
-                $items[] = $this->serialize($contact);
-            }
+            // Le paginateur est typé sur le modèle : le garde instanceof était
+            // toujours vrai (PHPStan Strict — regression main 2026-08-23).
+            $items[] = $this->serialize($contact);
         }
 
         return response()->json([
