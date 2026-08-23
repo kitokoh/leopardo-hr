@@ -50,7 +50,7 @@ final class GenerateDocumentPdf implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function handle(PdfRendererInterface $renderer): void
