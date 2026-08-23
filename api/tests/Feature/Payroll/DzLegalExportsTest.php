@@ -35,6 +35,7 @@ class DzLegalExportsTest extends TestCase
      */
     private function seededDzRun(): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['metadata' => ['nis' => 'DZ-NIS-123456']]);
         $run = PayrollRun::create([
             'company_id' => $company->id,
@@ -44,12 +45,14 @@ class DzLegalExportsTest extends TestCase
             'status' => 'validated',
         ]);
 
+        /** @var Employee $employeeA */
         $employeeA = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Karim',
             'last_name' => 'Benali',
             'matricule' => 'MAT-A',
         ]);
+        /** @var Employee $employeeB */
         $employeeB = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Yacine',
@@ -123,6 +126,7 @@ class DzLegalExportsTest extends TestCase
     public function test_bordereau_endpoint_manager_can_download(): void
     {
         [$company, $run] = $this->seededDzRun();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
@@ -137,8 +141,10 @@ class DzLegalExportsTest extends TestCase
     public function test_bordereau_endpoint_requires_manager_and_tenant_and_dz(): void
     {
         [$company, $run, $employeeA] = $this->seededDzRun();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         [$otherCompany] = $this->seededDzRun();
+        /** @var Employee $otherManager */
         $otherManager = Employee::factory()->manager()->create(['company_id' => $otherCompany->id]);
 
         // Employé non-manager → 403.
@@ -150,6 +156,7 @@ class DzLegalExportsTest extends TestCase
         $this->get("/api/v1/payroll-runs/{$run->id}/bordereau")->assertNotFound();
 
         // Run non-DZ → 422.
+        /** @var Company $maCompany */
         $maCompany = Company::factory()->create();
         $maRun = PayrollRun::create([
             'company_id' => $maCompany->id,
@@ -158,6 +165,7 @@ class DzLegalExportsTest extends TestCase
             'country_code' => 'MA',
             'status' => 'validated',
         ]);
+        /** @var Employee $maManager */
         $maManager = Employee::factory()->manager()->create(['company_id' => $maCompany->id]);
         Sanctum::actingAs($maManager);
         $this->get("/api/v1/payroll-runs/{$maRun->id}/bordereau")->assertStatus(422);
@@ -240,6 +248,7 @@ class DzLegalExportsTest extends TestCase
     public function test_das_endpoint_aggregates_only_validated_dz_runs_of_year(): void
     {
         [$company, $run] = $this->seededDzRun();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         // Bulletin non validé → exclu de la DAS.
@@ -262,6 +271,7 @@ class DzLegalExportsTest extends TestCase
             'country_code' => 'MA',
             'status' => 'validated',
         ]);
+        /** @var Employee $maEmployee */
         $maEmployee = Employee::factory()->create(['company_id' => $company->id]);
         $this->slip($maRun, $maEmployee, 5000.0, 4500.0, 800.0, 5800.0);
 
@@ -281,11 +291,13 @@ class DzLegalExportsTest extends TestCase
     public function test_das_endpoint_rbac_and_validation(): void
     {
         [$company] = $this->seededDzRun();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($employee);
         $this->postJson('/api/v1/social-declarations/das-dz', ['year' => 2026])->assertForbidden();
 
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Sanctum::actingAs($manager);
         $this->postJson('/api/v1/social-declarations/das-dz', ['year' => 2019])
@@ -351,6 +363,7 @@ class DzLegalExportsTest extends TestCase
     public function test_bank_export_endpoint_accepts_cnep_and_edx_formats(): void
     {
         [$company, $run] = $this->seededDzRun();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
@@ -364,6 +377,7 @@ class DzLegalExportsTest extends TestCase
     /**
      * Parse un CSV (pipe- ou point-virgule-délimité) en lignes de cellules.
      *
+     * @param  non-empty-string  $separator
      * @return list<list<string>>
      */
     private function parsePipeCsv(string $content, string $separator = '|'): array

@@ -143,8 +143,11 @@ class PayrollAccountingExportTest extends TestCase
     {
         // #5243 — bridge comptable DZ : colonnes cotisations ajoutées pour
         // les runs DZ uniquement (CNAS salariale/patronale + IRG).
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Karim',
@@ -197,8 +200,11 @@ class PayrollAccountingExportTest extends TestCase
     {
         // #5243 — les colonnes cotisations sont DZ-only : le contrat
         // multi-pays (MA) reste inchangé.
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Amina',
