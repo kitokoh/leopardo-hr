@@ -24,7 +24,7 @@ test.describe('Tax slabs admin page', () => {
     // (en-US dans le headless) — les assertions ci-dessous sont en français.
     await page.addInitScript(() => localStorage.setItem('admin_locale', 'fr'))
     await page.goto('/login')
-    await page.getByLabel(/^Email$/i).fill('admin@leopardo-rh.com')
+    await page.locator('#email').fill('admin@leopardo-rh.com')
     await page.locator('#password').fill(E2E_ADMIN_PASSWORD)
     await page.getByRole('button', { name: /Se connecter/i }).click()
     await expect(page).not.toHaveURL(/\/login/, { timeout: 15_000 })
