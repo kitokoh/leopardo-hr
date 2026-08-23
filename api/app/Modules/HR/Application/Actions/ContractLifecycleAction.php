@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\HR\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Events\EmployeeLastContractTerminated;
 use App\Modules\HR\Domain\Exceptions\InvalidContractTransitionException;
 use App\Modules\HR\Domain\Models\Contract;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,13 @@ use Illuminate\Support\Facades\DB;
  * le contrat rafraîchi. Les autorisations (rôle manager/principal, tenant)
  * restent à la charge du controller via ContractPolicy — cette classe ne
  * fait QUE la règle métier.
+ *
+ * Issue #5327 (G4) — ORCHESTRATION contrat ↔ employé : la transition de
+ * contrat synchronise le statut de l'employé (activate → active,
+ * suspend → suspended) et, quand le DERNIER contrat en cours est terminé,
+ * émet `EmployeeLastContractTerminated` (hook du workflow de départ #5324).
+ * Invariant garanti : JAMAIS de contrat actif/suspendu sur un employé
+ * archivé (transition refusée). Aucun changement Payroll (constitution §III).
  */
 final class ContractLifecycleAction
 {
@@ -26,7 +34,14 @@ final class ContractLifecycleAction
             throw new InvalidContractTransitionException('Only draft contracts can be activated.');
         }
 
+        $employee = $this->employeeOrFail($contract);
+        $this->assertEmployeeNotArchived($employee);
+
         $contract->update(['status' => 'active', 'signed_at' => now()]);
+        // `status` n'est pas mass-assignable (Employee::$fillable) → assignation
+        // directe, même pattern que EmployeeService::archive (#5327).
+        $employee->status = 'active';
+        $employee->save();
 
         return $contract->fresh() ?? $contract;
     }
@@ -37,7 +52,12 @@ final class ContractLifecycleAction
             throw new InvalidContractTransitionException('Only active contracts can be suspended.');
         }
 
+        $employee = $this->employeeOrFail($contract);
+        $this->assertEmployeeNotArchived($employee);
+
         $contract->update(['status' => 'suspended']);
+        $employee->status = 'suspended';
+        $employee->save();
 
         return $contract->fresh() ?? $contract;
     }
@@ -48,11 +68,22 @@ final class ContractLifecycleAction
             throw new InvalidContractTransitionException('Contract must be active or suspended to terminate.');
         }
 
+        $employee = $this->employeeOrFail($contract);
+        $this->assertEmployeeNotArchived($employee);
+
         $contract->update([
             'status' => 'terminated',
             'termination_reason' => $reason,
             'terminated_at' => now(),
         ]);
+
+        // G4 (#5327) : si c'était le dernier contrat en cours, l'employé n'a
+        // plus de contrat actif → hook du workflow de départ (#5324). Le
+        // statut `departed` est posé par ce workflow (migration 5324) ; ici
+        // on ne fait QUE signaler l'événement (résilient avant son merge).
+        if (! $this->hasActiveContract($employee)) {
+            EmployeeLastContractTerminated::dispatch($employee, $contract);
+        }
 
         return $contract->fresh() ?? $contract;
     }
@@ -92,5 +123,34 @@ final class ContractLifecycleAction
 
             return $newContract;
         });
+    }
+
+    private function employeeOrFail(Contract $contract): Employee
+    {
+        $employee = $contract->employee;
+        if ($employee === null) {
+            throw new InvalidContractTransitionException('Contract has no employee.');
+        }
+
+        return $employee;
+    }
+
+    /**
+     * Invariant G4 (#5327) : jamais de contrat actif/suspendu sur un employé
+     * archivé (un employé `departed` sera couvert par le workflow #5324).
+     */
+    private function assertEmployeeNotArchived(Employee $employee): void
+    {
+        if ($employee->status === 'archived') {
+            throw new InvalidContractTransitionException('Cannot change contract status of an archived employee.');
+        }
+    }
+
+    private function hasActiveContract(Employee $employee): bool
+    {
+        return Contract::query()
+            ->where('employee_id', $employee->id)
+            ->whereIn('status', ['active', 'suspended'])
+            ->exists();
     }
 }
