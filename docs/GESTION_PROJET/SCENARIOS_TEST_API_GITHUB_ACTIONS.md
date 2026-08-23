@@ -1421,3 +1421,11 @@ Note 2026-08-22 (issue #5259) : plans de carrière — événements de carrière
 - `GET|POST /api/v1/career-events`, `GET|PUT|PATCH|DELETE /api/v1/career-events/{id}` (édit/suppression `pending` uniquement), `PUT /api/v1/career-events/{id}/approve|reject|apply`. Workflow `pending → approved → applied` (ou `rejected`) ; `apply` met à jour l'employé (position_id, department_id, salary_base) en transaction → impact paie au run suivant.
 - Scénarios à vérifier : création manager avec snapshot `from_*` (poste/département/salaire courants de l'employé), employé → 403 sur create et lecture limitée à son propre parcours, manager `dept` scopé (PA2-SEC-002) / `superviseur` (PA2-SEC-003), isolation tenant (ressource d'une autre société → 404, cible poste/département cross-tenant → 422), transitions invalides (apply sur `pending` → 403, apply sans cible → 422 CAREER_EVENT_NOTHING_TO_APPLY, edit/delete hors `pending` → 403), `GET /me/career` expose `data.career_events` (parcours complet contrats + événements).
 - Couverture : `tests/Feature/HR/CareerEventTest.php` (12 tests) — contrat OpenAPI documenté (9 opérations, 753/753 routes couvertes).
+Note 2026-08-23 (issue #5225) : envoi email des documents + portail client sécurisé.
+- Partage tokenisé (`accounting_document_shares` : token 64 caractères, expiration 14 j, email destinataire) — RGPD : accès strictement limité au document partagé (pattern CabinetShare #1817) ; le token est la credential, pas d'auth Sanctum.
+- `GET /accounting/documents/shared/{token}` : méta du document partagé (numéro, type, statut, TTC, expiration) — token inconnu/expiré → 404.
+- `GET /accounting/documents/shared/{token}/download` : PDF depuis le disque privé — token inconnu/expiré → 404 ; throttle dédié ; Content-Disposition `attachment`.
+- `DocumentShareMail` : PDF en pièce jointe + lien sécurisé ; `SendDocumentEmail` garantit le PDF (job #5224), crée le partage, envoie, `sent_at` + statut `sent` (transition minimale — workflow complet via #5223).
+- Commande artisan `accounting:send-document {document} [--email=]`.
+- Scénarios : envoi avec pièce jointe + lien, méta publiques, téléchargement PDF, token expiré/inconnu → 404, accès limité au document partagé (un token ne révèle que son document), RBAC sans effet sur les routes publiques.
+- Couverture : `DocumentShareEmailTest` (6 tests).
