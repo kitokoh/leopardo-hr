@@ -227,4 +227,5 @@ return [
     // Platform — RTMX (#5277): mobil yazma işlemlerinin idempotent tekrarı
     'INVALID_IDEMPOTENCY_KEY' => 'Geçersiz idempotency anahtarı.',
     'IDEMPOTENCY_IN_PROGRESS' => 'Aynı istek zaten işleniyor. Birazdan tekrar deneyin.',
+    'ATTENDANCE_PERIOD_CLOSED' => 'Devam süresi kapatıldı: düzeltmeler kilitli.',
 ];
