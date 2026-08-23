@@ -142,7 +142,11 @@ jobs:
           import sys
           import xml.etree.ElementTree as ET
 
-          tree = ET.parse(sys.argv[1])
+          try:
+              tree = ET.parse(sys.argv[1])
+          except ET.ParseError as exc:
+              print(f'Rapport JUnit vide ou invalide — extraction ignorée: {exc}')
+              sys.exit(0)
           failures = []
           for suite in tree.iter('testsuite'):
               n = int(suite.get('failures', '0')) + int(suite.get('errors', '0'))

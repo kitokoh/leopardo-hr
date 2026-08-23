@@ -14,6 +14,7 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ### Fixed
 - **FamilyPartsRicfTest uses a deterministic contract period.** The three employee fixtures now start before the July 2026 payroll period, preventing factory randomness from prorating the expected 300,000 XOF gross and making the RICF assertions stable.
+- **Coverage gate tolerates empty JUnit reports.** Auxiliary causal-error extraction now ignores empty or malformed JUnit XML after preserving the PHPUnit exit status, preventing a post-test parsing artifact from masking a successful test run.
 
 - **PayrollAuditTest uses a deterministic manager contract period.** The manager fixture now starts before the July 2026 audit period, preventing random contract proration and preserving the expected aggregate gross of two complete 60,000 bulletins.
 
