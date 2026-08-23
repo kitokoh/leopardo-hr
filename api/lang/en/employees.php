@@ -53,4 +53,5 @@ return [
     'evaluation_not_draft_submit' => 'Only a draft evaluation can be submitted.',
     'evaluation_not_draft_delete' => 'Only a draft evaluation can be deleted.',
     'evaluation_not_submitted' => 'Only a submitted evaluation can be acknowledged.',
+    'contract_template_not_found' => 'No contract template available for this country (DZ/MA/TN/SN supported).',
 ];

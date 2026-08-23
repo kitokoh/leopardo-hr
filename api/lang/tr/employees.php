@@ -53,4 +53,5 @@ return [
     'evaluation_not_draft_submit' => 'Yalnizca taslak degerlendirme gonderilebilir.',
     'evaluation_not_draft_delete' => 'Yalnizca taslak degerlendirme silinebilir.',
     'evaluation_not_submitted' => 'Yalnizca gonderilmis bir degerlendirme teslim alinabilir.',
+    'contract_template_not_found' => 'Bu ülke için sözleşme şablonu yok (desteklenen: DZ/MA/TN/SN).',
 ];
