@@ -18,7 +18,9 @@ class TurkeyPayrollRules extends AbstractCountryRules
 
     public function minimumWage(): float
     {
-        return 20002.0;
+        // Asgari ücret 2026 : 33 030,00 TRY brut / mois (28 075,50 TRY net
+        // officiel) — annoncé décembre 2025, en vigueur au 1er janvier 2026.
+        return 33030.0;
     }
 
     public function socialContributions(): array
@@ -33,12 +35,15 @@ class TurkeyPayrollRules extends AbstractCountryRules
 
     protected function defaultTaxSlabs(): array
     {
+        // Barème 2026 gelir vergisi — salariés (Gelir Vergisi Kanunu art. 103,
+        // tarife 01.01.2026) : 0–190 000 15 % · 190 001–400 000 20 % ·
+        // 400 001–1 500 000 27 % · 1 500 001–5 300 000 35 % · > 5 300 000 40 %.
         return [
-            ['min' => 0, 'max' => 110000, 'rate' => 15, 'fixed_deduction' => 0],
-            ['min' => 110001, 'max' => 230000, 'rate' => 20, 'fixed_deduction' => 0],
-            ['min' => 230001, 'max' => 580000, 'rate' => 27, 'fixed_deduction' => 0],
-            ['min' => 580001, 'max' => 3000000, 'rate' => 35, 'fixed_deduction' => 0],
-            ['min' => 3000001, 'max' => null, 'rate' => 40, 'fixed_deduction' => 0],
+            ['min' => 0, 'max' => 190000, 'rate' => 15, 'fixed_deduction' => 0],
+            ['min' => 190001, 'max' => 400000, 'rate' => 20, 'fixed_deduction' => 0],
+            ['min' => 400001, 'max' => 1500000, 'rate' => 27, 'fixed_deduction' => 0],
+            ['min' => 1500001, 'max' => 5300000, 'rate' => 35, 'fixed_deduction' => 0],
+            ['min' => 5300001, 'max' => null, 'rate' => 40, 'fixed_deduction' => 0],
         ];
     }
 

@@ -48,7 +48,8 @@ class PayrollCountryRulesTest extends TestCase
         self::assertSame(0.0, (new TunisiaPayrollRules)->calculateIncomeTax(6000 / 12));
         self::assertSame(0.0, (new FrancePayrollRules)->calculateIncomeTax(11294 / 12));
         self::assertSame(0.06, (new FrancePayrollRules)->calculateIncomeTax(11300 / 12));
-        self::assertSame(1375.0, (new TurkeyPayrollRules)->calculateIncomeTax(110000 / 12));
+        // TR (#5253) : barème 2026 — 190 000 × 15 % = 28 500/an → 2 375/mois.
+        self::assertSame(2375.0, (new TurkeyPayrollRules)->calculateIncomeTax(190000 / 12));
         self::assertSame(0.0, (new SenegalPayrollRules)->calculateIncomeTax(630000 / 12));
     }
 
