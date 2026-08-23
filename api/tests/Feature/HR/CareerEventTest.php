@@ -449,7 +449,13 @@ class CareerEventTest extends TestCase
         ?string $managerRole = null,
     ): Employee {
         $employee = new Employee(['email' => $email]);
-        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
+        $employee->forceFill([
+            'password_hash' => Hash::make('password123'),
+            // NOT NULL sans défaut sur le vrai schéma (leçon #4980) : sans
+            // first_name/last_name → SQLSTATE 23502 (masqué par le fix plan_id).
+            'first_name' => 'Test',
+            'last_name' => strtoupper((string) strstr($email, '@', true)),
+        ])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => $role,
