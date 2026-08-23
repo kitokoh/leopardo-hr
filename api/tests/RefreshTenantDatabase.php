@@ -112,7 +112,9 @@ trait RefreshTenantDatabase
         // tenant fixture and make a healthy canonical database look missing;
         // that would remigrate before every test and exhaust Coverage timeout.
         $row = DB::selectOne(
-            "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history,\n                    to_regclass('shared_tenants.onboarding_steps') AS onboarding_steps,\n                    to_regclass('shared_tenants.social_contributions') AS social_contributions,\n                    to_regclass('shared_tenants.employees') AS employees,\n                    to_regclass('shared_tenants.app_notifications') AS app_notifications"
+            "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history,\n                    to_regclass('shared_tenants.onboarding_steps') AS onboarding_steps,\n                    to_regclass('shared_tenants.social_contributions') AS social_contributions,\n                    to_regclass('shared_tenants.employees') AS employees,\n                    to_regclass('shared_tenants.app_notifications') AS app_notifications,
+                    EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'personal_statuses') AS personal_statuses,
+                    EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'personal_onboarding_completed_at') AS personal_onboarding_completed_at"
         );
 
         return $row !== null
@@ -128,7 +130,9 @@ trait RefreshTenantDatabase
             // « relation "employees" does not exist » / 25P02 dans le test
             // suivant du worker, observés en CI workers 3-4).
             && $row->employees !== null
-            && $row->app_notifications !== null;
+            && $row->app_notifications !== null
+            && $row->personal_statuses === true
+            && $row->personal_onboarding_completed_at === true;
     }
 
     /**
