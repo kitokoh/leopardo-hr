@@ -107,13 +107,14 @@ class SelfServiceController extends Controller
                 $items->push([
                     'type' => 'contract',
                     'label' => __('career.type_contract'),
-                    'date' => $contract->start_date?->toDateString(),
+                    // start_date est un Carbon non-nullable (cast date) — pas de ?->.
+                    'date' => $contract->start_date->toDateString(),
                     'status' => $contract->status,
                     'data' => [
                         'id' => $contract->id,
                         'contract_type' => $contract->contract_type,
                         'job_title' => $contract->job_title,
-                        'start_date' => $contract->start_date?->toDateString(),
+                        'start_date' => $contract->start_date->toDateString(),
                         'end_date' => $contract->end_date?->toDateString(),
                         'status' => $contract->status,
                     ],

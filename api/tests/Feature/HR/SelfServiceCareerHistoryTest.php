@@ -42,7 +42,9 @@ class SelfServiceCareerHistoryTest extends TestCase
             ->assertJsonPath('data.timeline.0.id', $newContract->id)
             ->assertJsonCount(3, 'data.career_history.data');
 
-        $types = collect($response->json('data.career_history.data'))->pluck('type')->all();
+        /** @var list<array{type: string, data: array{id: int}}> $careerItems */
+        $careerItems = $response->json('data.career_history.data');
+        $types = collect($careerItems)->pluck('type')->all();
         // Tri par date décroissante : évaluation (créée « maintenant ») puis contrats.
         $this->assertSame(['evaluation', 'contract', 'contract'], $types);
 
@@ -97,7 +99,9 @@ class SelfServiceCareerHistoryTest extends TestCase
             ->assertJsonPath('data.career_history.total', 2)
             ->assertJsonCount(2, 'data.career_history.data');
 
-        $contractIds = collect($response->json('data.career_history.data'))
+        /** @var list<array{type: string, data: array{id: int}}> $careerItems */
+        $careerItems = $response->json('data.career_history.data');
+        $contractIds = collect($careerItems)
             ->where('type', 'contract')
             ->pluck('data.id')
             ->all();
