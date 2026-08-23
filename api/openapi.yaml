@@ -49,6 +49,7 @@ tags:
   - name: "Platform"
   - name: "Employees"
   - name: "Attendance"
+  - name: "Accounting"
   - name: "Estimations"
   - name: "Me"
   - name: "Invitations"
@@ -4742,6 +4743,137 @@ paths:
                             type: integer
                           month:
                             type: integer
+
+  /accounting/contacts:
+    get:
+      tags: ["Accounting"]
+      summary: "Lister les contacts client/fournisseur"
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: ["customer", "supplier", "both"]
+        - name: search
+          in: query
+          schema:
+            type: string
+        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/Page"
+      responses:
+        "200":
+          description: "Liste paginee des contacts du tenant courant"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AccountingContact"
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        "403":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Accounting"]
+      summary: "Creer un contact client/fournisseur"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountingContactPayload"
+      responses:
+        "201":
+          description: "Contact cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingContact"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/contacts/{contact}:
+    get:
+      tags: ["Accounting"]
+      summary: "Detail d'un contact client/fournisseur"
+      parameters:
+        - name: contact
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Contact"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingContact"
+        "404":
+          description: "Contact introuvable (hors tenant ou supprime)"
+        "403":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Accounting"]
+      summary: "Mettre a jour un contact client/fournisseur"
+      parameters:
+        - name: contact
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountingContactPayload"
+      responses:
+        "200":
+          description: "Contact mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingContact"
+        "404":
+          description: "Contact introuvable"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["Accounting"]
+      summary: "Supprimer un contact client/fournisseur"
+      parameters:
+        - name: contact
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "Contact supprime"
+        "404":
+          description: "Contact introuvable"
 
   /attendance/check-in:
     post:
@@ -21406,6 +21538,108 @@ components:
         reason:
           type: string
           maxLength: 500
+
+    AccountingContact:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: ["customer", "supplier", "both"]
+        name:
+          type: string
+        legal_name:
+          type: string
+          nullable: true
+        tax_id:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        payment_terms:
+          type: string
+          nullable: true
+        language:
+          type: string
+          nullable: true
+        source:
+          type: string
+          enum: ["manual", "marketing_lead"]
+        marketing_lead_id:
+          type: integer
+          nullable: true
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: true
+        documents_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    AccountingContactPayload:
+      type: object
+      required:
+        - type
+        - name
+      properties:
+        type:
+          type: string
+          enum: ["customer", "supplier", "both"]
+        name:
+          type: string
+        legal_name:
+          type: string
+          nullable: true
+        tax_id:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        payment_terms:
+          type: string
+          nullable: true
+        language:
+          type: string
+          nullable: true
+        source:
+          type: string
+          enum: ["manual", "marketing_lead"]
+        marketing_lead_id:
+          type: integer
+          nullable: true
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: true
 
     AttendanceCorrectionRequest:
       type: object
