@@ -34,6 +34,9 @@ class AccountingServiceProvider extends ServiceProvider
         // #5224 — rendu PDF (fr + ar RTL) fourni par l'issue #5224.
     }
 
+        // #5224 — rendu PDF (fr + ar RTL) fourni par l'issue #5224.
+    }
+
     public function boot(): void
     {
         // Issue #5232 — défauts pays appliqués à la création d'entreprise.

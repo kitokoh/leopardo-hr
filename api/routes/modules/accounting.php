@@ -53,3 +53,22 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
         });
     });
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
+use Illuminate\Support\Facades\Route;
+
+/**
+ * Routes Comptabilité — documents (Phase A, #5223).
+ *
+ * RBAC : managers principal/comptable uniquement (api.manager:principal,comptable)
+ * — le groupe externe api/v1 porte déjà auth:sanctum + tenant.
+ */
+Route::middleware(['api.manager:principal,comptable'])->prefix('accounting')->group(function (): void {
+    Route::get('/documents', [AccountingDocumentController::class, 'index']);
+    Route::post('/documents', [AccountingDocumentController::class, 'store']);
+    Route::get('/documents/next-number', [AccountingDocumentController::class, 'nextNumber']);
+    Route::get('/documents/{document}', [AccountingDocumentController::class, 'show'])->whereNumber('document');
+    Route::post('/documents/{document}/send', [AccountingDocumentController::class, 'send'])->whereNumber('document');
+    Route::post('/documents/{document}/payments', [AccountingDocumentController::class, 'payments'])->whereNumber('document');
+    Route::post('/documents/{document}/cancel', [AccountingDocumentController::class, 'cancel'])->whereNumber('document');
+    Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
+});
