@@ -12,13 +12,13 @@ use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
-use App\Modules\Attendance\Infrastructure\Services\AttendanceMonthlyReportService;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceRegularityService;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceReportService;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceService;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceAnomaliesRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceIndexRequest;
-use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceMonthlyReportRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceRegularityRequest;
+use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceReportRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceTodayRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckInRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckOutRequest;
@@ -274,9 +274,9 @@ class AttendanceController extends Controller
         );
     }
 
-    public function monthlyReport(
-        AttendanceMonthlyReportRequest $request,
-        AttendanceMonthlyReportService $reportService,
+    public function report(
+        AttendanceReportRequest $request,
+        AttendanceReportService $reportService,
     ): JsonResponse|Response {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -285,11 +285,12 @@ class AttendanceController extends Controller
 
         $company = currentCompany();
         $validated = $request->validated();
-        $month = $validated['month'] ?? now($company->timezone)->format('Y-m');
+        $period = $validated['period'] ?? AttendanceReportService::PERIOD_MONTH;
         $format = $validated['format'] ?? 'json';
         $report = $reportService->build(
             $company,
-            $month,
+            $period,
+            $validated,
             $actor,
         );
 

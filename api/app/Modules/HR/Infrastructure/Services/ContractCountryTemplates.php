@@ -100,7 +100,7 @@ class ContractCountryTemplates
                 'notice_period' => 'Préavis : 8 jours (ancienneté < 1 an), 1 mois (1-5 ans), 2 mois (5-10 ans), 3 mois (≥ 10 ans) — art. 54.',
                 'annual_leave' => 'Congé annuel payé : 1,5 jour ouvrable par mois de travail effectif (18 jours/an — art. 232).',
                 'overtime' => 'Heures supplémentaires majorées : 25 % (jour), 50 % (nuit / repos hebdomadaire) au-delà de 44 h/sem (art. 201).',
-                'minimum_wage' => 'SMIG en vigueur (3 111 MAD/mois référence — règles paye MoroccoPayrollRules).',
+                'minimum_wage' => 'SMIG en vigueur (3 422,72 MAD/mois 2026 — règles paye MoroccoPayrollRules, audit #5248).',
                 'social_security' => 'Cotisations CNSS (salarié 4,48 % plafonnée à 6 000 MAD/mois) + AMO (salarié 2,26 %) — règles paye MoroccoPayrollRules.',
                 'clauses' => [
                     'cdi' => [

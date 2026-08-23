@@ -533,7 +533,7 @@ class LeopardoClient:
         return self.request("PUT", "/attendance/corrections/{correction}/reject", **kwargs)
 
     def get_attendance_monthly_report(self, **kwargs):
-        """Rapport mensuel de pointage"""
+        """Rapport de pointage (journalier, hebdomadaire ou mensuel)"""
         return self.request("GET", "/attendance/monthly-report", **kwargs)
 
     def get_attendance_regularity(self, **kwargs):
@@ -1143,6 +1143,10 @@ class LeopardoClient:
     def get_employees_by_employee_daily_summary(self, **kwargs):
         """Resume journalier d'un employe"""
         return self.request("GET", "/employees/{employee}/daily-summary", **kwargs)
+
+    def get_employees_by_employee_departure_notice(self, **kwargs):
+        """Récapitulatif du préavis légal (issue #5325, G2)"""
+        return self.request("GET", "/employees/{employee}/departure/notice", **kwargs)
 
     def get_employees_by_employee_end_of_contract(self, **kwargs):
         """Solde de tout compte (fin de contrat, F-08)"""

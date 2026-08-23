@@ -640,7 +640,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/attendance/corrections/{correction}/reject", options);
     },
 
-    /** Rapport mensuel de pointage */
+    /** Rapport de pointage (journalier, hebdomadaire ou mensuel) */
     getAttendanceMonthlyReport(options = {}) {
       return request("GET", "/attendance/monthly-report", options);
     },
@@ -1403,6 +1403,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Resume journalier d'un employe */
     getEmployeesByEmployeeDailySummary(options = {}) {
       return request("GET", "/employees/{employee}/daily-summary", options);
+    },
+
+    /** Récapitulatif du préavis légal (issue #5325, G2) */
+    getEmployeesByEmployeeDepartureNotice(options = {}) {
+      return request("GET", "/employees/{employee}/departure/notice", options);
     },
 
     /** Solde de tout compte (fin de contrat, F-08) */
