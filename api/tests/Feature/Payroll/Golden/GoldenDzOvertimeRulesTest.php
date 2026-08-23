@@ -51,6 +51,9 @@ class GoldenDzOvertimeRulesTest extends TestCase
         ], $rules->overtimeRateTiers());
     }
 
+    /**
+     * @return array<string, array{float, float, float}>  base, heures, attendu
+     */
     public static function overtimePayProvider(): array
     {
         return [
