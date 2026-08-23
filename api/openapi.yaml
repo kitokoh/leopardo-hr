@@ -1142,7 +1142,6 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-
   /payrolls:
     get:
       tags: ["Payroll"]
@@ -1174,7 +1173,6 @@ paths:
           description: "Métriques"
         "401":
           description: "Non autorisé"
-
 
   /auth/google:
     get:
@@ -1847,6 +1845,8 @@ paths:
           description: "Planning"
         "401":
           $ref: "#/components/responses/Error401"
+
+
     patch:
       tags: ["Payroll Engine"]
       summary: "Mettre à jour un planning (manager — sécurité #2217)"
@@ -1918,7 +1918,6 @@ paths:
           $ref: "#/components/responses/Error403"
         "422":
           $ref: "#/components/responses/Validation422"
-
 
   /auth/forgot-password:
     post:
@@ -2966,7 +2965,6 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
-
 
   /admin/tax-slabs:
     get:
@@ -7519,7 +7517,6 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
-
   /vehicle-trips:
     get:
       tags: ["Vehicle Tracking"]
@@ -8172,8 +8169,6 @@ paths:
       responses:
         "200":
           description: "Liste des erreurs IA avec details"
-
-
 
   # =============================================
   # ITERATION 33.1 — CORE RH
@@ -13127,6 +13122,8 @@ paths:
           description: "Candidature"
         "401":
           $ref: "#/components/responses/Error401"
+
+
     delete:
       tags: ["Recruitment"]
       summary: "Supprimer une candidature (manager)"
@@ -13215,6 +13212,8 @@ paths:
           $ref: "#/components/responses/Error401"
 
   # --- Training ---
+
+
     delete:
       tags: ["Recruitment"]
       summary: "Supprimer un entretien (manager)"
@@ -14144,7 +14143,7 @@ paths:
                         approver_id: { type: integer }
                         decision: { type: string, enum: [approved, rejected] }
                         comment: { type: string, nullable: true }
-                        decided_at: { type: string, nullable: true, format: date-time }
+                        decided_at: { type: string, format: date-time, nullable: true }
                         request:
                           type: object
                           properties:
@@ -14160,7 +14159,7 @@ paths:
                                 id: { type: integer }
                                 first_name: { type: string }
                                 last_name: { type: string }
-                        created_at: { type: string, nullable: true, format: date-time }
+                        created_at: { type: string, format: date-time, nullable: true }
                   links:
                     type: object
                     properties:
@@ -14733,7 +14732,6 @@ paths:
           description: "Donnees export"
         "401":
           $ref: "#/components/responses/Error401"
-
 
   /export/absences:
     get:
@@ -15879,7 +15877,6 @@ paths:
         "201": { description: "Demande créée" }
         "422": { $ref: "#/components/responses/Error422" }
 
-
   /platform/growth/partners:
     get:
       tags: ["Growth", "Platform Admin"]
@@ -16802,6 +16799,7 @@ paths:
         "404":
           description: "Introuvable"
 
+
   /notifications/stream:
     get:
       tags: ["Notifications"]
@@ -16826,6 +16824,7 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+
   /me/contract:
     get:
       tags: ["Me"]
@@ -16838,12 +16837,13 @@ paths:
         "404":
           description: "Aucun contrat actif"
 
-  /recruitment/applicants/{id}/status:
+
+  /recruitment/applicants/{applicant}/status:
     patch:
       tags: ["Recruitment"]
       summary: "Changer le statut d'une candidature (principal/rh)"
       parameters:
-        - name: id
+        - name: applicant
           in: path
           required: true
           schema: { type: integer }
@@ -16866,12 +16866,12 @@ paths:
         "403":
           description: "Rôle requis (principal/rh)"
 
-  /recruitment/interviews/{id}/feedback:
+  /recruitment/interviews/{interview}/feedback:
     patch:
       tags: ["Recruitment"]
       summary: "Saisir le feedback d'un entretien (le clôture)"
       parameters:
-        - name: id
+        - name: interview
           in: path
           required: true
           schema: { type: integer }
@@ -16895,6 +16895,7 @@ paths:
           description: "Entretien clôturé (status=completed)"
         "401":
           $ref: "#/components/responses/Error401"
+
 
   /smart-attendance/config:
     get:
@@ -17422,7 +17423,6 @@ paths:
           description: "Sessions de l'employé"
         "401":
           $ref: "#/components/responses/Error401"
-
 
   /smart-attendance/employees/{employeeId}/preference:
     get:
@@ -18088,7 +18088,6 @@ paths:
           description: "Nœud révoqué"
         "401":
           $ref: "#/components/responses/Error401"
-
 
   /planning/weekly-optimization:
     get:
@@ -23687,7 +23686,6 @@ components:
         created_at:
           type: string
           format: date-time
-
 
     StoreTrainingCourseRequest:
       type: object
