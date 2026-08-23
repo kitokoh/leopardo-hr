@@ -1905,6 +1905,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/marketing/leads", options);
     },
 
+    /** Lire le contact comptabilite cree depuis un lead qualifie */
+    getMarketingLeadsByLeadContact(options = {}) {
+      return request("GET", "/marketing/leads/{lead}/contact", options);
+    },
+
+    /** Qualifier un lead et creer le contact comptabilite associe */
+    postMarketingLeadsByLeadQualify(options = {}) {
+      return request("POST", "/marketing/leads/{lead}/qualify", options);
+    },
+
     /** Lister les publications (alias court de /social-posts) */
     getMarketingPosts(options = {}) {
       return request("GET", "/marketing/posts", options);
