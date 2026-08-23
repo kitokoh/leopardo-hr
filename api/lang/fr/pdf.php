@@ -172,4 +172,5 @@ return [
 
     'payslip_regularization_banner' => 'BULLETIN DE RÉGULARISATION — corrige le run #:run',
     'payslip_regularization_banner_slip' => 'BULLETIN DE RÉGULARISATION — corrige le bulletin #:slip',
+    'contract_legal_clauses_title' => 'Clauses légales du contrat',
 ];

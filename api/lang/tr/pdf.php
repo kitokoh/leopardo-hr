@@ -172,4 +172,5 @@ return [
 
     'payslip_regularization_banner' => 'DÜZELTME BORDROSU — :run numaralı ödemeyi düzeltir',
     'payslip_regularization_banner_slip' => 'DÜZELTME BORDROSU — :slip numaralı bordroyu düzeltir',
+    'contract_legal_clauses_title' => 'Sözleşmenin yasal maddeleri',
 ];
