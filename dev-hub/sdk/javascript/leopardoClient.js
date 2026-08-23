@@ -163,6 +163,9 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Mettre a jour un contact client/fournisseur */
     putAccountingContactsByContact(options = {}) {
       return request("PUT", "/accounting/contacts/{contact}", options);
+    /** Audit trail du module Comptabilité (qui/quoi/quand, #5273) */
+    getAccountingAuditLogs(options = {}) {
+      return request("GET", "/accounting/audit-logs", options);
     },
 
     /** Lister les documents comptables du tenant (pagine, filtres, #5223) */

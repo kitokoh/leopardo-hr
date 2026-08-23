@@ -151,6 +151,9 @@ class LeopardoClient:
     def put_accounting_contacts_by_contact(self, **kwargs):
         """Mettre a jour un contact client/fournisseur"""
         return self.request("PUT", "/accounting/contacts/{contact}", **kwargs)
+    def get_accounting_audit_logs(self, **kwargs):
+        """Audit trail du module Comptabilité (qui/quoi/quand, #5273)"""
+        return self.request("GET", "/accounting/audit-logs", **kwargs)
 
     def get_accounting_documents(self, **kwargs):
         """Lister les documents comptables du tenant (pagine, filtres, #5223)"""

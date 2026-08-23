@@ -53,6 +53,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
         });
     });
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use Illuminate\Support\Facades\Route;
 
@@ -71,4 +72,7 @@ Route::middleware(['api.manager:principal,comptable'])->prefix('accounting')->gr
     Route::post('/documents/{document}/payments', [AccountingDocumentController::class, 'payments'])->whereNumber('document');
     Route::post('/documents/{document}/cancel', [AccountingDocumentController::class, 'cancel'])->whereNumber('document');
     Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
+
+    // #5273 — audit trail scope module (qui/quoi/quand).
+    Route::get('/audit-logs', [AccountingAuditController::class, 'index']);
 });
