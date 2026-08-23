@@ -6,6 +6,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Domain\Models\Department;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Testing\TestResponse;
 use Laravel\Sanctum\Sanctum;
@@ -23,7 +24,10 @@ class AttendanceReportTest extends TestCase
 
     private function company(): Company
     {
-        return Company::factory()->create(['timezone' => 'UTC']);
+        /** @var Company $company */
+        $company = Company::factory()->create(['timezone' => 'UTC']);
+
+        return $company;
     }
 
     private function bindCompany(Company $company): void
@@ -48,16 +52,27 @@ class AttendanceReportTest extends TestCase
     /**
      * Le rapport liste tous les employés de l'entreprise (manager inclus) ;
      * on cherche donc la ligne par employee_id plutôt que par indice.
+     *
+     * @param  TestResponse<JsonResponse>  $response
+     * @return array<string, mixed>|null
      */
     private function employeeRow(TestResponse $response, int $employeeId): ?array
     {
-        return collect($response->json('data.employees'))->firstWhere('employee_id', $employeeId);
+        /** @var array<int, array<string, mixed>> $rows */
+        $rows = (array) $response->json('data.employees');
+
+        /** @var array<string, mixed>|null $row */
+        $row = collect($rows)->firstWhere('employee_id', $employeeId);
+
+        return is_array($row) ? $row : null;
     }
 
     public function test_manager_can_get_daily_report_scoped_to_the_day(): void
     {
         $company = $this->company();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Nadia',
@@ -94,7 +109,9 @@ class AttendanceReportTest extends TestCase
     public function test_manager_can_get_weekly_report_covering_the_iso_week(): void
     {
         $company = $this->company();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Sofia',
@@ -130,7 +147,9 @@ class AttendanceReportTest extends TestCase
     public function test_month_period_param_matches_legacy_month_report(): void
     {
         $company = $this->company();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'salary_base' => 173330,
@@ -154,6 +173,7 @@ class AttendanceReportTest extends TestCase
     public function test_default_period_is_month_without_parameters(): void
     {
         $company = $this->company();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
@@ -167,6 +187,7 @@ class AttendanceReportTest extends TestCase
     public function test_department_filter_limits_report_to_that_team(): void
     {
         $company = $this->company();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $deptA = Department::create(['name' => 'Operations']);
@@ -177,7 +198,9 @@ class AttendanceReportTest extends TestCase
         $deptB->company_id = $company->id;
         $deptB->save();
 
+        /** @var Employee $employeeA */
         $employeeA = Employee::factory()->create(['company_id' => $company->id, 'first_name' => 'Team', 'last_name' => 'Alpha', 'department_id' => $deptA->id]);
+        /** @var Employee $employeeB */
         $employeeB = Employee::factory()->create(['company_id' => $company->id, 'first_name' => 'Team', 'last_name' => 'Bravo', 'department_id' => $deptB->id]);
 
         $this->bindCompany($company);
@@ -201,8 +224,11 @@ class AttendanceReportTest extends TestCase
     public function test_employee_filter_returns_single_employee_sheet(): void
     {
         $company = $this->company();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employeeA */
         $employeeA = Employee::factory()->create(['company_id' => $company->id, 'first_name' => 'One', 'last_name' => 'A']);
+        /** @var Employee $employeeB */
         $employeeB = Employee::factory()->create(['company_id' => $company->id, 'first_name' => 'Two', 'last_name' => 'B']);
 
         $this->bindCompany($company);
@@ -222,7 +248,9 @@ class AttendanceReportTest extends TestCase
     public function test_weekly_report_csv_export(): void
     {
         $company = $this->company();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'matricule' => 'EMP-042',
@@ -246,7 +274,9 @@ class AttendanceReportTest extends TestCase
     public function test_daily_report_pdf_export(): void
     {
         $company = $this->company();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id, 'salary_base' => 173330]);
 
         $this->bindCompany($company);
@@ -273,10 +303,12 @@ class AttendanceReportTest extends TestCase
         $deptOther->company_id = $company->id;
         $deptOther->save();
 
+        /** @var Employee $manager */
         $manager = Employee::factory()->managerDept()->create([
             'company_id' => $company->id,
             'department_id' => $deptOwned->id,
         ]);
+        /** @var Employee $ownedEmployee */
         $ownedEmployee = Employee::factory()->create(['company_id' => $company->id, 'first_name' => 'Dans', 'last_name' => 'Scope', 'department_id' => $deptOwned->id]);
         Employee::factory()->create(['company_id' => $company->id, 'first_name' => 'Hors', 'last_name' => 'Scope', 'department_id' => $deptOther->id]);
 
@@ -296,7 +328,9 @@ class AttendanceReportTest extends TestCase
         // Sans filtre, le manager voit bien uniquement SA team (manager + équipe).
         $scoped = $this->getJson('/api/v1/attendance/monthly-report?period=month&month=2026-05');
         $scoped->assertOk();
-        $names = collect($scoped->json('data.employees'))->pluck('name')->all();
+        /** @var array<int, array<string, mixed>> $scopedRows */
+        $scopedRows = (array) $scoped->json('data.employees');
+        $names = collect($scopedRows)->pluck('name')->all();
         $this->assertContains('Dans Scope', $names);
         $this->assertNotContains('Hors Scope', $names);
     }
@@ -304,6 +338,7 @@ class AttendanceReportTest extends TestCase
     public function test_invalid_period_is_rejected(): void
     {
         $company = $this->company();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
