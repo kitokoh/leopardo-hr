@@ -46,8 +46,8 @@ class ContractByCountryTest extends TestCase
         $response = $this->getJson('/api/v1/contracts/templates?country=DZ&contract_type=cdd');
 
         $response->assertOk()
-            ->assertJsonPath('data.contract_type', 'cdd')
-            ->assertNotEmpty($response->json('data.clauses'));
+            ->assertJsonPath('data.contract_type', 'cdd');
+        $this->assertNotEmpty($response->json('data.clauses'));
     }
 
     public function test_templates_endpoint_rejects_unsupported_country(): void

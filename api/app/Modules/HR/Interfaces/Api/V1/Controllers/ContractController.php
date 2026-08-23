@@ -102,7 +102,9 @@ class ContractController extends Controller
                 ->where('company_id', $actor->company_id)
                 ->find($validated['employee_id']);
 
-            $country = strtoupper((string) ($employee?->company?->country ?? ''));
+            $country = $employee !== null && $employee->company !== null
+                ? strtoupper((string) $employee->company->country)
+                : '';
             if ($country !== '') {
                 $template = (new ContractCountryTemplates)->forCountry($country, (string) $validated['contract_type']);
                 $validated['clauses'] = $template['clauses'];
