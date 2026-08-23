@@ -96,6 +96,43 @@ paths:
         "404":
           description: "Employe introuvable (isolation tenant)"
 
+  /employees/{employee}/departure/notice:
+    get:
+      tags: ["HR"]
+      summary: "Récapitulatif du préavis légal (issue #5325, G2)"
+      description: "Affiche la durée légale de préavis par pays/ancienneté (règle Payroll consommee, jamais recalculée) et le statut de service (employee_departures, workflow #5324). Reserve aux managers, isole par tenant."
+      parameters:
+        - name: employee
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Recapitulatif du preavis legal"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      country_code: { type: string }
+                      years_of_service: { type: number }
+                      notice_days: { type: number }
+                      notice_status: { type: string, enum: [served, not_served, unknown] }
+                      notice_days_served: { type: integer, nullable: true }
+                      rule_reference: { type: string }
+                      confidence_level: { type: string }
+                      compliance_source: { type: string, nullable: true }
+                      rules_version: { type: string }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager role required"
+        "404":
+          description: "Employe introuvable (isolation tenant)"
+
   /employees/{employee}/end-of-contract:
     get:
       tags: ["Payroll"]
