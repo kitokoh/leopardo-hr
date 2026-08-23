@@ -64,9 +64,16 @@ class GoldenDzEngineCompletionTest extends TestCase
         // n'applique pas de plafond de cotisation sur les branches
         // principales — contrairement MA/TN) + validation expert 2026-08-08
         // du cœur CNAS 9 %/26 % (DZ_COMPLIANCE.md §2).
-        $contributions = $this->rules()->socialContributions();
-        $employee = collect($contributions)->firstWhere('code', 'CNAS_EMP');
-        $employer = collect($contributions)->firstWhere('code', 'CNAS_PAT');
+        $employee = null;
+        $employer = null;
+        foreach ($this->rules()->socialContributions() as $contribution) {
+            if ($contribution['code'] === 'CNAS_EMP') {
+                $employee = $contribution;
+            }
+            if ($contribution['code'] === 'CNAS_PAT') {
+                $employer = $contribution;
+            }
+        }
 
         $this->assertNotNull($employee);
         $this->assertNotNull($employer);
