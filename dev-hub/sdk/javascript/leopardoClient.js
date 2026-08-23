@@ -1110,11 +1110,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/contracts/{contract}/renew", options);
     },
 
-    /** Signer explicitement un contrat (issue #5260) — idempotent */
-    postContractsByContractSign(options = {}) {
-      return request("POST", "/contracts/{contract}/sign", options);
-    },
-
     /** Suspendre un contrat actif */
     postContractsByContractSuspend(options = {}) {
       return request("POST", "/contracts/{contract}/suspend", options);
@@ -1128,11 +1123,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Contrats expirant bientot */
     getContractsExpiring(options = {}) {
       return request("GET", "/contracts/expiring", options);
-    },
-
-    /** Modeles legaux de contrat par pays (issue #5260) — DZ/MA/TN/SN */
-    getContractsTemplates(options = {}) {
-      return request("GET", "/contracts/templates", options);
     },
 
     /** Lister les conversations de l'employe courant */
@@ -2896,13 +2886,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Changer le statut d'une candidature (principal/rh) */
-    patchRecruitmentApplicantsByIdStatus(options = {}) {
-      return request("PATCH", "/recruitment/applicants/{id}/status", options);
-    },
-
-    /** Saisir le feedback d'un entretien (le clôture) */
-    patchRecruitmentInterviewsByIdFeedback(options = {}) {
-      return request("PATCH", "/recruitment/interviews/{id}/feedback", options);
+    patchRecruitmentApplicantsByApplicantStatus(options = {}) {
+      return request("PATCH", "/recruitment/applicants/{applicant}/status", options);
     },
 
     /** Supprimer un entretien (manager) */
@@ -2913,6 +2898,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier un entretien */
     putRecruitmentInterviewsByInterview(options = {}) {
       return request("PUT", "/recruitment/interviews/{interview}", options);
+    },
+
+    /** Saisir le feedback d'un entretien (le clôture) */
+    patchRecruitmentInterviewsByInterviewFeedback(options = {}) {
+      return request("PATCH", "/recruitment/interviews/{interview}/feedback", options);
     },
 
     /** Lister les offres d'emploi */

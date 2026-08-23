@@ -908,10 +908,6 @@ class LeopardoClient:
         """Renouveler un contrat"""
         return self.request("POST", "/contracts/{contract}/renew", **kwargs)
 
-    def post_contracts_by_contract_sign(self, **kwargs):
-        """Signer explicitement un contrat (issue #5260) — idempotent"""
-        return self.request("POST", "/contracts/{contract}/sign", **kwargs)
-
     def post_contracts_by_contract_suspend(self, **kwargs):
         """Suspendre un contrat actif"""
         return self.request("POST", "/contracts/{contract}/suspend", **kwargs)
@@ -923,10 +919,6 @@ class LeopardoClient:
     def get_contracts_expiring(self, **kwargs):
         """Contrats expirant bientot"""
         return self.request("GET", "/contracts/expiring", **kwargs)
-
-    def get_contracts_templates(self, **kwargs):
-        """Modeles legaux de contrat par pays (issue #5260) — DZ/MA/TN/SN"""
-        return self.request("GET", "/contracts/templates", **kwargs)
 
     def get_conversations(self, **kwargs):
         """Lister les conversations de l'employe courant"""
@@ -2336,13 +2328,9 @@ class LeopardoClient:
         """Planifier un entretien"""
         return self.request("POST", "/recruitment/applicants/{applicant}/interviews", **kwargs)
 
-    def patch_recruitment_applicants_by_id_status(self, **kwargs):
+    def patch_recruitment_applicants_by_applicant_status(self, **kwargs):
         """Changer le statut d'une candidature (principal/rh)"""
-        return self.request("PATCH", "/recruitment/applicants/{id}/status", **kwargs)
-
-    def patch_recruitment_interviews_by_id_feedback(self, **kwargs):
-        """Saisir le feedback d'un entretien (le clôture)"""
-        return self.request("PATCH", "/recruitment/interviews/{id}/feedback", **kwargs)
+        return self.request("PATCH", "/recruitment/applicants/{applicant}/status", **kwargs)
 
     def delete_recruitment_interviews_by_interview(self, **kwargs):
         """Supprimer un entretien (manager)"""
@@ -2351,6 +2339,10 @@ class LeopardoClient:
     def put_recruitment_interviews_by_interview(self, **kwargs):
         """Modifier un entretien"""
         return self.request("PUT", "/recruitment/interviews/{interview}", **kwargs)
+
+    def patch_recruitment_interviews_by_interview_feedback(self, **kwargs):
+        """Saisir le feedback d'un entretien (le clôture)"""
+        return self.request("PATCH", "/recruitment/interviews/{interview}/feedback", **kwargs)
 
     def get_recruitment_jobs(self, **kwargs):
         """Lister les offres d'emploi"""
