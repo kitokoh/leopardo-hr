@@ -6,6 +6,14 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- **Accounting document workflow + concurrent-safe numbering (issue #5223)**:
+  - `SequentialDocumentNumbering` implements `DocumentNumberingInterface`: per-type series from `AccountingSettings.number_series` (defaults FAC/PRF/DEV/AVR/BL/RCP), `{SERIE}-{ANNEE}-{NUMERO}` format, atomic `INSERT ... ON CONFLICT ... RETURNING` increment (no duplicates under concurrency)
+  - `DocumentWorkflowService` state machine: draft → sent → partially_paid → paid | cancelled (+ computed overdue), business rules (no `paid` without full payment, partial payment for `partially_paid`, credit note linked to source invoice, delivery note with delivery date) + dedicated domain exceptions
+  - Additive tenant migration: `accounting_number_counters` table + `accounting_documents.source_document_id` (self-FK for credit notes)
+  - Provider binding; no API endpoints (exposed via #5226)
+  - Tests: `DocumentWorkflowNumberingTest` (16) — sequences, custom series, upsert on pre-existing counter (race simulation, repo convention #4978), 100 unique numbers, full workflow, transition rules
+
+### Added
 - **Attendance reports by period (issue #5268)** — the monthly report endpoint `GET /attendance/monthly-report` is now a full report engine:
   - `period=day|week|month` (default `month`, backward compatible), anchors `date` (Y-m-d), `week` (Y-m-d — ISO week Monday→Sunday), `month` (Y-m)
   - Filters `department_id` (team) and `employee_id` (individual attendance sheet); manager scope (`visibleToManager`, PA2-SEC-002/003) always enforced — filters can only narrow, never widen visibility
