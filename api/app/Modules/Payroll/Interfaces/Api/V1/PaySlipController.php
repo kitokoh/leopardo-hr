@@ -13,10 +13,12 @@ use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
+use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Support\I18nCatalog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -79,6 +81,10 @@ class PaySlipController extends Controller
             ->orderByDesc('id')
             ->paginate($perPage);
 
+        // Issue #5245 — soldes de congés annuels par employé (1 requête
+        // groupée, jamais de N+1) pour le bloc `attendance.leave_balance`.
+        $this->attachLeaveBalances($slips->getCollection(), (string) $actor->company_id);
+
         $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.list', null, [
             'result_count' => $slips->total(),
         ]);
@@ -100,6 +106,10 @@ class PaySlipController extends Controller
         $slips = $payrollRun->paySlips()
             ->with(['employee:id,first_name,last_name,email', 'lines', 'payrollRun:id,country_code'])
             ->paginate(max(1, min(100, $request->integer('per_page', 20))));
+
+        // Issue #5245 — soldes de congés annuels par employé (1 requête
+        // groupée, jamais de N+1) pour le bloc `attendance.leave_balance`.
+        $this->attachLeaveBalances($slips->getCollection(), (string) $actor->company_id);
 
         $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.list', $payrollRun, [
             'result_count' => $slips->total(),
@@ -326,5 +336,59 @@ class PaySlipController extends Controller
         return $disk->download($document->path, $document->original_name, [
             'Content-Type' => 'application/pdf',
         ]);
+    }
+
+    /**
+     * Issue #5245 — attache les soldes de congés annuels (types payés) à
+     * chaque bulletin de la collection, en UNE requête groupée (jamais de
+     * N+1 par employé).
+     *
+     * Les soldes ne sont pas persistés sur le bulletin (données vivantes de
+     * `leave_balances`) : l'attribut `leave_balance` est porté par le modèle
+     * pour la réponse API seulement — {acquired, used, pending, remaining}
+     * agrégés sur l'année de la période du bulletin.
+     *
+     * @param  Collection<int, PaySlip>  $slips
+     */
+    private function attachLeaveBalances(Collection $slips, string $companyId): void
+    {
+        if ($slips->isEmpty()) {
+            return;
+        }
+
+        $employeeIds = $slips->pluck('employee_id')->unique()->values()->all();
+
+        $years = $slips
+            ->map(fn (PaySlip $slip): int => (int) $slip->period_start->format('Y'))
+            ->unique()
+            ->values()
+            ->all();
+
+        if ($employeeIds === [] || $years === []) {
+            return;
+        }
+
+        /** @var Collection<int, LeaveBalance> $rows */
+        $rows = LeaveBalance::query()
+            ->where('company_id', $companyId)
+            ->whereIn('employee_id', $employeeIds)
+            ->whereIn('year', $years)
+            ->whereHas('absenceType', fn ($query) => $query->where('is_paid', true))
+            ->selectRaw('employee_id, SUM(balance) AS remaining, SUM(used) AS used, SUM(pending) AS pending, SUM(balance + used + pending) AS acquired')
+            ->groupBy('employee_id')
+            ->get()
+            ->keyBy('employee_id');
+
+        foreach ($slips as $slip) {
+            /** @var LeaveBalance|null $row */
+            $row = $rows->get($slip->employee_id);
+
+            $slip->setAttribute('leave_balance', $row === null ? null : [
+                'acquired' => round((float) $row->getAttribute('acquired'), 2),
+                'used' => round((float) $row->getAttribute('used'), 2),
+                'pending' => round((float) $row->getAttribute('pending'), 2),
+                'remaining' => round((float) $row->getAttribute('remaining'), 2),
+            ]);
+        }
     }
 }
