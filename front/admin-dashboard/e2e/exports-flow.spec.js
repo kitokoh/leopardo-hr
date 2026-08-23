@@ -33,17 +33,15 @@ test.describe('Recruitment page structure', () => {
     'Skipped: requires PLAYWRIGHT_AUTH_TOKEN for authenticated tests',
   )
 
-  test('tenant-scoped recruitment view redirects the super-admin to the dashboard', async ({ page }) => {
-    // Issue #2272 : la console super-admin n'a pas de contexte tenant —
-    // l'accès direct par URL à une vue tenant redirige vers le dashboard.
+  test('removed recruitment route renders an authenticated 404', async ({ page }) => {
     await page.addInitScript((token) => {
       sessionStorage.setItem('admin_token', token)
     }, process.env.PLAYWRIGHT_AUTH_TOKEN)
 
     await page.goto('/recruitment')
 
-    await expect(page).toHaveURL(/\/$/, { timeout: 10_000 })
-    await expect(page.getByText(/Fonctionnalité entreprise/i)).toBeVisible()
+    await expect(page).toHaveURL(/\/recruitment$/, { timeout: 10_000 })
+    await expect(page.getByRole('heading', { name: /Page non trouvée/i })).toBeVisible()
   })
 })
 
@@ -53,16 +51,14 @@ test.describe('Exports page structure', () => {
     'Skipped: requires PLAYWRIGHT_AUTH_TOKEN for authenticated tests',
   )
 
-  test('tenant-scoped exports view redirects the super-admin to the dashboard', async ({ page }) => {
-    // Issue #2272 : la console super-admin n'a pas de contexte tenant —
-    // l'accès direct par URL à une vue tenant redirige vers le dashboard.
+  test('exports page keeps tenant-only operations local and visible', async ({ page }) => {
     await page.addInitScript((token) => {
       sessionStorage.setItem('admin_token', token)
     }, process.env.PLAYWRIGHT_AUTH_TOKEN)
 
     await page.goto('/exports')
 
-    await expect(page).toHaveURL(/\/$/, { timeout: 10_000 })
-    await expect(page.getByText(/Fonctionnalité entreprise/i)).toBeVisible()
+    await expect(page).toHaveURL(/\/exports$/, { timeout: 10_000 })
+    await expect(page.getByText(/Disponible dans l.space client/i).first()).toBeVisible()
   })
 })
