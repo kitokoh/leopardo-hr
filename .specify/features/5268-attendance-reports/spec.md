@@ -70,3 +70,11 @@ Généraliser le moteur existant sans casser le contrat actuel :
 - Mode kiosque / géo / ZKTeco unifiés : issue #5265.
 - Corrections/validations workflow : issue #5267.
 - UI web (sélecteur de période) : consomme le contrat API via la page reports existante ; amélioration visuelle suivie séparément pour ne pas toucher `front/web` (anti-collision module `attendance`).
+
+## Validation (exécutée localement, PHP 8.4 + PostgreSQL 16)
+
+- `tests/Feature/Attendance` : **62/62** (301 assertions) — dont 10 tests de cette issue.
+- PHPStan strict (config CI) : **0 erreur** (fichiers app + tests).
+- Pint : PASS sur les 6 fichiers modifiés.
+- `check-openapi-coverage.sh` : **577/577** routes documentées ; `generate-openapi-sdk.mjs --check` : PASS.
+- Gates CI : Backend Coverage + Payroll Golden PASS (premier push) ; Pint + Governance corrigés au push 2 ; PHPStan strict corrigé au push 3 (typage @var factories).
