@@ -261,6 +261,16 @@ class CountryRulesResolverTest extends TestCase
                 return 0.0;
             }
 
+            public function sickLeavePolicy(): array
+            {
+                return [
+                    'waiting_days' => 0,
+                    'daily_allowance_rates' => [],
+                    'max_paid_days' => 0,
+                    'employer_maintenance_days' => 0,
+                ];
+            }
+
             public function forCompany(?string $companyId): static
             {
                 $this->receivedCompany = $companyId;
@@ -462,6 +472,16 @@ class CountryRulesResolverTest extends TestCase
             public function familyAllowancePerChild(): float
             {
                 return 0.0;
+            }
+
+            public function sickLeavePolicy(): array
+            {
+                return [
+                    'waiting_days' => 0,
+                    'daily_allowance_rates' => [],
+                    'max_paid_days' => 0,
+                    'employer_maintenance_days' => 0,
+                ];
             }
 
             public function withCapsEnabled(bool $enabled): static

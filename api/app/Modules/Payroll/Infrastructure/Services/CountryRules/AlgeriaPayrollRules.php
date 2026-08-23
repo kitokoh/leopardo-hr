@@ -35,6 +35,13 @@ class AlgeriaPayrollRules extends AbstractCountryRules
         //   le cadrage « AC inclus dans CNAS » est documenté dans
         //   docs/payroll/DZ_COMPLIANCE.md §7 et verrouillé par le golden test
         //   GoldenDzEndOfContractFullTest (issue #1943).
+        //
+        // Issue #5241 (écart E1) — PLAFOND D'ASSIETTE CNAS : « aucun »,
+        // confirmé par sources 2026 (l'Algérie n'applique pas de plafond de
+        // cotisation sur les branches principales, contrairement au Maroc/TN)
+        // et cohérent avec la validation expert comptable 2026-08-08 du cœur
+        // CNAS 9 %/26 %. Verrouillé par golden
+        // (GoldenDzEngineCompletionTest::test_golden_dz_cnas_has_no_statutory_cap).
         return [
             ['name' => 'CNAS Salariale', 'code' => 'CNAS_EMP', 'type' => 'employee', 'rate' => 9.0, 'cap' => null],
             ['name' => 'CNAS Patronale', 'code' => 'CNAS_PAT', 'type' => 'employer', 'rate' => 26.0, 'cap' => null],
@@ -189,5 +196,70 @@ class AlgeriaPayrollRules extends AbstractCountryRules
     public function severanceMonthsPerYear(float $yearsOfService): float
     {
         return 1.0;
+    }
+
+    /**
+     * Issue #5241 (écart E4) — 13ᵉ MOIS DZ : verrouillé sur le mécanisme
+     * générique du moteur, position légale explicite :
+     *
+     * Le 13ᵉ mois n'est PAS une obligation légale en Algérie : la loi 90-11
+     * (Code du travail) n'impose aucun 13ᵉ mois — son versement relève de
+     * la convention collective, du contrat de travail ou de l'usage
+     * d'entreprise (pratique généralisée mais non statutaire).
+     *
+     * Conséquence : `thirteenthMonthMandatory()` renvoie `false` — le
+     * moteur n'injecte AUCUNE ligne « 13ème mois » automatique en décembre.
+     * Les entreprises qui versent un 13ᵉ mois conventionnel le modélisent
+     * via un composant de salaire (SalaryComponent, entièrement imposable —
+     * `thirteenthMonthTaxTreatment()` par défaut 'fully_taxable').
+     *
+     * Si un expert confirme un jour une obligation conventionnelle de
+     * branche généralisée (cas CI #1825), basculer ce booléen + golden.
+     * Référence : docs/payroll/DZ_COMPLIANCE.md §8.
+     */
+    public function thirteenthMonthMandatory(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Issue #5241 (écart E5) — MALADIE / ARRÊT DE TRAVAIL DZ : règles
+     * d'indemnisation sourcées, confidenceLevel 'pilot' (validation expert
+     * comptable requise avant passage 'production', procédure #5149).
+     *
+     * Sources (vérifiées 2026-08-23) :
+     *  - CNAS (site officiel cnas.dz, « medical certificate for work
+     *    stoppage ») : IJ = 50 % du salaire journalier de référence (après
+     *    déduction des cotisations et de l'IRG) du 1er au 15e jour de
+     *    l'arrêt, puis 100 % à partir du 16e jour ;
+     *  - loi 90-11 (21/04/1990) art. 41+ : la maladie suspend le contrat de
+     *    travail (motif légal) — l'indemnisation relève du régime CNAS ;
+     *  - délai de carence : 3 jours (usage courant, aucune IJ versée — sauf
+     *    convention collective plus favorable) ;
+     *  - durée maximale maladie ordinaire : 6 mois (180 jours, renouvelable).
+     *
+     * Maintien patronal légal : 0 jour — le droit algérien ne prévoit pas
+     * de maintien de salaire obligatoire en maladie ordinaire (seule la
+     * convention collective peut en prévoir un). Le flux absence → paie
+     * (comptage des jours d'arrêt, prorata) est porté par #5245.
+     *
+     * @return array{
+     *     waiting_days: int,
+     *     daily_allowance_rates: array<int, array{from_day: int, to_day: int|null, rate: float}>,
+     *     max_paid_days: int,
+     *     employer_maintenance_days: int,
+     * }
+     */
+    public function sickLeavePolicy(): array
+    {
+        return [
+            'waiting_days' => 3,
+            'daily_allowance_rates' => [
+                ['from_day' => 1, 'to_day' => 15, 'rate' => 0.50],
+                ['from_day' => 16, 'to_day' => null, 'rate' => 1.00],
+            ],
+            'max_paid_days' => 180,
+            'employer_maintenance_days' => 0,
+        ];
     }
 }
