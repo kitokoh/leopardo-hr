@@ -6,11 +6,13 @@ namespace Tests\Feature\E2E;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Jobs\ProvisionDemoTenantJob;
 use App\Modules\Billing\Application\Actions\ProvisionGuidedTrial;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -44,6 +46,12 @@ class CriticalFunnelPayrollE2ETest extends TestCase
         Storage::fake('local');
         Storage::fake('private');
 
+        // Le job de provision est ASYNC en prod (worker) : on fake la queue
+        // pour ne pas l'exécuter dans la requête (pattern
+        // TrialProvisioningDedupTest #3951) — la provision est ensuite
+        // exécutée explicitement avec le code réel (ProvisionGuidedTrial).
+        Queue::fake();
+
         $email = 'prospect-'.time().'@e2e.leopardo.test';
         $companyName = 'E2E Funnel SARL';
         $country = 'DZ';
@@ -58,12 +66,16 @@ class CriticalFunnelPayrollE2ETest extends TestCase
         $signup->assertOk()
             ->assertJsonPath('data.status', 'provisioning_sandbox');
 
-        $provisioningToken = (string) $signup->json('data.provisioning_token');
+        /** @var string $provisioningToken */
+        $provisioningToken = $signup->json('data.provisioning_token');
         $this->assertNotEmpty($provisioningToken, 'un provisioning_token doit être retourné');
 
         $provisioning = DB::table('trial_provisionings')->where('email', $email)->first();
         $this->assertNotNull($provisioning, 'la ligne trial_provisionings doit exister');
         $this->assertSame('pending', $provisioning->status);
+
+        // Le job a bien été dispatché (contrat async) — jamais exécuté ici.
+        Queue::assertPushed(ProvisionDemoTenantJob::class, 1);
 
         // ── 2. Provision — le code réel du job (ProvisionDemoTenantJob) ───────
         $provisioned = app(ProvisionGuidedTrial::class)->execute($email, $companyName, $country);
@@ -93,7 +105,8 @@ class CriticalFunnelPayrollE2ETest extends TestCase
             'email' => 'yasmine.benali@e2e.leopardo.test',
             'role' => 'employee',
             'password' => 'ProvidedPass123!',
-            'gross_salary' => 60000,
+            'salary_type' => 'fixed',
+            'salary_base' => 60000,
             'country' => $country,
         ])->assertCreated();
 
@@ -120,12 +133,15 @@ class CriticalFunnelPayrollE2ETest extends TestCase
         ]);
         $runResponse->assertCreated()
             ->assertJsonPath('data.status', PayrollRun::STATUS_DRAFT);
-        $runId = (int) $runResponse->json('data.id');
+        /** @var int $runId */
+        $runId = $runResponse->json('data.id');
 
         $calculated = $this->postJson("/api/v1/payroll-runs/{$runId}/calculate")
             ->assertOk()
             ->assertJsonPath('data.status', PayrollRun::STATUS_CALCULATED);
-        $this->assertGreaterThanOrEqual(1, (int) $calculated->json('data.pay_slips_count'));
+        /** @var int $slipsCount */
+        $slipsCount = $calculated->json('data.pay_slips_count');
+        $this->assertGreaterThanOrEqual(1, $slipsCount);
 
         $this->postJson("/api/v1/payroll-runs/{$runId}/validate")
             ->assertOk()
