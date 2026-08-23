@@ -217,8 +217,12 @@ class PayrollRunController extends Controller
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false) {
-            abort(403);
+        // Issue #5246 — workflow de validation RBAC : la validation (vérification
+        // / vise) est réservée aux managers principal/comptable (contrat
+        // documenté RBAC_ROUTE_MATRIX.md F-11/#1541). Un `rh` peut PRÉPARER
+        // (calculer) mais pas auto-valider sa propre préparation.
+        if ($actor->hasManagerRole('principal', 'comptable') === false) {
+            abort(403, 'INSUFFICIENT_ROLE');
         }
 
         try {
@@ -288,8 +292,11 @@ class PayrollRunController extends Controller
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false) {
-            abort(403);
+        // Issue #5246 — l'approbation finale (clôture comptable / verrouillage)
+        // est réservée aux managers principal/comptable : un `rh` ne peut pas
+        // clôturer ce qu'il a préparé (séparation des tâches).
+        if ($actor->hasManagerRole('principal', 'comptable') === false) {
+            abort(403, 'INSUFFICIENT_ROLE');
         }
 
         try {
@@ -329,8 +336,10 @@ class PayrollRunController extends Controller
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false) {
-            abort(403);
+        // Issue #5246 — la réversion d'une clôture est une décision sensible :
+        // réservée aux managers principal/comptable (même règle que lock).
+        if ($actor->hasManagerRole('principal', 'comptable') === false) {
+            abort(403, 'INSUFFICIENT_ROLE');
         }
 
         $validated = $request->validate([
