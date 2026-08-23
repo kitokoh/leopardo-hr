@@ -8,7 +8,7 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_hr/core/providers/core_providers.dart';
 import 'package:leopardo_core/features/schedules/data/schedule_repository.dart';
-import 'package:leopardo_hr/features/schedules/providers/schedule_provider.dart';
+import 'package:leopardo_core/features/schedules/providers/schedule_provider.dart';
 import 'package:leopardo_hr/features/team/providers/team_provider.dart';
 
 class ScheduleListScreen extends ConsumerWidget {

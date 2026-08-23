@@ -8,10 +8,10 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/shimmer_loading.dart';
-import 'package:leopardo_manager/features/cabinet/providers/cabinet_provider.dart';
+import 'package:leopardo_core/features/cabinet/providers/cabinet_provider.dart';
 import 'package:leopardo_core/models/cabinet_document.dart';
 import 'package:leopardo_core/models/cabinet_folder.dart';
-import 'package:leopardo_manager/core/providers/core_providers.dart';
+import 'package:leopardo_core/core/providers/core_providers.dart';
 
 class CabinetScreen extends ConsumerStatefulWidget {
   final int? folderId;
