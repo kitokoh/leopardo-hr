@@ -99,6 +99,7 @@ Dans `api/app/Modules/Payroll/Infrastructure/Services/CountryRules/TurkeyPayroll
 
 ## Validation
 
+- Migration tenant backfill `2026_08_23_000004_backfill_tr_2026_payroll.php` (pattern backfill CI #1918) : remplace l'ancien barème 2024 des scopes TR seedés (sinon `taxSlabs()` résout la base AVANT le code — bulletins existants resteraient sur un barème abrogé ; un re-seed simple créerait 10 lignes actives chevauchantes) et aligne les 4 cotisations TR (taux 21,75 %, cap tavan 297 270). Lignes custom admin préservées.
 - PHPStan strict (level 8) 0 erreur sur les fichiers touchés ; Pint PASS.
 - Golden TR (15 cas) + suite Payroll sans régression.
 - `docs/payroll/TR_COMPLIANCE.md` mis à jour (CSGB, SGK, GİB — Resmî Gazete
