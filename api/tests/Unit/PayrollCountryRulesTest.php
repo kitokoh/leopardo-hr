@@ -49,14 +49,15 @@ class PayrollCountryRulesTest extends TestCase
         // deux sous la tranche 0 % après abattement (6 000 − 1 000 = 5 000).
         self::assertSame(0.0, (new TunisiaPayrollRules)->calculateIncomeTax(5000 / 12));
         self::assertSame(0.0, (new TunisiaPayrollRules)->calculateIncomeTax(6000 / 12));
-        self::assertSame(0.0, (new FrancePayrollRules)->calculateIncomeTax(11294 / 12));
-        self::assertSame(0.06, (new FrancePayrollRules)->calculateIncomeTax(11300 / 12));
         // TR 2026 (#5253) : l'asgari ücret istisnası (exonération SMIC, loi
         // 7346) annule l'IR sous le SMIC net annuel (336 906 TRY) → un
         // revenu imposable de 110 000 TRY/an paie 0,00 ; au-dessus de la
         // borne (400 000 TRY/an), le barème 2026 s'applique après istisna.
         self::assertSame(0.0, (new TurkeyPayrollRules)->calculateIncomeTax(110000 / 12));
         self::assertSame(1051.57, (new TurkeyPayrollRules)->calculateIncomeTax(400000 / 12));
+        // FR (#5254) : barème 2026 (LF 2026) — bornes 11 600/29 579/84 577/181 917.
+        self::assertSame(0.0, (new FrancePayrollRules)->calculateIncomeTax(11600 / 12));
+        self::assertSame(0.01, (new FrancePayrollRules)->calculateIncomeTax(11601 / 12));
         self::assertSame(0.0, (new SenegalPayrollRules)->calculateIncomeTax(630000 / 12));
     }
 

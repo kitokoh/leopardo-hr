@@ -78,21 +78,21 @@ class PayrollCalculationContractTest extends TestCase
 
     public function test_golden_fr_contract(): void
     {
-        // Calcul manuel (FrancePayrollRules) — brut 3 000 EUR :
+        // Calcul manuel (FrancePayrollRules, barème IR 2026 — #5254) — brut 3 000 EUR :
         //   SS salariale 7,5 % = 225 · CSG 9,2 % sur 98,25 % du brut = 271,17
         //   CRDS 0,5 % sur 98,25 % = 14,74 → salarial total 510,91
         //   Patronal 30 % = 900 · Assiette = 2 489,09 · annuel 29 869,08
-        //   Tranches : 0-11 294 × 0 % · 11 295-28 797 × 11 % = 1 925,33
-        //     28 798-29 869,08 × 30 % = 321,62 → impôt mensuel 187,25
-        //   Net = 3 000 − 510,91 − 187,25 = 2 301,84 · Coût = 3 900
+        //   Tranches 2026 : 0-11 600 × 0 % · 11 601-29 579 × 11 % = 1 977,69
+        //     29 580-29 869,08 × 30 % = 87,024 → impôt mensuel 172,06
+        //   Net = 3 000 − 510,91 − 172,06 = 2 317,03 · Coût = 3 900
         $contract = $this->presenter()->present('FR', 3000.0);
 
         $this->assertSame('FR', $contract['country_code']);
         $this->assertSame('EUR', $contract['currency']);
         $this->assertEquals(510.91, $contract['social_employee']);
         $this->assertEquals(2489.09, $contract['tax_base']);
-        $this->assertEquals(187.25, $contract['income_tax']);
-        $this->assertEquals(2301.84, $contract['net_salary']);
+        $this->assertEquals(172.06, $contract['income_tax']);
+        $this->assertEquals(2317.03, $contract['net_salary']);
         $this->assertEquals(900.0, $contract['social_employer']);
         $this->assertEquals(3900.0, $contract['total_cost']);
     }
