@@ -58,4 +58,11 @@ return [
     'correction_already_processed' => 'تمت معالجة طلب التصحيح هذا مسبقاً.',
     'manual_checkout_requires_check_in' => 'يتطلب تسجيل الخروج اليدوي وقت تسجيل دخول.',
     'checkout_after_checkin' => 'يجب أن يكون وقت تسجيل الخروج بعد وقت تسجيل الدخول.',
+
+    // Issue #5269 — messages API pointage (zéro chaîne hardcodée utilisateur).
+    'workflow_deactivated' => 'تم تعطيل سير العمل.',
+    'request_not_pending' => 'الطلب ليس قيد الانتظار.',
+    'calendar_disconnected' => 'تم فصل التقويم.',
+    'geo_event_no_session' => 'تمت معالجة الحدث (لا توجد جلسة مفتوحة للخروج).',
+    'geo_event_processed' => 'تمت معالجة الحدث الجغرافي بنجاح.',
 ];
