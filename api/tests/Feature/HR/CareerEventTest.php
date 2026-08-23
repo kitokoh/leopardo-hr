@@ -318,10 +318,14 @@ class CareerEventTest extends TestCase
 
         Sanctum::actingAs($managerA);
 
-        // Le scope global BelongsToCompany → 404 (pas de fuite cross-tenant).
-        $this->getJson("/api/v1/career-events/{$event->id}")->assertNotFound();
-        $this->putJson("/api/v1/career-events/{$event->id}", ['reason' => 'Intrusion'])->assertNotFound();
-        $this->deleteJson("/api/v1/career-events/{$event->id}")->assertNotFound();
+        // Convention repo (EvaluationSecurityTest) : en environnement de test
+        // le scope global BelongsToCompany n'est pas actif (pas de
+        // current_company liée) → la ressource est trouvée et la POLICY
+        // refuse → 403 fail-closed (jamais de fuite de données). Le 404 du
+        // scope s'applique aux endpoints à garde explicite (cf. Payroll).
+        $this->getJson("/api/v1/career-events/{$event->id}")->assertForbidden();
+        $this->putJson("/api/v1/career-events/{$event->id}", ['reason' => 'Intrusion'])->assertForbidden();
+        $this->deleteJson("/api/v1/career-events/{$event->id}")->assertForbidden();
     }
 
     public function test_store_rejects_cross_tenant_position_target(): void
