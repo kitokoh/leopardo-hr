@@ -11016,6 +11016,42 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /accounting/documents/shared/{token}:
+    get:
+      tags: ["Accounting"]
+      summary: "Portail client — informations du document partagé (token)"
+      description: "Endpoint public : le token de partage est la credential. Accès RGPD limité au document partagé (issue #5225)."
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Méta-données du document (numéro, type, statut, total TTC, expiration)"
+        "404":
+          description: "Token invalide ou expiré"
+        "429":
+          description: "Trop de requêtes (throttle)"
+
+  /accounting/documents/shared/{token}/download:
+    get:
+      tags: ["Accounting"]
+      summary: "Portail client — téléchargement du PDF partagé (token)"
+      description: "Endpoint public : télécharge le PDF du document partagé (issue #5225)."
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "PDF du document"
+        "404":
+          description: "Token invalide/expiré ou PDF non prêt"
+        "429":
+          description: "Trop de requêtes (throttle)"
+
   /supported-countries:
     get:
       tags: ["Payroll Engine"]

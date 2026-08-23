@@ -140,6 +140,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/absences/{absence}/reject", options);
     },
 
+    /** Portail client — informations du document partagé (token) */
+    getAccountingDocumentsSharedByToken(options = {}) {
+      return request("GET", "/accounting/documents/shared/{token}", options);
+    },
+
+    /** Portail client — téléchargement du PDF partagé (token) */
+    getAccountingDocumentsSharedByTokenDownload(options = {}) {
+      return request("GET", "/accounting/documents/shared/{token}/download", options);
+    },
+
     /** Envoyer un message a l'assistant IA (super-admin) */
     postAdminAiChat(options = {}) {
       return request("POST", "/admin/ai/chat", options);

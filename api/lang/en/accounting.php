@@ -44,6 +44,14 @@ return [
 
     'no_lines' => 'No lines',
 
+    // Email (issue #5225)
+    'email_subject' => 'Document :number',
+    'email_heading' => 'Your document',
+    'email_body' => 'Hello, your document :number is available.',
+    'email_button' => 'View my document',
+    'email_expires' => 'This link expires on :date.',
+    'email_footer' => 'This is an automated email — please do not reply.',
+
     // Footer
     'legal_mentions' => 'Legal mentions',
 ];

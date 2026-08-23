@@ -44,6 +44,14 @@ return [
 
     'no_lines' => 'Satır yok',
 
+    // Email (issue #5225)
+    'email_subject' => 'Belge :number',
+    'email_heading' => 'Belgeniz',
+    'email_body' => 'Merhaba, :number numaralı belgeniz hazır.',
+    'email_button' => 'Belgemi görüntüle',
+    'email_expires' => 'Bu bağlantı :date tarihinde sona erer.',
+    'email_footer' => 'Bu otomatik bir e-postadır — lütfen yanıtlamayın.',
+
     // Alt bilgi
     'legal_mentions' => 'Yasal bildirimler',
 ];

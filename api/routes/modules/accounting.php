@@ -37,3 +37,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
         });
     });
+ * Routes module Comptabilité (issue #5225).
+ *
+ * Endpoints PUBLICS du portail client : le token de partage est la credential
+ * (pas d'auth Sanctum) — accès RGPD limité au document partagé, pattern
+ * CabinetShare (#1817). Les endpoints authentifiés arrivent avec #5226.
+ */
+
+use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
+use Illuminate\Support\Facades\Route;
+
+// Public: consultation + téléchargement d'un document partagé (token + throttle).
+Route::get('/accounting/documents/shared/{token}', [PublicDocumentShareController::class, 'info'])
+    ->middleware('throttle:60,1');
+Route::get('/accounting/documents/shared/{token}/download', [PublicDocumentShareController::class, 'download'])
+    ->middleware('throttle:60,1');

@@ -44,6 +44,14 @@ return [
 
     'no_lines' => 'لا توجد أسطر',
 
+    // Email (issue #5225)
+    'email_subject' => 'مستند :number',
+    'email_heading' => 'مستندك',
+    'email_body' => 'مرحباً، مستندك :number متاح.',
+    'email_button' => 'عرض المستند',
+    'email_expires' => 'تنتهي صلاحية هذا الرابط في :date.',
+    'email_footer' => 'هذه رسالة تلقائية — يرجى عدم الرد.',
+
     // التذييل
     'legal_mentions' => 'إشعارات قانونية',
 ];

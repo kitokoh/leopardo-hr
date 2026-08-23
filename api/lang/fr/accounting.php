@@ -44,6 +44,14 @@ return [
 
     'no_lines' => 'Aucune ligne',
 
+    // Email (issue #5225)
+    'email_subject' => 'Document :number',
+    'email_heading' => 'Votre document',
+    'email_body' => 'Bonjour, votre document :number est disponible.',
+    'email_button' => 'Consulter mon document',
+    'email_expires' => 'Ce lien expire le :date.',
+    'email_footer' => 'Ceci est un envoi automatique — merci de ne pas répondre.',
+
     // Pied de page
     'legal_mentions' => 'Mentions légales',
 ];
