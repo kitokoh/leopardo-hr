@@ -1155,6 +1155,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/contracts/{contract}/renew", options);
     },
 
+    /** Signer explicitement un contrat (issue #5260) — idempotent */
+    postContractsByContractSign(options = {}) {
+      return request("POST", "/contracts/{contract}/sign", options);
+    },
+
     /** Suspendre un contrat actif */
     postContractsByContractSuspend(options = {}) {
       return request("POST", "/contracts/{contract}/suspend", options);
@@ -1168,6 +1173,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Contrats expirant bientot */
     getContractsExpiring(options = {}) {
       return request("GET", "/contracts/expiring", options);
+    },
+
+    /** Modeles legaux de contrat par pays (issue #5260) — DZ/MA/TN/SN */
+    getContractsTemplates(options = {}) {
+      return request("GET", "/contracts/templates", options);
     },
 
     /** Lister les conversations de l'employe courant */

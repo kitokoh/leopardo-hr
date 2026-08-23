@@ -53,11 +53,5 @@ return [
     'evaluation_not_draft_submit' => 'يمكن إرسال تقييم المسودة فقط.',
     'evaluation_not_draft_delete' => 'يمكن حذف تقييم المسودة فقط.',
     'evaluation_not_submitted' => 'يمكن استلام التقييم المُرسل فقط.',
-    'career_event_employee_not_found' => 'الموظف غير موجود في شركتك.',
-    'career_event_position_not_found' => 'المنصب غير موجود في شركتك.',
-    'career_event_department_not_found' => 'القسم غير موجود في شركتك.',
-    'career_event_effective_date_required' => 'تاريخ السريان مطلوب.',
-    'career_event_reason_required' => 'السبب مطلوب.',
-    'career_event_nothing_to_apply' => 'لا شيء للتطبيق: الحدث لا يحتوي على منصب أو قسم أو راتب مستهدف.',
-    'career_event_deleted' => 'تم حذف حدث المسار المهني.',
+    'contract_template_not_found' => 'لا يوجد نموذج عقد متاح لهذا البلد (المدعومة: DZ/MA/TN/SN).',
 ];

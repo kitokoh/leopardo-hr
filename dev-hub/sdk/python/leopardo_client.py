@@ -944,6 +944,10 @@ class LeopardoClient:
         """Renouveler un contrat"""
         return self.request("POST", "/contracts/{contract}/renew", **kwargs)
 
+    def post_contracts_by_contract_sign(self, **kwargs):
+        """Signer explicitement un contrat (issue #5260) — idempotent"""
+        return self.request("POST", "/contracts/{contract}/sign", **kwargs)
+
     def post_contracts_by_contract_suspend(self, **kwargs):
         """Suspendre un contrat actif"""
         return self.request("POST", "/contracts/{contract}/suspend", **kwargs)
@@ -955,6 +959,10 @@ class LeopardoClient:
     def get_contracts_expiring(self, **kwargs):
         """Contrats expirant bientot"""
         return self.request("GET", "/contracts/expiring", **kwargs)
+
+    def get_contracts_templates(self, **kwargs):
+        """Modeles legaux de contrat par pays (issue #5260) — DZ/MA/TN/SN"""
+        return self.request("GET", "/contracts/templates", **kwargs)
 
     def get_conversations(self, **kwargs):
         """Lister les conversations de l'employe courant"""

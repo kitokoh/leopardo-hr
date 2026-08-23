@@ -1370,7 +1370,9 @@ Note 2026-08-15 (campagne QA complète, issues #2652/#2653/#2654/#2662) : durcis
 - Garde CI : `dev-hub/tools/check-openapi-route-coverage.py` étendu (routes DDD `api/routes/**` incluses, allowlist `openapi-coverage-allowlist.txt` ajustée — 524/706, 0 drift) — un endpoint non documenté OpenAPI fait échouer la CI.
 - SDK régénérés (`dev-hub/sdk/javascript/leopardoClient.js`, `dev-hub/sdk/python/leopardo_client.py`, `dev-hub/openapi/v1.yaml`, `MANIFEST.json`) alignés sur `api/openapi.yaml` (534 opérations).
 
-Note 2026-08-22 (issue #5259) : plans de carrière — événements de carrière (promotion/raise/transfer/title_change).
-- `GET|POST /api/v1/career-events`, `GET|PUT|PATCH|DELETE /api/v1/career-events/{id}` (édit/suppression `pending` uniquement), `PUT /api/v1/career-events/{id}/approve|reject|apply`. Workflow `pending → approved → applied` (ou `rejected`) ; `apply` met à jour l'employé (position_id, department_id, salary_base) en transaction → impact paie au run suivant.
-- Scénarios à vérifier : création manager avec snapshot `from_*` (poste/département/salaire courants de l'employé), employé → 403 sur create et lecture limitée à son propre parcours, manager `dept` scopé (PA2-SEC-002) / `superviseur` (PA2-SEC-003), isolation tenant (ressource d'une autre société → 404, cible poste/département cross-tenant → 422), transitions invalides (apply sur `pending` → 403, apply sans cible → 422 CAREER_EVENT_NOTHING_TO_APPLY, edit/delete hors `pending` → 403), `GET /me/career` expose `data.career_events` (parcours complet contrats + événements).
-- Couverture : `tests/Feature/HR/CareerEventTest.php` (12 tests) — contrat OpenAPI documenté (9 opérations, 753/753 routes couvertes).
+Note 2026-08-22 (issue #5260) : contrats par pays — modèles légaux + signature explicite.
+- `GET /api/v1/contracts/templates?country=DZ|MA|TN|SN[&contract_type=cdi|cdd]` (principal/rh) : bundle légal (références, période d'essai, préavis, congés, HS, SMIG, cotisations, clauses CDI/CDD) ; pays inconnu → 422 `CONTRACT_TEMPLATE_NOT_FOUND`, employé → 403.
+- `POST /api/v1/contracts` : `apply_legal_template` (défaut : semer quand `clauses` absent) — clauses du pays de l'entreprise de l'employé, jamais d'écrasement des clauses explicites.
+- `POST /api/v1/contracts/{id}/sign` : signature explicite idempotente (`signed_at` + `signed_document_path` optionnel) ; 403 non-manager, 404 cross-tenant.
+- Scénarios à vérifier : bundles ×4 pays, seed au store (entreprise DZ → clauses loi 90-11), clauses explicites préservées, idempotence sign, historique amendements complet (list chronologique), isolation tenant.
+- Couverture : `tests/Feature/HR/ContractByCountryTest.php` (9 tests) — contrat OpenAPI documenté (745/745 routes couvertes).

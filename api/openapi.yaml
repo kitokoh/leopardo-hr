@@ -9373,6 +9373,72 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /contracts/templates:
+    get:
+      tags: ["Contracts"]
+      summary: "Modeles legaux de contrat par pays (issue #5260) — DZ/MA/TN/SN"
+      parameters:
+        - name: country
+          in: query
+          required: true
+          schema:
+            type: string
+            example: DZ
+        - name: contract_type
+          in: query
+          schema:
+            type: string
+            enum: ["cdi", "cdd", "stage", "freelance", "interim"]
+            default: cdi
+      responses:
+        "200":
+          description: "Bundle legal du pays (references, probation, preavis, conges, HS, SMIG, cotisations, clauses CDI/CDD)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      country:
+                        type: string
+                      contract_type:
+                        type: string
+                      legal_references:
+                        type: object
+                      probation:
+                        type: string
+                      notice_period:
+                        type: string
+                      annual_leave:
+                        type: string
+                      overtime:
+                        type: string
+                      minimum_wage:
+                        type: string
+                      social_security:
+                        type: string
+                      clauses:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            title:
+                              type: string
+                            body:
+                              type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          description: "Pays non supporte (CONTRACT_TEMPLATE_NOT_FOUND)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /contracts/{contract}:
     get:
       tags: ["Contracts"]
@@ -9448,6 +9514,42 @@ paths:
           $ref: "#/components/responses/Error401"
         "422":
           description: "Only draft contracts can be activated"
+
+  /contracts/{contract}/sign:
+    post:
+      tags: ["Contracts"]
+      summary: "Signer explicitement un contrat (issue #5260) — idempotent"
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                signed_document_path:
+                  type: string
+                  maxLength: 500
+      responses:
+        "200":
+          description: "Contrat signe (signed_at pose) — idempotent"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Contract"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
 
   /contracts/{contract}/suspend:
     post:
@@ -22812,6 +22914,10 @@ components:
         clauses:
           type: object
           nullable: true
+        apply_legal_template:
+          type: boolean
+          nullable: true
+          description: "Issue #5260 — semer les clauses legales du pays de l'entreprise quand clauses est absent (defaut : true si clauses vide)"
 
     UpdateContractRequest:
       type: object

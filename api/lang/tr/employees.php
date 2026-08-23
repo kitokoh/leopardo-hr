@@ -53,11 +53,5 @@ return [
     'evaluation_not_draft_submit' => 'Yalnizca taslak degerlendirme gonderilebilir.',
     'evaluation_not_draft_delete' => 'Yalnizca taslak degerlendirme silinebilir.',
     'evaluation_not_submitted' => 'Yalnizca gonderilmis bir degerlendirme teslim alinabilir.',
-    'career_event_employee_not_found' => 'Çalışan şirketinizde bulunamadı.',
-    'career_event_position_not_found' => 'Pozisyon şirketinizde bulunamadı.',
-    'career_event_department_not_found' => 'Departman şirketinizde bulunamadı.',
-    'career_event_effective_date_required' => 'Yürürlük tarihi zorunludur.',
-    'career_event_reason_required' => 'Gerekçe zorunludur.',
-    'career_event_nothing_to_apply' => 'Uygulanacak bir şey yok: etkinliğin hedef pozisyonu, departmanı veya maaşı yok.',
-    'career_event_deleted' => 'Kariyer etkinliği silindi.',
+    'contract_template_not_found' => 'Bu ülke için sözleşme şablonu yok (desteklenen: DZ/MA/TN/SN).',
 ];
