@@ -24,7 +24,10 @@ class PayrollCountryRulesTest extends TestCase
             'MA' => [new MoroccoPayrollRules, 69.3, 214.7],
             'TN' => [new TunisiaPayrollRules, 91.8, 165.7],
             'FR' => [new FrancePayrollRules, 170.3, 300.0],
-            'TR' => [new TurkeyPayrollRules, 150.0, 225.0],
+            // TR 2026 (#5253) : salarié 15 % (SGK 14 + chômage 1), employeur
+            // 23,75 % (SGK 21,75 + chômage 2) — sans teşvik. Sur 1 000 TRY :
+            // 150,00 / 237,50.
+            'TR' => [new TurkeyPayrollRules, 150.0, 237.5],
             'SN' => [new SenegalPayrollRules, 56.0, 194.0],
         ];
 
@@ -48,7 +51,12 @@ class PayrollCountryRulesTest extends TestCase
         self::assertSame(0.0, (new TunisiaPayrollRules)->calculateIncomeTax(6000 / 12));
         self::assertSame(0.0, (new FrancePayrollRules)->calculateIncomeTax(11294 / 12));
         self::assertSame(0.06, (new FrancePayrollRules)->calculateIncomeTax(11300 / 12));
-        self::assertSame(1375.0, (new TurkeyPayrollRules)->calculateIncomeTax(110000 / 12));
+        // TR 2026 (#5253) : l'asgari ücret istisnası (exonération SMIC, loi
+        // 7346) annule l'IR sous le SMIC net annuel (336 906 TRY) → un
+        // revenu imposable de 110 000 TRY/an paie 0,00 ; au-dessus de la
+        // borne (400 000 TRY/an), le barème 2026 s'applique après istisna.
+        self::assertSame(0.0, (new TurkeyPayrollRules)->calculateIncomeTax(110000 / 12));
+        self::assertSame(1051.57, (new TurkeyPayrollRules)->calculateIncomeTax(400000 / 12));
         self::assertSame(0.0, (new SenegalPayrollRules)->calculateIncomeTax(630000 / 12));
     }
 

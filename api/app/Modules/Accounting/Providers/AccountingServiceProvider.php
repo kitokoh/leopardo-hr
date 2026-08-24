@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Accounting\Providers;
 
+use App\Events\CompanyCreated;
+use App\Modules\Accounting\Application\Listeners\ProvisionAccountingSettings;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -15,7 +18,15 @@ use Illuminate\Support\ServiceProvider;
  */
 class AccountingServiceProvider extends ServiceProvider
 {
-    public function register(): void {}
+    public function register(): void
+    {
+    }
 
-    public function boot(): void {}
+    public function boot(): void
+    {
+        // Issue #5232 — défauts pays appliqués à la création d'entreprise.
+        // Enregistrement local au module (Event::listen) pour ne pas toucher
+        // EventServiceProvider central (isolation module, anti-collision).
+        Event::listen(CompanyCreated::class, ProvisionAccountingSettings::class);
+    }
 }
