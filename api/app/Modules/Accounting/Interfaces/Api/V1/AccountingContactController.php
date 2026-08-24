@@ -85,6 +85,8 @@ class AccountingContactController extends Controller
 
     public function show(Request $request, AccountingContact $contact): JsonResponse
     {
+        $this->assertTenantScope($request, $contact);
+
         return response()->json([
             'data' => $this->serialize($contact),
         ]);
@@ -92,6 +94,8 @@ class AccountingContactController extends Controller
 
     public function update(UpdateContactRequest $request, AccountingContact $contact): JsonResponse
     {
+        $this->assertTenantScope($request, $contact);
+
         $contact->update($this->contactPayload($request->validated()));
 
         return response()->json([
@@ -101,9 +105,27 @@ class AccountingContactController extends Controller
 
     public function destroy(Request $request, AccountingContact $contact): JsonResponse
     {
+        $this->assertTenantScope($request, $contact);
+
         $contact->delete();
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * Garde défensive d'isolation tenant (fail-closed #3727) : le scope global
+     * du trait BelongsToCompany ne s'applique PAS au route-model binding
+     * implicite (résolu via {contact}) — sans garde explicite, un contact d'un
+     * autre tenant répondait 200 (fuite cross-tenant, constatée sur le run
+     * Backend 2026-08-24, test test_contact_is_tenant_scoped_via_api).
+     */
+    private function assertTenantScope(Request $request, AccountingContact $contact): void
+    {
+        $companyId = $request->user()?->company_id;
+
+        if ($companyId !== null && (string) $contact->company_id !== (string) $companyId) {
+            abort(404);
+        }
     }
 
     /**
