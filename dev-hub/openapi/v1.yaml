@@ -5234,6 +5234,44 @@ paths:
         "403":
           $ref: "#/components/responses/Error401"
 
+  /accounting/reports/vat-declaration:
+    get:
+      tags: ["Accounting"]
+      summary: "Declaration TVA simplifiee par periode"
+      description: |
+        Declaration TVA mensuelle du tenant courant (issue #5271) : TVA
+        collectee (factures + recus), TVA deductible (avoirs), net a declarer,
+        detail par taux de TVA (assiette HT, taxe, total TTC). Les documents
+        brouillon et annules sont exclus. Formats : json (defaut) ou csv.
+      parameters:
+        - name: period
+          in: query
+          description: "Periode au format YYYY-MM (defaut : mois courant)."
+          schema:
+            type: string
+            example: "2026-08"
+        - name: format
+          in: query
+          description: "Format de sortie : json ou csv."
+          schema:
+            type: string
+            enum: ["json", "csv"]
+            default: "json"
+      responses:
+        "200":
+          description: "Declaration TVA de la periode"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/VatDeclaration"
+        "422":
+          $ref: "#/components/responses/Validation422"
+        "403":
+          $ref: "#/components/responses/Error401"
+
   /attendance/check-in:
     post:
       tags: ["Attendance"]
@@ -22192,6 +22230,62 @@ components:
           type: object
           additionalProperties:
             type: string
+
+    VatDeclaration:
+      type: object
+      description: "Declaration TVA simplifiee d'une periode mensuelle (issue #5271)."
+      properties:
+        period:
+          type: object
+          properties:
+            label:
+              type: string
+            from:
+              type: string
+              format: date
+            to:
+              type: string
+              format: date
+        currency:
+          type: string
+        collected:
+          $ref: "#/components/schemas/VatDeclarationTotals"
+        deductible:
+          $ref: "#/components/schemas/VatDeclarationTotals"
+        net:
+          type: object
+          description: "Net a declarer (collectee - deductible)."
+          properties:
+            base:
+              type: number
+            tax:
+              type: number
+            total:
+              type: number
+
+    VatDeclarationTotals:
+      type: object
+      description: "Totaux d'un cote de la declaration (assiette HT, taxe, TTC) + detail par taux."
+      properties:
+        base:
+          type: number
+        tax:
+          type: number
+        total:
+          type: number
+        by_rate:
+          type: array
+          items:
+            type: object
+            properties:
+              rate:
+                type: number
+              base:
+                type: number
+              tax:
+                type: number
+              total:
+                type: number
 
     MarketingLeadContact:
       type: object

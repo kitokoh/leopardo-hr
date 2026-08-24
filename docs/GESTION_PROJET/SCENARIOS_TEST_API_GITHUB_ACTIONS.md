@@ -1396,3 +1396,9 @@ Note 2026-08-24 (issue #5232) : paramétrage comptable par entreprise — `GET/P
 - Provisioning : listener `ProvisionAccountingSettings` sur `CompanyCreated` (withinTenant, additif non bloquant, idempotent).
 - Scénarios à vérifier : défauts pays DZ (DZD, fr, TVA 19 %, série `FAC`), upsert puis relecture, validation 422 ×4, RBAC, isolation tenant, provisioning + idempotence.
 - Couverture : `tests/Feature/Accounting/AccountingSettingsTest.php` (12 tests) — OpenAPI documenté (756/756 routes couvertes), SDK régénérés.
+
+Note 2026-08-24 (issue #5271) : déclaration TVA simplifiée par période — `GET /api/v1/accounting/reports/vat-declaration`.
+- `GET /api/v1/accounting/reports/vat-declaration?period=YYYY-MM[&format=json|csv]` : déclaration mensuelle du tenant courant (RBAC `api.manager:comptable,principal`, employé → 403) — TVA collectée (factures + reçus), déductible (avoirs), net, détail par taux (assiette HT, taxe, TTC) ; brouillons et annulés exclus ; période invalide → 422 ; `format=csv` → export `vat-declaration-<period>.csv`.
+- Multi-taux TVA par pays dans les défauts settings (DZ 19/9, MA 20, TN 19, SN 18, CI 18, TR 20, FR 20…) + mentions légales par défaut par pays.
+- Scénarios à vérifier : golden août 2026 (collectée 6 200/678/6 878 · déductible 300/57/357 · net 5 900/621/6 521), période vide → zéros, exclusion brouillon/annulé/hors période/proforma, isolation tenant, CSV, RBAC.
+- Couverture : `tests/Feature/Accounting/VatDeclarationTest.php` (8 tests) — OpenAPI documenté (757/757 routes couvertes), SDK régénérés.
