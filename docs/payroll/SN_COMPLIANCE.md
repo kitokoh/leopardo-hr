@@ -141,6 +141,10 @@ Sources : AfricaPaieRH (08/2024), expatriation.io, countrytaxcalc (06/2026),
 CGI art. 168. L'ancienne implémentation (non plafonnée) surévaluait
 l'abattement des hauts revenus — corrigée au 2026-08-18 (#1912).
 
+## 8. Bulletin PDF et export virement (issue #5250)
+
+Le bulletin SN est rendu par le template PDF générique (`PaySlipPdfGenerator::COUNTRY_LEGAL` — mention « Conformément au Code du travail sénégalais. IPRES/CSS incluses. ») et l'export virement par les formats multi-pays (`sepa_xml`/`csv_generic` en XOF, `BankExportGenerator`). Cas limites verrouillés par `GoldenSnEdgeCasesTest` (issue #5250).
+
 ## 8. Préavis
 
 | Catégorie | Préavis (jours OUVRÉS, #2219) |

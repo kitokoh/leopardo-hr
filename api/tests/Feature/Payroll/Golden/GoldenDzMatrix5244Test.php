@@ -325,4 +325,81 @@ class GoldenDzMatrix5244Test extends TestCase
 
         $this->assertSame($expectedTotal, $result['total']);
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Maladie / arrêt de travail — IJ CNAS (règles #5241, DZ_COMPLIANCE §8.2)
+    // ─────────────────────────────────────────────────────────────────────
+
+    /**
+     * @return array<string, array{0: float, 1: float, 2: float}>
+     */
+    public static function sickLeaveProvider(): array
+    {
+        // [salaire journalier de référence, jours d'arrêt, IJ attendue]
+        // Politique DZ (CNAS, cnas.dz) : carence 3 j, IJ 50 % J1-15 puis
+        // 100 % J16+, max 180 j — DZ_COMPLIANCE.md §8.2 (pilot).
+        return [
+            // Arrêt ≤ carence (2 j) → aucune IJ.
+            'arrêt 2 j (carence)' => [2000.0, 2.0, 0.0],
+            // 10 j → carence 3 → 7 j @ 50 % = 7 × 2 000 × 0,50 = 7 000.
+            'arrêt 10 j' => [2000.0, 10.0, 7000.0],
+            // 20 j → 17 j indemnisés : jours 4-15 (12 j) @ 50 % = 12 000 +
+            // jours 16-20 (5 j) @ 100 % = 10 000 → 22 000.
+            'arrêt 20 j (franchit 100 %)' => [2000.0, 20.0, 22000.0],
+            // 30 j avec salaire journalier 2 500 : 27 j indemnisés →
+            // 12 j @ 50 % = 15 000 + 15 j @ 100 % = 37 500 → 52 500.
+            'arrêt 30 j (2 500 DZD/j)' => [2500.0, 30.0, 52500.0],
+            // 200 j → plafonné à 180 j indemnisables : 12 j @ 50 % = 12 000
+            // + 168 j @ 100 % = 336 000 → 348 000.
+            'arrêt 200 j (plafond 180)' => [2000.0, 200.0, 348000.0],
+        ];
+    }
+
+    #[DataProvider('sickLeaveProvider')]
+    public function test_golden_dz_sick_leave_matrix(float $dailyRef, float $sickDays, float $expectedIj): void
+    {
+        $this->assertSame(
+            $expectedIj,
+            $this->calculator()->computeSickLeaveAllowance($dailyRef, $sickDays, $this->rules())
+        );
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Prime exonérée IRG (is_taxable=false — règles #5241, DZ_COMPLIANCE §8.3)
+    // ─────────────────────────────────────────────────────────────────────
+
+    /**
+     * @return array<string, array{0: float, 1: float, 2: float, 3: float, 4: float}>
+     */
+    public static function exemptPrimeProvider(): array
+    {
+        // [brut, prime exonérée, assiette IRG, IRG, net]
+        return [
+            // Base 60 000 + prime exonérée 10 000 (brut 70 000) : CNAS 6 300
+            // (brut complet) · assiette IRG 70 000−10 000−6 300 = 53 700 ·
+            // IRG 4 600+13 700×27 % = 8 299 → annuel 99 588 → abattement
+            // 18 000 → 6 799 · net 70 000−6 300−6 799 = 56 901.
+            'prime exonérée 10 000' => [70000.0, 10000.0, 53700.0, 6799.0, 56901.0],
+            // Base 60 000 + prime exonérée 5 000 (brut 65 000) : CNAS 5 850 ·
+            // assiette 65 000−5 000−5 850 = 54 150 · IRG 4 600+14 150×27 %
+            // = 8 420,50 → annuel 101 046 → abattement 18 000 → 6 920,50 ·
+            // net 65 000−5 850−6 920,50 = 52 229,50.
+            'prime exonérée 5 000' => [65000.0, 5000.0, 54150.0, 6920.5, 52229.5],
+        ];
+    }
+
+    #[DataProvider('exemptPrimeProvider')]
+    public function test_golden_dz_exempt_prime_matrix(
+        float $gross,
+        float $nonTaxable,
+        float $expectedTaxable,
+        float $expectedIrg,
+        float $expectedNet
+    ): void {
+        $breakdown = $this->calculator()->computeNetBreakdown($gross, $this->rules(), null, $nonTaxable);
+
+        $this->assertSame($expectedTaxable, $breakdown['taxable_gross']);
+        $this->assertSame($expectedIrg, $breakdown['income_tax']);
+        $this->assertSame($expectedNet, $breakdown['net_salary']);
+    }
 }
