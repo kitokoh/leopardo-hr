@@ -207,6 +207,9 @@ class EmployeeDepartureTest extends TestCase
 
     // ── Fixtures ────────────────────────────────────────────────────────────
 
+    /**
+     * @return array{0: Company, 1: Employee, 2: Employee}
+     */
     private function createActors(string $suffix = 'a'): array
     {
         /** @var Company $company */
