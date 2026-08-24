@@ -164,7 +164,9 @@ final class VatDeclarationService
 
         $from = CarbonImmutable::createFromFormat('!Y-m', $period);
 
-        if ($from === false) {
+        // createFromFormat renvoie false en cas d'échec ; instanceof couvre
+        // null et false (vérification PHPStan-compatible sur CarbonImmutable).
+        if (! $from instanceof CarbonImmutable) {
             throw new InvalidArgumentException('accounting.vat_period_invalid');
         }
 
