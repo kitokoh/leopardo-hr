@@ -41,4 +41,8 @@ export const VITRINE_LANG_PREFIXES = [
   '/guides',
   '/case-studies',
   '/checkout',
+  // Portail client des documents partagés (issue #5233) : route PUBLIQUE
+  // (le token de partage est la credential, pattern CabinetShare #1817) —
+  // le middleware normalise `?lang=` / Accept-Language pour un SSR localisé.
+  '/documents',
 ] as const;
