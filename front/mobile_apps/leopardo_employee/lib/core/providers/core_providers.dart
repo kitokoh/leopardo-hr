@@ -1,75 +1,26 @@
 import 'dart:async';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
-import 'package:leopardo_core/core/api/session_expired_handler.dart';
-import 'package:leopardo_core/core/location/attendance_location_service.dart';
-import 'package:leopardo_core/core/services/offline_sync_service.dart';
-import 'package:leopardo_core/core/services/push_notification_service.dart';
-import 'package:leopardo_core/core/storage/app_preferences.dart';
-import 'package:leopardo_core/core/storage/secure_storage.dart';
+import 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:leopardo_core/offline/database/edge_database.dart';
 import 'package:leopardo_core/offline/services/sync_service.dart';
-import 'package:leopardo_employee/features/auth/data/auth_repository.dart';
 import 'package:leopardo_employee/features/attendance/data/attendance_repository.dart';
-import 'package:leopardo_employee/features/settings/data/settings_repository.dart';
-import 'package:leopardo_employee/features/absences/data/absence_repository.dart';
-import 'package:leopardo_employee/features/salary_advances/data/salary_advance_repository.dart';
-import 'package:leopardo_employee/features/payrolls/data/payroll_repository.dart';
-import 'package:leopardo_employee/features/notifications/data/notification_repository.dart';
-import 'package:leopardo_employee/features/evaluations/data/evaluation_repository.dart';
-import 'package:leopardo_employee/features/cabinet/data/cabinet_repository.dart';
-import 'package:leopardo_employee/features/user_auth/data/user_auth_repository.dart';
+import 'package:leopardo_employee/features/auth/data/auth_repository.dart';
 import 'package:leopardo_employee/features/onboarding/data/onboarding_repository.dart';
+import 'package:leopardo_employee/features/settings/data/settings_repository.dart';
 
-final secureStorageProvider = Provider<SecureStorage>((ref) {
-  return SecureStorage();
-});
+export 'package:leopardo_core/core/providers/core_providers.dart';
 
-final appPreferencesProvider = Provider<AppPreferences>((ref) {
-  return AppPreferences();
-});
-
-final apiClientProvider = Provider<ApiClient>((ref) {
-  final storage = ref.watch(secureStorageProvider);
-  final preferences = ref.watch(appPreferencesProvider);
-  final sessionExpiredHandler = ref.watch(sessionExpiredHandlerProvider);
-  // Issue #2737 — un 401 (session révoquée, mot de passe changé) doit sortir
-  // l'utilisateur de l'état « authentifié » fantôme. Lecture différée du
-  // notifier pour éviter la dépendance circulaire apiClient ↔ authProvider.
-  return ApiClient(storage, preferences, onUnauthorized: sessionExpiredHandler.call);
-});
-
-final pushNotificationServiceProvider = Provider<PushNotificationService>((
-  ref,
-) {
-  return PushNotificationService();
-});
-
-/// Replays the `offline_punches` Hive box written by [AttendanceRepository]
-/// (see issue #1290) whenever connectivity comes back. Without this, offline
-/// check-in/check-out attempts stay stuck in Hive forever.
-final offlineSyncServiceProvider = Provider<OfflineSyncService>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  final service = OfflineSyncService(apiClient, Connectivity());
-  ref.onDispose(service.dispose);
-  return service;
-});
-
-/// Local SQLite (Drift) database used by the Edge/offline module
-/// (see issue #1287 — `leopardo_core/lib/offline/*` was previously never
-/// wired into any app). Long-lived: closed only when the app itself exits.
+/// Local SQLite (Drift) database used by the Edge/offline module.
 final edgeDatabaseProvider = Provider<EdgeDatabase>((ref) {
   return EdgeDatabase();
 });
 
-/// Detects Cloud / local-Edge-network / fully-offline connectivity and
-/// syncs the Edge SQLite queue accordingly. Only reaches [SyncMode.edge]
-/// once the device has been paired with an Edge node from Settings (see
-/// [AppPreferences.edgeNodeId]); otherwise it simply oscillates between
-/// cloud and offline, same as before this module existed.
+/// Detects cloud, local Edge network, and fully offline states, then syncs the
+/// Edge queue. The service starts once when this provider is created and is
+/// stopped when the provider is disposed.
 final syncServiceProvider = Provider<SyncService>((ref) {
   final preferences = ref.watch(appPreferencesProvider);
   final db = ref.watch(edgeDatabaseProvider);
@@ -84,8 +35,6 @@ final syncServiceProvider = Provider<SyncService>((ref) {
     edgeToken: preferences.edgeToken,
   );
   service.start();
-  // Audit #1700 : le bearer secret Edge est persisté dans
-  // flutter_secure_storage — on l'hydrate en arrière-plan au démarrage.
   unawaited(
     preferences.hydrateEdgeToken().then((_) {
       service.updateEdgeToken(preferences.edgeToken);
@@ -93,12 +42,6 @@ final syncServiceProvider = Provider<SyncService>((ref) {
   );
   ref.onDispose(service.stop);
   return service;
-});
-
-final attendanceLocationServiceProvider = Provider<AttendanceLocationService>((
-  ref,
-) {
-  return const AttendanceLocationService();
 });
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
@@ -119,52 +62,7 @@ final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   return SettingsRepository(apiClient, preferences);
 });
 
-final absenceRepositoryProvider = Provider<AbsenceRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return AbsenceRepository(apiClient);
-});
-
-final salaryAdvanceRepositoryProvider = Provider<SalaryAdvanceRepository>((
-  ref,
-) {
-  final apiClient = ref.watch(apiClientProvider);
-  return SalaryAdvanceRepository(apiClient);
-});
-
-final payrollRepositoryProvider = Provider<PayrollRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return PayrollRepository(apiClient);
-});
-
-final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return NotificationRepository(apiClient);
-});
-
-final evaluationRepositoryProvider = Provider<EvaluationRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return EvaluationRepository(apiClient);
-});
-
-final cabinetRepositoryProvider = Provider<CabinetRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return CabinetRepository(apiClient);
-});
-
-final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  final storage = ref.watch(secureStorageProvider);
-  final preferences = ref.watch(appPreferencesProvider);
-  return UserAuthRepository(apiClient, storage, preferences);
-});
-
-
-
-
-
 final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return OnboardingRepository(apiClient);
 });
-
-

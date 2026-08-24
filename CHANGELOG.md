@@ -4,6 +4,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(ci/mobile): réexport employee du barrel core.** `leopardo_employee` réutilise désormais `leopardo_core/core/providers/core_providers.dart` pour les providers communs ; seuls ses providers Edge et métier spécifiques restent locaux, conformément au guard de déduplication.
 - **ci(admin-e2e): validation backend isolé réussie.** Le run `32663872951` couvre les dix parcours activés sur le backend isolé ; les routes tenant supprimées restent en 404 authentifiée et `/exports` conserve son état tenant-only sans exposition de données.
 - **test(admin-e2e): assertions alignées sur les routes tenant réellement exposées.** `/exports` vérifie désormais son état tenant-only local ; `/recruitment`, `/leaves` et `/payroll`, absentes du routeur super-admin, vérifient une 404 authentifiée au lieu d’attendre une redirection legacy vers le dashboard.
 - **fix(test/admin-e2e): locators de connexion alignés sur le contrat d’accessibilité.** Les parcours isolés des cotisations sociales et des tranches fiscales ciblaient un libellé non associé de manière déterministe par `FormField` ; les tests utilisent désormais l’ID explicite `#email` et continuent de valider le flux réel d’authentification.
