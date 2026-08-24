@@ -137,7 +137,7 @@ peux toujours personnaliser le label (saisie libre → label custom sans `label_
 
 ## Success Criteria
 
-- `rg "Le montant doit être strictement positif|Seul un brouillon|Un avoir doit|Paiement refusé|TVA standard|TVA réduite" api/app api/resources/views/pdf/accounting-document.blade.php` → 0 résultat hors commentaires/catalogue.
+- `rg "Le montant doit être strictement positif|Seul un brouillon|Un avoir doit|Paiement refusé" api/app api/resources/views/pdf/accounting-document.blade.php` → 0 résultat hors commentaires/catalogue. (Les labels TVA `TVA standard`/`TVA réduite` restent dans `AccountingSettingsDefaults` comme **données seed** — désormais accompagnés d'un `label_key` stable traduit à l'affichage, rétro-compat pour les lignes existantes.)
 - `php -l` vert sur les 8 fichiers lang modifiés + 6 fichiers de service/exceptions/requests.
 - Réponse 422 `?lang=ar` = arabe (test), `PAYMENT_EXCEEDS_TOTAL` = anglais (test).
 - PDF ar : HTML rendu avec Almarai + `dir=rtl` (test).
