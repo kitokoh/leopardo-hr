@@ -34,6 +34,10 @@ class ApproveGeoSession
             $company  = currentCompany();
             $employee = $session->employee;
 
+            if (! $employee instanceof Employee) {
+                throw new \RuntimeException('Session GPS sans employé rattaché.');
+            }
+
             $startedAt = $session->started_at->copy()->setTimezone($company->timezone);
             $endedAt   = $session->ended_at?->copy()->setTimezone($company->timezone);
             $today     = $startedAt->toDateString();
@@ -57,7 +61,7 @@ class ApproveGeoSession
             }
 
             // Calculer les heures supplémentaires
-            $threshold     = (float) ($schedule?->overtime_threshold_daily ?? 8.0);
+            $threshold     = (float) ($schedule->overtime_threshold_daily ?? 8.0);
             $overtimeHours = round(max(0.0, $durationHours - $threshold), 2);
 
             // Déterminer le session_number (éviter les collisions)
@@ -97,7 +101,7 @@ class ApproveGeoSession
                 'validation_note'   => $note,
             ]);
 
-            return $session->fresh();
+            return $session->fresh() ?? $session;
         });
     }
 

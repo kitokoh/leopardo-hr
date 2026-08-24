@@ -49,6 +49,7 @@ class AttendanceModeSettings extends Model
     ];
 
     /** Manager/RH qui a effectué la dernière modification */
+    /** @return BelongsTo<Employee, $this> */
     public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'updated_by');

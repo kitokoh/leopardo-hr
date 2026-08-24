@@ -37,6 +37,7 @@ class EmployeeAttendancePreference extends Model
         'gps_consent_at'    => 'datetime',
     ];
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');

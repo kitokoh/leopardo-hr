@@ -8,6 +8,9 @@ use Illuminate\Support\Carbon;
 
 final class GeoEventDTO
 {
+    /**
+     * @param  array<string, mixed>  $metadata
+     */
     public function __construct(
         public readonly int    $employeeId,
         public readonly string $companyId,
@@ -19,6 +22,9 @@ final class GeoEventDTO
         public readonly array  $metadata = [],
     ) {}
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public static function fromRequest(
         int    $employeeId,
         string $companyId,
