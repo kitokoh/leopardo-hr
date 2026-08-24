@@ -144,3 +144,13 @@ peux toujours personnaliser le label (saisie libre → label custom sans `label_
 - `node dev-hub/tools/check-i18n-diff.js main <head>` → 0 signal sur le diff.
 - `LangCatalogParityTest` vert (parité ×4 des nouveaux fichiers).
 - PHPStan strict + Pint verts sur les fichiers modifiés (CI).
+
+
+## Garde CI (ajout PM — union des deux implémentations)
+
+`dev-hub/tools/check-accounting-i18n.py` (miroir du #5257 étendu : littéraux
+`message`/`throw` non localisés, parité ×4 y compris catalogues imbriqués
+`errors.*`/`validation.*`, clés `__('accounting.*')` utilisées, libellés PDF
+6 types × 6 statuts, codes `errors.*` des DomainException) branchée dans
+`accounting-ci.yml` (job `i18n-scan` + chemins `api/lang/**`). Vérif locale :
+`python3 dev-hub/tools/check-accounting-i18n.py` → ACCOUNTING_I18N_OK.

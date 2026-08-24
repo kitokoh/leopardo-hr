@@ -60,9 +60,28 @@ for php in sorted(ACCOUNTING.rglob("*.php")):
             continue
         errors.append(f"{php.relative_to(REPO)}:{i}  littéral throw non localisé : {text!r}")
 
-# 3. Parité des clés ×4
+# 3. Parité des clés ×4 (catalogues plats OU imbriqués — paths aplatis)
 def catalog_keys(path: pathlib.Path) -> set[str]:
-    return set(re.findall(r"^\s*'([a-z0-9_]+)'\s*=>", path.read_text(encoding="utf-8"), re.M))
+    """Retourne l'ensemble des chemins de clés (dotted) du catalogue PHP.
+
+    Gère le format du module : clés racine plates (`'document_type_*'`,
+    `'tva_label_*'`) et groupes imbriqués (`'errors' => [...]`,
+    `'validation' => [...]` → paths `errors.wf_*`, `validation.amount_*`).
+    """
+    keys: set[str] = set()
+    group: str | None = None
+    for line in path.read_text(encoding="utf-8").splitlines():
+        m = re.match(r"^(\s*)'([a-z0-9_]+)'\s*=>\s*(\[|['\"])", line)
+        if not m:
+            continue
+        indent, key, opener = len(m.group(1)), m.group(2), m.group(3)
+        if opener == '[' and indent == 4:
+            group = key
+        elif indent == 8 and group is not None:
+            keys.add(f"{group}.{key}")
+        elif indent == 4:
+            keys.add(key)
+    return keys
 
 catalogs = {loc: catalog_keys(REPO / "api" / "lang" / loc / "accounting.php") for loc in LANGS}
 base = set().union(*catalogs.values())
