@@ -54,15 +54,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         });
     });
  * Routes API du module Comptabilité — trésorerie : paiements, rapprochement,
- * relances (issue #5229).
+ * relances (issue #5229) + contacts client/fournisseur (issue #5222).
  *
  * APV L.08 — Un module = un route group Laravel. Toutes les routes sont
  * exposées sous le préfixe /api/v1 (groupe porté par api.php).
  *
  * RBAC : `api.manager:principal,comptable` — la trésorerie est réservée à la
- * direction et aux comptables (aucun accès RH/marketing).
+ * direction et aux comptables (aucun accès RH/marketing) ; contacts —
+ * `comptable` (CRUD complet), `principal` (lecture + paramétrage).
  */
 
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
 use Illuminate\Support\Facades\Route;
 
@@ -72,3 +74,17 @@ Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:princ
     Route::post('accounting/payments/{payment}/reconcile', [AccountingPaymentController::class, 'reconcile']);
     Route::post('accounting/reminders/run', [AccountingPaymentController::class, 'runReminders']);
 });
+
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
+    ->prefix('accounting')
+    ->group(function (): void {
+
+        // ── Contacts client/fournisseur (RBAC comptable + principal) ────────
+        Route::middleware('api.manager:comptable,principal')->group(function (): void {
+            Route::get('/contacts', [AccountingContactController::class, 'index']);
+            Route::post('/contacts', [AccountingContactController::class, 'store']);
+            Route::get('/contacts/{contact}', [AccountingContactController::class, 'show'])->whereNumber('contact');
+            Route::put('/contacts/{contact}', [AccountingContactController::class, 'update'])->whereNumber('contact');
+            Route::delete('/contacts/{contact}', [AccountingContactController::class, 'destroy'])->whereNumber('contact');
+        });
+    });
