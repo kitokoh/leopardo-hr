@@ -12,6 +12,7 @@ use App\Support\CountryDefaults;
 use App\Support\I18nCatalog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\File;
 
 class PaySlipPdfGenerator
 {
@@ -39,8 +40,13 @@ class PaySlipPdfGenerator
         // middleware never runs here — the locale must be applied explicitly
         // before rendering, following the same priority as the API middleware.
         App::setLocale(I18nCatalog::normalizeLocale(
-            $employee?->preferred_language ?? $company?->language
+            $employee->preferred_language ?? $company?->language
         ));
+
+        // Issue #5242 — police arabe (Almarai, OFL) : dompdf n'embarque que
+        // les polices enregistrées ; sans elle, le rendu RTL retombe sur
+        // DejaVu Sans dont la couverture arabe est partielle (cassure).
+        $this->ensureArabicFonts();
 
         $pdf = Pdf::loadView('pdf.payslip', [
             'slip' => $paySlip,
@@ -130,13 +136,20 @@ class PaySlipPdfGenerator
             return ['gross' => 0.0, 'deductions' => 0.0, 'net' => 0.0];
         }
 
+        $gross = $aggregates->getAttribute('gross');
+        $deductions = $aggregates->getAttribute('deductions');
+        $net = $aggregates->getAttribute('net');
+
         return [
-            'gross' => (float) $aggregates->getAttribute('gross'),
-            'deductions' => (float) $aggregates->getAttribute('deductions'),
-            'net' => (float) $aggregates->getAttribute('net'),
+            'gross' => is_numeric($gross) ? (float) $gross : 0.0,
+            'deductions' => is_numeric($deductions) ? (float) $deductions : 0.0,
+            'net' => is_numeric($net) ? (float) $net : 0.0,
         ];
     }
 
+    /**
+     * @return list<array{employee_id: int|null, pdf: string}>
+     */
     public function generateForRun(int $payrollRunId): array
     {
         $slips = PaySlip::where('payroll_run_id', $payrollRunId)
@@ -153,5 +166,47 @@ class PaySlipPdfGenerator
         }
 
         return $results;
+    }
+
+    /**
+     * Issue #5242 — enregistre la police arabe Almarai (OFL) auprès de dompdf.
+     * Les TTFs vivent dans `api/resources/fonts/` (committés) ; les métriques
+     * dompdf sont cachées dans `storage/fonts` (runtime, gitignoré).
+     * L'enregistrement est idempotent par processus.
+     */
+    private function ensureArabicFonts(): void
+    {
+        static $registered = false;
+
+        if ($registered) {
+            return;
+        }
+
+        $fontDir = resource_path('fonts');
+        $regular = $fontDir.'/Almarai-Regular.ttf';
+        $bold = $fontDir.'/Almarai-Bold.ttf';
+
+        if (! is_file($regular) || ! is_file($bold)) {
+            return; // fonts absentes (dev partiel) : fallback DejaVu, pas de crash.
+        }
+
+        $dompdf = app('dompdf');
+        $fontMetrics = $dompdf->getFontMetrics();
+
+        // Cache des métriques dompdf (storage/fonts, runtime — gitignoré).
+        File::ensureDirectoryExists(storage_path('fonts'));
+
+        $fontMetrics->registerFont([
+            'family' => 'Almarai',
+            'style' => 'normal',
+            'weight' => 'normal',
+        ], $regular);
+        $fontMetrics->registerFont([
+            'family' => 'Almarai',
+            'style' => 'normal',
+            'weight' => 'bold',
+        ], $bold);
+
+        $registered = true;
     }
 }

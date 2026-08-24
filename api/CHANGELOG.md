@@ -6,6 +6,14 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- **Accounting document workflow + concurrent-safe numbering (issue #5223)**:
+  - `SequentialDocumentNumbering` implements `DocumentNumberingInterface`: per-type series from `AccountingSettings.number_series` (defaults FAC/PRF/DEV/AVR/BL/RCP), `{SERIE}-{ANNEE}-{NUMERO}` format, atomic `INSERT ... ON CONFLICT ... RETURNING` increment (no duplicates under concurrency)
+  - `DocumentWorkflowService` state machine: draft → sent → partially_paid → paid | cancelled (+ computed overdue), business rules (no `paid` without full payment, partial payment for `partially_paid`, credit note linked to source invoice, delivery note with delivery date) + dedicated domain exceptions
+  - Additive tenant migration: `accounting_number_counters` table + `accounting_documents.source_document_id` (self-FK for credit notes)
+  - Provider binding; no API endpoints (exposed via #5226)
+  - Tests: `DocumentWorkflowNumberingTest` (16) — sequences, custom series, upsert on pre-existing counter (race simulation, repo convention #4978), 100 unique numbers, full workflow, transition rules
+
+### Added
 - **Attendance reports by period (issue #5268)** — the monthly report endpoint `GET /attendance/monthly-report` is now a full report engine:
   - `period=day|week|month` (default `month`, backward compatible), anchors `date` (Y-m-d), `week` (Y-m-d — ISO week Monday→Sunday), `month` (Y-m)
   - Filters `department_id` (team) and `employee_id` (individual attendance sheet); manager scope (`visibleToManager`, PA2-SEC-002/003) always enforced — filters can only narrow, never widen visibility
@@ -13,6 +21,8 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - `AttendanceMonthlyReportService`/`AttendanceMonthlyReportRequest` renamed to `AttendanceReportService`/`AttendanceReportRequest`; controller method `monthlyReport` → `report` (route URL unchanged)
   - Employee rows now include `department_id`/`department_name`; `data.period` adds `type` while keeping `month` for backward compatibility
   - Tests: `AttendanceReportTest` (9 scenarios: daily, weekly, monthly, defaults, filters, CSV/PDF exports, scoped RBAC, invalid period)
+- **Audit sécurité OWASP + scan secrets consolidé (issue #5281).** Rapport `docs/security/AUDIT_SECURITE_2026-08-23.md` : checklist OWASP Top 10 par surface (API/web/admin/mobile) avec preuves (CI scans ZAP/TruffleHog/Semgrep/CodeQL/Dependabot verts sur main, suites de tests sécurité re-vérifiées) ; **0 vulnérabilité critique ouverte** (DoD) ; plan de remédiation chiffré P0/P1/P2 (P0 = #5171 Google signup, P1 = merge #5292 + rotations secrets, P2 = MASVS mobile + pen-test tiers). Index mis à jour dans `docs/security/README.md`.
+- **Congés légaux par pays DZ/MA/TN/SN (issue #5289)** — registre de règles légales (`LegalLeaveRulesRegistry` : 30/24/30/26 j/an, acquisition mensuelle, report, monétisation, source légale, `confidenceLevel`), plancher légal appliqué par `leave:accrue` (l'acquisition mensuelle d'une politique de congés déductibles ne descend jamais sous le minimum légal du pays ; log `planning.legal_leave.floor_applied`), droit projeté par ancienneté (`LegalLeaveEntitlementService`), calendrier des fériés légaux en lecture seule de `public_holidays` (`LegalLeaveCalendarService`) ; spec `.specify/features/5289-legal-leaves-by-country/` + inventaire `docs/payroll/LEGAL_LEAVES.md` + tests golden par pays.
 
 ### Fixed
 - **Trial signup slug-collision retries preserve PostgreSQL transactions.** Each bounded retry now uses an explicit savepoint when invoked inside an existing transaction, so an expected `23505` collision cannot poison subsequent queries or unrelated tests.
