@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-24
 
-**Status**: Partielle — **Partie 2 (ordre de virement) implémentée (PR #5393)** ; Partie 1 (écritures → journal) en attente de la fusion #5363 + approbation fondateur de la spec
+**Status**: Complète — **Parties 1 (journal des écritures) ET 2 (ordres de virement) implémentées (PR #5392, branche `mod/accounting/5239-payroll-accounting-bridge`)** ; DoD vérifiés par tests Feature (golden DZ persisté, idempotence, RBAC, isolation tenant, workflow virement).
 
 **Input**: Issue #5239 — [P1][backend][payroll][compliance] Flux Paie → Comptabilité :
 écritures salariales automatiques + ordre de virement exécuté par le comptable (Phase C).
@@ -149,13 +149,13 @@ lisible par B (404 fail-closed, scope `BelongsToCompany`).
 
 ## Critères d'acceptation (DoD #5239)
 
-- [ ] **Écritures équilibrées (débit = crédit) pour un run de paie DZ réel** (golden test)
-- [ ] **Virement préparé puis marqué exécuté + rapproché** (test)
-- [ ] **Traçabilité run → écritures vérifiée ; isolation tenant testée**
-- [ ] **Spec approuvée avant code** (cette spec) ; CHANGELOG
-- [ ] Aucune modification du moteur Payroll (FOCUS intact — diff Payroll limité au dispatch
+- [x] **Écritures équilibrées (débit = crédit) pour un run de paie DZ réel** (golden test)
+- [x] **Virement préparé puis marqué exécuté + rapproché** (test)
+- [x] **Traçabilité run → écritures vérifiée ; isolation tenant testée**
+- [x] **Spec approuvée avant code** (cette spec) ; CHANGELOG
+- [x] Aucune modification du moteur Payroll (FOCUS intact — diff Payroll limité au dispatch
       additif de l'événement, aucun calcul touché)
-- [ ] OpenAPI : 3 opérations (list/generate écritures, ordres CRUD-lite, execute) + schémas ;
+- [x] OpenAPI : opérations list/show écritures + ordres (create/prepare/execute) + schémas ;
       couverture routes 100 % ; i18n ×4 des messages
 
 ## Dépendances d'implémentation

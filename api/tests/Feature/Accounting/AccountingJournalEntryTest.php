@@ -123,9 +123,7 @@ class AccountingJournalEntryTest extends TestCase
     {
         // E2E : comptable valide un run calculé → l'événement additif
         // PayrollRunValidated est dispatché → le journal est alimenté.
-        $company = $this->company();
-        $this->bindCompany($company);
-        [$run] = $this->dzRun(slipStatus: 'calculated', runStatus: 'calculated');
+        [$run, $company] = $this->dzRun(slipStatus: 'calculated', runStatus: 'calculated');
         $comptable = $this->manager($company, 'comptable');
         Sanctum::actingAs($comptable);
 
@@ -238,8 +236,8 @@ class AccountingJournalEntryTest extends TestCase
 
     public function test_event_listener_creates_entries(): void
     {
-        [$run] = $this->dzRun();
-        $comptable = $this->manager($this->company(), 'comptable');
+        [$run, $company] = $this->dzRun();
+        $comptable = $this->manager($company, 'comptable');
 
         PayrollRunValidated::dispatch($run, (int) $comptable->id);
 
@@ -266,9 +264,7 @@ class AccountingJournalEntryTest extends TestCase
 
     public function test_comptable_can_list_and_show_entries(): void
     {
-        $company = $this->company();
-        $this->bindCompany($company);
-        [$run] = $this->dzRun();
+        [$run, $company] = $this->dzRun();
         app(PayrollJournalEntryService::class)->generateForRun($run);
         Sanctum::actingAs($this->manager($company, 'comptable'));
 
@@ -282,15 +278,15 @@ class AccountingJournalEntryTest extends TestCase
         $id = $list->json('data.0.id');
         $this->getJson("/api/v1/accounting/journal-entries/{$id}")
             ->assertOk()
-            ->assertJsonPath('data.id', $id)
-            ->assertJsonPath('data.account_code', '641');
+            ->assertJsonPath('data.id', $id);
+
+        // Le golden DZ contient bien un débit 641 (salaires).
+        $this->assertContains('641', array_column($list->json('data'), 'account_code'));
     }
 
     public function test_principal_can_read_entries(): void
     {
-        $company = $this->company();
-        $this->bindCompany($company);
-        [$run] = $this->dzRun();
+        [$run, $company] = $this->dzRun();
         app(PayrollJournalEntryService::class)->generateForRun($run);
         Sanctum::actingAs($this->manager($company, 'principal'));
 
@@ -313,9 +309,7 @@ class AccountingJournalEntryTest extends TestCase
 
     public function test_cross_tenant_entries_are_invisible(): void
     {
-        $company = $this->company();
-        $this->bindCompany($company);
-        [$run] = $this->dzRun();
+        [$run, $company] = $this->dzRun();
         app(PayrollJournalEntryService::class)->generateForRun($run);
         $entryId = AccountingJournalEntry::query()->where('payroll_run_id', $run->id)->first()->id;
 
