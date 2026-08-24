@@ -500,4 +500,29 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     {
         return 0.0;
     }
+
+    /**
+     * Issue #5241 (écart E5) — défaut INERTE : aucune indemnisation
+     * statutaire modélisée (pas de délai de carence, pas de taux d'IJ, pas
+     * de maintien patronal). Les pays avec un régime documenté (ex. DZ :
+     * IJ CNAS 50 % J1-15 puis 100 % J16+) override cette méthode avec des
+     * valeurs sourcées et conservent confidenceLevel()='pilot' tant qu'un
+     * expert local n'a pas validé.
+     *
+     * @return array{
+     *     waiting_days: int,
+     *     daily_allowance_rates: array<int, array{from_day: int, to_day: int|null, rate: float}>,
+     *     max_paid_days: int,
+     *     employer_maintenance_days: int,
+     * }
+     */
+    public function sickLeavePolicy(): array
+    {
+        return [
+            'waiting_days' => 0,
+            'daily_allowance_rates' => [],
+            'max_paid_days' => 0,
+            'employer_maintenance_days' => 0,
+        ];
+    }
 }

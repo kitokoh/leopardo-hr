@@ -51,7 +51,14 @@ class PayrollAuditTest extends TestCase
         $this->companyB = $companyB;
 
         /** @var Employee $managerA */
-        $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
+        // contract_start épinglé avant la période des runs (2026-07) : la
+        // factory tire une date aléatoire (faker) qui pouvait tomber pendant
+        // la période → prorata → total_gross 108 381,82 au lieu de 120 000
+        // (flake constaté 2026-08-23, même classe que FamilyPartsRicfTest).
+        $managerA = Employee::factory()->manager()->create([
+            'company_id' => $companyA->id,
+            'contract_start' => '2026-01-01',
+        ]);
         $this->managerA = $managerA;
     }
 
@@ -234,7 +241,10 @@ class PayrollAuditTest extends TestCase
         $correlationId = (string) $run->refresh()->correlation_id;
 
         /** @var Employee $managerB */
-        $managerB = Employee::factory()->manager()->create(['company_id' => $this->companyB->id]);
+        $managerB = Employee::factory()->manager()->create([
+            'company_id' => $this->companyB->id,
+            'contract_start' => '2026-01-01',
+        ]);
 
         Sanctum::actingAs($managerB);
 
@@ -255,7 +265,10 @@ class PayrollAuditTest extends TestCase
 
         // Employé lambda : 403 (middleware api.manager + PayrollAuditPolicy).
         /** @var Employee $plainEmployee */
-        $plainEmployee = Employee::factory()->create(['company_id' => $this->companyA->id]);
+        $plainEmployee = Employee::factory()->create([
+            'company_id' => $this->companyA->id,
+            'contract_start' => '2026-01-01',
+        ]);
         Sanctum::actingAs($plainEmployee);
         $this->getJson('/api/v1/payroll/audit')->assertForbidden();
         $this->getJson("/api/v1/payroll/audit/{$correlationId}")->assertForbidden();
@@ -265,13 +278,17 @@ class PayrollAuditTest extends TestCase
         $comptable = Employee::factory()->manager()->create([
             'company_id' => $this->companyA->id,
             'manager_role' => 'comptable',
+            'contract_start' => '2026-01-01',
         ]);
         Sanctum::actingAs($comptable);
         $this->getJson('/api/v1/payroll/audit')->assertForbidden();
 
         // Manager RH : autorisé (périmètre de l'issue).
         /** @var Employee $managerRh */
-        $managerRh = Employee::factory()->managerRh()->create(['company_id' => $this->companyA->id]);
+        $managerRh = Employee::factory()->managerRh()->create([
+            'company_id' => $this->companyA->id,
+            'contract_start' => '2026-01-01',
+        ]);
         Sanctum::actingAs($managerRh);
         $this->getJson('/api/v1/payroll/audit')->assertOk();
         $this->getJson("/api/v1/payroll/audit/{$correlationId}")->assertOk();
@@ -306,7 +323,7 @@ class PayrollAuditTest extends TestCase
         // (y compris Log::withContext) est vérifié — aucun secret ne doit
         // apparaître dans les messages ni les contextes.
         $log = Log::spy();
-        /** @var \Mockery\Expectation $channelExpectation */
+        /** @var Expectation $channelExpectation */
         $channelExpectation = $log->shouldReceive('channel');
         $channelExpectation->andReturn($log);
 

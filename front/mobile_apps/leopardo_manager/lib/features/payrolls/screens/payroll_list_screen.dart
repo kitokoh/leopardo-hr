@@ -10,7 +10,7 @@ import 'package:leopardo_core/core/widgets/payroll_compliance_pill.dart';
 import 'package:leopardo_core/models/payment_document.dart';
 import 'package:leopardo_core/models/payroll_balance.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
-import 'package:leopardo_manager/features/payrolls/providers/payroll_provider.dart';
+import 'package:leopardo_core/features/payrolls/providers/payroll_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:intl/intl.dart';

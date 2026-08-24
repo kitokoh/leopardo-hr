@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Payroll;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -65,7 +66,7 @@ class FamilyPartsRicfTest extends TestCase
     public function test_employees_table_has_family_parts_column(): void
     {
         $this->assertTrue(
-            \Illuminate\Support\Facades\Schema::hasColumn('employees', 'family_parts')
+            Schema::hasColumn('employees', 'family_parts')
         );
     }
 
@@ -79,6 +80,10 @@ class FamilyPartsRicfTest extends TestCase
             'company_id' => $this->company->id,
             'salary_type' => 'fixed',
             'salary_base' => 300000,
+            // Épinglé avant la période du run (2026-07) : la factory tire un
+            // contract_start aléatoire (faker) qui pouvait tomber en juillet
+            // → prorata → 270 954,55 au lieu de 300 000 (flake, Refs #5241).
+            'contract_start' => '2026-01-01',
         ]);
 
         (new PayrollCalculator)->calculateRun($run);
@@ -101,6 +106,7 @@ class FamilyPartsRicfTest extends TestCase
             'salary_type' => 'fixed',
             'salary_base' => 300000,
             'family_parts' => 3.0,
+            'contract_start' => '2026-01-01',
         ]);
 
         (new PayrollCalculator)->calculateRun($run);
@@ -121,6 +127,7 @@ class FamilyPartsRicfTest extends TestCase
             'salary_type' => 'fixed',
             'salary_base' => 300000,
             'family_parts' => 5.0,
+            'contract_start' => '2026-01-01',
         ]);
 
         (new PayrollCalculator)->calculateRun($run);

@@ -8,7 +8,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Marketing\Domain\Models\MarketingLead;
-use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -75,6 +74,9 @@ class MarketingLeadConversionTest extends TestCase
         return $employee;
     }
 
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
     private function createLead(array $overrides = []): MarketingLead
     {
         /** @var MarketingLead $lead */
