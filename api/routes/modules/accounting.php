@@ -14,6 +14,7 @@ declare(strict_types=1);
  */
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingDashboardController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
@@ -39,6 +40,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
             // ── Rapports (issue #5271) — déclaration TVA par période.
             Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
+
+            // ── Tableaux de bord comptables (issue #5230) — rapports manager/comptable
+            // GET  : synthèse (factures émises, encaissements, impayés aging, dépenses) ;
+            // GET /export : CSV de la liste des impayés.
+            Route::get('/dashboard', [AccountingDashboardController::class, 'show']);
+            Route::get('/dashboard/export', [AccountingDashboardController::class, 'export']);
         });
 
         // ── Documents (Phase A, #5223) — RBAC principal/comptable ───────────

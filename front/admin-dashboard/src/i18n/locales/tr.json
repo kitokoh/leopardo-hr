@@ -1251,7 +1251,8 @@
     "legalRates": "Yasal oranlar",
     "account": "Hesabim",
     "notFound": "Sayfa bulunamadi",
-    "accountingSettings": "Muhasebe — Ayarlar"
+    "accountingSettings": "Muhasebe — Ayarlar",
+    "accountingDashboard": "Muhasebe — Panel"
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?",
@@ -3325,6 +3326,48 @@
       "lang_ar": "Arapça",
       "lang_tr": "Türkçe",
       "lang_en": "İngilizce"
+    },
+    "dashboard": {
+      "title": "Muhasebe paneli",
+      "subtitle": "Dönem için kesilen faturalar, tahsilatlar, ödenmemişler ve tedarikçi giderleri.",
+      "from": "Başlangıç",
+      "to": "bitiş",
+      "apply": "Uygula",
+      "invoices_title": "Kesilen faturalar",
+      "invoices_count": "belge",
+      "collections_title": "Tahsilatlar",
+      "collections_count": "ödeme",
+      "expenses_title": "Tedarikçi giderleri",
+      "expenses_count": "satın alma",
+      "outstanding_title": "Ödenmemişler",
+      "outstanding_due": "Toplam borç",
+      "outstanding_count": "bekleyen belge",
+      "aging_title": "Vadeye göre ödenmemişler",
+      "aging_0_30": "0-30 g",
+      "aging_31_60": "31-60 g",
+      "aging_61_90": "61-90 g",
+      "aging_90_plus": "90 g+",
+      "list_title": "Ödenmemiş detayı",
+      "col_number": "No",
+      "col_contact": "Kişi",
+      "col_issue_date": "Kesim tarihi",
+      "col_due_date": "Vade",
+      "col_days_late": "Gecikme",
+      "col_total": "Toplam KDV'li",
+      "col_paid": "Ödenen",
+      "col_due": "Kalan",
+      "col_status": "Durum",
+      "status_sent": "Gönderildi",
+      "status_partially_paid": "Kısmen ödendi",
+      "status_paid": "Ödendi",
+      "status_overdue": "Gecikmiş",
+      "status_draft": "Taslak",
+      "status_cancelled": "İptal edildi",
+      "export": "CSV dışa aktar",
+      "load_error": "Muhasebe paneli yüklenemedi.",
+      "days": "g",
+      "empty": "Şu an ödenmemiş belge yok.",
+      "currency_hint": "Tutarlar şirket para birimindedir."
     }
   }
 }

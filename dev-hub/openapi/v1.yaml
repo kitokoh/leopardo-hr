@@ -5488,6 +5488,77 @@ paths:
         "403":
           $ref: "#/components/responses/Error401"
 
+  /accounting/dashboard:
+    get:
+      tags: ["Accounting"]
+      summary: "Tableau de bord comptable — factures emises, encaissements, impayes, depenses"
+      description: |
+        Synthese de pilotage du tenant courant (issue #5230) : factures emises
+        (ventes, hors brouillons/annules), encaissements (paiements recus),
+        impayes (aging par retard d'echeance 0-30/31-60/61-90/90+ jours) et
+        depenses fournisseurs (documents lies a un contact fournisseur).
+        Periode par defaut : mois courant. Lecture seule.
+      parameters:
+        - name: from
+          in: query
+          description: "Debut de periode (YYYY-MM-DD)."
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          description: "Fin de periode (YYYY-MM-DD)."
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: "Synthese du tableau de bord"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingDashboard"
+        "422":
+          $ref: "#/components/responses/Validation422"
+        "403":
+          $ref: "#/components/responses/Error401"
+
+  /accounting/dashboard/export:
+    get:
+      tags: ["Accounting"]
+      summary: "Export CSV de la liste des impayes"
+      description: |
+        Export CSV (UTF-8) de la liste des impayes du tenant courant (issue
+        #5230) : numero, contact, dates, retard, total TTC, paye, reste du,
+        statut. Fichier : accounting-dashboard-outstanding-<from>_<to>.csv.
+      parameters:
+        - name: from
+          in: query
+          description: "Debut de periode (YYYY-MM-DD)."
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          description: "Fin de periode (YYYY-MM-DD)."
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: "Fichier CSV (text/csv)"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "422":
+          $ref: "#/components/responses/Validation422"
+        "403":
+          $ref: "#/components/responses/Error401"
+
   /attendance/check-in:
     post:
       tags: ["Attendance"]
@@ -23539,6 +23610,97 @@ components:
           type: object
           additionalProperties:
             type: string
+
+    AccountingDashboard:
+      type: object
+      description: "Synthese du tableau de bord comptable (issue #5230)."
+      properties:
+        period:
+          type: object
+          properties:
+            from:
+              type: string
+              format: date
+            to:
+              type: string
+              format: date
+        invoices:
+          type: object
+          description: "Factures emises (ventes, hors brouillons/annules) sur la periode."
+          properties:
+            count:
+              type: integer
+            total_ttc:
+              type: number
+              nullable: true
+        collections:
+          type: object
+          description: "Encaissements (paiements recus) sur la periode."
+          properties:
+            count:
+              type: integer
+            total:
+              type: number
+              nullable: true
+        expenses:
+          type: object
+          description: "Depenses fournisseurs (documents lies a un contact fournisseur) sur la periode."
+          properties:
+            count:
+              type: integer
+            total_ttc:
+              type: number
+              nullable: true
+        outstanding:
+          type: object
+          description: "Impayes : documents emis non soldes + aging par retard d'echeance."
+          properties:
+            count:
+              type: integer
+            total_due:
+              type: number
+            aging:
+              type: array
+              description: "Buckets 0_30 / 31_60 / 61_90 / 90_plus (documents en retard)."
+              items:
+                type: object
+                properties:
+                  bucket:
+                    type: string
+                  count:
+                    type: integer
+                  total_due:
+                    type: number
+            list:
+              type: array
+              description: "100 impayes les plus anciens (tri echeance ASC)."
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  number:
+                    type: string
+                  contact:
+                    type: string
+                  issue_date:
+                    type: string
+                    format: date
+                    nullable: true
+                  due_date:
+                    type: string
+                    format: date
+                    nullable: true
+                  days_late:
+                    type: integer
+                  total_ttc:
+                    type: number
+                  paid_amount:
+                    type: number
+                  due_amount:
+                    type: number
+                  status:
+                    type: string
 
     VatDeclaration:
       type: object

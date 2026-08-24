@@ -1251,7 +1251,8 @@
     "legalRates": "Legal rates",
     "account": "My account",
     "notFound": "Page not found",
-    "accountingSettings": "Accounting — Settings"
+    "accountingSettings": "Accounting — Settings",
+    "accountingDashboard": "Accounting — Dashboard"
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?",
@@ -3325,6 +3326,48 @@
       "lang_ar": "Arabic",
       "lang_tr": "Turkish",
       "lang_en": "English"
+    },
+    "dashboard": {
+      "title": "Accounting dashboard",
+      "subtitle": "Invoices issued, collections, outstanding and supplier expenses for the period.",
+      "from": "From",
+      "to": "to",
+      "apply": "Apply",
+      "invoices_title": "Invoices issued",
+      "invoices_count": "documents",
+      "collections_title": "Collections",
+      "collections_count": "payments",
+      "expenses_title": "Supplier expenses",
+      "expenses_count": "purchases",
+      "outstanding_title": "Outstanding",
+      "outstanding_due": "Total due",
+      "outstanding_count": "documents pending",
+      "aging_title": "Outstanding by age",
+      "aging_0_30": "0-30 d",
+      "aging_31_60": "31-60 d",
+      "aging_61_90": "61-90 d",
+      "aging_90_plus": "90 d+",
+      "list_title": "Outstanding details",
+      "col_number": "No.",
+      "col_contact": "Contact",
+      "col_issue_date": "Issued on",
+      "col_due_date": "Due date",
+      "col_days_late": "Late",
+      "col_total": "Total TTC",
+      "col_paid": "Paid",
+      "col_due": "Due",
+      "col_status": "Status",
+      "status_sent": "Sent",
+      "status_partially_paid": "Partially paid",
+      "status_paid": "Paid",
+      "status_overdue": "Overdue",
+      "status_draft": "Draft",
+      "status_cancelled": "Cancelled",
+      "export": "Export CSV",
+      "load_error": "Unable to load the accounting dashboard.",
+      "days": "d",
+      "empty": "No outstanding documents right now.",
+      "currency_hint": "Amounts in the company currency."
     }
   }
 }
