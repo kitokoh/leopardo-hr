@@ -137,12 +137,13 @@ class GoldenDzEndOfContractRulesTest extends TestCase
 
     public function test_unregistered_country_throws_typed_error_instead_of_dz_fallback(): void
     {
-        // Pays inconnu du moteur (ex. 'US') : PLUS AUCUN repli silencieux sur
-        // les défauts DZ (MULTI-PAYS #1868) — une règle indisponible produit
+        // Pays totalement inconnu du moteur (ex. 'XX' — GB/US sont désormais
+        // enregistrés depuis #5255) : PLUS AUCUN repli silencieux sur les
+        // défauts DZ (MULTI-PAYS #1868) — une règle indisponible produit
         // une erreur métier typée et explicable (critère #1869 : « les erreurs
         // expliquent quelle règle ou quel contexte manque »).
         /** @var Company $company */
-        $company = Company::factory()->create(['country' => 'US']);
+        $company = Company::factory()->create(['country' => 'XX']);
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,

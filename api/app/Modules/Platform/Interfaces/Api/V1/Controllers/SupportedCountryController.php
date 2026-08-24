@@ -38,8 +38,10 @@ class SupportedCountryController extends Controller
                 $confidence = $rules->confidenceLevel();
                 $available = true;
             } catch (UnsupportedCountryRulesException) {
-                // Pays référencé mais sans règles de paie dédiées (ex. GB/US) :
-                // indisponible pour un calcul, pas une erreur.
+                // Pays référencé mais sans règles de paie dédiées : indisponible
+                // pour un calcul, pas une erreur. (Depuis #5255, plus aucun pays
+                // CountryDefaults n'est sans règles — GB/US livrés — mais la
+                // garde reste pour un futur pays display-only.)
                 $rules = null;
                 $confidence = 'unknown';
                 $available = false;

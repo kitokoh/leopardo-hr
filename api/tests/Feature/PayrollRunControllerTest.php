@@ -499,26 +499,46 @@ class PayrollRunControllerTest extends TestCase
 
     // ── #1951 : « pays supporté » = registre ET règles de paie ─────────────
 
-    public function test_run_creation_rejects_country_without_payroll_rules(): void
+    public function test_run_creation_accepts_gb_us_now_that_rules_exist(): void
     {
-        // GB/US sont dans le registre de display (CountryDefaults) mais n'ont
-        // AUCUNE règle de paie — le run doit être refusé dès la validation
-        // (422) au lieu d'échouer au calcul (UnsupportedCountryRulesException).
-        /** @var Company $company */
-        $company = Company::factory()->create(['country' => 'GB', 'currency' => 'GBP', 'timezone' => 'Europe/London']);
-        /** @var Employee $manager */
-        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        // #1951 : GB/US étaient « display-only » (CountryDefaults sans règles
+        // de paie) → refusés 422. Depuis #5255, les packs EN sont livrés
+        // (pilot 2026-27) : la création de run est acceptée comme pour les
+        // autres pays supportés (le pays du run reste verrouillé sur le pays
+        // du tenant — PAYROLL_RUN_COUNTRY_MISMATCH).
+        /** @var Company $gbCompany */
+        $gbCompany = Company::factory()->create(['country' => 'GB', 'currency' => 'GBP', 'timezone' => 'Europe/London']);
+        /** @var Employee $gbManager */
+        $gbManager = Employee::factory()->manager()->create(['company_id' => $gbCompany->id]);
 
-        Sanctum::actingAs($manager);
+        Sanctum::actingAs($gbManager);
 
         $this->postJson('/api/v1/payroll-runs', [
             'country_code' => 'GB',
             'period_start' => now()->startOfMonth()->toDateString(),
             'period_end' => now()->endOfMonth()->toDateString(),
-        ])->assertStatus(422);
+        ])->assertCreated()
+            ->assertJsonPath('data.country_code', 'GB');
+
+        /** @var Company $usCompany */
+        $usCompany = Company::factory()->create(['country' => 'US', 'currency' => 'USD', 'timezone' => 'America/New_York']);
+        /** @var Employee $usManager */
+        $usManager = Employee::factory()->manager()->create(['company_id' => $usCompany->id]);
+
+        Sanctum::actingAs($usManager);
 
         $this->postJson('/api/v1/payroll-runs', [
             'country_code' => 'US',
+            'period_start' => now()->startOfMonth()->toDateString(),
+            'period_end' => now()->endOfMonth()->toDateString(),
+        ])->assertCreated()
+            ->assertJsonPath('data.country_code', 'US');
+
+        // La garde reste active pour un code totalement inconnu du registre.
+        Sanctum::actingAs($gbManager);
+
+        $this->postJson('/api/v1/payroll-runs', [
+            'country_code' => 'ZZ',
             'period_start' => now()->startOfMonth()->toDateString(),
             'period_end' => now()->endOfMonth()->toDateString(),
         ])->assertStatus(422);

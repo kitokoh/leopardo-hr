@@ -48,16 +48,19 @@ class SupportedCountryRuleTest extends TestCase
 
     public function test_country_with_payroll_rules_is_accepted(): void
     {
-        foreach (['DZ', 'CI', 'SN', 'CM', 'BF', 'CA', 'FR', 'MA', 'TN', 'TR'] as $code) {
+        // Depuis #5255, GB/US ont leurs règles de paie (pilot 2026-27) : la
+        // divergence #1951 (« display sans règles ») est fermée.
+        foreach (['DZ', 'CI', 'SN', 'CM', 'BF', 'CA', 'FR', 'MA', 'TN', 'TR', 'GB', 'US'] as $code) {
             $this->assertPasses($code);
         }
     }
 
     public function test_country_without_payroll_rules_is_rejected(): void
     {
-        // GB/US sont dans le registre de display (CountryDefaults) mais n'ont
-        // aucune règle de paie → rejetés par la règle (#1951).
-        foreach (['GB', 'US'] as $code) {
+        // Aucun code CountryDefaults ne manque plus de règles de paie depuis
+        // #5255 — la garde reste vérifiée avec un code TOTALEMENT inconnu du
+        // registre (jamais affiché ni résolu) : rejeté par la règle (#1951).
+        foreach (['XX', 'ZZ'] as $code) {
             $this->assertFails($code);
         }
     }

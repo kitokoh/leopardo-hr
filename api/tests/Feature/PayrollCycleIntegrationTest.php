@@ -241,8 +241,11 @@ class PayrollCycleIntegrationTest extends TestCase
             ->assertJsonPath('data.compliance.verification_date', null);
     }
 
-    public function test_employee_balance_compliance_null_for_unsupported_country(): void
+    public function test_employee_balance_exposes_compliance_block_for_us(): void
     {
+        // #1951 → #5255 : US avait « compliance: null » (pays display-only).
+        // Depuis le pack EN, les règles US sont résolubles (pilot) : le bloc
+        // compliance est exposé comme pour les autres pays supportés.
         /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create([
             'country' => 'US',
@@ -260,7 +263,9 @@ class PayrollCycleIntegrationTest extends TestCase
 
         $this->getJson('/api/v1/me/balance')
             ->assertOk()
-            ->assertJsonPath('data.compliance', null);
+            ->assertJsonPath('data.country', 'US')
+            ->assertJsonPath('data.compliance.level', 'pilot')
+            ->assertJsonPath('data.compliance.source', 'docs/payroll/US_COMPLIANCE.md');
     }
 
     public function test_employee_balance_reports_next_payment_date_from_company_pay_day(): void
