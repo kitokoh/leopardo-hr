@@ -49,7 +49,7 @@ class _PendingGeoSessionsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur : $e'),
+            content: Text(context.l10n.smartAttendanceError(e)),
             backgroundColor: AppColors.danger,
           ),
         );
@@ -65,7 +65,7 @@ class _PendingGeoSessionsScreenState
         backgroundColor: MobileSurface.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Motif du rejet',
+          context.l10n.smartAttendanceRejectReason,
           style: AppTypography.subtitle.copyWith(
             color: MobileSurface.text,
             fontWeight: FontWeight.w600,
@@ -76,7 +76,7 @@ class _PendingGeoSessionsScreenState
           style: AppTypography.body.copyWith(color: MobileSurface.text),
           maxLines: 3,
           decoration: InputDecoration(
-            hintText: 'Expliquez la raison du rejet...',
+            hintText: context.l10n.smartAttendanceRejectHint,
             hintStyle: AppTypography.body.copyWith(color: MobileSurface.muted),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: MobileSurface.border),
@@ -94,7 +94,7 @@ class _PendingGeoSessionsScreenState
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
-              'Annuler',
+              context.l10n.smartAttendanceCancel,
               style: AppTypography.body.copyWith(color: MobileSurface.text),
             ),
           ),
@@ -145,7 +145,7 @@ class _PendingGeoSessionsScreenState
     return MobilePage(
       appBar: MobileTopBar(
         title: context.l10n.pendingSessionsToValidate,
-        subtitle: 'Sessions Smart Attendance',
+        subtitle: context.l10n.smartAttendanceSessionsTitle,
         leading: IconButton(
           tooltip: context.l10n.back,
           icon: const Icon(Icons.arrow_back_rounded),
@@ -206,7 +206,7 @@ class _PendingGeoSessionsScreenState
             child: Padding(
               padding: const EdgeInsets.only(top: 80),
               child: Text(
-                'Erreur : $e',
+                context.l10n.smartAttendanceError(e),
                 style: AppTypography.body.copyWith(color: AppColors.danger),
               ),
             ),
@@ -299,7 +299,9 @@ class _SessionCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Sortie : ${fmt.format(session.endedAt!.toLocal())} · ${session.durationLabel}',
+                  context.l10n.smartAttendanceSessionExit(
+                      fmt.format(session.endedAt!.toLocal()),
+                      session.durationLabel),
                   style: AppTypography.bodySmall.copyWith(
                     color: MobileSurface.muted,
                   ),
@@ -314,7 +316,7 @@ class _SessionCard extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: onReject,
                   icon: const Icon(Icons.close_rounded, size: 16),
-                  label: const Text('Rejeter'),
+                  label: Text(context.l10n.smartAttendanceReject),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.danger,
                     side: BorderSide(
@@ -332,7 +334,7 @@ class _SessionCard extends StatelessWidget {
                 child: FilledButton.icon(
                   onPressed: onApprove,
                   icon: const Icon(Icons.check_rounded, size: 16),
-                  label: const Text('Approuver'),
+                  label: Text(context.l10n.smartAttendanceApprove),
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.success,
                     foregroundColor: Colors.white,

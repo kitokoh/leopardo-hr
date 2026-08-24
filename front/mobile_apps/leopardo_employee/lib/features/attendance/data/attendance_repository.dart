@@ -5,6 +5,7 @@ import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:hive/hive.dart';
 import 'package:leopardo_employee/features/attendance/models/attendance_anomaly.dart';
 
@@ -311,7 +312,7 @@ class AttendanceRepository {
     }
 
     if (payload is! Map) {
-      throw const FormatException('Invalid attendance/today payload');
+      throw FormatException(deviceL10n.attendanceInvalidPayload);
     }
 
     final data = payload.cast<String, dynamic>();
