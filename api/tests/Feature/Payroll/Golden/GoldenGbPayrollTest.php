@@ -93,11 +93,12 @@ class GoldenGbPayrollTest extends TestCase
 
     public function test_golden_gb_at_primary_threshold_1047_50(): void
     {
-        // Brut = PT mensuel exact : NI salarié 0 (bande nulle) · NI patron 15 % × 630,83 = 94,63
+        // Brut = PT mensuel exact : NI salarié 0 (bande nulle) · NI patron 15 % × 630,83 = 94,6245 → 94,62
+        // (arrondi au centime : 630,83 × 15 % = 94,6245 → 94,62, pas 94,63)
         // IR : annuel 12 570 → tranche 0 % → 0 · Net = 1 047,50
         $charges = $this->rules()->calculateSocialCharges(1047.50);
         $this->assertSame(0.0, $charges['employee']);
-        $this->assertSame(94.63, $charges['employer']);
+        $this->assertSame(94.62, $charges['employer']);
 
         $tax = $this->rules()->calculateIncomeTax(1047.50 - $charges['employee']);
         $this->assertSame(0.0, $tax);

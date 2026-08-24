@@ -458,7 +458,10 @@ class PayrollCountryRulesTest extends TestCase
         self::assertSame('CAD', $rules->currency());
         self::assertSame('America/Toronto', $rules->timezone());
         self::assertSame(44.0, $rules->overtimeThresholdWeeklyHours());
-        self::assertSame('placeholder', $rules->confidenceLevel());
+        // Audit légal 2026 (pack EN #5255) : CA passe de « placeholder » à
+        // « pilot » (taux fédéraux 2026 sourcés CRA/Canada.ca, voir
+        // CanadaPayrollRules + CA_COMPLIANCE.md).
+        self::assertSame('pilot', $rules->confidenceLevel());
     }
 
     /**
@@ -518,12 +521,17 @@ class PayrollCountryRulesTest extends TestCase
     {
         $rules = new CanadaPayrollRules;
 
+        // Audit 2026 (CRA/Canada.ca) : CPP 5,95 % sur (brut − $291,67/mois)
+        // + EI 1,63 % salarial / 2,282 % patronal. Brut $1 000 →
+        // salarié 42,15 + 16,30 = 58,45 · patron 42,15 + 22,82 = 64,97.
         $charges = $rules->calculateSocialCharges(1000);
-        self::assertEqualsWithDelta(76.1, $charges['employee'], 0.01);
-        self::assertEqualsWithDelta(82.7, $charges['employer'], 0.01);
+        self::assertEqualsWithDelta(58.45, $charges['employee'], 0.01);
+        self::assertEqualsWithDelta(64.97, $charges['employer'], 0.01);
 
         self::assertSame(0.0, $rules->calculateIncomeTax(0));
-        self::assertEqualsWithDelta(698.34, $rules->calculateIncomeTax(55867 / 12), 0.5);
+        // Revenu annuel $55 867 : 14 % = $7 821,38 − crédit BPA $16 452 ×
+        // 14 % = $2 303,28 → $5 518,10/an = $459,84/mois.
+        self::assertEqualsWithDelta(459.84, $rules->calculateIncomeTax(55867 / 12), 0.5);
     }
 
     /**
