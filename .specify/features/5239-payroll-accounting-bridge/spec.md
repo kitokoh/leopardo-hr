@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-24
 
-**Status**: Draft — en attente d'approbation (DoD #5239 : « spec approuvée avant code »)
+**Status**: Partielle — **Partie 2 (ordre de virement) implémentée (PR #5393)** ; Partie 1 (écritures → journal) en attente de la fusion #5363 + approbation fondateur de la spec
 
 **Input**: Issue #5239 — [P1][backend][payroll][compliance] Flux Paie → Comptabilité :
 écritures salariales automatiques + ordre de virement exécuté par le comptable (Phase C).
@@ -85,9 +85,11 @@ Nouvelle table tenant **`accounting_payment_orders`** :
 | `reconciled_payment_id` | FK `accounting_payments` après rapprochement |
 
 Workflow : le comptable **prépare** l'ordre (génération de l'export banque depuis le net du
-run — réutilise les formats existants du module Payroll, en lecture seule) puis **exécute**
-(référence banque + date) ; le rapprochement crée un `AccountingPayment`
-(`method=bank_transfer`, `reference=PAYMENT-ORDER-{id}`) lié à l'ordre.
+run — réutilise `BankExportGenerator`, formats Payroll, en lecture seule) puis **exécute**
+(référence banque + date). **Note d'implémentation (PR #5393)** : `AccountingPayment` étant
+scopé document (document_id NOT NULL), l'ordre porte lui-même la traçabilité du règlement
+(banque, référence, date, exécutant) — l'exécution vaut rapprochement ; le champ
+`reconciled_payment_id` reste disponible pour un futur rapprochement bancaire externe.
 
 ### 4. RBAC et traçabilité
 

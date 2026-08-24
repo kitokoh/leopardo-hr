@@ -227,6 +227,9 @@ return [
     // النظام الأساسي — RTMX (#5277): إعادة تشغيل آمنة للكتابات من الجوال
     'INVALID_IDEMPOTENCY_KEY' => 'مفتاح التكرار غير صالح.',
     'IDEMPOTENCY_IN_PROGRESS' => 'طلب مماثل قيد المعالجة بالفعل. أعد المحاولة بعد قليل.',
+    'PAYMENT_ORDER_NOT_PREPARABLE' => 'لا يمكن تجهيز أمر التحويل في حالته الحالية.',
+    'PAYMENT_ORDER_NOT_EXECUTABLE' => 'لا يمكن تنفيذ أمر التحويل في حالته الحالية.',
+    'PAYMENT_ORDER_EXPORT_FAILED' => 'فشل تصدير أمر التحويل البنكي. تحقق من البيانات البنكية وأعد المحاولة.',
     'DEPARTMENT_DELETED' => 'تم حذف القسم.',
     'POSITION_DELETED' => 'تم حذف المنصب.',
     'SITE_DELETED' => 'تم حذف الموقع.',

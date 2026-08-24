@@ -227,6 +227,9 @@ return [
     // Platform — RTMX (#5277): mobil yazma işlemlerinin idempotent tekrarı
     'INVALID_IDEMPOTENCY_KEY' => 'Geçersiz idempotency anahtarı.',
     'IDEMPOTENCY_IN_PROGRESS' => 'Aynı istek zaten işleniyor. Birazdan tekrar deneyin.',
+    'PAYMENT_ORDER_NOT_PREPARABLE' => 'Ödeme emri mevcut durumunda hazırlanamaz.',
+    'PAYMENT_ORDER_NOT_EXECUTABLE' => 'Ödeme emri mevcut durumunda gerçekleştirilemez.',
+    'PAYMENT_ORDER_EXPORT_FAILED' => 'Ödeme emri banka dışa aktarımı başarısız oldu. Banka bilgilerini kontrol edip tekrar deneyin.',
     'DEPARTMENT_DELETED' => 'Departman silindi.',
     'POSITION_DELETED' => 'Pozisyon silindi.',
     'SITE_DELETED' => 'Lokasyon silindi.',

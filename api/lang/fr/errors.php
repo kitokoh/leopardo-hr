@@ -228,6 +228,9 @@ return [
     // Plateforme — RTMX (#5277) : rejeu idempotent des écritures mobiles
     'INVALID_IDEMPOTENCY_KEY' => "Clé d'idempotence invalide.",
     'IDEMPOTENCY_IN_PROGRESS' => 'Une requête identique est déjà en cours. Réessayez dans un instant.',
+    'PAYMENT_ORDER_NOT_PREPARABLE' => "L'ordre de virement ne peut pas être préparé dans son état actuel.",
+    'PAYMENT_ORDER_NOT_EXECUTABLE' => "L'ordre de virement ne peut pas être exécuté dans son état actuel.",
+    'PAYMENT_ORDER_EXPORT_FAILED' => "L'export banque de l'ordre de virement a échoué. Vérifiez les coordonnées bancaires puis réessayez.",
     'DEPARTMENT_DELETED' => 'Département supprimé.',
     'POSITION_DELETED' => 'Poste supprimé.',
     'SITE_DELETED' => 'Site supprimé.',

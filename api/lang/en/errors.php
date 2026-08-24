@@ -234,6 +234,9 @@ return [
     // Platform — RTMX (#5277): idempotent replay of mobile writes
     'INVALID_IDEMPOTENCY_KEY' => 'Invalid idempotency key.',
     'IDEMPOTENCY_IN_PROGRESS' => 'An identical request is already in progress. Retry shortly.',
+    'PAYMENT_ORDER_NOT_PREPARABLE' => 'The payment order cannot be prepared in its current state.',
+    'PAYMENT_ORDER_NOT_EXECUTABLE' => 'The payment order cannot be executed in its current state.',
+    'PAYMENT_ORDER_EXPORT_FAILED' => 'The bank export for the payment order failed. Check the bank details and retry.',
     'DEPARTMENT_DELETED' => 'Department deleted.',
     'POSITION_DELETED' => 'Position deleted.',
     'SITE_DELETED' => 'Site deleted.',

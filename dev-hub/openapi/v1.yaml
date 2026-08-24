@@ -19916,6 +19916,190 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /accounting/payment-orders:
+    get:
+      tags: ["Accounting"]
+      summary: "Lister les ordres de virement salarial"
+      description: "Ordres de virement depuis un run de paie validé (issue #5239). RBAC comptable/principal."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: "Filtre par statut (draft, prepared, executed)."
+          schema: { type: string, enum: [draft, prepared, executed] }
+        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/Page"
+      responses:
+        "200":
+          description: "Liste paginée des ordres de virement du tenant courant"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AccountingPaymentOrder"
+                  meta:
+                    type: object
+                    properties:
+                      current_page: { type: integer }
+                      last_page: { type: integer }
+                      per_page: { type: integer }
+                      total: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Accounting"]
+      summary: "Créer un ordre de virement depuis un run de paie validé"
+      description: "Comptable uniquement. Idempotent par run (un seul ordre par (entreprise, run)). 422 si le run n'est pas validé/locké."
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                payroll_run_id: { type: integer }
+              required: [payroll_run_id]
+      responses:
+        "201":
+          description: "Ordre créé (ou existant)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingPaymentOrder"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/payment-orders/{order}:
+    get:
+      tags: ["Accounting"]
+      summary: "Détail d'un ordre de virement"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: order
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Ordre de virement"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingPaymentOrder"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /accounting/payment-orders/{order}/prepare:
+    post:
+      tags: ["Accounting"]
+      summary: "Préparer un ordre de virement (génération de l'export banque)"
+      description: "Comptable uniquement. Génère l'export banque (formats Payroll : cnep_dz, sepa_xml, csv_generic…) et passe l'ordre en prepared."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: order
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                format:
+                  type: string
+                  enum: [sepa_xml, ccp_dz, cpa_dz, bna_dz, cnep_dz, edx_dz, virement_ma, csv_generic]
+              required: [format]
+      responses:
+        "200":
+          description: "Ordre préparé avec export banque"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingPaymentOrder"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/payment-orders/{order}/execute:
+    post:
+      tags: ["Accounting"]
+      summary: "Exécuter un ordre de virement (référence banque + date = rapprochement)"
+      description: "Comptable uniquement. Exige un ordre prepared et une référence banque."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: order
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bank_reference: { type: string, maxLength: 120 }
+                executed_at: { type: string, format: date-time }
+              required: [bank_reference]
+      responses:
+        "200":
+          description: "Ordre exécuté"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingPaymentOrder"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+
 components:
   securitySchemes:
     BearerAuth:
@@ -26198,3 +26382,17 @@ components:
         duration_days: { type: integer, minimum: 1, maximum: 5 }
         confirmed: { type: boolean, default: true }
         source: { type: string, enum: [manual, api, computed], default: manual }
+    AccountingPaymentOrder:
+      type: object
+      description: "Ordre de virement salarial (issue #5239) — flux Paie → Comptabilité."
+      properties:
+        id: { type: integer }
+        payroll_run_id: { type: integer }
+        status: { type: string, enum: [draft, prepared, executed] }
+        total_net: { type: number, format: double }
+        currency: { type: string, nullable: true }
+        export_format: { type: string, nullable: true }
+        export_file: { type: string, nullable: true }
+        bank_reference: { type: string, nullable: true }
+        executed_at: { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }

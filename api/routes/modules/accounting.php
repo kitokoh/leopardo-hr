@@ -3,27 +3,37 @@
 declare(strict_types=1);
 
 /**
- * Routes Module Comptabilité — issue #5222 (CRUD contacts) et #5223 (documents).
+ * Routes API du module Comptabilité — contacts, documents, trésorerie,
+ * ordres de virement salarial et journal des écritures (issues #5222, #5223,
+ * #5229, #5239, #5271).
  *
- * RBAC (matrice comptabilité) : contacts client/fournisseur —
- * `comptable` (CRUD complet), `principal` (lecture + paramétrage) ;
- * documents (Phase A, #5223) — `principal`/`comptable`.
- * Toutes les routes exigent un employé manager du tenant courant
- * (middleware api.manager) ; l'isolation tenant est portée par le trait
- * BelongsToCompany (scope global fail-closed #3727).
+ * RBAC (matrice comptabilité, docs/security/RBAC_ACCOUNTING_MATRIX.md) :
+ *   - contacts client/fournisseur : `comptable` (CRUD complet), `principal` (lecture + paramétrage) ;
+ *   - documents (Phase A, #5223) : `principal`/`comptable` ;
+ *   - trésorerie (paiements, rapprochement, relances, #5229) : `principal`/`comptable` ;
+ *   - ordres de virement salarial (#5239) : lecture `principal`/`comptable`, écriture `comptable` ;
+ *   - journal des écritures salariales (#5239, Partie 1) : lecture `principal`/`comptable`
+ *     — la génération est déclenchée à la validation du run de paie (événement
+ *     `PayrollRunValidated`) et rattrapable par la commande
+ *     `accounting:generate-payroll-entries`.
+ * Toutes les routes exigent un employé manager du tenant courant (middleware
+ * api.manager) ; l'isolation tenant est portée par le trait BelongsToCompany
+ * (scope global fail-closed #3727).
  */
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalEntryController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentOrderController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use Illuminate\Support\Facades\Route;
 
+// ── Contacts, paramétrage, rapports (RBAC comptable + principal) ──────────
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
     ->prefix('accounting')
     ->group(function (): void {
-
-        // ── Contacts client/fournisseur (RBAC comptable + principal) ────────
         Route::middleware('api.manager:comptable,principal')->group(function (): void {
             Route::get('/contacts', [AccountingContactController::class, 'index']);
             Route::post('/contacts', [AccountingContactController::class, 'store']);
@@ -53,19 +63,34 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
         });
     });
-/**
- * Routes API du module Comptabilité — trésorerie : paiements, rapprochement,
- * relances (issue #5229).
- *
- * RBAC : `api.manager:principal,comptable` — la trésorerie est réservée à la
- * direction et aux comptables (aucun accès RH/marketing).
- */
 
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
-
+// ── Trésorerie — paiements + rapprochement + relances (issue #5229) ────────
 Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
     Route::get('accounting/payments', [AccountingPaymentController::class, 'index']);
     Route::post('accounting/documents/{document}/payments', [AccountingPaymentController::class, 'store']);
     Route::post('accounting/payments/{payment}/reconcile', [AccountingPaymentController::class, 'reconcile']);
     Route::post('accounting/reminders/run', [AccountingPaymentController::class, 'runReminders']);
+});
+
+// ── Ordres de virement salarial (issue #5239, Phase C) — RBAC comptable/principal ──
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:principal,comptable'])->group(function (): void {
+    Route::get('accounting/payment-orders', [AccountingPaymentOrderController::class, 'index']);
+    Route::get('accounting/payment-orders/{order}', [AccountingPaymentOrderController::class, 'show'])->whereNumber('order');
+});
+
+// Actions d'écriture — comptable uniquement (création, préparation, exécution).
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:comptable'])->group(function (): void {
+    Route::post('accounting/payment-orders', [AccountingPaymentOrderController::class, 'store']);
+    Route::post('accounting/payment-orders/{order}/prepare', [AccountingPaymentOrderController::class, 'prepare'])->whereNumber('order');
+    Route::post('accounting/payment-orders/{order}/execute', [AccountingPaymentOrderController::class, 'execute'])->whereNumber('order');
+});
+
+// ── Journal des écritures salariales (issue #5239, Phase C — Partie 1) ─────
+// Lecture seule RBAC comptable/principal — la génération est déclenchée à la
+// validation du run (événement PayrollRunValidated, dispatch additif dans
+// PayrollRunController::validateRun) et rattrapable par la commande
+// `accounting:generate-payroll-entries --run={id}`.
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:principal,comptable'])->group(function (): void {
+    Route::get('accounting/journal-entries', [AccountingJournalEntryController::class, 'index']);
+    Route::get('accounting/journal-entries/{entry}', [AccountingJournalEntryController::class, 'show'])->whereNumber('entry');
 });
