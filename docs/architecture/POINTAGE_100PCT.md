@@ -4,7 +4,7 @@
 > Source d'architecture : **ADR 0016** (`docs/architecture/adr/0016-attendance-smartattendance-fusion.md`).
 > Spec cible : **`.specify/features/attendance-target/spec.md`**.
 
-**État** : 2026-08-23 — ADR proposée (décision fondateur requise), spec draft, plan chiffré.
+**État** : 2026-08-24 — ADR-0016 validée (PR #5318), phases 2-3 mergées (#5362/#5364), Phase 4 en PR (#5381), **Phase 5 livrée (PR, nettoyage final #5356)** — module SmartAttendance supprimé, contrat unique `/attendance/*`.
 
 ## Cadrage
 
@@ -31,19 +31,22 @@ sans rupture de contrat API ni migration de données destructive.
 | Issue | Sujet | Statut 2026-08-23 |
 |---|---|---|
 | #5264 | ADR fusion + spec cible (ce document) | ✅ ADR-0016 mergée (PR #5318) — phases 2-5 créées |
-| #5353 | ADR Phase 2 — unifier les chemins d'usage géofence + mode | 🔵 PR (agent plateforme) |
+| #5353 | ADR Phase 2 — unifier les chemins d'usage géofence + mode | ✅ MERGÉE (PR #5362) |
+| #5354 | ADR Phase 3 — surface API consolidée `/attendance/*` + alias temporaires | ✅ MERGÉE (PR #5364) |
+| #5355 | ADR Phase 4 — fusion modèles/services/commandes | 🔵 PR #5381 |
+| #5356 | ADR Phase 5 — nettoyage final (module SmartAttendance supprimé, gardes CI) | 🔵 **PR (chantier livré)** |
 | #5265 | Modes unifiés (kiosque, géo, ZKTeco, mobile) + règles de calcul | ⚪ ouverte |
 | #5266 | Heures supplémentaires DZ — règles légales + intégration paie | ⚪ ouverte |
 | #5267 | Corrections/validations — workflow d'approbation + audit | 🔵 PR #5314 (agent en cours) |
-| #5268 | Rapports de pointage par période + exports CSV/PDF | 🔵 PR #5304 (agent en cours) |
-| #5269 | Tests, i18n ×4, docs | ⚪ ouverte |
+| #5268 | Rapports de pointage par période + exports CSV/PDF | ✅ MERGÉE (#5351) |
+| #5269 | Tests, i18n ×4, docs | ✅ MERGÉE (PR #5351) |
 
 ## Plan de migration (résumé chiffré — détail dans ADR-0016 §Plan)
 
 - **Périmètre** : 4 tables, 4 modèles, 2 services, 6 actions, 3 contrôleurs, 11 routes API, 6 fichiers de test, 3 apps mobiles, 2 commandes, 1 contrat OpenAPI.
 - **Effort** : ~5 j·a en 5 phases (formalisation → géofence/mode → API aliasée → fusion modèles/commandes → nettoyage).
 - **Zéro perte de données** : aucune table fusionnée ; FK `attendance_log_id` inchangées.
-- **Séquencement** : Phases 2-3 en W3 (post-approbation ADR), Phases 4-5 en W5/W6.
+- **Séquencement** : Phases 2-3 en W3 (post-approbation ADR) ✅ mergées, Phases 4-5 livrées (PR #5381 / Phase 5).
 
 ## Garde-fous
 

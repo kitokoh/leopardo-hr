@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Interfaces\Api\V1;
+namespace App\Modules\Attendance\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
@@ -11,7 +11,7 @@ use App\Modules\Attendance\Application\Actions\ProcessGeoExit;
 use App\Modules\Attendance\Application\DTOs\GeoEventDTO;
 use App\Modules\Attendance\Domain\Exceptions\OutsideGeofenceException;
 use App\Modules\Attendance\Domain\Exceptions\SessionAlreadyOpenException;
-use App\Modules\SmartAttendance\Interfaces\Api\V1\Requests\GeoEventRequest;
+use App\Modules\Attendance\Interfaces\Api\V1\Requests\GeoEventRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
@@ -28,7 +28,7 @@ class GeoAttendanceController extends Controller
     }
 
     /**
-     * POST /api/v1/smart-attendance/geo-events
+     * POST /api/v1/attendance/geo-events
      *
      * Reçoit un événement zone_enter ou zone_exit depuis le mobile.
      */

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\SmartAttendance;
+namespace Tests\Feature\Attendance;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
@@ -13,7 +13,7 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * Issue #3887 — le module SmartAttendance (présence intelligente GPS) était
+ * Issue #3887 — le module Attendance (présence intelligente GPS) était
  * le seul module métier SANS AUCUN test.
  *
  * Couverture :
@@ -24,7 +24,7 @@ use Tests\TestCase;
  *  - AttendanceModeController — config (mode par défaut / mode forcé),
  *    updatePreference (mode forcé entreprise → 403).
  */
-class GeoSmartAttendanceFlowTest extends TestCase
+class GeoAttendanceFlowTest extends TestCase
 {
     use RefreshTenantDatabase;
 
@@ -39,7 +39,7 @@ class GeoSmartAttendanceFlowTest extends TestCase
         parent::setUp();
 
         // #4243 : RefreshTenantDatabase exécute les migrations tenant —
-        // dont 2026_06_29_0002xx qui créent les 4 tables SmartAttendance
+        // dont 2026_06_29_0002xx qui créent les 4 tables géo Attendance
         // avec le schéma PostgreSQL. Plus de DDL manuel (l'ancien était du
         // MySQL → SQLSTATE 42601 sur pgsql → 12 tests rouges).
 
@@ -63,7 +63,7 @@ class GeoSmartAttendanceFlowTest extends TestCase
         $this->managerRh = $managerRh;
     }
 
-    // #4243 : plus de tearDown custom ni de createSmartAttendanceSchema —
+    // #4243 : plus de tearDown custom ni de schéma DDL manuel —
     // RefreshTenantDatabase (migrate:fresh) recrée les tables depuis les
     // migrations tenant (2026_06_29_0002xx).
 
@@ -86,7 +86,7 @@ class GeoSmartAttendanceFlowTest extends TestCase
     {
         Sanctum::actingAs($this->employee);
 
-        $response = $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent());
+        $response = $this->postJson('/api/v1/attendance/geo-events', $this->geoEvent());
 
         $response->assertStatus(201)
             ->assertJsonPath('data.status', GeoAttendanceSession::STATUS_DETECTED);
@@ -106,9 +106,9 @@ class GeoSmartAttendanceFlowTest extends TestCase
     {
         Sanctum::actingAs($this->employee);
 
-        $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent())->assertStatus(201);
+        $this->postJson('/api/v1/attendance/geo-events', $this->geoEvent())->assertStatus(201);
 
-        $response = $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent());
+        $response = $this->postJson('/api/v1/attendance/geo-events', $this->geoEvent());
 
         $response->assertStatus(409)
             ->assertJsonPath('code', 'SESSION_ALREADY_OPEN');
@@ -139,7 +139,7 @@ class GeoSmartAttendanceFlowTest extends TestCase
         $this->employee->unsetRelation('company');
 
         // Position très loin (Oran) → hors zone.
-        $response = $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent([
+        $response = $this->postJson('/api/v1/attendance/geo-events', $this->geoEvent([
             'latitude' => 35.6971,
             'longitude' => -0.6308,
         ]));
@@ -158,9 +158,9 @@ class GeoSmartAttendanceFlowTest extends TestCase
     {
         Sanctum::actingAs($this->employee);
 
-        $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent())->assertStatus(201);
+        $this->postJson('/api/v1/attendance/geo-events', $this->geoEvent())->assertStatus(201);
 
-        $response = $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent([
+        $response = $this->postJson('/api/v1/attendance/geo-events', $this->geoEvent([
             'event_type' => 'zone_exit',
         ]));
 
@@ -177,7 +177,7 @@ class GeoSmartAttendanceFlowTest extends TestCase
     {
         Sanctum::actingAs($this->employee);
 
-        $response = $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent([
+        $response = $this->postJson('/api/v1/attendance/geo-events', $this->geoEvent([
             'event_type' => 'zone_exit',
         ]));
 
@@ -189,7 +189,7 @@ class GeoSmartAttendanceFlowTest extends TestCase
     {
         Sanctum::actingAs($this->employee);
 
-        $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent([
+        $this->postJson('/api/v1/attendance/geo-events', $this->geoEvent([
             'event_type' => 'teleport',
         ]))->assertStatus(422);
     }
@@ -200,7 +200,7 @@ class GeoSmartAttendanceFlowTest extends TestCase
     {
         Sanctum::actingAs($this->employee);
 
-        $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent())->assertStatus(201);
+        $this->postJson('/api/v1/attendance/geo-events', $this->geoEvent())->assertStatus(201);
         // Session d'un autre employé — ne doit pas apparaître.
         /** @var Employee $other */
         $other = Employee::factory()->create(['company_id' => $this->company->id, 'status' => 'active']);
@@ -213,7 +213,7 @@ class GeoSmartAttendanceFlowTest extends TestCase
             'status' => GeoAttendanceSession::STATUS_DETECTED,
         ]);
 
-        $response = $this->getJson('/api/v1/smart-attendance/my-sessions');
+        $response = $this->getJson('/api/v1/attendance/my-sessions');
 
         $response->assertOk();
         $sessions = $response->json('data');
@@ -225,27 +225,27 @@ class GeoSmartAttendanceFlowTest extends TestCase
     {
         // Employé ordinary → 403.
         Sanctum::actingAs($this->employee);
-        $this->getJson('/api/v1/smart-attendance/sessions')->assertForbidden();
+        $this->getJson('/api/v1/attendance/geo-sessions')->assertForbidden();
 
         // Manager RH → OK.
         Sanctum::actingAs($this->managerRh);
-        $this->getJson('/api/v1/smart-attendance/sessions')->assertOk();
+        $this->getJson('/api/v1/attendance/geo-sessions')->assertOk();
     }
 
     public function test_manager_can_approve_a_session(): void
     {
         Sanctum::actingAs($this->employee);
-        $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent())->assertStatus(201);
+        $this->postJson('/api/v1/attendance/geo-events', $this->geoEvent())->assertStatus(201);
 
         $session = GeoAttendanceSession::where('employee_id', $this->employee->id)->first();
         // Fermer d'abord (approve ne s'applique qu'aux sessions fermées).
-        $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent([
+        $this->postJson('/api/v1/attendance/geo-events', $this->geoEvent([
             'event_type' => 'zone_exit',
         ]))->assertStatus(201);
 
         Sanctum::actingAs($this->managerRh);
         $this->assertNotNull($session);
-        $response = $this->postJson("/api/v1/smart-attendance/sessions/{$session->id}/approve");
+        $response = $this->postJson("/api/v1/attendance/geo-sessions/{$session->id}/approve");
 
         $response->assertOk();
         $this->assertDatabaseHas('geo_attendance_sessions', [
@@ -260,7 +260,7 @@ class GeoSmartAttendanceFlowTest extends TestCase
     {
         Sanctum::actingAs($this->employee);
 
-        $response = $this->getJson('/api/v1/smart-attendance/config');
+        $response = $this->getJson('/api/v1/attendance/config');
 
         $response->assertOk()
             ->assertJsonPath('data.mode', 'manual')
@@ -282,7 +282,7 @@ class GeoSmartAttendanceFlowTest extends TestCase
 
         Sanctum::actingAs($this->employee);
 
-        $response = $this->getJson('/api/v1/smart-attendance/config');
+        $response = $this->getJson('/api/v1/attendance/config');
 
         $response->assertOk()
             ->assertJsonPath('data.mode', 'gps_auto')
@@ -302,7 +302,7 @@ class GeoSmartAttendanceFlowTest extends TestCase
 
         Sanctum::actingAs($this->employee);
 
-        $response = $this->putJson('/api/v1/smart-attendance/preferences', [
+        $response = $this->putJson('/api/v1/attendance/preferences', [
             'preferred_mode' => 'manual',
         ]);
 

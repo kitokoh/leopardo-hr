@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Interfaces\Api\V1\Requests;
+namespace App\Modules\Attendance\Interfaces\Api\V1\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 

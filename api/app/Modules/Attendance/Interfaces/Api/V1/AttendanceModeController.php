@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Interfaces\Api\V1;
+namespace App\Modules\Attendance\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Application\Actions\SetCompanyAttendanceMode;
@@ -11,8 +11,8 @@ use App\Modules\Attendance\Domain\Exceptions\GpsConsentMissingException;
 use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
 use App\Modules\Attendance\Domain\Models\EmployeeAttendancePreference;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceModeResolver;
-use App\Modules\SmartAttendance\Interfaces\Api\V1\Requests\SetCompanyModeRequest;
-use App\Modules\SmartAttendance\Interfaces\Api\V1\Requests\SetModeRequest;
+use App\Modules\Attendance\Interfaces\Api\V1\Requests\SetCompanyModeRequest;
+use App\Modules\Attendance\Interfaces\Api\V1\Requests\SetModeRequest;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -33,7 +33,7 @@ class AttendanceModeController extends Controller
     }
 
     /**
-     * GET /api/v1/smart-attendance/config
+     * GET /api/v1/attendance/config
      * Retourne la config de mode active pour l'employé connecté.
      * Appelé au démarrage de l'app mobile.
      */
@@ -60,7 +60,7 @@ class AttendanceModeController extends Controller
     }
 
     /**
-     * PUT /api/v1/smart-attendance/preferences
+     * PUT /api/v1/attendance/preferences
      * L'employé définit son mode préféré (niveau 2).
      */
     public function updatePreference(SetModeRequest $request): JsonResponse
@@ -105,7 +105,7 @@ class AttendanceModeController extends Controller
     }
 
     /**
-     * GET /api/v1/smart-attendance/mode-settings
+     * GET /api/v1/attendance/mode-settings
      * Manager/RH lit la configuration de leur entreprise.
      */
     public function getCompanySettings(): JsonResponse
@@ -127,7 +127,7 @@ class AttendanceModeController extends Controller
     }
 
     /**
-     * PUT /api/v1/smart-attendance/mode-settings
+     * PUT /api/v1/attendance/mode-settings
      * Principal configure le mode de pointage de l'entreprise.
      */
     public function updateCompanySettings(SetCompanyModeRequest $request): JsonResponse
@@ -155,7 +155,7 @@ class AttendanceModeController extends Controller
     }
 
     /**
-     * GET /api/v1/smart-attendance/employees/{id}/preference
+     * GET /api/v1/attendance/employees/{id}/preference
      * Manager lit la préférence d'un employé.
      */
     public function employeePreference(int $employeeId): JsonResponse

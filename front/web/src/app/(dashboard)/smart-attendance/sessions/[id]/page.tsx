@@ -102,7 +102,7 @@ export default function SmartAttendanceSessionDetailPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await apiFetch(`/smart-attendance/sessions/${id}`);
+      const response = await apiFetch(`/attendance/geo-sessions/${id}`);
       const payload = await response.json() as SessionPayload;
       setSession(payload.data ?? null);
       setError(null);
@@ -121,7 +121,7 @@ export default function SmartAttendanceSessionDetailPage() {
     if (!session) return;
     setModalLoading(true);
     try {
-      await apiFetch(`/smart-attendance/sessions/${session.id}/approve`, {
+      await apiFetch(`/attendance/geo-sessions/${session.id}/approve`, {
         method: 'POST',
         body: JSON.stringify({ note }),
       });
@@ -138,7 +138,7 @@ export default function SmartAttendanceSessionDetailPage() {
     if (!session) return;
     setModalLoading(true);
     try {
-      await apiFetch(`/smart-attendance/sessions/${session.id}/reject`, {
+      await apiFetch(`/attendance/geo-sessions/${session.id}/reject`, {
         method: 'POST',
         body: JSON.stringify({ reason }),
       });

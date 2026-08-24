@@ -61,7 +61,7 @@ export default function SmartAttendanceSettingsPage() {
   const loadSettings = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await apiFetch('/smart-attendance/mode-settings');
+      const response = await apiFetch('/attendance/mode-settings');
       const payload = await response.json() as SettingsPayload;
       const d = payload.data;
       if (d) {
@@ -99,7 +99,7 @@ export default function SmartAttendanceSettingsPage() {
         radius: form.gps_enabled && form.radius !== '' ? parseInt(form.radius, 10) : null,
       };
 
-      await apiFetch('/smart-attendance/mode-settings', {
+      await apiFetch('/attendance/mode-settings', {
         method: 'PUT',
         body: JSON.stringify(body),
       });

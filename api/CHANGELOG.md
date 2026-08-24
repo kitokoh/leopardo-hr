@@ -5,6 +5,12 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
 
+- **Attendance ADR-0016 Phase 5 (issue #5356) — module SmartAttendance supprimé, contrat unique `/api/v1/attendance/*`**:
+  - Controllers + FormRequests géo déplacés de `SmartAttendance/Interfaces/Api/V1/` vers `Attendance/Interfaces/Api/V1/` (namespaces alignés) ; dossier `api/app/Modules/SmartAttendance/`, `SmartAttendanceServiceProvider` et routes alias `smart_attendance.php` supprimés ; binding `GeofenceValidatorInterface` transféré dans `AttendanceServiceProvider`.
+  - Chemins `/api/v1/smart-attendance/*` purgés (OpenAPI + miroir + SDK régénéré, 757 opérations) ; tests géo migrés sur `/attendance/*` (liste sessions → `/geo-sessions`) avec verrou 404 sur les anciens alias (`GeoRoutesMigrationTest`).
+  - Commande alias `smart-attendance:auto-close` supprimée — couverture `--sessions-only` portée sur `attendance:auto-close` (`AutoCloseSessionsOnlyCommandTest`).
+  - Garde CI finale `check-smartattendance-purged.sh` (Architecture Quality) : aucun import `App\Modules\SmartAttendance\*`, aucun chemin `/smart-attendance/*`, module/provider absents.
+  - Pages web dashboard `(dashboard)/smart-attendance/*` migrées sur `/attendance/*` ; contrat mobile vérifié `/attendance/*` uniquement.
 - **feat(attendance): ADR-0016 Phase 4 — fusion modèles/services/commandes SmartAttendance dans le module Attendance (Closes #5355).** 4 modèles (`GeoAttendanceSession`, `EmployeeLocationEvent`, `AttendanceModeSettings`, `EmployeeAttendancePreference`), 2 services (`AttendanceModeResolver`, `GeoSessionManager`), 6 actions, 2 DTOs, 3 exceptions et le contrat `GeofenceValidatorInterface` déplacés dans `App\Modules\Attendance\*` avec classes de re-export `@deprecated` dans SmartAttendance (imports existants préservés). `AutoCloseGeoSessionsCommand` fusionnée dans `AutoCloseAttendanceCommand` (une seule fermeture automatique — pointages sans check-out + sessions GPS orphelines, options `--hours`/`--company`/`--logs-only`/`--sessions-only`) ; `smart-attendance:auto-close` conservée comme alias délégué `@deprecated` ; scheduler unifié sur `attendance:auto-close`. Tests : 6 fichiers `tests/Feature/SmartAttendance/*` migrés vers `tests/Feature/Attendance/Geo*` sans perte de scénarios. Garde géofence (`check-geofence-single-usage.sh`) mise à jour. Aucune route `/smart-attendance/*` cassée (surface conservée jusqu'à la Phase 5 #5356).
 
 ### Added
