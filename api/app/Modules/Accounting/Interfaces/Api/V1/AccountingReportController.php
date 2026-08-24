@@ -9,7 +9,6 @@ use App\Modules\Accounting\Infrastructure\Services\VatDeclarationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use InvalidArgumentException;
 
 /**
  * Rapports du module Comptabilité — issue #5271.
@@ -44,11 +43,7 @@ class AccountingReportController extends Controller
             abort(403, 'Tenant context missing.');
         }
 
-        try {
-            $declaration = $this->vatDeclarationService->declaration(currentCompany(), $period);
-        } catch (InvalidArgumentException) {
-            abort(422, 'accounting.vat_period_invalid');
-        }
+        $declaration = $this->vatDeclarationService->declaration(currentCompany(), $period);
 
         if (($validated['format'] ?? 'json') === 'csv') {
             return $this->vatDeclarationService->toCsv($declaration);

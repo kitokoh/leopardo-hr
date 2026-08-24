@@ -147,6 +147,27 @@ class DocumentPdfRendererTest extends TestCase
         $this->assertFalse($renderer->buildViewData($document, 'tr')['rtl']);
     }
 
+    public function test_rtl_view_uses_alarai_font_and_shaped_arabic(): void
+    {
+        $renderer = new DocumentPdfRenderer;
+        $document = $this->makeDocument();
+
+        $arHtml = view('pdf.accounting-document', $renderer->buildViewData($document, 'ar'))->render();
+        $this->assertStringContainsString('dir="rtl"', $arHtml);
+        $this->assertStringContainsString('font-family: Almarai', $arHtml);
+        $this->assertSame(
+            1,
+            preg_match('/[\x{FB50}-\x{FEFF}]/u', $arHtml),
+            'Le texte arabe doit être shapingé (formes de présentation) pour dompdf.',
+        );
+
+        $frHtml = view('pdf.accounting-document', $renderer->buildViewData($document, 'fr'))->render();
+        $this->assertStringContainsString('dir="ltr"', $frHtml);
+        $this->assertStringContainsString('font-family: DejaVu Sans', $frHtml);
+        $this->assertStringNotContainsString('Almarai', $frHtml);
+        $this->assertSame(0, preg_match('/[\x{FB50}-\x{FEFF}]/u', $frHtml), 'Aucun shaping hors arabe.');
+    }
+
     public function test_legal_mentions_priority_settings_then_footer(): void
     {
         $renderer = new DocumentPdfRenderer;
