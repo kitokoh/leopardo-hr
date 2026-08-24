@@ -17516,7 +17516,6 @@ paths:
 
 
   /recruitment/applicants/{id}/status:
-  /recruitment/applicants/{applicant}/status:
     patch:
       tags: ["Recruitment"]
       summary: "Changer le statut d'une candidature (principal/rh)"

@@ -3016,8 +3016,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Changer le statut d'une candidature (principal/rh) */
-    patchRecruitmentApplicantsByApplicantStatus(options = {}) {
-      return request("PATCH", "/recruitment/applicants/{applicant}/status", options);
+    patchRecruitmentApplicantsByIdStatus(options = {}) {
+      return request("PATCH", "/recruitment/applicants/{id}/status", options);
     },
 
     /** Supprimer un entretien (manager) */

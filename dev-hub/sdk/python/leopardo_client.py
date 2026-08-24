@@ -2432,9 +2432,9 @@ class LeopardoClient:
         """Planifier un entretien"""
         return self.request("POST", "/recruitment/applicants/{applicant}/interviews", **kwargs)
 
-    def patch_recruitment_applicants_by_applicant_status(self, **kwargs):
+    def patch_recruitment_applicants_by_id_status(self, **kwargs):
         """Changer le statut d'une candidature (principal/rh)"""
-        return self.request("PATCH", "/recruitment/applicants/{applicant}/status", **kwargs)
+        return self.request("PATCH", "/recruitment/applicants/{id}/status", **kwargs)
 
     def delete_recruitment_interviews_by_interview(self, **kwargs):
         """Supprimer un entretien (manager)"""
