@@ -13,7 +13,7 @@ class AttendanceServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // ADR-0016 Phase 3 (#5354) : routes géo consolidées sous /api/v1/attendance/*
-        // (les alias /smart-attendance/* restent chargés par SmartAttendanceServiceProvider).
+        // (ADR-0016 Phase 5, #5356 : alias legacy purgés).
         $this->loadRoutesFrom(__DIR__.'/../routes/geo.php');
     }
 }

@@ -28,15 +28,18 @@ sans rupture de contrat API ni migration de données destructive.
 
 ## Issues du programme Pointage (backlog source)
 
-| Issue | Sujet | Statut 2026-08-23 |
+| Issue | Sujet | Statut 2026-08-24 |
 |---|---|---|
 | #5264 | ADR fusion + spec cible (ce document) | ✅ ADR-0016 mergée (PR #5318) — phases 2-5 créées |
-| #5353 | ADR Phase 2 — unifier les chemins d'usage géofence + mode | 🔵 PR (agent plateforme) |
+| #5353 | ADR Phase 2 — unifier les chemins d'usage géofence + mode | ✅ livrée (PR #5362 mergée 2026-08-24, garde `check-geofence-single-usage.sh` active) |
+| #5354 | ADR Phase 3 — surface API consolidée `/attendance/*` | 🔵 portée par PR #5381 (routes `geo.php` sur main, mobile basculé) |
+| #5355 | ADR Phase 4 — fusion modèles/services/commandes | 🔵 PR #5381 (fusion modèles/actions/services + `AutoCloseAttendanceCommand` unique) |
+| #5356 | ADR Phase 5 — nettoyage final (suppression module + alias) | 🔵 PR agent (branch `chore/attendance/5356-phase5-cleanup`) — dépend de la fusion #5381 |
 | #5265 | Modes unifiés (kiosque, géo, ZKTeco, mobile) + règles de calcul | ⚪ ouverte |
 | #5266 | Heures supplémentaires DZ — règles légales + intégration paie | ⚪ ouverte |
 | #5267 | Corrections/validations — workflow d'approbation + audit | 🔵 PR #5314 (agent en cours) |
-| #5268 | Rapports de pointage par période + exports CSV/PDF | 🔵 PR #5304 (agent en cours) |
-| #5269 | Tests, i18n ×4, docs | ⚪ ouverte |
+| #5268 | Rapports de pointage par période + exports CSV/PDF | 🔵 PR (agent en cours) |
+| #5269 | Tests, i18n ×4, docs | ✅ livrée (#5269 — i18n ×4 + guide POINTAGE) |
 
 ## Plan de migration (résumé chiffré — détail dans ADR-0016 §Plan)
 
@@ -52,4 +55,4 @@ sans rupture de contrat API ni migration de données destructive.
 - Fermeture automatique : `AutoCloseAttendanceCommand` unique.
 - Mode entreprise : `attendance_mode_settings` = source de vérité.
 - Approbations : trait `Approvable` partagé (absences, frais, sessions, corrections).
-- Garde CI : aucun import `App\Modules\SmartAttendance\*` après Phase 3 ; purge des alias prouvée par contrat mobile.
+- Garde CI (Phase 5, #5356) : `check-no-smartattendance.sh` — zéro import `App\Modules\SmartAttendance\*` et zéro chemin `/smart-attendance` dans le code vivant (API, OpenAPI, SDK, web) ; contrat mobile 100 % `/attendance/*` (vérifié `validate-mobile-workflow-contracts.ps1`).

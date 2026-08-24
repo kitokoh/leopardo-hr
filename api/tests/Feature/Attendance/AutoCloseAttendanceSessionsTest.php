@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Console;
+namespace Tests\Feature\Attendance;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
@@ -12,11 +12,15 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * #4797 — la commande smart-attendance:auto-close doit itérer TOUS les
- * tenants actifs (multi-schéma). Avant le correctif, le scheduler ne
- * fermait que les sessions du schéma par défaut.
+ * ADR-0016 Phases 4-5 (#5355, #5356) — fermeture automatique des sessions GPS
+ * via la commande fusionnée `attendance:auto-close --sessions-only`.
+ *
+ * #4797 — la commande doit itérer TOUS les tenants actifs (multi-schéma).
+ * Avant le correctif, le scheduler ne fermait que les sessions du schéma par
+ * défaut. Scénarios portés depuis `AutoCloseGeoSessionsCommandTest` (commande
+ * dépréciée `smart-attendance:auto-close` supprimée en Phase 5).
  */
-class AutoCloseGeoSessionsCommandTest extends TestCase
+class AutoCloseAttendanceSessionsTest extends TestCase
 {
     use RefreshTenantDatabase;
 
@@ -62,7 +66,10 @@ class AutoCloseGeoSessionsCommandTest extends TestCase
 
     public function test_command_closes_stale_sessions_only(): void
     {
-        $exit = Artisan::call('smart-attendance:auto-close', ['--hours' => 14]);
+        $exit = Artisan::call('attendance:auto-close', [
+            '--sessions-only' => true,
+            '--hours' => 14,
+        ]);
 
         $this->assertSame(0, $exit);
 
@@ -76,7 +83,8 @@ class AutoCloseGeoSessionsCommandTest extends TestCase
 
     public function test_command_dry_run_does_not_modify(): void
     {
-        $exit = Artisan::call('smart-attendance:auto-close', [
+        $exit = Artisan::call('attendance:auto-close', [
+            '--sessions-only' => true,
             '--hours' => 14,
             '--dry-run' => true,
         ]);
@@ -109,7 +117,8 @@ class AutoCloseGeoSessionsCommandTest extends TestCase
             'check_in_lng' => 3.05,
         ]);
 
-        $exit = Artisan::call('smart-attendance:auto-close', [
+        $exit = Artisan::call('attendance:auto-close', [
+            '--sessions-only' => true,
             '--hours' => 14,
             '--company' => $this->company->id,
         ]);

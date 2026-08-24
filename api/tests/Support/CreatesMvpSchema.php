@@ -1007,10 +1007,9 @@ trait CreatesMvpSchema
             return;
         }
 
-        // Supprimer les tables SmartAttendance avant les tables MVP (contraintes FK)
-        if (method_exists($this, 'dropSmartAttendanceTables')) {
-            $this->dropSmartAttendanceTables();
-        }
+        // Les tables géo Attendance (employee_location_events, geo_attendance_sessions…)
+        // sont supprimées par dropMvpTables ci-dessous (ADR-0016 Phase 5, #5356 :
+        // l'ancien hook dropSmartAttendanceTables a été supprimé avec le module).
 
         $this->dropMvpTables();
         $this->restoreDefaultSearchPath();
@@ -2261,7 +2260,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "languages"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "plans"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "hr_model_templates"'.$cascade);
-        // Tables SmartAttendance
+        // Tables géo Attendance
         DB::statement('DROP TABLE IF EXISTS "employee_location_events"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "geo_attendance_sessions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "employee_attendance_preferences"'.$cascade);

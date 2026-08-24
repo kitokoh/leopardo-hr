@@ -6,17 +6,13 @@ declare(strict_types=1);
  * Routes géo — module Attendance (ADR-0016 Phase 3, issue #5354).
  *
  * Surface de pointage géo consolidée sous /api/v1/attendance/*.
- * Les anciens chemins /smart-attendance/* restent enregistrés (fichier
- * smart_attendance.php du module SmartAttendance) comme alias temporaires —
- * double enregistrement, puis bascule mobile, puis purge en Phase 5.
- *
- * Contrôleurs : toujours ceux du module SmartAttendance (fusion des
- * contrôleurs en Phase 4 — comportement identique, pas de rupture).
+ * Alias legacy purgés en Phase 5 (ADR-0016, issue #5356) —
+ * le contrat mobile est exclusivement sur /attendance/*.
  */
 
-use App\Modules\SmartAttendance\Interfaces\Api\V1\AttendanceModeController;
-use App\Modules\SmartAttendance\Interfaces\Api\V1\GeoAttendanceController;
-use App\Modules\SmartAttendance\Interfaces\Api\V1\GeoSessionController;
+use App\Modules\Attendance\Interfaces\Api\V1\AttendanceModeController;
+use App\Modules\Attendance\Interfaces\Api\V1\GeoAttendanceController;
+use App\Modules\Attendance\Interfaces\Api\V1\GeoSessionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('api/v1/attendance')

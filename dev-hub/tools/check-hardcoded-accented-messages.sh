@@ -6,7 +6,7 @@
 #
 # Context: docs/archive/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md PA2-I18N-007 found a
 # hardcoded French string in
-# api/app/Modules/SmartAttendance/Interfaces/Api/V1/GeoSessionController.php
+# api/app/Modules/Attendance/Interfaces/Api/V1/GeoSessionController.php
 # (already fixed to use __('attendance.geo_session_approved')) plus several
 # other controllers still returning raw French strings in JSON responses
 # (e.g. BillingController, SelfServiceTrialController, PaySlipController,

@@ -16,8 +16,8 @@ use Illuminate\Support\Facades\Log;
 /**
  * Fermeture automatique unique (ADR-0016 Phase 4, #5355) :
  *  1. les pointages sans check-out (politique tenant, logique historique) ;
- *  2. les sessions GPS restées ouvertes trop longtemps (fusion de
- *     l'ancienne commande `smart-attendance:auto-close`, #4797) — itère
+ *  2. les sessions GPS restées ouvertes trop longtemps (ADR-0016 Phase 4,
+ *     #5355 : fusion de l'ancienne commande `smart-attendance:auto-close`, #4797) — itère
  *     TOUS les tenants actifs (chaque tenant dans son schéma via
  *     TenantManager::withinTenant).
  */
@@ -143,8 +143,8 @@ class AutoCloseAttendanceCommand extends Command
     }
 
     /**
-     * Ferme les sessions GPS restées ouvertes trop longtemps (fusion #5355 —
-     * ancienne commande smart-attendance:auto-close, #4797).
+     * Ferme les sessions GPS restées ouvertes trop longtemps (ADR-0016
+     * Phase 4, #5355 : fusion de l'ancienne commande `smart-attendance:auto-close`, #4797).
      *
      * Multi-tenant : itère TOUTES les companies actives (chaque tenant dans
      * son schéma via TenantManager::withinTenant) — sans itération, seules les

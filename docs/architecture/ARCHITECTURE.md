@@ -83,7 +83,7 @@ Modules/<Name>/
 ### Domain Boundaries
 1. **Identity & Access:** Multi-tenant authentication and RBAC (`Core/Auth`, `Core/Tenant`).
 2. **Core HRM:** Employee lifecycle and organizational structure (`Modules/HR`).
-3. **Attendance Engine:** Real-time tracking with geofencing and biometrics (`Modules/Attendance`, `Modules/SmartAttendance`, `Modules/Cameras`).
+3. **Attendance Engine:** Real-time tracking with geofencing and biometrics (`Modules/Attendance`, `Modules/Cameras`).
 4. **Payroll Processor:** Multi-country compliant salary calculations (`Modules/Payroll`, `Modules/Billing`).
 5. **AI Insights:** LLM-driven forecasting and anomaly detection (`app/AI/`).
 

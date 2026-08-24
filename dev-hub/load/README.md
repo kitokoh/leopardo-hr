@@ -8,7 +8,7 @@ Ce dossier contient les scripts de charge k6 utilises pour mesurer les parcours 
 |---|---|---|
 | `k6/api-core-smoke.js` | Health, auth session, dashboard manager, employees, attendance, payroll et self-service employe | Non |
 | `k6/employee-100-attendance-payroll.js` | Benchmark 100 employes simultanes sur pointage, historique et consultation paie | Non par defaut ; check-in optionnel avec `ALLOW_ATTENDANCE_MUTATIONS=true` |
-| `k6/attendance-punch-scale.js` | Charge progressive pointage (10/20/50/100 VUs) manuel (`check-in`/`check-out`) ou path-based (`smart-attendance/geo-events`) | Oui, punchs reels crees a chaque iteration (voir Garde-fous) |
+| `k6/attendance-punch-scale.js` | Charge progressive pointage (10/20/50/100 VUs) manuel (`check-in`/`check-out`) ou path-based (`attendance/geo-events`) | Oui, punchs reels crees a chaque iteration (voir Garde-fous) |
 | `k6/payroll-500-batch.js` | Benchmark calcul paie 500 employes avec seuil < 30 s | Lecture par defaut ; calcul optionnel avec `ALLOW_PAYROLL_MUTATIONS=true` |
 | `k6/payroll-progressive-scale.js` | Charge progressive paie (10/20/50/100 VUs) : preview cycle, paiement en masse et sante de la queue de notifications async | Lecture par defaut (preview + observability) ; paiement en masse reel optionnel avec `ALLOW_PAYROLL_MUTATIONS=true` |
 | `k6/admin-dashboard-10k.js` | Benchmark dashboard admin + pagination/search sur tenant 10k employes | Non |
@@ -69,7 +69,7 @@ Seuil : `POST /api/v1/payroll-runs/{id}/calculate` p95 < 30000 ms.
 
 ### Pointage progressif 10/20/50/100 (PA2-QA-004)
 
-Montee en charge par palier sur le pointage, en mode manuel (`check-in`/`check-out` classiques) ou path-based (evenements geofence `zone_enter`/`zone_exit` de SmartAttendance). Chaque palier dure `STAGE_DURATION` (30s par defaut) et le VU cible peut etre ajuste par palier.
+Montee en charge par palier sur le pointage, en mode manuel (`check-in`/`check-out` classiques) ou path-based (evenements geofence `zone_enter`/`zone_exit` du module Attendance). Chaque palier dure `STAGE_DURATION` (30s par defaut) et le VU cible peut etre ajuste par palier.
 
 Mode manuel (par defaut) :
 

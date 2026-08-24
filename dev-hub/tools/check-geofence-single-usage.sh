@@ -9,7 +9,6 @@
 # Fichiers autorisés (allow-list) :
 #   - l'implémentation elle-même (AttendanceGeofenceService.php)
 #   - le chemin d'usage unique (GeofenceZoneService.php)
-#   - le binding du contrat (SmartAttendanceServiceProvider.php)
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -18,7 +17,6 @@ MODULES="$REPO_ROOT/api/app/Modules"
 ALLOWED=(
   "api/app/Modules/Attendance/Infrastructure/Services/AttendanceGeofenceService.php"
   "api/app/Modules/Attendance/Infrastructure/Services/GeofenceZoneService.php"
-  "api/app/Modules/SmartAttendance/Providers/SmartAttendanceServiceProvider.php"
   "api/app/Modules/Attendance/Domain/Contracts/GeofenceValidatorInterface.php"
 )
 

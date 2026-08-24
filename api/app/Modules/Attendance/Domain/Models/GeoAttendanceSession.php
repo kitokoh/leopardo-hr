@@ -47,7 +47,7 @@ class GeoAttendanceSession extends Model
     // `where('company_id', ...)` calls sprinkled across GeoSessionController
     // and GeoSessionManager for tenant isolation. Every existing call site
     // was verified to filter correctly (see
-    // tests/Feature/SmartAttendance/MultiTenantIsolationTest.php), but a
+    // tests/Feature/Attendance/GeoMultiTenantIsolationTest.php), but a
     // future query that forgets the manual filter would silently leak
     // cross-tenant data. Adding the standard global scope (same pattern as
     // the rest of the codebase) makes isolation the default instead of an

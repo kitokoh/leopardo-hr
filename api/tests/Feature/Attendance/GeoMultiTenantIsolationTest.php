@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\SmartAttendance;
+namespace Tests\Feature\Attendance;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
@@ -198,7 +198,7 @@ class GeoMultiTenantIsolationTest extends TestCase
 
         Sanctum::actingAs($this->employeeA);
 
-        $response = $this->getJson('/api/v1/smart-attendance/my-sessions');
+        $response = $this->getJson('/api/v1/attendance/my-sessions');
 
         $response->assertStatus(200);
 
@@ -218,7 +218,7 @@ class GeoMultiTenantIsolationTest extends TestCase
 
         Sanctum::actingAs($this->managerA);
 
-        $response = $this->getJson('/api/v1/smart-attendance/sessions');
+        $response = $this->getJson('/api/v1/attendance/sessions');
 
         $response->assertStatus(200);
 
@@ -240,7 +240,7 @@ class GeoMultiTenantIsolationTest extends TestCase
 
         Sanctum::actingAs($this->employeeB);
 
-        $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
+        $response = $this->postJson('/api/v1/attendance/geo-events', [
             'event_type' => 'zone_enter',
             'latitude' => $latOran,
             'longitude' => $lngOran,
@@ -257,7 +257,7 @@ class GeoMultiTenantIsolationTest extends TestCase
 
         // L'employé A (géofence = Alger) ne voit pas cette session
         Sanctum::actingAs($this->employeeA);
-        $mySessionsResponse = $this->getJson('/api/v1/smart-attendance/my-sessions');
+        $mySessionsResponse = $this->getJson('/api/v1/attendance/my-sessions');
         $ids = collect((array) $mySessionsResponse->json('data'))->pluck('id')->all();
         $this->assertNotContains($session->id, $ids);
     }

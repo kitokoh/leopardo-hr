@@ -26,7 +26,7 @@ return [
     'monthly_summary' => 'Résumé mensuel',
     'history' => 'Historique',
 
-    // Sessions geo (SmartAttendance)
+    // Sessions géo (Attendance)
     'geo_session_approved' => 'Session approuvée. Le pointage a été créé.',
     'geo_session_rejected' => 'Session refusée.',
 

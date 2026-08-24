@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Interfaces\Api\V1;
+namespace App\Modules\Attendance\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Application\Actions\ApproveGeoSession;
 use App\Modules\Attendance\Application\Actions\RejectGeoSession;
 use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
-use App\Modules\SmartAttendance\Interfaces\Api\V1\Requests\ApproveSessionRequest;
-use App\Modules\SmartAttendance\Interfaces\Api\V1\Requests\RejectSessionRequest;
+use App\Modules\Attendance\Interfaces\Api\V1\Requests\ApproveSessionRequest;
+use App\Modules\Attendance\Interfaces\Api\V1\Requests\RejectSessionRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -26,7 +26,7 @@ class GeoSessionController extends Controller
     }
 
     /**
-     * GET /api/v1/smart-attendance/sessions
+     * GET /api/v1/attendance/geo-sessions
      * Liste des sessions GPS avec filtres optionnels.
      */
     public function index(Request $request): JsonResponse
@@ -75,7 +75,7 @@ class GeoSessionController extends Controller
     }
 
     /**
-     * GET /api/v1/smart-attendance/sessions/{id}
+     * GET /api/v1/attendance/geo-sessions/{id}
      * Détail d'une session.
      */
     public function show(int $id): JsonResponse
@@ -93,7 +93,7 @@ class GeoSessionController extends Controller
     }
 
     /**
-     * GET /api/v1/smart-attendance/my-sessions
+     * GET /api/v1/attendance/my-sessions
      * Mes propres sessions GPS (employé connecté).
      */
     public function mySessions(Request $request): JsonResponse
@@ -119,7 +119,7 @@ class GeoSessionController extends Controller
     }
 
     /**
-     * POST /api/v1/smart-attendance/sessions/{id}/approve
+     * POST /api/v1/attendance/geo-sessions/{id}/approve
      */
     public function approve(ApproveSessionRequest $request, int $id): JsonResponse
     {
@@ -149,7 +149,7 @@ class GeoSessionController extends Controller
     }
 
     /**
-     * POST /api/v1/smart-attendance/sessions/{id}/reject
+     * POST /api/v1/attendance/geo-sessions/{id}/reject
      */
     public function reject(RejectSessionRequest $request, int $id): JsonResponse
     {
@@ -179,7 +179,7 @@ class GeoSessionController extends Controller
     }
 
     /**
-     * GET /api/v1/smart-attendance/dashboard
+     * GET /api/v1/attendance/dashboard
      * Statistiques du jour pour le dashboard manager/RH.
      */
     public function dashboard(): JsonResponse
