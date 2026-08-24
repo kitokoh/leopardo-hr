@@ -103,7 +103,7 @@ class AccountingSettingsController extends Controller
     {
         $out = [];
 
-        foreach (is_array($rates) ? $rates : [] as $row) {
+        foreach ((is_array($rates) ? $rates : []) as $row) {
             if (! is_array($row)) {
                 continue;
             }
