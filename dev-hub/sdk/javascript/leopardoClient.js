@@ -140,6 +140,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/absences/{absence}/reject", options);
     },
 
+    /** Etat d'activation du module Comptabilite (check-list du wizard) */
+    getAccountingActivation(options = {}) {
+      return request("GET", "/accounting/activation", options);
+    },
+
+    /** Executer l'activation guidee du module Comptabilite (wizard) */
+    postAccountingActivation(options = {}) {
+      return request("POST", "/accounting/activation", options);
+    },
+
     /** Lister les contacts client/fournisseur */
     getAccountingContacts(options = {}) {
       return request("GET", "/accounting/contacts", options);

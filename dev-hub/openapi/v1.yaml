@@ -5544,6 +5544,56 @@ paths:
         "403":
           $ref: "#/components/responses/Error401"
 
+  /accounting/activation:
+    get:
+      tags: ["Accounting"]
+      summary: "Etat d'activation du module Comptabilite (check-list du wizard)"
+      description: |
+        Retourne la check-list d'activation du tenant courant : parametrage
+        complet, contact de demonstration cree, facture d'exemple creee.
+        Lecture seule, aucune ecriture. Idempotent.
+      responses:
+        "200":
+          description: "Etat d'activation (etapes + apercus contact/facture)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingActivation"
+        "403":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Accounting"]
+      summary: "Executer l'activation guidee du module Comptabilite (wizard)"
+      description: |
+        Idempotent : persiste le parametrage (defauts pays si champ absent),
+        cree un contact de demonstration et une facture d'exemple jetable
+        (marquee EXEMPLE, statut brouillon) si absents. Un second appel ne
+        cree jamais de doublon. Payload identique a PUT /accounting/settings
+        (champs optionnels).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountingSettingsPayload"
+      responses:
+        "200":
+          description: "Activation executee (etat final)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingActivation"
+        "422":
+          $ref: "#/components/responses/Validation422"
+        "403":
+          $ref: "#/components/responses/Error401"
+
   /attendance/check-in:
     post:
       tags: ["Attendance"]
@@ -23652,6 +23702,61 @@ components:
                     type: number
                   status:
                     type: string
+
+    AccountingActivation:
+      type: object
+      description: "Etat d'activation du module Comptabilite (issue #5288) — check-list du wizard."
+      properties:
+        completed:
+          type: boolean
+          description: "true quand les trois etapes sont satisfaites."
+        steps:
+          type: object
+          properties:
+            settings:
+              type: boolean
+              description: "Parametrage comptable persiste et complet."
+            contact:
+              type: boolean
+              description: "Contact de demonstration present (metadata.is_sample)."
+            example_invoice:
+              type: boolean
+              description: "Facture d'exemple presente (metadata.is_example)."
+        contact:
+          type: object
+          nullable: true
+          description: "Apercu du contact de demonstration, ou null."
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            email:
+              type: string
+              nullable: true
+            type:
+              type: string
+        example_invoice:
+          type: object
+          nullable: true
+          description: "Apercu de la facture d'exemple, ou null."
+          properties:
+            id:
+              type: integer
+            number:
+              type: string
+            status:
+              type: string
+            total_ttc:
+              type: number
+              nullable: true
+            currency:
+              type: string
+              nullable: true
+            issue_date:
+              type: string
+              format: date
+              nullable: true
 
     VatDeclaration:
       type: object

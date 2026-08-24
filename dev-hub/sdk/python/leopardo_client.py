@@ -132,6 +132,14 @@ class LeopardoClient:
         """Refuser une absence (déprécié — utiliser POST)"""
         return self.request("PUT", "/absences/{absence}/reject", **kwargs)
 
+    def get_accounting_activation(self, **kwargs):
+        """Etat d'activation du module Comptabilite (check-list du wizard)"""
+        return self.request("GET", "/accounting/activation", **kwargs)
+
+    def post_accounting_activation(self, **kwargs):
+        """Executer l'activation guidee du module Comptabilite (wizard)"""
+        return self.request("POST", "/accounting/activation", **kwargs)
+
     def get_accounting_contacts(self, **kwargs):
         """Lister les contacts client/fournisseur"""
         return self.request("GET", "/accounting/contacts", **kwargs)
