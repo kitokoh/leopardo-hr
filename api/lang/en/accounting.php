@@ -47,27 +47,34 @@ return [
     // Footer
     'legal_mentions' => 'Legal mentions',
 
-    // API business errors (issue #5227)
-    'error_invalid_document_type' => 'Invalid document type.',
-    'error_document_requires_line' => 'A document must have at least one line.',
-    'error_only_draft_can_be_sent' => 'Only a draft can be sent.',
-    'error_send_without_lines' => 'Cannot send a document without lines.',
-    'error_contact_required_for_invoice' => 'A customer contact is required to send an invoice or a credit note.',
-    'error_payment_on_closed_document' => 'A paid or cancelled document cannot receive payments.',
-    'error_payment_amount_positive' => 'The payment amount must be strictly positive.',
-    'error_payment_exceeds_total_ttc' => 'The total of payments exceeds the document total including tax.',
-    'error_paid_document_cannot_cancel' => 'A paid document cannot be cancelled.',
-    'error_credit_note_requires_invoice' => 'A credit note must be linked to an invoice.',
-    'error_credit_note_source_not_sent' => 'A cancelled or draft invoice cannot generate a credit note.',
-    'error_source_invoice_already_paid' => 'The source invoice is already fully paid: no credit note is possible.',
-    'error_credit_note_exceeds_remaining' => 'The credit note amount exceeds the remaining balance of the source invoice.',
-    'error_company_context_required' => 'Company context is required.',
-
-    'error_vat_period_invalid' => 'Invalid VAT declaration period (expected format: YYYY-MM).',
-    'error_unknown_series' => 'Unknown series: ":key" is not a document type (:allowed).',
-
     // Validation (issue #5227)
-    'validation_amount_required' => 'The amount is required.',
-    'validation_amount_positive' => 'The amount must be strictly positive.',
-    'validation_payment_method_invalid' => 'Invalid payment method (cash, bank_transfer, check, card, other).',
+    'validation' => [
+        'amount_required' => 'The amount is required.',
+        'amount_min' => 'The amount must be strictly positive.',
+        'method_invalid' => 'Invalid payment method (cash, bank_transfer, check, card, other).',
+        'series_unknown' => 'Unknown series: « :key » is not a document type (:allowed).',
+    ],
+
+    // Business errors (issue #5227)
+    'errors' => [
+        'payment_amount_positive' => 'The payment amount must be strictly positive.',
+        'wf_invalid_type' => 'Invalid document type.',
+        'wf_requires_lines' => 'A document must have at least one line.',
+        'wf_send_draft_only' => 'Only a draft can be sent.',
+        'wf_send_no_lines' => 'Cannot send a document without lines.',
+        'wf_send_requires_contact' => 'A client contact is required to send an invoice or a credit note.',
+        'wf_payment_receive_status' => 'A paid or cancelled document cannot receive a payment.',
+        'wf_payment_over_total' => 'The total payments exceed the total amount of the document.',
+        'wf_cancel_status' => 'A paid document cannot be cancelled.',
+        'wf_credit_note_requires_invoice' => 'A credit note must be linked to an invoice.',
+        'wf_source_invoice_not_issuable' => 'A cancelled or draft invoice cannot generate a credit note.',
+        'wf_source_invoice_paid' => 'The source invoice is already fully paid: no credit note is possible.',
+        'wf_credit_exceeds_remaining' => 'The credit note amount exceeds the remaining balance of the source invoice.',
+        'wf_company_context' => 'Company context required.',
+    ],
+
+    // Default VAT labels (issue #5227)
+    'tva_label_standard' => 'Standard VAT',
+    'tva_label_reduced' => 'Reduced VAT',
+
 ];

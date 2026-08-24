@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Exceptions\DomainException;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 
 /**
  * Déclaration TVA simplifiée par période — issue #5271.
@@ -159,15 +159,13 @@ final class VatDeclarationService
     private function periodBounds(string $period): array
     {
         if (preg_match('/^\d{4}-\d{2}$/', $period) !== 1) {
-            throw new InvalidArgumentException(__('accounting.error_vat_period_invalid'));
+            throw new DomainException('ACCOUNTING_VAT_PERIOD_INVALID', 422, 'ACCOUNTING_VAT_PERIOD_INVALID');
         }
 
         $from = CarbonImmutable::createFromFormat('!Y-m', $period);
 
-        // createFromFormat renvoie false en cas d'échec ; instanceof couvre
-        // null et false (vérification PHPStan-compatible sur CarbonImmutable).
-        if (! $from instanceof CarbonImmutable) {
-            throw new InvalidArgumentException(__('accounting.error_vat_period_invalid'));
+        if ($from === false) {
+            throw new DomainException('ACCOUNTING_VAT_PERIOD_INVALID', 422, 'ACCOUNTING_VAT_PERIOD_INVALID');
         }
 
         return [$from, $from->endOfMonth()];

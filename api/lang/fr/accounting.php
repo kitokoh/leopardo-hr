@@ -47,26 +47,35 @@ return [
     // Pied de page
     'legal_mentions' => 'Mentions légales',
 
-    // Erreurs métier API (issue #5227)
-    'error_invalid_document_type' => 'Type de document invalide.',
-    'error_document_requires_line' => 'Un document doit avoir au moins une ligne.',
-    'error_only_draft_can_be_sent' => 'Seul un brouillon peut être envoyé.',
-    'error_send_without_lines' => 'Impossible d\'envoyer un document sans ligne.',
-    'error_contact_required_for_invoice' => 'Un contact client est requis pour envoyer une facture ou un avoir.',
-    'error_payment_on_closed_document' => 'Un document payé ou annulé ne peut pas recevoir de paiement.',
-    'error_payment_amount_positive' => 'Le montant du paiement doit être strictement positif.',
-    'error_payment_exceeds_total_ttc' => 'Le cumul des paiements dépasse le total TTC du document.',
-    'error_paid_document_cannot_cancel' => 'Un document payé ne peut pas être annulé.',
-    'error_credit_note_requires_invoice' => 'Un avoir doit être lié à une facture.',
-    'error_credit_note_source_not_sent' => 'Une facture annulée ou brouillon ne peut pas générer d\'avoir.',
-    'error_source_invoice_already_paid' => 'La facture source est déjà entièrement payée : aucun avoir possible.',
-    'error_credit_note_exceeds_remaining' => 'Le montant de l\'avoir dépasse le reste à payer de la facture source.',
-    'error_company_context_required' => 'Contexte entreprise requis.',
-    'error_vat_period_invalid' => 'Période de déclaration TVA invalide (format attendu : YYYY-MM).',
-    'error_unknown_series' => 'Série inconnue : « :key » n\'est pas un type de document (:allowed).',
-
     // Validation (issue #5227)
-    'validation_amount_required' => 'Le montant est requis.',
-    'validation_amount_positive' => 'Le montant doit être strictement positif.',
-    'validation_payment_method_invalid' => 'Méthode de paiement invalide (cash, bank_transfer, check, card, other).',
+    'validation' => [
+        'amount_required' => 'Le montant est requis.',
+        'amount_required' => 'Le montant est requis.',
+        'amount_min' => 'Le montant doit être strictement positif.',
+        'method_invalid' => 'Méthode de paiement invalide (cash, bank_transfer, check, card, other).',
+        'series_unknown' => 'Série inconnue : « :key » n\'est pas un type de document (:allowed).',
+    ],
+
+    // Erreurs métier (issue #5227)
+    'errors' => [
+        'payment_amount_positive' => 'Le montant du paiement doit être strictement positif.',
+        'wf_invalid_type' => 'Type de document invalide.',
+        'wf_requires_lines' => 'Un document doit avoir au moins une ligne.',
+        'wf_send_draft_only' => 'Seul un brouillon peut être envoyé.',
+        'wf_send_no_lines' => 'Impossible d\'envoyer un document sans ligne.',
+        'wf_send_requires_contact' => 'Un contact client est requis pour envoyer une facture ou un avoir.',
+        'wf_payment_receive_status' => 'Un document payé ou annulé ne peut pas recevoir de paiement.',
+        'wf_payment_over_total' => 'Le cumul des paiements dépasse le total TTC du document.',
+        'wf_cancel_status' => 'Un document payé ne peut pas être annulé.',
+        'wf_credit_note_requires_invoice' => 'Un avoir doit être lié à une facture.',
+        'wf_source_invoice_not_issuable' => 'Une facture annulée ou brouillon ne peut pas générer d\'avoir.',
+        'wf_source_invoice_paid' => 'La facture source est déjà entièrement payée : aucun avoir possible.',
+        'wf_credit_exceeds_remaining' => 'Le montant de l\'avoir dépasse le reste à payer de la facture source.',
+        'wf_company_context' => 'Contexte entreprise requis.',
+    ],
+
+    // Labels TVA par défaut (issue #5227)
+    'tva_label_standard' => 'TVA standard',
+    'tva_label_reduced' => 'TVA réduite',
+
 ];

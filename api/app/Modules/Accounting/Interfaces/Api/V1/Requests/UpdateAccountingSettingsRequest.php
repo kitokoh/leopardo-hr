@@ -74,8 +74,8 @@ class UpdateAccountingSettingsRequest extends FormRequest
                 if (! in_array((string) $key, $allowed, true)) {
                     $validator->errors()->add(
                         'number_series.'.$key,
-                        __('accounting.error_unknown_series', [
-                            'key' => (string) $key,
+                        __('accounting.validation.series_unknown', [
+                            'key' => $key,
                             'allowed' => implode(', ', $allowed),
                         ]),
                     );

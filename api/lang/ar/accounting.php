@@ -47,27 +47,34 @@ return [
     // التذييل
     'legal_mentions' => 'إشعارات قانونية',
 
-    // أخطاء الأعمال في API (issue #5227)
-    'error_invalid_document_type' => 'نوع المستند غير صالح.',
-    'error_document_requires_line' => 'يجب أن يحتوي المستند على سطر واحد على الأقل.',
-    'error_only_draft_can_be_sent' => 'يمكن إرسال المسودة فقط.',
-    'error_send_without_lines' => 'لا يمكن إرسال مستند بدون أسطر.',
-    'error_contact_required_for_invoice' => 'يلزم جهة اتصال عميل لإرسال فاتورة أو إشعار دائن.',
-    'error_payment_on_closed_document' => 'لا يمكن تسجيل دفعة على مستند مدفوع أو ملغى.',
-    'error_payment_amount_positive' => 'يجب أن يكون مبلغ الدفعة موجباً تماماً.',
-    'error_payment_exceeds_total_ttc' => 'مجموع الدفعات يتجاوز الإجمالي الشامل للضريبة للمستند.',
-    'error_paid_document_cannot_cancel' => 'لا يمكن إلغاء مستند مدفوع.',
-    'error_credit_note_requires_invoice' => 'يجب ربط الإشعار الدائن بفاتورة.',
-    'error_credit_note_source_not_sent' => 'لا يمكن للفاتورة الملغاة أو المسودة توليد إشعار دائن.',
-    'error_source_invoice_already_paid' => 'الفاتورة المصدر مدفوعة بالكامل بالفعل: لا يمكن إصدار إشعار دائن.',
-    'error_credit_note_exceeds_remaining' => 'مبلغ الإشعار الدائن يتجاوز الرصيد المتبقي من الفاتورة المصدر.',
-    'error_company_context_required' => 'سياق الشركة مطلوب.',
-
-    'error_vat_period_invalid' => 'فترة إقرار الضريبة غير صالحة (الصيغة المتوقعة: YYYY-MM).',
-    'error_unknown_series' => 'سلسلة غير معروفة: «:key» ليست نوع مستند (:allowed).',
-
     // التحقق (issue #5227)
-    'validation_amount_required' => 'المبلغ مطلوب.',
-    'validation_amount_positive' => 'يجب أن يكون المبلغ موجباً تماماً.',
-    'validation_payment_method_invalid' => 'طريقة دفع غير صالحة (cash, bank_transfer, check, card, other).',
+    'validation' => [
+        'amount_required' => 'المبلغ مطلوب.',
+        'amount_min' => 'يجب أن يكون المبلغ موجباً تماماً.',
+        'method_invalid' => 'طريقة دفع غير صالحة (cash, bank_transfer, check, card, other).',
+        'series_unknown' => 'سلسلة غير معروفة: « :key » ليست نوع مستند (:allowed).',
+    ],
+
+    // أخطاء الأعمال (issue #5227)
+    'errors' => [
+        'payment_amount_positive' => 'يجب أن يكون مبلغ الدفع موجباً تماماً.',
+        'wf_invalid_type' => 'نوع مستند غير صالح.',
+        'wf_requires_lines' => 'يجب أن يحتوي المستند على سطر واحد على الأقل.',
+        'wf_send_draft_only' => 'يمكن إرسال المسودة فقط.',
+        'wf_send_no_lines' => 'لا يمكن إرسال مستند بدون أسطر.',
+        'wf_send_requires_contact' => 'يلزم جهة اتصال عميل لإرسال فاتورة أو إشعار دائن.',
+        'wf_payment_receive_status' => 'لا يمكن أن يستقبل المستند المدفوع أو الملغى دفعة.',
+        'wf_payment_over_total' => 'إجمالي الدفعات يتجاوز المبلغ الإجمالي للمستند.',
+        'wf_cancel_status' => 'لا يمكن إلغاء مستند مدفوع.',
+        'wf_credit_note_requires_invoice' => 'يجب ربط الإشعار الدائن بفاتورة.',
+        'wf_source_invoice_not_issuable' => 'لا يمكن للفاتورة الملغاة أو المسودة توليد إشعار دائن.',
+        'wf_source_invoice_paid' => 'الفاتورة المصدرية مدفوعة بالكامل بالفعل: لا يمكن إصدار إشعار دائن.',
+        'wf_credit_exceeds_remaining' => 'مبلغ الإشعار الدائن يتجاوز الرصيد المتبقي للفاتورة المصدرية.',
+        'wf_company_context' => 'سياق الشركة مطلوب.',
+    ],
+
+    // تسميات الضريبة الافتراضية (issue #5227)
+    'tva_label_standard' => 'الضريبة القياسية',
+    'tva_label_reduced' => 'الضريبة المخفضة',
+
 ];

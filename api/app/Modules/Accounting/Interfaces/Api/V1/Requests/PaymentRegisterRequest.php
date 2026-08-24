@@ -25,9 +25,9 @@ class PaymentRegisterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'amount.required' => __('accounting.validation_amount_required'),
-            'amount.min' => __('accounting.validation_amount_positive'),
-            'method.in' => __('accounting.validation_payment_method_invalid'),
+            'amount.required' => __('accounting.validation.amount_required'),
+            'amount.min' => __('accounting.validation.amount_min'),
+            'method.in' => __('accounting.validation.method_invalid'),
         ];
     }
 }

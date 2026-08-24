@@ -55,14 +55,14 @@ class DocumentWorkflowService
     {
         $type = DocumentType::tryFrom((string) ($payload['type'] ?? ''));
         if ($type === null) {
-            throw new DocumentWorkflowException(__('accounting.error_invalid_document_type'));
+            throw new DocumentWorkflowException(__('accounting.errors.wf_invalid_type'));
         }
 
         $companyId ??= $this->currentCompanyId();
 
         $lines = $payload['lines'] ?? [];
         if ($lines === []) {
-            throw new DocumentWorkflowException(__('accounting.error_document_requires_line'));
+            throw new DocumentWorkflowException(__('accounting.errors.wf_requires_lines'));
         }
 
         $subtotal = 0.0;
@@ -141,15 +141,15 @@ class DocumentWorkflowService
      */
     public function send(AccountingDocument $document, ?Carbon $sentAt = null): AccountingDocument
     {
-        $this->assertStatus($document, [DocumentStatus::Draft], __('accounting.error_only_draft_can_be_sent'));
+        $this->assertStatus($document, [DocumentStatus::Draft], __('accounting.errors.wf_send_draft_only'));
 
         if ($document->lines()->count() === 0) {
-            throw new DocumentWorkflowException(__('accounting.error_send_without_lines'));
+            throw new DocumentWorkflowException(__('accounting.errors.wf_send_no_lines'));
         }
 
         if (in_array($document->type, [DocumentType::Invoice->value, DocumentType::CreditNote->value], true)
             && $document->contact_id === null) {
-            throw new DocumentWorkflowException(__('accounting.error_contact_required_for_invoice'));
+            throw new DocumentWorkflowException(__('accounting.errors.wf_send_requires_contact'));
         }
 
         $document->forceFill([
@@ -173,15 +173,15 @@ class DocumentWorkflowService
         ?Carbon $receivedAt = null,
         ?string $reference = null,
     ): AccountingPayment {
-        $this->assertStatus($document, [DocumentStatus::Draft, DocumentStatus::Sent, DocumentStatus::PartiallyPaid, DocumentStatus::Overdue], __('accounting.error_payment_on_closed_document'));
+        $this->assertStatus($document, [DocumentStatus::Draft, DocumentStatus::Sent, DocumentStatus::PartiallyPaid, DocumentStatus::Overdue], __('accounting.errors.wf_payment_receive_status'));
 
         if ($amount <= 0.0) {
-            throw new DocumentWorkflowException(__('accounting.error_payment_amount_positive'));
+            throw new DocumentWorkflowException(__('accounting.errors.payment_amount_positive'));
         }
 
         $newPaid = round($document->paid_amount + $amount, 2);
         if ($newPaid > round($document->total_ttc, 2) + 0.001) {
-            throw new DocumentWorkflowException(__('accounting.error_payment_exceeds_total_ttc'));
+            throw new DocumentWorkflowException(__('accounting.errors.wf_payment_over_total'));
         }
 
         /** @var AccountingPayment $payment */
@@ -213,7 +213,7 @@ class DocumentWorkflowService
      */
     public function cancel(AccountingDocument $document, ?string $reason = null): AccountingDocument
     {
-        $this->assertStatus($document, [DocumentStatus::Draft, DocumentStatus::Sent, DocumentStatus::PartiallyPaid, DocumentStatus::Overdue], __('accounting.error_paid_document_cannot_cancel'));
+        $this->assertStatus($document, [DocumentStatus::Draft, DocumentStatus::Sent, DocumentStatus::PartiallyPaid, DocumentStatus::Overdue], __('accounting.errors.wf_cancel_status'));
 
         $metadata = is_array($document->metadata) ? $document->metadata : [];
         if ($reason !== null && $reason !== '') {
@@ -238,9 +238,9 @@ class DocumentWorkflowService
     public function createCreditNote(AccountingDocument $source, array $payload): AccountingDocument
     {
         if ($source->type !== DocumentType::Invoice->value) {
-            throw new DocumentWorkflowException(__('accounting.error_credit_note_requires_invoice'));
+            throw new DocumentWorkflowException(__('accounting.errors.wf_credit_note_requires_invoice'));
         }
-        $this->assertStatus($source, [DocumentStatus::Sent, DocumentStatus::PartiallyPaid, DocumentStatus::Paid, DocumentStatus::Overdue], __('accounting.error_credit_note_source_not_sent'));
+        $this->assertStatus($source, [DocumentStatus::Sent, DocumentStatus::PartiallyPaid, DocumentStatus::Paid, DocumentStatus::Overdue], __('accounting.errors.wf_source_invoice_not_issuable'));
 
         $payload['type'] = DocumentType::CreditNote->value;
         $payload['contact_id'] = $source->contact_id;
@@ -251,7 +251,7 @@ class DocumentWorkflowService
 
         $remaining = round($source->total_ttc - $source->paid_amount, 2);
         if ($remaining <= 0.001) {
-            throw new DocumentWorkflowException(__('accounting.error_source_invoice_already_paid'));
+            throw new DocumentWorkflowException(__('accounting.errors.wf_source_invoice_paid'));
         }
 
         $draft = $this->createDraft($payload, (string) $source->company_id);
@@ -259,7 +259,7 @@ class DocumentWorkflowService
             // Rollback du brouillon : l'avoir dépasse le reste à payer.
             $draft->delete();
 
-            throw new DocumentWorkflowException(__('accounting.error_credit_note_exceeds_remaining'));
+            throw new DocumentWorkflowException(__('accounting.errors.wf_credit_exceeds_remaining'));
         }
 
         return $draft;
@@ -305,7 +305,7 @@ class DocumentWorkflowService
     private function currentCompanyId(): string
     {
         if (! app()->bound('current_company')) {
-            throw new DocumentWorkflowException(__('accounting.error_company_context_required'));
+            throw new DocumentWorkflowException(__('accounting.errors.wf_company_context'));
         }
 
         return (string) currentCompany()->id;

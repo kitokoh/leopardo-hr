@@ -47,27 +47,34 @@ return [
     // Alt bilgi
     'legal_mentions' => 'Yasal bildirimler',
 
-    // API iş hataları (issue #5227)
-    'error_invalid_document_type' => 'Geçersiz belge türü.',
-    'error_document_requires_line' => 'Bir belgenin en az bir satırı olmalıdır.',
-    'error_only_draft_can_be_sent' => 'Yalnızca taslak gönderilebilir.',
-    'error_send_without_lines' => 'Satırı olmayan belge gönderilemez.',
-    'error_contact_required_for_invoice' => 'Fatura veya iade faturası göndermek için müşteri kişisi gereklidir.',
-    'error_payment_on_closed_document' => 'Ödenmiş veya iptal edilmiş bir belgeye ödeme kaydedilemez.',
-    'error_payment_amount_positive' => 'Ödeme tutarı sıfırdan büyük olmalıdır.',
-    'error_payment_exceeds_total_ttc' => 'Ödemelerin toplamı belgenin genel toplamını aşıyor.',
-    'error_paid_document_cannot_cancel' => 'Ödenmiş bir belge iptal edilemez.',
-    'error_credit_note_requires_invoice' => 'İade faturası bir faturaya bağlı olmalıdır.',
-    'error_credit_note_source_not_sent' => 'İptal edilmiş veya taslak fatura iade faturası oluşturamaz.',
-    'error_source_invoice_already_paid' => 'Kaynak fatura zaten tamamen ödendi: iade faturası düzenlenemez.',
-    'error_credit_note_exceeds_remaining' => 'İade faturası tutarı, kaynak faturanın kalan bakiyesini aşıyor.',
-    'error_company_context_required' => 'Şirket bağlamı gereklidir.',
-
-    'error_vat_period_invalid' => 'Geçersiz KDV beyan dönemi (beklenen biçim: YYYY-MM).',
-    'error_unknown_series' => 'Bilinmeyen seri: ":key" bir belge türü değil (:allowed).',
-
     // Doğrulama (issue #5227)
-    'validation_amount_required' => 'Tutar zorunludur.',
-    'validation_amount_positive' => 'Tutar sıfırdan büyük olmalıdır.',
-    'validation_payment_method_invalid' => 'Geçersiz ödeme yöntemi (cash, bank_transfer, check, card, other).',
+    'validation' => [
+        'amount_required' => 'Tutar gereklidir.',
+        'amount_min' => 'Tutar kesinlikle pozitif olmalıdır.',
+        'method_invalid' => 'Geçersiz ödeme yöntemi (cash, bank_transfer, check, card, other).',
+        'series_unknown' => 'Bilinmeyen seri: « :key » bir belge türü değil (:allowed).',
+    ],
+
+    // İş hataları (issue #5227)
+    'errors' => [
+        'payment_amount_positive' => 'Ödeme tutarı kesinlikle pozitif olmalıdır.',
+        'wf_invalid_type' => 'Geçersiz belge türü.',
+        'wf_requires_lines' => 'Bir belgenin en az bir satırı olmalıdır.',
+        'wf_send_draft_only' => 'Yalnızca taslak gönderilebilir.',
+        'wf_send_no_lines' => 'Satırı olmayan bir belge gönderilemez.',
+        'wf_send_requires_contact' => 'Fatura veya iade faturası göndermek için müşteri iletişimi gereklidir.',
+        'wf_payment_receive_status' => 'Ödenmiş veya iptal edilmiş bir belge ödeme alamaz.',
+        'wf_payment_over_total' => 'Ödemelerin toplamı belgenin genel tutarını aşıyor.',
+        'wf_cancel_status' => 'Ödenmiş bir belge iptal edilemez.',
+        'wf_credit_note_requires_invoice' => 'İade faturası bir faturaya bağlı olmalıdır.',
+        'wf_source_invoice_not_issuable' => 'İptal edilmiş veya taslak bir fatura iade faturası oluşturamaz.',
+        'wf_source_invoice_paid' => 'Kaynak fatura zaten tamamen ödendi: iade faturası mümkün değil.',
+        'wf_credit_exceeds_remaining' => 'İade faturası tutarı, kaynak faturanın kalan bakiyesini aşıyor.',
+        'wf_company_context' => 'Şirket bağlamı gereklidir.',
+    ],
+
+    // Varsayılan KDV etiketleri (issue #5227)
+    'tva_label_standard' => 'Standart KDV',
+    'tva_label_reduced' => 'İndirimli KDV',
+
 ];
