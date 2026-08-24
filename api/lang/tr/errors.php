@@ -52,6 +52,8 @@ return [
 
     'PAYMENT_SESSION_FAILED' => 'Ödeme oturumu oluşturulamadı.',
     'NO_PAYMENT_ACCOUNT' => 'İlişkili ödeme hesabı yok. Önce bir plana abone olun.',
+    'PAYMENT_EXCEEDS_TOTAL' => 'Ödeme tutarı belgenin kalan bakiyesini aşıyor.',
+    'PAYMENT_ON_UNSENT_DOCUMENT' => 'Gönderilmemiş bir belgeye ödeme kaydedilemez.',
     'VERIFICATION_CODE_SENT' => 'Doğrulama kodu gönderildi.',
     'VERIFICATION_TEMPORARILY_UNAVAILABLE' => 'İsteğinizin doğrulaması geçici olarak kullanılamıyor. Lütfen kısa süre sonra tekrar deneyin.',
     'TRIAL_SPACE_READY' => 'Leopardo çalışma alanınız hazır!',

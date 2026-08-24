@@ -44,7 +44,7 @@ final class PaymentRegistrationService
         }
 
         if ($amount <= 0) {
-            throw new \InvalidArgumentException('Le montant du paiement doit être strictement positif.');
+            throw new \InvalidArgumentException(__('accounting.error_payment_amount_positive'));
         }
 
         $alreadyPaid = (float) $document->paid_amount;

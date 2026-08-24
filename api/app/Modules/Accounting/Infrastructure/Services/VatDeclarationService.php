@@ -159,7 +159,7 @@ final class VatDeclarationService
     private function periodBounds(string $period): array
     {
         if (preg_match('/^\d{4}-\d{2}$/', $period) !== 1) {
-            throw new InvalidArgumentException('accounting.vat_period_invalid');
+            throw new InvalidArgumentException(__('accounting.error_vat_period_invalid'));
         }
 
         $from = CarbonImmutable::createFromFormat('!Y-m', $period);
@@ -167,7 +167,7 @@ final class VatDeclarationService
         // createFromFormat renvoie false en cas d'échec ; instanceof couvre
         // null et false (vérification PHPStan-compatible sur CarbonImmutable).
         if (! $from instanceof CarbonImmutable) {
-            throw new InvalidArgumentException('accounting.vat_period_invalid');
+            throw new InvalidArgumentException(__('accounting.error_vat_period_invalid'));
         }
 
         return [$from, $from->endOfMonth()];

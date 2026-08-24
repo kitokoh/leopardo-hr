@@ -47,7 +47,7 @@ class AccountingReportController extends Controller
         try {
             $declaration = $this->vatDeclarationService->declaration(currentCompany(), $period);
         } catch (InvalidArgumentException) {
-            abort(422, 'accounting.vat_period_invalid');
+            abort(422, __('accounting.error_vat_period_invalid'));
         }
 
         if (($validated['format'] ?? 'json') === 'csv') {

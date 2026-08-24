@@ -52,6 +52,8 @@ return [
 
     'PAYMENT_SESSION_FAILED' => 'تعذّر إنشاء جلسة الدفع.',
     'NO_PAYMENT_ACCOUNT' => 'لا يوجد حساب دفع مرتبط. اشترك في باقة أولاً.',
+    'PAYMENT_EXCEEDS_TOTAL' => 'مبلغ الدفعة يتجاوز الرصيد المتبقي من المستند.',
+    'PAYMENT_ON_UNSENT_DOCUMENT' => 'لا يمكن تسجيل دفعة على مستند غير مُرسل.',
     'VERIFICATION_CODE_SENT' => 'تم إرسال رمز التحقق.',
     'VERIFICATION_TEMPORARILY_UNAVAILABLE' => 'التحقق من طلبك غير متاح مؤقتاً. حاول مرة أخرى بعد قليل.',
     'TRIAL_SPACE_READY' => 'مساحة Leopardo الخاصة بك جاهزة!',
