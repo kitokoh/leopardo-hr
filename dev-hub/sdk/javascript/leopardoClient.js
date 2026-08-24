@@ -168,6 +168,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/accounting/audit-logs", options);
     },
 
+    /** Lister les contacts client/fournisseur */
+    getAccountingContacts(options = {}) {
+      return request("GET", "/accounting/contacts", options);
+    },
+
+    /** Creer un contact client/fournisseur */
+    postAccountingContacts(options = {}) {
+      return request("POST", "/accounting/contacts", options);
+    },
+
+    /** Supprimer un contact client/fournisseur */
+    deleteAccountingContactsByContact(options = {}) {
+      return request("DELETE", "/accounting/contacts/{contact}", options);
+    },
+
+    /** Detail d'un contact client/fournisseur */
+    getAccountingContactsByContact(options = {}) {
+      return request("GET", "/accounting/contacts/{contact}", options);
+    },
+
+    /** Mettre a jour un contact client/fournisseur */
+    putAccountingContactsByContact(options = {}) {
+      return request("PUT", "/accounting/contacts/{contact}", options);
+    },
+
     /** Lister les documents comptables du tenant (pagine, filtres, #5223) */
     getAccountingDocuments(options = {}) {
       return request("GET", "/accounting/documents", options);

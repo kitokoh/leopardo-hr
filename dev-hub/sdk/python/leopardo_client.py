@@ -155,6 +155,26 @@ class LeopardoClient:
         """Audit trail du module Comptabilité (qui/quoi/quand, #5273)"""
         return self.request("GET", "/accounting/audit-logs", **kwargs)
 
+    def get_accounting_contacts(self, **kwargs):
+        """Lister les contacts client/fournisseur"""
+        return self.request("GET", "/accounting/contacts", **kwargs)
+
+    def post_accounting_contacts(self, **kwargs):
+        """Creer un contact client/fournisseur"""
+        return self.request("POST", "/accounting/contacts", **kwargs)
+
+    def delete_accounting_contacts_by_contact(self, **kwargs):
+        """Supprimer un contact client/fournisseur"""
+        return self.request("DELETE", "/accounting/contacts/{contact}", **kwargs)
+
+    def get_accounting_contacts_by_contact(self, **kwargs):
+        """Detail d'un contact client/fournisseur"""
+        return self.request("GET", "/accounting/contacts/{contact}", **kwargs)
+
+    def put_accounting_contacts_by_contact(self, **kwargs):
+        """Mettre a jour un contact client/fournisseur"""
+        return self.request("PUT", "/accounting/contacts/{contact}", **kwargs)
+
     def get_accounting_documents(self, **kwargs):
         """Lister les documents comptables du tenant (pagine, filtres, #5223)"""
         return self.request("GET", "/accounting/documents", **kwargs)

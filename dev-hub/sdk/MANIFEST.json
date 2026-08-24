@@ -8,9 +8,10 @@
   "spec_sha256": "3165dbbe6f9bb2b33b908ea2e5a659f92adb296775e22e5d9a3ba0fe830aa063",
   "spec_sha256": "d2fb1418b435d373f5f02d375e6a825698df72f6a253317d0062bfebc23a0301",
   "spec_sha256": "979e6cc31f87592bfcf06ff23d2d15a7f672b30941598d4e19b48aca9b4c6129",
+  "spec_sha256": "da57033ef278c0f84142476de78660d806f71274e40e837a328ec7d7ac4f571c",
   "openapi": "3.0.3",
   "api_version": "4.24.0",
-  "operation_count": 755,
+  "operation_count": 762,
   "targets": [
     "javascript",
     "python"
