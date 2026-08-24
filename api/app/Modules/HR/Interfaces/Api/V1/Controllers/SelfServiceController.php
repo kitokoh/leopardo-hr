@@ -29,12 +29,14 @@ class SelfServiceController extends Controller
         /** @var Employee $user */
         $user = $request->user();
 
+        /** @var Collection<int, array{id: int|null, company_id: string|int|null, company_name: string|null, start_date: string|null, end_date: string|null, job_title: mixed, contract_type: string, status: string, current: bool}> $contracts */
         $contracts = Contract::query()
             ->where('employee_id', $user->id)
             ->where('company_id', $user->company_id)
             ->orderByDesc('start_date')
             ->get()
             ->map(fn (Contract $contract): array => [
+                'id' => $contract->id,
                 'company_id' => $contract->company_id,
                 'company_name' => $user->company?->name,
                 'start_date' => $contract->start_date?->toDateString(),
@@ -48,6 +50,7 @@ class SelfServiceController extends Controller
 
         if ($contracts->isEmpty()) {
             $contracts->push([
+                'id' => null,
                 'company_id' => $user->company_id,
                 'company_name' => $user->company?->name,
                 'start_date' => $user->contract_start?->toDateString(),
@@ -201,8 +204,7 @@ class SelfServiceController extends Controller
      * de la base (stdClass), pour rester tolérant au schéma des sections
      * carrière/départ non encore mergées.
      *
-     * @param object $row
-     * @param list<string> $keys
+     * @param  list<string>  $keys
      */
     private function firstNonEmptyString(object $row, array $keys): string
     {

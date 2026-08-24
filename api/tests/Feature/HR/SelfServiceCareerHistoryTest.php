@@ -74,7 +74,7 @@ class SelfServiceCareerHistoryTest extends TestCase
             ->assertJsonPath('data.career_history.per_page', 2)
             ->assertJsonPath('data.career_history.total', 3)
             ->assertJsonCount(2, 'data.career_history.data')
-            ->assertJsonPath('data.career_history.data.0.id', $page1->json('data.timeline.0.id'));
+            ->assertJsonPath('data.career_history.data.0.data.id', $page1->json('data.timeline.0.id'));
 
         $page2 = $this->getJson('/api/v1/me/career?per_page=2&page=2');
         $page2->assertOk()->assertJsonCount(1, 'data.career_history.data');
