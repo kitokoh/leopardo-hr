@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property string $number
  * @property string $status
  * @property int|null $contact_id
+ * @property int|null $source_document_id
  * @property string|null $project_ref
  * @property Carbon $issue_date
  * @property Carbon|null $due_date
@@ -58,6 +59,7 @@ class AccountingDocument extends Model
         'number',
         'status',
         'contact_id',
+        'source_document_id',
         'project_ref',
         'issue_date',
         'due_date',
