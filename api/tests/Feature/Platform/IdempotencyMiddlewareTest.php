@@ -43,7 +43,7 @@ class IdempotencyMiddlewareTest extends TestCase
 
             $attempts = 0;
             Route::post('/_test/rtmx-fail', function () use (&$attempts): JsonResponse {
-                ++$attempts;
+                $attempts++;
 
                 return response()->json(['attempt' => $attempts], 422);
             });

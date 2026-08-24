@@ -62,7 +62,7 @@ class IdempotencyMiddleware
         $cacheKey = $this->cacheKey($request, $idempotencyKey, $authorization);
 
         $cached = Cache::get($cacheKey);
-        if (is_array($cached)) {
+        if ($this->isSnapshot($cached)) {
             return $this->replay($cached);
         }
 
@@ -111,6 +111,23 @@ class IdempotencyMiddleware
             'content_type' => $response->headers->get('Content-Type'),
             'body' => (string) $response->getContent(),
         ];
+    }
+
+    /**
+     * Valide la forme d'un snapshot mémorisé en cache (défense contre un
+     * cache corrompu ou une clé collisionnée) avant de le rejouer.
+     *
+     * @phpstan-assert-if-true array{status: int, content_type: string|null, body: string} $value
+     */
+    private function isSnapshot(mixed $value): bool
+    {
+        return is_array($value)
+            && array_key_exists('status', $value)
+            && is_int($value['status'])
+            && array_key_exists('content_type', $value)
+            && ($value['content_type'] === null || is_string($value['content_type']))
+            && array_key_exists('body', $value)
+            && is_string($value['body']);
     }
 
     /**

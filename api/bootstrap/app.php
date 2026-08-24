@@ -5,6 +5,7 @@ use App\Core\Http\Middleware\IdempotencyMiddleware;
 use App\Exceptions\DomainException;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ApiVersionMiddleware;
+use App\Http\Middleware\AuthenticateZktecoDevice;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
@@ -142,7 +143,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'kiosk.search_path' => EnsureKioskSearchPathReset::class,
             // #4934 (audit web client 2026-08-17) : auth device ZKTeco
             // (heartbeat / sync-attendance) — fail-closed, search_path-safe.
-            'zkteco.device' => \App\Http\Middleware\AuthenticateZktecoDevice::class,
+            'zkteco.device' => AuthenticateZktecoDevice::class,
             // Issue #1774 : variante résiliente du middleware de throttling —
             // un échec du stockage du compteur répond 429 dégradé (au lieu d'un
             // 500) et les exceptions du pipeline en aval ne sont jamais masquées.
