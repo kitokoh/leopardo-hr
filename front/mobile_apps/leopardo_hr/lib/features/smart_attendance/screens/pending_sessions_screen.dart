@@ -48,7 +48,7 @@ class _PendingGeoSessionsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur : $e'),
+            content: Text(context.l10n.smartAttendanceError(e)),
             backgroundColor: AppColors.danger,
           ),
         );
@@ -63,15 +63,15 @@ class _PendingGeoSessionsScreenState
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.mobileDarkSurface,
         title: Text(
-          'Motif du rejet',
+          context.l10n.smartAttendanceRejectReason,
           style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
         ),
         content: TextField(
           controller: _noteController,
           style: const TextStyle(color: AppColors.textDark),
           maxLines: 3,
-          decoration: const InputDecoration(
-            hintText: 'Expliquez la raison du rejet...',
+          decoration: InputDecoration(
+            hintText: context.l10n.smartAttendanceRejectHint,
             hintStyle: TextStyle(color: AppColors.textMutedDark),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: AppColors.borderDark),
@@ -81,7 +81,7 @@ class _PendingGeoSessionsScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annuler'),
+            child: Text(context.l10n.smartAttendanceCancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -123,7 +123,7 @@ class _PendingGeoSessionsScreenState
       backgroundColor: AppColors.mobileDarkBg,
       appBar: MobileTopBar(
         title: context.l10n.sessionsToValidate,
-        subtitle: 'Smart Attendance — GPS',
+        subtitle: context.l10n.smartAttendanceGpsTitle,
         leading: IconButton(
           tooltip: context.l10n.back,
           icon: const Icon(Icons.arrow_back_rounded),
@@ -165,7 +165,8 @@ class _PendingGeoSessionsScreenState
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
-          child: Text('Erreur : $e', style: TextStyle(color: AppColors.danger)),
+          child: Text(context.l10n.smartAttendanceError(e),
+              style: TextStyle(color: AppColors.danger)),
         ),
       ),
     );
@@ -249,7 +250,9 @@ class _SessionCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  'Sortie : ${fmt.format(session.endedAt!.toLocal())} · ${session.durationLabel}',
+                  context.l10n.smartAttendanceSessionExit(
+                      fmt.format(session.endedAt!.toLocal()),
+                      session.durationLabel),
                   style: AppTypography.bodySmall.copyWith(
                     color: AppColors.textMutedDark,
                   ),
@@ -264,7 +267,7 @@ class _SessionCard extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: onReject,
                   icon: const Icon(Icons.close_rounded, size: 16),
-                  label: const Text('Rejeter'),
+                  label: Text(context.l10n.smartAttendanceReject),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.danger,
                     side: BorderSide(
@@ -278,7 +281,7 @@ class _SessionCard extends StatelessWidget {
                 child: FilledButton.icon(
                   onPressed: onApprove,
                   icon: const Icon(Icons.check_rounded, size: 16),
-                  label: const Text('Approuver'),
+                  label: Text(context.l10n.smartAttendanceApprove),
                   style: FilledButton.styleFrom(backgroundColor: Colors.green),
                 ),
               ),

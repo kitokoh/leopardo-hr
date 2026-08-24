@@ -12,6 +12,7 @@ import 'package:leopardo_hr/core/providers/core_providers.dart';
 import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/location/attendance_location_context.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 class AttendanceState {
   final bool isLoading;
@@ -90,8 +91,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         state = state.copyWith(
           isLoading: false,
           context: {...?state.context, 'load_degraded': true},
-          notice:
-              'Les donnees du jour prennent plus de temps que prevu. L\'ecran reste utilisable, vous pouvez actualiser.',
+          notice: deviceL10n.attendanceLoadDegradedNotice,
         );
         return;
       }
@@ -138,7 +138,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         isPunching: false,
         notice: _successNotice(
           log: log,
-          fallback: 'Arrivee enregistree a l instant.',
+          fallback: deviceL10n.attendanceCheckinRegistered,
           location: location,
         ),
       );
@@ -176,7 +176,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         isPunching: false,
         notice: _successNotice(
           log: log,
-          fallback: 'Depart enregistre a l instant.',
+          fallback: deviceL10n.attendanceCheckoutRegistered,
           location: location,
         ),
       );
@@ -277,11 +277,11 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         return error.message;
       }
       if (error.statusCode == 403) {
-        return 'Votre role ne permet pas cette action de pointage.';
+        return deviceL10n.attendanceRoleForbidden;
       }
     }
 
-    return 'Le pointage n a pas pu etre confirme. Verifiez la connexion puis reessayez.';
+    return deviceL10n.attendancePunchFailed;
   }
 
   Future<AttendanceLocationContext> _attendanceLocation() {
@@ -297,7 +297,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
   }) {
     final geofence = log.geofence;
     if (geofence != null && geofence['inside'] == false) {
-      return '$fallback Pointage hors zone detecte; controlez le contexte avant validation RH.';
+      return deviceL10n.attendanceOutsideZoneManagerNotice(fallback);
     }
 
     if (!location.hasCoordinates && location.message != null) {

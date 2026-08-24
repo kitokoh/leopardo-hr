@@ -640,9 +640,15 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           const SizedBox(height: 14),
           Row(
             children: [
-              Expanded(child: _TimeChip(label: context.l10n.attendanceCheckinLabel, value: checkIn)),
+              Expanded(
+                  child: _TimeChip(
+                      label: context.l10n.attendanceCheckinLabel,
+                      value: checkIn)),
               const SizedBox(width: 10),
-              Expanded(child: _TimeChip(label: context.l10n.attendanceCheckoutLabel, value: checkOut)),
+              Expanded(
+                  child: _TimeChip(
+                      label: context.l10n.attendanceCheckoutLabel,
+                      value: checkOut)),
             ],
           ),
           if (sessionsCount > 1 || breakMinutes > 0) ...[
@@ -670,8 +676,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           const SizedBox(height: 14),
           Row(
             children: [
-              const Text(
-                'Gain estime du jour',
+              Text(
+                context.l10n.attendanceDailyEstimate,
                 style: TextStyle(color: _muted, fontSize: 12),
               ),
               const Spacer(),
@@ -706,17 +712,17 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   Widget _buildTodayTasks(AsyncValue<List<Map<String, dynamic>>> tasksAsync) {
     return tasksAsync.when(
       loading: () => _buildNoticeGlassCard(
-        'Synchronisation des taches du jour...',
+        context.l10n.attendanceTasksSyncing,
         AppColors.warning,
       ),
       error: (_, __) => _buildNoticeGlassCard(
-        'Taches du jour indisponibles pour l instant.',
+        context.l10n.attendanceTasksUnavailable,
         AppColors.warning,
       ),
       data: (tasks) {
         if (tasks.isEmpty) {
           return _buildNoticeGlassCard(
-            'Aucune tache assignee pour aujourd hui.',
+            context.l10n.attendanceTasksEmpty,
             AppColors.rh,
           );
         }
@@ -731,8 +737,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'TACHES DU JOUR',
+              Text(
+                context.l10n.attendanceTasksSectionTitle,
                 style: TextStyle(
                   color: _secondary,
                   fontSize: 12,
@@ -799,8 +805,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                         const SizedBox(height: 2),
                         Text(
                           day.isAbsent
-                              ? 'Absent'
-                              : '${day.checkInFormatted} -> ${day.checkOutFormatted}'
+                              ? context.l10n.attendanceAbsent
+                              : '${context.l10n.attendanceSessionRange(day.checkInFormatted, day.checkOutFormatted)}'
                                   '${day.lateMinutes > 0 ? ' · +${day.lateMinutes} min' : ''}',
                           style: const TextStyle(fontSize: 10, color: _soft),
                         ),
@@ -896,18 +902,20 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         children: [
           _WeekStat(
             value: '${hours}h${mins.toString().padLeft(2, '0')}',
-            label: 'Heures semaine',
+            label: context.l10n.attendanceWeekHours,
             color: AppColors.mobileDarkTextSoft,
           ),
           _WeekStat(
             value:
                 '${totalEarnings.toStringAsFixed(0)}${currencySuffix(currency)}',
-            label: 'Gain estime',
+            label: context.l10n.attendanceEstimatedEarnings,
             color: AppColors.rh,
           ),
           _WeekStat(
-            value: totalLate > 0 ? '$totalLate min' : 'Aucun',
-            label: 'Retard cumule',
+            value: totalLate > 0
+                ? context.l10n.attendanceLateMinutes(totalLate)
+                : 'Aucun',
+            label: context.l10n.attendanceTotalLate,
             color: totalLate > 0 ? AppColors.warning : AppColors.rh,
           ),
         ],
@@ -973,15 +981,15 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               _SheetHeader(
                 title: day.dayLabel,
                 subtitle: day.isAbsent
-                    ? 'Aucun pointage enregistre pour cette journee.'
-                    : '${day.sessionsCount} session(s) - ${day.hoursFormatted} travaillees.',
+                    ? context.l10n.attendanceNoPunchForDay
+                    : context.l10n.attendanceDaySessionsSummary(
+                        day.hoursFormatted, day.sessionsCount),
               ),
               const SizedBox(height: 14),
               _ActionTile(
                 icon: Icons.receipt_long_outlined,
-                title: 'Details de la journee',
-                subtitle:
-                    'Voir les pointages, pauses, heures supp et temps reel.',
+                title: context.l10n.attendanceDayDetails,
+                subtitle: context.l10n.attendanceDayDetailsBody,
                 onTap: () {
                   Navigator.pop(ctx);
                   _showDayDetailsSheet(context, day, currency: currency);
@@ -990,10 +998,12 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               const SizedBox(height: 8),
               _ActionTile(
                 icon: Icons.edit_calendar_outlined,
-                title: canDirectEdit ? 'Modifier' : 'Demander une modification',
+                title: canDirectEdit
+                    ? context.l10n.attendanceMenuEdit
+                    : context.l10n.attendanceRequestCorrection,
                 subtitle: canDirectEdit
-                    ? 'Corriger directement cette ligne de pointage.'
-                    : 'Soumettre une correction au RH pour validation.',
+                    ? context.l10n.attendanceCorrectionDirectBody
+                    : context.l10n.attendanceCorrectionRequestBody,
                 onTap: () {
                   Navigator.pop(ctx);
                   _showCorrectionSheet(
@@ -1044,7 +1054,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   const _SheetHandle(),
                   const SizedBox(height: 16),
                   _SheetHeader(
-                    title: 'Details de la journee',
+                    title: context.l10n.attendanceDayDetails,
                     subtitle: DateFormat(
                       'EEEE d MMMM yyyy',
                       deviceIntlDateLocale,
@@ -1059,7 +1069,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                     children: [
                       Expanded(
                         child: _DetailMetric(
-                          label: 'Temps travaille',
+                          label: context.l10n.attendanceWorkedTime,
                           value: day.hoursFormatted,
                           color: AppColors.mobileDarkTextSoft,
                         ),
@@ -1067,7 +1077,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: _DetailMetric(
-                          label: 'Heures supp',
+                          label: context.l10n.attendanceOvertimeShortLabel,
                           value: day.overtimeFormatted,
                           color: AppColors.rh,
                         ),
@@ -1087,7 +1097,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: _DetailMetric(
-                          label: 'Gain estime',
+                          label: context.l10n.attendanceEstimatedEarnings,
                           value:
                               '${day.estimatedEarnings.toStringAsFixed(0)}${currencySuffix(currency)}',
                           color: AppColors.rh,
@@ -1107,10 +1117,10 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   ),
                   const SizedBox(height: 10),
                   if (day.sessions.isEmpty)
-                    const _SheetMessage(
+                    _SheetMessage(
                       icon: Icons.event_busy_outlined,
-                      title: 'Aucune session',
-                      body: 'Cette journee ne contient pas encore de pointage.',
+                      title: context.l10n.attendanceNoSession,
+                      body: context.l10n.attendanceDayNoSessionsYet,
                     )
                   else
                     ...day.sessions.map(_SessionDetailTile.new),
@@ -1135,9 +1145,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       final date = today.subtract(Duration(days: index));
       final sessions = byDay[_dateKey(date)] ?? const <AttendanceLog>[];
       final labelPrefix = index == 0
-          ? 'Aujourd hui'
+          ? context.l10n.attendanceDayTodayLabel
           : index == 1
-              ? 'Hier'
+              ? context.l10n.attendanceDayYesterdayLabel
               : _capitalize(
                   DateFormat('EEE', deviceIntlDateLocale).format(date));
       final label =
@@ -1159,10 +1169,10 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   static double _estimatedEarnings(double hours) => hours * 550;
 
   static String _statusLabel(AttendanceLog? log) {
-    if (log == null || log.checkIn == null) return 'A pointer';
-    if (log.checkOut == null) return 'En cours';
-    if ((log.lateMinutes ?? 0) > 0) return 'Retard';
-    return 'Complet';
+    if (log == null || log.checkIn == null) return deviceL10n.attendanceToPunch;
+    if (log.checkOut == null) return deviceL10n.attendanceStatusInProgress;
+    if ((log.lateMinutes ?? 0) > 0) return deviceL10n.attendanceStatusLate;
+    return deviceL10n.attendanceStatusComplete;
   }
 
   static Color _statusColor(AttendanceLog? log) {
@@ -1185,22 +1195,22 @@ class _PunchChoice {
   final String successLabel;
   final String failureLabel;
 
-  static const firstArrival = _PunchChoice(
+  static final firstArrival = _PunchChoice(
     workType: 'normal',
-    title: 'Arrivee normale',
-    subtitle: 'Demarrer la journee',
-    loadingLabel: 'Envoi de l arrivee',
-    successLabel: 'Arrivee confirmee.',
-    failureLabel: 'Arrivee non confirmee',
+    title: deviceL10n.attendanceCheckinNormal,
+    subtitle: deviceL10n.attendanceStartDay,
+    loadingLabel: deviceL10n.attendanceSendCheckin,
+    successLabel: deviceL10n.attendanceCheckinConfirmed,
+    failureLabel: deviceL10n.attendanceCheckinNotConfirmed,
   );
 
-  static const firstDeparture = _PunchChoice(
+  static final firstDeparture = _PunchChoice(
     workType: 'normal',
-    title: 'Terminer le travail',
-    subtitle: 'Enregistrer le depart de cette session',
-    loadingLabel: 'Envoi du depart',
-    successLabel: 'Depart confirme.',
-    failureLabel: 'Depart non confirme',
+    title: deviceL10n.attendanceEndWork,
+    subtitle: deviceL10n.attendanceSaveDeparture,
+    loadingLabel: deviceL10n.attendanceSendCheckout,
+    successLabel: deviceL10n.attendanceCheckoutConfirmed,
+    failureLabel: deviceL10n.attendanceCheckoutNotConfirmed,
   );
 
   const _PunchChoice({
@@ -1578,7 +1588,7 @@ class _SessionDetailTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  '$start -> $end',
+                  context.l10n.attendanceSessionRange(start, end),
                   style: const TextStyle(
                     color: _AttendanceScreenState._muted,
                     fontSize: 11,
@@ -1659,7 +1669,7 @@ class _TaskLine extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final id = int.tryParse(task['id']?.toString() ?? '');
-    final title = task['title']?.toString() ?? 'Tache';
+    final title = task['title']?.toString() ?? context.l10n.attendanceTask;
     final priority = task['priority']?.toString() ?? 'normal';
     final status = task['status']?.toString() ?? 'todo';
     final minutes = int.tryParse(task['estimated_minutes']?.toString() ?? '');
@@ -1699,7 +1709,7 @@ class _TaskLine extends ConsumerWidget {
           ),
           if (minutes != null)
             Text(
-              '$minutes min',
+              context.l10n.attendanceBreakMinutes(minutes),
               style: const TextStyle(
                 color: _AttendanceScreenState._muted,
                 fontSize: 11,
@@ -1709,7 +1719,7 @@ class _TaskLine extends ConsumerWidget {
             const SizedBox(width: 8),
             TextButton(
               onPressed: () => _openCompleteSheet(context, ref, id, minutes),
-              child: const Text('Terminer'),
+              child: Text(context.l10n.attendanceFinish),
             ),
           ],
         ],
@@ -1781,8 +1791,8 @@ class _TaskCompletionSheetState extends ConsumerState<_TaskCompletionSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Cloturer la tache',
+            Text(
+              context.l10n.attendanceCloseTask,
               style: TextStyle(
                 color: _AttendanceScreenState._text,
                 fontSize: 16,
@@ -1790,8 +1800,8 @@ class _TaskCompletionSheetState extends ConsumerState<_TaskCompletionSheet> {
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
-              'Indiquez le temps reel et une note courte avant le depart.',
+            Text(
+              context.l10n.attendanceRealTimeHint,
               style: TextStyle(
                 color: _AttendanceScreenState._muted,
                 fontSize: 12,
@@ -1802,13 +1812,15 @@ class _TaskCompletionSheetState extends ConsumerState<_TaskCompletionSheet> {
               controller: _minutesCtrl,
               keyboardType: TextInputType.number,
               style: const TextStyle(color: _AttendanceScreenState._text),
-              decoration: const InputDecoration(
-                labelText: 'Temps reel',
+              decoration: InputDecoration(
+                labelText: context.l10n.attendanceRealTime,
                 suffixText: 'min',
               ),
               validator: (value) {
                 final parsed = int.tryParse(value?.trim() ?? '');
-                if (parsed == null || parsed <= 0) return 'Duree invalide';
+                if (parsed == null || parsed <= 0) {
+                  return context.l10n.attendanceInvalidDuration;
+                }
                 return null;
               },
             ),
@@ -1819,8 +1831,8 @@ class _TaskCompletionSheetState extends ConsumerState<_TaskCompletionSheet> {
               maxLines: 3,
               maxLength: 300,
               style: const TextStyle(color: _AttendanceScreenState._text),
-              decoration: const InputDecoration(
-                labelText: 'Note de realisation',
+              decoration: InputDecoration(
+                labelText: context.l10n.attendanceTaskNote,
               ),
             ),
             const SizedBox(height: 14),
@@ -1833,7 +1845,7 @@ class _TaskCompletionSheetState extends ConsumerState<_TaskCompletionSheet> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.task_alt),
-              label: const Text('Marquer terminee'),
+              label: Text(context.l10n.attendanceMarkDone),
             ),
           ],
         ),
@@ -1855,12 +1867,13 @@ class _TaskCompletionSheetState extends ConsumerState<_TaskCompletionSheet> {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Tache terminee.')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.attendanceTaskDone)));
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+        ).showSnackBar(
+            SnackBar(content: Text(context.l10n.attendanceTaskFailed(e))));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -1916,8 +1929,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
-      helpText:
-          isCheckIn ? 'Heure d\'arrivee reelle' : 'Heure de depart reelle',
+      helpText: isCheckIn
+          ? context.l10n.attendanceCorrectionCheckinTime
+          : context.l10n.attendanceCorrectionCheckoutTime,
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
         child: child!,
@@ -1943,16 +1957,17 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (!_formKey.currentState!.validate()) return;
     if (_checkIn == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Saisir l\'heure d\'arrivee reelle')),
+        SnackBar(
+            content: Text(context.l10n.attendanceCorrectionCheckinRequired)),
       );
       return;
     }
 
     if (widget.canDirectEdit && widget.logId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Aucune ligne de pointage existante a modifier pour ce jour.',
+            context.l10n.attendanceCorrectionNoLogWarning,
           ),
           backgroundColor: AppColors.warning,
         ),
@@ -1987,7 +2002,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     setState(() => _submitting = false);
     if (!success) {
       final message = ref.read(attendanceProvider).error ??
-          'Impossible d envoyer la modification pour le moment.';
+          context.l10n.attendanceCorrectionSubmitError;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: AppColors.danger),
       );
@@ -1998,8 +2013,12 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
       SnackBar(
         content: Text(
           widget.canDirectEdit
-              ? 'Pointage du ${DateFormat('d MMM', deviceIntlDateLocale).format(widget.targetDate)} modifie.'
-              : 'Demande du ${DateFormat('d MMM', deviceIntlDateLocale).format(widget.targetDate)} soumise au RH - vous serez notifie de la decision.',
+              ? context.l10n.attendanceCorrectionDirectSnack(
+                  DateFormat('d MMM', deviceIntlDateLocale)
+                      .format(widget.targetDate))
+              : context.l10n.attendanceCorrectionRequestSnack(
+                  DateFormat('d MMM', deviceIntlDateLocale)
+                      .format(widget.targetDate)),
         ),
         backgroundColor: AppColors.rh,
         duration: const Duration(seconds: 4),
@@ -2038,7 +2057,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Modifier le ${DateFormat('EEEE d MMMM', deviceIntlDateLocale).format(widget.targetDate)}',
+              context.l10n.attendanceCorrectionEditDateTitle(
+                  DateFormat('EEEE d MMMM', deviceIntlDateLocale)
+                      .format(widget.targetDate)),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -2048,8 +2069,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
             const SizedBox(height: 4),
             Text(
               widget.canDirectEdit
-                  ? 'La correction sera appliquee au dossier de pointage.'
-                  : 'La demande sera transmise au RH pour validation.',
+                  ? context.l10n.attendanceCorrectionDirectHint
+                  : context.l10n.attendanceCorrectionRequestHint,
               style: const TextStyle(
                   fontSize: 12, color: AppColors.mobileDarkMuted),
             ),
@@ -2058,7 +2079,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               children: [
                 Expanded(
                   child: _TimeTile(
-                    label: 'Arrivee reelle *',
+                    label: context.l10n.attendanceRealCheckinRequired,
                     value: _checkIn,
                     onTap: () => _pickTime(isCheckIn: true),
                   ),
@@ -2066,7 +2087,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _TimeTile(
-                    label: 'Depart reel',
+                    label: context.l10n.attendanceRealCheckout,
                     value: _checkOut,
                     onTap: () => _pickTime(isCheckIn: false),
                   ),
@@ -2081,7 +2102,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               style: const TextStyle(
                   fontSize: 13, color: AppColors.mobileDarkText),
               decoration: InputDecoration(
-                hintText: 'Motif (ex: oubli de pointage a 8h)',
+                hintText: context.l10n.attendanceCorrectionReasonHint,
                 hintStyle: const TextStyle(
                   fontSize: 13,
                   color: AppColors.mobileDarkMuted,
@@ -2100,7 +2121,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                 ),
               ),
               validator: (value) => value == null || value.trim().isEmpty
-                  ? 'Motif obligatoire'
+                  ? context.l10n.attendanceCorrectionReasonRequired
                   : null,
             ),
             const SizedBox(height: 16),
@@ -2128,7 +2149,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                     : Text(
                         widget.canDirectEdit
                             ? 'Modifier'
-                            : 'Demander une modification',
+                            : context.l10n.attendanceRequestCorrection,
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
               ),

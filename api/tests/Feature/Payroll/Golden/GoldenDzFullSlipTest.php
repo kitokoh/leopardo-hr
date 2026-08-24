@@ -176,35 +176,36 @@ class GoldenDzFullSlipTest extends TestCase
 
     public function test_golden_dz_full_slip_with_overtime_15_hours(): void
     {
-        // Calcul manuel (DZ_COMPLIANCE.md §5 — heures sup intégrées) :
-        //   HS = 10 h × 346,160503 × 1,25 + 5 h × 346,160503 × 1,50 = 6 923,21
-        //   (taux horaire = 60 000 / 173,33, précision complète #2685)
-        //   brut = 60 000 + 6 923,21 = 66 923,21
-        //   CNAS salariale = 66 923,21 × 9 % = 6 023,09
-        //   assiette IRG = 66 923,21 − 6 023,09 = 60 900,12
-        //   IRG(60 900,12) : 4 600 + 20 900,12×27 % = 10 243,03
-        //     → annuel 122 916,39 → abattement plafonné 18 000 → IRG mensuel 8 743,03
-        //   net = 66 923,21 − 6 023,09 − 8 743,03 = 52 157,09
-        //   patronale = 17 400,03 → coût employeur = 84 323,24
-        $overtime = (new PayrollCalculator)->computeOvertimePay(60000.0, 15.0);
-        $this->assertSame(6923.21, $overtime);
+        // Calcul manuel (DZ_COMPLIANCE.md §5 — heures sup intégrées, #5266) :
+        //   HS = 15 h × 346,160503 × 1,50 = 7 788,61
+        //   (palier unique ≥ 50 %, art. 32 loi 90-11 — écart E2 arbitré #5266 ;
+        //   taux horaire = 60 000 / 173,33, précision complète #2685)
+        //   brut = 60 000 + 7 788,61 = 67 788,61
+        //   CNAS salariale = 67 788,61 × 9 % = 6 100,97
+        //   assiette IRG = 67 788,61 − 6 100,97 = 61 687,64
+        //   IRG(61 687,64) : 4 600 + 21 687,64×27 % = 10 455,66
+        //     → annuel 125 467,92 → abattement plafonné 18 000 → IRG mensuel 8 955,66
+        //   net = 67 788,61 − 6 100,97 − 8 955,66 = 52 731,98
+        //   patronale = 17 625,04 → coût employeur = 85 413,65
+        $rules = $this->rules();
+        $overtime = (new PayrollCalculator)->computeOvertimePay(60000.0, 15.0, 10, $rules);
+        $this->assertSame(7788.61, $overtime);
 
         $gross = 60000.0 + $overtime;
-        $rules = $this->rules();
         $charges = $rules->calculateSocialCharges($gross);
         $taxable = $gross - $charges['employee'];
         $irg = $rules->calculateIncomeTax($taxable);
         $net = round($gross - ($charges['employee'] + $irg), 2);
         $cost = round($gross + $charges['employer'], 2);
 
-        $this->assertSame(6023.09, $charges['employee']);
-        // Idem : assiette NON arrondie — 66 923,21 − 6 023,09 = 60 900,12000000001
+        $this->assertSame(6100.97, $charges['employee']);
+        // Idem : assiette NON arrondie — 67 788,61 − 6 100,97 = 61 687,64000000001
         // en binaire flottant ; l'IRG est calculé sur la valeur exacte.
-        $this->assertEqualsWithDelta(60900.12, $taxable, 0.0001);
-        $this->assertSame(8743.03, $irg);
-        $this->assertSame(52157.09, $net);
-        $this->assertSame(17400.03, $charges['employer']);
-        $this->assertSame(84323.24, $cost);
+        $this->assertEqualsWithDelta(61687.64, $taxable, 0.0001);
+        $this->assertSame(8955.66, $irg);
+        $this->assertSame(52731.98, $net);
+        $this->assertSame(17625.04, $charges['employer']);
+        $this->assertSame(85413.65, $cost);
     }
 
     public function test_golden_dz_full_slip_rounding_centimes_33333(): void

@@ -12,6 +12,11 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - Additive tenant migration: `accounting_number_counters` table + `accounting_documents.source_document_id` (self-FK for credit notes)
   - Provider binding; no API endpoints (exposed via #5226)
   - Tests: `DocumentWorkflowNumberingTest` (16) — sequences, custom series, upsert on pre-existing counter (race simulation, repo convention #4978), 100 unique numbers, full workflow, transition rules
+- **Accounting perf/scale audit (issue #5275)**:
+  - Composite indexes (additive migration `2026_08_23_000005`): `accounting_documents (company_id, status, due_date)`, `(company_id, issue_date)`, `accounting_payments (company_id, document_id, status)`
+  - `accounting:benchmark` command (F-12 protocol): seeds 10k realistic documents (dedicated company, chunked inserts) + measures paginated eager list (N+1 barrier ≤ 5 queries), reminder query (J+7), monthly aggregation
+  - Measured: 10k-document list 0.01 s (< 200 ms target), 1,763 reminder-eligible, 13 months
+  - `AccountingPerformanceTest` (3 tests) + `docs/accounting/BENCHMARK.md` (protocol, targets, index map, reference results)
 
 ### Added
 - **Attendance reports by period (issue #5268)** — the monthly report endpoint `GET /attendance/monthly-report` is now a full report engine:
@@ -25,6 +30,8 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 - **Congés légaux par pays DZ/MA/TN/SN (issue #5289)** — registre de règles légales (`LegalLeaveRulesRegistry` : 30/24/30/26 j/an, acquisition mensuelle, report, monétisation, source légale, `confidenceLevel`), plancher légal appliqué par `leave:accrue` (l'acquisition mensuelle d'une politique de congés déductibles ne descend jamais sous le minimum légal du pays ; log `planning.legal_leave.floor_applied`), droit projeté par ancienneté (`LegalLeaveEntitlementService`), calendrier des fériés légaux en lecture seule de `public_holidays` (`LegalLeaveCalendarService`) ; spec `.specify/features/5289-legal-leaves-by-country/` + inventaire `docs/payroll/LEGAL_LEAVES.md` + tests golden par pays.
 
 ### Fixed
+- **Parallel PostgreSQL test database creation tolerates duplicate-database SQLSTATE.** `TestCase` now accepts SQLSTATE `42P04` directly when multiple workers race to create the same `{db}_test_{token}` database, preventing false backend-suite failures while still rethrowing unrelated database errors.
+- **Payroll validation is atomic.** Run status, related pay-slip statuses, and the validation audit are now committed inside the same transaction; the controller no longer performs a second partial transition.
 - **Trial signup slug-collision retries preserve PostgreSQL transactions.** Each bounded retry now uses an explicit savepoint when invoked inside an existing transaction, so an expected `23505` collision cannot poison subsequent queries or unrelated tests.
 - **LeaveCarryForward processes all tenants explicitly.** The annual carry-forward command now disables tenant global scopes for policies, balances, accrual expiration queries, and write builders while retaining explicit company filters, so console execution cannot inherit a stale `current_company` or `search_path` context; per-employee failures remain isolated and logged without poisoning the command transaction.
 

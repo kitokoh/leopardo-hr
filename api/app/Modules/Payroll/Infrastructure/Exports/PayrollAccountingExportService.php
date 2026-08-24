@@ -29,7 +29,7 @@ class PayrollAccountingExportService
     {
         // Issue #2223 : seuls les bulletins validés sont exportés (le journal
         // voisin suit la même règle) — pas de statuts intermédiaires.
-        $slips = $run->paySlips()->with('employee')->where('status', 'validated')->get();
+        $slips = $run->paySlips()->with(['employee', 'lines'])->where('status', 'validated')->get();
         $currency = $this->resolveCurrency($run);
         $periodStart = $run->period_start->toDateString();
         $periodEnd = $run->period_end->toDateString();
@@ -41,7 +41,7 @@ class PayrollAccountingExportService
             // Add BOM for Excel UTF-8 compatibility
             fwrite($file, "\xEF\xBB\xBF");
 
-            fputcsv($file, [
+            $header = [
                 'Matricule',
                 'Nom',
                 'Prénom',
@@ -54,10 +54,19 @@ class PayrollAccountingExportService
                 'Déductions',
                 'Salaire Net',
                 'Coût Employeur',
-            ], ';');
+            ];
+
+            // #5243 — bridge vers le flux comptable DZ : colonnes cotisations
+            // ajoutées pour les runs DZ uniquement (contrat multi-pays intact).
+            $dzColumns = $countryCode === 'DZ';
+            if ($dzColumns) {
+                array_push($header, 'CNAS Salariale', 'CNAS Patronale', 'IRG');
+            }
+
+            fputcsv($file, $header, ';');
 
             foreach ($slips as $slip) {
-                fputcsv($file, [
+                $row = [
                     CsvCellSanitizer::neutralize((string) ($slip->employee->matricule ?? '')),
                     CsvCellSanitizer::neutralize((string) ($slip->employee->last_name ?? '')),
                     CsvCellSanitizer::neutralize((string) ($slip->employee->first_name ?? '')),
@@ -70,7 +79,13 @@ class PayrollAccountingExportService
                     number_format((float) $slip->total_deductions, 2, '.', ''),
                     number_format((float) $slip->net_salary, 2, '.', ''),
                     number_format((float) $slip->total_cost, 2, '.', ''),
-                ], ';');
+                ];
+
+                if ($dzColumns) {
+                    array_push($row, ...$this->dzContributionColumns($slip));
+                }
+
+                fputcsv($file, $row, ';');
             }
 
             fclose($file);
@@ -280,5 +295,45 @@ class PayrollAccountingExportService
             : Company::query()->where('id', $run->company_id)->first();
 
         return strtoupper((string) ($company?->currency ?? 'DZD'));
+    }
+
+    /**
+     * #5243 — Colonnes cotisations DZ pour l'export comptable : CNAS
+     * salariale (ligne « Cotisations salariales », sinon 9 % du brut), CNAS
+     * patronale (lignes « employer_contribution », sinon 26 %), IRG (déductions
+     * hors cotisations salariales). Les montants suivent les lignes réelles
+     * du bulletin quand elles existent.
+     *
+     * @return list<string>
+     */
+    private function dzContributionColumns(PaySlip $slip): array
+    {
+        $gross = (float) $slip->gross_salary;
+
+        $cnasEmployee = (float) $slip->lines
+            ->where('type', 'deduction')
+            ->where('name', 'Cotisations salariales')
+            ->sum('amount');
+        if ($cnasEmployee <= 0.0) {
+            $cnasEmployee = round($gross * 0.09, 2);
+        }
+
+        $cnasEmployer = (float) $slip->lines
+            ->where('type', 'employer_contribution')
+            ->sum('amount');
+        if ($cnasEmployer <= 0.0) {
+            $cnasEmployer = round($gross * 0.26, 2);
+        }
+
+        $irg = (float) $slip->lines
+            ->where('type', 'deduction')
+            ->where('name', '!=', 'Cotisations salariales')
+            ->sum('amount');
+
+        return [
+            number_format($cnasEmployee, 2, '.', ''),
+            number_format($cnasEmployer, 2, '.', ''),
+            number_format($irg, 2, '.', ''),
+        ];
     }
 }

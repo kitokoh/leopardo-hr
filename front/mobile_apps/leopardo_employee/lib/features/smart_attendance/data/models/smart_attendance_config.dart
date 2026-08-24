@@ -1,5 +1,5 @@
 /// Modèle de configuration du pointage intelligent retourné par l'API.
-/// Endpoint : GET /api/v1/smart-attendance/config
+/// Endpoint : GET /api/v1/attendance/config
 class SmartAttendanceConfig {
   /// Mode forcé par l'entreprise : 'gps_auto' | 'qr_code' | 'manual' | null
   final String? forcedMode;

@@ -50,8 +50,8 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: _text),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
-          'Pointage Intelligent',
+        title: Text(
+          context.l10n.smartAttendanceSmart,
           style: TextStyle(
             color: _text,
             fontWeight: FontWeight.w600,
@@ -61,7 +61,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
         actions: [
           // Bouton de rafraîchissement
           IconButton(
-            tooltip: 'Actualiser',
+            tooltip: context.l10n.attendanceRefresh,
             icon: const Icon(Icons.refresh_rounded, color: _muted),
             onPressed: () {
               ref.invalidate(smartAttendanceConfigProvider);
@@ -182,9 +182,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
         if (sessionState.recentSessions.isEmpty && !sessionState.isLoading)
           _EmptySessionsPanel()
         else
-          ...sessionState.recentSessions
-              .take(10)
-              .map(
+          ...sessionState.recentSessions.take(10).map(
                 (session) => Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: _SessionCard(session: session),
@@ -238,15 +236,15 @@ class _ModeStatusCard extends StatelessWidget {
     required this.onChangeTap,
   });
 
-  String get _modeLabelFr {
+  String _modeLabelFr(BuildContext context) {
     switch (effectiveMode) {
       case 'gps_auto':
-        return 'GPS Automatique';
+        return context.l10n.smartAttendanceGpsAuto;
       case 'qr_code':
-        return 'QR Code';
+        return context.l10n.smartAttendanceQr;
       case 'manual':
       default:
-        return 'Manuel';
+        return context.l10n.smartAttendanceManual;
     }
   }
 
@@ -301,12 +299,12 @@ class _ModeStatusCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Mode actif',
+                    Text(
+                      context.l10n.smartAttendanceActiveMode,
                       style: TextStyle(color: _muted, fontSize: 12),
                     ),
                     Text(
-                      _modeLabelFr,
+                      _modeLabelFr(context),
                       style: TextStyle(
                         color: _modeColor,
                         fontWeight: FontWeight.w700,
@@ -352,7 +350,7 @@ class _ModeStatusCard extends StatelessWidget {
                   Icon(Icons.settings_rounded, color: _accent, size: 16),
                   const SizedBox(width: 6),
                   Text(
-                    'Changer mon mode de pointage',
+                    context.l10n.smartAttendanceChangeMode,
                     style: TextStyle(
                       color: _accent,
                       fontSize: 13,
@@ -407,12 +405,12 @@ class _GpsZoneStatusCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Titre section
-          const Row(
+          Row(
             children: [
-              Icon(Icons.radar_rounded, color: _muted, size: 18),
+              const Icon(Icons.radar_rounded, color: _muted, size: 18),
               SizedBox(width: 8),
               Text(
-                'Surveillance de zone',
+                context.l10n.smartAttendanceZoneSurveillance,
                 style: TextStyle(
                   color: _text,
                   fontWeight: FontWeight.w600,
@@ -446,7 +444,9 @@ class _GpsZoneStatusCard extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                isMonitoring ? 'Surveillance active' : 'Surveillance inactive',
+                isMonitoring
+                    ? context.l10n.smartAttendanceSurveillanceActive
+                    : context.l10n.smartAttendanceSurveillanceInactive,
                 style: TextStyle(
                   color: isMonitoring ? _green : _muted,
                   fontSize: 14,
@@ -477,7 +477,8 @@ class _GpsZoneStatusCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     context.l10n.saPresenceInProgress(
-                      _formatTime(sessionState.activeSession!.startedAt),
+                      _formatTime(
+                          context, sessionState.activeSession!.startedAt),
                     ),
                     style: const TextStyle(
                       color: _green,
@@ -545,9 +546,8 @@ class _GpsZoneStatusCard extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isMonitoring
-                      ? _red.withValues(alpha: 0.8)
-                      : _accent,
+                  backgroundColor:
+                      isMonitoring ? _red.withValues(alpha: 0.8) : _accent,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
@@ -561,10 +561,12 @@ class _GpsZoneStatusCard extends StatelessWidget {
     );
   }
 
-  String _formatTime(DateTime dateTime) {
+  String _formatTime(BuildContext context, DateTime dateTime) {
     final now = DateTime.now();
     final diff = now.difference(dateTime);
-    if (diff.inMinutes < 60) return '${diff.inMinutes} min';
+    if (diff.inMinutes < 60) {
+      return context.l10n.attendanceBreakMinutes(diff.inMinutes);
+    }
     return DateFormat('HH:mm').format(dateTime);
   }
 }
@@ -697,8 +699,8 @@ class _SessionCard extends StatelessWidget {
                       ),
                     ] else ...[
                       const SizedBox(width: 12),
-                      const Text(
-                        'En cours',
+                      Text(
+                        context.l10n.attendanceStatusInProgress,
                         style: TextStyle(
                           color: AppColors.mobileAccentGreen,
                           fontSize: 12,
@@ -838,8 +840,8 @@ class _EmptySessionsPanel extends StatelessWidget {
             size: 40,
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Aucune session GPS pour le moment.',
+          Text(
+            context.l10n.smartAttendanceNoGpsSessions,
             style: TextStyle(color: AppColors.mobileDarkMuted, fontSize: 13),
           ),
         ],
