@@ -25,10 +25,24 @@ use Symfony\Component\HttpFoundation\Response;
  * - aucune politique de cache explicite posée par l'application n'est écrasée ;
  * - seules les réponses JSON 2xx GET sont concernées (les écritures et les
  *   erreurs ne sont jamais cachées).
+ *
+ * Piège Symfony (HTTP Foundation) : `ResponseHeaderBag` calcule TOUJOURS une
+ * politique de cache — `no-cache, private` par défaut, ou les directives
+ * posées par l'app suffixées de `, private` quand elles ne contiennent ni
+ * `public` ni `private`. Le header `Cache-Control` n'est donc JAMAIS absent en
+ * sortie de pipeline : tester sa présence reviendrait à ne jamais activer le
+ * middleware. On ne considère comme politique EXPLICITE (à respecter sans
+ * ETag) que ce qui diffère du défaut calculé par Symfony.
  */
 class HttpCacheMiddleware
 {
     private const CACHE_CONTROL = 'private, max-age=0, must-revalidate';
+
+    /**
+     * Politique calculée par Symfony pour une réponse sans directives
+     * explicites (ResponseHeaderBag::computeCacheControlValue()).
+     */
+    private const SYMFONY_DEFAULT_CACHE_CONTROL = 'no-cache, private';
 
     public function handle(Request $request, Closure $next): Response
     {
@@ -43,7 +57,17 @@ class HttpCacheMiddleware
             return $response;
         }
 
-        if ($response->headers->has('Cache-Control') || $response->headers->has('ETag')) {
+        // Un ETag déjà posé (app ou autre middleware) fait foi.
+        if ($response->headers->has('ETag')) {
+            return $response;
+        }
+
+        // Politique de cache explicite posée par l'application → on ne pose
+        // pas d'ETag et on n'écrase rien (le défaut calculé par Symfony n'est
+        // PAS une politique explicite : il s'applique à toute réponse sans
+        // directives — on le remplace par notre politique privée).
+        $cacheControl = $response->headers->get('Cache-Control');
+        if (is_string($cacheControl) && trim($cacheControl) !== self::SYMFONY_DEFAULT_CACHE_CONTROL) {
             return $response;
         }
 

@@ -33,10 +33,15 @@ class HttpCacheMiddlewareTest extends TestCase
 
     public function test_get_json_response_carries_etag_and_private_cache_control(): void
     {
+        // Symfony (ResponseHeaderBag) normalise l'ordre des directives
+        // Cache-Control : on vérifie la politique sémantique (privé,
+        // revalidation immédiate), pas l'ordre exact des directives.
         $this->getJson('/api/_test/rtmx-static')
             ->assertOk()
             ->assertHeader('ETag')
-            ->assertHeader('Cache-Control', 'private, max-age=0, must-revalidate');
+            ->assertHeaderContains('Cache-Control', 'private')
+            ->assertHeaderContains('Cache-Control', 'max-age=0')
+            ->assertHeaderContains('Cache-Control', 'must-revalidate');
     }
 
     public function test_conditional_get_returns_304_when_unchanged(): void
@@ -85,9 +90,12 @@ class HttpCacheMiddlewareTest extends TestCase
 
     public function test_explicit_cache_policy_is_never_overridden(): void
     {
+        // Symfony suffixe ', private' aux politiques explicites sans
+        // public/private — on vérifie que la politique de l'app ('no-store')
+        // est préservée et qu'aucun ETag n'est posé.
         $this->getJson('/api/_test/rtmx-explicit')
             ->assertOk()
-            ->assertHeader('Cache-Control', 'no-store')
+            ->assertHeaderContains('Cache-Control', 'no-store')
             ->assertHeaderMissing('ETag');
     }
 
