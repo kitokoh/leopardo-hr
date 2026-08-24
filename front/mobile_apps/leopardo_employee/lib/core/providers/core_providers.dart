@@ -4,18 +4,18 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/providers/core_providers.dart';
-import 'package:leopardo_employee/features/cabinet/data/cabinet_repository.dart';
-import 'package:leopardo_employee/features/evaluations/data/evaluation_repository.dart';
-import 'package:leopardo_employee/features/notifications/data/notification_repository.dart';
-import 'package:leopardo_employee/features/payrolls/data/payroll_repository.dart';
-import 'package:leopardo_employee/features/salary_advances/data/salary_advance_repository.dart';
-import 'package:leopardo_employee/features/user_auth/data/user_auth_repository.dart';
 import 'package:leopardo_core/offline/database/edge_database.dart';
 import 'package:leopardo_core/offline/services/sync_service.dart';
 import 'package:leopardo_employee/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_employee/features/auth/data/auth_repository.dart';
+import 'package:leopardo_employee/features/cabinet/data/cabinet_repository.dart';
+import 'package:leopardo_employee/features/evaluations/data/evaluation_repository.dart';
+import 'package:leopardo_employee/features/notifications/data/notification_repository.dart';
 import 'package:leopardo_employee/features/onboarding/data/onboarding_repository.dart';
+import 'package:leopardo_employee/features/payrolls/data/payroll_repository.dart';
+import 'package:leopardo_employee/features/salary_advances/data/salary_advance_repository.dart';
 import 'package:leopardo_employee/features/settings/data/settings_repository.dart';
+import 'package:leopardo_employee/features/user_auth/data/user_auth_repository.dart';
 
 export 'package:leopardo_core/core/providers/core_providers.dart'
     hide cabinetRepositoryProvider,
@@ -74,7 +74,8 @@ final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   return SettingsRepository(apiClient, preferences);
 });
 
-final salaryAdvanceRepositoryProvider = Provider<SalaryAdvanceRepository>((ref) {
+final salaryAdvanceRepositoryProvider =
+    Provider<SalaryAdvanceRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return SalaryAdvanceRepository(apiClient);
 });
@@ -84,7 +85,8 @@ final payrollRepositoryProvider = Provider<PayrollRepository>((ref) {
   return PayrollRepository(apiClient);
 });
 
-final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
+final notificationRepositoryProvider =
+    Provider<NotificationRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return NotificationRepository(apiClient);
 });
