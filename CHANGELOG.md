@@ -4,6 +4,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(ci/mobile): guard notifications compatible avec la déduplication core.** La preuve de production accepte désormais la vue notifications partagée de `leopardo_core` lorsque l’application manager ne conserve plus de copie locale ; les assertions de cycle de token, suppression et lecture restent obligatoires.
+- **chore(i18n): checksums admin régénérés par le synchroniseur canonique.** `shared/i18n/versions/versions.json` correspond à nouveau aux catalogues générés et passe `I18N_VALIDATION_OK` pour les quatre locales.
 - **fix(ci/mobile): réexport employee du barrel core.** `leopardo_employee` réutilise désormais `leopardo_core/core/providers/core_providers.dart` pour les providers communs ; seuls ses providers Edge et métier spécifiques restent locaux, conformément au guard de déduplication.
 - **ci(admin-e2e): validation backend isolé réussie.** Le run `32663872951` couvre les dix parcours activés sur le backend isolé ; les routes tenant supprimées restent en 404 authentifiée et `/exports` conserve son état tenant-only sans exposition de données.
 - **test(admin-e2e): assertions alignées sur les routes tenant réellement exposées.** `/exports` vérifie désormais son état tenant-only local ; `/recruitment`, `/leaves` et `/payroll`, absentes du routeur super-admin, vérifient une 404 authentifiée au lieu d’attendre une redirection legacy vers le dashboard.

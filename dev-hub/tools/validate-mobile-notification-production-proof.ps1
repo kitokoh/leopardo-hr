@@ -50,7 +50,10 @@ foreach ($app in @("employee", "manager")) {
     Assert-Contains $repository "method: 'DELETE'" "$app notifications delete"
     Assert-Contains $repository "requestWithRetry" "$app notifications retry"
 
-    $screen = Read-RepoFile "front/mobile_apps/leopardo_$app/lib/features/notifications/screens/notification_list_screen.dart"
+    $appScreenPath = "front/mobile_apps/leopardo_$app/lib/features/notifications/screens/notification_list_screen.dart"
+    $coreScreenPath = "front/mobile_apps/leopardo_core/lib/features/notifications/screens/notification_list_screen.dart"
+    $screenPath = if (Test-Path (Join-Path $Root $appScreenPath)) { $appScreenPath } else { $coreScreenPath }
+    $screen = Read-RepoFile $screenPath
     Assert-Contains $screen "RefreshIndicator" "$app notifications refresh"
     Assert-Contains $screen "Dismissible" "$app notifications delete gesture"
     Assert-Contains $screen "markAsRead" "$app notifications mark read"
