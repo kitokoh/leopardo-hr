@@ -188,6 +188,22 @@ class LeopardoClient:
         """Apercu du prochain numero de la serie configuree (#5223)"""
         return self.request("GET", "/accounting/documents/next-number", **kwargs)
 
+    def get_accounting_journal_entries(self, **kwargs):
+        """Lister les écritures du journal salarial"""
+        return self.request("GET", "/accounting/journal-entries", **kwargs)
+
+    def get_accounting_journal_entries_2(self, **kwargs):
+        """Lister les écritures du journal salarial"""
+        return self.request("GET", "/accounting/journal-entries", **kwargs)
+
+    def get_accounting_journal_entries_by_entry(self, **kwargs):
+        """Consulter une écriture du journal salarial"""
+        return self.request("GET", "/accounting/journal-entries/{entry}", **kwargs)
+
+    def get_accounting_journal_entries_by_entry_2(self, **kwargs):
+        """Détail d'une écriture du journal salarial"""
+        return self.request("GET", "/accounting/journal-entries/{entry}", **kwargs)
+
     def get_accounting_payment_orders(self, **kwargs):
         """Lister les ordres de virement salarial"""
         return self.request("GET", "/accounting/payment-orders", **kwargs)

@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Events\PayrollRunValidated;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PayrollRunResource;
 use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
@@ -250,6 +251,14 @@ class PayrollRunController extends Controller
         if (config('performance.payroll.queue_pdf_warmup', true)) {
             WarmPaySlipPdfPathsForPayrollRunJob::dispatch($payrollRun->id);
         }
+
+        // Issue #5239 (Phase C) — dispatch ADDITIF de l'événement de run
+        // validé : le module Accounting persiste les écritures salariales du
+        // journal (PayrollJournalEntryService, idempotent). Aucune
+        // modification du calcul Payroll (FOCUS intact) — le listener échoue
+        // en silence (log) et reste rattrapable par la commande
+        // `accounting:generate-payroll-entries --run={id}`.
+        PayrollRunValidated::dispatch($payrollRun->refresh(), (int) $actor->id);
 
         return (new PayrollRunResource($payrollRun->refresh()->loadCount('paySlips')))->response();
     }

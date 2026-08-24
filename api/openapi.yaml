@@ -20089,6 +20089,143 @@ paths:
           $ref: "#/components/responses/Validation422"
 
 
+  /accounting/journal-entries:
+    get:
+      tags: ["Accounting"]
+      summary: "Lister les écritures du journal salarial"
+      description: "Journal des écritures salariales générées à la validation d'un run de paie (issue #5239, Partie 1). RBAC comptable/principal. Filtre optionnel par run."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: payroll_run_id
+          in: query
+          required: false
+          description: "Filtre par run de paie."
+          schema: { type: integer }
+        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/Page"
+      responses:
+        "200":
+          description: "Liste paginée des écritures du tenant courant"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AccountingJournalEntry"
+                  meta:
+                    type: object
+                    properties:
+                      current_page: { type: integer }
+                      last_page: { type: integer }
+                      per_page: { type: integer }
+                      total: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error401"
+
+  /accounting/journal-entries/{entry}:
+    get:
+      tags: ["Accounting"]
+      summary: "Consulter une écriture du journal salarial"
+      description: "Détail d'une écriture (issue #5239, Partie 1). RBAC comptable/principal ; 404 cross-tenant (fail-closed)."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: entry
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Écriture du journal"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingJournalEntry"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+
+  /accounting/journal-entries:
+    get:
+      tags: ["Accounting"]
+      summary: "Lister les écritures du journal salarial"
+      description: "Écritures du journal (issue #5239, Partie 1) — persistance exacte de journalLines() (#5256). RBAC comptable/principal."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: payroll_run_id
+          in: query
+          required: false
+          description: "Filtre par run de paie."
+          schema: { type: integer }
+        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/Page"
+      responses:
+        "200":
+          description: "Liste paginée des écritures du journal du tenant courant"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AccountingJournalEntry"
+                  meta:
+                    type: object
+                    properties:
+                      current_page: { type: integer }
+                      last_page: { type: integer }
+                      per_page: { type: integer }
+                      total: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error401"
+
+  /accounting/journal-entries/{entry}:
+    get:
+      tags: ["Accounting"]
+      summary: "Détail d'une écriture du journal salarial"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: entry
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Écriture du journal"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingJournalEntry"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+
 components:
   securitySchemes:
     BearerAuth:
@@ -26385,3 +26522,34 @@ components:
         bank_reference: { type: string, nullable: true }
         executed_at: { type: string, format: date-time, nullable: true }
         created_at: { type: string, format: date-time, nullable: true }
+    AccountingJournalEntry:
+      type: object
+      description: "Écriture du journal salarial (issue #5239, Partie 1) — persistance de PayrollAccountingExportService::journalLines() à la validation du run."
+      properties:
+        id: { type: integer }
+        entry_date: { type: string, format: date }
+        payroll_run_id: { type: integer }
+        pay_slip_id: { type: integer, nullable: true }
+        employee_id: { type: integer, nullable: true }
+        account_code: { type: string, maxLength: 16 }
+        account_label: { type: string, maxLength: 120 }
+        debit: { type: number, format: double }
+        credit: { type: number, format: double }
+        reference: { type: string, maxLength: 64 }
+        source: { type: string, maxLength: 32 }
+        created_at: { type: string, format: date-time, nullable: true }
+    AccountingJournalEntry:
+      type: object
+      description: "Écriture du journal salarial (issue #5239, Partie 1) — flux Paie → Comptabilité."
+      properties:
+        id: { type: integer }
+        entry_date: { type: string, format: date }
+        payroll_run_id: { type: integer }
+        pay_slip_id: { type: integer, nullable: true }
+        employee_id: { type: integer, nullable: true }
+        account_code: { type: string }
+        account_label: { type: string }
+        debit: { type: number, format: double }
+        credit: { type: number, format: double }
+        reference: { type: string }
+        source: { type: string }
