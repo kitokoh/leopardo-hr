@@ -165,6 +165,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/accounting/contacts/{contact}", options);
     },
 
+    /** Declaration TVA simplifiee par periode */
+    getAccountingReportsVatDeclaration(options = {}) {
+      return request("GET", "/accounting/reports/vat-declaration", options);
+    },
+
     /** Parametrage comptable de l'entreprise */
     getAccountingSettings(options = {}) {
       return request("GET", "/accounting/settings", options);

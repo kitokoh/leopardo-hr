@@ -11,6 +11,7 @@
  */
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,5 +32,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // PUT  : upsert avec validation (devise, TVA, séries, mentions).
             Route::get('/settings', [AccountingSettingsController::class, 'show']);
             Route::put('/settings', [AccountingSettingsController::class, 'update']);
+
+            // ── Rapports (issue #5271) — déclaration TVA par période.
+            Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
         });
     });

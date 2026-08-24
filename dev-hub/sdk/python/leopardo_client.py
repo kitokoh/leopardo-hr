@@ -152,6 +152,10 @@ class LeopardoClient:
         """Mettre a jour un contact client/fournisseur"""
         return self.request("PUT", "/accounting/contacts/{contact}", **kwargs)
 
+    def get_accounting_reports_vat_declaration(self, **kwargs):
+        """Declaration TVA simplifiee par periode"""
+        return self.request("GET", "/accounting/reports/vat-declaration", **kwargs)
+
     def get_accounting_settings(self, **kwargs):
         """Parametrage comptable de l'entreprise"""
         return self.request("GET", "/accounting/settings", **kwargs)
