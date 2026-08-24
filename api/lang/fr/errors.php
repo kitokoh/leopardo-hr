@@ -224,4 +224,8 @@ return [
     'JOB_POSTING_DELETED' => 'Offre supprimée.',
     'TASK_DELETED' => 'Tâche supprimée.',
     'TRIAL_SIGNUP_UNAVAILABLE' => "Le service d'essai est temporairement indisponible. Veuillez réessayer dans quelques instants.",
+
+    // Plateforme — RTMX (#5277) : rejeu idempotent des écritures mobiles
+    'INVALID_IDEMPOTENCY_KEY' => "Clé d'idempotence invalide.",
+    'IDEMPOTENCY_IN_PROGRESS' => 'Une requête identique est déjà en cours. Réessayez dans un instant.',
 ];

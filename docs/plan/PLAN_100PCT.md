@@ -120,7 +120,7 @@ CI verte (#5201), i18n mobile (#2755 suite), dedup mobile (#2601 suite), RTMX (P
 | #5283 Backup/DR | ✅ **MERGÉ (PR #5305)** — DR.md (RPO ≤ 24 h / RTO ≤ 4 h), **restauration réelle réussie** (6/6 tables), fix `CREATE SCHEMA public` | — |
 | #5285 E2E critiques | ✅ **MERGÉ (PR #5312)** — `CriticalFunnelPayrollE2ETest` (signup → provision → employé → run → calculate → validate → bulletin %PDF) | Parcours facture bloqué Comptabilité (pas de faux vert) |
 | #5286 Tracker | ✅ Ce document (livré) | Rituel hebdo |
-| #5277 RTMX | ⚪ Rien | Pointage mobile temps réel (gap Phase 1 roadmap) |
+| #5277 RTMX | 🟡 `HttpCacheMiddleware` (ETag/304) + `IdempotencyMiddleware` (rejeu `Idempotency-Key`) livrés, PR ouverte (branche `mod/platform/5277-rtmx`) | Pointage mobile temps réel (gap Phase 1 roadmap) — socle serveur livré ; recette pilote « < 3 s » en cours (#5277) ; bascule client `If-None-Match`/`Idempotency-Key` → issue de suite (convergence #2601) |
 | #5289 Congés légaux pays | 🔵 → PR #5308 | Soldes/acquisition/fériés DZ/MA/TN/SN → paie |
 
 ### 6.4 Règles d'allocation (rappel, anti-collision §2)
