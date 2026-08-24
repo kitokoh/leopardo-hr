@@ -12,6 +12,7 @@ use App\Modules\Accounting\Infrastructure\Services\PaymentReminderService;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\PaymentRegisterRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 /**
  * Trésorerie Phase B (issue #5229) — paiements, rapprochement, relances.
@@ -62,7 +63,7 @@ final class AccountingPaymentController extends Controller
             amount: (float) $request->validated('amount'),
             method: (string) $request->validated('method'),
             reference: $request->validated('reference') !== null ? (string) $request->validated('reference') : null,
-            receivedAt: $request->filled('received_at') ? \Illuminate\Support\Carbon::parse((string) $request->validated('received_at')) : null,
+            receivedAt: $request->filled('received_at') ? Carbon::parse((string) $request->validated('received_at')) : null,
         );
 
         return response()->json([

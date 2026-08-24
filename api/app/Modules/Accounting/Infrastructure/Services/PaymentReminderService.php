@@ -93,7 +93,7 @@ final class PaymentReminderService
                 ]);
 
                 $this->notifyManagers($document, $day, $stage, $reminder);
-                ++$sent;
+                $sent++;
             }
         }
 
