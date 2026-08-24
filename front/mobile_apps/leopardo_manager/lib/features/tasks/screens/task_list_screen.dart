@@ -7,8 +7,8 @@ import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/models/project_task.dart';
-import 'package:leopardo_manager/features/tasks/providers/task_provider.dart';
-import 'package:leopardo_manager/features/team/providers/team_provider.dart';
+import 'package:leopardo_core/features/tasks/providers/task_provider.dart';
+import 'package:leopardo_core/features/team/providers/team_provider.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 
@@ -508,4 +508,3 @@ class _TaskTemplate {
   final String priority;
   final int estimatedMinutes;
 }
-

@@ -16,6 +16,7 @@
  * Les anciennes routes sont conservees pour la compatibilite ascendante.
  */
 
+use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadConversionController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\SocialAccountController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\SocialPostController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,13 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:marketing,principal'])
     ->prefix('marketing')
     ->group(function (): void {
+        // ----------------------------------------------------------------
+        // Conversion leads marketing → contacts comptabilité (issue #5231)
+        // RBAC : marketing + principal (groupe ci-dessus).
+        // ----------------------------------------------------------------
+        Route::post('/leads/{lead}/qualify', [MarketingLeadConversionController::class, 'qualify'])->whereNumber('lead');
+        Route::get('/leads/{lead}/contact', [MarketingLeadConversionController::class, 'contact'])->whereNumber('lead');
+
         // ----------------------------------------------------------------
         // Comptes sociaux (agregateur Ayrshare)
         // Routes originales conservees pour compatibilite ascendante.

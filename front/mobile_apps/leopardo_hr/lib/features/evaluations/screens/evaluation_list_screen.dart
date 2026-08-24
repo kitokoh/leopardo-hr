@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
-import 'package:leopardo_hr/features/evaluations/providers/evaluation_provider.dart';
+import 'package:leopardo_core/features/evaluations/providers/evaluation_provider.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 class EvaluationListScreen extends ConsumerWidget {

@@ -70,3 +70,13 @@ super-admin : il y a des donnees croisees a purger proprement.
    sinon **Renvoyer**.
 5. A l activation, l employe est redirige vers l app mobile
    (`/mobile` cote web, redirection `Employee::homeRoute()`).
+
+## Récapitulatif du préavis légal
+
+Depuis v4.17 (issue #5325), le manager peut afficher le préavis légal d'un employé sans calcul manuel :
+
+- `GET /api/v1/employees/{id}/departure/notice` (RBAC manager, lecture seule).
+- La durée affichée provient de la règle pays du moteur de paie (ex. DZ : 22 jours ouvrés avant 10 ans d'ancienneté, 44 jours au-delà — loi 90-11) : le module HR n'affiche jamais un recalcul local.
+- Le statut de service (servi / non servi / non renseigné) provient de l'enregistrement de départ (`employee_departures`) quand il existe.
+
+> ⚙️ Le calcul de l'ancienneté est identique au moteur de paie (mois entiers depuis le début du contrat) : le récapitulatif reste cohérent avec le solde de tout compte.
