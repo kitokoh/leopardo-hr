@@ -48,7 +48,9 @@ class WebhookSsrfGuardTest extends TestCase
     /** @dataProvider disallowedUrls */
     public function test_store_rejects_private_or_insecure_webhook_url(string $url): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Sanctum::actingAs($manager);
 
@@ -63,7 +65,9 @@ class WebhookSsrfGuardTest extends TestCase
 
     public function test_store_accepts_public_https_webhook_url(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Sanctum::actingAs($manager);
 
@@ -85,7 +89,9 @@ class WebhookSsrfGuardTest extends TestCase
         // tests, non routables (aucun risque SSRF possible). En environnement
         // de test, la règle les accepte (les fixtures utilisent ces hôtes
         // fictifs) ; en production ils restent refusés (fail-closed).
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Sanctum::actingAs($manager);
 
@@ -103,8 +109,11 @@ class WebhookSsrfGuardTest extends TestCase
 
     public function test_update_rejects_private_webhook_url(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var WebhookEndpoint $endpoint */
         $endpoint = WebhookEndpoint::create([
             'company_id' => $company->id,
             'url' => 'https://example.com/hook',

@@ -258,4 +258,39 @@ interface CountryRulesInterface
      * the payroll engine). ZONE-INFRA (#1820).
      */
     public function familyAllowancePerChild(): float;
+
+    /**
+     * Country policy for sick-leave / work-stoppage indemnisation
+     * (maladie ordinaire / arrêt de travail), issue #5241 (écart E5).
+     *
+     * Values are consumed by PayrollCalculator::computeSickLeaveAllowance()
+     * (rules of indemnisation) and, for the absence → payroll flow, by the
+     * dedicated ticket #5245.
+     *
+     * Semantics:
+     *  - `waiting_days` : délai de carence (days of the stoppage during
+     *    which no daily allowance is paid; employers may cover it via a
+     *    collective agreement, not modelled here by default);
+     *  - `daily_allowance_rates` : tiers keyed by stoppage DAY (1 = first
+     *    day off work), e.g. [{from_day: 1, to_day: 15, rate: 0.50},
+     *    {from_day: 16, to_day: null, rate: 1.00}] — the first tier whose
+     *    range contains the stoppage day wins;
+     *  - `max_paid_days` : maximum number of indemnised days per stoppage
+     *    (0 = unlimited);
+     *  - `employer_maintenance_days` : days during which the employer must
+     *    MAINTAIN the salary (maintien de salaire légal) before the social
+     *    scheme takes over — 0 when the law only provides social daily
+     *    allowances (CNAS/CNAM...) and maintenance is purely contractual.
+     *
+     * Default (AbstractCountryRules): inert policy (no waiting days, no
+     * rates, no maintenance) — countries opt in with their sourced values.
+     *
+     * @return array{
+     *     waiting_days: int,
+     *     daily_allowance_rates: array<int, array{from_day: int, to_day: int|null, rate: float}>,
+     *     max_paid_days: int,
+     *     employer_maintenance_days: int,
+     * }
+     */
+    public function sickLeavePolicy(): array;
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\Absence\Providers\AbsenceServiceProvider;
+use App\Modules\Accounting\Providers\AccountingServiceProvider;
 use App\Modules\Attendance\Providers\AttendanceServiceProvider;
 use App\Modules\Billing\Providers\BillingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
@@ -53,4 +54,6 @@ return [
     EdgeSyncServiceProvider::class,
     // — Marketing module (Phase 1)
     MarketingServiceProvider::class,
+    // — Accounting module (Phase A, issue #5221)
+    AccountingServiceProvider::class,
 ];

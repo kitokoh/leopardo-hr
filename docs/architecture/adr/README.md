@@ -17,6 +17,7 @@ Ce dossier capture les decisions structurantes qui doivent rester stables pour L
 | [0009](0009-ai-agent-tool-contracts-and-human-validation.md) | Acceptee | Contrats d'outils pour l'agent IA : permissions RBAC, audit et validation humaine avant toute ecriture |
 | [0010](0010-marketplace-plugin-permissions-billing-webhooks.md) | Acceptee | Plugins marketplace : scopes Sanctum existants, gating via FeaturePlanMatrix, revenu via Partner/Commission, webhooks via AVAILABLE_EVENTS |
 | [0013](0013-notifications-read-path-unification.md) | Proposee | Notifications in-app : read-path unifie sur `app_notifications`, migration du canal historique `notifications` (3 etapes) |
+| [0016](0016-attendance-smartattendance-fusion.md) | Proposee | Fusion progressive Attendance + SmartAttendance en un module unique (5 phases, zero perte de donnees, contrat API preserve) |
 
 ## Format
 

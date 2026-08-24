@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
-import 'package:leopardo_manager/features/user_auth/providers/user_auth_provider.dart';
+import 'package:leopardo_core/features/user_auth/providers/user_auth_provider.dart';
 
 class UserHomeScreen extends ConsumerWidget {
   const UserHomeScreen({super.key});
@@ -246,7 +246,8 @@ class _EmployeeLinkGlassCard extends StatelessWidget {
   final String companyName;
   final VoidCallback onTap;
 
-  const _EmployeeLinkGlassCard({required this.companyName, required this.onTap});
+  const _EmployeeLinkGlassCard(
+      {required this.companyName, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -280,7 +281,8 @@ class _CompanyRequestGlassCard extends StatelessWidget {
   final String companyName;
   final String status;
 
-  const _CompanyRequestGlassCard({required this.companyName, required this.status});
+  const _CompanyRequestGlassCard(
+      {required this.companyName, required this.status});
 
   @override
   Widget build(BuildContext context) {
@@ -316,4 +318,3 @@ class _CompanyRequestGlassCard extends StatelessWidget {
     );
   }
 }
-

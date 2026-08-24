@@ -172,4 +172,5 @@ return [
 
     'payslip_regularization_banner' => 'REGULARIZATION PAYSLIP — corrects run #:run',
     'payslip_regularization_banner_slip' => 'REGULARIZATION PAYSLIP — corrects slip #:slip',
+    'contract_legal_clauses_title' => 'Contract legal clauses',
 ];

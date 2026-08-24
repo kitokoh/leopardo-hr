@@ -120,7 +120,13 @@ class SmartAttendanceFlowTest extends TestCase
     {
         Sanctum::actingAs($this->employee);
 
-        // Géofence entreprise : centre Alger, rayon 100 m.
+        // Géofence entreprise : centre Alger, rayon 100 m (contrat lu par
+        // AttendanceGeofenceService::resolveTarget → company.metadata).
+        // NB : le hook `saved` de Employee (syncUserLookup) eager-loade la
+        // relation `company` AU MOMENT de la création — la company tenue par
+        // l'employé est donc périmée après un update de metadata. Le
+        // TenantMiddleware lie `$employee->company` : sans reload, la géofence
+        // n'est jamais vue → 201 au lieu de 422 (issue #5201).
         $this->company->forceFill([
             'metadata' => [
                 'attendance_geofence' => [
@@ -130,6 +136,7 @@ class SmartAttendanceFlowTest extends TestCase
                 ],
             ],
         ])->save();
+        $this->employee->unsetRelation('company');
 
         // Position très loin (Oran) → hors zone.
         $response = $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent([

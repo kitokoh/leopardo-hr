@@ -11,7 +11,7 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/mobile_decision_actions.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
-import 'package:leopardo_hr/features/absences/providers/absence_provider.dart';
+import 'package:leopardo_core/features/absences/providers/absence_provider.dart';
 import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/models/absence.dart';
 import 'package:leopardo_core/models/employee.dart';
