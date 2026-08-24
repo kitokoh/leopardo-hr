@@ -18,7 +18,7 @@
 | Préavis / licenciement | ✅ implémenté + golden tests | loi 90-11 art. 73-4/98 (préavis), art. 72 (licenciement) | #1819/#1943 | `pilot` |
 | Solde de tout compte / certificat | ✅ implémenté + golden tests | loi 90-11 | F-08 (#1538) | `pilot` |
 | Assurance chômage (inclus CNAS) | ✅ documenté + verrouillé | décret législatif n° 94-11, art. 94-188 | #1819/#1943 | `pilot` |
-| Heures sup (25 %/50 %) | ✅ implémenté + golden tests | loi 90-11 art. 18-19/33 | F-05 | `pilot` |
+| Heures sup (≥ 50 %) | ✅ implémenté + golden tests (arbitrage E2 #5266) | loi 90-11 art. 32 | F-05/#5266 | `pilot` |
 
 **Confiance (issue #5149)** : `AlgeriaPayrollRules::confidenceLevel()` renvoie
 `pilot` (vérifié par `ComplianceConfidenceApiTest` et le contrat de calcul).
@@ -103,9 +103,19 @@ recoupe `contract_start`/`contract_end` avec la période du run (PayrollCalculat
 | Sortie 10/07 (10 j sur 31) | 22 × 10/31 = 7,10 j → 60 000 × 7,10/22 | **19 363,64** |
 | Absence 1 jour (21/22) | 60 000 × 21/22 | 57 272,73 (retenue **2 727,27**) |
 | Congés sans solde 5 j (17/22) | 60 000 × 17/22 | 46 363,64 (retenue **13 636,36**) |
-| Heures sup 10 h @25 % + 5 h @50 % | taux horaire 346,160503… (60 000/173,33) → 10×346,160503×1,25 + 5×346,160503×1,50 | **6 923,21** (précision complète #2685) |
+| Heures sup 15 h @50 % | taux horaire 346,160503… (60 000/173,33) → 15×346,160503×1,50 | **7 788,61** (précision complète #2685) |
 
-⚠️ Majorations HS (25 % jusqu'à 10 h/mois, 50 % au-delà) : seuil conventionnel **à confirmer** par la convention collective applicable.
+✅ **Arbitrage E2 résolu (issue #5266, 2026-08-23)** — majorations HS DZ :
+palier unique **× 1,5** sur toutes les heures (loi 90-11 **art. 32** : majoration
+« qui ne peut en aucun cas être inférieure à 50 % du salaire horaire normal »).
+L'ancien barème conventionnel « 25 % jusqu'à 10 h/mois puis 50 % » était **sous
+le minimum légal** pour les 10 premières heures et n'est pas confirmé par une
+convention collective → **écarté**. Le palier est consommé par
+`PayrollCalculator::computeOvertimePay()` pour tout run de paie DZ (#5266) —
+DoD : les HS du pointage sont intégrées sans intervention manuelle (F-20).
+**Art. 36** (loi 90-11) : le travail un jour de **repos légal** ouvre droit à un
+**repos compensateur d'égale durée** en plus de la majoration — règle
+documentée, le suivi du repos compensateur reste un acte RH hors moteur de paie.
 
 **Source des jours travaillés** (F-20, #1816) : **AttendanceLog** — jours DISTINCTS avec au moins un log valide sur la période (statuts `cancelled`/`rejected`/`incomplete` exclus), scoped au tenant. Fallback = **prorata contrat** (tableau ci-dessus) quand aucun log valide n'existe. Le bulletin expose la source via `pay_slips.has_attendance_data`.
 
@@ -137,7 +147,7 @@ consommées par `EndOfContractService` au lieu de valeurs codées en dur).
 | Préavis — durées légales | ✅ implémenté (#1819/#1943) : **1 mois si ancienneté < 10 ans, 2 mois si ≥ 10 ans**, exprimé en **jours ouvrés** (22/44) — l'indemnité = rémunération de la période de préavis (art. 98) : base × 22/22 = 1 mois exact (corrige la surpaie 30/22 = 1,36×). **Conditionné** : CDI + licenciement hors faute lourde + préavis non effectué (contexte `departure_reason`/`notice_served`), défaut prudent = 0 | loi 90-11 art. 73-4/98 ; la **durée** est renvoyée aux conventions collectives/règlement intérieur — valeur retenue = usage dominant, confidenceLevel reste `pilot` | Validation expert comptable DZ avant passage `production` |
 | Indemnité de licenciement | ⚙️ implémenté : 1 mois/an via règles pays | loi 90-11 art. 72 (1 mois/an, plafond 15 mois) | **Plafond légal de 15 mois non appliqué** (à paramétrer/valider) |
 | Solde de tout compte + certificat de travail | ✅ implémenté + golden tests | F-08 (#1538) | — |
-| Heures supplémentaires (25 %/50 %) | ⚙️ implémenté (palier unique ×1,5 pilot) | loi 90-11 art. 33 | Seuil conventionnel à confirmer |
+| Heures supplémentaires (≥ 50 %) | ✅ implémenté (palier unique ×1,5, câblé au run #5266) | loi 90-11 art. 32 | Arbitrage E2 résolu (#5266) ; repos compensateur art. 36 documenté (§5) |
 | Assurance chômage | ✅ **AC inclus dans les agrégats CNAS (9 % / 26 %) (#1819/#1943)** | décret législatif n° 94-11, art. 94-188 ; décrets exécutifs n° 22-70 (10/02/2022) et n° 26-87 (21/01/2026) | Le régime contributif CNAC couvre les salariés du privé licenciés pour motif économique (1 % patron + 0,5 % salarié), déjà inclus dans CNAS → **pas de lignes AC_DZ_EMP/AC_DZ_PAT séparées** (double cotisation). L'allocation chômage des primo-demandeurs (ANEM, 13 000 DZD/mois) est financée par le budget de l'État (≈ 420 Mds DZD en LF 2026) |
 | Rétroactifs et régularisations | ✅ implémenté (#1818) | — | — |
 | Primes non soumises (`SalaryComponent.is_taxable=false`) | ✅ **implémenté (#5241, écart E3)** — `PayrollCalculator::computeSlipValues` consomme désormais le drapeau : la prime est ajoutée au brut (assiette CNAS complète) mais **exclue de l'assiette IRG** (`computeNetBreakdown(nonTaxableEarnings)`, assiette visible sur la ligne IRG du bulletin). Verrouillé golden (`GoldenDzEngineCompletionTest`). ⚠️ À confirmer expert : exclusion de l'assiette CNAS (défaut conservateur = incluse) | — | Issue #5241 |
