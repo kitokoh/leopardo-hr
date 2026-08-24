@@ -18,7 +18,8 @@ import 'package:leopardo_employee/features/settings/data/settings_repository.dar
 import 'package:leopardo_employee/features/user_auth/data/user_auth_repository.dart';
 
 export 'package:leopardo_core/core/providers/core_providers.dart'
-    hide cabinetRepositoryProvider,
+    hide
+        cabinetRepositoryProvider,
         evaluationRepositoryProvider,
         notificationRepositoryProvider,
         payrollRepositoryProvider,
@@ -74,8 +75,9 @@ final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   return SettingsRepository(apiClient, preferences);
 });
 
-final salaryAdvanceRepositoryProvider =
-    Provider<SalaryAdvanceRepository>((ref) {
+final salaryAdvanceRepositoryProvider = Provider<SalaryAdvanceRepository>((
+  ref,
+) {
   final apiClient = ref.watch(apiClientProvider);
   return SalaryAdvanceRepository(apiClient);
 });
@@ -85,8 +87,7 @@ final payrollRepositoryProvider = Provider<PayrollRepository>((ref) {
   return PayrollRepository(apiClient);
 });
 
-final notificationRepositoryProvider =
-    Provider<NotificationRepository>((ref) {
+final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return NotificationRepository(apiClient);
 });
