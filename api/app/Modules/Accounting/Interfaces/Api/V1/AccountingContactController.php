@@ -121,7 +121,10 @@ class AccountingContactController extends Controller
      */
     private function assertTenantScope(Request $request, AccountingContact $contact): void
     {
-        $companyId = $request->user()?->company_id;
+        // getAttribute() : disponible sur Employee|User|SuperAdmin (modèles) —
+        // company_id n'existe pas sur SuperAdmin, la propriété directe serait
+        // une erreur PHPStan (access to undefined property).
+        $companyId = $request->user()?->getAttribute('company_id');
 
         if ($companyId !== null && (string) $contact->company_id !== (string) $companyId) {
             abort(404);
