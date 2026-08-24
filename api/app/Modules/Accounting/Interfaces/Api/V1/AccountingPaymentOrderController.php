@@ -12,9 +12,9 @@ use App\Modules\Accounting\Interfaces\Api\V1\Requests\ExecutePaymentOrderRequest
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\PreparePaymentOrderRequest;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 
 /**
@@ -36,7 +36,7 @@ final class AccountingPaymentOrderController extends Controller
         $status = $request->string('status')->toString();
         $status = in_array($status, ['draft', 'prepared', 'executed'], true) ? $status : null;
 
-        /** @var Collection<int, AccountingPaymentOrder> $orders */
+        /** @var LengthAwarePaginator<int, AccountingPaymentOrder> $orders */
         $orders = AccountingPaymentOrder::query()
             ->when($status !== null, static fn (Builder $query) => $query->where('status', $status))
             ->orderByDesc('id')

@@ -63,7 +63,7 @@ final class PaymentOrderService
             ->where('status', 'validated')
             ->sum('net_salary');
 
-        $currency = CountryDefaults::for($run->country_code)['currency'] ?? null;
+        $currency = CountryDefaults::for($run->country_code)['currency'];
 
         /** @var AccountingPaymentOrder $order */
         $order = AccountingPaymentOrder::create([
