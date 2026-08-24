@@ -263,8 +263,9 @@ class AccountingDemoE2ETest extends TestCase
         $this->workflow->transition($invoice, DocumentStatus::Sent);
 
         // PDF : fake PdfRendererInterface (implémentation réelle #5224 en vol).
+        // NB : pas de assertIsString ici — PHPStan (strict) sait déjà que
+        // l'interface retourne string (assertion toujours vraie, refusée).
         $pdfPath = app(PdfRendererInterface::class)->render($invoice, 'fr');
-        $this->assertIsString($pdfPath);
         $invoice->update([
             'pdf_path' => $pdfPath,
             'sent_at' => now(),
