@@ -53,7 +53,7 @@ class PaymentDocumentController extends Controller
 
         if ($paymentDocument->status !== PaymentDocument::STATUS_AVAILABLE || $paymentDocument->path === null) {
             return response()->json([
-                'message' => 'Document is not available yet.',
+                'message' => __('payroll.document_not_available_yet'),
                 'status' => $paymentDocument->status,
             ], 409);
         }

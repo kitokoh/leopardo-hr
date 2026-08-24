@@ -165,6 +165,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/accounting/contacts/{contact}", options);
     },
 
+    /** Parametrage comptable de l'entreprise */
+    getAccountingSettings(options = {}) {
+      return request("GET", "/accounting/settings", options);
+    },
+
+    /** Mettre a jour le parametrage comptable de l'entreprise */
+    putAccountingSettings(options = {}) {
+      return request("PUT", "/accounting/settings", options);
+    },
+
     /** Envoyer un message a l'assistant IA (super-admin) */
     postAdminAiChat(options = {}) {
       return request("POST", "/admin/ai/chat", options);
@@ -2370,6 +2380,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/payroll-runs/{payrollRun}/bank-export", options);
     },
 
+    /** Bordereau de paie d'un run (totaux par cotisation + recap, #5243) */
+    getPayrollRunsByPayrollRunBordereau(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/bordereau", options);
+    },
+
     /** Lancer le paiement groupé du run (virements) */
     postPayrollRunsByPayrollRunBulkPay(options = {}) {
       return request("POST", "/payroll-runs/{payrollRun}/bulk-pay", options);
@@ -3398,6 +3413,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Generer la declaration trimestrielle CNSS (Maroc) pour tous les employes actifs */
     generateCnssMaDeclaration(options = {}) {
       return request("POST", "/social-declarations/cnss-ma", options);
+    },
+
+    /** Generer la declaration annuelle des salaires DAS (Algerie, #5243) */
+    generateDasDzDeclaration(options = {}) {
+      return request("POST", "/social-declarations/das-dz", options);
     },
 
     /** Generer la DSN (Declaration Sociale Nominative, France) pour un mois donne */

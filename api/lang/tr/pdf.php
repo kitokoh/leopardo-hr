@@ -27,6 +27,7 @@ return [
     'legal_notice' => 'Bu belge bilgilendirme amaçlıdır ve resmi maaş bordrosu niteliğinde değildir.',
 
     // Maaş bordrosu (payslip.blade.php)
+    'payslip_number' => 'Maaş bordrosu No: :n',
     'payslip_title' => 'Maaş Bordrosu',
     'payslip_company_fallback' => 'Şirket',
     'payslip_matricule' => 'Personel numarası',

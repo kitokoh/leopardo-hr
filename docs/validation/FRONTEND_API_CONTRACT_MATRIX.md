@@ -140,6 +140,8 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Manager web/mobile | CNSS Côte d'Ivoire — déclaration CSV (CEDEAO #1830) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/cnss-ci` | manager principal/comptable | `CiSnDeclarationTest` |
 | Manager web/mobile | IPRES/CSS Sénégal — déclaration CSV (CEDEAO #1830) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/ipres-sn` | manager principal/comptable | `CiSnDeclarationTest` |
 | Manager web/mobile | CNPS Cameroun — déclaration DAS CSV (CEMAC/CM #1823) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/cnps-cm` | manager principal/comptable | `CnpsDeclarationTest` |
+| Manager web/mobile | DAS DZ — déclaration annuelle des salaires CSV (#5243) | `POST /api/v1/social-declarations/das-dz` | manager principal/comptable | `DzLegalExportsTest` |
+| Manager web/mobile | Bordereau de paie DZ — CSV totaux par cotisation (#5243) | `GET /api/v1/payroll-runs/{payrollRun}/bordereau` | manager principal/comptable | `DzLegalExportsTest` |
 | Manager web/mobile | Run paie — régularisation (DZ-DEPTH #1818) | `POST /api/v1/payroll-runs/{payrollRun}/regularize` | manager principal/comptable | `PayrollRegularizationTest` |
 | Manager web/mobile | Run paie — liste des régularisations | `GET /api/v1/payroll-runs/{payrollRun}/regularizations` | manager principal/comptable | `PayrollRegularizationTest` |
 | Manager web/mobile | Récapitulatif préavis légal par pays (G2 #5325) | `GET /api/v1/employees/{employee}/departure/notice` | manager | `DepartureNoticeTest` |

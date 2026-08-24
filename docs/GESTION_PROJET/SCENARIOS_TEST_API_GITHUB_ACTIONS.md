@@ -523,7 +523,7 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - RBAC : employe connecte, ses propres bulletins uniquement
 
 ### Bank Exports
-- `POST /api/v1/payroll-runs/{id}/bank-export` genere un fichier export (format: sepa_xml, ccp_dz, virement_ma, csv_generic)
+- `POST /api/v1/payroll-runs/{id}/bank-export` genere un fichier export (format: sepa_xml, ccp_dz, cpa_dz, bna_dz, cnep_dz, edx_dz, virement_ma, csv_generic)
 - `GET /api/v1/bank-exports/{id}` detail de l'export
 - `GET /api/v1/bank-exports/{id}/download` telecharge le fichier genere
 - Validation : payroll run doit etre validated ou paid
@@ -779,9 +779,11 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - Verifie que le run est valide avant envoi
 
 ### Export bancaire reel
-- `POST /api/v1/payroll-runs/{id}/bank-export` avec format : sepa_xml, ccp_dz, virement_ma, csv_generic
+- `POST /api/v1/payroll-runs/{id}/bank-export` avec format : sepa_xml, ccp_dz, cpa_dz, bna_dz, cnep_dz, edx_dz, virement_ma, csv_generic
 - SEPA XML : format pain.001.001.03 pour virements europeens
 - CCP Algerie Poste : format texte fixe (entete, detail, total)
+- CPA/BNA/CNEP (DZ) : pipe-delimited HEADER/DETAIL/FOOTER (RIB, nom, net) — conventions internes a valider avec la banque (#5243)
+- EDX (DZ) : enregistrements a largeur fixe H/D/F, montants DZD — convention interne documentee (#5243)
 - CSV generique / virement_ma : employee_id, first_name, last_name, iban, bank_account, net_salary, currency, period
 - Les tests doivent couvrir que l'export ne selectionne pas de colonnes employees inexistantes (`rib`, `bank_name`)
 
@@ -799,15 +801,16 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - `leave:carry-forward` (annuel) : reporter les soldes non utilises selon LeavePolicy
 - Expiration des reports selon carry_forward_expiry_days
 
-### Declarations sociales (CNAS DZ / CNSS MA / DSN FR)
+### Declarations sociales (CNAS DZ / CNSS MA / DSN FR / DAS DZ)
 - `POST /api/v1/social-declarations/cnas-dz` genere une declaration trimestrielle CNAS Algerie avec taux salarie 9% et employeur 26%
 - `POST /api/v1/social-declarations/cnss-ma` genere une declaration trimestrielle CNSS Maroc avec jours travailles
 - `POST /api/v1/social-declarations/dsn-fr` genere une declaration mensuelle DSN simplifiee France (format S10/S20/S21/S44)
   - Parametres : `month` (1-12), `year` (2020-2099)
   - Mapping types contrat : CDIâ01, CDDâ02, INTERIMâ03, APPRENTISSAGEâ04, PROFESSIONNALISATIONâ05, STAGEâ07
   - La reponse contient `content` (texte DSN), `filename` (DSN_FR_MM_YYYY_date.dsn), `employee_count`
-- Les trois endpoints sont reserves aux roles manager (isManager)
-- Les calculs s'appuient sur les bulletins valides (`pay_slips` status=validated) du mois/trimestre demande
+- `POST /api/v1/social-declarations/das-dz` genere la Declaration Annuelle des Salaires DZ (CSV une ligne par employe : NIS, nom, mois, brut, CNAS 9%/26%, IRG, net + TOTAUX), agregee des bulletins valides des runs DZ de l'annee (#5243) — parametre `year` (2020-2099), managers uniquement, audit `payroll.das_declaration`
+- Les quatre endpoints sont reserves aux roles manager (isManager)
+- Les calculs s'appuient sur les bulletins valides (`pay_slips` status=validated) du mois/trimestre/annee demande
 - Isolation tenant : les bulletins et employes doivent etre scopes au `company_id` de l'acteur
 - La requete company ne doit effectuer qu'un seul SELECT (pas de requetes dupliquees name + tax_id)
 
@@ -1321,8 +1324,10 @@ La matrice RGPD référençait `audit:purge --older-than=24months` sans que la c
 
 - Scenario a valider : `tests/Unit/PurgeAuditLogsCommandTest` (purge des logs > N mois, respect de l'option `--older-than`, no-op si rien d'expiré) + la matrice de conformité RGPD passe le point « limitation de conservation » de PARTIEL a CONFORME (politique documentée dans `docs/security/POLITIQUE_RETENTION_DOCUMENTS.md`).
 Note 2026-08-09 (F-11, #1541) : le workflow de cloture de paie est expose via l'API. `POST /payroll-runs/{run}/validate` passe par `PayrollClosingService::validateRh` (audit `payroll_run_validated`), `POST /payroll-runs/{run}/lock` verrouille le run (conditionnel atomique, audit `payroll_run_locked`, reserve principal/comptable), `POST /payroll-runs/{run}/unlock` exige une `reason` (audit `payroll_run_unlocked`), `cancel` refuse les runs verrouilles, `PayrollRunResource` expose `locked_by`/`locked_at`. Les scenarios API doivent verifier : RBAC employee 403, isolation tenant 404, lock sans validation 422, unlock sans raison 422, recalcul d'un run verrouille refuse.
+Note 2026-08-23 (#5243) : `GET /payroll-runs/{run}/bordereau` exporte le bordereau de paie d'un run (CSV : section TOTAUX_PAR_COTISATION — lignes de bulletin groupees par type/libelle — puis section RECAPITULATIF_RUN — brut, cotisations salariales, IRG, autres deductions, net, cotisations patronales, cout employeur, bulletins). Scenarios a verifier : RBAC manager (employee 403), isolation tenant (404), run non-DZ (422), totaux CSV egaux aux totaux de la cloture, audit `payroll.bordereau`.
 Note 2026-08-09 (F-10, #1540) : `GET /payroll-runs/{run}/journal` exporte le journal de paie mensuel (CSV, toutes rubriques par employe) depuis un run verrouille/cloture. Les scenarios API doivent verifier : RBAC principal/comptable uniquement (employee 403), isolation tenant 404, run non cloture 422, totaux du CSV egaux aux totaux de la cloture, contenu horodate et rejouable.
 Note 2026-08-09 (F-20, #1550) : ecarts pointage → paie. `GET /api/v1/payroll-runs/{run}/anomalies` (lecture seule, principal/comptable) agrege doublons de pointage, incoherences, variance brut et ecarts heures pointees vs heures integrees au bulletin (`attendance_vs_payroll`, tolerance 2 h, severite medium/high). Scenarios : RBAC employee 403, isolation tenant 404, totaux coherents avec la cloture.
+Note 2026-08-23 (#5243) : `GET /payroll-runs/{run}/bordereau` exporte le bordereau de paie d'un run (CSV : section TOTAUX_PAR_COTISATION — lignes de bulletin groupees par type/libelle — puis section RECAPITULATIF_RUN — brut, cotisations salariales, IRG, autres deductions, net, cotisations patronales, cout employeur, bulletins). Scenarios a verifier : RBAC manager (employee 403), isolation tenant (404), run non-DZ (422), totaux CSV egaux aux totaux de la cloture, audit `payroll.bordereau`.
 Note 2026-08-09 (F-10, #1540) : `GET /payroll-runs/{run}/journal` exporte le journal de paie mensuel (CSV, toutes rubriques par employe) depuis un run verrouille/cloture. Les scenarios API doivent verifier : RBAC principal/comptable uniquement (employee 403), isolation tenant 404, run non cloture 422, totaux du CSV egaux aux totaux de la cloture, contenu horodate et rejouable.
 
 ## CI main rouge 2026-08-09 — réparation des 43 tests pré-existants
@@ -1384,3 +1389,10 @@ Note 2026-08-22 (issue #5260) : contrats par pays — modèles légaux + signatu
 - `POST /api/v1/contracts/{id}/sign` : signature explicite idempotente (`signed_at` + `signed_document_path` optionnel) ; 403 non-manager, 404 cross-tenant.
 - Scénarios à vérifier : bundles ×4 pays, seed au store (entreprise DZ → clauses loi 90-11), clauses explicites préservées, idempotence sign, historique amendements complet (list chronologique), isolation tenant.
 - Couverture : `tests/Feature/HR/ContractByCountryTest.php` (9 tests) — contrat OpenAPI documenté (745/745 routes couvertes).
+
+Note 2026-08-24 (issue #5232) : paramétrage comptable par entreprise — `GET/PUT /api/v1/accounting/settings`.
+- `GET /api/v1/accounting/settings` : renvoie la ligne de paramétrage de l'entreprise courante (devise, langue des documents, `tva_rates`, `number_series` par DocumentType, mentions légales, `template_style`) ; défauts dérivés du pays de l'entreprise via CountryDefaults si aucun paramétrage persisté.
+- `PUT /api/v1/accounting/settings` : upsert d'une ligne par entreprise (RBAC `api.manager:comptable,principal`, employé → 403) ; validation 422 (devise hors registre, langue hors fr/ar/tr/en, `tva_rates` {label,rate} invalide, mentions > 2000 caractères).
+- Provisioning : listener `ProvisionAccountingSettings` sur `CompanyCreated` (withinTenant, additif non bloquant, idempotent).
+- Scénarios à vérifier : défauts pays DZ (DZD, fr, TVA 19 %, série `FAC`), upsert puis relecture, validation 422 ×4, RBAC, isolation tenant, provisioning + idempotence.
+- Couverture : `tests/Feature/Accounting/AccountingSettingsTest.php` (12 tests) — OpenAPI documenté (756/756 routes couvertes), SDK régénérés.

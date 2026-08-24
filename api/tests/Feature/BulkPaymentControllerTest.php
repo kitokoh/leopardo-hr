@@ -166,7 +166,7 @@ class BulkPaymentControllerTest extends TestCase
         // 2e dispatch immédiat → 409 (claim déjà posé)
         $this->postJson("/api/v1/payroll-runs/{$run->id}/bulk-pay")
             ->assertStatus(409)
-            ->assertJsonPath('message', 'Bulk payment already in progress.');
+            ->assertJsonPath('message', 'Un paiement en masse est déjà en cours.');
 
         // Un seul job dispatché au total
         Bus::assertDispatchedTimes(ProcessBulkPaymentJob::class, 1);

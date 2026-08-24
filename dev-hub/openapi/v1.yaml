@@ -1997,6 +1997,33 @@ paths:
         "404":
           description: "Run introuvable (isolation tenant)"
 
+  /payroll-runs/{payrollRun}/bordereau:
+    get:
+      tags: ["Payroll"]
+      summary: "Bordereau de paie d'un run (totaux par cotisation + recap, #5243)"
+      description: "CSV : section TOTAUX_PAR_COTISATION (lignes de bulletin groupees par type + libelle) et section RECAPITULATIF_RUN (brut, cotisations salariales, IRG, autres deductions, net, cotisations patronales, cout employeur, bulletins). Reserve aux managers, garde pays DZ (422 sinon), isolation tenant (404)."
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV (Content-Disposition: attachment)"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager role required"
+        "404":
+          description: "Run introuvable (isolation tenant)"
+        "422":
+          description: "Run non-DZ (bordereau DZ uniquement)"
+
+
   /payroll-runs/{payrollRun}/lock:
     post:
       tags: ["Payroll"]
@@ -5154,6 +5181,58 @@ paths:
           description: "Contact supprime"
         "404":
           description: "Contact introuvable"
+
+  /accounting/settings:
+    get:
+      tags: ["Accounting"]
+      summary: "Parametrage comptable de l'entreprise"
+      description: |
+        Retourne la ligne AccountingSettings du tenant courant, ou les defauts
+        derives du pays de l'entreprise (registre CountryDefaults : devise,
+        langue, TVA standard, series de numerotation) si aucune ligne n'est
+        encore persistee. Une ligne unique par entreprise (company_id unique).
+      responses:
+        "200":
+          description: "Parametrage comptable (persiste ou defauts pays)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingSettings"
+        "403":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Accounting"]
+      summary: "Mettre a jour le parametrage comptable de l'entreprise"
+      description: |
+        Upsert (une ligne unique par entreprise). Chaque champ est optionnel ;
+        seuls les champs fournis remplacent la valeur existante. Devise limitee
+        aux devises du registre CountryDefaults (multi-devises hors perimetre
+        v1, #5270) ; langue des documents fr/ar/tr/en ; tva_rates : liste de
+        {label, rate} avec taux entre 0 et 100 % ; number_series : prefixe par
+        type de document (DocumentType).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountingSettingsPayload"
+      responses:
+        "200":
+          description: "Parametrage mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingSettings"
+        "422":
+          $ref: "#/components/responses/Validation422"
+        "403":
+          $ref: "#/components/responses/Error401"
 
   /attendance/check-in:
     post:
@@ -11573,7 +11652,7 @@ paths:
               properties:
                 format:
                   type: string
-                  enum: [sepa_xml, ccp_dz, virement_ma, csv_generic]
+                  enum: [sepa_xml, ccp_dz, cpa_dz, bna_dz, cnep_dz, edx_dz, virement_ma, csv_generic]
       responses:
         "202":
           description: "Export cree (generation asynchrone)"
@@ -12824,6 +12903,31 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /social-declarations/das-dz:
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Generer la declaration annuelle des salaires DAS (Algerie, #5243)"
+      description: "Agrege les bulletins valides (pay_slips.status=validated) des runs DZ de l'annee demandee, par employe : NIS, nom, mois, brut, CNAS salariale/patronale (9 %/26 %), IRG retenu, net + ligne TOTAUX. Reserve aux managers principal/comptable."
+      operationId: generateDasDzDeclaration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [year]
+              properties:
+                year: { type: integer, minimum: 2020, maximum: 2099 }
+      responses:
+        "200":
+          description: "Declaration DAS generee (lignes par employe + totaux)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /social-declarations/cnss-ma:
     post:
       tags: ["Payroll Engine"]
@@ -13029,7 +13133,7 @@ paths:
                   type: integer
                 format:
                   type: string
-                  enum: [sepa_xml, ccp_dz, virement_ma, csv_generic]
+                  enum: [sepa_xml, ccp_dz, cpa_dz, bna_dz, cnep_dz, edx_dz, virement_ma, csv_generic]
       responses:
         "202":
           description: "Export cree (generation asynchrone)"
@@ -22011,6 +22115,84 @@ components:
           nullable: true
           additionalProperties: true
 
+    AccountingSettings:
+      type: object
+      description: "Parametrage comptable par entreprise (une ligne unique par company_id)."
+      properties:
+        currency:
+          type: string
+          nullable: true
+        document_language:
+          type: string
+          enum: ["fr", "ar", "tr", "en"]
+        template_style:
+          type: string
+          nullable: true
+        payment_terms:
+          type: string
+          nullable: true
+        legal_mentions:
+          type: string
+          nullable: true
+        tva_rates:
+          type: array
+          description: "Taux de TVA par defaut (modifiables), ex. [{label: 'TVA standard', rate: 19}]."
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              rate:
+                type: number
+        number_series:
+          type: object
+          description: "Prefixe de serie par type de document, ex. {invoice: 'FAC', quote: 'DEV'}."
+          additionalProperties:
+            type: string
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    AccountingSettingsPayload:
+      type: object
+      description: "Payload de mise a jour — chaque champ est optionnel et remplace la valeur existante."
+      properties:
+        currency:
+          type: string
+          nullable: true
+        document_language:
+          type: string
+          enum: ["fr", "ar", "tr", "en"]
+          nullable: true
+        template_style:
+          type: string
+          nullable: true
+        payment_terms:
+          type: string
+          nullable: true
+        legal_mentions:
+          type: string
+          nullable: true
+        tva_rates:
+          type: array
+          items:
+            type: object
+            required:
+              - label
+              - rate
+            properties:
+              label:
+                type: string
+              rate:
+                type: number
+                minimum: 0
+                maximum: 100
+        number_series:
+          type: object
+          additionalProperties:
+            type: string
+
     MarketingLeadContact:
       type: object
       properties:
@@ -23481,7 +23663,7 @@ components:
           type: integer
         format:
           type: string
-          enum: [sepa_xml, ccp_dz, virement_ma, csv_generic]
+          enum: [sepa_xml, ccp_dz, cpa_dz, bna_dz, cnep_dz, edx_dz, virement_ma, csv_generic]
         status:
           type: string
           enum: [pending, generating, generated, failed, sent, confirmed]

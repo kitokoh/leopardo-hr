@@ -10,10 +10,12 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Application\Services\SocialDeclarationService;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\CedeaoCnsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CemacCnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnssDeclarationGenerator;
+use App\Modules\Payroll\Infrastructure\Services\DasDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\IpresDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\SocialDeclarationGenerator;
 use DateTimeInterface;
@@ -93,6 +95,59 @@ class SocialDeclarationController extends Controller
                 'employee_count' => $declarationRows->count(),
                 'content' => $content,
                 'filename' => sprintf('CNAS_DZ_%s_%d_%s.txt', $validated['quarter'], $validated['year'], now()->format('Ymd')),
+            ],
+        ]);
+    }
+
+    /**
+     * #5243 — Déclaration Annuelle des Salaires (DAS) DZ : CSV annuel agrégé
+     * depuis les bulletins validés des runs DZ de l'année (une ligne par
+     * employé : NIS, nom, mois, brut, CNAS 9 %/26 %, IRG, net + TOTAUX).
+     * Manager principal/comptable, audit `payroll.das_declaration`.
+     */
+    public function generateDasDz(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'year' => 'required|integer|min:2020|max:2099',
+        ]);
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.das_declaration');
+
+        $year = (int) $validated['year'];
+
+        $slips = PaySlip::query()
+            ->where('company_id', $actor->company_id)
+            ->where('status', 'validated')
+            ->whereBetween('period_start', ["{$year}-01-01", "{$year}-12-31"])
+            ->whereHas('payrollRun', fn ($query) => $query->where('country_code', 'DZ'))
+            ->with(['employee', 'lines'])
+            ->get();
+
+        $company = Company::query()->whereKey($actor->company_id)->first();
+
+        $companyName = $company->name ?? 'N/A';
+        $companyNis = $this->companyRegistrationNumber($company);
+
+        $content = (new DasDeclarationGenerator)->generate(
+            $companyName,
+            $companyNis,
+            $year,
+            $slips,
+        );
+
+        return response()->json([
+            'data' => [
+                'format' => 'das_dz',
+                'year' => $year,
+                'employee_count' => $slips->groupBy('employee_id')->count(),
+                'content' => $content,
+                'filename' => sprintf('DAS_DZ_%d_%s.txt', $year, now()->format('Ymd')),
             ],
         ]);
     }

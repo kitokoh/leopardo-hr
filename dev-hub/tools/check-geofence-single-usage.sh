@@ -20,6 +20,7 @@ ALLOWED=(
   "api/app/Modules/Attendance/Infrastructure/Services/GeofenceZoneService.php"
   "api/app/Modules/SmartAttendance/Providers/SmartAttendanceServiceProvider.php"
   "api/app/Modules/Attendance/Domain/Contracts/GeofenceValidatorInterface.php"
+  "api/app/Modules/SmartAttendance/Domain/Contracts/GeofenceValidatorInterface.php"
 )
 
 violations=0

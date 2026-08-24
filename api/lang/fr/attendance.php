@@ -58,4 +58,11 @@ return [
     'correction_already_processed' => 'Cette demande de correction a deja ete traitee.',
     'manual_checkout_requires_check_in' => 'Le départ manuel nécessite une heure d\'arrivée.',
     'checkout_after_checkin' => 'L\'heure de départ doit être postérieure à l\'heure d\'arrivée.',
+
+    // Issue #5269 — messages API pointage (zéro chaîne hardcodée utilisateur).
+    'workflow_deactivated' => 'Workflow désactivé.',
+    'request_not_pending' => 'La demande n\'est pas en attente.',
+    'calendar_disconnected' => 'Calendrier déconnecté.',
+    'geo_event_no_session' => 'Événement traité (aucune session ouverte pour la sortie).',
+    'geo_event_processed' => 'Événement géolocalisé traité avec succès.',
 ];

@@ -152,6 +152,14 @@ class LeopardoClient:
         """Mettre a jour un contact client/fournisseur"""
         return self.request("PUT", "/accounting/contacts/{contact}", **kwargs)
 
+    def get_accounting_settings(self, **kwargs):
+        """Parametrage comptable de l'entreprise"""
+        return self.request("GET", "/accounting/settings", **kwargs)
+
+    def put_accounting_settings(self, **kwargs):
+        """Mettre a jour le parametrage comptable de l'entreprise"""
+        return self.request("PUT", "/accounting/settings", **kwargs)
+
     def post_admin_ai_chat(self, **kwargs):
         """Envoyer un message a l'assistant IA (super-admin)"""
         return self.request("POST", "/admin/ai/chat", **kwargs)
@@ -1916,6 +1924,10 @@ class LeopardoClient:
         """Generer un export bancaire pour un run valide (alias chemin)"""
         return self.request("POST", "/payroll-runs/{payrollRun}/bank-export", **kwargs)
 
+    def get_payroll_runs_by_payrollrun_bordereau(self, **kwargs):
+        """Bordereau de paie d'un run (totaux par cotisation + recap, #5243)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/bordereau", **kwargs)
+
     def post_payroll_runs_by_payrollrun_bulk_pay(self, **kwargs):
         """Lancer le paiement groupé du run (virements)"""
         return self.request("POST", "/payroll-runs/{payrollRun}/bulk-pay", **kwargs)
@@ -2739,6 +2751,10 @@ class LeopardoClient:
     def generatecnssmadeclaration(self, **kwargs):
         """Generer la declaration trimestrielle CNSS (Maroc) pour tous les employes actifs"""
         return self.request("POST", "/social-declarations/cnss-ma", **kwargs)
+
+    def generatedasdzdeclaration(self, **kwargs):
+        """Generer la declaration annuelle des salaires DAS (Algerie, #5243)"""
+        return self.request("POST", "/social-declarations/das-dz", **kwargs)
 
     def generatedsnfrdeclaration(self, **kwargs):
         """Generer la DSN (Declaration Sociale Nominative, France) pour un mois donne"""

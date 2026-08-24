@@ -80,6 +80,11 @@ class PayrollClosingService
                     : new PayrollAlreadyValidatedException('L\'état du run a changé entre la lecture et la validation.');
             }
 
+            // Le run, ses bulletins et l’audit doivent être validés atomiquement.
+            // Un échec de mise à jour des bulletins ne doit pas laisser un run
+            // dans l’état `validated` avec des bulletins encore `calculated`.
+            $run->paySlips()->update(['status' => 'validated']);
+
             $run->refresh();
             $this->writeAudit(
                 $run,

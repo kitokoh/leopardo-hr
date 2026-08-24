@@ -18,7 +18,9 @@ class FrancePayrollRules extends AbstractCountryRules
 
     public function minimumWage(): float
     {
-        return 1766.0;
+        // SMIC au 1er juin 2026 : 1 867,02 €/mois (12,31 €/h × 151,67 h),
+        // revalorisation +2,41 % (décret 2026-05 ; +1,18 % au 1er janvier 2026).
+        return 1867.02;
     }
 
     public function socialContributions(): array
@@ -36,12 +38,15 @@ class FrancePayrollRules extends AbstractCountryRules
 
     protected function defaultTaxSlabs(): array
     {
+        // Barème 2026 (revenus 2025, loi de finances 2026 — revalorisation
+        // +0,9 %) : 0–11 600 € 0 % · 11 601–29 579 € 11 % · 29 580–84 577 € 30 %
+        // · 84 578–181 917 € 41 % · > 181 917 € 45 %.
         return [
-            ['min' => 0, 'max' => 11294, 'rate' => 0, 'fixed_deduction' => 0],
-            ['min' => 11295, 'max' => 28797, 'rate' => 11, 'fixed_deduction' => 0],
-            ['min' => 28798, 'max' => 82341, 'rate' => 30, 'fixed_deduction' => 0],
-            ['min' => 82342, 'max' => 177106, 'rate' => 41, 'fixed_deduction' => 0],
-            ['min' => 177107, 'max' => null, 'rate' => 45, 'fixed_deduction' => 0],
+            ['min' => 0, 'max' => 11600, 'rate' => 0, 'fixed_deduction' => 0],
+            ['min' => 11601, 'max' => 29579, 'rate' => 11, 'fixed_deduction' => 0],
+            ['min' => 29580, 'max' => 84577, 'rate' => 30, 'fixed_deduction' => 0],
+            ['min' => 84578, 'max' => 181917, 'rate' => 41, 'fixed_deduction' => 0],
+            ['min' => 181918, 'max' => null, 'rate' => 45, 'fixed_deduction' => 0],
         ];
     }
 

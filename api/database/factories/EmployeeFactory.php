@@ -6,7 +6,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
-/** @extends \Illuminate\Database\Eloquent\Factories\Factory<Employee> */
+/** @extends Factory<Employee> */
 /**
  * EmployeeFactory — Génère des employés de test (schéma tenant actif)
  *
@@ -34,7 +34,7 @@ class EmployeeFactory extends Factory
      */
     public function newModel(array $attributes = [])
     {
-        $model = new $this->model();
+        $model = new $this->model;
         $model->forceFill($attributes);
 
         return $model;
@@ -96,6 +96,18 @@ class EmployeeFactory extends Factory
         return $this->state(fn () => [
             'role' => 'manager',
             'manager_role' => 'dept',
+        ]);
+    }
+
+    /**
+     * Comptable (RBAC paie — issue #5246) : manager_role `comptable`, rôle de
+     * vérification/vise et clôture de la paie (matrice RBAC_ROUTE_MATRIX.md).
+     */
+    public function managerComptable(): static
+    {
+        return $this->state(fn () => [
+            'role' => 'manager',
+            'manager_role' => 'comptable',
         ]);
     }
 

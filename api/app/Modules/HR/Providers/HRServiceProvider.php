@@ -27,6 +27,7 @@ class HRServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Boot HR module
+        // Issue #5261 — embauche candidat (fichier dédié, rh.php/hr_extended verrouillés)
+        $this->loadRoutesFrom(__DIR__.'/../routes/candidate_hiring.php');
     }
 }

@@ -1,1 +1,1 @@
-# claim marker #5354 — Phase 3 ADR-0016 : routes pointage /attendance/* + alias (module attendance)
+# claim marker #5355 — ADR-0016 Phase 4 : fusion modèles/services/commandes SmartAttendance (Closes #5355)

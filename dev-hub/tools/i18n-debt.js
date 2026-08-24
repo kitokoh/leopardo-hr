@@ -244,6 +244,24 @@ function walk(dir, extensions, files = []) {
   return files;
 }
 
+// DateFormat patterns (`DateFormat('HH:mm')`, `DateFormat('EEEE d MMMM yyyy', ...)`)
+// are format templates, not user-visible text — they never render literally on
+// screen. Skip any string literal that is the first argument of a DateFormat(...)
+// call (the locale arg is a technical token and already filtered). The regex
+// also covers multiline calls where the pattern sits on the line after
+// `DateFormat(`.
+const dateFormatCallPattern = /DateFormat\(\s*['"]/;
+const dateFormatPatternLinePattern = /^['"][yMdHmsEa]+[^'"]*['"]\s*,?\s*$/;
+// String-matching / manipulation arguments (`message.contains('delai')`,
+// `str.startsWith('x')`, `value.split(',')`, `replaceAll('a','b')`) are
+// technical matching tokens, never rendered — the literal is compared against
+// server strings, not shown to a user.
+const stringMatchCallPattern = /\.(contains|startsWith|endsWith|split|indexOf|lastIndexOf|replaceAll|replaceFirst|substring|trimLeft|trimRight)\(\s*['"]/;
+// Dart doc/block comment lines (`///`, `//`, `/*`, `*`, `*/`) — their contents
+// are documentation, never rendered; the regex quote-matcher cannot tell a
+// comment's apostrophe (`l'employé`) from a string literal, so skip the line.
+const dartCommentLinePattern = /^\s*(\/\/\/|\/\/|\/\*|\*|\*\/)/;
+
 function scanSurface(surface) {
   const absoluteDir = path.join(repoRoot, surface.dir);
   const files = walk(absoluteDir, surface.extensions);
@@ -255,6 +273,10 @@ function scanSurface(surface) {
     const lines = fs.readFileSync(filePath, 'utf8').split(/\r?\n/);
     lines.forEach((line, index) => {
       if (/^\s*(import|export)\s/.test(line)) return;
+      if (dartCommentLinePattern.test(line)) return;
+      if (dateFormatCallPattern.test(line)) return;
+      if (dateFormatPatternLinePattern.test(line.trim())) return;
+      if (stringMatchCallPattern.test(line)) return;
       let match;
       stringLiteralPattern.lastIndex = 0;
       while ((match = stringLiteralPattern.exec(line)) !== null) {
