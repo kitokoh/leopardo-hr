@@ -1041,6 +1041,9 @@ class PayrollCalculator
         }
 
         return round($pay, 2);
+    }
+
+    /**
      * Issue #5241 (écart E5) — indemnités journalières maladie / arrêt de
      * travail selon la politique pays (CountryRulesInterface::sickLeavePolicy).
      *
