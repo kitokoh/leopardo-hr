@@ -5,6 +5,15 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- **Attendance reports by period (issue #5268)** — the monthly report endpoint `GET /attendance/monthly-report` is now a full report engine:
+  - `period=day|week|month` (default `month`, backward compatible), anchors `date` (Y-m-d), `week` (Y-m-d — ISO week Monday→Sunday), `month` (Y-m)
+  - Filters `department_id` (team) and `employee_id` (individual attendance sheet); manager scope (`visibleToManager`, PA2-SEC-002/003) always enforced — filters can only narrow, never widen visibility
+  - CSV + PDF exports for every period (`attendance-report-<period>-<from>_<to>.<ext>`); payroll synthesis (hours, overtime, estimated gross) kept per period
+  - `AttendanceMonthlyReportService`/`AttendanceMonthlyReportRequest` renamed to `AttendanceReportService`/`AttendanceReportRequest`; controller method `monthlyReport` → `report` (route URL unchanged)
+  - Employee rows now include `department_id`/`department_name`; `data.period` adds `type` while keeping `month` for backward compatibility
+  - Tests: `AttendanceReportTest` (9 scenarios: daily, weekly, monthly, defaults, filters, CSV/PDF exports, scoped RBAC, invalid period)
+
 ### Fixed
 - **Trial signup slug-collision retries preserve PostgreSQL transactions.** Each bounded retry now uses an explicit savepoint when invoked inside an existing transaction, so an expected `23505` collision cannot poison subsequent queries or unrelated tests.
 - **LeaveCarryForward processes all tenants explicitly.** The annual carry-forward command now disables tenant global scopes for policies, balances, accrual expiration queries, and write builders while retaining explicit company filters, so console execution cannot inherit a stale `current_company` or `search_path` context; per-employee failures remain isolated and logged without poisoning the command transaction.

@@ -14,6 +14,7 @@ use App\Modules\Attendance\Interfaces\Api\V1\AttendanceController;
 use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
 use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureNoticeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeImportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
@@ -51,6 +52,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/employees/{employee}/archive', [EmployeeController::class, 'archive'])->whereNumber('employee');
     Route::get('/employees/{employee}/end-of-contract', [EndOfContractController::class, 'settlement'])->whereNumber('employee');
     Route::get('/employees/{employee}/certificate-of-employment', [EndOfContractController::class, 'certificate'])->whereNumber('employee');
+    // G2 (#5325) — récapitulatif du préavis légal par pays/ancienneté (lecture, règle Payroll consommée)
+    Route::get('/employees/{employee}/departure/notice', [DepartureNoticeController::class, 'show'])->whereNumber('employee');
     // MULTI-PAYS (#1952) : l'import d'employés crée des écritures RH — même
     // garde pays que store/update (#1867).
     Route::post('/employees/import', [EmployeeImportController::class, 'import'])->middleware(['api.manager', 'tenant.country']);
@@ -83,14 +86,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/attendance/today', [AttendanceController::class, 'today']);
     Route::get('/attendance/anomalies', [AttendanceController::class, 'anomalies']);
     Route::get('/attendance/regularity', [AttendanceController::class, 'regularity']);
-    Route::get('/attendance/monthly-report', [AttendanceController::class, 'monthlyReport']);
+    Route::get('/attendance/monthly-report', [AttendanceController::class, 'report']);
     Route::get('/attendance', [AttendanceController::class, 'index']);
     Route::post('/attendance/corrections', [AttendanceController::class, 'requestCorrection']);
     Route::get('/attendance/corrections', [AttendanceController::class, 'corrections']);
     Route::post('/attendance/corrections/{correction}/approve', [AttendanceController::class, 'approveCorrection'])->whereNumber('correction')->middleware('api.manager');
-        Route::put('/attendance/corrections/{correction}/approve', [AttendanceController::class, 'approveCorrection'])->whereNumber('correction')->middleware('api.manager'); // déprécié #4930
+    Route::put('/attendance/corrections/{correction}/approve', [AttendanceController::class, 'approveCorrection'])->whereNumber('correction')->middleware('api.manager'); // déprécié #4930
     Route::post('/attendance/corrections/{correction}/reject', [AttendanceController::class, 'rejectCorrection'])->whereNumber('correction')->middleware('api.manager');
-        Route::put('/attendance/corrections/{correction}/reject', [AttendanceController::class, 'rejectCorrection'])->whereNumber('correction')->middleware('api.manager'); // déprécié #4930
+    Route::put('/attendance/corrections/{correction}/reject', [AttendanceController::class, 'rejectCorrection'])->whereNumber('correction')->middleware('api.manager'); // déprécié #4930
     Route::put('/attendance/{attendanceLog}', [AttendanceController::class, 'update'])->whereNumber('attendanceLog')->middleware('api.manager');
     Route::get('/attendance/{attendanceLog}/punch-photo', [AttendanceController::class, 'punchPhoto'])->whereNumber('attendanceLog')->name('attendance.punch-photo');
 
@@ -117,13 +120,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // PA2-MOB-006: download the supporting document attached to a request.
     Route::get('/salary-advances/{salaryAdvance}/proof', [SalaryAdvanceController::class, 'downloadProof'])->whereNumber('salaryAdvance');
     Route::post('/salary-advances/{salaryAdvance}/approve', [SalaryAdvanceController::class, 'approve'])->whereNumber('salaryAdvance');
-        Route::put('/salary-advances/{salaryAdvance}/approve', [SalaryAdvanceController::class, 'approve'])->whereNumber('salaryAdvance'); // déprécié #4930
+    Route::put('/salary-advances/{salaryAdvance}/approve', [SalaryAdvanceController::class, 'approve'])->whereNumber('salaryAdvance'); // déprécié #4930
     Route::post('/salary-advances/{salaryAdvance}/reject', [SalaryAdvanceController::class, 'reject'])->whereNumber('salaryAdvance');
-        Route::put('/salary-advances/{salaryAdvance}/reject', [SalaryAdvanceController::class, 'reject'])->whereNumber('salaryAdvance'); // déprécié #4930
+    Route::put('/salary-advances/{salaryAdvance}/reject', [SalaryAdvanceController::class, 'reject'])->whereNumber('salaryAdvance'); // déprécié #4930
     Route::delete('/salary-advances/{salaryAdvance}', [SalaryAdvanceController::class, 'destroy'])->whereNumber('salaryAdvance');
     // Plan 60 — double validation workflow
     Route::post('/salary-advances/{salaryAdvance}/manager-approve', [SalaryAdvanceController::class, 'managerApprove'])->whereNumber('salaryAdvance');
-        Route::put('/salary-advances/{salaryAdvance}/manager-approve', [SalaryAdvanceController::class, 'managerApprove'])->whereNumber('salaryAdvance'); // déprécié #4930
+    Route::put('/salary-advances/{salaryAdvance}/manager-approve', [SalaryAdvanceController::class, 'managerApprove'])->whereNumber('salaryAdvance'); // déprécié #4930
     Route::put('/salary-advances/{salaryAdvance}/mark-paid', [SalaryAdvanceController::class, 'markPaid'])->whereNumber('salaryAdvance');
     Route::put('/salary-advances/{salaryAdvance}/confirm-received', [SalaryAdvanceController::class, 'confirmReceived'])->whereNumber('salaryAdvance');
     // PA2-PAY-015 — employee dispute ("reclamation") instead of confirming reception
@@ -137,7 +140,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::put('/payrolls/{payroll}', [PayrollController::class, 'update'])->whereNumber('payroll');
     Route::patch('/payrolls/{payroll}', [PayrollController::class, 'update'])->whereNumber('payroll');
     Route::post('/payrolls/{payroll}/validate', [PayrollController::class, 'validatePayroll'])->whereNumber('payroll');
-        Route::put('/payrolls/{payroll}/validate', [PayrollController::class, 'validatePayroll'])->whereNumber('payroll'); // déprécié #4930
+    Route::put('/payrolls/{payroll}/validate', [PayrollController::class, 'validatePayroll'])->whereNumber('payroll'); // déprécié #4930
     Route::delete('/payrolls/{payroll}', [PayrollController::class, 'destroy'])->whereNumber('payroll');
 
     // ── Module 4 — HR Referentials ────────────────────────────────────────────

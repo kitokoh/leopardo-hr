@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
-import 'package:leopardo_hr/features/user_auth/providers/user_auth_provider.dart';
+import 'package:leopardo_core/features/user_auth/providers/user_auth_provider.dart';
 
 class UserHomeScreen extends ConsumerWidget {
   const UserHomeScreen({super.key});

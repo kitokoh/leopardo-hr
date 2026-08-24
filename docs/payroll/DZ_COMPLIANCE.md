@@ -76,10 +76,17 @@ Référence légale : CIDTA art. 104 (barèmes IRG) + art. 104 bis (abattement f
 
 | Cotisation | Taux | Assiette | Cap |
 |---|---|---|---|
-| CNAS salariale | 9 % | salaire brut | aucun (implémenté) — à confirmer |
-| CNAS patronale | 26 % | salaire brut | aucun (implémenté) — à confirmer |
+| CNAS salariale | 9 % | salaire brut | aucun ✅ (E1 — confirmé sources 2026, verrouillé golden #5241) |
+| CNAS patronale | 26 % | salaire brut | aucun ✅ (E1 — confirmé sources 2026, verrouillé golden #5241) |
 
 **Exemple chiffré (golden test F-03)** — brut 60 000 DZD : salariale 5 400 DZD, patronale 15 600 DZD.
+
+> **E1 — plafond d'assiette (issue #5241)** : « aucun plafond » confirmé par
+> les sources 2026 (l'Algérie n'applique pas de plafond de cotisation sur
+> les branches principales, contrairement au Maroc et à la Tunisie) et
+> cohérent avec la validation expert comptable 2026-08-08 du cœur CNAS
+> 9 %/26 %. Verrouillé par golden
+> (`GoldenDzEngineCompletionTest::test_golden_dz_cnas_has_no_statutory_cap`).
 
 ## 3. SMIG / minima
 
@@ -143,10 +150,55 @@ consommées par `EndOfContractService` au lieu de valeurs codées en dur).
 | Heures supplémentaires (≥ 50 %) | ✅ implémenté (palier unique ×1,5, câblé au run #5266) | loi 90-11 art. 32 | Arbitrage E2 résolu (#5266) ; repos compensateur art. 36 documenté (§5) |
 | Assurance chômage | ✅ **AC inclus dans les agrégats CNAS (9 % / 26 %) (#1819/#1943)** | décret législatif n° 94-11, art. 94-188 ; décrets exécutifs n° 22-70 (10/02/2022) et n° 26-87 (21/01/2026) | Le régime contributif CNAC couvre les salariés du privé licenciés pour motif économique (1 % patron + 0,5 % salarié), déjà inclus dans CNAS → **pas de lignes AC_DZ_EMP/AC_DZ_PAT séparées** (double cotisation). L'allocation chômage des primo-demandeurs (ANEM, 13 000 DZD/mois) est financée par le budget de l'État (≈ 420 Mds DZD en LF 2026) |
 | Rétroactifs et régularisations | ✅ implémenté (#1818) | — | — |
-| Primes non soumises (`SalaryComponent.is_taxable=false`) | ⚠️ **non modélisé** — le moteur ajoute TOUTE ligne earning au brut (assiette CNAS + IRG complète), le drapeau `is_taxable` n'est pas consommé par `PayrollCalculator::computeSlipValues` (vérifié #5149) | — | Issue fille P1 : paramétrer l'exclusion des primes non imposables de l'assiette CNAS/IRG, avec le calcul à la main en preuve |
+| Primes non soumises (`SalaryComponent.is_taxable=false`) | ✅ **implémenté (#5241, écart E3)** — `PayrollCalculator::computeSlipValues` consomme désormais le drapeau : la prime est ajoutée au brut (assiette CNAS complète) mais **exclue de l'assiette IRG** (`computeNetBreakdown(nonTaxableEarnings)`, assiette visible sur la ligne IRG du bulletin). Verrouillé golden (`GoldenDzEngineCompletionTest`). ⚠️ À confirmer expert : exclusion de l'assiette CNAS (défaut conservateur = incluse) | — | Issue #5241 |
 
 > Règle (inchangée) : toute modification de taux/durée = mise à jour
 > **simultanée** du référentiel + du golden test + du CHANGELOG.
+
+## 8. 13ᵉ mois, maladie, primes exonérées (issue #5241 — complétion du moteur)
+
+### 8.1 13ᵉ mois — non statutaire (E4)
+
+La loi 90-11 (Code du travail) **n'impose pas** de 13ᵉ mois en Algérie : son
+versement relève de la convention collective, du contrat de travail ou de
+l'usage d'entreprise. Le moteur ne l'injecte donc **jamais** automatiquement
+(`AlgeriaPayrollRules::thirteenthMonthMandatory()` = `false`, verrouillé
+golden). Les entreprises qui versent un 13ᵉ mois conventionnel le modélisent
+via un composant de salaire (entièrement imposable — `thirteenthMonthTaxTreatment()`
+= `'fully_taxable'`). Le mécanisme générique (#1820) reste fonctionnel si une
+règle pays le déclare obligatoire (cas CI #1825).
+
+### 8.2 Maladie / arrêt de travail — règles d'indemnisation (E5)
+
+Sources vérifiées 2026-08-23 : CNAS (site officiel cnas.dz, « medical
+certificate for work stoppage »), loi 90-11. Régime `pilot` — validation
+expert comptable requise avant `production` (procédure #5149).
+
+| Paramètre | Valeur | Référence |
+|---|---|---|
+| Délai de carence | 3 jours (aucune IJ versée, sauf convention collective plus favorable) | usage courant |
+| IJ jours 1-15 de l'arrêt | 50 % du salaire journalier de référence (après déduction cotisations + IRG) | CNAS |
+| IJ à partir du 16e jour | 100 % du salaire journalier de référence | CNAS |
+| Durée maximale (maladie ordinaire) | 180 jours (6 mois, renouvelable) | CNAS |
+| Maintien patronal légal | 0 jour (convention collective uniquement) | loi 90-11 |
+
+Implémentation : `AlgeriaPayrollRules::sickLeavePolicy()` +
+`PayrollCalculator::computeSickLeaveAllowance()` (calcul IJ, verrouillé
+golden). Le flux absence → paie (comptage des jours d'arrêt, prorata) est
+porté par l'issue #5245.
+
+### 8.3 Primes exonérées IRG — `is_taxable` consommé (E3)
+
+`SalaryComponent.is_taxable=false` → la prime est **ajoutée au brut**
+(assiette CNAS complète : salariale 9 % + patronale 26 %) mais **exclue de
+l'assiette IRG** : `assiette IRG = brut − primes exonérées − CNAS salariale`.
+L'assiette réelle est visible sur la ligne « Impot sur le revenu » du
+bulletin (base_amount). Verrouillé golden : prime non imposable 10 000 DZD
+sur base 60 000 → brut 70 000, CNAS 6 300/18 200, IRG 6 799 (assiette
+53 700), net 56 901.
+
+⚠️ **À confirmer par expert** : l'exclusion de l'assiette CNAS (défaut
+conservateur = les primes exonérées d'IRG restent soumises à CNAS).
 
 ## Procédure de mise à jour
 
