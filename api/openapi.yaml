@@ -9493,6 +9493,81 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /contracts/templates:
+    get:
+      tags: ["Contracts"]
+      summary: "Obtenir les modèles de contrat d’un pays"
+      parameters:
+        - name: country
+          in: query
+          required: true
+          schema: { type: string, minLength: 2, maxLength: 3 }
+        - name: contract_type
+          in: query
+          required: false
+          schema: { type: string, enum: [cdi, cdd, stage, freelance, interim], default: cdi }
+      responses:
+        "200":
+          description: "Modèles légaux disponibles"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { data: { type: object, additionalProperties: true } }
+        "401": { $ref: "#/components/responses/Error401" }
+        "422": { $ref: "#/components/responses/Validation422" }
+
+  /contracts/{contract}/sign:
+    post:
+      tags: ["Contracts"]
+      summary: "Signer explicitement un contrat"
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                signed_document_path: { type: string, maxLength: 500, nullable: true }
+      responses:
+        "200":
+          description: "Contrat signé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { data: { $ref: "#/components/schemas/Contract" } }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "422": { $ref: "#/components/responses/Validation422" }
+
+  /employees/{employee}/departure/notice:
+    get:
+      tags: ["Employees"]
+      summary: "Afficher le récapitulatif du préavis légal"
+      parameters:
+        - name: employee
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Récapitulatif du préavis"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { data: { type: object, additionalProperties: true } }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+
   /contracts/{contract}:
     get:
       tags: ["Contracts"]
