@@ -98,7 +98,9 @@ class EmployeeDocumentTest extends TestCase
         // Sans filtre : tous les documents du tenant A uniquement.
         $all = $this->getJson('/api/v1/employee-documents');
         $all->assertOk()->assertJsonCount(2, 'data');
-        $ids = collect($all->json('data'))->pluck('id')->all();
+        $data = $all->json('data');
+        $this->assertIsArray($data);
+        $ids = collect($data)->pluck('id')->all();
         $this->assertNotContains($otherDoc->id, $ids);
     }
 
@@ -163,7 +165,8 @@ class EmployeeDocumentTest extends TestCase
     {
         [$company, $manager, $employee] = $this->createActors();
 
-        // Une ligne « missing » ne satisfait pas le type requis.
+        // Une ligne « missing » ne satisfait pas le type requis. Statut actif :
+        // contrat signé + fiche employé sont exigés (requiredTypesPerStatus).
         $this->makeDocument($company, $employee, 'contract_signed', 'missing');
 
         Sanctum::actingAs($manager);
@@ -171,7 +174,7 @@ class EmployeeDocumentTest extends TestCase
         $this->getJson('/api/v1/employees/'.$employee->id)
             ->assertOk()
             ->assertJsonPath('data.documents_status.complete', false)
-            ->assertJsonPath('data.documents_status.missing', ['contract_signed']);
+            ->assertJsonPath('data.documents_status.missing', ['contract_signed', 'employee_file']);
     }
 
     public function test_update_document_keeps_tenant_and_changes_fields(): void
