@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\SmartAttendance\Providers;
 
 use App\Modules\Attendance\Infrastructure\Services\AttendanceGeofenceService;
-use App\Modules\SmartAttendance\Domain\Contracts\GeofenceValidatorInterface;
+use App\Modules\Attendance\Domain\Contracts\GeofenceValidatorInterface;
 use Illuminate\Support\ServiceProvider;
 
 class SmartAttendanceServiceProvider extends ServiceProvider

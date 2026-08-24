@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Application\Actions;
+namespace App\Modules\Attendance\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
+use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
 
 /**
  * Cas d'usage (niveau 1) : configurer le mode de pointage pour toute l'entreprise.

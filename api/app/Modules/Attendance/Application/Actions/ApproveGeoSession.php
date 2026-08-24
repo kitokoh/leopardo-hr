@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Application\Actions;
+namespace App\Modules\Attendance\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
+use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 

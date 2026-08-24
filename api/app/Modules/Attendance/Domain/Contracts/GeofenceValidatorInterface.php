@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Domain\Contracts;
+namespace App\Modules\Attendance\Domain\Contracts;
 
 /**
  * Contrat pour la validation de zone géographique.

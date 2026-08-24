@@ -7,7 +7,7 @@ namespace Tests\Feature\SmartAttendance;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
+use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -21,7 +21,7 @@ use Tests\TestCase;
  *   PUT  /api/v1/smart-attendance/preferences
  *   PUT  /api/v1/smart-attendance/mode-settings  (principal uniquement)
  */
-class AttendanceModeConfigTest extends TestCase
+class GeoAttendanceModeConfigTest extends TestCase
 {
     use RefreshTenantDatabase;
 

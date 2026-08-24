@@ -8,7 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
+use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -21,7 +21,7 @@ use Tests\TestCase;
  *   POST /api/v1/smart-attendance/sessions/{id}/approve
  *   POST /api/v1/smart-attendance/sessions/{id}/reject
  */
-class ManagerValidationTest extends TestCase
+class GeoManagerValidationTest extends TestCase
 {
     use RefreshTenantDatabase;
 

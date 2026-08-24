@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\SmartAttendance\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Modules\SmartAttendance\Application\Actions\ApproveGeoSession;
-use App\Modules\SmartAttendance\Application\Actions\RejectGeoSession;
-use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
+use App\Modules\Attendance\Application\Actions\ApproveGeoSession;
+use App\Modules\Attendance\Application\Actions\RejectGeoSession;
+use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use App\Modules\SmartAttendance\Interfaces\Api\V1\Requests\ApproveSessionRequest;
 use App\Modules\SmartAttendance\Interfaces\Api\V1\Requests\RejectSessionRequest;
 use Illuminate\Http\JsonResponse;

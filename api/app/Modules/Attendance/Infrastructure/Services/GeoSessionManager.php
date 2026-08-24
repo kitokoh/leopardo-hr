@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Infrastructure\Services;
+namespace App\Modules\Attendance\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Infrastructure\Services\GeofenceZoneService;
-use App\Modules\SmartAttendance\Application\DTOs\GeoEventDTO;
-use App\Modules\SmartAttendance\Domain\Exceptions\OutsideGeofenceException;
-use App\Modules\SmartAttendance\Domain\Exceptions\SessionAlreadyOpenException;
-use App\Modules\SmartAttendance\Domain\Models\EmployeeLocationEvent;
-use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
+use App\Modules\Attendance\Application\DTOs\GeoEventDTO;
+use App\Modules\Attendance\Domain\Exceptions\OutsideGeofenceException;
+use App\Modules\Attendance\Domain\Exceptions\SessionAlreadyOpenException;
+use App\Modules\Attendance\Domain\Models\EmployeeLocationEvent;
+use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -71,7 +71,7 @@ class GeoSessionManager
 
             if ($existing) {
                 // Log l'événement dupliqué mais ne plante pas
-                Log::info('[SmartAttendance] Duplicate zone_enter ignored', [
+                Log::info('[Attendance.Geo] Duplicate zone_enter ignored', [
                     'employee_id' => $dto->employeeId,
                     'session_id' => $existing->id,
                 ]);
@@ -125,7 +125,7 @@ class GeoSessionManager
             if (! $session) {
                 // Pas de session ouverte — événement orphelin, on le log quand même
                 $this->logEvent($dto, null, EmployeeLocationEvent::TYPE_ZONE_EXIT);
-                Log::info('[SmartAttendance] zone_exit received with no open session', [
+                Log::info('[Attendance.Geo] zone_exit received with no open session', [
                     'employee_id' => $dto->employeeId,
                 ]);
 

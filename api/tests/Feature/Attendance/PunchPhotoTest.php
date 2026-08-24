@@ -8,7 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
+use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
