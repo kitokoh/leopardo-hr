@@ -238,7 +238,7 @@ return [
     'ALREADY_ENROLLED_SESSION' => 'Déjà inscrit à cette session.',
     'DELETION_REQUEST_RECEIVED' => 'Demande de suppression reçue pour revue RH/juridique.',
     // Comptabilité (issue #5227)
-    'PAYMENT_EXCEEDS_TOTAL' => 'Le paiement dépasse le montant total TTC du document.',
+    'PAYMENT_EXCEEDS_TOTAL' => 'Le montant du paiement dépasse le solde restant du document.',
     'PAYMENT_ON_UNSENT_DOCUMENT' => 'Impossible d\'enregistrer un paiement sur un document non émis.',
     'CREDIT_NOTE_REQUIRES_SOURCE_INVOICE' => 'Un avoir doit être lié à sa facture source.',
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'Un bordereau de livraison doit porter sa date de livraison.',

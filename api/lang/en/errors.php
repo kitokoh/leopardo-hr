@@ -244,7 +244,7 @@ return [
     'ALREADY_ENROLLED_SESSION' => 'Already enrolled in this session.',
     'DELETION_REQUEST_RECEIVED' => 'Deletion request received for HR/legal review.',
     // Accounting (issue #5227)
-    'PAYMENT_EXCEEDS_TOTAL' => 'The payment exceeds the total amount of the document.',
+    'PAYMENT_EXCEEDS_TOTAL' => 'The payment amount exceeds the remaining balance of the document.',
     'PAYMENT_ON_UNSENT_DOCUMENT' => 'Cannot record a payment on a document that has not been issued.',
     'CREDIT_NOTE_REQUIRES_SOURCE_INVOICE' => 'A credit note must be linked to its source invoice.',
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'A delivery note must include its delivery date.',

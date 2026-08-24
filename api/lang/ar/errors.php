@@ -237,7 +237,7 @@ return [
     'ALREADY_ENROLLED_SESSION' => 'مسجل بالفعل في هذه الجلسة.',
     'DELETION_REQUEST_RECEIVED' => 'تم استلام طلب الحذف للمراجعة من قبل الموارد البشرية/القانونية.',
     // المحاسبة (issue #5227)
-    'PAYMENT_EXCEEDS_TOTAL' => 'يتجاوز مبلغ الدفع الإجمالي للمستند.',
+    'PAYMENT_EXCEEDS_TOTAL' => 'يتجاوز مبلغ الدفع الرصيد المتبقي للمستند.',
     'PAYMENT_ON_UNSENT_DOCUMENT' => 'لا يمكن تسجيل دفعة على مستند لم يُصدر بعد.',
     'CREDIT_NOTE_REQUIRES_SOURCE_INVOICE' => 'يجب ربط الإشعار الدائن بفاتورته المصدرية.',
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'يجب أن يتضمن سند التسليم تاريخ التسليم.',

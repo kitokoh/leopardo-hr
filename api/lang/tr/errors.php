@@ -237,7 +237,7 @@ return [
     'ALREADY_ENROLLED_SESSION' => 'Bu oturuma zaten kayıtlısınız.',
     'DELETION_REQUEST_RECEIVED' => 'Silme talebi İK/hukuk incelemesi için alındı.',
     // Muhasebe (issue #5227)
-    'PAYMENT_EXCEEDS_TOTAL' => 'Ödeme, belgenin toplam tutarını aşıyor.',
+    'PAYMENT_EXCEEDS_TOTAL' => 'Ödeme tutarı, belgenin kalan bakiyesini aşıyor.',
     'PAYMENT_ON_UNSENT_DOCUMENT' => 'Düzenlenmemiş bir belge üzerinde ödeme kaydedilemez.',
     'CREDIT_NOTE_REQUIRES_SOURCE_INVOICE' => 'İade faturası, kaynak faturasına bağlı olmalıdır.',
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'İrsaliye, teslim tarihini içermelidir.',
