@@ -191,6 +191,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Enregistrer un encaissement (→ partiellement paye / paye, #5223) */
+    /** Enregistrer un paiement */
     postAccountingDocumentsByDocumentPayments(options = {}) {
       return request("POST", "/accounting/documents/{document}/payments", options);
     },
@@ -203,6 +204,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Apercu du prochain numero de la serie configuree (#5223) */
     getAccountingDocumentsNextNumber(options = {}) {
       return request("GET", "/accounting/documents/next-number", options);
+    /** Lister les paiements */
+    getAccountingPayments(options = {}) {
+      return request("GET", "/accounting/payments", options);
+    },
+
+    /** Rapprocher un paiement */
+    postAccountingPaymentsByPaymentReconcile(options = {}) {
+      return request("POST", "/accounting/payments/{payment}/reconcile", options);
+    },
+
+    /** Declencher les relances de paiement */
+    postAccountingRemindersRun(options = {}) {
+      return request("POST", "/accounting/reminders/run", options);
     },
 
     /** Envoyer un message a l'assistant IA (super-admin) */
