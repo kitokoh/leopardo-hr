@@ -116,8 +116,11 @@ class AccountingPaymentOrderTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonPath('data.payroll_run_id', $run->id)
             ->assertJsonPath('data.status', 'draft')
-            ->assertJsonPath('data.total_net', 100000.0)
             ->assertJsonPath('data.currency', 'DZD');
+
+        // JSON encode sans JSON_PRESERVE_ZERO_FRACTION → entier pour les nets
+        // ronds (100000, pas 100000.0) : comparaison numérique robuste.
+        $this->assertSame(100000.0, (float) $response->json('data.total_net'));
     }
 
     public function test_store_is_idempotent_per_run(): void

@@ -9,6 +9,7 @@ use App\Modules\Accounting\Domain\Models\AccountingJournalEntry;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Journal des écritures salariales — flux Paie → Comptabilité (issue #5239,
@@ -29,7 +30,7 @@ final class AccountingJournalEntryController extends Controller
     {
         $runId = $request->integer('payroll_run_id');
 
-        /** @var \Illuminate\Database\Eloquent\Collection<int, AccountingJournalEntry> $entries */
+        /** @var LengthAwarePaginator<int, AccountingJournalEntry> $entries */
         $entries = AccountingJournalEntry::query()
             ->when($runId > 0, static fn (Builder $query) => $query->where('payroll_run_id', $runId))
             ->orderByDesc('id')
@@ -39,7 +40,7 @@ final class AccountingJournalEntryController extends Controller
             'data' => collect($entries->items())->map(
                 static fn (AccountingJournalEntry $entry): array => [
                     'id' => $entry->id,
-                    'entry_date' => $entry->entry_date?->toDateString(),
+                    'entry_date' => $entry->entry_date->toDateString(),
                     'payroll_run_id' => $entry->payroll_run_id,
                     'pay_slip_id' => $entry->pay_slip_id,
                     'employee_id' => $entry->employee_id,
@@ -68,7 +69,7 @@ final class AccountingJournalEntryController extends Controller
         return response()->json([
             'data' => [
                 'id' => $entry->id,
-                'entry_date' => $entry->entry_date?->toDateString(),
+                'entry_date' => $entry->entry_date->toDateString(),
                 'payroll_run_id' => $entry->payroll_run_id,
                 'pay_slip_id' => $entry->pay_slip_id,
                 'employee_id' => $entry->employee_id,

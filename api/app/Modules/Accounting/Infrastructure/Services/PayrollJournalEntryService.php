@@ -40,8 +40,8 @@ final class PayrollJournalEntryService
      * Génère (idempotent) les écritures du journal pour un run de paie.
      *
      * @return array{run_id: int, status: string, generated: int}
-     *         status : `generated` (écritures persistées ou run sans bulletin
-     *         validé) | `pending` (plan comptable pays indisponible)
+     *                                                            status : `generated` (écritures persistées ou run sans bulletin
+     *                                                            validé) | `pending` (plan comptable pays indisponible)
      */
     public function generateForRun(PayrollRun $run, ?int $actorId = null): array
     {
@@ -83,10 +83,10 @@ final class PayrollJournalEntryService
         $now = now();
         $rows = array_map(
             static fn (array $line): array => [
-                'company_id' => (string) ($line['company_id'] ?? $run->company_id),
+                'company_id' => (string) $line['company_id'],
                 'entry_date' => (string) $line['date'],
                 'payroll_run_id' => (int) $line['payroll_run_id'],
-                'pay_slip_id' => $line['pay_slip_id'] !== null ? (int) $line['pay_slip_id'] : null,
+                'pay_slip_id' => (int) $line['pay_slip_id'],
                 'employee_id' => $line['employee_id'] !== null ? (int) $line['employee_id'] : null,
                 'account_code' => (string) $line['account_code'],
                 'account_label' => (string) $line['account_label'],

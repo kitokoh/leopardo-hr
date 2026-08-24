@@ -9,11 +9,11 @@ use App\Events\PayrollRunValidated;
 use App\Modules\Accounting\Application\Listeners\GeneratePayrollJournalEntries;
 use App\Modules\Accounting\Application\Listeners\ProvisionAccountingSettings;
 use App\Modules\Accounting\Console\Commands\GeneratePayrollJournalEntriesCommand;
-use Illuminate\Support\Facades\Event;
-use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
-use App\Modules\Accounting\Infrastructure\Services\DocumentPdfRenderer;
 use App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface;
+use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
 use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
+use App\Modules\Accounting\Infrastructure\Services\DocumentPdfRenderer;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 /**
