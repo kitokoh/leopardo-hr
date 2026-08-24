@@ -63,6 +63,8 @@ class AccountingAuditRetentionTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $overrides
+     *
+     * @return array<string, mixed>
      */
     private function payload(array $overrides = []): array
     {
@@ -271,6 +273,6 @@ class AccountingAuditRetentionTest extends TestCase
 
         // Round-trip : le modèle déchiffre à la lecture.
         $this->assertSame('CHEQUE-2026-001', $payment->refresh()->reference);
-        $this->assertSame(42, $document->refresh()->metadata['source_document_id']);
+        $this->assertSame(42, ($document->refresh()->metadata ?? [])['source_document_id'] ?? null);
     }
 }
