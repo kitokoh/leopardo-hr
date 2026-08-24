@@ -401,6 +401,18 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - Self-service : un employe ne peut pas consulter, generer le PDF ou lire les avenants du contrat d'un collegue
 - Scheduler : `contracts:alert-expiring` alerte a 30/15/7 jours
 
+### Module L — Checklist documents du dossier employe (issue #5326, gap G3)
+- `POST /api/v1/employee-documents` enregistre un document (type, statut, date, reference, url) — RBAC : principal/rh uniquement (403 employe)
+- `GET /api/v1/employee-documents` liste les documents du tenant (filtres `employee_id`, `type`, pagination `per_page`)
+- `GET /api/v1/employee-documents/{id}` detail d'un document du tenant
+- `PUT|PATCH /api/v1/employee-documents/{id}` met a jour type/statut/reference/url/notes
+- `DELETE /api/v1/employee-documents/{id}` supprime un document du dossier
+- `GET /api/v1/me/documents` self-service : l'employe lit UNIQUEMENT les documents de son propre dossier
+- Badge dossier : `GET /api/v1/employees/{id}` expose `documents_status` (complete/present/missing, types requis par statut employe)
+- Isolation : un document d'un autre tenant repond 404 (scope `BelongsToCompany` fail-closed #3727)
+- Validation : type hors liste ou `employee_id` d'un autre tenant repond 422
+- Tests : `tests/Feature/HR/EmployeeDocumentTest.php` (8 scenarios)
+
 ### Module C â Avances salaire mobile
 - `GET /api/v1/salary-advances` retourne les avances de l'employe connecte, et la liste tenant pour manager/RH autorise.
 - `POST /api/v1/salary-advances` permet a un employe de demander une avance avec `amount`, `reason` et `repayment_months`.

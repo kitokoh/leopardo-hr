@@ -2458,6 +2458,32 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /me/documents:
+    get:
+      tags: ["Me"]
+      summary: "Lire les documents de SON dossier employe (self-service)"
+      description: "Checklist documents du dossier employe (issue #5326, G3) : lecture seule, scope strictement sur l'employe authentifie."
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        "200":
+          description: "Documents du dossier (pagine)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/EmployeeDocument"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /privacy/export:
     get:
       tags: ["Privacy"]
@@ -9664,6 +9690,180 @@ paths:
           $ref: "#/components/responses/Error401"
         "422":
           $ref: "#/components/responses/Validation422"
+
+  /employee-documents:
+    get:
+      tags: ["HR"]
+      summary: "Lister les documents des dossiers employes (checklist G3)"
+      description: "Manager : tout le tenant, filtres employee_id/type. Employe : uniquement son dossier."
+      parameters:
+        - name: employee_id
+          in: query
+          schema: { type: integer }
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [contract_signed, employee_file, career_decision, departure_record, notice_summary, settlement, certificate, other]
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        "200":
+          description: "Documents pagines"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/EmployeeDocument"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["HR"]
+      summary: "Enregistrer un document du dossier employe"
+      description: "RBAC : principal/rh uniquement. L'employe doit appartenir au tenant de l'acteur."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreEmployeeDocumentRequest"
+      responses:
+        "201":
+          description: "Document enregistre"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeDocument"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /employee-documents/{employeeDocument}:
+    get:
+      tags: ["HR"]
+      summary: "Lire un document du dossier employe"
+      parameters:
+        - name: employeeDocument
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Document"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeDocument"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+    put:
+      tags: ["HR"]
+      summary: "Mettre a jour un document du dossier employe"
+      parameters:
+        - name: employeeDocument
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEmployeeDocumentRequest"
+      responses:
+        "200":
+          description: "Document mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeDocument"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    patch:
+      tags: ["HR"]
+      summary: "Patch un document du dossier employe"
+      parameters:
+        - name: employeeDocument
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEmployeeDocumentRequest"
+      responses:
+        "200":
+          description: "Document mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeDocument"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["HR"]
+      summary: "Supprimer un document du dossier employe"
+      parameters:
+        - name: employeeDocument
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Document supprime"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
 
   /contracts/expiring:
     get:
@@ -20173,6 +20373,107 @@ components:
           nullable: true
         personal_phone:
           type: string
+          nullable: true
+
+    EmployeeDocument:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        employee_id:
+          type: integer
+        type:
+          type: string
+          enum: [contract_signed, employee_file, career_decision, departure_record, notice_summary, settlement, certificate, other]
+        type_label:
+          type: string
+        status:
+          type: string
+          enum: [received, uploaded, generated, missing]
+        status_label:
+          type: string
+        document_date:
+          type: string
+          format: date
+          nullable: true
+        reference:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        uploaded_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    StoreEmployeeDocumentRequest:
+      type: object
+      required: [employee_id, type]
+      properties:
+        employee_id:
+          type: integer
+        type:
+          type: string
+          enum: [contract_signed, employee_file, career_decision, departure_record, notice_summary, settlement, certificate, other]
+        status:
+          type: string
+          enum: [received, uploaded, generated, missing]
+          default: received
+        document_date:
+          type: string
+          format: date
+          nullable: true
+        reference:
+          type: string
+          maxLength: 100
+          nullable: true
+        url:
+          type: string
+          maxLength: 2000
+          nullable: true
+        notes:
+          type: string
+          maxLength: 5000
+          nullable: true
+
+    UpdateEmployeeDocumentRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [contract_signed, employee_file, career_decision, departure_record, notice_summary, settlement, certificate, other]
+        status:
+          type: string
+          enum: [received, uploaded, generated, missing]
+        document_date:
+          type: string
+          format: date
+          nullable: true
+        reference:
+          type: string
+          maxLength: 100
+          nullable: true
+        url:
+          type: string
+          maxLength: 2000
+          nullable: true
+        notes:
+          type: string
+          maxLength: 5000
           nullable: true
 
     EmployeeCareerResponse:

@@ -21,6 +21,7 @@ use App\Modules\Billing\Interfaces\Api\V1\WebhookController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\AdvancedReportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\AuditLogController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\ContractController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeDocumentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\HrReportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\OrgChartController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PredictionController;
@@ -39,6 +40,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/me/contracts', [ContractController::class, 'myContracts']);
     Route::get('/me/contract', [ContractController::class, 'myActiveContract']);
     Route::get('/me/career', [SelfServiceController::class, 'myCareer']);
+    Route::get('/me/documents', [EmployeeDocumentController::class, 'myDocuments']);
     Route::get('/me/trainings', [SelfServiceController::class, 'myTrainings']);
     // Alias compatible client mobile employee (TrainingEnrollment shape enrichie).
     Route::get('/me/training-enrollments', [SelfServiceController::class, 'myTrainings']);
@@ -98,6 +100,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/contracts/{contract}/renew', [ContractController::class, 'renew']);
         Route::get('/contracts/{contract}/amendments', [ContractController::class, 'amendments']);
         Route::post('/contracts/{contract}/amendments', [ContractController::class, 'storeAmendment']);
+
+        // ── Employee documents — checklist dossier employé (#5326, G3) ─────
+        Route::get('/employee-documents', [EmployeeDocumentController::class, 'index']);
+        Route::post('/employee-documents', [EmployeeDocumentController::class, 'store']);
+        Route::get('/employee-documents/{employeeDocument}', [EmployeeDocumentController::class, 'show'])->whereNumber('employeeDocument');
+        Route::put('/employee-documents/{employeeDocument}', [EmployeeDocumentController::class, 'update'])->whereNumber('employeeDocument');
+        Route::patch('/employee-documents/{employeeDocument}', [EmployeeDocumentController::class, 'update'])->whereNumber('employeeDocument');
+        Route::delete('/employee-documents/{employeeDocument}', [EmployeeDocumentController::class, 'destroy'])->whereNumber('employeeDocument');
         // ── Recruitment / ATS ────────────────────────────────────────────
         Route::get('/recruitment/jobs', [RecruitmentController::class, 'indexJobs']);
         Route::post('/recruitment/jobs', [RecruitmentController::class, 'storeJob']);

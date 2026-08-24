@@ -58,6 +58,7 @@ This matrix maps the current API route surfaces to the roles allowed by the rout
 | Evaluations `/evaluations*` | RW | RW | R scoped | - | R scoped | self acknowledge/read | `EvaluationSecurityTest` covers cross-tenant and forbidden actions. |
 | Leave policies/balances `/leave-*`, `/me/leave-balances` | RW | RW | R scoped | - | R scoped | self R | `LeavePolicyApiTest` covers role and company scoping. |
 | Contracts `/contracts*`, `/me/contracts` | RW | RW | R scoped | R | R scoped | self R | Contract document/PDF access must be policy-gated. |
+| Employee documents `/employee-documents*`, `/me/documents` | RW | RW | - | - | - | self R | Écriture principal/rh uniquement (FormRequests `Store/UpdateEmployeeDocumentRequest`), lecture manager scopée tenant (filtres `employee_id`/`type`), employé = SON dossier via `GET /me/documents` (lecture seule). Isolation cross-tenant 404 (BelongsToCompany fail-closed #3727). Tests : `EmployeeDocumentTest` (#5326, G3). |
 | Recruitment `/recruitment*` | RW | RW | R scoped | - | R scoped | - | Candidate actions must validate employee/interviewer tenant. |
 | Training `/training*`, `/me/trainings*` | RW | RW | R scoped | - | R scoped | enroll/self R | Self-enroll is limited to authenticated employee tenant. |
 | Loans `/loans*`, `/me/loans*` | RW approve | R workflow | - | RW disburse | - | create/self R | Similar sensitivity to salary advances. |
