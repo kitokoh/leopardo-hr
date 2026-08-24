@@ -2328,10 +2328,6 @@ class LeopardoClient:
         """Mettre à jour un poste (manager)"""
         return self.request("PATCH", "/positions/{position}", **kwargs)
 
-    def patch_positions_by_position_2(self, **kwargs):
-        """Mettre à jour un poste (manager)"""
-        return self.request("PATCH", "/positions/{position}", **kwargs)
-
     def put_positions_by_position(self, **kwargs):
         """Modifier un poste"""
         return self.request("PUT", "/positions/{position}", **kwargs)
@@ -2424,15 +2420,7 @@ class LeopardoClient:
         """Supprimer une candidature (manager)"""
         return self.request("DELETE", "/recruitment/applicants/{applicant}", **kwargs)
 
-    def delete_recruitment_applicants_by_applicant_2(self, **kwargs):
-        """Supprimer une candidature (manager)"""
-        return self.request("DELETE", "/recruitment/applicants/{applicant}", **kwargs)
-
     def get_recruitment_applicants_by_applicant(self, **kwargs):
-        """Détail d'une candidature (manager)"""
-        return self.request("GET", "/recruitment/applicants/{applicant}", **kwargs)
-
-    def get_recruitment_applicants_by_applicant_2(self, **kwargs):
         """Détail d'une candidature (manager)"""
         return self.request("GET", "/recruitment/applicants/{applicant}", **kwargs)
 
@@ -2449,10 +2437,6 @@ class LeopardoClient:
         return self.request("PATCH", "/recruitment/applicants/{applicant}/status", **kwargs)
 
     def delete_recruitment_interviews_by_interview(self, **kwargs):
-        """Supprimer un entretien (manager)"""
-        return self.request("DELETE", "/recruitment/interviews/{interview}", **kwargs)
-
-    def delete_recruitment_interviews_by_interview_2(self, **kwargs):
         """Supprimer un entretien (manager)"""
         return self.request("DELETE", "/recruitment/interviews/{interview}", **kwargs)
 
@@ -2473,10 +2457,6 @@ class LeopardoClient:
         return self.request("POST", "/recruitment/jobs", **kwargs)
 
     def delete_recruitment_jobs_by_jobposting(self, **kwargs):
-        """Supprimer une offre d'emploi (manager)"""
-        return self.request("DELETE", "/recruitment/jobs/{jobPosting}", **kwargs)
-
-    def delete_recruitment_jobs_by_jobposting_2(self, **kwargs):
         """Supprimer une offre d'emploi (manager)"""
         return self.request("DELETE", "/recruitment/jobs/{jobPosting}", **kwargs)
 
@@ -2660,15 +2640,7 @@ class LeopardoClient:
         """Détail d'un planning"""
         return self.request("GET", "/schedules/{schedule}", **kwargs)
 
-    def get_schedules_by_schedule_2(self, **kwargs):
-        """Détail d'un planning"""
-        return self.request("GET", "/schedules/{schedule}", **kwargs)
-
     def patch_schedules_by_schedule(self, **kwargs):
-        """Mettre à jour un planning (manager — sécurité #2217)"""
-        return self.request("PATCH", "/schedules/{schedule}", **kwargs)
-
-    def patch_schedules_by_schedule_2(self, **kwargs):
         """Mettre à jour un planning (manager — sécurité #2217)"""
         return self.request("PATCH", "/schedules/{schedule}", **kwargs)
 
@@ -2697,10 +2669,6 @@ class LeopardoClient:
         return self.request("GET", "/sites/{site}", **kwargs)
 
     def patch_sites_by_site(self, **kwargs):
-        """Mettre à jour un site (manager)"""
-        return self.request("PATCH", "/sites/{site}", **kwargs)
-
-    def patch_sites_by_site_2(self, **kwargs):
         """Mettre à jour un site (manager)"""
         return self.request("PATCH", "/sites/{site}", **kwargs)
 
@@ -2873,10 +2841,6 @@ class LeopardoClient:
         return self.request("PUT", "/tasks/{task}", **kwargs)
 
     def get_tasks_by_task_comments(self, **kwargs):
-        """Commentaires d'une tâche (auteur + employés liés)"""
-        return self.request("GET", "/tasks/{task}/comments", **kwargs)
-
-    def get_tasks_by_task_comments_2(self, **kwargs):
         """Commentaires d'une tâche (auteur + employés liés)"""
         return self.request("GET", "/tasks/{task}/comments", **kwargs)
 
