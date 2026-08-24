@@ -45,6 +45,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'The product opens what is useful today first, then keeps Finance, Security, and Leo on a readable path.';
 
   @override
+  String get welcomeLeaves => 'Leave';
+
+  @override
+  String get welcomeMyTeam => 'My team';
+
+  @override
+  String get welcomePresences => 'Attendance';
+
+  @override
+  String get welcomeTasks => 'Tasks';
+
+  @override
   String get login => 'Sign in';
 
   @override
@@ -1016,6 +1028,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Available in the platform dashboard.';
 
   @override
+  String get dashboardSearchplaceholder => 'Search...';
+
+  @override
+  String dashboardModulesactivesentence(Object active, Object locked) {
+    return '$active modules active, $locked to activate based on your plan.';
+  }
+
+  @override
+  String get dashboardYourcompany => 'Your company';
+
+  @override
   String get marketingOauthNavTitle => 'Marketing OAuth';
 
   @override
@@ -1081,6 +1104,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'https://example.com/oauth/callback';
 
   @override
+  String get marketingSocialexampleplaceholder =>
+      'Ex: Leopardo RH — Social media';
+
+  @override
+  String get marketingPostcontentplaceholder => 'Post content...';
+
+  @override
   String attendanceSendingToServer(Object label) {
     return 'Sending $label to the server...';
   }
@@ -1088,6 +1118,335 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String attendanceRetryAfterFailure(Object label) {
     return '$label. Please try again.';
+  }
+
+  @override
+  String get attendanceAbsent => 'absent';
+
+  @override
+  String attendanceDaySummary(
+      Object date, Object hours, Object range, Object status) {
+    return 'Day of $date, status $status, $range, $hours.';
+  }
+
+  @override
+  String get attendanceDayToday => 'Today';
+
+  @override
+  String get attendanceDayYesterday => 'Yesterday';
+
+  @override
+  String get attendanceHourWorked => 'hour worked';
+
+  @override
+  String get attendanceHoursWorked => 'hours worked';
+
+  @override
+  String get attendanceInProgress => 'in progress';
+
+  @override
+  String get attendanceLate => 'late';
+
+  @override
+  String get attendanceNoClock => 'no clock-in';
+
+  @override
+  String get attendanceOnTime => 'on time';
+
+  @override
+  String get attendanceOvertime => 'Overtime hours';
+
+  @override
+  String attendanceTimeRange(Object from, Object to) {
+    return 'from $from to $to';
+  }
+
+  @override
+  String get attendanceFutureTimeError => 'Cannot enter a future time';
+
+  @override
+  String get attendanceBreakFailure => 'Break not confirmed';
+
+  @override
+  String get attendanceBreakHint => 'Closes the session and starts a break';
+
+  @override
+  String get attendanceBreakLoading => 'Sending break';
+
+  @override
+  String get attendanceBreakSuccess => 'Break confirmed.';
+
+  @override
+  String get attendanceBreakTitle => 'Take a break';
+
+  @override
+  String get attendanceCheckinFailure => 'Check-in not confirmed. Try again.';
+
+  @override
+  String get attendanceCheckinLabel => 'Check-in';
+
+  @override
+  String get attendanceCheckinSending => 'Sending check-in to server...';
+
+  @override
+  String get attendanceCheckinSuccess => 'Check-in confirmed.';
+
+  @override
+  String get attendanceCheckoutFailure => 'Checkout not confirmed. Try again.';
+
+  @override
+  String get attendanceCheckoutLabel => 'Check-out';
+
+  @override
+  String get attendanceCheckoutSending => 'Sending checkout to server...';
+
+  @override
+  String get attendanceCheckoutSuccess => 'Checkout confirmed.';
+
+  @override
+  String get attendanceCorrectionCheckinLabel => 'Actual check-in *';
+
+  @override
+  String get attendanceCorrectionCheckoutLabel => 'Actual check-out';
+
+  @override
+  String get attendanceCorrectionDirectHint =>
+      'The correction will be applied to the attendance record.';
+
+  @override
+  String get attendanceCorrectionNoLogWarning =>
+      'No existing attendance entry to edit for this day.';
+
+  @override
+  String get attendanceCorrectionReasonHint =>
+      'Reason (e.g. forgot to clock in at 8h)';
+
+  @override
+  String get attendanceCorrectionReasonRequired => 'Reason is required';
+
+  @override
+  String get attendanceCorrectionRequestHint =>
+      'The request will be sent to HR for validation.';
+
+  @override
+  String get attendanceCorrectionSubmitDirect => 'Edit';
+
+  @override
+  String get attendanceCorrectionSubmitRequest => 'Request a correction';
+
+  @override
+  String get attendanceCorrectionTitle => 'Edit attendance';
+
+  @override
+  String get attendanceCorrectionCheckinTime => 'Actual clock-in time';
+
+  @override
+  String get attendanceCorrectionCheckoutTime => 'Actual clock-out time';
+
+  @override
+  String get attendanceCorrectionCheckinRequired =>
+      'Enter the actual clock-in time';
+
+  @override
+  String get attendanceCorrectionSubmitError =>
+      'Unable to send the correction at the moment.';
+
+  @override
+  String get attendanceDailyEstimate => 'Estimated daily earnings';
+
+  @override
+  String get attendanceFingerprintEnable => 'Enable fingerprint (optional)';
+
+  @override
+  String get attendanceFingerprintEnabled => 'Fingerprint enabled (optional)';
+
+  @override
+  String get attendanceHistoryTitle => 'History';
+
+  @override
+  String get attendanceMenuEdit => 'Edit';
+
+  @override
+  String get attendanceMenuMonthly => 'My full month';
+
+  @override
+  String get attendanceMenuProfile => 'My profile';
+
+  @override
+  String get attendanceMissionFailure => 'Mission not confirmed';
+
+  @override
+  String get attendanceMissionHint => 'Work time outside the usual site';
+
+  @override
+  String get attendanceMissionLoading => 'Sending mission';
+
+  @override
+  String get attendanceMissionSuccess => 'Mission started.';
+
+  @override
+  String get attendanceMissionTitle => 'Mission';
+
+  @override
+  String get attendanceNone => 'None';
+
+  @override
+  String get attendanceOtherLabel => 'Other';
+
+  @override
+  String get attendanceOvertimeFailure => 'Overtime not confirmed';
+
+  @override
+  String get attendanceOvertimeHint => 'Start an overtime session';
+
+  @override
+  String get attendanceOvertimeLoading => 'Sending overtime';
+
+  @override
+  String get attendanceOvertimeShort => 'OT';
+
+  @override
+  String get attendanceOvertimeSuccess => 'Overtime started.';
+
+  @override
+  String get attendanceOvertimeTitle => 'Overtime';
+
+  @override
+  String get attendancePauseLabel => 'Break';
+
+  @override
+  String get attendancePreferencesTitle => 'Preferences';
+
+  @override
+  String get attendancePressToCheckin => 'Tap to record your check-in';
+
+  @override
+  String get attendancePressToCheckout => 'Tap to record your checkout';
+
+  @override
+  String get attendanceResumeFailure => 'Resume not confirmed';
+
+  @override
+  String get attendanceResumeHint => 'Resume after a break or leave';
+
+  @override
+  String get attendanceResumeLoading => 'Sending resume';
+
+  @override
+  String get attendanceResumeSuccess => 'Resume confirmed.';
+
+  @override
+  String get attendanceResumeTitle => 'Resume';
+
+  @override
+  String get attendanceRoleEmployee => 'Employee';
+
+  @override
+  String get attendanceRoleEmployee2 => 'Employee';
+
+  @override
+  String get attendanceRoleFinance => 'Finance';
+
+  @override
+  String get attendanceRoleHr => 'HR Manager';
+
+  @override
+  String get attendanceRoleManager => 'Manager';
+
+  @override
+  String get attendanceRolePrincipal => 'Principal Manager';
+
+  @override
+  String get attendanceSaving => 'Saving...';
+
+  @override
+  String get attendanceSettingsTitle => 'Settings';
+
+  @override
+  String get attendanceStatusComplete => 'Complete';
+
+  @override
+  String get attendanceStatusInProgress => 'In progress';
+
+  @override
+  String get attendanceStatusLate => 'Late';
+
+  @override
+  String get attendanceStatusPointer => 'To clock in';
+
+  @override
+  String get attendanceSyncTitle => 'Synchronization';
+
+  @override
+  String get attendanceTasksTitle => 'Today\'s tasks';
+
+  @override
+  String get attendanceTasksLoading => 'Loading today\'s tasks...';
+
+  @override
+  String get attendanceTasksUnavailable => 'Tasks unavailable';
+
+  @override
+  String get attendanceTasksUnavailableHint =>
+      'Clocking in remains functional. Retry after sync.';
+
+  @override
+  String get attendanceTasksEmpty => 'No tasks today';
+
+  @override
+  String get attendanceTasksEmptyHint =>
+      'You can still punch normally. Assigned tasks will appear here.';
+
+  @override
+  String get attendanceTasksCloseHint =>
+      'Close completed tasks before clocking out.';
+
+  @override
+  String get attendanceThisWeek => 'THIS WEEK';
+
+  @override
+  String get attendanceToday => 'TODAY';
+
+  @override
+  String get attendanceTrainingLabel => 'Training';
+
+  @override
+  String get attendanceTravelFailure => 'Travel not confirmed';
+
+  @override
+  String get attendanceTravelHint => 'Professional travel time';
+
+  @override
+  String get attendanceTravelLoading => 'Sending travel';
+
+  @override
+  String get attendanceTravelSuccess => 'Travel started.';
+
+  @override
+  String get attendanceTravelTitle => 'Travel';
+
+  @override
+  String get attendanceWeekEarnings => 'Estimated earnings';
+
+  @override
+  String get attendanceWeekHours => 'Week hours';
+
+  @override
+  String get attendanceWeekLate => 'Cumulated delay';
+
+  @override
+  String get attendanceWeekUnavailable =>
+      'Week temporarily unavailable. Clock-in remains usable.';
+
+  @override
+  String get attendanceWorkTypeTitle => 'Clock type';
+
+  @override
+  String get attendanceSessions => 'Sessions';
+
+  @override
+  String attendanceBreakMinutes(Object minutes) {
+    return '$minutes min';
   }
 
   @override
@@ -1587,9 +1946,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taxSlabsSimGross => 'Gross salary';
 
   @override
-  String get taxSlabsSimCompare => 'Salary to compare';
-
-  @override
   String get taxSlabsSimRun => 'Simulate';
 
   @override
@@ -1805,445 +2161,629 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  @override
   String get pricingPageHeroBadge => 'Transparent pricing';
+
   @override
   String get pricingPageHeroHeadline => 'Pricing built for field HR teams';
+
   @override
   String get pricingPageHeroSubheadline =>
       'Start for free — no credit card — and upgrade when you are ready.';
+
   @override
   String get pricingPageHeroPrimary => 'Start for free';
+
   @override
   String get pricingPageHeroSecondary => 'Talk to an expert';
+
   @override
   String get pricingPagePlansBadge => 'Our plans';
+
   @override
   String get pricingPagePlansTitle => 'A plan for every stage of your growth';
+
   @override
   String get pricingPagePlansSubtitle =>
       'Start small, scale up without switching platforms.';
+
   @override
   String get pricingPagePlansMonthly => 'Monthly';
+
   @override
   String get pricingPagePlansAnnual => 'Annual';
+
   @override
   String get pricingPagePlansCustomprice => 'Custom';
+
   @override
   String get pricingPagePlansPeriodmonthly => '/month';
+
   @override
   String get pricingPagePlansPeriodannual => '/month billed annually';
+
   @override
   String get pricingPagePlansTrialnote =>
       'Free trial · No credit card required';
+
   @override
   String get pricingPageCurrencyLabel => 'Show prices in';
+
   @override
   String get pricingPageCurrencyApprox =>
       'Approximate conversion from the EUR reference price; the contractual price stays denominated in EUR.';
+
   @override
   String get pricingPageTrustItems0 => 'Free trial — no credit card';
+
   @override
   String get pricingPageTrustItems1 => 'Support included from day one';
+
   @override
   String get pricingPageTrustItems2 => 'Data hosted in Europe';
+
   @override
   String get pricingPageTrustItems3 => 'Cancel anytime';
+
   @override
   String get pricingPageComparisonBadge => 'Full comparison';
+
   @override
   String get pricingPageComparisonTitle => 'Everything that\'s included';
+
   @override
   String get pricingPageComparisonSubtitle => 'per plan';
+
   @override
   String get pricingPageComparisonFeaturecolumn => 'Feature';
+
   @override
   String get pricingPageComparisonCategories0Name => 'HR management';
+
   @override
   String get pricingPageComparisonCategories0Features0Name =>
       'Web & mobile attendance';
+
   @override
   String get pricingPageComparisonCategories0Features0Free => 'Web only';
+
   @override
   String get pricingPageComparisonCategories0Features1Name =>
       'Absences & leave';
+
   @override
   String get pricingPageComparisonCategories0Features2Name => 'Shared calendar';
+
   @override
   String get pricingPageComparisonCategories0Features3Name =>
       'Guided onboarding';
+
   @override
   String get pricingPageComparisonCategories0Features4Name =>
       'Reviews & performance';
+
   @override
   String get pricingPageComparisonCategories0Features5Name =>
       'Dynamic org chart';
+
   @override
   String get pricingPageComparisonCategories1Name => 'Payroll & finance';
+
   @override
   String get pricingPageComparisonCategories1Features0Name =>
       'Automated payroll';
+
   @override
   String get pricingPageComparisonCategories1Features1Name => 'PDF pay slips';
+
   @override
   String get pricingPageComparisonCategories1Features2Name =>
       'Accounting exports';
+
   @override
   String get pricingPageComparisonCategories1Features3Name => 'Salary advances';
+
   @override
   String get pricingPageComparisonCategories1Features4Name =>
       'Multi-country & currency';
+
   @override
   String get pricingPageComparisonCategories1Features5Name =>
       'Advanced legal compliance';
+
   @override
   String get pricingPageComparisonCategories2Name => 'Field & mobile';
+
   @override
   String get pricingPageComparisonCategories2Features0Name =>
       'Employee mobile app';
+
   @override
   String get pricingPageComparisonCategories2Features1Name =>
       'Manager mobile app';
+
   @override
   String get pricingPageComparisonCategories2Features2Name => 'Offline mode';
+
   @override
   String get pricingPageComparisonCategories2Features3Name =>
       'ZKTeco biometrics';
+
   @override
   String get pricingPageComparisonCategories2Features4Name =>
       'Dedicated HR kiosk';
+
   @override
   String get pricingPageComparisonCategories2Features5Name =>
       'GPS & geofencing';
+
   @override
   String get pricingPageComparisonCategories3Name => 'Security & integrations';
+
   @override
   String get pricingPageComparisonCategories3Features0Name => 'Document vault';
+
   @override
   String get pricingPageComparisonCategories3Features1Name =>
       'REST API & Webhooks';
+
   @override
   String get pricingPageComparisonCategories3Features2Name => 'SSO SAML / OIDC';
+
   @override
   String get pricingPageComparisonCategories3Features3Name =>
       'Immutable audit trail';
+
   @override
   String get pricingPageComparisonCategories3Features4Name =>
       'Isolated PostgreSQL schema';
+
   @override
   String get pricingPageComparisonCategories3Features5Name =>
       'Dedicated SLA & support';
+
   @override
   String get pricingPageFaqBadge => 'Pricing FAQ';
+
   @override
   String get pricingPageFaqTitle => 'Frequently asked questions';
+
   @override
   String get pricingPageFaqSubtitle => 'What to check before you start';
+
   @override
   String get pricingPageFaqAll => 'All';
+
   @override
   String get pricingPageFaqCategories0 => 'Billing';
+
   @override
   String get pricingPageFaqCategories1 => 'Trial';
+
   @override
   String get pricingPageFaqCategories2 => 'Support';
+
   @override
   String get pricingPageFaqCategories3 => 'Security';
+
   @override
   String get pricingPageFaqCategories4 => 'Technical';
+
   @override
   String get pricingPageFaqItems0Question =>
       'What does the Pilot plan include?';
+
   @override
   String get pricingPageFaqItems0Answer =>
       'The Pilot plan at €29/month includes up to 30 employees, web and mobile time tracking, absences and leave, employee records and PDF payslips. Free 14-day trial, no credit card required.';
+
   @override
   String get pricingPageFaqItems0Category => 'Trial';
+
   @override
   String get pricingPageFaqItems1Question => 'Can I change plan later?';
+
   @override
   String get pricingPageFaqItems1Answer =>
       'Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.';
+
   @override
   String get pricingPageFaqItems1Category => 'Billing';
+
   @override
   String get pricingPageFaqItems2Question => 'How does billing work?';
+
   @override
   String get pricingPageFaqItems2Answer =>
       'Each plan includes a fixed monthly price with an included employee cap (30 for Pilot, 200 for Operations, unlimited for Enterprise). No per-active-employee surcharge.';
+
   @override
   String get pricingPageFaqItems2Category => 'Billing';
+
   @override
   String get pricingPageFaqItems3Question => 'Is the trial really free?';
+
   @override
   String get pricingPageFaqItems3Answer =>
       'Yes. Full free trial — 30 days on the Free plan, 14 days on paid plans. No credit card needed to sign up.';
+
   @override
   String get pricingPageFaqItems3Category => 'Trial';
+
   @override
   String get pricingPageFaqItems4Question =>
       'What happens when the trial ends?';
+
   @override
   String get pricingPageFaqItems4Answer =>
       'You choose a plan or your data stays archived for 14 more days. No automatic billing without your consent.';
+
   @override
   String get pricingPageFaqItems4Category => 'Trial';
+
   @override
   String get pricingPageFaqItems5Question => 'What support is available?';
+
   @override
   String get pricingPageFaqItems5Answer =>
       'Pilot: email support within 48h. Operations: priority support within 24h. Enterprise: dedicated account manager + contractual SLA.';
+
   @override
   String get pricingPageFaqItems5Category => 'Support';
+
   @override
   String get pricingPageFaqItems6Question => 'Where is my data hosted?';
+
   @override
   String get pricingPageFaqItems6Answer =>
       'In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.';
+
   @override
   String get pricingPageFaqItems6Category => 'Security';
+
   @override
   String get pricingPageFaqItems7Question => 'Are you GDPR compliant?';
+
   @override
   String get pricingPageFaqItems7Answer =>
       'Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.';
+
   @override
   String get pricingPageFaqItems7Category => 'Security';
+
   @override
   String get pricingPageFaqItems8Question => 'Is the API available?';
+
   @override
   String get pricingPageFaqItems8Answer =>
       'REST API and webhooks are available from the Operations plan. On Pilot you can export your data as CSV/Excel.';
+
   @override
   String get pricingPageFaqItems8Category => 'Technical';
+
+  @override
+  String get pricingPageFaqMoretitle => 'Another question?';
+
+  @override
+  String get pricingPageFaqContactsupport => 'Contact support';
+
   @override
   String get pricingPageCtaBadge => 'Ready to start';
+
   @override
   String get pricingPageCtaHeadline => 'Launch your field HR today';
+
   @override
   String get pricingPageCtaSubheadline =>
       'Join teams that reduced payroll time from 2 hours to 8 minutes.';
+
   @override
   String get pricingPageCtaPrimary => 'Start for free';
+
   @override
   String get pricingPageCtaSecondary => 'Contact sales';
+
   @override
   String get pricingPageBadgesPopular => 'Most popular';
+
   @override
   String get pricingPageBadgesFree => '100% Free';
+
   @override
   String get pricingPageBadgesFreeprice => 'Free';
+
   @override
   String get pricingPageBadgesFreenote => 'No credit card · Forever';
+
   @override
   String get pricingPageBadgesFreetag => 'free';
+
   @override
   String get pricingPlansCustomprice => 'Custom';
+
   @override
   String get pricingPlansFreeDescription =>
       'Start without commitment — ideal for teams of up to 5 people';
+
   @override
   String get pricingPlansFreePricenote =>
       '14-day free trial. Up to 5 employees.';
+
   @override
   String get pricingPlansFreeEmployeelimit => 'Up to 5 employees';
+
   @override
   String get pricingPlansFreeCta => 'Start for free';
+
   @override
   String get pricingPlansFreeFeatures0 => 'Basic web and mobile attendance';
+
   @override
   String get pricingPlansFreeFeatures1 => 'Leave and absence consultation';
+
   @override
   String get pricingPlansFreeFeatures2 => 'Essential employee records';
+
   @override
   String get pricingPlansFreeFeatures3 => 'PDF pay slips';
+
   @override
   String get pricingPlansFreeFeatures4 => 'Employee app included';
+
   @override
   String get pricingPlansFreeFeatures5 => 'Community support';
+
   @override
   String get pricingPlansFreePeriod => '/month';
+
   @override
   String get pricingPlansFreeAnnualperiod => '/month';
+
   @override
   String get pricingPlansPilotDescription =>
       'For testing Leopardo on one site, team or branch';
+
   @override
   String get pricingPlansPilotPricenote => '14 days free. Up to 30 employees.';
+
   @override
   String get pricingPlansPilotEmployeelimit => 'Up to 30 employees';
+
   @override
   String get pricingPlansPilotCta => 'Start free trial';
+
   @override
   String get pricingPlansPilotFeatures0 => 'Web and mobile attendance';
+
   @override
   String get pricingPlansPilotFeatures1 => 'Leave, absences and balances';
+
   @override
   String get pricingPlansPilotFeatures2 => 'Employee records and HR documents';
+
   @override
   String get pricingPlansPilotFeatures3 => 'PDF pay slips and basic exports';
+
   @override
   String get pricingPlansPilotFeatures4 => 'Client portal and manager space';
+
   @override
   String get pricingPlansPilotFeatures5 => 'Employee and Manager apps included';
+
   @override
   String get pricingPlansPilotFeatures6 => 'Email support within 48h';
+
   @override
   String get pricingPlansPilotPeriod => '/month';
+
   @override
   String get pricingPlansPilotAnnualperiod => '/month · billed 290 €/year';
+
   @override
   String get pricingPlansOperationsDescription =>
       'For SMBs managing field teams, HR workflows and payroll';
+
   @override
   String get pricingPlansOperationsPricenote =>
       '14 days free. Up to 200 employees.';
+
   @override
   String get pricingPlansOperationsEmployeelimit => 'Up to 200 employees';
+
   @override
   String get pricingPlansOperationsCta => 'Try Operations';
+
   @override
   String get pricingPlansOperationsFeatures0 => 'Everything in Pilot, plus:';
+
   @override
   String get pricingPlansOperationsFeatures1 =>
       'Multi-country payroll and HR validations';
+
   @override
   String get pricingPlansOperationsFeatures2 =>
       'Managers, teams and approval workflows';
+
   @override
   String get pricingPlansOperationsFeatures3 =>
       'ZKTeco, kiosk and mobile attendance';
+
   @override
   String get pricingPlansOperationsFeatures4 =>
       'HR analytics, readiness and advanced exports';
+
   @override
   String get pricingPlansOperationsFeatures5 =>
       'API, webhooks and integrations';
+
   @override
   String get pricingPlansOperationsFeatures6 => 'Priority support within 24h';
+
   @override
   String get pricingPlansOperationsPeriod => '/month';
+
   @override
   String get pricingPlansOperationsAnnualperiod => '/month · billed 790 €/year';
+
   @override
   String get pricingPlansEnterpriseDescription =>
       'For multi-country groups, franchises, site networks and strict governance';
+
   @override
   String get pricingPlansEnterprisePricenote =>
       '14 days free. Unlimited employees.';
+
   @override
   String get pricingPlansEnterpriseEmployeelimit => 'Unlimited employees';
+
   @override
   String get pricingPlansEnterpriseCta => 'Contact sales';
+
   @override
   String get pricingPlansEnterpriseFeatures0 =>
       'Everything in Operations, plus:';
+
   @override
   String get pricingPlansEnterpriseFeatures1 =>
       'SAML/OIDC SSO and advanced policies';
+
   @override
   String get pricingPlansEnterpriseFeatures2 =>
       'SLA, migration guidance and training';
+
   @override
   String get pricingPlansEnterpriseFeatures3 =>
       'Dedicated environments or selected cloud region';
+
   @override
   String get pricingPlansEnterpriseFeatures4 =>
       'Audit trail, compliance exports and priority support';
+
   @override
   String get pricingPlansEnterpriseFeatures5 =>
       'AI, connectors and governance options';
+
   @override
   String get pricingFaqItems0Question => 'What does the Pilot plan include?';
+
   @override
   String get pricingFaqItems0Answer =>
       'The Pilot plan at €29/month includes up to 30 employees, web and mobile time tracking, absences and leave, employee records and PDF payslips. Free 14-day trial, no credit card required.';
+
   @override
   String get pricingFaqItems0Category => 'Trial';
+
   @override
   String get pricingFaqItems1Question => 'Can I change plan later?';
+
   @override
   String get pricingFaqItems1Answer =>
       'Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.';
+
   @override
   String get pricingFaqItems1Category => 'Billing';
+
   @override
   String get pricingFaqItems2Question => 'How does billing work?';
+
   @override
   String get pricingFaqItems2Answer =>
       'Each plan includes a fixed monthly price with an included employee cap (5 for Free, 30 for Pilot, 200 for Operations, unlimited for Enterprise). No per-active-employee surcharge.';
+
   @override
   String get pricingFaqItems2Category => 'Billing';
+
   @override
   String get pricingFaqItems3Question => 'Is the trial really free?';
+
   @override
   String get pricingFaqItems3Answer =>
       'Yes. 14 full days with all paid features included. No credit card needed to sign up.';
+
   @override
   String get pricingFaqItems3Category => 'Trial';
+
   @override
   String get pricingFaqItems4Question => 'Is the Free plan really free?';
+
   @override
   String get pricingFaqItems4Answer =>
       'Yes. The Free plan (€0/month) includes up to 5 employees: web attendance, leave and absences, employee records and the Employee mobile app. No credit card.';
+
   @override
   String get pricingFaqItems4Category => 'Trial';
+
   @override
   String get pricingFaqItems5Question => 'What happens when the trial ends?';
+
   @override
   String get pricingFaqItems5Answer =>
       'You choose a plan or your data stays archived for 14 more days. No automatic billing without your consent.';
+
   @override
   String get pricingFaqItems5Category => 'Trial';
+
   @override
   String get pricingFaqItems6Question => 'What support is available?';
+
   @override
   String get pricingFaqItems6Answer =>
       'Pilot: email support within 48h. Operations: priority support within 24h. Enterprise: dedicated account manager + contractual SLA.';
+
   @override
   String get pricingFaqItems6Category => 'Support';
+
   @override
   String get pricingFaqItems7Question => 'Where is my data hosted?';
+
   @override
   String get pricingFaqItems7Answer =>
       'In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.';
+
   @override
   String get pricingFaqItems7Category => 'Security';
+
   @override
   String get pricingFaqItems8Question => 'Are you GDPR compliant?';
+
   @override
   String get pricingFaqItems8Answer =>
       'Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.';
+
   @override
   String get pricingFaqItems8Category => 'Security';
+
   @override
   String get pricingFaqItems9Question => 'Is the API available?';
+
   @override
   String get pricingFaqItems9Answer =>
       'REST API and webhooks are available from the Operations plan. On Pilot you can export your data as CSV/Excel.';
+
   @override
   String get pricingFaqItems9Category => 'Technical';
+
   @override
   String get pricingSectionFreelabel => 'Free';
+
   @override
   String get pricingSectionTogglemonthly => 'Monthly';
+
   @override
   String get pricingSectionToggleannual => 'Annual';
+
   @override
   String get pricingSectionTogglearia => 'Toggle billing period';
+
   @override
   String get pricingSectionFullcomparison => 'View full comparison';
+
   @override
   String get pricingCardPerioddefault => '/month';
+
   @override
   String get pricingCardCustompricedefault => 'Custom';
 
   @override
-  String get pricingPageFaqMoretitle => 'Another question?';
-  @override
-  String get pricingPageFaqContactsupport => 'Contact support';
-
-
   String get signupBadge => 'Free 14-day trial';
 
   @override
@@ -2797,6 +3337,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enterprise feature — reserved for client workspaces';
 
   @override
+  String get shellSettings => 'Settings';
+
+  @override
+  String get shellTeam => 'Team';
+
+  @override
   String get exportsReportemployees => 'Employees';
 
   @override
@@ -3071,6 +3617,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Web and mobile notification center.';
 
   @override
+  String get notificationsMarkAllReadError =>
+      'Unable to mark notifications as read.';
+
+  @override
+  String get notificationsMarkReadError =>
+      'Unable to mark notification as read.';
+
+  @override
+  String get notificationsDeleteError => 'Unable to delete the notification.';
+
+  @override
+  String get notificationsDeleted => 'Notification deleted.';
+
+  @override
   String get employeesLoadError => 'Unable to load employees.';
 
   @override
@@ -3329,6 +3889,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Connection error. Check your internet connection.';
 
   @override
+  String get apiLoginInvalidJson => 'Invalid request body.';
+
+  @override
+  String get apiLoginTimeout =>
+      'The server is taking too long to respond. Please try again shortly.';
+
+  @override
+  String get apiLoginNetworkError => 'Unable to reach the server.';
+
+  @override
+  String get apiLoginBackendError => 'Unexpected server response.';
+
+  @override
   String get settingspageCancel => 'Cancel';
 
   @override
@@ -3542,47 +4115,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get systempageTitle => 'System Administration';
 
   @override
-  String get retry => 'Retry';
+  String get billingCancelSubscriptionConfirm =>
+      'Cancel your subscription? You will lose access to premium modules at the end of the current period.';
 
   @override
-  String get settingsJourneyLoadError => 'Unable to load your journey.';
+  String get billingNoActivePeriod => 'No active period';
 
   @override
-  String get settingsStatsLoadError => 'Unable to load statistics.';
+  String get billingNoActiveSubscription => 'No active subscription';
 
   @override
-  String get featureComingSoon => 'Feature coming soon';
+  String get billingPeriodLabel => 'Period';
 
   @override
-  String get backToHome => 'Back to home';
+  String get billingCheckoutSandboxMessage =>
+      'Simulated payment (sandbox mode). No card is charged.';
 
   @override
-  String get pageNotFound =>
-      'The requested page was not found or the navigation failed.';
+  String get billingCheckoutUnavailable =>
+      'Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.';
 
   @override
-  String get registerCreateAccount => 'Create your account';
+  String get billingCheckoutFailed => 'Unable to create the payment session.';
 
   @override
-  String get registerFirstName => 'First name';
+  String get contractsListSubtitle =>
+      'Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.';
 
   @override
-  String get registerRequired => 'Required';
+  String get contractsSearchplaceholder =>
+      'Search for an employee or contract type...';
 
   @override
-  String get registerPassword => 'Password';
+  String get contractsAllstatuses => 'All statuses';
 
   @override
-  String get registerMinChars => '8 characters minimum';
+  String get trainingTitleplaceholder => 'Title *';
 
   @override
-  String get registerCreating => 'Creating your account...';
+  String get trainingDurationplaceholder => 'Duration (h)';
 
   @override
-  String get registerSubmit => 'Create my account';
+  String get trainingMaxparticipantsplaceholder => 'Max participants';
 
   @override
-  String get accessDeniedTitle => 'Access denied';
+  String get trainingOnline => 'Online';
 
   @override
   String get accessDeniedBody =>
@@ -3592,165 +4169,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accessDeniedLogout => 'Log out';
 
   @override
+  String get accessDeniedTitle => 'Access denied';
+
+  @override
   String get accessDeniedBodyHr =>
       'Your account does not have the required HR role for this application. Use the application matching your role (Employee, Manager…) or contact your administrator.';
-
-  @override
-  String get evaluationsTitle => 'My Evaluations';
-
-  @override
-  String get evaluationsEmpty => 'No evaluations';
-
-  @override
-  String get evaluationsEmptyHint =>
-      'You don\'t have any recorded evaluation yet.';
-
-  @override
-  String evaluationPeriod(String period) {
-    return 'Period: $period';
-  }
-
-  @override
-  String get attendanceOnTime => 'on time';
-
-  @override
-  String get attendanceLate => 'late';
-
-  @override
-  String get attendanceAbsent => 'absent';
-
-  @override
-  String get attendanceInProgress => 'in progress';
-
-  @override
-  String get attendanceNoClock => 'no clock-in';
-
-  @override
-  String attendanceTimeRange(String from, String to) {
-    return 'from $from to $to';
-  }
-
-  @override
-  String get attendanceHourWorked => 'hour worked';
-
-  @override
-  String get attendanceHoursWorked => 'hours worked';
-
-  @override
-  String attendanceDaySummary(
-      String date, String status, String range, String hours) {
-    return 'Day of $date, status $status, $range, $hours.';
-  }
-
-  @override
-  String get sessionApproved => 'Session approved ✓';
-
-  @override
-  String get sessionRejected => 'Session rejected';
-
-  @override
-  String get pendingSessionsToValidate => 'To validate';
-
-  @override
-  String get pendingSessionsUpToDate => 'All up to date';
-
-  @override
-  String get pendingSessionsEmpty => 'No GPS session waiting for validation.';
-
-  @override
-  String employeeNumber(String id) {
-    return 'Employee #$id';
-  }
-
-  @override
-  String sessionEntryAt(String time) {
-    return 'Entry: $time';
-  }
-
-  @override
-  String get sessionsToValidate => 'Sessions to validate';
-
-  @override
-  String errorPrefix(String message) {
-    return 'Error: $message';
-  }
-
-  @override
-  String get saDashboardTitle => 'GPS attendance — team dashboard';
-
-  @override
-  String get saDetected => 'Detected';
-
-  @override
-  String get saApproved => 'Approved';
-
-  @override
-  String get saRejected => 'Rejected';
-
-  @override
-  String get saRecentSessions => 'Recent sessions';
-
-  @override
-  String get saForced => 'Enforced';
-
-  @override
-  String saPresenceInProgress(String time) {
-    return 'Presence in progress since $time';
-  }
-
-  @override
-  String get saGpsZoneNotConfigured =>
-      'Your company\'s GPS zone is not configured yet.';
-
-  @override
-  String get saDisableAutoGps => 'Disable automatic GPS';
-
-  @override
-  String get saStatusApproved => 'Approved';
-
-  @override
-  String get saStatusDetected => 'Detected';
-
-  @override
-  String get saStatusRejected => 'Rejected';
-
-  @override
-  String get saStatusCancelled => 'Cancelled';
-
-  @override
-  String get saStatusPending => 'Pending validation';
-
-  @override
-  String get saEnableAutoGps => 'Enable automatic GPS';
-
-  @override
-  String get attendanceOvertime => 'Overtime hours';
-
-  @override
-  String get approvalsUpToDate => 'All up to date';
-
-  @override
-  String get approvalsEmpty => 'No pending approvals.';
-
-  @override
-  String saConfigLoadError(String error) {
-    return 'Unable to load the configuration.\n$error';
-  }
 
   @override
   String get ampAutoDetectDesc =>
       'Your presence is detected automatically as soon as you enter the company zone. No action required from you.';
 
   @override
-  String get ampRecommended => 'Recommended';
+  String get ampManualDesc =>
+      'Clock in manually using the Arrival and Departure buttons in the attendance screen.';
+
+  @override
+  String get ampModeTitle => 'Attendance mode';
 
   @override
   String get ampQrScanDesc =>
       'Scan the QR Code displayed at the company entrance to clock in and out.';
 
   @override
-  String get ampManualDesc =>
-      'Clock in manually using the Arrival and Departure buttons in the attendance screen.';
+  String get ampRecommended => 'Recommended';
 
   @override
   String get ampSaveError =>
@@ -3761,58 +4202,163 @@ class AppLocalizationsEn extends AppLocalizations {
       'Choose how you want to clock your presence every day.';
 
   @override
-  String get ampModeTitle => 'Attendance mode';
+  String get approvalApproved => 'Request approved';
+
+  @override
+  String get approvalRejected => 'Request rejected';
+
+  @override
+  String get approvalsEmpty => 'No pending approvals.';
+
+  @override
+  String get approvalsUpToDate => 'All up to date';
+
+  @override
+  String get approvalsLoading => 'Loading approvals...';
+
+  @override
+  String get approvalsRejectReasonHint => 'Explain the reason...';
+
+  @override
+  String get approvalsRejectReasonLabel => 'Rejection reason';
+
+  @override
+  String get approvalsTitle => 'Approvals';
 
   @override
   String get back => 'Back';
 
-  String get cabinetScreenAddDocument => 'Add a document';
-  String get cabinetScreenAddDocumentSubtitle => 'From your files or camera';
-  String get cabinetScreenCancel => 'Cancel';
-  String get cabinetScreenCreate => 'Create';
-  String get cabinetScreenCreateShareLink => 'Create a share link';
-  String get cabinetScreenDelete => 'Delete';
-  String cabinetScreenDeleteBody(Object name) => 'The document "${name}" will be permanently deleted.';
-  String get cabinetScreenDeleteTitle => 'Delete this document?';
-
-  String cabinetScreenDocumentsCount(num count) {
-    if (count == 1) return '1 doc';
-    return '${count} docs';
-  }  String get cabinetScreenDocumentAdded => 'Document added successfully';
-  String get cabinetScreenDocuments => 'Documents';
-  String get cabinetScreenEmailHint => 'Recipient email';
-  String get cabinetScreenEmptyDescription => 'Add folders and documents to organize your space.';
-  String get cabinetScreenEmptyTitle => 'Empty cabinet';
-  String get cabinetScreenFolderNameHint => 'Folder name';
-  String get cabinetScreenFolders => 'Folders';
-  String cabinetScreenLinkCopied(Object url) => 'Link copied: ${url}';
-  String get cabinetScreenNewFolder => 'New folder';
-  String get cabinetScreenSend => 'Send';
-  String get cabinetScreenShareByEmail => 'Share by email';
-  String cabinetScreenShareSent(Object email) => 'Share sent to ${email}';
-  String cabinetScreenShareTitle(Object name) => 'Share "${name}"';
-  String get cabinetScreenTitleRoot => 'My cabinet';
-  String get cabinetScreenUploadFailed => 'Failed to upload the document. Try again.';
-  String get cabinetScreenUploading => 'Uploading...';
-
+  @override
+  String employeeNumber(Object id) {
+    return 'Employee #$id';
+  }
 
   @override
-  String get notificationsMarkAllReadError => 'Unable to mark notifications as read.';
+  String errorPrefix(Object message) {
+    return 'Error: $message';
+  }
 
   @override
-  String get notificationsMarkReadError => 'Unable to mark notification as read.';
+  String get errorUnexpected => 'An error occurred';
 
   @override
-  String get notificationsDeleteError => 'Unable to delete the notification.';
+  String evaluationPeriod(Object period) {
+    return 'Period: $period';
+  }
 
   @override
-  String get notificationsDeleted => 'Notification deleted.';
+  String get evaluationsEmpty => 'No evaluations';
 
   @override
-  String get attendanceFutureTimeError => 'Cannot enter a future time';
+  String get evaluationsTitle => 'My Evaluations';
+
+  @override
+  String get evaluationsEmptyHint =>
+      'You don\'t have any recorded evaluation yet.';
+
+  @override
+  String get featureComingSoon => 'Feature coming soon';
+
+  @override
+  String get homeCompleteOnboarding => 'Complete my onboarding';
+
+  @override
+  String get homeOnboardingHint => 'Set up your workspace in a few steps.';
+
+  @override
+  String get monthlySummaryLoading => 'Loading monthly summary...';
+
+  @override
+  String get orgChartCollapse => 'Collapse';
+
+  @override
+  String get orgChartEmpty =>
+      'The org chart will be available once employees are configured.';
+
+  @override
+  String get orgChartExpand => 'Expand';
+
+  @override
+  String get pageNotFound =>
+      'The requested page was not found or the navigation failed.';
+
+  @override
+  String get pendingSessionsEmpty => 'No GPS session waiting for validation.';
+
+  @override
+  String get pendingSessionsToValidate => 'To validate';
+
+  @override
+  String get pendingSessionsUpToDate => 'All up to date';
 
   @override
   String get refresh => 'Refresh';
+
+  @override
+  String get registerCreateAccount => 'Create your account';
+
+  @override
+  String get registerCreating => 'Creating your account...';
+
+  @override
+  String get registerFirstName => 'First name';
+
+  @override
+  String get registerMinChars => '8 characters minimum';
+
+  @override
+  String get registerPassword => 'Password';
+
+  @override
+  String get registerRequired => 'Required';
+
+  @override
+  String get registerSubmit => 'Create my account';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get saApproved => 'Approved';
+
+  @override
+  String saConfigLoadError(Object error) {
+    return 'Unable to load the configuration.\n$error';
+  }
+
+  @override
+  String get saDashboardTitle => 'GPS attendance — team dashboard';
+
+  @override
+  String get saDetected => 'Detected';
+
+  @override
+  String get saDisableAutoGps => 'Disable automatic GPS';
+
+  @override
+  String get saEnableAutoGps => 'Enable automatic GPS';
+
+  @override
+  String get saForced => 'Enforced';
+
+  @override
+  String get saGpsZoneNotConfigured =>
+      'Your company\'s GPS zone is not configured yet.';
+
+  @override
+  String get saPermissionDenied =>
+      'Location permission denied. Enable GPS in settings to start monitoring.';
+
+  @override
+  String saPresenceInProgress(Object time) {
+    return 'Presence in progress since $time';
+  }
+
+  @override
+  String get saRecentSessions => 'Recent sessions';
+
+  @override
+  String get saRejected => 'Rejected';
 
   @override
   String get saSessionsLoadError =>
@@ -3823,238 +4369,585 @@ class AppLocalizationsEn extends AppLocalizations {
       'Unable to start GPS monitoring. Check location permissions and try again.';
 
   @override
-  String get shellTeam => 'Team';
+  String get saStatusApproved => 'Approved';
 
   @override
-  String get shellSettings => 'Settings';
+  String get saStatusCancelled => 'Cancelled';
 
   @override
-  String get homeCompleteOnboarding => 'Complete my onboarding';
+  String get saStatusDetected => 'Detected';
 
   @override
-  String get homeOnboardingHint => 'Set up your workspace in a few steps.';
+  String get saStatusPending => 'Pending validation';
 
   @override
-  String get welcomeMyTeam => 'My team';
+  String get saStatusRejected => 'Rejected';
 
   @override
-  String get welcomePresences => 'Attendance';
+  String get sessionApproved => 'Session approved ✓';
 
   @override
-  String get welcomeTasks => 'Tasks';
+  String sessionEntryAt(Object time) {
+    return 'Entry: $time';
+  }
 
   @override
-  String get welcomeLeaves => 'Leave';
+  String get sessionRejected => 'Session rejected';
 
   @override
-  String get monthlySummaryLoading => 'Loading monthly summary...';
+  String get sessionsToValidate => 'Sessions to validate';
 
   @override
-  String get orgChartEmpty =>
-      'The org chart will be available once employees are configured.';
+  String get backToHome => 'Back to home';
 
   @override
-  String get orgChartCollapse => 'Collapse';
+  String get absencesTitle => 'My absences';
 
   @override
-  String get orgChartExpand => 'Expand';
+  String get absencesSubtitle => 'Requests, balances and HR decisions';
 
   @override
-  String get errorUnexpected => 'An error occurred';
+  String get absencesRequest => 'Request';
 
   @override
-  String get approvalApproved => 'Request approved';
+  String get absencesEmptyTitle => 'No absences';
 
   @override
-  String get approvalRejected => 'Request rejected';
+  String get absencesEmptyHint =>
+      'Request an absence from the main button, then follow the HR decision here.';
 
   @override
-  String get saPermissionDenied =>
-      'Location permission denied. Enable GPS in settings to start monitoring.';
+  String get absencesEmployeeLabel => 'Employee';
+
+  @override
+  String get absencesTypeFallback => 'Absence';
+
+  @override
+  String get absencesLoading => 'Loading absences';
 
   @override
   String get absencesApprove => 'Approve';
-  @override
-  String get absencesApproveBody => 'The request will move to approved status and the employee will be notified.';
-  @override
-  String get absencesApproveTitle => 'Approve this absence?';
-  @override
-  String get absencesApprovedSnack => 'Absence approved.';
-  @override
-  String get absencesAttachProof => 'Attach a supporting document (optional)';
-  @override
-  String get absencesBalancesLoading => 'Loading balances';
-  @override
-  String get absencesCancel => 'Cancel';
-  @override
-  String get absencesCancelBody => 'The pending request will be removed and HR will see the cancelled status.';
-  @override
-  String get absencesCancelRequest => 'Cancel request';
-  @override
-  String get absencesCancelTitle => 'Cancel this request?';
-  @override
-  String get absencesCancelledSnack => 'Absence request cancelled.';
-  @override
-  String get absencesCompanyLabel => 'Company: ';
-  @override
-  String get absencesCurrentCompany => 'Current company';
-  @override
-  String get absencesDateMissing => 'No request date';
-  @override
-  String get absencesDaysAvailable => ' day(s) available';
-  String get absencesDaysShort => ' d';
-  @override
-  String get absencesEmployeeLabel => 'Employee';
-  @override
-  String get absencesEmptyHint => 'Request an absence from the main button, then follow the HR decision here.';
-  @override
-  String get absencesEmptyTitle => 'No absences';
-  @override
-  String get absencesEnd => 'End';
-  @override
-  String get absencesFailure => 'Error: ';
-  @override
-  String get absencesKeep => 'Keep';
-  @override
-  String get absencesLoading => 'Loading absences';
-  @override
-  String get absencesNewAbsence => 'New absence';
-  @override
-  String get absencesNewAbsenceHint => 'Choose the balance type and the period to send to HR.';
-  @override
-  String get absencesNoTypeAvailable => 'No absence type available for this account. Contact HR to configure balances.';
-  @override
-  String get absencesProofAttached => 'Supporting document attached';
-  @override
-  String get absencesProofDownloaded => 'Supporting document downloaded: ';
-  @override
-  String get absencesReason => 'Reason';
-  @override
-  String get absencesReasonLabel => 'Reason: ';
-  @override
-  String get absencesReasonMissing => 'No reason provided';
-  @override
-  String get absencesReasonNotProvided => 'not provided';
-  @override
-  String get absencesReasonhint => 'e.g. medical appointment, family leave...';
-  @override
-  String get absencesReasonrequired => 'Reason is required';
+
   @override
   String get absencesReject => 'Reject';
+
   @override
-  String get absencesRejectHelper => 'The reason will be visible to the employee.';
-  @override
-  String get absencesRejectTitle => 'Reject absence';
-  @override
-  String get absencesRejectedSnack => 'Absence rejected.';
-  @override
-  String get absencesRequest => 'Request';
-  @override
-  String get absencesRequestLabel => 'Request: ';
-  @override
-  String get absencesRequesterLabel => 'Requester: ';
-  @override
-  String get absencesStart => 'Start';
-  @override
-  String get absencesStatusApproved => 'approved';
-  @override
-  String get absencesStatusCancelled => 'cancelled';
-  @override
-  String get absencesStatusPending => 'pending';
-  @override
-  String get absencesStatusRejected => 'rejected';
-  @override
-  String get absencesSubmitToHr => 'Submit to HR';
-  @override
-  String get absencesSubmittedSnack => 'Absence request sent to HR.';
-  @override
-  String get absencesSubtitle => 'Requests, balances and HR decisions';
-  @override
-  String get absencesTitle => 'My absences';
-  @override
-  String get absencesType => 'Type';
-  @override
-  String get absencesTypeFallback => 'Absence';
-  @override
-  String get absencesTypeRequired => 'Absence type is required';
+  String get absencesCancelRequest => 'Cancel request';
+
   @override
   String get absencesViewProof => 'View supporting document';
-  @override
-  String get apiLoginBackendError => 'Unexpected server response.';
-  @override
-  String get apiLoginInvalidJson => 'Invalid request body.';
-  @override
-  String get apiLoginNetworkError => 'Unable to reach the server.';
-  @override
-  String get apiLoginTimeout => 'The server is taking too long to respond. Please try again shortly.';
-  @override
-  String get billingCancelSubscriptionConfirm => 'Cancel your subscription? You will lose access to premium modules at the end of the current period.';
-  @override
-  String get billingCheckoutFailed => 'Unable to create the payment session.';
-  @override
-  String get billingCheckoutSandboxMessage => 'Simulated payment (sandbox mode). No card is charged.';
-  @override
-  String get billingCheckoutUnavailable => 'Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.';
-  @override
-  String get billingNoActivePeriod => 'No active period';
-  @override
-  String get billingNoActiveSubscription => 'No active subscription';
-  @override
-  String get billingPeriodLabel => 'Period';
-  @override
-  String get contractsAllstatuses => 'All statuses';
-  @override
-  String get contractsListSubtitle => 'Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.';
-  @override
-  String get contractsSearchplaceholder => 'Search for an employee or contract type...';
-  @override
-  String get dashboardModulesactivesentence => '{active} modules active, {locked} to activate based on your plan.';
-  @override
-  String get dashboardSearchplaceholder => 'Search...';
-  @override
-  String get dashboardYourcompany => 'Your company';
-  @override
-  String get marketingPostcontentplaceholder => 'Post content...';
-  @override
-  String get marketingSocialexampleplaceholder => 'Ex: Leopardo RH — Social media';
-  @override
-  String get trainingDurationplaceholder => 'Duration (h)';
-  @override
-  String get trainingMaxparticipantsplaceholder => 'Max participants';
-  @override
-  String get trainingOnline => 'Online';
-  @override
-  String get trainingTitleplaceholder => 'Title *';
 
   @override
-  String get attendanceFutureTimeError => 'Cannot enter a future time';
+  String get absencesProofDownloaded => 'Supporting document downloaded: ';
 
   @override
-  String get notificationsMarkAllReadError => 'Unable to mark notifications as read.';
+  String get absencesFailure => 'Error: ';
 
   @override
-  String get notificationsMarkReadError => 'Unable to mark notification as read.';
+  String get absencesReasonMissing => 'No reason provided';
 
   @override
-  String get notificationsDeleteError => 'Unable to delete the notification.';
+  String get absencesDateMissing => 'No request date';
 
   @override
-  String get notificationsDeleted => 'Notification deleted.';
+  String get absencesCurrentCompany => 'Current company';
+
+  @override
+  String get absencesRequesterLabel => 'Requester: ';
+
+  @override
+  String get absencesCompanyLabel => 'Company: ';
+
+  @override
+  String get absencesRequestLabel => 'Request: ';
+
+  @override
+  String get absencesReasonLabel => 'Reason: ';
+
+  @override
+  String get absencesApproveTitle => 'Approve this absence?';
+
+  @override
+  String get absencesReasonNotProvided => 'not provided';
+
+  @override
+  String get absencesApproveBody =>
+      'The request will move to approved status and the employee will be notified.';
+
+  @override
+  String get absencesApprovedSnack => 'Absence approved.';
+
+  @override
+  String get absencesRejectTitle => 'Reject absence';
+
+  @override
+  String get absencesRejectHelper =>
+      'The reason will be visible to the employee.';
+
+  @override
+  String get absencesRejectedSnack => 'Absence rejected.';
+
+  @override
+  String get absencesCancelTitle => 'Cancel this request?';
+
+  @override
+  String get absencesCancelBody =>
+      'The pending request will be removed and HR will see the cancelled status.';
+
+  @override
+  String get absencesKeep => 'Keep';
+
+  @override
+  String get absencesCancel => 'Cancel';
+
+  @override
+  String get absencesCancelledSnack => 'Absence request cancelled.';
+
+  @override
+  String get absencesStatusApproved => 'approved';
+
+  @override
+  String get absencesStatusPending => 'pending';
+
+  @override
+  String get absencesStatusRejected => 'rejected';
+
+  @override
+  String get absencesStatusCancelled => 'cancelled';
+
+  @override
+  String get absencesNewAbsence => 'New absence';
+
+  @override
+  String get absencesNewAbsenceHint =>
+      'Choose the balance type and the period to send to HR.';
+
+  @override
+  String get absencesNoTypeAvailable =>
+      'No absence type available for this account. Contact HR to configure balances.';
+
+  @override
+  String get absencesType => 'Type';
+
+  @override
+  String get absencesTypeRequired => 'Absence type is required';
+
+  @override
+  String get absencesBalancesLoading => 'Loading balances';
+
+  @override
+  String get absencesStart => 'Start';
+
+  @override
+  String get absencesEnd => 'End';
+
+  @override
+  String get absencesReason => 'Reason';
+
+  @override
+  String get absencesReasonhint => 'e.g. medical appointment, family leave...';
+
+  @override
+  String get absencesReasonrequired => 'Reason is required';
+
+  @override
+  String get absencesAttachProof => 'Attach a supporting document (optional)';
+
+  @override
+  String get absencesProofAttached => 'Supporting document attached';
+
+  @override
+  String get absencesSubmitToHr => 'Submit to HR';
+
+  @override
+  String get absencesSubmittedSnack => 'Absence request sent to HR.';
+
+  @override
+  String get absencesDaysAvailable => ' day(s) available';
+
+  @override
+  String get absencesDaysShort => ' d';
+
+  @override
+  String get absencesEmpty => 'No absences';
+
+  @override
+  String get absencesListSubtitle => 'Requests, balances and HR decisions';
+
+  @override
+  String get absencesListTitle => 'My absences';
 
   @override
   String get settingsJourneyLoadError => 'Unable to load your journey.';
 
   @override
+  String get settingsJourneyInProgress => 'In progress';
+
+  @override
+  String get settingsJourneyTitle => 'Professional journey';
+
+  @override
+  String get settingsJourneyUnknownCompany => 'Company';
+
+  @override
+  String get settingsJourneyUnknownDate => 'Unknown date';
+
+  @override
+  String get settingsJourneyUnknownPosition => 'Position not specified';
+
+  @override
   String get settingsStatsLoadError => 'Unable to load statistics.';
 
   @override
-  String get emptyAbsences => 'No absences';
+  String get settingsAccountPortableHint =>
+      'Your account stays useful even when you change company.';
+
+  @override
+  String get settingsAccountSubtitle => 'Profile, language and security';
+
+  @override
+  String get settingsAccountTitle => 'Account';
+
+  @override
+  String get settingsBiometricApproved => 'Approved';
+
+  @override
+  String get settingsBiometricConsent =>
+      'I consent to the processing of my biometric data.';
+
+  @override
+  String get settingsBiometricDevice => 'Reference device (optional)';
+
+  @override
+  String get settingsBiometricFace => 'Face';
+
+  @override
+  String get settingsBiometricFingerprint => 'Fingerprint';
+
+  @override
+  String get settingsBiometricManagerHint =>
+      'Reserved for employee profiles in this manager app.';
+
+  @override
+  String get settingsBiometricNone => 'No enrollment';
+
+  @override
+  String get settingsBiometricNote => 'Note (optional)';
+
+  @override
+  String get settingsBiometricPending => 'Pending';
+
+  @override
+  String get settingsBiometricRejected => 'Rejected';
+
+  @override
+  String get settingsBiometricSaved => 'Biometric enrollment saved.';
+
+  @override
+  String get settingsBiometricTerminalHint =>
+      'Finger and face preparation for field terminals.';
+
+  @override
+  String get settingsConfirmPassword => 'Confirm password';
+
+  @override
+  String get settingsCurrentPassword => 'Current password';
+
+  @override
+  String get settingsEdgeSaved => 'Edge settings saved.';
+
+  @override
+  String get settingsEmailInvalid => 'Invalid email';
+
+  @override
+  String get settingsEmailLabel => 'Email';
+
+  @override
+  String get settingsEmailRequired => 'Email is required';
+
+  @override
+  String get settingsEmployeeProfileHint =>
+      'Employee profile: access to clock-in, personal history and biometric setup settings.';
+
+  @override
+  String get settingsFirstName => 'First name';
+
+  @override
+  String get settingsFirstNameRequired => 'First name is required';
+
+  @override
+  String get settingsKioskBiometricTitle => 'Kiosk biometrics';
+
+  @override
+  String get settingsLanguageSaved => 'Language saved.';
+
+  @override
+  String get settingsLanguageSubtitle =>
+      'The chosen language also drives future notifications and texts.';
+
+  @override
+  String get settingsLanguageTitle => 'Language';
+
+  @override
+  String get settingsLastNameLabel => 'Last name';
+
+  @override
+  String get settingsLastNameRequired => 'Last name is required';
+
+  @override
+  String get settingsLogout => 'Log out';
+
+  @override
+  String get settingsManagerAccountHint =>
+      'A manager account must remain clear, secure and ready for field decisions.';
+
+  @override
+  String get settingsMobileAccess => 'Mobile access';
+
+  @override
+  String get settingsMyProfile => 'My profile';
+
+  @override
+  String get settingsMyQrEmployee => 'My QR code';
+
+  @override
+  String get settingsMyQrManager => 'My manager QR';
+
+  @override
+  String get settingsNewPassword => 'New password';
+
+  @override
+  String get settingsNoCompanyQr => 'No company QR in the clipboard.';
+
+  @override
+  String get settingsNoJourney => 'No journey recorded yet.';
+
+  @override
+  String get settingsNotificationsSubtitle =>
+      'Channels, quiet hours and manager operational alerts.';
+
+  @override
+  String get settingsNotificationsTitle => 'Notifications';
+
+  @override
+  String get settingsPasswordChanged => 'Password changed.';
+
+  @override
+  String get settingsPasswordMinLength => 'Minimum 8 characters';
+
+  @override
+  String get settingsPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get settingsPasteQr => 'Paste the QR provided by the manager or HR';
+
+  @override
+  String get settingsPersonalContacts => 'Personal contacts';
+
+  @override
+  String get settingsPersonalEmail => 'Personal email (optional)';
+
+  @override
+  String get settingsPersonalPhone => 'Personal phone (optional)';
+
+  @override
+  String get settingsPortableAccountHint =>
+      'Your personal information remains linked to your account.';
+
+  @override
+  String get settingsPreferredLanguage => 'Preferred language';
+
+  @override
+  String get settingsPreferredLanguageLabel => 'Preferred language';
+
+  @override
+  String get settingsProfileSaved => 'Profile saved.';
+
+  @override
+  String get settingsQrCopyToken => 'Also copy the token';
+
+  @override
+  String get settingsQrManagerHint =>
+      'A colleague or HR can scan it to pre-fill an invitation.';
+
+  @override
+  String get settingsRecoveryEmail => 'Recovery email (optional)';
+
+  @override
+  String get settingsSave => 'Save';
+
+  @override
+  String get settingsSaveEnrollment => 'Save enrollment';
+
+  @override
+  String get settingsSaveProfile => 'Save profile';
+
+  @override
+  String get settingsSaving => 'Saving...';
+
+  @override
+  String get settingsSecurityTitle => 'Security';
+
+  @override
+  String get settingsSessionSubtitle =>
+      'Logout is intentionally at the bottom of the page.';
+
+  @override
+  String get settingsSessionTitle => 'Session';
+
+  @override
+  String get settingsTeamDrive => 'Team drive';
+
+  @override
+  String get settingsTeamDriveHint =>
+      'Profile, role and permissions remain readable for HR actions.';
+
+  @override
+  String get cabinetScreenTitleRoot => 'My cabinet';
+
+  @override
+  String get cabinetScreenEmptyTitle => 'Empty cabinet';
+
+  @override
+  String get cabinetScreenEmptyDescription =>
+      'Add folders and documents to organize your space.';
+
+  @override
+  String get cabinetScreenFolders => 'Folders';
+
+  @override
+  String get cabinetScreenDocuments => 'Documents';
+
+  @override
+  String get cabinetScreenNewFolder => 'New folder';
+
+  @override
+  String get cabinetScreenAddDocument => 'Add a document';
+
+  @override
+  String get cabinetScreenAddDocumentSubtitle => 'From your files or camera';
+
+  @override
+  String get cabinetScreenFolderNameHint => 'Folder name';
+
+  @override
+  String get cabinetScreenCancel => 'Cancel';
+
+  @override
+  String get cabinetScreenCreate => 'Create';
+
+  @override
+  String get cabinetScreenUploading => 'Uploading...';
+
+  @override
+  String get cabinetScreenDocumentAdded => 'Document added successfully';
+
+  @override
+  String get cabinetScreenUploadFailed =>
+      'Failed to upload the document. Try again.';
+
+  @override
+  String cabinetScreenShareTitle(Object name) {
+    return 'Share \"$name\"';
+  }
+
+  @override
+  String get cabinetScreenCreateShareLink => 'Create a share link';
+
+  @override
+  String cabinetScreenLinkCopied(Object url) {
+    return 'Link copied: $url';
+  }
+
+  @override
+  String get cabinetScreenShareByEmail => 'Share by email';
+
+  @override
+  String get cabinetScreenEmailHint => 'Recipient email';
+
+  @override
+  String get cabinetScreenSend => 'Send';
+
+  @override
+  String cabinetScreenShareSent(Object email) {
+    return 'Share sent to $email';
+  }
+
+  @override
+  String get cabinetScreenDeleteTitle => 'Delete this document?';
+
+  @override
+  String cabinetScreenDeleteBody(Object name) {
+    return 'The document \"$name\" will be permanently deleted.';
+  }
+
+  @override
+  String get cabinetScreenDelete => 'Delete';
+
+  @override
+  String cabinetScreenDocumentsCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count docs',
+      one: '1 doc',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get absenceCancelBody =>
+      'The pending request will be removed and HR will see the cancelled status.';
+
+  @override
+  String get absenceCancelRequest => 'Cancel request';
+
+  @override
+  String get absenceCancelTitle => 'Cancel this request?';
+
+  @override
+  String get absenceCancelled => 'Absence request cancelled.';
+
+  @override
+  String get absenceLabel => 'Absence';
+
+  @override
+  String get absenceNewHint =>
+      'Choose the balance type and the period to send to HR.';
+
+  @override
+  String get absenceNewTitle => 'New absence';
+
+  @override
+  String get absenceNoType =>
+      'No absence type available for this account. Contact HR to configure balances.';
+
+  @override
+  String get absenceRequest => 'Request';
+
+  @override
+  String get absenceViewProof => 'View proof';
+
+  @override
+  String get actionApprove => 'Approve';
+
+  @override
+  String get actionCancel => 'Cancel';
+
+  @override
+  String get actionReject => 'Reject';
 
   @override
   String get cancelRequest => 'Cancel request';
 
   @override
-  String get emptySessions => 'No sessions';
+  String get confirmReceipt => 'Confirm receipt';
+
+  @override
+  String get emptyAbsences => 'No absences';
+
+  @override
+  String get emptyAdvances => 'No advances';
 
   @override
   String get emptyHistory => 'No history';
@@ -4063,19 +4956,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emptyPayslips => 'No payslips';
 
   @override
-  String get emptyAdvances => 'No advances';
-
-  @override
-  String get noReason => 'No reason';
-
-  @override
-  String get confirmReceipt => 'Confirm receipt';
-
-  @override
-  String get saveProfile => 'Save profile';
-
-  @override
-  String get savingProfile => 'Saving…';
+  String get emptySessions => 'No sessions';
 
   @override
   String get loadError => 'Loading error';
@@ -4084,76 +4965,83 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noData => 'No data';
 
   @override
+  String get noReason => 'No reason';
+
+  @override
   String get noTasksToday => 'No tasks today';
 
   @override
-  String get salaryAdvanceListTitle => 'Advances';
+  String get salaryAdvanceAttachHint => 'Attach a file (optional)';
 
   @override
-  String get salaryAdvanceListSubtitle => 'Requests, statuses and repayment';
-
-  @override
-  String get salaryAdvanceRequest => 'Request';
-
-  @override
-  String get salaryAdvancesEmpty => 'No advances';
-
-  @override
-  String get salaryAdvancesEmptyHint => 'Request an advance in seconds, then track the HR decision here.';
-
-  @override
-  String get salaryAdvanceNoReason => 'No reason';
-
-  @override
-  String get salaryAdvancesLoading => 'Loading advances';
-
-  @override
-  String get salaryAdvancePaymentDeclared => 'The manager declared the payment. Confirm only after you actually received it.';
-
-  @override
-  String get salaryAdvanceConfirmReceived => 'Confirm receipt';
-
-  @override
-  String get salaryAdvanceCancelRequest => 'Cancel request';
-
-  @override
-  String get salaryAdvanceViewProof => 'View attachment';
-
-  @override
-  String salaryAdvanceProofDownloaded(Object path) => 'Attachment downloaded: $path';
-
-  @override
-  String salaryAdvanceError(Object error) => 'Failed: $error';
-
-  @override
-  String get salaryAdvanceCancelTitle => 'Cancel this advance?';
-
-  @override
-  String get salaryAdvanceCancelBody => 'The pending request will be removed before the HR decision.';
-
-  @override
-  String get salaryAdvanceKeep => 'Keep';
+  String get salaryAdvanceAttachmentLabel => 'Attachment';
 
   @override
   String get salaryAdvanceCancelAction => 'Cancel';
 
   @override
+  String get salaryAdvanceCancelBody =>
+      'The pending request will be removed before the HR decision.';
+
+  @override
+  String get salaryAdvanceCancelRequest => 'Cancel request';
+
+  @override
+  String get salaryAdvanceCancelTitle => 'Cancel this advance?';
+
+  @override
   String get salaryAdvanceCancelled => 'Advance request cancelled.';
 
   @override
-  String salaryAdvanceMonths(Object reason, Object months) => '$reason - $months months';
+  String get salaryAdvanceConfirmAction => 'Confirm';
 
   @override
-  String salaryAdvanceSemantics(Object amount, Object reason, Object status) => 'Advance of $amount, reason: $reason, status $status.';
+  String get salaryAdvanceConfirmReceived => 'Confirm receipt';
 
   @override
-  String get salaryStatusValidated => 'validated';
+  String get salaryAdvanceConfirmReceivedBody =>
+      'Confirm only if the amount actually arrived. This action will be recorded.';
 
   @override
-  String get salaryStatusToConfirm => 'to confirm';
+  String get salaryAdvanceConfirmReceivedTitle => 'Confirm receipt?';
 
   @override
-  String get salaryStatusReceived => 'received';
+  String get salaryAdvanceKeep => 'Keep';
+
+  @override
+  String get salaryAdvanceListSubtitle => 'Requests, statuses and repayment';
+
+  @override
+  String get salaryAdvanceListTitle => 'Advances';
+
+  @override
+  String get salaryAdvanceNoReason => 'No reason';
+
+  @override
+  String get salaryAdvancePaymentDeclared =>
+      'The manager declared the payment. Confirm only after you actually received it.';
+
+  @override
+  String get salaryAdvanceRequest => 'Request';
+
+  @override
+  String get salaryAdvanceRequestTitle => 'Advance request';
+
+  @override
+  String get salaryAdvanceSubmitted => 'Advance request sent to HR.';
+
+  @override
+  String get salaryAdvanceViewProof => 'View attachment';
+
+  @override
+  String get salaryAdvancesEmpty => 'No advances';
+
+  @override
+  String get salaryAdvancesEmptyHint =>
+      'Request an advance in seconds, then track the HR decision here.';
+
+  @override
+  String get salaryAdvancesLoading => 'Loading advances';
 
   @override
   String get salaryStatusActive => 'active';
@@ -4162,579 +5050,190 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salaryStatusApproved => 'approved';
 
   @override
+  String get salaryStatusCancelled => 'cancelled';
+
+  @override
   String get salaryStatusPending => 'pending';
+
+  @override
+  String get salaryStatusReceived => 'received';
 
   @override
   String get salaryStatusRejected => 'rejected';
 
   @override
-  String get salaryStatusCancelled => 'cancelled';
+  String get salaryStatusToConfirm => 'to confirm';
 
   @override
-  String get salaryAdvanceConfirmReceivedTitle => 'Confirm receipt?';
+  String get salaryStatusValidated => 'validated';
 
   @override
-  String get salaryAdvanceConfirmReceivedBody => 'Confirm only if the amount actually arrived. This action will be recorded.';
+  String get saveProfile => 'Save profile';
 
   @override
-  String get salaryAdvanceConfirmAction => 'Confirm';
+  String get savingProfile => 'Saving…';
 
   @override
-  String get salaryAdvanceRequestTitle => 'Advance request';
+  String get taxSlabsSimCompare => 'Salary to compare';
 
   @override
-  String get salaryAdvanceAttachmentLabel => 'Attachment';
+  String get teamAdd => 'Add';
 
   @override
-  String get salaryAdvanceAttachHint => 'Attach a file (optional)';
+  String get teamAddCollaborator => 'Add a collaborator';
 
   @override
-  String get salaryAdvanceSubmitted => 'Advance request sent to HR.';
+  String get teamAddFromQr => 'From employee QR';
 
   @override
-  String get absencesListTitle => 'My absences';
+  String get teamAddFromQrHint => 'Paste the provided code';
 
   @override
-  String get absencesListSubtitle => 'Requests, balances and HR decisions';
+  String get teamAddManualForm => 'Classic form';
 
   @override
-  String get absenceRequest => 'Request';
+  String get teamAddManualHint => 'Complete manual entry';
 
   @override
-  String get absencesEmpty => 'No absences';
+  String get teamArchive => 'Archive';
 
   @override
-  String get absenceLabel => 'Absence';
+  String get teamArchiveConfirmAction => 'Archive';
 
   @override
-  String absencesDaysCount(Object date, Object days) => '$date - $days d';
+  String get teamArchiveConfirmTitle => 'Archive this employee?';
 
   @override
-  String get absenceViewProof => 'View proof';
+  String get teamArchiveSuccess => 'Employee archived.';
 
   @override
-  String get absenceCancelRequest => 'Cancel request';
+  String get teamConfirmCancel => 'Cancel';
 
   @override
-  String absenceProofDownloaded(Object path) => 'Proof downloaded: $path';
+  String get teamEditProfile => 'Edit profile';
 
   @override
-  String get absenceCancelTitle => 'Cancel this request?';
+  String get teamEditProfileHint => 'Update essential HR fields';
 
   @override
-  String get absenceCancelBody => 'The pending request will be removed and HR will see the cancelled status.';
+  String get teamEmployeeLabel => 'Employee';
 
   @override
-  String get absenceCancelled => 'Absence request cancelled.';
+  String get teamEmployeesTab => 'Employees';
 
   @override
-  String get absenceNewTitle => 'New absence';
+  String get teamEmpty => 'No collaborator';
 
   @override
-  String get absenceNewHint => 'Choose the balance type and the period to send to HR.';
+  String get teamEmptyHint =>
+      'Start by adding your team with the button below.';
 
   @override
-  String get absenceNoType => 'No absence type available for this account. Contact HR to configure balances.';
+  String get teamInvitationsTab => 'Invitations';
 
   @override
-  String get attendanceRoleEmployee => 'Employee';
+  String get teamMakeHr => 'Appoint HR';
 
   @override
-  String get attendanceWeekUnavailable => 'Week temporarily unavailable. Clock-in remains usable.';
+  String get teamMakeHrConfirmAction => 'Appoint HR';
 
   @override
-  String get attendanceWorkTypeTitle => 'Clock type';
+  String get teamMakeHrConfirmTitle => 'Appoint HR?';
 
   @override
-  String get attendanceBreakTitle => 'Take a break';
+  String get teamMakeHrHint => 'Grant HR permissions to this collaborator';
 
   @override
-  String get attendanceBreakHint => 'Closes the session and starts a break';
+  String get teamMakeHrSuccess => 'HR appointed.';
 
   @override
-  String get attendanceBreakLoading => 'Sending break';
+  String get teamManagerLabel => 'Manager';
 
   @override
-  String get attendanceBreakSuccess => 'Break confirmed.';
+  String get teamManagerRequired => 'Manager/HR access required';
 
   @override
-  String get attendanceBreakFailure => 'Break not confirmed';
+  String get teamRevokeHr => 'Revoke HR';
 
   @override
-  String get attendanceResumeTitle => 'Resume';
+  String get teamRevokeHrConfirmAction => 'Revoke';
 
   @override
-  String get attendanceResumeHint => 'Resume after a break or leave';
+  String get teamRevokeHrConfirmTitle => 'Revoke HR?';
 
   @override
-  String get attendanceResumeLoading => 'Sending resume';
+  String get teamRevokeHrHint => 'Remove HR permissions from this account';
 
   @override
-  String get attendanceResumeSuccess => 'Resume confirmed.';
+  String get teamRevokeHrSuccess => 'HR permissions removed.';
 
   @override
-  String get attendanceResumeFailure => 'Resume not confirmed';
-
-  @override
-  String get attendanceOvertimeTitle => 'Overtime';
-
-  @override
-  String get attendanceOvertimeHint => 'Start an overtime session';
-
-  @override
-  String get attendanceOvertimeLoading => 'Sending overtime';
-
-  @override
-  String get attendanceOvertimeSuccess => 'Overtime started.';
-
-  @override
-  String get attendanceOvertimeFailure => 'Overtime not confirmed';
-
-  @override
-  String get attendanceMissionTitle => 'Mission';
-
-  @override
-  String get attendanceMissionHint => 'Work time outside the usual site';
-
-  @override
-  String get attendanceMissionLoading => 'Sending mission';
-
-  @override
-  String get attendanceMissionSuccess => 'Mission started.';
-
-  @override
-  String get attendanceMissionFailure => 'Mission not confirmed';
-
-  @override
-  String get attendanceTravelTitle => 'Travel';
-
-  @override
-  String get attendanceTravelHint => 'Professional travel time';
-
-  @override
-  String get attendanceTravelLoading => 'Sending travel';
-
-  @override
-  String get attendanceTravelSuccess => 'Travel started.';
-
-  @override
-  String get attendanceTravelFailure => 'Travel not confirmed';
-
-  @override
-  String get attendanceTasksTitle => 'Today\'s tasks';
-  String get attendanceTasksLoading => 'Loading today\'s tasks...';
-  String get attendanceTasksUnavailable => 'Tasks unavailable';
-  String get attendanceTasksUnavailableHint => 'Clocking in remains functional. Retry after sync.';
-  String get attendanceTasksEmpty => 'No tasks today';
-  String get attendanceTasksEmptyHint => 'You can still punch normally. Assigned tasks will appear here.';
-  String get attendanceTasksCloseHint => 'Close completed tasks before clocking out.';
-  String get attendanceSessions => 'Sessions';
-  String attendanceBreakMinutes(Object minutes) => '$minutes min';
-
-  @override
-  String get attendanceHistoryTitle => 'History';
-
-  @override
-  String get attendancePreferencesTitle => 'Preferences';
-
-  @override
-  String get attendanceSettingsTitle => 'Settings';
-
-  @override
-  String get attendanceSyncTitle => 'Synchronization';
-
-  @override
-  String get attendanceSaving => 'Saving...';
-
-  @override
-  String get attendancePressToCheckout => 'Tap to record your checkout';
-
-  @override
-  String get attendancePressToCheckin => 'Tap to record your check-in';
-
-  @override
-  String get attendanceOvertimeShort => 'OT';
-
-  @override
-  String get attendancePauseLabel => 'Break';
-
-  @override
-  String get attendanceTrainingLabel => 'Training';
-
-  @override
-  String get attendanceOtherLabel => 'Other';
-
-  @override
-  String get settingsEdgeSaved => 'Edge settings saved.';
-
-  @override
-  String get settingsAccountTitle => 'Account';
-
-  @override
-  String get settingsAccountSubtitle => 'Profile, language and security';
-
-  @override
-  String get settingsEmployeeProfileHint => 'Employee profile: access to clock-in, personal history and biometric setup settings.';
-
-  @override
-  String get settingsSaving => 'Saving...';
-
-  @override
-  String get settingsSaveProfile => 'Save profile';
-
-  @override
-  String get settingsKioskBiometricTitle => 'Kiosk biometrics';
-
-  @override
-  String get settingsNotificationsTitle => 'Notifications';
-
-  @override
-  String get settingsAccountPortableHint => 'Your account stays useful even when you change company.';
-
-  @override
-  String get settingsNoJourney => 'No journey recorded yet.';
-
-  @override
-  String get settingsNoCompanyQr => 'No company QR in the clipboard.';
-
-  @override
-  String get settingsLanguageTitle => 'Language';
-
-  @override
-  String get settingsPreferredLanguage => 'Preferred language';
-
-  @override
-  String get settingsSecurityTitle => 'Security';
-
-  @override
-  String get settingsCurrentPassword => 'Current password';
-
-  @override
-  String get settingsSaveEnrollment => 'Save enrollment';
-
-  @override
-  String get settingsSave => 'Save';
-
-  @override
-  String get settingsLogout => 'Log out';
-
-  @override
-  String get approvalsTitle => 'Approvals';
-
-  @override
-  String get approvalsRejectReasonLabel => 'Rejection reason';
-
-  @override
-  String get approvalsRejectReasonHint => 'Explain the reason...';
-
-  @override
-  String get approvalsLoading => 'Loading approvals...';
-
-  @override
-  String get actionApprove => 'Approve';
-
-  @override
-  String get actionReject => 'Reject';
-
-  @override
-  String get actionCancel => 'Cancel';
-
-
-
-  @override
-  String get attendanceThisWeek => 'THIS WEEK';
-  @override
-  String get attendanceToday => 'TODAY';
-  @override
-  String get attendanceCheckinLabel => 'Check-in';
-  @override
-  String get attendanceCheckoutLabel => 'Check-out';
-  @override
-  String get attendanceDailyEstimate => 'Estimated daily earnings';
-  @override
-  String get attendanceWeekHours => 'Week hours';
-  @override
-  String get attendanceWeekEarnings => 'Estimated earnings';
-  @override
-  String get attendanceWeekLate => 'Cumulated delay';
-  @override
-  String get attendanceMenuEdit => 'Edit';
-  @override
-  String get attendanceMenuMonthly => 'My full month';
-  @override
-  String get attendanceMenuProfile => 'My profile';
-  @override
-  String get attendanceCheckoutSending => 'Sending checkout to server...';
-  @override
-  String get attendanceCheckinSending => 'Sending check-in to server...';
-  @override
-  String get attendanceCheckoutSuccess => 'Checkout confirmed.';
-  @override
-  String get attendanceCheckoutFailure => 'Checkout not confirmed. Try again.';
-  @override
-  String get attendanceCheckinSuccess => 'Check-in confirmed.';
-  @override
-  String get attendanceCheckinFailure => 'Check-in not confirmed. Try again.';
-  @override
-  String get attendanceFingerprintEnabled => 'Fingerprint enabled (optional)';
-  @override
-  String get attendanceFingerprintEnable => 'Enable fingerprint (optional)';
-  @override
-  String get attendanceAbsent => 'Absent';
-  @override
-  String get attendanceStatusPointer => 'To clock in';
-  @override
-  String get attendanceStatusInProgress => 'In progress';
-  @override
-  String get attendanceStatusLate => 'Late';
-  @override
-  String get attendanceStatusComplete => 'Complete';
-  @override
-  String get attendanceDayToday => 'Today';
-  String get attendanceDayYesterday => 'Yesterday';
-  String get attendanceCorrectionCheckinTime => 'Actual clock-in time';
-  String get attendanceCorrectionCheckoutTime => 'Actual clock-out time';
-  String get attendanceCorrectionCheckinRequired => 'Enter the actual clock-in time';
-  String get attendanceCorrectionSubmitError => 'Unable to send the correction at the moment.';
-  String get attendanceCorrectionTitle => 'Edit attendance';
-  @override
-  String get attendanceCorrectionDirectHint => 'The correction will be applied to the attendance record.';
-  @override
-  String get attendanceCorrectionRequestHint => 'The request will be sent to HR for validation.';
-  @override
-  String get attendanceCorrectionCheckinLabel => 'Actual check-in *';
-  @override
-  String get attendanceCorrectionCheckoutLabel => 'Actual check-out';
-  @override
-  String get attendanceCorrectionReasonHint => 'Reason (e.g. forgot to clock in at 8h)';
-  @override
-  String get attendanceCorrectionReasonRequired => 'Reason is required';
-  @override
-  String get attendanceCorrectionNoLogWarning => 'No existing attendance entry to edit for this day.';
-  @override
-  String get attendanceCorrectionSubmitDirect => 'Edit';
-  @override
-  String get attendanceCorrectionSubmitRequest => 'Request a correction';
-  @override
-  String get attendanceRoleEmployee2 => 'Employee';
-  @override
-  String get attendanceRolePrincipal => 'Principal Manager';
-  @override
-  String get attendanceRoleHr => 'HR Manager';
-  @override
-  String get attendanceRoleFinance => 'Finance';
-  @override
-  String get attendanceRoleManager => 'Manager';
-  @override
-  String get attendanceNone => 'None';
-
-
-
-  @override
-  String get settingsMobileAccess => 'Mobile access';
-  @override
-  String get settingsManagerProfileHint => 'HR/Manager profile: access to team monitoring and history.';
-  @override
-  String get settingsTeamDrive => 'Team drive';
-  @override
-  String get settingsTeamDriveHint => 'Profile, role and permissions remain readable for HR actions.';
-  @override
-  String get settingsSessionTitle => 'Session';
-  @override
-  String get settingsSessionSubtitle => 'Logout is intentionally at the bottom of the page.';
-  @override
-  String get settingsOverview => 'Overview';
-  @override
-  String get settingsManagerAccountHint => 'A manager account must remain clear, secure and ready for field decisions.';
-  @override
-  String get settingsMyProfile => 'My profile';
-  @override
-  String get settingsFirstName => 'First name';
-  @override
-  String get settingsLastNameLabel => 'Last name';
-  @override
-  String get settingsEmailLabel => 'Email';
-  @override
-  String get settingsEmailRequired => 'Email is required';
-  @override
-  String get settingsEmailInvalid => 'Invalid email';
-  @override
-  String get settingsFirstNameRequired => 'First name is required';
-  @override
-  String get settingsLastNameRequired => 'Last name is required';
-  @override
-  String get settingsPersonalContacts => 'Personal contacts';
-  @override
-  String get settingsPersonalEmail => 'Personal email (optional)';
-  @override
-  String get settingsRecoveryEmail => 'Recovery email (optional)';
-  @override
-  String get settingsPersonalPhone => 'Personal phone (optional)';
-  @override
-  String get settingsNewPassword => 'New password';
-  @override
-  String get settingsConfirmPassword => 'Confirm password';
-  @override
-  String get settingsPasswordMinLength => 'Minimum 8 characters';
-  @override
-  String get settingsPasswordMismatch => 'Passwords do not match';
-  @override
-  String get settingsPasswordChanged => 'Password changed.';
-  @override
-  String get settingsShareProfile => 'Share your profile or scan a company QR.';
-  @override
-  String get settingsMyQrManager => 'My manager QR';
-  @override
-  String get settingsMyQrEmployee => 'My QR code';
-  @override
-  String get settingsQrManagerHint => 'A colleague or HR can scan it to pre-fill an invitation.';
-  @override
-  String get settingsQrCopyToken => 'Also copy the token';
-  @override
-  String get settingsPasteQr => 'Paste the QR provided by the manager or HR';
-  @override
-  String get settingsJourneyTitle => 'Professional journey';
-  @override
-  String get settingsJourneyUnknownDate => 'Unknown date';
-  @override
-  String get settingsJourneyToday => 'Today';
-  @override
-  String get settingsJourneyInProgress => 'In progress';
-  @override
-  String get settingsJourneyUnknownPosition => 'Position not specified';
-  @override
-  String get settingsJourneyUnknownCompany => 'Company';
-  @override
-  String get settingsNotificationsSubtitle => 'Channels, quiet hours and manager operational alerts.';
-  @override
-  String get settingsLanguageSubtitle => 'The chosen language also drives future notifications and texts.';
-  @override
-  String get settingsProfileSaved => 'Profile saved.';
-  @override
-  String get settingsBiometricManagerHint => 'Reserved for employee profiles in this manager app.';
-  @override
-  String get settingsBiometricTerminalHint => 'Finger and face preparation for field terminals.';
-  @override
-  String get settingsBiometricNote => 'Note (optional)';
-  @override
-  String get settingsBiometricDevice => 'Reference device (optional)';
-  @override
-  String get settingsBiometricFace => 'Face';
-  @override
-  String get settingsBiometricFingerprint => 'Fingerprint';
-  @override
-  String get settingsBiometricConsent => 'I consent to the processing of my biometric data.';
-  @override
-  String get settingsBiometricSaved => 'Biometric enrollment saved.';
-  @override
-  String get settingsBiometricEnrollmentStatus => 'Enrollment status';
-  @override
-  String get settingsBiometricNone => 'No enrollment';
-  @override
-  String get settingsBiometricPending => 'Pending';
-  @override
-  String get settingsBiometricApproved => 'Approved';
-  @override
-  String get settingsBiometricRejected => 'Rejected';
-  @override
-  String get settingsPreferredLanguageLabel => 'Preferred language';
-  @override
-  String get settingsLanguageSaved => 'Language saved.';
-  @override
-  String get settingsPortableAccountHint => 'Your personal information remains linked to your account.';
-
-
-
-  @override
-  String settingsPasswordError(Object error) => 'Password error: $error';
-  @override
-  String settingsProfileError(Object error) => 'Profile error: $error';
-  @override
-  String settingsBiometricError(Object error) => 'Biometric error: $error';
-
-
+  String get teamSubtitle => 'Employees and invitations';
 
   @override
   String get teamTitle => 'Team';
-  @override
-  String get teamSubtitle => 'Employees and invitations';
-  @override
-  String get teamManagerRequired => 'Manager/HR access required';
-  @override
-  String get teamManagerRequiredHint => 'Only principal managers and HR can manage the team from mobile.';
-  @override
-  String get teamEmployeesTab => 'Employees';
-  @override
-  String get teamInvitationsTab => 'Invitations';
-  @override
-  String get teamAdd => 'Add';
-  @override
-  String get teamAddCollaborator => 'Add a collaborator';
-  @override
-  String get teamAddManualForm => 'Classic form';
-  @override
-  String get teamAddManualHint => 'Complete manual entry';
-  @override
-  String get teamAddFromQr => 'From employee QR';
-  @override
-  String get teamAddFromQrHint => 'Paste the provided code';
-  @override
-  String get teamLoading => 'Loading team';
-  @override
-  String get teamEmpty => 'No collaborator';
-  @override
-  String get teamEmptyHint => 'Start by adding your team with the button below.';
-  @override
-  String get teamEmployeeLabel => 'Employee';
-  @override
-  String get teamManagerLabel => 'Manager';
-  @override
-  String get teamViewProfile => 'View profile';
-  @override
-  String get teamViewProfileHint => 'Contact details, position, salary, schedule';
-  @override
-  String get teamEditProfile => 'Edit profile';
-  @override
-  String get teamEditProfileHint => 'Update essential HR fields';
+
   @override
   String get teamViewAttendance => 'Attendance stats';
+
   @override
   String get teamViewAttendanceHint => 'Presence, anomalies, history';
+
+  @override
+  String get teamViewProfile => 'View profile';
+
+  @override
+  String get teamViewProfileHint =>
+      'Contact details, position, salary, schedule';
+
   @override
   String get teamViewTasks => 'Tasks';
+
   @override
   String get teamViewTasksHint => 'View or assign field tasks';
-  @override
-  String get teamMakeHr => 'Appoint HR';
-  @override
-  String get teamRevokeHr => 'Revoke HR';
-  @override
-  String get teamMakeHrHint => 'Grant HR permissions to this collaborator';
-  @override
-  String get teamRevokeHrHint => 'Remove HR permissions from this account';
-  @override
-  String get teamArchive => 'Archive';
-  @override
-  String get teamMakeHrConfirmTitle => 'Appoint HR?';
-  @override
-  String get teamRevokeHrConfirmTitle => 'Revoke HR?';
-  @override
-  String get teamArchiveConfirmTitle => 'Archive this employee?';
-  @override
-  String get teamConfirmCancel => 'Cancel';
-  @override
-  String get teamMakeHrConfirmAction => 'Appoint HR';
-  @override
-  String get teamRevokeHrConfirmAction => 'Revoke';
-  @override
-  String get teamArchiveConfirmAction => 'Archive';
-  @override
-  String get teamMakeHrSuccess => 'HR appointed.';
-  @override
-  String get teamRevokeHrSuccess => 'HR permissions removed.';
-  @override
-  String get teamArchiveSuccess => 'Employee archived.';
-  @override
-  String teamActionError(Object error) => 'Error: $error';
 
+  @override
+  String get settingsManagerProfileHint =>
+      'HR/Manager profile: access to team monitoring and history.';
+
+  @override
+  String get settingsOverview => 'Overview';
+
+  @override
+  String get teamLoading => 'Loading team';
+
+  @override
+  String get teamManagerRequiredHint =>
+      'Only principal managers and HR can manage the team from mobile.';
+
+  @override
+  String salaryAdvanceError(Object error) {
+    return 'Failed: $error';
+  }
+
+  @override
+  String salaryAdvanceMonths(Object months, Object reason) {
+    return '$reason - $months months';
+  }
+
+  @override
+  String salaryAdvanceProofDownloaded(Object path) {
+    return 'Attachment downloaded: $path';
+  }
+
+  @override
+  String salaryAdvanceSemantics(Object amount, Object reason, Object status) {
+    return 'Advance of $amount, reason: $reason, status $status.';
+  }
+
+  @override
+  String get settingsJourneyToday => 'Today';
+
+  @override
+  String get settingsShareProfile => 'Share your profile or scan a company QR.';
+
+  @override
+  String teamActionError(Object error) {
+    return 'Error: $error';
+  }
 }
