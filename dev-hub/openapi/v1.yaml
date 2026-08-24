@@ -17531,7 +17531,7 @@ paths:
       tags: ["Recruitment"]
       summary: "Changer le statut d'une candidature (principal/rh)"
       parameters:
-        - name: applicant
+        - name: id
           in: path
           required: true
           schema: { type: integer }
