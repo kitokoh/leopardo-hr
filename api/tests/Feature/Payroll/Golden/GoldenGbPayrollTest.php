@@ -174,4 +174,31 @@ class GoldenGbPayrollTest extends TestCase
         $this->assertSame(1629.65, $tax);
         $this->assertSame(5062.80, round(7000.0 - $charges['employee'] - $tax, 2));
     }
+
+    public function test_golden_gb_rules_metadata(): void
+    {
+        $rules = $this->rules();
+        $this->assertSame('GB', $rules->countryCode());
+        $this->assertSame('GBP', $rules->currency());
+        $this->assertSame('pilot', $rules->confidenceLevel());
+        $this->assertSame('en', $rules->language());
+        $this->assertSame('Europe/London', $rules->timezone());
+        $this->assertSame([6, 7], $rules->weeklyRestDays());
+        $this->assertSame(['monthly'], $rules->supportedPayCycles());
+        $this->assertSame(48.0, $rules->overtimeThresholdWeeklyHours());
+        $this->assertSame([], $rules->overtimeRateTiers());
+        // ERA 1996 s.86 : 1 semaine/année plafonnée 12, 0 avant 1 mois.
+        $this->assertSame(0.0, $rules->noticePeriodDays(0.05));
+        $this->assertSame(7.0, $rules->noticePeriodDays(0.5));
+        $this->assertSame(28.0, $rules->noticePeriodDays(4.0));
+        $this->assertSame(84.0, $rules->noticePeriodDays(12.0));
+        $this->assertSame(0.2309, $rules->severanceMonthsPerYear(5.0));
+        $this->assertNotEmpty($rules->complianceWarning());
+        $this->assertSame('docs/payroll/GB_COMPLIANCE.md', $rules->complianceSource());
+        $this->assertNull($rules->verificationDate());
+        $this->assertCount(4, $rules->legalReferenceTaxSlabs());
+        $this->assertCount(3, $rules->socialContributions());
+        $this->assertSame(0.0, $rules->calculateBracketTax(5000.0));
+        $this->assertFalse($rules->thirteenthMonthMandatory());
+    }
 }

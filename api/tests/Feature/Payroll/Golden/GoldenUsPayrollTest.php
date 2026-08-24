@@ -195,4 +195,28 @@ class GoldenUsPayrollTest extends TestCase
         $this->assertSame(31666.65, $tax);
         $this->assertSame(65180.10, round(100000.0 - $charges['employee'] - $tax, 2));
     }
+
+    public function test_golden_us_rules_metadata(): void
+    {
+        $rules = $this->rules();
+        $this->assertSame('US', $rules->countryCode());
+        $this->assertSame('USD', $rules->currency());
+        $this->assertSame('pilot', $rules->confidenceLevel());
+        $this->assertSame('en', $rules->language());
+        $this->assertSame('America/New_York', $rules->timezone());
+        $this->assertSame([6, 7], $rules->weeklyRestDays());
+        $this->assertSame(['monthly'], $rules->supportedPayCycles());
+        $this->assertSame(40.0, $rules->overtimeThresholdWeeklyHours());
+        $this->assertSame([['up_to_hours' => null, 'multiplier' => 1.5]], $rules->overtimeRateTiers());
+        // At-will : aucun préavis ni indemnité statutaire.
+        $this->assertSame(0.0, $rules->noticePeriodDays(5.0));
+        $this->assertSame(0.0, $rules->severanceMonthsPerYear(5.0));
+        $this->assertNotEmpty($rules->complianceWarning());
+        $this->assertSame('docs/payroll/US_COMPLIANCE.md', $rules->complianceSource());
+        $this->assertNull($rules->verificationDate());
+        $this->assertCount(7, $rules->legalReferenceTaxSlabs());
+        $this->assertCount(6, $rules->socialContributions());
+        $this->assertSame(0.0, $rules->calculateBracketTax(5000.0));
+        $this->assertFalse($rules->thirteenthMonthMandatory());
+    }
 }

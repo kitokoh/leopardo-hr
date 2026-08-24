@@ -194,4 +194,37 @@ class GoldenCaPayrollTest extends TestCase
         $this->assertSame(17299.67, $tax);
         $this->assertSame(42219.54, round(60000.0 - $charges['employee'] - $tax, 2));
     }
+
+    public function test_golden_ca_rules_metadata(): void
+    {
+        $rules = $this->rules();
+        $this->assertSame('CA', $rules->countryCode());
+        $this->assertSame('CAD', $rules->currency());
+        $this->assertSame('pilot', $rules->confidenceLevel());
+        $this->assertSame('en', $rules->language());
+        $this->assertSame('America/Toronto', $rules->timezone());
+        $this->assertSame([7], $rules->weeklyRestDays());
+        $this->assertSame(['monthly'], $rules->supportedPayCycles());
+        $this->assertSame(44.0, $rules->overtimeThresholdWeeklyHours());
+        $this->assertSame([['up_to_hours' => null, 'multiplier' => 1.5]], $rules->overtimeRateTiers());
+        // CLC art. 230 : 1 semaine après 3 mois, puis +1 semaine/an jusqu'à 8.
+        $this->assertSame(0.0, $rules->noticePeriodDays(0.1));
+        $this->assertSame(7.0, $rules->noticePeriodDays(0.5));
+        $this->assertSame(14.0, $rules->noticePeriodDays(1.5));
+        $this->assertSame(21.0, $rules->noticePeriodDays(3.5));
+        $this->assertSame(56.0, $rules->noticePeriodDays(8.0));
+        $this->assertSame(0.2309, $rules->severanceMonthsPerYear(5.0));
+        $this->assertNotEmpty($rules->complianceWarning());
+        $this->assertSame('docs/payroll/CA_COMPLIANCE.md', $rules->complianceSource());
+        $this->assertNull($rules->verificationDate());
+        $this->assertCount(5, $rules->legalReferenceTaxSlabs());
+        $this->assertCount(6, $rules->socialContributions());
+        $this->assertSame(0.0, $rules->calculateBracketTax(5000.0));
+        $this->assertFalse($rules->thirteenthMonthMandatory());
+        // Province optionnelle (PA2-COUNTRY-009) : timezone + seuil HS.
+        $bc = $rules->forProvince('BC');
+        $this->assertSame('America/Vancouver', $bc->timezone());
+        $this->assertSame(40.0, $bc->overtimeThresholdWeeklyHours());
+        $this->assertSame('CA', $bc->countryCode());
+    }
 }
