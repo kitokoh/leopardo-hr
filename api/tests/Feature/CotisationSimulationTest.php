@@ -448,6 +448,7 @@ class CotisationSimulationTest extends TestCase
             'company_id' => $company->id,
             'salary_type' => 'fixed',
             'salary_base' => 60000,
+            'contract_start' => '2026-01-01',
             'status' => 'active',
         ]);
 
