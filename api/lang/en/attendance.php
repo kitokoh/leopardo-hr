@@ -58,4 +58,11 @@ return [
     'correction_already_processed' => 'This correction request has already been processed.',
     'manual_checkout_requires_check_in' => 'Manual check-out requires a check-in time.',
     'checkout_after_checkin' => 'Check-out time must be after check-in time.',
+
+    // Issue #5269 — messages API pointage (zéro chaîne hardcodée utilisateur).
+    'workflow_deactivated' => 'Workflow deactivated.',
+    'request_not_pending' => 'Request is not pending.',
+    'calendar_disconnected' => 'Calendar disconnected.',
+    'geo_event_no_session' => 'Event processed (no open session found for exit).',
+    'geo_event_processed' => 'Geo event processed successfully.',
 ];
