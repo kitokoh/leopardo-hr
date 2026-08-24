@@ -58,3 +58,16 @@ Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:princ
     Route::post('accounting/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
     Route::post('accounting/documents/{document}/journal', [AccountingJournalController::class, 'postDocument']);
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
