@@ -94,7 +94,8 @@ class AccountingSettingsTest extends TestCase
     {
         app()->instance('current_company', $this->companyA);
 
-        /** @var AccountingSettings $settings */
+        // Persisté sans capture de variable : le @var PHPStan pointait sur
+        // $settings inexistant (varTag.variableNotFound).
         AccountingSettings::query()->create([
             'company_id' => $this->companyA->id,
             'currency' => 'EUR',
