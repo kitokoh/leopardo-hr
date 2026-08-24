@@ -1,6 +1,6 @@
 # 👥 SUIVI_PILOTES — Mesure d'usage hebdomadaire des pilotes (issue #5156)
 
-**Version** : 1.0 · **Date** : 2026-08-20 · **Lié** : `docs/pilotes/CARNET_TEMPLATE.md`, `docs/pilotes/KPI_GATE_<date>.md`
+**Version** : 1.0 · **Date** : 2026-08-20 · **Lié** : `docs/pilotes/CARNET_TEMPLATE.md`, `docs/pilotes/CARNET_1.md` (pilote 1), `docs/pilotes/CARNET_2.md` (pilote 2), `docs/pilotes/CARNET_3.md` (pilote 3) — issues #5186/#5187/#5188, `docs/pilotes/KPI_GATE_<date>.md`
 
 « Pilote actif » est **mesuré, pas déclaré** (cible plan : ≥ 2 pilotes
 actifs / semaine au gate J60). Sans outil externe : une requête agrégée sur
