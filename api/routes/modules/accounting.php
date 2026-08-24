@@ -73,16 +73,19 @@ Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:princ
 });
 
 // ── Ordres de virement salarial (issue #5239, Phase C) — RBAC comptable/principal ──
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:principal,comptable'])->group(function (): void {
-    Route::get('accounting/payment-orders', [AccountingPaymentOrderController::class, 'index']);
-    Route::get('accounting/payment-orders/{order}', [AccountingPaymentOrderController::class, 'show'])->whereNumber('order');
+// NB : préfixe déclaré via ->prefix('accounting') (et non chemin absolu) pour
+// rester lisible par la garde OpenAPI #1473 (parser statique — le préfixe v1
+// hérité de api.php est consommé par le groupe précédent).
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:principal,comptable'])->prefix('accounting')->group(function (): void {
+    Route::get('/payment-orders', [AccountingPaymentOrderController::class, 'index']);
+    Route::get('/payment-orders/{order}', [AccountingPaymentOrderController::class, 'show'])->whereNumber('order');
 });
 
 // Actions d'écriture — comptable uniquement (création, préparation, exécution).
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:comptable'])->group(function (): void {
-    Route::post('accounting/payment-orders', [AccountingPaymentOrderController::class, 'store']);
-    Route::post('accounting/payment-orders/{order}/prepare', [AccountingPaymentOrderController::class, 'prepare'])->whereNumber('order');
-    Route::post('accounting/payment-orders/{order}/execute', [AccountingPaymentOrderController::class, 'execute'])->whereNumber('order');
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:comptable'])->prefix('accounting')->group(function (): void {
+    Route::post('/payment-orders', [AccountingPaymentOrderController::class, 'store']);
+    Route::post('/payment-orders/{order}/prepare', [AccountingPaymentOrderController::class, 'prepare'])->whereNumber('order');
+    Route::post('/payment-orders/{order}/execute', [AccountingPaymentOrderController::class, 'execute'])->whereNumber('order');
 });
 
 // ── Journal des écritures salariales (issue #5239, Phase C — Partie 1) ─────
@@ -90,7 +93,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 // validation du run (événement PayrollRunValidated, dispatch additif dans
 // PayrollRunController::validateRun) et rattrapable par la commande
 // `accounting:generate-payroll-entries --run={id}`.
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:principal,comptable'])->group(function (): void {
-    Route::get('accounting/journal-entries', [AccountingJournalEntryController::class, 'index']);
-    Route::get('accounting/journal-entries/{entry}', [AccountingJournalEntryController::class, 'show'])->whereNumber('entry');
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:principal,comptable'])->prefix('accounting')->group(function (): void {
+    Route::get('/journal-entries', [AccountingJournalEntryController::class, 'index']);
+    Route::get('/journal-entries/{entry}', [AccountingJournalEntryController::class, 'show'])->whereNumber('entry');
 });
