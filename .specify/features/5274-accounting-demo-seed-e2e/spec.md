@@ -30,7 +30,10 @@ activable en 1 clic) et le parcours facture doit être couvert **de bout en bout
 2. **Action `SeedAccountingDemoData`** (Application/Actions) : seed idempotent et marqué —
    chaque enregistrement demo porte `metadata.demo_seed = true` ; re-exécution sans `--force` =
    no-op (`ALREADY_SEEDED`) ; `--force` supprime UNIQUEMENT les lignes marquées `demo_seed`
-   (jamais de données réelles) puis re-seed.
+   (jamais de données réelles) puis re-seed. **Garanties renforcées (revue)** : exécution
+   ATOMIQUE (transaction — pas d'état partiel), garde d'idempotence sur contacts ET documents,
+   et tout document demo porteur d'un paiement non-demo est PRÉSERVÉ (`skipped_documents`,
+   jamais de perte de données réelles par cascade FK).
 3. **Commande `artisan accounting:demo-seed`** : cible une entreprise par id ou slug
    (`{company?}`), option `--force`. C'est le « démo exploitable en 1 clic » documenté.
 4. **E2E** : test Feature qui déroule le parcours réel contact → devis → facture → PDF (fake
@@ -38,7 +41,7 @@ activable en 1 clic) et le parcours facture doit être couvert **de bout en bout
    non mergé) → paiement → rapprochement → statuts. Le test est vert sur main **sans dépendre
    des PRs en vol** : PDF/email sont fakes, tout le reste passe par le code réel mergé.
 5. **Données réalistes DZ** (pays par défaut du registre, CF `CountryDefaults`) : 3 clients +
-   2 fournisseurs, séries de numérotation FAC/PRO/DEV/AVOIR/BL/REC, 6 documents dans des états
+   2 fournisseurs, séries de numérotation FAC/PRO/DEV/AVOIR/BL/REC, 7 documents dans des états
    variés (devis envoyé, facture payée, facture partiellement payée, proforma, avoir lié,
    bordereau, reçu) + paiements rapprochés. Totaux HT/TVA/TTC cohérents (TVA 19 % DZ).
 6. **Isolation tenant** : le seed passe par les modèles du module (trait `BelongsToCompany`,

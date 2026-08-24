@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Application\Actions;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Accounting\Domain\Enums\ContactSource;
 use App\Modules\Accounting\Domain\Enums\ContactType;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
@@ -18,6 +19,7 @@ use App\Modules\Accounting\Domain\Models\AccountingSettings;
 use App\Modules\Accounting\Infrastructure\Services\DocumentWorkflowService;
 use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Seed de données de démonstration pour le module Comptabilité — issue #5274.
@@ -63,29 +65,36 @@ final class SeedAccountingDemoData
     /**
      * Exécute le seed de démonstration pour une entreprise.
      *
-     * @return array{seeded: bool, status: string, company_id: string, contacts: int, documents: int, payments: int}
+     * Garanties renforcées (revue) :
+     *   - exécution ATOMIQUE (transaction) : un échec en cours de seed ne
+     *     laisse jamais un état partiel (contact sans documents…) ;
+     *   - garde d'idempotence sur contacts ET documents (une vitrine déjà
+     *     partiellement nettoyée via l'API reste détectée) ;
+     *   - `--force` préserve tout document démo porteur d'un paiement
+     *     non-demo (jamais de perte de données réelles par cascade FK).
+     *
+     * @return array{seeded: bool, status: string, company_id: string, contacts: int, documents: int, payments: int, skipped_documents: int}
      */
     public function seed(Company $company, bool $force = false): array
     {
+        $skippedDocuments = 0;
+
         if ($force) {
-            $this->deleteDemoRecords($company);
+            $skippedDocuments = $this->deleteDemoRecords($company);
         } elseif ($this->hasDemoRecords($company)) {
             return $this->summary($company, false, 'ALREADY_SEEDED');
         }
 
-        $this->seedSettings($company);
-        $contacts = $this->seedContacts($company);
-        $documents = $this->seedDocuments($company, $contacts);
-        $payments = $this->seedPayments($company, $documents);
+        [$contacts, $documents, $payments] = DB::transaction(function () use ($company): array {
+            $this->seedSettings($company);
+            $contacts = $this->seedContacts($company);
+            $documents = $this->seedDocuments($company, $contacts);
+            $payments = $this->seedPayments($company, $documents);
 
-        return $this->summary(
-            $company,
-            true,
-            'SEEDED',
-            count($contacts),
-            count($documents),
-            count($payments),
-        );
+            return [count($contacts), count($documents), count($payments)];
+        });
+
+        return $this->summary($company, true, 'SEEDED', $contacts, $documents, $payments, $skippedDocuments);
     }
 
     /**
@@ -179,7 +188,7 @@ final class SeedAccountingDemoData
             $contact = AccountingContact::query()->create([
                 'company_id' => $company->id,
                 ...$attributes,
-                'source' => 'manual',
+                'source' => ContactSource::Manual->value,
                 'metadata' => self::DEMO_MARKER,
             ]);
             $contacts[$key] = $contact;
@@ -384,11 +393,12 @@ final class SeedAccountingDemoData
     /**
      * Synchronise le champ dénormalisé `paid_amount` (somme des paiements) —
      * maintenu par #5229 côté API ; le seed le maintient pour rester cohérent.
+     * Comparaison avec tolérance (jamais d'égalité stricte sur des floats).
      */
     private function syncPaidAmount(AccountingDocument $document): void
     {
-        $paid = (float) $document->payments()->sum('amount');
-        if ($paid !== (float) $document->paid_amount) {
+        $paid = round((float) $document->payments()->sum('amount'), 2);
+        if (abs($paid - (float) $document->paid_amount) > 0.0001) {
             $document->update(['paid_amount' => $paid]);
         }
     }
@@ -412,40 +422,72 @@ final class SeedAccountingDemoData
     }
 
     /**
-     * Détecte un seed déjà exécuté (au moins un enregistrement marqué demo).
+     * Détecte un seed déjà exécuté (au moins un enregistrement marqué demo —
+     * contact OU document). Le contrôle croisé rend la garde robuste :
+     * si les contacts demo ont été supprimés via l'API mais que les documents
+     * demo existent encore, le re-seed reste un no-op.
      */
     private function hasDemoRecords(Company $company): bool
     {
-        return AccountingContact::query()
+        $contactMarked = AccountingContact::query()
             ->where('company_id', $company->id)
             ->get()
             ->contains(static fn (AccountingContact $contact): bool => ($contact->metadata['demo_seed'] ?? false) === true);
+
+        if ($contactMarked) {
+            return true;
+        }
+
+        return AccountingDocument::query()
+            ->where('company_id', $company->id)
+            ->get()
+            ->contains(static fn (AccountingDocument $document): bool => ($document->metadata['demo_seed'] ?? false) === true);
     }
 
     /**
      * Supprime UNIQUEMENT les enregistrements marqués `demo_seed` (jamais les
-     * données réelles). Documents d'abord (les lignes/paiements suivent par
-     * cascade), puis contacts.
+     * données réelles). Documents d'abord (les lignes suivent par cascade),
+     * puis contacts.
+     *
+     * Un document démo porteur d'un paiement NON-demo est PRÉSERVÉ (compté en
+     * retour) : le supprimer détruirait une donnée réelle via la cascade FK
+     * `accounting_payments.document_id` (cascadeOnDelete).
+     *
+     * @return int nombre de documents démo préservés (paiement non-demo)
      */
-    private function deleteDemoRecords(Company $company): void
+    private function deleteDemoRecords(Company $company): int
     {
-        AccountingDocument::query()
-            ->where('company_id', $company->id)
-            ->get()
-            ->filter(static fn (AccountingDocument $document): bool => ($document->metadata['demo_seed'] ?? false) === true)
-            ->each(static fn (AccountingDocument $document): void => $document->delete());
+        $skipped = 0;
+
+        foreach (AccountingDocument::query()->where('company_id', $company->id)->get() as $document) {
+            if (($document->metadata['demo_seed'] ?? false) !== true) {
+                continue;
+            }
+
+            $hasRealPayment = $document->payments()->get()
+                ->contains(static fn (AccountingPayment $payment): bool => ($payment->metadata['demo_seed'] ?? false) !== true);
+
+            if ($hasRealPayment) {
+                $skipped++;
+                continue;
+            }
+
+            $document->delete();
+        }
 
         AccountingContact::query()
             ->where('company_id', $company->id)
             ->get()
             ->filter(static fn (AccountingContact $contact): bool => ($contact->metadata['demo_seed'] ?? false) === true)
             ->each(static fn (AccountingContact $contact): void => $contact->delete());
+
+        return $skipped;
     }
 
     /**
-     * @return array{seeded: bool, status: string, company_id: string, contacts: int, documents: int, payments: int}
+     * @return array{seeded: bool, status: string, company_id: string, contacts: int, documents: int, payments: int, skipped_documents: int}
      */
-    private function summary(Company $company, bool $seeded, string $status, int $contacts = 0, int $documents = 0, int $payments = 0): array
+    private function summary(Company $company, bool $seeded, string $status, int $contacts = 0, int $documents = 0, int $payments = 0, int $skippedDocuments = 0): array
     {
         return [
             'seeded' => $seeded,
@@ -454,6 +496,7 @@ final class SeedAccountingDemoData
             'contacts' => $contacts,
             'documents' => $documents,
             'payments' => $payments,
+            'skipped_documents' => $skippedDocuments,
         ];
     }
 }

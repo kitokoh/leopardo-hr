@@ -69,7 +69,7 @@ final class SeedAccountingDemoCommand extends Command
     }
 
     /**
-     * @param  array{seeded: bool, status: string, company_id: string, contacts: int, documents: int, payments: int}  $result
+     * @param  array{seeded: bool, status: string, company_id: string, contacts: int, documents: int, payments: int, skipped_documents: int}  $result
      */
     private function printResult(Company $company, array $result): void
     {
@@ -83,6 +83,13 @@ final class SeedAccountingDemoCommand extends Command
                 [[$result['contacts'], $result['documents'], $result['payments']]],
             );
             $this->warn('Toutes les lignes demo portent metadata.demo_seed=true — jamais confondues avec des données réelles.');
+
+            if ($result['skipped_documents'] > 0) {
+                $this->warn(sprintf(
+                    '%d document(s) démo préservé(s) : ils portent un paiement non-demo — aucune donnée réelle supprimée.',
+                    $result['skipped_documents'],
+                ));
+            }
         } else {
             $this->warn(sprintf('Aucune nouvelle donnée (%s) — rejouer avec --force pour recréer la vitrine.', $result['status']));
         }

@@ -166,6 +166,7 @@ class AccountingDemoE2ETest extends TestCase
 
         $this->assertTrue($result['seeded']);
         $this->assertSame('SEEDED', $result['status']);
+        $this->assertSame(0, $result['skipped_documents'], 'Aucun document démo ne porte de paiement réel ici.');
 
         // Le contact réel survit ; la vitrine demo est recréée.
         $this->assertDatabaseHas('accounting_contacts', ['id' => $real->id, 'name' => 'Client Réel Non-Demo']);
@@ -173,6 +174,40 @@ class AccountingDemoE2ETest extends TestCase
             ->where('id', '!=', $real->id)->count());
         $this->assertSame(7, AccountingDocument::query()->where('company_id', $this->companyA->id)->count());
         $this->assertSame(2, AccountingPayment::query()->where('company_id', $this->companyA->id)->count());
+    }
+
+    public function test_demo_seed_force_preserves_document_with_real_payment(): void
+    {
+        $seeder = new SeedAccountingDemoData();
+        $seeder->seed($this->companyA);
+
+        // Paiement RÉEL rattaché à une facture demo (scénario réaliste : un
+        // encaissement client arrivé après le seed).
+        $paidInvoice = AccountingDocument::query()->where('company_id', $this->companyA->id)
+            ->where('type', DocumentType::Invoice->value)->where('status', DocumentStatus::Paid->value)->firstOrFail();
+        AccountingPayment::query()->create([
+            'company_id' => $this->companyA->id,
+            'document_id' => $paidInvoice->id,
+            'amount' => 1000.0,
+            'method' => PaymentMethod::Cash->value,
+            'reference' => 'ENCAISSEMENT-REEL-001',
+            'received_at' => now(),
+            'status' => 'recorded',
+            'metadata' => ['real' => true],
+        ]);
+
+        $result = $seeder->seed($this->companyA, force: true);
+
+        $this->assertTrue($result['seeded']);
+        // Le document demo porteur du paiement réel est préservé, pas supprimé.
+        $this->assertSame(1, $result['skipped_documents']);
+        $this->assertDatabaseHas('accounting_documents', ['id' => $paidInvoice->id]);
+
+        // Le paiement réel survit (jamais de perte de données réelles par cascade).
+        $realPayments = AccountingPayment::query()->where('company_id', $this->companyA->id)->get()
+            ->filter(static fn (AccountingPayment $payment): bool => ($payment->metadata['real'] ?? false) === true);
+        $this->assertSame(1, $realPayments->count());
+        $this->assertEqualsWithDelta(1000.0, (float) $realPayments->firstOrFail()->amount, 0.001);
     }
 
     public function test_demo_contacts_tax_id_is_encrypted_at_rest(): void
