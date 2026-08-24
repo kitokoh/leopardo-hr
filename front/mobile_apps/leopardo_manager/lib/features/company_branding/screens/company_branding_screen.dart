@@ -6,7 +6,7 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_core/features/company_branding/data/company_branding_repository.dart';
-import 'package:leopardo_manager/features/company_branding/providers/company_branding_provider.dart';
+import 'package:leopardo_core/features/company_branding/providers/company_branding_provider.dart';
 import 'package:leopardo_manager/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
 

@@ -159,6 +159,7 @@ class PayrollCalculator
      * @return array{
      *     social: array{employee: float, employer: float},
      *     taxable_gross: float,
+     *     non_taxable_earnings: float,
      *     income_tax: float,
      *     bracket_tax: float,
      *     base_deductions: float,
@@ -166,10 +167,19 @@ class PayrollCalculator
      *     total_cost: float,
      * }
      */
-    public function computeNetBreakdown(float $grossEarnings, CountryRulesContract $rules, ?float $familyParts = null): array
-    {
+    public function computeNetBreakdown(
+        float $grossEarnings,
+        CountryRulesContract $rules,
+        ?float $familyParts = null,
+        float $nonTaxableEarnings = 0.0
+    ): array {
         $social = $rules->calculateSocialCharges($grossEarnings);
-        $taxableGross = $grossEarnings - $social['employee'];
+        // Issue #5241 (écart E3) — primes exonérées (SalaryComponent
+        // is_taxable=false) : exclues de l'assiette IRG mais laissées dans
+        // l'assiette CNAS (brut complet — position DZ documentée dans
+        // DZ_COMPLIANCE.md §8, à confirmer par expert). Par défaut 0.0 →
+        // comportement historique identique (simulation, autres pays).
+        $taxableGross = $grossEarnings - $nonTaxableEarnings - $social['employee'];
         // Même appel que calculateSlip() : le 3e argument (grossForAbatement)
         // porte le brut réel aux règles qui en ont besoin (CM #1821).
         $incomeTax = $rules->calculateIncomeTax($taxableGross, 12, $grossEarnings);
@@ -188,6 +198,7 @@ class PayrollCalculator
         return [
             'social' => $social,
             'taxable_gross' => $taxableGross,
+            'non_taxable_earnings' => $nonTaxableEarnings,
             'income_tax' => $incomeTax,
             'bracket_tax' => $bracketTax,
             'base_deductions' => $baseDeductions,
@@ -767,6 +778,10 @@ class PayrollCalculator
 
         /** @var Collection<int, SalaryComponent> $components */
         $components = $structure->components->where('active', true)->sortBy('order');
+        // Issue #5241 (écart E3) — montant cumulé des composants de salaire
+        // NON IMPOSABLES (is_taxable=false) : ajoutés au brut (assiette CNAS
+        // complète) mais exclus de l'assiette IRG via computeNetBreakdown().
+        $nonTaxableEarnings = 0.0;
         foreach ($components as $component) {
             /** @var SalaryComponent $component */
             if ($component->type !== 'earning') {
@@ -774,6 +789,9 @@ class PayrollCalculator
             }
             $amount = $this->computeComponentAmount($component, $baseSalary, $grossEarnings);
             $grossEarnings += $amount;
+            if (! $component->is_taxable) {
+                $nonTaxableEarnings += $amount;
+            }
             $lines[] = [
                 'salary_component_id' => $component->id,
                 'name' => $component->name,
@@ -829,7 +847,7 @@ class PayrollCalculator
         // `employees.family_parts` (défaut moteur 1 part → réduction nulle) ;
         // même pattern lecture attribut que children_count (allocations
         // familiales, ZONE-INFRA #1820).
-        $breakdown = $this->computeNetBreakdown($grossEarnings, $rules, $this->familyPartsOf($employee));
+        $breakdown = $this->computeNetBreakdown($grossEarnings, $rules, $this->familyPartsOf($employee), $nonTaxableEarnings);
         $social = $breakdown['social'];
 
         $lines[] = [
@@ -1040,6 +1058,57 @@ class PayrollCalculator
         $premium = max(0.0, $overtimeHours - (float) $standardRateHours);
 
         return round(($standard * $hourlyRate * 1.25) + ($premium * $hourlyRate * 1.50), 2);
+    }
+
+    /**
+     * Issue #5241 (écart E5) — indemnités journalières maladie / arrêt de
+     * travail selon la politique pays (CountryRulesInterface::sickLeavePolicy).
+     *
+     * Règle (générique, valeurs pays dans la politique) :
+     *  1. jours indemnisables = jours d'arrêt − délai de carence, plafonnés
+     *     à max_paid_days ;
+     *  2. pour chaque jour indemnisable, le taux de la 1ère tranche dont la
+     *     plage [from_day, to_day] contient le JOUR D'ARRÊT (stoppage day =
+     *     waiting_days + index IJ) s'applique sur le salaire journalier de
+     *     référence ;
+     *  3. arrondi final à 2 décimales.
+     *
+     * DZ (politique sourcée CNAS/loi 90-11, pilot) : carence 3 j, 50 % les
+     * jours 1-15 puis 100 % à partir du 16e, max 180 j (maladie ordinaire).
+     *
+     * Consommée par le futur flux absence → paie (#5245) ; exposée et
+     * verrouillée par golden tests (GoldenDzEngineCompletionTest) — aucun
+     * changement de comportement du bulletin tant que l'appelant ne l'utilise
+     * pas (politique inerte par défaut dans AbstractCountryRules).
+     */
+    public function computeSickLeaveAllowance(float $dailyReferenceWage, float $sickDays, CountryRulesContract $rules): float
+    {
+        $policy = $rules->sickLeavePolicy();
+        if ($sickDays <= 0.0 || $dailyReferenceWage <= 0.0 || $policy['daily_allowance_rates'] === []) {
+            return 0.0;
+        }
+
+        $waitingDays = max(0, (int) $policy['waiting_days']);
+        $maxPaidDays = max(0, (int) $policy['max_paid_days']);
+        $indemnifiedDays = min(max(0.0, $sickDays - $waitingDays), (float) $maxPaidDays);
+        $eligibleDays = (int) floor($indemnifiedDays);
+
+        $allowance = 0.0;
+        for ($i = 1; $i <= $eligibleDays; $i++) {
+            $stoppageDay = $waitingDays + $i;
+            $rate = 0.0;
+            foreach ($policy['daily_allowance_rates'] as $tier) {
+                $from = max(1, (int) $tier['from_day']);
+                $to = $tier['to_day'] === null ? PHP_INT_MAX : (int) $tier['to_day'];
+                if ($stoppageDay >= $from && $stoppageDay <= $to) {
+                    $rate = (float) $tier['rate'];
+                    break;
+                }
+            }
+            $allowance += $dailyReferenceWage * $rate;
+        }
+
+        return round($allowance, 2);
     }
 
     /**
