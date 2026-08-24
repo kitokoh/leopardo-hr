@@ -49,6 +49,7 @@ declare(strict_types=1);
  * direction et aux comptables (aucun accès RH/marketing).
  */
 
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
 use Illuminate\Support\Facades\Route;
 
@@ -59,15 +60,17 @@ Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:princ
     Route::post('accounting/documents/{document}/journal', [AccountingJournalController::class, 'postDocument']);
 });
 
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
+    ->prefix('accounting')
+    ->group(function (): void {
 
-
-
-
-
-
-
-
-
-
-
+        // ── Contacts client/fournisseur (RBAC comptable + principal) ────────
+        Route::middleware('api.manager:comptable,principal')->group(function (): void {
+            Route::get('/contacts', [AccountingContactController::class, 'index']);
+            Route::post('/contacts', [AccountingContactController::class, 'store']);
+            Route::get('/contacts/{contact}', [AccountingContactController::class, 'show'])->whereNumber('contact');
+            Route::put('/contacts/{contact}', [AccountingContactController::class, 'update'])->whereNumber('contact');
+            Route::delete('/contacts/{contact}', [AccountingContactController::class, 'destroy'])->whereNumber('contact');
+        });
+    });
 
