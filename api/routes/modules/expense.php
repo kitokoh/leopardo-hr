@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseAccountingController;
 use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseClaimController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,5 +21,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/expense-claims/{expenseClaim}/approve', [ExpenseClaimController::class, 'approve']); // déprécié #4930
         Route::post('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']);
         Route::put('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']); // déprécié #4930
+
+        // Issue #5235 — Phase C : écritures comptables des notes de frais.
+        // Lecture/écriture réservées principal + comptable (RBAC #5235) :
+        // le groupe api.manager (sans rôle) admettrait RH/dept/marketing.
+        Route::middleware('api.manager:principal,comptable')->group(function (): void {
+            Route::get('/expense-claims/{expenseClaim}/accounting-entries', [ExpenseAccountingController::class, 'index']);
+            Route::post('/expense-claims/{expenseClaim}/accounting-entries/regenerate', [ExpenseAccountingController::class, 'regenerate']);
+        });
     });
 });

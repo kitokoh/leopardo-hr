@@ -15445,6 +15445,65 @@ paths:
         "404":
           description: "Introuvable"
 
+  /expense-claims/{expenseClaim}/accounting-entries:
+    get:
+      tags: ["Expenses"]
+      summary: "Écritures comptables d'une note de frais approuvée (#5235)"
+      description: "Lignes d'écriture (D 625 frais généraux / C 512 banque, référence EXPENSE-CLAIM-{id}) générées automatiquement à l'approbation de la note (observer Eloquent). Réservé aux managers principal/comptable, isolation tenant (404)."
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des écritures de la note"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ExpenseAccountingEntry"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          description: "Note introuvable (isolation tenant)"
+
+  /expense-claims/{expenseClaim}/accounting-entries/regenerate:
+    post:
+      tags: ["Expenses"]
+      summary: "Régénérer les écritures comptables d'une note (comptable, idempotent)"
+      description: "Remplace les lignes existantes de la note (contrainte unique note/compte). Réservé au rôle comptable (403 sinon)."
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Régénération effectuée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  expense_claim_id: { type: integer }
+                  generated_lines: { type: integer }
+                  balance: { type: number, format: float }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Rôle comptable requis"
+        "404":
+          description: "Note introuvable (isolation tenant)"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /approval-workflows:
     get:
       tags: ["Approvals"]
@@ -25716,6 +25775,20 @@ components:
         reason:
           type: string
           nullable: true
+
+    ExpenseAccountingEntry:
+      type: object
+      properties:
+        id: { type: integer }
+        expense_claim_id: { type: integer }
+        date: { type: string, format: date }
+        account_code: { type: string }
+        account_label: { type: string }
+        debit: { type: number, format: float }
+        credit: { type: number, format: float }
+        reference: { type: string }
+        created_by: { type: integer, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }
 
     ExpenseClaim:
       type: object
