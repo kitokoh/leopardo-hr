@@ -3020,11 +3020,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PATCH", "/recruitment/applicants/{id}/status", options);
     },
 
-    /** Saisir le feedback d'un entretien (le clôture) */
-    patchRecruitmentInterviewsByIdFeedback(options = {}) {
-      return request("PATCH", "/recruitment/interviews/{id}/feedback", options);
-    },
-
     /** Supprimer un entretien (manager) */
     deleteRecruitmentInterviewsByInterview(options = {}) {
       return request("DELETE", "/recruitment/interviews/{interview}", options);
@@ -3033,6 +3028,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier un entretien */
     putRecruitmentInterviewsByInterview(options = {}) {
       return request("PUT", "/recruitment/interviews/{interview}", options);
+    },
+
+    /** Saisir le feedback d'un entretien (le clôture) */
+    patchRecruitmentInterviewsByInterviewFeedback(options = {}) {
+      return request("PATCH", "/recruitment/interviews/{interview}/feedback", options);
     },
 
     /** Lister les offres d'emploi */

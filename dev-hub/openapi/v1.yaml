@@ -17554,12 +17554,12 @@ paths:
         "403":
           description: "Rôle requis (principal/rh)"
 
-  /recruitment/interviews/{id}/feedback:
+  /recruitment/interviews/{interview}/feedback:
     patch:
       tags: ["Recruitment"]
       summary: "Saisir le feedback d'un entretien (le clôture)"
       parameters:
-        - name: id
+        - name: interview
           in: path
           required: true
           schema: { type: integer }

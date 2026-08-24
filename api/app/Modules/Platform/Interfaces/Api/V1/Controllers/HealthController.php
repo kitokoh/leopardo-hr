@@ -221,9 +221,23 @@ class HealthController extends Controller
                 'driver' => $driver,
                 'size' => array_sum($queues),
                 'queues' => $queues,
+                'failed_jobs' => $this->failedJobsCount(),
             ];
         } catch (Throwable) {
             return ['ok' => false, 'driver' => $driver];
+        }
+    }
+
+    /**
+     * Issue #5282 : expose le nombre de jobs en échec sur /health pour les
+     * scrapers d'uptime et la supervision manuelle.
+     */
+    private function failedJobsCount(): ?int
+    {
+        try {
+            return DB::table((string) config('queue.failed.table', 'failed_jobs'))->count();
+        } catch (Throwable) {
+            return null;
         }
     }
 
