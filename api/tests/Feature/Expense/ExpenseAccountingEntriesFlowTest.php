@@ -49,7 +49,7 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
         $this->assertSame(2, ExpenseAccountingEntry::query()->where('expense_claim_id', $claim->id)->count());
         $this->assertSame(
             0.0,
-            (new ExpenseAccountingEntryService())->balanceForClaim($claim)
+            (new ExpenseAccountingEntryService)->balanceForClaim($claim)
         );
     }
 
@@ -59,25 +59,33 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
             ['category' => 'transport', 'description' => 'Taxi aéroport', 'amount' => 10000, 'date' => '2026-06-15'],
         ]);
 
-        $service = new ExpenseAccountingEntryService();
+        $service = new ExpenseAccountingEntryService;
         $count = $service->generateForClaim($claim);
         $this->assertSame(2, $count);
 
         $entries = $service->entriesForClaim($claim);
         $this->assertCount(2, $entries);
 
-        $byCode = [];
         foreach ($entries as $entry) {
             $this->assertSame("EXPENSE-{$claim->id}", $entry->reference);
             $this->assertSame($claim->company_id, $entry->company_id);
             $this->assertSame($claim->id, $entry->expense_claim_id);
-            $byCode[$entry->account_code] = $entry;
         }
 
-        $this->assertSame(10000.0, $byCode['6251']->debit);
-        $this->assertSame(0.0, $byCode['6251']->credit);
-        $this->assertSame(0.0, $byCode['425']->debit);
-        $this->assertSame(10000.0, $byCode['425']->credit);
+        $this->assertSame(
+            10000.0,
+            (float) ExpenseAccountingEntry::query()
+                ->where('expense_claim_id', $claim->id)
+                ->where('account_code', '6251')
+                ->sum('debit')
+        );
+        $this->assertSame(
+            10000.0,
+            (float) ExpenseAccountingEntry::query()
+                ->where('expense_claim_id', $claim->id)
+                ->where('account_code', '425')
+                ->sum('credit')
+        );
 
         $this->assertSame(0.0, $service->balanceForClaim($claim));
     }
@@ -89,7 +97,7 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
             ['category' => 'meals', 'description' => 'Repas client', 'amount' => 6000, 'date' => '2026-06-16'],
         ]);
 
-        $service = new ExpenseAccountingEntryService();
+        $service = new ExpenseAccountingEntryService;
         $service->generateForClaim($claim);
 
         // Catégorie dominante = meals (6 000 > 4 000) → D 6256.
@@ -98,7 +106,7 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
             (float) ExpenseAccountingEntry::query()
                 ->where('expense_claim_id', $claim->id)
                 ->where('account_code', '6256')
-                ->value('debit')
+                ->sum('debit')
         );
         $this->assertSame(0.0, $service->balanceForClaim($claim));
     }
@@ -109,7 +117,7 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
             ['category' => 'transport', 'description' => 'Taxi', 'amount' => 10000, 'date' => '2026-06-15'],
         ]);
 
-        $service = new ExpenseAccountingEntryService();
+        $service = new ExpenseAccountingEntryService;
         $this->assertSame(2, $service->generateForClaim($claim));
         $this->assertSame(2, $service->generateForClaim($claim)); // 2e appel → remplacement, pas doublon
 
@@ -122,7 +130,7 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
             ['category' => 'transport', 'description' => 'Taxi', 'amount' => 10000, 'date' => '2026-06-15'],
         ]);
 
-        $service = new ExpenseAccountingEntryService();
+        $service = new ExpenseAccountingEntryService;
         $this->expectException(\RuntimeException::class);
         $service->generateForClaim($claim);
     }
@@ -148,7 +156,7 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
             ['category' => 'transport', 'description' => 'Taxi', 'amount' => 10000, 'date' => '2026-06-15'],
         ]);
 
-        $service = new ExpenseAccountingEntryService();
+        $service = new ExpenseAccountingEntryService;
         $service->generateForClaim($claim);
         $this->assertSame(2, ExpenseAccountingEntry::query()->where('expense_claim_id', $claim->id)->count());
 
@@ -167,7 +175,7 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
             ['category' => 'meals', 'description' => 'Repas', 'amount' => 5000, 'date' => '2026-06-15'],
         ]);
 
-        $service = new ExpenseAccountingEntryService();
+        $service = new ExpenseAccountingEntryService;
         $service->generateForClaim($claimA);
         $service->generateForClaim($claimB);
 
@@ -185,14 +193,17 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
             ['category' => 'transport', 'description' => 'Taxi', 'amount' => 10000, 'date' => '2026-06-15'],
         ]);
 
-        $service = new ExpenseAccountingEntryService();
+        $service = new ExpenseAccountingEntryService;
 
-        // Lignes réelles de la note, puis altération du crédit → l'écart doit
-        // être détecté par le garde d'équilibre (exception sinon persistée).
-        $journal = (new ReflectionMethod($service, 'journalLines'))->invoke($service, $claim);
-        $journal[1]['credit'] = $journal[1]['credit'] - 1.0;
+        // Journal DÉSÉQUILIBRÉ (débit 10 000 − crédit 9 999 = 1) : le garde
+        // d'équilibre doit détecter l'écart (exception sinon persistée).
+        /** @var array<int, array{account_code: string, debit: float, credit: float}> $unbalanced */
+        $unbalanced = [
+            ['account_code' => '6251', 'debit' => 10000.0, 'credit' => 0.0],
+            ['account_code' => '425', 'debit' => 0.0, 'credit' => 9999.0],
+        ];
 
-        $balance = (new ReflectionMethod($service, 'balanceOf'))->invoke($service, $journal);
+        $balance = (new ReflectionMethod($service, 'balanceOf'))->invoke($service, $unbalanced);
         $this->assertSame(1.0, $balance);
 
         $exception = new UnbalancedExpenseEntriesException(
@@ -215,9 +226,10 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
         $observer = new ExpenseAccountingEntryObserver($service);
         $claim->status = 'approved'; // transition simulée (original = submitted)
 
-        Log::spy();
+        $log = Log::spy();
         $observer->updated($claim);
-        Log::shouldHaveReceived('error')->once();
+        // @phpstan-ignore-next-line staticMethod.notFound (Log::spy → MockInterface dynamique)
+        $log->shouldHaveReceived('error')->once();
     }
 
     // ── API ────────────────────────────────────────────────────────────────
@@ -227,7 +239,7 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
         [$company, $claim] = $this->claimWithItems('approved', [
             ['category' => 'transport', 'description' => 'Taxi', 'amount' => 10000, 'date' => '2026-06-15'],
         ]);
-        (new ExpenseAccountingEntryService())->generateForClaim($claim);
+        (new ExpenseAccountingEntryService)->generateForClaim($claim);
 
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);

@@ -13,13 +13,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class ExpenseAccountingEntryResource extends JsonResource
 {
+    /** @return array<string, mixed> */
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
             'expense_claim_id' => $this->expense_claim_id,
             'employee_id' => $this->employee_id,
-            'date' => $this->date?->toDateString(),
+            'date' => $this->date->toDateString(),
             'account_code' => $this->account_code,
             'account_label' => $this->account_label,
             'debit' => $this->debit,

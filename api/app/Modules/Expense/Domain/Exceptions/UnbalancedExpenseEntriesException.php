@@ -11,6 +11,4 @@ use RuntimeException;
  * vaut pas le total des crédits ne doit JAMAIS être persisté (partie double,
  * équilibre garanti par construction — exception défensive).
  */
-class UnbalancedExpenseEntriesException extends RuntimeException
-{
-}
+class UnbalancedExpenseEntriesException extends RuntimeException {}
