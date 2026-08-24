@@ -164,6 +164,15 @@ const routes = [
         }
       },
       {
+        path: '/accounting/settings',
+        name: 'accounting-settings',
+        component: () => import(`@/views/accounting/AccountingSettingsView.vue`),
+        meta: {
+          title: 'navigation.accountingSettings',
+          icon: 'CogIcon'
+        }
+      },
+      {
         path: '/training',
         name: 'training',
         component: () => import('@/views/training/TrainingView.vue'),

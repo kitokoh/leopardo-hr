@@ -152,6 +152,14 @@ class LeopardoClient:
         """Mettre a jour un contact client/fournisseur"""
         return self.request("PUT", "/accounting/contacts/{contact}", **kwargs)
 
+    def get_accounting_settings(self, **kwargs):
+        """Parametrage comptable de l'entreprise"""
+        return self.request("GET", "/accounting/settings", **kwargs)
+
+    def put_accounting_settings(self, **kwargs):
+        """Mettre a jour le parametrage comptable de l'entreprise"""
+        return self.request("PUT", "/accounting/settings", **kwargs)
+
     def post_admin_ai_chat(self, **kwargs):
         """Envoyer un message a l'assistant IA (super-admin)"""
         return self.request("POST", "/admin/ai/chat", **kwargs)

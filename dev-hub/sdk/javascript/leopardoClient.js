@@ -165,6 +165,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/accounting/contacts/{contact}", options);
     },
 
+    /** Parametrage comptable de l'entreprise */
+    getAccountingSettings(options = {}) {
+      return request("GET", "/accounting/settings", options);
+    },
+
+    /** Mettre a jour le parametrage comptable de l'entreprise */
+    putAccountingSettings(options = {}) {
+      return request("PUT", "/accounting/settings", options);
+    },
+
     /** Envoyer un message a l'assistant IA (super-admin) */
     postAdminAiChat(options = {}) {
       return request("POST", "/admin/ai/chat", options);

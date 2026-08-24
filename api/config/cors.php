@@ -24,8 +24,12 @@ return [
         // FRONTEND_URL pour rester déterministes (issues #1769) :
         //  - localhost:3000 : front web (défaut documenté de FRONTEND_URL)
         //  - localhost:3001 : admin dashboard (ajouté dans #1785)
+        //  - 127.0.0.1:4173 : admin dashboard E2E Playwright local (port par
+        //    défaut de front/admin-dashboard/playwright.config.js) — sans lui,
+        //    le job Web E2E échoue en masse sur le health-check CORS bloqué.
         'http://localhost:3000',
         'http://localhost:3001',
+        'http://127.0.0.1:4173',
         env('FRONTEND_URL', 'http://localhost:3000'),
         env('APP_URL', 'http://localhost'),
         // Production origins
