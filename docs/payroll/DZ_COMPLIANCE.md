@@ -122,7 +122,7 @@ recoupe `contract_start`/`contract_end` avec la période du run (PayrollCalculat
   - 10 j, base 60 000, référentiel 900 000 (augmentation) → 1/10ᵉ 30 000 > maintien 27 272,73 → **30 000,00**
   - Mois complet 22 j, référentiel 720 000 → maintien **60 000,00**
 - ⚠️ À confirmer : assiette du « salaires bruts de référence » (12 mois glissants vs exercice).
-- **Intégration bulletin** : à brancher sur les absences approuvées (F-20) — versée au départ en congé.
+- **Intégration bulletin (issue #5245 — livré 2026-08-23)** : l'indemnité est branchée sur les **absences approuvées** (statut `approved`, ventilées payées/non payées via `AbsenceType.is_paid`). Chaque bulletin porte le snapshot des entrées utilisées : `paid_leave_days`, `unpaid_leave_days`, `public_holiday_days` (jours fériés payés de la période). Le run expose le détail par employé (bloc `attendance` de l'API). Un congé payé pris ne réduit pas la paie : le prorata est compensé par l'indemnité (maintien de salaire) — vérifié par `GoldenDzLeaveToPayrollTest`.
 
 ## 7. À compléter (prochaine itération — besoin expert paie DZ)
 

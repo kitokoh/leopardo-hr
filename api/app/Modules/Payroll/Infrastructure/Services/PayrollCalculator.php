@@ -532,6 +532,11 @@ class PayrollCalculator
                     'working_days' => $corrected['working_days'],
                     'actual_days_worked' => $corrected['actual_days_worked'],
                     'overtime_hours' => $corrected['overtime_hours'],
+                    // Issue #5245 — snapshot des entrées congés/absences/fériés
+                    // du calcul corrigé (transparence du différentiel).
+                    'paid_leave_days' => $corrected['paid_leave_days'],
+                    'unpaid_leave_days' => $corrected['unpaid_leave_days'],
+                    'public_holiday_days' => $corrected['public_holiday_days'],
                     'has_attendance_data' => $corrected['has_attendance_data'],
                     'status' => 'calculated',
                     'original_slip_id' => $originalSlip->id,
@@ -642,6 +647,9 @@ class PayrollCalculator
             'working_days' => $values['working_days'],
             'actual_days_worked' => $values['actual_days_worked'],
             'overtime_hours' => $values['overtime_hours'],
+            'paid_leave_days' => $values['paid_leave_days'],
+            'unpaid_leave_days' => $values['unpaid_leave_days'],
+            'public_holiday_days' => $values['public_holiday_days'],
             'has_attendance_data' => $values['has_attendance_data'],
             'status' => 'calculated',
         ]);
@@ -670,6 +678,9 @@ class PayrollCalculator
      *     working_days: float,
      *     actual_days_worked: float,
      *     overtime_hours: float,
+     *     paid_leave_days: float,
+     *     unpaid_leave_days: float,
+     *     public_holiday_days: float,
      *     has_attendance_data: bool,
      *     lines: list<array<string, mixed>>,
      * }
@@ -946,9 +957,62 @@ class PayrollCalculator
             'working_days' => $worked['working_days'],
             'actual_days_worked' => $worked['actual_days_worked'],
             'overtime_hours' => $worked['overtime_hours'],
+            // Issue #5245 — snapshot des entrées de travail utilisées par le
+            // calcul (congés payés pris, congés sans solde, jours fériés
+            // payés) : persisté sur le bulletin pour l'affichage du détail
+            // par employé dans la simulation du run et l'audit paie.
+            'paid_leave_days' => $inputs['paid_leave_days'],
+            'unpaid_leave_days' => $inputs['unpaid_leave_days'],
+            'public_holiday_days' => $this->publicHolidayDaysInPeriod($run),
             'has_attendance_data' => $worked['has_attendance_data'],
             'lines' => $lines,
         ];
+    }
+
+    /**
+     * Issue #5245 — jours fériés PAYÉS tombant dans la période du run
+     * (fériés nationaux + overrides entreprise, fusion islamique comprise).
+     *
+     * Les fériés sont déjà exclus des jours ouvrés (workingDaysBetween) : un
+     * employé qui ne pointe pas un jour férié n'est PAS déduit — le férié est
+     * payé par construction. Cette méthode rend ce fait EXPLICITE (détail
+     * par employé dans la simulation du run) sans changer la mécanique.
+     *
+     * @return float nombre de jours fériés (fraction .0/.5 — arrondi affichage)
+     */
+    private function publicHolidayDaysInPeriod(PayrollRun $run): float
+    {
+        if ($this->publicHolidayService === null) {
+            return 0.0;
+        }
+
+        $year = (int) $run->period_start->format('Y');
+        $companyId = $run->company_id !== null ? (string) $run->company_id : null;
+
+        try {
+            $holidays = $this->publicHolidayService->getHolidays(
+                (string) $run->country_code,
+                $year,
+                $companyId,
+            );
+        } catch (\Throwable) {
+            // Garde défensive : un calendrier indisponible (ex. table absente
+            // d'un schéma tenant historique) ne doit pas bloquer le calcul.
+            return 0.0;
+        }
+
+        $start = $run->period_start->copy()->startOfDay();
+        $end = $run->period_end->copy()->startOfDay();
+
+        $days = 0.0;
+        foreach ($holidays as $holiday) {
+            $date = Carbon::parse((string) $holiday['date'])->startOfDay();
+            if ($date->gte($start) && $date->lte($end)) {
+                $days += 1.0;
+            }
+        }
+
+        return $days;
     }
 
     /**
