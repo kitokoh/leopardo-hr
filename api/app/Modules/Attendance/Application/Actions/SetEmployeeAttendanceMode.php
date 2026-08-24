@@ -18,6 +18,9 @@ class SetEmployeeAttendanceMode
     /**
      * @throws GpsConsentMissingException
      */
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function handle(Employee $employee, array $data): EmployeeAttendancePreference
     {
         $preferredMode = $data['preferred_mode'];

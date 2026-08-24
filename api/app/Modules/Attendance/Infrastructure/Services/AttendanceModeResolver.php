@@ -41,12 +41,12 @@ class AttendanceModeResolver
         }
 
         // ── Niveau 2 : préférence individuelle ───────────────────────────────
-        $canOverride = $companySettings?->allow_employee_override ?? true;
+        $canOverride = $companySettings->allow_employee_override ?? true;
 
         /** @var EmployeeAttendancePreference|null $pref */
         $pref = EmployeeAttendancePreference::where('employee_id', $employee->id)->first();
 
-        $mode      = $pref?->preferred_mode ?? 'manual';
+        $mode      = $pref->preferred_mode ?? 'manual';
         $gpsEnabled = $companySettings?->gps_enabled
             ?? ($mode === 'gps_auto');
 
@@ -56,9 +56,9 @@ class AttendanceModeResolver
             gpsEnabled:        $gpsEnabled,
             geofenceLat:       $companySettings?->latitude,
             geofenceLng:       $companySettings?->longitude,
-            geofenceRadius:    $companySettings?->radius_meters ?? 100,
-            requiresConsent:   $mode === 'gps_auto' && ! ($pref?->hasGpsConsent() ?? false),
-            requiresPunchPhoto: $companySettings?->requiresPunchPhoto() ?? false,
+            geofenceRadius:    $companySettings->radius_meters ?? 100,
+            requiresConsent:   $mode === 'gps_auto' && ! ($pref->hasGpsConsent() ?? false),
+            requiresPunchPhoto: $companySettings->requiresPunchPhoto() ?? false,
         );
     }
 }

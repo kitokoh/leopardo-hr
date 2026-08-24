@@ -13,6 +13,9 @@ use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
  */
 class SetCompanyAttendanceMode
 {
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function handle(string $companyId, array $data, Employee $updatedBy): AttendanceModeSettings
     {
         /** @var AttendanceModeSettings $settings */

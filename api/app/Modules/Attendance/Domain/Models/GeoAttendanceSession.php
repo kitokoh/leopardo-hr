@@ -97,26 +97,31 @@ class GeoAttendanceSession extends Model
 
     // ── Relations ────────────────────────────────────────────────────────────
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /** @return BelongsTo<Site, $this> */
     public function site(): BelongsTo
     {
         return $this->belongsTo(Site::class, 'site_id');
     }
 
+    /** @return BelongsTo<AttendanceLog, $this> */
     public function attendanceLog(): BelongsTo
     {
         return $this->belongsTo(AttendanceLog::class, 'attendance_log_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function validatedBy(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'validated_by');
     }
 
+    /** @return HasMany<EmployeeLocationEvent, $this> */
     public function locationEvents(): HasMany
     {
         return $this->hasMany(EmployeeLocationEvent::class, 'geo_session_id');

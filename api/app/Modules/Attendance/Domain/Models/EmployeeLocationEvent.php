@@ -19,7 +19,7 @@ use Illuminate\Support\Carbon;
  * @property float|null  $longitude
  * @property int|null    $accuracy_meters
  * @property Carbon|null $device_timestamp
- * @property array       $metadata
+ * @property array<string, mixed> $metadata
  * @property Carbon      $created_at
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
@@ -65,11 +65,13 @@ class EmployeeLocationEvent extends Model
         'metadata' => '{}',
     ];
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /** @return BelongsTo<GeoAttendanceSession, $this> */
     public function geoSession(): BelongsTo
     {
         return $this->belongsTo(GeoAttendanceSession::class, 'geo_session_id');

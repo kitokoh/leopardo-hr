@@ -24,6 +24,6 @@ class RejectGeoSession
             'validation_note' => $reason,
         ]);
 
-        return $session->fresh();
+        return $session->fresh() ?? $session;
     }
 }
