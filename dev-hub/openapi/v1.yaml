@@ -321,31 +321,6 @@ paths:
     put:
       tags: ["Attendance"]
       summary: "Configurer le mode de pointage (principal)"
-                      type: object
-                      properties:
-                        id: { type: integer }
-                        document_id: { type: integer }
-                        amount: { type: number, format: double }
-                        method: { type: string }
-                        reference: { type: string, nullable: true }
-                        received_at: { type: string, format: date, nullable: true }
-                        reconciled_at: { type: string, format: date-time, nullable: true }
-                        status: { type: string }
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-  /accounting/documents/{document}/payments:
-    post:
-      tags: ["Accounting"]
-      summary: "Enregistrer un paiement"
-      description: "Enregistre un paiement sur un document emis. Regle jamais paye > total (422 PAYMENT_EXCEEDS_TOTAL). Met a jour paid_amount + statut du document (partially_paid/paid). Issue #5229."
-      parameters:
-        - name: document
-          in: path
-          required: true
-          description: "ID du document comptable."
-          schema: { type: integer }
       requestBody:
         required: true
         content:
@@ -380,23 +355,25 @@ paths:
           description: "Configuration mise a jour"
         "401":
           $ref: "#/components/responses/Error401"
-  /attendance/employees/{employeeId}/preference:
-    get:
-      tags: ["Attendance"]
-      summary: "Préférence mode géolocalisation d'un employé (manager/RH)"
-      security:
-        - BearerAuth: []
+        "403":
+          $ref: "#/components/responses/Error403"
+  /accounting/documents/{document}/payments:
+    post:
+      tags: ["Accounting"]
+      summary: "Enregistrer un paiement"
+      description: "Enregistre un paiement sur un document emis. Regle jamais paye > total (422 PAYMENT_EXCEEDS_TOTAL). Met a jour paid_amount + statut du document (partially_paid/paid). Issue #5229."
       parameters:
-        - name: employeeId
+        - name: document
           in: path
           required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Préférence de l'employé"
-        "401":
-          $ref: "#/components/responses/Error401"
+          description: "ID du document comptable."
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
               required: [amount, method]
               properties:
                 amount: { type: number, format: double, minimum: 0.01 }
@@ -427,6 +404,23 @@ paths:
           $ref: "#/components/responses/Error403"
         "422":
           description: "Montant > total (PAYMENT_EXCEEDS_TOTAL) ou document non emis (PAYMENT_ON_UNSENT_DOCUMENT)."
+  /attendance/employees/{employeeId}/preference:
+    get:
+      tags: ["Attendance"]
+      summary: "Préférence mode géolocalisation d'un employé (manager/RH)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Préférence de l'employé"
+        "401":
+          $ref: "#/components/responses/Error401"
   /accounting/payments/{payment}/reconcile:
     post:
       tags: ["Accounting"]
