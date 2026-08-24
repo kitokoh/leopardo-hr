@@ -130,6 +130,12 @@ class AccountingContactController extends Controller
             'metadata',
         ];
 
+        // Défaut explicite aligné sur la migration (source varchar default 'manual') :
+        // le modèle en mémoire porte la valeur AVANT le refresh — sans défaut ici,
+        // la réponse renvoyait null alors que la ligne en DB a 'manual'
+        // (régression merge #5301, constatée sur le run coverage 2026-08-24).
+        $validated['source'] = $validated['source'] ?? 'manual';
+
         return array_intersect_key($validated, array_flip($allowed));
     }
 

@@ -81,6 +81,7 @@ class AccountingContactCrudTest extends TestCase
     {
         /** @var AccountingContact $contact */
         $contact = AccountingContact::query()->create(array_merge([
+            'company_id' => $company->id,
             'type' => 'customer',
             'name' => 'Société Alpha',
             'email' => 'alpha@example.com',

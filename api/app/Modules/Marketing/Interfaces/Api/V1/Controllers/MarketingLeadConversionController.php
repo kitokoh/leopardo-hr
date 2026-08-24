@@ -43,7 +43,10 @@ class MarketingLeadConversionController extends Controller
                 abort(404);
             }
 
-            if ($locked->converted_company_id !== null || $locked->status === MarketingLead::STATUS_CONVERTED || $locked->status === MarketingLead::STATUS_REJECTED) {
+            if ($locked->converted_company_id !== null
+                || $locked->status === MarketingLead::STATUS_QUALIFIED
+                || $locked->status === MarketingLead::STATUS_CONVERTED
+                || $locked->status === MarketingLead::STATUS_REJECTED) {
                 return response()->json([
                     'error' => 'LEAD_ALREADY_CLAIMED',
                     'message' => 'This lead has already been claimed by a company.',
