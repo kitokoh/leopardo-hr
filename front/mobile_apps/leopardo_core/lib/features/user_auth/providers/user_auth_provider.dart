@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
-import 'package:leopardo_hr/core/providers/core_providers.dart';
-import 'package:leopardo_hr/features/user_auth/data/user_auth_repository.dart';
+import 'package:leopardo_core/core/providers/core_providers.dart';
+import 'package:leopardo_core/features/user_auth/data/user_auth_repository.dart';
 import 'package:leopardo_core/models/app_user.dart';
 
 class UserAuthState {
