@@ -17109,7 +17109,7 @@ paths:
       tags: ["Recruitment"]
       summary: "Mettre à jour le statut d'une candidature"
       parameters:
-        - name: applicant
+        - name: id
           in: path
           required: true
           schema: { type: integer }
