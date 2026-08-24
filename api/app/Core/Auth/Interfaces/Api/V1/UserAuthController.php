@@ -129,23 +129,25 @@ class UserAuthController extends Controller
             ],
         ]);
 
-        /** @var User $user */
         $user = $request->user('user_api');
+        abort_unless($user instanceof User, 401);
         $statuses = array_values(array_unique($validated['statuses']));
         $user->forceFill([
             'personal_statuses' => $statuses,
             'personal_onboarding_completed_at' => now(),
         ])->save();
 
+        $freshUser = $user->fresh();
+
         return new JsonResponse([
-            'data' => $this->personalOnboardingPayload($user->fresh()),
+            'data' => $this->personalOnboardingPayload($freshUser instanceof User ? $freshUser : $user),
         ]);
     }
 
     public function personalOnboarding(Request $request): JsonResponse
     {
-        /** @var User $user */
         $user = $request->user('user_api');
+        abort_unless($user instanceof User, 401);
 
         return new JsonResponse([
             'data' => $this->personalOnboardingPayload($user),
@@ -157,8 +159,8 @@ class UserAuthController extends Controller
         $validated = $request->validate([
             'resume' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
         ]);
-        /** @var User $user */
         $user = $request->user('user_api');
+        abort_unless($user instanceof User, 401);
         $preferences = is_array($user->job_search_preferences) ? $user->job_search_preferences : [];
         $path = $validated['resume']->store('user-resumes/'.$user->id, 'local');
         $resume = [
@@ -203,8 +205,8 @@ class UserAuthController extends Controller
             'resume_id' => ['nullable', 'string', 'max:80'],
         ]);
 
-        /** @var User $user */
         $user = $request->user('user_api');
+        abort_unless($user instanceof User, 401);
         $user->forceFill([
             'job_search_preferences' => $validated,
             'job_search_profile_updated_at' => now(),
@@ -218,8 +220,8 @@ class UserAuthController extends Controller
 
     public function jobRecommendations(Request $request): JsonResponse
     {
-        /** @var User $user */
         $user = $request->user('user_api');
+        abort_unless($user instanceof User, 401);
         $statuses = is_array($user->personal_statuses) ? $user->personal_statuses : [];
         if (! in_array('job_seeker', $statuses, true)) {
             return new JsonResponse([

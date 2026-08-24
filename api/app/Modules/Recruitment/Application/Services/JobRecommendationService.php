@@ -190,7 +190,10 @@ final class JobRecommendationService
     /** @return array<int, string> */
     private function normalizeList(mixed $value): array
     {
-        /** @var array<int, mixed> $value */
+        if (! is_array($value)) {
+            return [];
+        }
+
         return array_values(array_unique(array_filter(array_map(
             static fn (mixed $item): string => Str::lower(trim((string) $item)),
             $value,
