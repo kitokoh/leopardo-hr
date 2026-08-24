@@ -27,6 +27,7 @@ return [
     'legal_notice' => 'This document is for informational purposes only and does not constitute an official payslip.',
 
     // Payslip (payslip.blade.php)
+    'payslip_number' => 'Pay slip No. :n',
     'payslip_title' => 'Payslip',
     'payslip_company_fallback' => 'Company',
     'payslip_matricule' => 'Employee ID',

@@ -27,6 +27,7 @@ return [
     'legal_notice' => 'Ce document est informatif et ne constitue pas un bulletin de paie officiel.',
 
     // Bulletin de paie (payslip.blade.php)
+    'payslip_number' => 'Bulletin N° :n',
     'payslip_title' => 'Bulletin de Paie',
     'payslip_company_fallback' => 'Entreprise',
     'payslip_matricule' => 'Matricule',
