@@ -1110,6 +1110,51 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/cameras/test-rtsp", options);
     },
 
+    /** Lister les evenements de carriere (plans de carriere, issue #5259) */
+    getCareerEvents(options = {}) {
+      return request("GET", "/career-events", options);
+    },
+
+    /** Creer un evenement de carriere (manager) */
+    postCareerEvents(options = {}) {
+      return request("POST", "/career-events", options);
+    },
+
+    /** Supprimer un evenement de carriere (pending uniquement) */
+    deleteCareerEventsByCareerEvent(options = {}) {
+      return request("DELETE", "/career-events/{careerEvent}", options);
+    },
+
+    /** Voir un evenement de carriere */
+    getCareerEventsByCareerEvent(options = {}) {
+      return request("GET", "/career-events/{careerEvent}", options);
+    },
+
+    /** Modifier partiellement un evenement de carriere (pending uniquement) */
+    patchCareerEventsByCareerEvent(options = {}) {
+      return request("PATCH", "/career-events/{careerEvent}", options);
+    },
+
+    /** Modifier un evenement de carriere (pending uniquement) */
+    putCareerEventsByCareerEvent(options = {}) {
+      return request("PUT", "/career-events/{careerEvent}", options);
+    },
+
+    /** Appliquer un evenement approuve (approved → applied) — met a jour l'employe (poste/departement/salaire de base, impact paie) */
+    putCareerEventsByCareerEventApply(options = {}) {
+      return request("PUT", "/career-events/{careerEvent}/apply", options);
+    },
+
+    /** Approuver un evenement de carriere (pending → approved) */
+    putCareerEventsByCareerEventApprove(options = {}) {
+      return request("PUT", "/career-events/{careerEvent}/approve", options);
+    },
+
+    /** Rejeter un evenement de carriere (pending → rejected) */
+    putCareerEventsByCareerEventReject(options = {}) {
+      return request("PUT", "/career-events/{careerEvent}/reject", options);
+    },
+
     /** Persister un evenement UX client tenant-scope */
     postClientEvents(options = {}) {
       return request("POST", "/client-events", options);

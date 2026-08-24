@@ -13,6 +13,7 @@ declare(strict_types=1);
 use App\Modules\Attendance\Interfaces\Api\V1\AttendanceController;
 use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
 use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\CareerEventController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureNoticeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
@@ -231,6 +232,21 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::put('/evaluations/{evaluation}/submit', [EvaluationController::class, 'submit'])->whereNumber('evaluation');
     Route::put('/evaluations/{evaluation}/acknowledge', [EvaluationController::class, 'acknowledge'])->whereNumber('evaluation');
     Route::delete('/evaluations/{evaluation}', [EvaluationController::class, 'destroy'])->whereNumber('evaluation');
+
+    // ── Module 7 (complément) — Plans de carrière (issue #5259) ─────────────
+    // Événements de carrière : promotion, augmentation, transfert, changement
+    // de poste. Workflow pending → approved → applied (ou rejected). `apply`
+    // met à jour l'employé (position/département/salaire de base) — impact
+    // paie sans intervention manuelle (spec ISSUE_5259_CAREER_PLANS.md).
+    Route::get('/career-events', [CareerEventController::class, 'index']);
+    Route::post('/career-events', [CareerEventController::class, 'store'])->middleware('api.manager');
+    Route::get('/career-events/{careerEvent}', [CareerEventController::class, 'show'])->whereNumber('careerEvent');
+    Route::put('/career-events/{careerEvent}', [CareerEventController::class, 'update'])->whereNumber('careerEvent');
+    Route::patch('/career-events/{careerEvent}', [CareerEventController::class, 'update'])->whereNumber('careerEvent');
+    Route::put('/career-events/{careerEvent}/approve', [CareerEventController::class, 'approve'])->whereNumber('careerEvent');
+    Route::put('/career-events/{careerEvent}/reject', [CareerEventController::class, 'reject'])->whereNumber('careerEvent');
+    Route::put('/career-events/{careerEvent}/apply', [CareerEventController::class, 'apply'])->whereNumber('careerEvent');
+    Route::delete('/career-events/{careerEvent}', [CareerEventController::class, 'destroy'])->whereNumber('careerEvent');
 });
 
 // ── Kiosk — auth par X-Kiosk-Token ────────────────────────────────────────────
