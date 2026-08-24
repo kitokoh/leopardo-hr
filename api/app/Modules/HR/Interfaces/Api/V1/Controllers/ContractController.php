@@ -13,6 +13,7 @@ use App\Modules\HR\Domain\Contracts\ContractDocumentGeneratorInterface;
 use App\Modules\HR\Domain\Exceptions\InvalidContractTransitionException;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\ContractAmendment;
+use App\Modules\HR\Infrastructure\Services\ContractCountryTemplates;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -70,6 +71,7 @@ class ContractController extends Controller
             'probation_end_date' => 'nullable|date|after:start_date',
             'benefits' => 'nullable|array',
             'clauses' => 'nullable|array',
+            'apply_legal_template' => 'nullable|boolean',
         ]);
 
         $employeeBelongsToCompany = Employee::query()
@@ -81,6 +83,32 @@ class ContractController extends Controller
             throw ValidationException::withMessages([
                 'employee_id' => ['The selected employee is invalid.'],
             ]);
+        }
+
+        // Issue #5260 — modèles légaux par pays : si aucune clause explicite
+        // n'est fournie, le contrat est semé avec les clauses types du pays de
+        // l'entreprise de l'employé (dérivé via employee.company.country).
+        // `apply_legal_template=false` désactive le seed ; des clauses
+        // explicites ne sont jamais écrasées.
+        $hasExplicitClauses = ! empty($validated['clauses'] ?? []);
+        $applyTemplate = $request->has('apply_legal_template')
+            ? (bool) $request->input('apply_legal_template')
+            : ! $hasExplicitClauses;
+
+        if ($applyTemplate && ! $hasExplicitClauses) {
+            /** @var Employee|null $employee */
+            $employee = Employee::query()
+                ->with('company:id,country')
+                ->where('company_id', $actor->company_id)
+                ->find($validated['employee_id']);
+
+            $country = $employee !== null && $employee->company !== null
+                ? strtoupper((string) $employee->company->country)
+                : '';
+            if ($country !== '') {
+                $template = (new ContractCountryTemplates)->forCountry($country, (string) $validated['contract_type']);
+                $validated['clauses'] = $template['clauses'];
+            }
         }
 
         $contract = Contract::create([
@@ -215,6 +243,69 @@ class ContractController extends Controller
             ->get();
 
         return ContractResource::collection($contracts)->response();
+    }
+
+    /**
+     * Issue #5260 — modèles légaux de contrat par pays.
+     * GET /contracts/templates?country=DZ[&contract_type=cdi] → bundle du
+     * pays (références légales, période d'essai, préavis, congés, heures
+     * supplémentaires, SMIG, cotisations, clauses CDI/CDD).
+     */
+    public function templates(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($actor->hasManagerRole('principal', 'rh') === false) {
+            abort(403);
+        }
+
+        $templates = new ContractCountryTemplates;
+
+        $country = strtoupper(trim((string) $request->input('country', '')));
+        if ($country === '' || ! $templates->supports($country)) {
+            return response()->json([
+                'error' => ['code' => 'CONTRACT_TEMPLATE_NOT_FOUND', 'message' => __('employees.contract_template_not_found')],
+            ], 422);
+        }
+
+        $contractType = (string) $request->input('contract_type', 'cdi');
+        if (! in_array($contractType, ['cdi', 'cdd', 'stage', 'freelance', 'interim'], true)) {
+            $contractType = 'cdi';
+        }
+
+        return response()->json(['data' => $templates->forCountry($country, $contractType)]);
+    }
+
+    /**
+     * Issue #5260 — signature explicite du contrat (validation formelle).
+     * POST /contracts/{contract}/sign — pose signed_at (+ document éventuel)
+     * sans activer le contrat. Idempotent : un contrat déjà signé est renvoyé
+     * tel quel (200).
+     */
+    public function sign(Request $request, Contract $contract): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($contract->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->hasManagerRole('principal', 'rh') === false) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'signed_document_path' => 'nullable|string|max:500',
+        ]);
+
+        if ($contract->signed_at === null) {
+            $contract->update([
+                'signed_at' => now(),
+                'signed_document_path' => $validated['signed_document_path'] ?? $contract->signed_document_path,
+            ]);
+        }
+
+        return (new ContractResource($contract->refresh()->load('employee:id,first_name,last_name')))
+            ->response();
     }
 
     public function activate(Request $request, Contract $contract): JsonResponse

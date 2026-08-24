@@ -11,6 +11,14 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 - **Payroll absence overlap predicates use direct date comparisons.** Replaced the four payroll `whereDate()` predicates on `absences.start_date` and `absences.end_date` with direct `where()` comparisons, preserving the overlap semantics while keeping the date columns directly usable by PostgreSQL indexes. No additional `absences` index was added before a staging plan comparison.
 
 - **Add composite index for payroll leave-balance lookup.** Added PostgreSQL index `idx_leave_balances_company_employee_year_type` on `(company_id, employee_id, year, absence_type_id)` to match `PayrollCalculator::accruedLeaveDays()` filters; created concurrently and guarded for non-PostgreSQL or missing-table environments. No other payroll index candidate was changed.
+### Added
+- **Attendance reports by period (issue #5268)** — the monthly report endpoint `GET /attendance/monthly-report` is now a full report engine:
+  - `period=day|week|month` (default `month`, backward compatible), anchors `date` (Y-m-d), `week` (Y-m-d — ISO week Monday→Sunday), `month` (Y-m)
+  - Filters `department_id` (team) and `employee_id` (individual attendance sheet); manager scope (`visibleToManager`, PA2-SEC-002/003) always enforced — filters can only narrow, never widen visibility
+  - CSV + PDF exports for every period (`attendance-report-<period>-<from>_<to>.<ext>`); payroll synthesis (hours, overtime, estimated gross) kept per period
+  - `AttendanceMonthlyReportService`/`AttendanceMonthlyReportRequest` renamed to `AttendanceReportService`/`AttendanceReportRequest`; controller method `monthlyReport` → `report` (route URL unchanged)
+  - Employee rows now include `department_id`/`department_name`; `data.period` adds `type` while keeping `month` for backward compatibility
+  - Tests: `AttendanceReportTest` (9 scenarios: daily, weekly, monthly, defaults, filters, CSV/PDF exports, scoped RBAC, invalid period)
 
 ### Fixed
 - **FamilyPartsRicfTest uses a deterministic contract period.** The three employee fixtures now start before the July 2026 payroll period, preventing factory randomness from prorating the expected 300,000 XOF gross and making the RICF assertions stable.

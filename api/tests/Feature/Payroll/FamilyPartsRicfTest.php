@@ -80,6 +80,9 @@ class FamilyPartsRicfTest extends TestCase
             'company_id' => $this->company->id,
             'salary_type' => 'fixed',
             'salary_base' => 300000,
+            // Épinglé avant la période du run (2026-07) : la factory tire un
+            // contract_start aléatoire (faker) qui pouvait tomber en juillet
+            // → prorata → 270 954,55 au lieu de 300 000 (flake, Refs #5241).
             'contract_start' => '2026-01-01',
         ]);
 
@@ -104,6 +107,7 @@ class FamilyPartsRicfTest extends TestCase
             'salary_base' => 300000,
             'contract_start' => '2026-01-01',
             'family_parts' => 3.0,
+            'contract_start' => '2026-01-01',
         ]);
 
         (new PayrollCalculator)->calculateRun($run);
@@ -125,6 +129,7 @@ class FamilyPartsRicfTest extends TestCase
             'salary_base' => 300000,
             'contract_start' => '2026-01-01',
             'family_parts' => 5.0,
+            'contract_start' => '2026-01-01',
         ]);
 
         (new PayrollCalculator)->calculateRun($run);

@@ -13,7 +13,7 @@ import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/mobile_decision_actions.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
-import 'package:leopardo_hr/features/salary_advances/providers/salary_advance_provider.dart';
+import 'package:leopardo_core/features/salary_advances/providers/salary_advance_provider.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/models/salary_advance.dart';
 import 'package:url_launcher/url_launcher.dart';

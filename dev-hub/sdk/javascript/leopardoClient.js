@@ -140,6 +140,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/absences/{absence}/reject", options);
     },
 
+    /** Lister les contacts client/fournisseur */
+    getAccountingContacts(options = {}) {
+      return request("GET", "/accounting/contacts", options);
+    },
+
+    /** Creer un contact client/fournisseur */
+    postAccountingContacts(options = {}) {
+      return request("POST", "/accounting/contacts", options);
+    },
+
+    /** Supprimer un contact client/fournisseur */
+    deleteAccountingContactsByContact(options = {}) {
+      return request("DELETE", "/accounting/contacts/{contact}", options);
+    },
+
+    /** Detail d'un contact client/fournisseur */
+    getAccountingContactsByContact(options = {}) {
+      return request("GET", "/accounting/contacts/{contact}", options);
+    },
+
+    /** Mettre a jour un contact client/fournisseur */
+    putAccountingContactsByContact(options = {}) {
+      return request("PUT", "/accounting/contacts/{contact}", options);
+    },
+
     /** Envoyer un message a l'assistant IA (super-admin) */
     postAdminAiChat(options = {}) {
       return request("POST", "/admin/ai/chat", options);
@@ -640,7 +665,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/attendance/corrections/{correction}/reject", options);
     },
 
-    /** Rapport mensuel de pointage */
+    /** Rapport de pointage (journalier, hebdomadaire ou mensuel) */
     getAttendanceMonthlyReport(options = {}) {
       return request("GET", "/attendance/monthly-report", options);
     },
@@ -1110,6 +1135,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/contracts/{contract}/renew", options);
     },
 
+    /** Signer explicitement un contrat (issue #5260) — idempotent */
+    postContractsByContractSign(options = {}) {
+      return request("POST", "/contracts/{contract}/sign", options);
+    },
+
     /** Suspendre un contrat actif */
     postContractsByContractSuspend(options = {}) {
       return request("POST", "/contracts/{contract}/suspend", options);
@@ -1123,6 +1153,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Contrats expirant bientot */
     getContractsExpiring(options = {}) {
       return request("GET", "/contracts/expiring", options);
+    },
+
+    /** Modeles legaux de contrat par pays (issue #5260) — DZ/MA/TN/SN */
+    getContractsTemplates(options = {}) {
+      return request("GET", "/contracts/templates", options);
     },
 
     /** Lister les conversations de l'employe courant */
@@ -1398,6 +1433,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Resume journalier d'un employe */
     getEmployeesByEmployeeDailySummary(options = {}) {
       return request("GET", "/employees/{employee}/daily-summary", options);
+    },
+
+    /** Récapitulatif du préavis légal (issue #5325, G2) */
+    getEmployeesByEmployeeDepartureNotice(options = {}) {
+      return request("GET", "/employees/{employee}/departure/notice", options);
     },
 
     /** Solde de tout compte (fin de contrat, F-08) */
@@ -1863,6 +1903,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Persister un lead marketing (vitrine) */
     postMarketingLeads(options = {}) {
       return request("POST", "/marketing/leads", options);
+    },
+
+    /** Lire le contact comptabilite cree depuis un lead qualifie */
+    getMarketingLeadsByLeadContact(options = {}) {
+      return request("GET", "/marketing/leads/{lead}/contact", options);
+    },
+
+    /** Qualifier un lead et creer le contact comptabilite associe */
+    postMarketingLeadsByLeadQualify(options = {}) {
+      return request("POST", "/marketing/leads/{lead}/qualify", options);
     },
 
     /** Lister les publications (alias court de /social-posts) */
@@ -2888,6 +2938,14 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Mettre à jour le statut d'une candidature */
     patchRecruitmentApplicantsByApplicantStatus(options = {}) {
       return request("PATCH", "/recruitment/applicants/{applicant}/status", options);
+    /** Changer le statut d'une candidature (principal/rh) */
+    patchRecruitmentApplicantsByIdStatus(options = {}) {
+      return request("PATCH", "/recruitment/applicants/{id}/status", options);
+    },
+
+    /** Saisir le feedback d'un entretien (le clôture) */
+    patchRecruitmentInterviewsByIdFeedback(options = {}) {
+      return request("PATCH", "/recruitment/interviews/{id}/feedback", options);
     },
 
     /** Supprimer un entretien (manager) */

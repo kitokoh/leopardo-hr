@@ -19,7 +19,9 @@ class PayrollCountryRulesTest extends TestCase
     {
         $rules = [
             'DZ' => [new AlgeriaPayrollRules, 90.0, 260.0],
-            'MA' => [new MoroccoPayrollRules, 67.4, 130.9],
+            // MA 2026 (#5248) : salarié 6,93 ‰ (CNSS 4,48 + AMO 2,26 + IPE 0,19)
+            // · employeur 21,47 ‰ (CNSS 8,98 + AMO 4,11 + IPE 0,38 + AF 6,40 + TFP 1,60).
+            'MA' => [new MoroccoPayrollRules, 69.3, 214.7],
             'TN' => [new TunisiaPayrollRules, 91.8, 165.7],
             'FR' => [new FrancePayrollRules, 170.3, 300.0],
             'TR' => [new TurkeyPayrollRules, 150.0, 225.0],
@@ -60,15 +62,23 @@ class PayrollCountryRulesTest extends TestCase
 
     public function test_morocco_uses_annual_ir_with_fixed_deduction(): void
     {
-        // CGI MA art. 58 (#2260) : abattement frais professionnels 35 % du brut
-        // ANNUEL (plancher 2 500 / plafond 30 000 MAD) appliqué AVANT le barème.
+        // CGI MA art. 59-I (#5248, LF 2023) : abattement frais professionnels
+        // 35 % du brut ANNUEL si < 78 000 (25 % au-delà), plancher 2 500 /
+        // plafond 35 000 MAD — appliqué AVANT le barème IR (art. 73-I, LF 2025).
         $rules = new MoroccoPayrollRules;
 
         // 2 500 × 12 = 30 000 ; abattement 35 % = 10 500 → assiette 19 500 → 0 %
         self::assertSame(0.0, $rules->calculateIncomeTax(2500));
         // 5 000 × 12 = 60 000 ; abattement 35 % = 21 000 → assiette 39 000
-        // → tranche 10 % (fixe 3 000) : 39 000 × 10 % − 3 000 = 900/an → 75,00/mois
-        self::assertSame(75.0, $rules->calculateIncomeTax(5000));
+        // → tranche 0 % (seuil relevé à 40 000 par la LF 2025) → IR nul
+        self::assertSame(0.0, $rules->calculateIncomeTax(5000));
+        // 5 500 × 12 = 66 000 ; abattement 35 % = 23 100 → assiette 42 900
+        // → tranche 10 % (fixe 4 000) : 42 900 × 10 % − 4 000 = 290/an → 24,17/mois
+        self::assertSame(24.17, $rules->calculateIncomeTax(5500));
+        // 6 500 × 12 = 78 000 (seuil exact) ; abattement 25 % = 19 500
+        // → assiette 58 500 → tranche 10 % : 58 500 × 10 % − 4 000 = 1 850/an
+        // → 154,17/mois
+        self::assertSame(154.17, $rules->calculateIncomeTax(6500));
     }
 
     /**

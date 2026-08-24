@@ -8,8 +8,8 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_core/features/schedules/data/schedule_repository.dart';
-import 'package:leopardo_manager/features/schedules/providers/schedule_provider.dart';
-import 'package:leopardo_manager/features/team/providers/team_provider.dart';
+import 'package:leopardo_core/features/schedules/providers/schedule_provider.dart';
+import 'package:leopardo_core/features/team/providers/team_provider.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 
 class ScheduleListScreen extends ConsumerWidget {
@@ -51,7 +51,8 @@ class ScheduleListScreen extends ConsumerWidget {
                   EmptyState(
                     icon: Icons.schedule_outlined,
                     title: 'Aucune regle entreprise',
-                    description: 'Creez la premiere regle pour cadrer horaires, repos, conges, pauses et heures supplementaires.',
+                    description:
+                        'Creez la premiere regle pour cadrer horaires, repos, conges, pauses et heures supplementaires.',
                   ),
                 ],
               );
@@ -463,11 +464,10 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
       text: (schedule?.overtimeThresholdWeekly ?? 40).toStringAsFixed(0),
     );
     _leaveDaysCtrl = TextEditingController(
-      text:
-          (schedule?.leaveRules.isNotEmpty == true
-                  ? schedule!.leaveRules.first.daysPerYear ?? 21
-                  : 21)
-              .toStringAsFixed(0),
+      text: (schedule?.leaveRules.isNotEmpty == true
+              ? schedule!.leaveRules.first.daysPerYear ?? 21
+              : 21)
+          .toStringAsFixed(0),
     );
     _notesCtrl = TextEditingController(text: schedule?.assignmentNotes ?? '');
     _startTime = _parseTime(schedule?.startTime ?? '08:00');
@@ -665,7 +665,8 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
                 style: AppTypography.body.copyWith(color: MobileSurface.text),
                 decoration: InputDecoration(
                   labelText: 'Regles internes',
-                  hintText: 'Repos, consignes de pause, conges, exceptions terrain...',
+                  hintText:
+                      'Repos, consignes de pause, conges, exceptions terrain...',
                   prefixIcon: const Icon(
                     Icons.rule_folder_outlined,
                     color: MobileSurface.secondary,
