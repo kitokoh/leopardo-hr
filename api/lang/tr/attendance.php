@@ -58,4 +58,11 @@ return [
     'correction_already_processed' => 'Bu düzeltme talebi zaten işlendi.',
     'manual_checkout_requires_check_in' => 'Manuel çıkış için giriş saati gerekir.',
     'checkout_after_checkin' => 'Çıkış saati giriş saatinden sonra olmalıdır.',
+
+    // Issue #5269 — messages API pointage (zéro chaîne hardcodée utilisateur).
+    'workflow_deactivated' => 'İş akışı devre dışı bırakıldı.',
+    'request_not_pending' => 'Talep beklemede değil.',
+    'calendar_disconnected' => 'Takvim bağlantısı kesildi.',
+    'geo_event_no_session' => 'Olay işlendi (çıkış için açık oturum bulunamadı).',
+    'geo_event_processed' => 'Coğrafi olay başarıyla işlendi.',
 ];

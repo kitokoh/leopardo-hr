@@ -92,7 +92,7 @@ class CalendarSyncController extends Controller
 
         $this->syncService->disconnect($user, $provider);
 
-        return new JsonResponse(['message' => 'Calendar disconnected.']);
+        return new JsonResponse(['message' => __('attendance.calendar_disconnected')]);
     }
 
     public function sync(CalendarSyncRequest $request): JsonResponse

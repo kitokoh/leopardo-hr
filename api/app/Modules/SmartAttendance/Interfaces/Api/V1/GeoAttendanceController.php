@@ -52,13 +52,13 @@ class GeoAttendanceController extends Controller
 
             if ($result === null) {
                 return response()->json([
-                    'message' => 'Event processed (no open session found for exit).',
+                    'message' => __('attendance.geo_event_no_session'),
                     'data' => null,
                 ]);
             }
 
             return response()->json([
-                'message' => 'Geo event processed successfully.',
+                'message' => __('attendance.geo_event_processed'),
                 'data' => [
                     'session_id' => $result->id,
                     'status' => $result->status,
