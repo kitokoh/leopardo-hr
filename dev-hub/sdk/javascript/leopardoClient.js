@@ -195,11 +195,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/accounting/documents/{document}/payments", options);
     },
 
-    /** Enregistrer un encaissement (→ partiellement paye / paye, #5223) */
-    postAccountingDocumentsByDocumentPayments2(options = {}) {
-      return request("POST", "/accounting/documents/{document}/payments", options);
-    },
-
     /** Envoyer un brouillon (draft → sent, #5223) */
     postAccountingDocumentsByDocumentSend(options = {}) {
       return request("POST", "/accounting/documents/{document}/send", options);
@@ -1770,11 +1765,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", options);
     },
 
-    /** Refuser une note de frais (déprécié — utiliser POST) */
-    putExpenseClaimsByExpenseClaimAccountingEntriesRegenerate(options = {}) {
-      return request("PUT", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", options);
-    },
-
     /** Approuver une note de frais */
     postExpenseClaimsByExpenseClaimApprove(options = {}) {
       return request("POST", "/expense-claims/{expenseClaim}/approve", options);
@@ -1788,6 +1778,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Rejeter une note de frais */
     postExpenseClaimsByExpenseClaimReject(options = {}) {
       return request("POST", "/expense-claims/{expenseClaim}/reject", options);
+    },
+
+    /** Rejeter une note de frais (deprecie) */
+    putExpenseClaimsByExpenseClaimReject(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}/reject", options);
     },
 
     /** Soumettre une note de frais */

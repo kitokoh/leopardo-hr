@@ -176,10 +176,6 @@ class LeopardoClient:
         """Enregistrer un paiement"""
         return self.request("POST", "/accounting/documents/{document}/payments", **kwargs)
 
-    def post_accounting_documents_by_document_payments_2(self, **kwargs):
-        """Enregistrer un encaissement (→ partiellement paye / paye, #5223)"""
-        return self.request("POST", "/accounting/documents/{document}/payments", **kwargs)
-
     def post_accounting_documents_by_document_send(self, **kwargs):
         """Envoyer un brouillon (draft → sent, #5223)"""
         return self.request("POST", "/accounting/documents/{document}/send", **kwargs)
@@ -1436,10 +1432,6 @@ class LeopardoClient:
         """Regenerer les ecritures comptables d'une note (comptable, idempotent)"""
         return self.request("POST", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", **kwargs)
 
-    def put_expense_claims_by_expenseclaim_accounting_entries_regenerate(self, **kwargs):
-        """Refuser une note de frais (déprécié — utiliser POST)"""
-        return self.request("PUT", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", **kwargs)
-
     def post_expense_claims_by_expenseclaim_approve(self, **kwargs):
         """Approuver une note de frais"""
         return self.request("POST", "/expense-claims/{expenseClaim}/approve", **kwargs)
@@ -1451,6 +1443,10 @@ class LeopardoClient:
     def post_expense_claims_by_expenseclaim_reject(self, **kwargs):
         """Rejeter une note de frais"""
         return self.request("POST", "/expense-claims/{expenseClaim}/reject", **kwargs)
+
+    def put_expense_claims_by_expenseclaim_reject(self, **kwargs):
+        """Rejeter une note de frais (deprecie)"""
+        return self.request("PUT", "/expense-claims/{expenseClaim}/reject", **kwargs)
 
     def put_expense_claims_by_expenseclaim_submit(self, **kwargs):
         """Soumettre une note de frais"""

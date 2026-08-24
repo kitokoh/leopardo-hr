@@ -321,31 +321,6 @@ paths:
     put:
       tags: ["Attendance"]
       summary: "Configurer le mode de pointage (principal)"
-                      type: object
-                      properties:
-                        id: { type: integer }
-                        document_id: { type: integer }
-                        amount: { type: number, format: double }
-                        method: { type: string }
-                        reference: { type: string, nullable: true }
-                        received_at: { type: string, format: date, nullable: true }
-                        reconciled_at: { type: string, format: date-time, nullable: true }
-                        status: { type: string }
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-  /accounting/documents/{document}/payments:
-    post:
-      tags: ["Accounting"]
-      summary: "Enregistrer un paiement"
-      description: "Enregistre un paiement sur un document emis. Regle jamais paye > total (422 PAYMENT_EXCEEDS_TOTAL). Met a jour paid_amount + statut du document (partially_paid/paid). Issue #5229."
-      parameters:
-        - name: document
-          in: path
-          required: true
-          description: "ID du document comptable."
-          schema: { type: integer }
       requestBody:
         required: true
         content:
@@ -380,28 +355,28 @@ paths:
           description: "Configuration mise a jour"
         "401":
           $ref: "#/components/responses/Error401"
-  /attendance/employees/{employeeId}/preference:
-    get:
-      tags: ["Attendance"]
-      summary: "Préférence mode géolocalisation d'un employé (manager/RH)"
-      security:
-        - BearerAuth: []
+  /accounting/documents/{document}/payments:
+    post:
+      tags: ["Accounting"]
+      summary: "Enregistrer un paiement"
+      description: "Enregistre un paiement sur un document emis. Regle jamais paye > total (422 PAYMENT_EXCEEDS_TOTAL). Met a jour paid_amount + statut du document (partially_paid/paid). Issue #5229."
       parameters:
-        - name: employeeId
+        - name: document
           in: path
           required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Préférence de l'employé"
-        "401":
-          $ref: "#/components/responses/Error401"
+          description: "ID du document comptable."
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
               required: [amount, method]
               properties:
                 amount: { type: number, format: double, minimum: 0.01 }
                 method: { type: string, enum: [cash, bank_transfer, check, card, other] }
-                reference: { type: string, nullable: true }
+                reference: { type: string, nullable: true, maxLength: 255 }
                 received_at: { type: string, format: date, nullable: true }
       responses:
         "201":
@@ -427,6 +402,23 @@ paths:
           $ref: "#/components/responses/Error403"
         "422":
           description: "Montant > total (PAYMENT_EXCEEDS_TOTAL) ou document non emis (PAYMENT_ON_UNSENT_DOCUMENT)."
+  /attendance/employees/{employeeId}/preference:
+    get:
+      tags: ["Attendance"]
+      summary: "Préférence mode géolocalisation d'un employé (manager/RH)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Préférence de l'employé"
+        "401":
+          $ref: "#/components/responses/Error401"
   /accounting/payments/{payment}/reconcile:
     post:
       tags: ["Accounting"]
@@ -13904,40 +13896,6 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /accounting/documents/{document}/payments:
-    post:
-      tags: ["Accounting"]
-      summary: "Enregistrer un encaissement (→ partiellement paye / paye, #5223)"
-      description: "Cumul des paiements borne au total TTC. Un document paye ou annule refuse tout paiement. Statut paye jamais atteint sans paiement."
-      parameters:
-        - name: document
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [amount, method]
-              properties:
-                amount: { type: number, minimum: 0, exclusiveMinimum: true }
-                method: { type: string, enum: [cash, bank_transfer, check, card, other] }
-                received_at: { type: string, format: date }
-                reference: { type: string, maxLength: 120 }
-      responses:
-        "201":
-          description: "Paiement enregistre"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-        "404":
-          $ref: "#/components/responses/Error404"
-        "422":
-          $ref: "#/components/responses/Validation422"
-
   /accounting/documents/{document}/cancel:
     post:
       tags: ["Accounting"]
@@ -15431,6 +15389,31 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Expenses"]
+      summary: "Rejeter une note de frais (deprecie)"
+      description: "Alias deprecie de POST /expense-claims/{expenseClaim}/reject (issue #4930). Conservé pour compatibilité clients existants."
+      deprecated: true
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rejection_reason:
+                  type: string
+      responses:
+        "200":
+          description: "Note rejetee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
 
   /expense-claims/{expenseClaim}/accounting-entries:
     get:
@@ -15496,25 +15479,6 @@ paths:
   # =============================================
 
   # --- Approvals ---
-    put:
-      tags: ["Deprecated"]
-      summary: "Refuser une note de frais (déprécié — utiliser POST)"
-      deprecated: true
-      parameters:
-        - name: expenseClaim
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Action effectuée (ancien verbe, déprécié #4930)"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          description: "Non autorisé"
-        "404":
-          description: "Introuvable"
-
   /approval-workflows:
     get:
       tags: ["Approvals"]
