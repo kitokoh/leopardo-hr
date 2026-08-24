@@ -50,10 +50,21 @@ class PayrollAccountingExportJournalTest extends TestCase
         $this->assertSame($debits, $credits);
 
         // Codes comptes attendus (1 écriture par compte, agrégée par bulletin).
-        $accountTotals = [];
+        $accountTotals = [
+            '641' => ['debit' => 0.0, 'credit' => 0.0],
+            '645' => ['debit' => 0.0, 'credit' => 0.0],
+            '421' => ['debit' => 0.0, 'credit' => 0.0],
+            '431' => ['debit' => 0.0, 'credit' => 0.0],
+            '4421' => ['debit' => 0.0, 'credit' => 0.0],
+            '425' => ['debit' => 0.0, 'credit' => 0.0],
+        ];
         foreach ($lines as $line) {
-            $accountTotals[$line['account_code']]['debit'] = ($accountTotals[$line['account_code']]['debit'] ?? 0.0) + $line['debit'];
-            $accountTotals[$line['account_code']]['credit'] = ($accountTotals[$line['account_code']]['credit'] ?? 0.0) + $line['credit'];
+            $code = $line['account_code'];
+            if (! isset($accountTotals[$code])) {
+                $this->fail('Code compte inattendu dans le journal : '.$code);
+            }
+            $accountTotals[$code]['debit'] += $line['debit'];
+            $accountTotals[$code]['credit'] += $line['credit'];
         }
         $this->assertSame(120000.0, $accountTotals['641']['debit']);
         $this->assertSame(18000.0, $accountTotals['645']['debit']);
@@ -64,6 +75,9 @@ class PayrollAccountingExportJournalTest extends TestCase
 
         // Équilibre par bulletin ET débit/crédit exclusifs.
         foreach ([$run->paySlips()->orderBy('id')->first(), $run->paySlips()->orderByDesc('id')->first()] as $slip) {
+            if ($slip === null) {
+                $this->fail('Deux bulletins validés attendus (équilibre par bulletin).');
+            }
             $slipLines = array_values(array_filter(
                 $lines,
                 fn (array $line): bool => $line['pay_slip_id'] === (int) $slip->id
