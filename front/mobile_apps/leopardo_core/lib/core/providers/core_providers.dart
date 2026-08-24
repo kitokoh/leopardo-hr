@@ -15,6 +15,7 @@ import 'package:leopardo_core/features/evaluations/data/evaluation_repository.da
 import 'package:leopardo_core/features/cabinet/data/cabinet_repository.dart';
 import 'package:leopardo_core/features/schedules/data/schedule_repository.dart';
 import 'package:leopardo_core/features/company_branding/data/company_branding_repository.dart';
+import 'package:leopardo_core/features/user_auth/data/user_auth_repository.dart';
 
 // ── Providers communs (apps leopardo_hr / leopardo_manager) ────────────────
 // Extrait de <app>/core/providers/core_providers.dart (issue #5279, lot 1) :
@@ -36,7 +37,8 @@ final apiClientProvider = Provider<ApiClient>((ref) {
   // Issue #2737 — un 401 (session révoquée, mot de passe changé) doit sortir
   // l'utilisateur de l'état « authentifié » fantôme. Lecture différée du
   // notifier pour éviter la dépendance circulaire apiClient ↔ authProvider.
-  return ApiClient(storage, preferences, onUnauthorized: sessionExpiredHandler.call);
+  return ApiClient(storage, preferences,
+      onUnauthorized: sessionExpiredHandler.call);
 });
 
 final pushNotificationServiceProvider = Provider<PushNotificationService>((
@@ -102,4 +104,11 @@ final companyBrandingRepositoryProvider = Provider<CompanyBrandingRepository>((
 ) {
   final apiClient = ref.watch(apiClientProvider);
   return CompanyBrandingRepository(apiClient);
+});
+
+final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  final storage = ref.watch(secureStorageProvider);
+  final preferences = ref.watch(appPreferencesProvider);
+  return UserAuthRepository(apiClient, storage, preferences);
 });

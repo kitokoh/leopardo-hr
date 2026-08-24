@@ -13,7 +13,7 @@ import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/features/schedules/data/schedule_repository.dart';
 import 'package:leopardo_core/features/schedules/providers/schedule_provider.dart';
 import 'package:leopardo_core/features/team/data/employee_repository.dart';
-import 'package:leopardo_manager/features/team/providers/team_provider.dart';
+import 'package:leopardo_core/features/team/providers/team_provider.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:leopardo_core/core/api/api_exceptions.dart';
-import 'package:leopardo_manager/core/providers/core_providers.dart';
+import 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 
