@@ -2368,16 +2368,9 @@ class LeopardoClient:
         """Planifier un entretien"""
         return self.request("POST", "/recruitment/applicants/{applicant}/interviews", **kwargs)
 
-    def patch_recruitment_applicants_by_applicant_status(self, **kwargs):
-        """Mettre à jour le statut d'une candidature"""
-        return self.request("PATCH", "/recruitment/applicants/{applicant}/status", **kwargs)
     def patch_recruitment_applicants_by_id_status(self, **kwargs):
-        """Changer le statut d'une candidature (principal/rh)"""
+        """Mettre à jour le statut d'une candidature"""
         return self.request("PATCH", "/recruitment/applicants/{id}/status", **kwargs)
-
-    def patch_recruitment_interviews_by_id_feedback(self, **kwargs):
-        """Saisir le feedback d'un entretien (le clôture)"""
-        return self.request("PATCH", "/recruitment/interviews/{id}/feedback", **kwargs)
 
     def delete_recruitment_interviews_by_interview(self, **kwargs):
         """Supprimer un entretien (manager)"""

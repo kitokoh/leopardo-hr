@@ -1907,41 +1907,6 @@ paths:
           description: "Non-manager"
 
 
-    get:
-      tags: ["Payroll Engine"]
-      summary: "Détail d'un planning"
-      parameters:
-        - name: schedule
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Planning"
-        "401":
-          $ref: "#/components/responses/Error401"
-    patch:
-      tags: ["Payroll Engine"]
-      summary: "Mettre à jour un planning (manager — sécurité #2217)"
-      parameters:
-        - name: schedule
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          description: "Planning mis à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          description: "Non-manager"
-
   /schedules/{schedule}/assign-employees:
     parameters:
       - name: schedule
@@ -6332,22 +6297,6 @@ paths:
           $ref: "#/components/responses/Error404"
         "422":
           $ref: "#/components/responses/Validation422"
-    get:
-      tags: ["Tasks"]
-      summary: "Commentaires d'une tâche (auteur + employés liés)"
-      parameters:
-        - name: task
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Commentaires"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          description: "Non autorisé (hors périmètre)"
-
     get:
       tags: ["Tasks"]
       summary: "Commentaires d'une tâche (auteur + employés liés)"
@@ -13226,20 +13175,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer une offre d'emploi (manager)"
-      parameters:
-        - name: jobPosting
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Offre supprimée"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /recruitment/jobs/{jobPosting}/publish:
     post:
       tags: ["Recruitment"]
@@ -13392,33 +13327,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-    get:
-      tags: ["Recruitment"]
-      summary: "Détail d'une candidature (manager)"
-      parameters:
-        - name: applicant
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Candidature"
-        "401":
-          $ref: "#/components/responses/Error401"
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer une candidature (manager)"
-      parameters:
-        - name: applicant
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Candidature supprimée"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /recruitment/applicants/{applicant}/interviews:
     post:
       tags: ["Recruitment"]
@@ -13506,20 +13414,6 @@ paths:
           $ref: "#/components/responses/Error401"
 
   # --- Training ---
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer un entretien (manager)"
-      parameters:
-        - name: interview
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Entretien supprimé"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /training/courses:
     get:
       tags: ["Training"]

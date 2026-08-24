@@ -2936,16 +2936,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Mettre à jour le statut d'une candidature */
-    patchRecruitmentApplicantsByApplicantStatus(options = {}) {
-      return request("PATCH", "/recruitment/applicants/{applicant}/status", options);
-    /** Changer le statut d'une candidature (principal/rh) */
     patchRecruitmentApplicantsByIdStatus(options = {}) {
       return request("PATCH", "/recruitment/applicants/{id}/status", options);
-    },
-
-    /** Saisir le feedback d'un entretien (le clôture) */
-    patchRecruitmentInterviewsByIdFeedback(options = {}) {
-      return request("PATCH", "/recruitment/interviews/{id}/feedback", options);
     },
 
     /** Supprimer un entretien (manager) */
