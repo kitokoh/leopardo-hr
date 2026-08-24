@@ -215,18 +215,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/accounting/journal-entries", options);
     },
 
-    /** Lister les écritures du journal salarial */
-    getAccountingJournalEntries2(options = {}) {
-      return request("GET", "/accounting/journal-entries", options);
-    },
-
     /** Consulter une écriture du journal salarial */
     getAccountingJournalEntriesByEntry(options = {}) {
-      return request("GET", "/accounting/journal-entries/{entry}", options);
-    },
-
-    /** Détail d'une écriture du journal salarial */
-    getAccountingJournalEntriesByEntry2(options = {}) {
       return request("GET", "/accounting/journal-entries/{entry}", options);
     },
 

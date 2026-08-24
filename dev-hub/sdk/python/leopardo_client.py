@@ -192,16 +192,8 @@ class LeopardoClient:
         """Lister les écritures du journal salarial"""
         return self.request("GET", "/accounting/journal-entries", **kwargs)
 
-    def get_accounting_journal_entries_2(self, **kwargs):
-        """Lister les écritures du journal salarial"""
-        return self.request("GET", "/accounting/journal-entries", **kwargs)
-
     def get_accounting_journal_entries_by_entry(self, **kwargs):
         """Consulter une écriture du journal salarial"""
-        return self.request("GET", "/accounting/journal-entries/{entry}", **kwargs)
-
-    def get_accounting_journal_entries_by_entry_2(self, **kwargs):
-        """Détail d'une écriture du journal salarial"""
         return self.request("GET", "/accounting/journal-entries/{entry}", **kwargs)
 
     def get_accounting_payment_orders(self, **kwargs):
