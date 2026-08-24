@@ -12,6 +12,92 @@ class AppLocalizationsTr extends AppLocalizations {
   String get appTitle => 'Leopardo IK';
 
   @override
+  String get accountingportalTitle => 'Güvenli belge alanı';
+
+  @override
+  String get accountingportalSubtitle =>
+      'Erişim, gönderenin paylaştığı belgeyle sınırlıdır';
+
+  @override
+  String get accountingportalNumber => 'Belge no.';
+
+  @override
+  String get accountingportalType => 'Belge türü';
+
+  @override
+  String get accountingportalStatus => 'Durum';
+
+  @override
+  String get accountingportalIssuedate => 'Düzenlenme tarihi';
+
+  @override
+  String get accountingportalTotal => 'Toplam tutar';
+
+  @override
+  String get accountingportalCurrency => 'Para birimi';
+
+  @override
+  String get accountingportalExpiresat =>
+      'Bağlantı :date tarihine kadar geçerli';
+
+  @override
+  String get accountingportalDownload => 'PDF indir';
+
+  @override
+  String get accountingportalDownloadhint => 'Belgeyi PDF olarak indir';
+
+  @override
+  String get accountingportalNotfoundtitle =>
+      'Geçersiz veya süresi dolmuş bağlantı';
+
+  @override
+  String get accountingportalNotfoundbody =>
+      'Bu bağlantı artık geçerli değil veya süresi doldu. Yeni bir bağlantı almak için gönderenle iletişime geçin.';
+
+  @override
+  String get accountingportalErrortitle => 'Belge yüklenemedi';
+
+  @override
+  String get accountingportalErrorbody =>
+      'Bir hata oluştu. Lütfen birkaç dakika sonra tekrar deneyin.';
+
+  @override
+  String get accountingportalRetry => 'Tekrar dene';
+
+  @override
+  String get accountingportalBacktosite => 'Siteye dön';
+
+  @override
+  String get accountingportalSecuritynote =>
+      'Güvenli paylaşım — bu bağlantıyı iletmeyin';
+
+  @override
+  String get accountingportalStatusdraft => 'Taslak';
+
+  @override
+  String get accountingportalStatussent => 'Gönderildi';
+
+  @override
+  String get accountingportalStatuspartiallypaid => 'Kısmen ödendi';
+
+  @override
+  String get accountingportalStatuspaid => 'Ödendi';
+
+  @override
+  String get accountingportalStatuscancelled => 'İptal edildi';
+
+  @override
+  String get accountingportalStatusoverdue => 'Gecikmiş';
+
+  @override
+  String get accountingportalLoading => 'Yükleniyor…';
+
+  @override
+  String get accountingportalDownloaderror =>
+      'İndirme başarısız oldu. Lütfen tekrar deneyin.';
+
+
+  @override
   String get welcomeBrandSubtitle => 'Sohbet odakli, mobil oncelikli, moduler.';
 
   @override
