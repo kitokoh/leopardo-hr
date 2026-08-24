@@ -73,6 +73,275 @@ tags:
     description: "Administration super-admin : gestion tenants, plans, metriques globales."
 
 paths:
+  /attendance/config:
+    get:
+      tags: ["Attendance"]
+      summary: "Lire la configuration de mode active pour l'employe connecte"
+      description: "Resout le mode de pointage effectif (GPS/QR/manuel) et indique si une photo de pointage est obligatoire (punch_photo_mode=photo_required)."
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Configuration de mode active"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      mode: { type: string, enum: [manual, gps_auto, qr, mixed] }
+                      can_override: { type: boolean }
+                      gps_enabled: { type: boolean }
+                      geofence:
+                        type: object
+                        nullable: true
+                        properties:
+                          latitude: { type: number, nullable: true }
+                          longitude: { type: number, nullable: true }
+                          radius_meters: { type: integer, nullable: true }
+                      requires_consent: { type: boolean }
+                      requires_punch_photo:
+                        type: boolean
+                        description: "true si l'entreprise impose une photo a chaque pointage mobile (arrivee/depart)."
+        "401":
+          $ref: "#/components/responses/Error401"
+  /attendance/preferences:
+    put:
+      tags: ["Attendance"]
+      summary: "Mettre à jour les préférences de pointage"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [preferred_mode]
+              properties:
+                preferred_mode:
+                  type: string
+                  enum: [gps_auto, qr, manual]
+                gps_consent_given:
+                  type: boolean
+                revoke_consent:
+                  type: boolean
+      responses:
+        "200":
+          description: "Préférences mises à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: "#/components/schemas/EmployeeAttendancePreference"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+  /attendance/geo-events:
+    post:
+      tags: ["Attendance"]
+      summary: "Envoyer un événement géographique (entrée/sortie de zone)"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GeoEventRequest"
+      responses:
+        "200":
+          description: "Événement enregistré"
+        "422":
+          $ref: "#/components/responses/Validation422"
+  /attendance/my-sessions:
+    get:
+      tags: ["Attendance"]
+      summary: "Sessions GPS de l'employé courant"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Sessions de l'employé"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /attendance/geo-sessions:
+    get:
+      tags: ["Attendance"]
+      summary: "Lister les sessions GPS"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [detected, pending_validation, approved, rejected, cancelled]
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: "Liste paginée des sessions GPS"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/GeoAttendanceSession"
+  /attendance/geo-sessions/{id}:
+    get:
+      tags: ["Attendance"]
+      summary: "Détail d'une session GPS"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Session GPS"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/GeoAttendanceSession"
+        "404":
+          $ref: "#/components/responses/Error404"
+  /attendance/geo-sessions/{id}/approve:
+    post:
+      tags: ["Attendance"]
+      summary: "Approuver une session GPS (manager/RH)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Session mise à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+  /attendance/geo-sessions/{id}/reject:
+    post:
+      tags: ["Attendance"]
+      summary: "Rejeter une session GPS (manager/RH)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Session mise à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+  /attendance/dashboard:
+    get:
+      tags: ["Attendance"]
+      summary: "Statistiques du jour — Smart Attendance (manager/RH)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Statistiques du jour"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmartAttendanceDashboard"
+
+  # --- ZKTeco (pointeuses biometriques) ---
+  /attendance/mode-settings:
+    get:
+      tags: ["Attendance"]
+      summary: "Parametres du mode de pointage de l'entreprise"
+      responses:
+        "200":
+          description: "Configuration (forced_mode, punch_photo_mode, gps_enabled, latitude, longitude, radius_meters, allow_employee_override)"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Attendance"]
+      summary: "Configurer le mode de pointage (principal)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forced_mode:
+                  type: string
+                  enum: [gps_auto, qr, manual, mixed]
+                punch_photo_mode:
+                  type: string
+                  enum: [kiosk, photo_required]
+                gps_enabled:
+                  type: boolean
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                radius_meters:
+                  type: integer
+                  minimum: 10
+                  maximum: 5000
+                allow_employee_override:
+                  type: boolean
+      responses:
+        "200":
+          description: "Configuration mise a jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+  /attendance/employees/{employeeId}/preference:
+    get:
+      tags: ["Attendance"]
+      summary: "Préférence mode géolocalisation d'un employé (manager/RH)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Préférence de l'employé"
+        "401":
+          $ref: "#/components/responses/Error401"
   /employees/{employee}/certificate-of-employment:
     get:
       tags: ["Payroll"]
@@ -1716,6 +1985,33 @@ paths:
           description: "Manager role required"
         "404":
           description: "Run introuvable (isolation tenant)"
+
+  /payroll-runs/{payrollRun}/bordereau:
+    get:
+      tags: ["Payroll"]
+      summary: "Bordereau de paie d'un run (totaux par cotisation + recap, #5243)"
+      description: "CSV : section TOTAUX_PAR_COTISATION (lignes de bulletin groupees par type + libelle) et section RECAPITULATIF_RUN (brut, cotisations salariales, IRG, autres deductions, net, cotisations patronales, cout employeur, bulletins). Reserve aux managers, garde pays DZ (422 sinon), isolation tenant (404)."
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV (Content-Disposition: attachment)"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager role required"
+        "404":
+          description: "Run introuvable (isolation tenant)"
+        "422":
+          description: "Run non-DZ (bordereau DZ uniquement)"
+
 
   /payroll-runs/{payrollRun}/lock:
     post:
@@ -11345,7 +11641,7 @@ paths:
               properties:
                 format:
                   type: string
-                  enum: [sepa_xml, ccp_dz, virement_ma, csv_generic]
+                  enum: [sepa_xml, ccp_dz, cpa_dz, bna_dz, cnep_dz, edx_dz, virement_ma, csv_generic]
       responses:
         "202":
           description: "Export cree (generation asynchrone)"
@@ -12596,6 +12892,31 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /social-declarations/das-dz:
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Generer la declaration annuelle des salaires DAS (Algerie, #5243)"
+      description: "Agrege les bulletins valides (pay_slips.status=validated) des runs DZ de l'annee demandee, par employe : NIS, nom, mois, brut, CNAS salariale/patronale (9 %/26 %), IRG retenu, net + ligne TOTAUX. Reserve aux managers principal/comptable."
+      operationId: generateDasDzDeclaration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [year]
+              properties:
+                year: { type: integer, minimum: 2020, maximum: 2099 }
+      responses:
+        "200":
+          description: "Declaration DAS generee (lignes par employe + totaux)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /social-declarations/cnss-ma:
     post:
       tags: ["Payroll Engine"]
@@ -12801,7 +13122,7 @@ paths:
                   type: integer
                 format:
                   type: string
-                  enum: [sepa_xml, ccp_dz, virement_ma, csv_generic]
+                  enum: [sepa_xml, ccp_dz, cpa_dz, bna_dz, cnep_dz, edx_dz, virement_ma, csv_generic]
       responses:
         "202":
           description: "Export cree (generation asynchrone)"
@@ -16967,6 +17288,7 @@ paths:
     get:
       tags: ["SmartAttendance"]
       summary: "Parametres du mode de pointage de l'entreprise"
+      deprecated: true
       responses:
         "200":
           description: "Configuration (forced_mode, punch_photo_mode, gps_enabled, latitude, longitude, radius_meters, allow_employee_override)"
@@ -16975,6 +17297,7 @@ paths:
     put:
       tags: ["SmartAttendance"]
       summary: "Configurer le mode de pointage (principal)"
+      deprecated: true
       requestBody:
         required: true
         content:
@@ -17217,6 +17540,7 @@ paths:
     get:
       tags: ["SmartAttendance"]
       summary: "Lire la configuration de mode active pour l'employe connecte"
+      deprecated: true
       description: "Resout le mode de pointage effectif (GPS/QR/manuel) et indique si une photo de pointage est obligatoire (punch_photo_mode=photo_required)."
       security:
         - BearerAuth: []
@@ -17252,6 +17576,7 @@ paths:
     put:
       tags: ["SmartAttendance"]
       summary: "Mettre à jour les préférences de pointage"
+      deprecated: true
       security:
         - BearerAuth: []
       requestBody:
@@ -17290,6 +17615,7 @@ paths:
     post:
       tags: ["SmartAttendance"]
       summary: "Envoyer un événement géographique (entrée/sortie de zone)"
+      deprecated: true
       security:
         - BearerAuth: []
       requestBody:
@@ -17308,6 +17634,7 @@ paths:
     get:
       tags: ["SmartAttendance"]
       summary: "Lister les sessions GPS"
+      deprecated: true
       security:
         - BearerAuth: []
       parameters:
@@ -17338,6 +17665,7 @@ paths:
     get:
       tags: ["SmartAttendance"]
       summary: "Détail d'une session GPS"
+      deprecated: true
       security:
         - BearerAuth: []
       parameters:
@@ -17363,6 +17691,7 @@ paths:
     post:
       tags: ["SmartAttendance"]
       summary: "Approuver une session GPS (manager/RH)"
+      deprecated: true
       security:
         - BearerAuth: []
       parameters:
@@ -17383,6 +17712,7 @@ paths:
     post:
       tags: ["SmartAttendance"]
       summary: "Rejeter une session GPS (manager/RH)"
+      deprecated: true
       security:
         - BearerAuth: []
       parameters:
@@ -17403,6 +17733,7 @@ paths:
     get:
       tags: ["SmartAttendance"]
       summary: "Statistiques du jour — Smart Attendance (manager/RH)"
+      deprecated: true
       security:
         - BearerAuth: []
       responses:
@@ -17732,6 +18063,7 @@ paths:
     get:
       tags: ["SmartAttendance"]
       summary: "Sessions GPS de l'employé courant"
+      deprecated: true
       security:
         - BearerAuth: []
       responses:
@@ -17745,6 +18077,7 @@ paths:
     get:
       tags: ["SmartAttendance"]
       summary: "Préférence mode géolocalisation d'un employé (manager/RH)"
+      deprecated: true
       security:
         - BearerAuth: []
       parameters:
@@ -23319,7 +23652,7 @@ components:
           type: integer
         format:
           type: string
-          enum: [sepa_xml, ccp_dz, virement_ma, csv_generic]
+          enum: [sepa_xml, ccp_dz, cpa_dz, bna_dz, cnep_dz, edx_dz, virement_ma, csv_generic]
         status:
           type: string
           enum: [pending, generating, generated, failed, sent, confirmed]

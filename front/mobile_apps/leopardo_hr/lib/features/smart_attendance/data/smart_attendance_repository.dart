@@ -12,10 +12,10 @@ class HrSmartAttendanceRepository {
   static const _readTimeout = Duration(seconds: 8);
   static const _writeTimeout = Duration(seconds: 10);
 
-  /// GET /api/v1/smart-attendance/sessions?status=pending_validation
+  /// GET /api/v1/attendance/geo-sessions?status=pending_validation
   Future<List<GeoAttendanceSession>> getPendingSessions() async {
     final response = await _apiClient.requestWithRetry(
-      '/smart-attendance/sessions?status=pending_validation&per_page=50',
+      '/attendance/geo-sessions?status=pending_validation&per_page=50',
       timeoutOverride: _readTimeout,
     );
     // #3500 : extractDataList absorbe les payloads directs, enveloppés et
@@ -26,19 +26,19 @@ class HrSmartAttendanceRepository {
         .toList();
   }
 
-  /// GET /api/v1/smart-attendance/dashboard
+  /// GET /api/v1/attendance/dashboard
   Future<Map<String, dynamic>> getDashboardStats() async {
     final response = await _apiClient.requestWithRetry(
-      '/smart-attendance/dashboard',
+      '/attendance/dashboard',
       timeoutOverride: _readTimeout,
     );
     return extractDataMap(response.data);
   }
 
-  /// POST /api/v1/smart-attendance/sessions/{id}/approve
+  /// POST /api/v1/attendance/geo-sessions/{id}/approve
   Future<void> approveSession(int sessionId, {String? note}) async {
     await _apiClient.requestWithRetry(
-      '/smart-attendance/sessions/$sessionId/approve',
+      '/attendance/geo-sessions/$sessionId/approve',
       method: 'POST',
       data: {if (note != null) 'note': note},
       maxRetriesOverride: 0,
@@ -46,10 +46,10 @@ class HrSmartAttendanceRepository {
     );
   }
 
-  /// POST /api/v1/smart-attendance/sessions/{id}/reject
+  /// POST /api/v1/attendance/geo-sessions/{id}/reject
   Future<void> rejectSession(int sessionId, {required String note}) async {
     await _apiClient.requestWithRetry(
-      '/smart-attendance/sessions/$sessionId/reject',
+      '/attendance/geo-sessions/$sessionId/reject',
       method: 'POST',
       data: {'reason': note},
       maxRetriesOverride: 0,

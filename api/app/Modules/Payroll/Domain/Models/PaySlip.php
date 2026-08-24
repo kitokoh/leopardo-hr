@@ -31,6 +31,9 @@ use Illuminate\Support\Carbon;
  * @property float $working_days
  * @property float $actual_days_worked
  * @property float $overtime_hours
+ * @property float $paid_leave_days
+ * @property float $unpaid_leave_days
+ * @property float $public_holiday_days
  * @property bool $has_attendance_data
  * @property string $status
  * @property string|null $pdf_path
@@ -51,6 +54,7 @@ class PaySlip extends Model
         'rules_identifier', 'gross_salary', 'total_deductions',
         'net_salary', 'employer_contributions', 'total_cost',
         'working_days', 'actual_days_worked', 'overtime_hours',
+        'paid_leave_days', 'unpaid_leave_days', 'public_holiday_days',
         'has_attendance_data',
         'status', 'pdf_path', 'sent_at',
         'original_slip_id',
@@ -68,6 +72,9 @@ class PaySlip extends Model
         'working_days' => 'float',
         'actual_days_worked' => 'float',
         'overtime_hours' => 'float',
+        'paid_leave_days' => 'float',
+        'unpaid_leave_days' => 'float',
+        'public_holiday_days' => 'float',
         'has_attendance_data' => 'boolean',
         'sent_at' => 'datetime',
     ];

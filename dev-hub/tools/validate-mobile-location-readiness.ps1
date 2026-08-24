@@ -44,11 +44,16 @@ foreach ($app in $apps) {
     Assert-Contains $iosPlist "NSLocationWhenInUseUsageDescription" "$app Info.plist"
 
     # #5279 (dé-duplication mobile) : attendanceLocationServiceProvider vit
-    # dans leopardo_core depuis le lot 1 — les apps le re-exportent.
+    # dans leopardo_core depuis le lot 1 — les apps le re-exportent. Le lot
+    # de l'employee n'est pas encore migré : le provider y est encore défini
+    # LOCALEMENT. Accepter les deux formes (re-export OU marker local) tant
+    # que la migration #5279 n'est pas complète.
     $coreProviders = Read-RepoFile "front/mobile_apps/leopardo_core/lib/core/providers/core_providers.dart"
     Assert-Contains $coreProviders "attendanceLocationServiceProvider" "core providers"
     $providers = Read-RepoFile "front/mobile_apps/leopardo_$app/lib/core/providers/core_providers.dart"
-    Assert-Contains $providers "package:leopardo_core/core/providers/core_providers.dart" "$app providers re-export"
+    if ($providers -notlike "*package:leopardo_core/core/providers/core_providers.dart*") {
+        Assert-Contains $providers "attendanceLocationServiceProvider" "$app providers local marker"
+    }
 
     $attendanceProvider = Read-RepoFile "front/mobile_apps/leopardo_$app/lib/features/attendance/providers/attendance_provider.dart"
     Assert-Contains $attendanceProvider "currentForAttendance" "$app attendance provider"

@@ -99,7 +99,7 @@ class PayrollCycleController extends Controller
 
         return response()->json([
             'data' => $settings,
-            'message' => 'Cycle de paie mis a jour.',
+            'message' => __('payroll.cycle_updated'),
         ]);
     }
 

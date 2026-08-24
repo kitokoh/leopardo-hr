@@ -7,6 +7,7 @@ name: Payroll CI — Golden & Conformité
 #   payroll-tests — tests du module Payroll (Feature/Unit)
 #   coverage      — gate de coverage module Payroll ≥ 80 % (F-14)
 #   phpstan       — analyse statique du module (niveau modules)
+#   i18n-scan     — #5257 : zéro chaîne hardcodée utilisateur + parité ×4
 
 on:
   pull_request:
@@ -16,6 +17,9 @@ on:
       - 'api/database/migrations/**'
       - 'api/tests/Feature/Payroll/**'
       - 'docs/payroll/**'
+      - 'api/lang/**'
+      - 'api/resources/views/pdf/**'
+      - 'dev-hub/tools/check-payroll-i18n.py'
       - '.github/workflows/payroll-ci.yml'
   push:
     branches: [main]
@@ -24,6 +28,9 @@ on:
       - 'api/database/migrations/**'
       - 'api/tests/Feature/Payroll/**'
       - 'docs/payroll/**'
+      - 'api/lang/**'
+      - 'api/resources/views/pdf/**'
+      - 'dev-hub/tools/check-payroll-i18n.py'
       - '.github/workflows/payroll-ci.yml'
   workflow_dispatch:
 
@@ -388,3 +395,18 @@ jobs:
       - name: PHPStan module (niveau modules)
         working-directory: api
         run: vendor/bin/phpstan analyse --configuration=phpstan-modules.neon --memory-limit=1G --no-progress -- paths app/Modules/Payroll || true
+
+  i18n-scan:
+    timeout-minutes: 10
+    name: i18n paie ×4 (littéraux + parité)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      # Issue #5257 — zéro chaîne hardcodée utilisateur dans le module Payroll
+      # (messages API via __('payroll.*')) + parité des clés ×4 (fr/en/tr/ar)
+      # + libellés de bulletin (PayrollLineLabels) présents dans les catalogues.
+      - name: Scan i18n module Payroll
+        run: python3 dev-hub/tools/check-payroll-i18n.py
