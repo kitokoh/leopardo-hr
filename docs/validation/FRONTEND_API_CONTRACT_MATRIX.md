@@ -142,3 +142,4 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Manager web/mobile | CNPS Cameroun — déclaration DAS CSV (CEMAC/CM #1823) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/cnps-cm` | manager principal/comptable | `CnpsDeclarationTest` |
 | Manager web/mobile | Run paie — régularisation (DZ-DEPTH #1818) | `POST /api/v1/payroll-runs/{payrollRun}/regularize` | manager principal/comptable | `PayrollRegularizationTest` |
 | Manager web/mobile | Run paie — liste des régularisations | `GET /api/v1/payroll-runs/{payrollRun}/regularizations` | manager principal/comptable | `PayrollRegularizationTest` |
+| Manager web/mobile | Récapitulatif préavis légal par pays (G2 #5325) | `GET /api/v1/employees/{employee}/departure/notice` | manager | `DepartureNoticeTest` |
