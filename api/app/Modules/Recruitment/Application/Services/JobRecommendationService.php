@@ -67,7 +67,11 @@ final class JobRecommendationService
         ];
     }
 
-    /** @return array{0: int, 1: array<int, string>} */
+    /**
+     * @param array<string, mixed> $job
+     * @param array<string, mixed> $preferences
+     * @return array{0: int, 1: array<int, string>}
+     */
     private function score(array $job, array $preferences): array
     {
         $score = 0;
@@ -110,12 +114,16 @@ final class JobRecommendationService
         return [min(100, $score), $reasons];
     }
 
-    /** @return array{data: array<int, array<string, mixed>>, source: string, model: string|null} */
+    /**
+     * @param array<string, mixed> $preferences
+     * @param array<int, array<string, mixed>> $jobs
+     * @return array{data: array<int, array<string, mixed>>, source: string, model: string|null}
+     */
     private function aiRerank(User $user, array $preferences, array $jobs): array
     {
-        $enabled = filter_var(env('JOB_RECOMMENDATION_AI_ENABLED', true), FILTER_VALIDATE_BOOL);
-        $base = trim((string) env('OPENAI_API_BASE', ''));
-        $key = trim((string) env('OPENAI_API_KEY', ''));
+        $enabled = (bool) config('ai.enabled', false);
+        $base = trim((string) config('ai.providers.openai.base_url', ''));
+        $key = trim((string) config('ai.providers.openai.key', ''));
         if (! $enabled || $base === '' || $key === '' || $jobs === []) {
             return ['data' => $jobs, 'source' => 'rules', 'model' => null];
         }
@@ -132,7 +140,7 @@ final class JobRecommendationService
             ])->values()->all();
 
             $response = Http::timeout(8)->withToken($key)->post(rtrim($base, '/').'/chat/completions', [
-                'model' => (string) env('JOB_RECOMMENDATION_AI_MODEL', 'gpt-5-mini'),
+                'model' => (string) config('ai.providers.openai.model', 'gpt-5-mini'),
                 'messages' => [
                     ['role' => 'system', 'content' => 'Tu recommandes des offres d’emploi de façon objective. Ne déduis jamais l’âge, le genre, l’origine, la santé ou toute autre caractéristique protégée. Retourne uniquement le JSON demandé.'],
                     ['role' => 'user', 'content' => json_encode([
@@ -173,16 +181,20 @@ final class JobRecommendationService
                     $byId->forget($job['id']);
                 }
             }
-            return ['data' => [...$ordered, ...$byId->values()->all()], 'source' => 'hybrid', 'model' => (string) env('JOB_RECOMMENDATION_AI_MODEL', 'gpt-5-mini')];
+            return ['data' => [...$ordered, ...$byId->values()->all()], 'source' => 'hybrid', 'model' => (string) config('ai.providers.openai.model', 'gpt-5-mini')];
         } catch (\Throwable) {
             return ['data' => $jobs, 'source' => 'rules_fallback', 'model' => null];
         }
     }
 
+    /** @return array<int, string> */
     private function normalizeList(mixed $value): array
     {
-        if (! is_array($value)) return [];
-        return array_values(array_unique(array_filter(array_map(fn ($item): string => Str::lower(trim((string) $item)), $value))));
+        /** @var array<int, mixed> $value */
+        return array_values(array_unique(array_filter(array_map(
+            static fn (mixed $item): string => Str::lower(trim((string) $item)),
+            $value,
+        ))));
     }
 
     /** @return array<string, mixed> */

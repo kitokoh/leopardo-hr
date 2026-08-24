@@ -53,7 +53,9 @@ class JobRecommendationTest extends TestCase
             ->assertJsonPath('data.preferences.skills.0', 'PHP');
 
         $this->assertDatabaseHas('users', ['id' => $user->id]);
-        $this->assertSame('Alger', $user->fresh()?->job_search_preferences['locations'][0]);
+        $preferences = $user->fresh()?->job_search_preferences;
+        $this->assertIsArray($preferences);
+        $this->assertSame('Alger', $preferences['locations'][0] ?? null);
     }
 
     public function test_job_search_profile_rejects_invalid_contract_type(): void
