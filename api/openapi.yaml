@@ -18678,6 +18678,887 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /accounting/payments:
+    get:
+      tags: ["Accounting"]
+      summary: "Lister les paiements"
+      description: "Paiements du tenant (filtres document_id/status), du plus recent au plus ancien. RBAC comptable/principal. Issue #5229."
+      parameters:
+        - name: document_id
+          in: query
+          required: false
+          description: "Filtre par document."
+          schema: { type: integer }
+        - name: status
+          in: query
+          required: false
+          description: "Filtre par statut (pending, recorded, matched)."
+          schema: { type: string, enum: [pending, recorded, matched] }
+      responses:
+        "200":
+          description: "Liste des paiements"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/GeoAttendanceSession"
+  /accounting/documents/{document}/payments:
+    post:
+      tags: ["Accounting"]
+      summary: "Enregistrer un encaissement (→ partiellement paye / paye, #5223)"
+      description: "Cumul des paiements borne au total TTC. Un document paye ou annule refuse tout paiement. Statut paye jamais atteint sans paiement."
+      parameters:
+        - name: document
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount, method]
+              properties:
+                amount: { type: number, minimum: 0, exclusiveMinimum: true }
+                method: { type: string, enum: [cash, bank_transfer, check, card, other] }
+                received_at: { type: string, format: date }
+                reference: { type: string, maxLength: 120 }
+      responses:
+        "201":
+          description: "Paiement enregistre"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/payments/{payment}/reconcile:
+    post:
+      tags: ["Accounting"]
+      summary: "Rapprocher un paiement"
+      description: "Rapprochement manuel : pending/recorded -> matched + reconciled_at. Idempotent. Issue #5229."
+      parameters:
+        - name: payment
+          in: path
+          required: true
+          description: "ID du paiement."
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Paiement rapproche"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id: { type: integer }
+                      status: { type: string }
+                      reconciled_at: { type: string, format: date-time, nullable: true }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+  /accounting/reminders/run:
+    post:
+      tags: ["Accounting"]
+      summary: "Declencher les relances de paiement"
+      description: "Relances J+7/J+15/J+30 (parametrables via accounting_settings.payment_reminder_days) pour les documents emis non soldes echus. Idempotent : une relance par (document, stage), jamais de doublon. Notification in-app aux managers principal/comptable. Issue #5229."
+      responses:
+        "200":
+          description: "Nombre de relances envoyees"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reminders_sent: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+  /me/documents:
+    get:
+      tags: ["Me"]
+      summary: "Lire les documents de SON dossier employe (self-service)"
+      description: "Checklist documents du dossier employe (issue #5326, G3) : lecture seule, scope strictement sur l'employe authentifie."
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        "200":
+          description: "Documents du dossier (pagine)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/EmployeeDocument"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /employees/{employee}/departure:
+    post:
+      tags: ["Employees"]
+      summary: "Enregistrer le depart d'un employe (offboarding, issue #5324)"
+      parameters:
+        - $ref: "#/components/parameters/EmployeeId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreDepartureRequest"
+      responses:
+        "201":
+          description: "Depart enregistre — statut employe departed, acces revoque"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeDeparturePayload"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    get:
+      tags: ["Employees"]
+      summary: "Lire le depart d'un employe (manager : entreprise ; employe : le sien)"
+      parameters:
+        - $ref: "#/components/parameters/EmployeeId"
+      responses:
+        "200":
+          description: "Depart (ou null si aucun)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    nullable: true
+                    allOf:
+                      - $ref: "#/components/schemas/EmployeeDeparturePayload"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+  /me/departure:
+    get:
+      tags: ["SelfService"]
+      summary: "Mon depart (self-service, issue #5324)"
+      responses:
+        "200":
+          description: "Dernier enregistrement de depart de l'employe connecte (ou null)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    nullable: true
+                    allOf:
+                      - $ref: "#/components/schemas/EmployeeDeparturePayload"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /accounting/reports/vat-declaration:
+    get:
+      tags: ["Accounting"]
+      summary: "Declaration TVA simplifiee par periode"
+      description: |
+        Declaration TVA mensuelle du tenant courant (issue #5271) : TVA
+        collectee (factures + recus), TVA deductible (avoirs), net a declarer,
+        detail par taux de TVA (assiette HT, taxe, total TTC). Les documents
+        brouillon et annules sont exclus. Formats : json (defaut) ou csv.
+      parameters:
+        - name: period
+          in: query
+          description: "Periode au format YYYY-MM (defaut : mois courant)."
+          schema:
+            type: string
+            example: "2026-08"
+        - name: format
+          in: query
+          description: "Format de sortie : json ou csv."
+          schema:
+            type: string
+            enum: ["json", "csv"]
+            default: "json"
+      responses:
+        "200":
+          description: "Declaration TVA de la periode"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/VatDeclaration"
+        "422":
+          $ref: "#/components/responses/Validation422"
+        "403":
+          $ref: "#/components/responses/Error401"
+
+  /career-events:
+    get:
+      tags: ["HR Career"]
+      summary: "Lister les evenements de carriere (plans de carriere, issue #5259)"
+      parameters:
+        - name: employee_id
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: ["promotion", "raise", "transfer", "title_change"]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["pending", "approved", "rejected", "applied"]
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: "Liste paginee des evenements de carriere"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CareerEventIndexResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    post:
+      tags: ["HR Career"]
+      summary: "Creer un evenement de carriere (manager)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreCareerEventRequest"
+      responses:
+        "201":
+          description: "Evenement cree au statut pending (snapshot from_* pris sur l'employe)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          description: "Validation ou conflit metier"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ErrorResponse"
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+
+  /career-events/{careerEvent}:
+    get:
+      tags: ["HR Career"]
+      summary: "Voir un evenement de carriere"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      responses:
+        "200":
+          description: "Detail de l'evenement de carriere"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+    put:
+      tags: ["HR Career"]
+      summary: "Modifier un evenement de carriere (pending uniquement)"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCareerEventRequest"
+      responses:
+        "200":
+          description: "Evenement modifie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    patch:
+      tags: ["HR Career"]
+      summary: "Modifier partiellement un evenement de carriere (pending uniquement)"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCareerEventRequest"
+      responses:
+        "200":
+          description: "Evenement modifie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["HR Career"]
+      summary: "Supprimer un evenement de carriere (pending uniquement)"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      responses:
+        "200":
+          description: "Evenement supprime"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /career-events/{careerEvent}/approve:
+    put:
+      tags: ["HR Career"]
+      summary: "Approuver un evenement de carriere (pending → approved)"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      responses:
+        "200":
+          description: "Evenement approuve"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /career-events/{careerEvent}/reject:
+    put:
+      tags: ["HR Career"]
+      summary: "Rejeter un evenement de carriere (pending → rejected)"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        "200":
+          description: "Evenement rejete (motif conserve dans notes)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /career-events/{careerEvent}/apply:
+    put:
+      tags: ["HR Career"]
+      summary: "Appliquer un evenement approuve (approved → applied) — met a jour l'employe (poste/departement/salaire de base, impact paie)"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      responses:
+        "200":
+          description: "Evenement applique — l'employe porte son nouveau poste/departement/salaire"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          description: "Rien a appliquer (aucune cible poste/departement/salaire)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /employee-documents:
+    get:
+      tags: ["HR"]
+      summary: "Lister les documents des dossiers employes (checklist G3)"
+      description: "Manager : tout le tenant, filtres employee_id/type. Employe : uniquement son dossier."
+      parameters:
+        - name: employee_id
+          in: query
+          schema: { type: integer }
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [contract_signed, employee_file, career_decision, departure_record, notice_summary, settlement, certificate, other]
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        "200":
+          description: "Documents pagines"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/EmployeeDocument"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["HR"]
+      summary: "Enregistrer un document du dossier employe"
+      description: "RBAC : principal/rh uniquement. L'employe doit appartenir au tenant de l'acteur."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreEmployeeDocumentRequest"
+      responses:
+        "201":
+          description: "Document enregistre"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeDocument"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /employee-documents/{employeeDocument}:
+    get:
+      tags: ["HR"]
+      summary: "Lire un document du dossier employe"
+      parameters:
+        - name: employeeDocument
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Document"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeDocument"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+    put:
+      tags: ["HR"]
+      summary: "Mettre a jour un document du dossier employe"
+      parameters:
+        - name: employeeDocument
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEmployeeDocumentRequest"
+      responses:
+        "200":
+          description: "Document mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeDocument"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    patch:
+      tags: ["HR"]
+      summary: "Patch un document du dossier employe"
+      parameters:
+        - name: employeeDocument
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEmployeeDocumentRequest"
+      responses:
+        "200":
+          description: "Document mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeDocument"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["HR"]
+      summary: "Supprimer un document du dossier employe"
+      parameters:
+        - name: employeeDocument
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Document supprime"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /accounting/documents:
+    get:
+      tags: ["Accounting"]
+      summary: "Lister les documents comptables du tenant (pagine, filtres, #5223)"
+      description: "Documents (facture, proforma, devis, avoir, irsaliye, recu). Statuts d'echeance rafraichis a la lecture (overdue). Reserve aux managers principal/comptable."
+      parameters:
+        - name: per_page
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+        - name: type
+          in: query
+          required: false
+          schema: { type: string, enum: [invoice, proforma, quote, credit_note, delivery_note, receipt] }
+        - name: status
+          in: query
+          required: false
+          schema: { type: string }
+        - name: contact_id
+          in: query
+          required: false
+          schema: { type: integer }
+        - name: from
+          in: query
+          required: false
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          required: false
+          schema: { type: string, format: date }
+      responses:
+        "200":
+          description: "Liste paginee des documents"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+    post:
+      tags: ["Accounting"]
+      summary: "Creer un brouillon de document numerote (facture, proforma, devis, avoir, irsaliye, recu, #5223)"
+      description: "Numero attribue a la creation (serie parametrable via accounting_settings.number_series, ex. FAC-2026-0001), concurrent-safe (contrainte unique + retry). Totaux calcules depuis les lignes (TVA incluse)."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, lines]
+              properties:
+                type: { type: string, enum: [invoice, proforma, quote, credit_note, delivery_note, receipt] }
+                contact_id: { type: integer, nullable: true }
+                project_ref: { type: string, maxLength: 120 }
+                issue_date: { type: string, format: date }
+                due_date: { type: string, format: date, nullable: true }
+                delivery_date: { type: string, format: date, nullable: true }
+                currency: { type: string, maxLength: 10 }
+                tva_rate: { type: number, minimum: 0, maximum: 100 }
+                notes: { type: string, maxLength: 2000 }
+                source_document_id: { type: integer, nullable: true }
+                lines:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [description]
+                    properties:
+                      description: { type: string, maxLength: 500 }
+                      quantity: { type: number, minimum: 0 }
+                      unit_price: { type: number, minimum: 0 }
+                      discount: { type: number, minimum: 0 }
+                      tax_id: { type: string, maxLength: 60 }
+      responses:
+        "201":
+          description: "Brouillon cree (numero + totaux)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/documents/next-number:
+    get:
+      tags: ["Accounting"]
+      summary: "Apercu du prochain numero de la serie configuree (#5223)"
+      parameters:
+        - name: type
+          in: query
+          required: true
+          schema: { type: string, enum: [invoice, proforma, quote, credit_note, delivery_note, receipt] }
+      responses:
+        "200":
+          description: "Prochain numero (ex. FAC-2026-0001)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/documents/{document}:
+    get:
+      tags: ["Accounting"]
+      summary: "Detail d'un document comptable (lignes + paiements, #5223)"
+      parameters:
+        - name: document
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Document avec lignes et paiements"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /accounting/documents/{document}/send:
+    post:
+      tags: ["Accounting"]
+      summary: "Envoyer un brouillon (draft → sent, #5223)"
+      description: "Exige des lignes ; facture/avoir exigent un contact. Pose sent_at."
+      parameters:
+        - name: document
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Document envoye"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/documents/{document}/cancel:
+    post:
+      tags: ["Accounting"]
+      summary: "Annuler un document non paye (#5223)"
+      parameters:
+        - name: document
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason: { type: string, maxLength: 500 }
+      responses:
+        "200":
+          description: "Document annule"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/documents/{document}/credit-note:
+    post:
+      tags: ["Accounting"]
+      summary: "Creer un avoir lie a une facture source (#5223)"
+      description: "Lien via metadata.source_document_id ; montant borne au reste a payer de la source (422 sinon)."
+      parameters:
+        - name: document
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lines]
+              properties:
+                issue_date: { type: string, format: date }
+                notes: { type: string, maxLength: 2000 }
+                lines:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [description]
+                    properties:
+                      description: { type: string, maxLength: 500 }
+                      quantity: { type: number, minimum: 0 }
+                      unit_price: { type: number, minimum: 0 }
+                      discount: { type: number, minimum: 0 }
+                      tax_id: { type: string, maxLength: 60 }
+      responses:
+        "201":
+          description: "Avoir cree"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -18790,6 +19671,12 @@ components:
       schema:
         type: string
 
+    CareerEventId:
+      name: careerEvent
+      in: path
+      required: true
+      schema:
+        type: integer
   headers:
     XRequestId:
       description: "Identifiant de correlation a fournir au support en cas d'incident."
@@ -24493,3 +25380,408 @@ components:
         duration_days: { type: integer, minimum: 1, maximum: 5 }
         confirmed: { type: boolean, default: true }
         source: { type: string, enum: [manual, api, computed], default: manual }
+
+    EmployeeDocument:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        employee_id:
+          type: integer
+        type:
+          type: string
+          enum: [contract_signed, employee_file, career_decision, departure_record, notice_summary, settlement, certificate, other]
+        type_label:
+          type: string
+        status:
+          type: string
+          enum: [received, uploaded, generated, missing]
+        status_label:
+          type: string
+        document_date:
+          type: string
+          format: date
+          nullable: true
+        reference:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        uploaded_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    StoreEmployeeDocumentRequest:
+      type: object
+      required: [employee_id, type]
+      properties:
+        employee_id:
+          type: integer
+        type:
+          type: string
+          enum: [contract_signed, employee_file, career_decision, departure_record, notice_summary, settlement, certificate, other]
+        status:
+          type: string
+          enum: [received, uploaded, generated, missing]
+          default: received
+        document_date:
+          type: string
+          format: date
+          nullable: true
+        reference:
+          type: string
+          maxLength: 100
+          nullable: true
+        url:
+          type: string
+          maxLength: 2000
+          nullable: true
+        notes:
+          type: string
+          maxLength: 5000
+          nullable: true
+
+    UpdateEmployeeDocumentRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [contract_signed, employee_file, career_decision, departure_record, notice_summary, settlement, certificate, other]
+        status:
+          type: string
+          enum: [received, uploaded, generated, missing]
+        document_date:
+          type: string
+          format: date
+          nullable: true
+        reference:
+          type: string
+          maxLength: 100
+          nullable: true
+        url:
+          type: string
+          maxLength: 2000
+          nullable: true
+        notes:
+          type: string
+          maxLength: 5000
+          nullable: true
+
+    EmployeeDeparturePayload:
+      type: object
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        employee_status:
+          type: string
+          enum: ["active", "suspended", "archived", "departed"]
+        departure_type:
+          type: string
+          enum: ["resignation", "termination", "end_of_contract", "retirement"]
+        reason:
+          type: string
+          nullable: true
+        last_work_day:
+          type: string
+          format: date
+          nullable: true
+        notice_served:
+          type: boolean
+        notice_days_served:
+          type: integer
+          nullable: true
+        departed_at:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    StoreDepartureRequest:
+      type: object
+      required:
+        - departure_type
+        - last_work_day
+      properties:
+        departure_type:
+          type: string
+          enum: ["resignation", "termination", "end_of_contract", "retirement"]
+        reason:
+          type: string
+          maxLength: 500
+          nullable: true
+        last_work_day:
+          type: string
+          format: date
+        notice_served:
+          type: boolean
+          default: false
+        notice_days_served:
+          type: integer
+          minimum: 0
+          maximum: 365
+          nullable: true
+        departed_at:
+          type: string
+          format: date
+          nullable: true
+    CareerEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        employee:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/CareerEventEmployeeMini"
+          nullable: true
+        type:
+          type: string
+          enum: ["promotion", "raise", "transfer", "title_change"]
+        status:
+          type: string
+          enum: ["pending", "approved", "rejected", "applied"]
+        from_position_id:
+          type: integer
+          nullable: true
+        to_position_id:
+          type: integer
+          nullable: true
+        from_department_id:
+          type: integer
+          nullable: true
+        to_department_id:
+          type: integer
+          nullable: true
+        from_position:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/CareerEventPositionMini"
+          nullable: true
+        to_position:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/CareerEventPositionMini"
+          nullable: true
+        from_department:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/CareerEventDepartmentMini"
+          nullable: true
+        to_department:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/CareerEventDepartmentMini"
+          nullable: true
+        from_salary:
+          type: number
+          format: float
+          nullable: true
+        to_salary:
+          type: number
+          format: float
+          nullable: true
+        effective_date:
+          type: string
+          format: date
+        reason:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        approved_by:
+          type: integer
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+        applied_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    CareerEventEmployeeMini:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+
+    CareerEventPositionMini:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    CareerEventDepartmentMini:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    CareerEventIndexResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/CareerEvent"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    StoreCareerEventRequest:
+      type: object
+      required:
+        - employee_id
+        - type
+        - effective_date
+        - reason
+      properties:
+        employee_id:
+          type: integer
+          minimum: 1
+        type:
+          type: string
+          enum: ["promotion", "raise", "transfer", "title_change"]
+        to_position_id:
+          type: integer
+          nullable: true
+        to_department_id:
+          type: integer
+          nullable: true
+        to_salary:
+          type: number
+          format: float
+          minimum: 0
+          nullable: true
+        effective_date:
+          type: string
+          format: date
+        reason:
+          type: string
+          maxLength: 500
+        notes:
+          type: string
+          maxLength: 2000
+          nullable: true
+
+    UpdateCareerEventRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ["promotion", "raise", "transfer", "title_change"]
+        to_position_id:
+          type: integer
+          nullable: true
+        to_department_id:
+          type: integer
+          nullable: true
+        to_salary:
+          type: number
+          format: float
+          minimum: 0
+          nullable: true
+        effective_date:
+          type: string
+          format: date
+        reason:
+          type: string
+          maxLength: 500
+        notes:
+          type: string
+          maxLength: 2000
+          nullable: true
+
+    VatDeclaration:
+      type: object
+      description: "Declaration TVA simplifiee d'une periode mensuelle (issue #5271)."
+      properties:
+        period:
+          type: object
+          properties:
+            label:
+              type: string
+            from:
+              type: string
+              format: date
+            to:
+              type: string
+              format: date
+        currency:
+          type: string
+        collected:
+          $ref: "#/components/schemas/VatDeclarationTotals"
+        deductible:
+          $ref: "#/components/schemas/VatDeclarationTotals"
+        net:
+          type: object
+          description: "Net a declarer (collectee - deductible)."
+          properties:
+            base:
+              type: number
+            tax:
+              type: number
+            total:
+              type: number
+
+    VatDeclarationTotals:
+      type: object
+      description: "Totaux d'un cote de la declaration (assiette HT, taxe, TTC) + detail par taux."
+      properties:
+        base:
+          type: number
+        tax:
+          type: number
+        total:
+          type: number
+        by_rate:
+          type: array
+          items:
+            type: object
+            properties:
+              rate:
+                type: number
+              base:
+                type: number
+              tax:
+                type: number
+              total:
+                type: number
+
