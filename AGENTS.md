@@ -71,6 +71,21 @@ Protocol OBLIGATOIRE avant de commencer a coder :
 4. **Fermeture des doublons** : toute PR dupliquee sur une meme issue est
    fermee avec un commentaire de renvoi vers la PR canonique (1 PR = 1 issue).
 
+### Garde migrations AVANT push (issue #1962 — 3 occurrences le 2026-08-24)
+
+Toute PR ajoutant ou renommant une migration (`api/database/migrations/*`)
+doit verifier AVANT push l'absence de collision de prefixe de sequence
+(`YYYY_MM_DD_0000NN`) — Laravel indexe les migrations par basename, une
+collision rend `main` ROUGE pour TOUTES les PRs (garde Hygiene Guards) :
+
+```bash
+bash dev-hub/tools/check-migration-basename-collisions.sh
+```
+
+Un prefixe deja pris = renumero ter (ex. `000006` -> `000007`) en gardant
+l'ordre chronologique (la migration la plus ancienne conserve son prefixe).
+Le commit precedent `fix/1962-*` est l'exemple canonique.
+
 ## Garde post-merge `Closes #` (issue #2512)
 
 Une PR qui **mentionne** une issue (`#1234`) sans mot-clé `Closes #` (ou
