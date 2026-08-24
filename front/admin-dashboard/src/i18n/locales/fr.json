@@ -3359,7 +3359,8 @@
       "banner_title": "Activation de la comptabilité en cours",
       "banner_text": "Terminez les étapes guidées pour pouvoir émettre vos premiers documents.",
       "banner_cta": "Continuer l'activation",
-      "banner_hide": "Masquer"
+      "banner_hide": "Masquer",
+      "stepAria": "Étape"
     },
     "dashboard": {
       "title": "Tableau de bord comptable",

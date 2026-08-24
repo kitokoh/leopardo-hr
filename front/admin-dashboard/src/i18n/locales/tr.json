@@ -3359,7 +3359,8 @@
       "banner_title": "Muhasebe etkinleştirmesi sürüyor",
       "banner_text": "İlk belgelerinizi kesmek için rehberli adımları tamamlayın.",
       "banner_cta": "Etkinleştirmeye devam et",
-      "banner_hide": "Gizle"
+      "banner_hide": "Gizle",
+      "stepAria": "Adım"
     },
     "dashboard": {
       "title": "Muhasebe paneli",

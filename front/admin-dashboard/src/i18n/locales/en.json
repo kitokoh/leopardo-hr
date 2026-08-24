@@ -3359,7 +3359,8 @@
       "banner_title": "Accounting activation in progress",
       "banner_text": "Complete the guided steps to issue your first documents.",
       "banner_cta": "Continue activation",
-      "banner_hide": "Hide"
+      "banner_hide": "Hide",
+      "stepAria": "Step"
     },
     "dashboard": {
       "title": "Accounting dashboard",

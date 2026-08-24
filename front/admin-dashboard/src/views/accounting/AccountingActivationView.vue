@@ -88,13 +88,13 @@
         </p>
         <div class="flex items-center gap-1.5" role="tablist">
           <button
-            v-for="step in 4"
+            v-for="step in steps"
             :key="step"
             type="button"
             class="h-2 rounded-full transition-all duration-300"
             :class="step === currentStep ? 'w-8 bg-brand-500' : 'w-2 bg-slate-300 dark:bg-slate-700'"
-            :aria-label="`Étape ${step}`"
-            @click="currentStep = step"
+            :aria-label="t('accounting.activation.stepAria') + ' ' + step"
+            @click="goToStep(step)"
           />
         </div>
       </div>
@@ -227,11 +227,11 @@
 
         <!-- Navigation du wizard -->
         <div class="flex flex-wrap items-center justify-between gap-3">
-          <button type="button" class="btn-secondary" :disabled="currentStep === 1 || saving" @click="currentStep -= 1">
+          <button type="button" class="btn-secondary" :disabled="currentStep === 1 || saving" @click="prevStep">
             {{ $t('accounting.activation.prev') }}
           </button>
           <div class="flex gap-3">
-            <button v-if="currentStep < 4" type="button" class="btn-primary" @click="currentStep += 1">
+            <button v-if="!lastStep" type="button" class="btn-primary" @click="nextStep">
               {{ $t('accounting.activation.next') }}
             </button>
             <button v-else type="submit" class="btn-primary" :disabled="saving">
@@ -245,7 +245,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { CheckBadgeIcon, DocumentTextIcon, UserPlusIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
@@ -284,6 +284,11 @@ const seriesTypes = [
 const loading = ref(true)
 const saving = ref(false)
 const currentStep = ref(1)
+const steps = [1, 2, 3, 4]
+const lastStep = computed(() => currentStep.value >= steps.length)
+function goToStep(step) { currentStep.value = step }
+function prevStep() { goToStep(Math.max(1, currentStep.value - 1)) }
+function nextStep() { goToStep(Math.min(steps.length, currentStep.value + 1)) }
 const activation = reactive({
   completed: false,
   steps: { settings: false, contact: false, example_invoice: false },
