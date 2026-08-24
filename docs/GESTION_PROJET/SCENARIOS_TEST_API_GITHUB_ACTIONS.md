@@ -1370,6 +1370,14 @@ Note 2026-08-15 (campagne QA complète, issues #2652/#2653/#2654/#2662) : durcis
 - Garde CI : `dev-hub/tools/check-openapi-route-coverage.py` étendu (routes DDD `api/routes/**` incluses, allowlist `openapi-coverage-allowlist.txt` ajustée — 524/706, 0 drift) — un endpoint non documenté OpenAPI fait échouer la CI.
 - SDK régénérés (`dev-hub/sdk/javascript/leopardoClient.js`, `dev-hub/sdk/python/leopardo_client.py`, `dev-hub/openapi/v1.yaml`, `MANIFEST.json`) alignés sur `api/openapi.yaml` (534 opérations).
 
+Note 2026-08-22 (issue #5268) : rapports de pointage par période — `GET /attendance/monthly-report` généralisé en moteur de rapports.
+- `period=day|week|month` (défaut `month`, rétro-compatible) ; ancres `date` (Y-m-d), `week` (Y-m-d — semaine ISO lundi→dimanche), `month` (Y-m), interprétées dans le fuseau entreprise.
+- Filtres `department_id` (équipe) et `employee_id` (fiche individuelle) ; `format=json|csv|pdf`.
+- RBAC : scope manager `visibleToManager` conservé (PA2-SEC-002/003) — un manager `dept` filtrant sur un AUTRE département reçoit zéro ligne (combinaison AND filtres × scope, jamais d'élargissement).
+- Contrat : `data.period.type` ajouté, `data.period.month` conservé (rétro-compat) ; chaque ligne employé expose `department_id`/`department_name` ; exports nommés `attendance-report-<period>-<from>_<to>.<ext>` (CSV neutralisé #4169, PDF i18n ×4).
+- Scénarios : journalier (borne jour), hebdomadaire (borne lundi→dimanche, hors-semaine exclue), mensuel (rétro-compat), défaut `month`, filtre équipe, filtre employé, export CSV hebdo (en-tête + valeurs), export PDF jour (Content-Disposition), RBAC scoped manager, `period` invalide → 422.
+- Couverture : `AttendanceReportTest` (10 tests) + `AttendanceMonthlyReportTest` (rétro-compat intacte) — suite `tests/Feature/Attendance` 62/62.
+
 Note 2026-08-22 (issue #5260) : contrats par pays — modèles légaux + signature explicite.
 - `GET /api/v1/contracts/templates?country=DZ|MA|TN|SN[&contract_type=cdi|cdd]` (principal/rh) : bundle légal (références, période d'essai, préavis, congés, HS, SMIG, cotisations, clauses CDI/CDD) ; pays inconnu → 422 `CONTRACT_TEMPLATE_NOT_FOUND`, employé → 403.
 - `POST /api/v1/contracts` : `apply_legal_template` (défaut : semer quand `clauses` absent) — clauses du pays de l'entreprise de l'employé, jamais d'écrasement des clauses explicites.

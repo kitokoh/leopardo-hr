@@ -4,6 +4,9 @@
 **Statut** : proposition à valider — **ne dérange aucun programme en cours (FOCUS paie DZ, HR, sécurité)**
 **Principe** : spec-first (constitution `.specify`) — ce document est la source ; les issues en découlent.
 
+> **Spec data associée (issue #5220)** : modèle de données canonique — entités, relations, enums,
+> tableaux des tables avec types/contraintes/index → `.specify/features/accounting-data-model/spec.md`.
+
 ---
 
 ## 1. Vision & repositionnement

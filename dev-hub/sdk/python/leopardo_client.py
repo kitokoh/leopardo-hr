@@ -132,6 +132,26 @@ class LeopardoClient:
         """Refuser une absence (déprécié — utiliser POST)"""
         return self.request("PUT", "/absences/{absence}/reject", **kwargs)
 
+    def get_accounting_contacts(self, **kwargs):
+        """Lister les contacts client/fournisseur"""
+        return self.request("GET", "/accounting/contacts", **kwargs)
+
+    def post_accounting_contacts(self, **kwargs):
+        """Creer un contact client/fournisseur"""
+        return self.request("POST", "/accounting/contacts", **kwargs)
+
+    def delete_accounting_contacts_by_contact(self, **kwargs):
+        """Supprimer un contact client/fournisseur"""
+        return self.request("DELETE", "/accounting/contacts/{contact}", **kwargs)
+
+    def get_accounting_contacts_by_contact(self, **kwargs):
+        """Detail d'un contact client/fournisseur"""
+        return self.request("GET", "/accounting/contacts/{contact}", **kwargs)
+
+    def put_accounting_contacts_by_contact(self, **kwargs):
+        """Mettre a jour un contact client/fournisseur"""
+        return self.request("PUT", "/accounting/contacts/{contact}", **kwargs)
+
     def post_admin_ai_chat(self, **kwargs):
         """Envoyer un message a l'assistant IA (super-admin)"""
         return self.request("POST", "/admin/ai/chat", **kwargs)
@@ -533,7 +553,7 @@ class LeopardoClient:
         return self.request("PUT", "/attendance/corrections/{correction}/reject", **kwargs)
 
     def get_attendance_monthly_report(self, **kwargs):
-        """Rapport mensuel de pointage"""
+        """Rapport de pointage (journalier, hebdomadaire ou mensuel)"""
         return self.request("GET", "/attendance/monthly-report", **kwargs)
 
     def get_attendance_regularity(self, **kwargs):
@@ -1184,6 +1204,10 @@ class LeopardoClient:
         """Resume journalier d'un employe"""
         return self.request("GET", "/employees/{employee}/daily-summary", **kwargs)
 
+    def get_employees_by_employee_departure_notice(self, **kwargs):
+        """Récapitulatif du préavis légal (issue #5325, G2)"""
+        return self.request("GET", "/employees/{employee}/departure/notice", **kwargs)
+
     def get_employees_by_employee_end_of_contract(self, **kwargs):
         """Solde de tout compte (fin de contrat, F-08)"""
         return self.request("GET", "/employees/{employee}/end-of-contract", **kwargs)
@@ -1555,6 +1579,14 @@ class LeopardoClient:
     def post_marketing_leads(self, **kwargs):
         """Persister un lead marketing (vitrine)"""
         return self.request("POST", "/marketing/leads", **kwargs)
+
+    def get_marketing_leads_by_lead_contact(self, **kwargs):
+        """Lire le contact comptabilite cree depuis un lead qualifie"""
+        return self.request("GET", "/marketing/leads/{lead}/contact", **kwargs)
+
+    def post_marketing_leads_by_lead_qualify(self, **kwargs):
+        """Qualifier un lead et creer le contact comptabilite associe"""
+        return self.request("POST", "/marketing/leads/{lead}/qualify", **kwargs)
 
     def get_marketing_posts(self, **kwargs):
         """Lister les publications (alias court de /social-posts)"""

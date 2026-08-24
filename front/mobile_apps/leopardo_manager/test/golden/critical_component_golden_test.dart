@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_manager/features/absences/providers/absence_provider.dart';
+import 'package:leopardo_core/features/absences/providers/absence_provider.dart';
 import 'package:leopardo_manager/features/absences/screens/absence_list_screen.dart';
 import 'package:leopardo_manager/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_manager/features/attendance/screens/monthly_summary_screen.dart';
@@ -74,7 +74,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(AbsenceListScreen), findsOneWidget);
-    expect(find.text('Mes Absences'), findsOneWidget);
+    expect(find.text('Mes absences'), findsOneWidget);
     expect(find.byIcon(Icons.calendar_today), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

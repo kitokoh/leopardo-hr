@@ -15,6 +15,7 @@ use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
 use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CareerEventController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureNoticeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeImportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
@@ -52,6 +53,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/employees/{employee}/archive', [EmployeeController::class, 'archive'])->whereNumber('employee');
     Route::get('/employees/{employee}/end-of-contract', [EndOfContractController::class, 'settlement'])->whereNumber('employee');
     Route::get('/employees/{employee}/certificate-of-employment', [EndOfContractController::class, 'certificate'])->whereNumber('employee');
+    // G2 (#5325) — récapitulatif du préavis légal par pays/ancienneté (lecture, règle Payroll consommée)
+    Route::get('/employees/{employee}/departure/notice', [DepartureNoticeController::class, 'show'])->whereNumber('employee');
     // MULTI-PAYS (#1952) : l'import d'employés crée des écritures RH — même
     // garde pays que store/update (#1867).
     Route::post('/employees/import', [EmployeeImportController::class, 'import'])->middleware(['api.manager', 'tenant.country']);
@@ -84,7 +87,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/attendance/today', [AttendanceController::class, 'today']);
     Route::get('/attendance/anomalies', [AttendanceController::class, 'anomalies']);
     Route::get('/attendance/regularity', [AttendanceController::class, 'regularity']);
-    Route::get('/attendance/monthly-report', [AttendanceController::class, 'monthlyReport']);
+    Route::get('/attendance/monthly-report', [AttendanceController::class, 'report']);
     Route::get('/attendance', [AttendanceController::class, 'index']);
     Route::post('/attendance/corrections', [AttendanceController::class, 'requestCorrection']);
     Route::get('/attendance/corrections', [AttendanceController::class, 'corrections']);
