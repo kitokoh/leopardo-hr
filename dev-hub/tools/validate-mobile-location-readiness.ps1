@@ -43,8 +43,12 @@ foreach ($app in $apps) {
     $iosPlist = Read-RepoFile "front/mobile_apps/leopardo_$app/ios/Runner/Info.plist"
     Assert-Contains $iosPlist "NSLocationWhenInUseUsageDescription" "$app Info.plist"
 
+    # #5279 (dé-duplication mobile) : attendanceLocationServiceProvider vit
+    # dans leopardo_core depuis le lot 1 — les apps le re-exportent.
+    $coreProviders = Read-RepoFile "front/mobile_apps/leopardo_core/lib/core/providers/core_providers.dart"
+    Assert-Contains $coreProviders "attendanceLocationServiceProvider" "core providers"
     $providers = Read-RepoFile "front/mobile_apps/leopardo_$app/lib/core/providers/core_providers.dart"
-    Assert-Contains $providers "attendanceLocationServiceProvider" "$app providers"
+    Assert-Contains $providers "package:leopardo_core/core/providers/core_providers.dart" "$app providers re-export"
 
     $attendanceProvider = Read-RepoFile "front/mobile_apps/leopardo_$app/lib/features/attendance/providers/attendance_provider.dart"
     Assert-Contains $attendanceProvider "currentForAttendance" "$app attendance provider"
