@@ -10,6 +10,7 @@ use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
+use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -493,6 +494,10 @@ class CotisationSimulationTest extends TestCase
      */
     public function test_contract_sn_trimef_parity_with_payslip(): void
     {
+        // Ce test valide le barème légal de référence ; les overrides actifs
+        // créés par d’autres tests ne doivent pas modifier son résultat.
+        TaxSlab::query()->where('country_code', 'SN')->delete();
+
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'SN', 'currency' => 'XOF']);
 
