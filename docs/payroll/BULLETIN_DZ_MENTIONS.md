@@ -30,3 +30,16 @@
 - [x] Vue `pdf.payslip` alignée : bloc employeur (adresse + **NIF/RC/CNAS employeur/ID.Nat** via `company.metadata`), bloc employé, période/présence, rémunération détaillée, **cumuls annuels** (brut/retenues/net) — PR #1643.
 - [x] Test automatique des mentions : `PaySlipDzMentionsTest` (NIF/RC/CNAS/ID.Nat + cumuls annuels).
 - [x] Archivage automatique Cabinet + horodatage — #1817 (`ArchivePaySlipsToCabinetJob`, dispatché par `PayrollClosingService::lock()` ; test `PaySlipCabinetArchiveTest`). Couverture du flux API complétée par `PayrollRunClosingE2ETest` (#5150) : les bulletins `validated`/`sent` sont archivés au verrouillage.
+
+## État RTL (2026-08-23, issue #5242)
+- [x] **Rendu arabe RTL SANS cassure** : `ArabicPdfText` (shaping contextuel
+      + inversion RTL par runs) appliqué dans la vue `pdf.payslip` via le
+      helper `$t()` quand la locale est RTL ; police **Almarai** (OFL)
+      embarquée et enregistrée dompdf (fallback DejaVu sans crash).
+- [x] **Numérotation** : « Bulletin N° :n » sous le titre (i18n ×4).
+- [x] **Test golden-ish (DoD #5242)** : `PaySlipBilingualRenderTest` — rendu
+      fr (mentions + numérotation, zéro U+FFFD) et ar (titre « كشف الراتب »
+      en formes jointes + ordre RTL, police Almarai, zéro U+FFFD) ;
+      `ArabicPdfTextTest` (5 cas unitaires).
+- [ ] **Validation comptable** : revue humaine des mentions par un
+      expert-comptable DZ (à planifier avec la recette pilote #5247).
