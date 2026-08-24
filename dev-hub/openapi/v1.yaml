@@ -5612,6 +5612,29 @@ paths:
         "404":
           description: "Introuvable"
 
+  /attendance/corrections/{correction}/proof:
+    get:
+      tags: ["Attendance"]
+      summary: "Télécharger le justificatif d'une demande de correction"
+      parameters:
+        - name: correction
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Fichier justificatif (jpg/jpeg/png/pdf/heic)"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "403":
+          description: "Non autorisé (ni le propriétaire ni un manager du tenant)"
+        "404":
+          description: "Correction introuvable ou sans justificatif"
+
   /attendance/today:
     get:
       tags: ["Attendance"]
@@ -15274,7 +15297,7 @@ paths:
                         approver_id: { type: integer }
                         decision: { type: string, enum: [approved, rejected] }
                         comment: { type: string, nullable: true }
-                        decided_at: { type: string, nullable: true, format: date-time }
+                        decided_at: { type: string, format: date-time, nullable: true }
                         request:
                           type: object
                           properties:
@@ -15290,7 +15313,7 @@ paths:
                                 id: { type: integer }
                                 first_name: { type: string }
                                 last_name: { type: string }
-                        created_at: { type: string, nullable: true, format: date-time }
+                        created_at: { type: string, format: date-time, nullable: true }
                   links:
                     type: object
                     properties:
@@ -22990,6 +23013,10 @@ components:
         reason:
           type: string
           maxLength: 500
+        proof:
+          type: string
+          format: binary
+          description: "Justificatif optionnel (jpg/jpeg/png/pdf/heic, ≤ 5 Mo — multipart)"
 
     AccountingContact:
       type: object
@@ -23287,6 +23314,33 @@ components:
           nullable: true
         reason:
           type: string
+        proof_url:
+          type: string
+          nullable: true
+          description: "URL de téléchargement du justificatif (null si absent)"
+        anomaly:
+          type: object
+          nullable: true
+          properties:
+            flagged:
+              type: boolean
+            reason:
+              type: string
+              nullable: true
+            session:
+              type: object
+              nullable: true
+              properties:
+                id:
+                  type: integer
+                started_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                ended_at:
+                  type: string
+                  format: date-time
+                  nullable: true
         reviewed_by:
           type: integer
           nullable: true

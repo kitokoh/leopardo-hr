@@ -524,6 +524,10 @@ class LeopardoClient:
         """Approuver une correction de pointage (déprécié — utiliser POST)"""
         return self.request("PUT", "/attendance/corrections/{correction}/approve", **kwargs)
 
+    def get_attendance_corrections_by_correction_proof(self, **kwargs):
+        """Télécharger le justificatif d'une demande de correction"""
+        return self.request("GET", "/attendance/corrections/{correction}/proof", **kwargs)
+
     def post_attendance_corrections_by_correction_reject(self, **kwargs):
         """Refuser une demande de correction de pointage"""
         return self.request("POST", "/attendance/corrections/{correction}/reject", **kwargs)

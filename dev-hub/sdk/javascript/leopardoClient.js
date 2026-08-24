@@ -630,6 +630,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/attendance/corrections/{correction}/approve", options);
     },
 
+    /** Télécharger le justificatif d'une demande de correction */
+    getAttendanceCorrectionsByCorrectionProof(options = {}) {
+      return request("GET", "/attendance/corrections/{correction}/proof", options);
+    },
+
     /** Refuser une demande de correction de pointage */
     postAttendanceCorrectionsByCorrectionReject(options = {}) {
       return request("POST", "/attendance/corrections/{correction}/reject", options);

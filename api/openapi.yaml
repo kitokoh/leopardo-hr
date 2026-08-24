@@ -1834,41 +1834,6 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-    get:
-      tags: ["Payroll Engine"]
-      summary: "Détail d'un planning"
-      parameters:
-        - name: schedule
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Planning"
-        "401":
-          $ref: "#/components/responses/Error401"
-    patch:
-      tags: ["Payroll Engine"]
-      summary: "Mettre à jour un planning (manager — sécurité #2217)"
-      parameters:
-        - name: schedule
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          description: "Planning mis à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          description: "Non-manager"
-
   /schedules/{schedule}/assign-employees:
     parameters:
       - name: schedule
@@ -6152,22 +6117,6 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-    get:
-      tags: ["Tasks"]
-      summary: "Commentaires d'une tâche (auteur + employés liés)"
-      parameters:
-        - name: task
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Commentaires"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          description: "Non autorisé (hors périmètre)"
-
   /evaluations:
     get:
       tags: ["Evaluations"]
@@ -9772,26 +9721,6 @@ paths:
       responses:
         "200":
           description: "Site supprime"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-    patch:
-      tags: ["Payroll Engine"]
-      summary: "Mettre à jour un site (manager)"
-      parameters:
-        - name: site
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          description: "Site mis à jour"
         "401":
           $ref: "#/components/responses/Error401"
 
