@@ -1,5 +1,7 @@
 <?php
 
+use App\Core\Http\Middleware\HttpCacheMiddleware;
+use App\Core\Http\Middleware\IdempotencyMiddleware;
 use App\Exceptions\DomainException;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ApiVersionMiddleware;
@@ -101,6 +103,19 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $middleware->api(prepend: [RequestIdMiddleware::class, ApiVersionMiddleware::class, SetLocale::class, StructuredLogging::class, SentryContextMiddleware::class, CompressResponse::class]);
+
+        // RTMX (#5277) — socle plateforme temps réel / réseau faible :
+        // GET conditionnels (ETag/304) + rejeu idempotent des écritures.
+        // Append : sur la requête, ces middleware s'exécutent après les
+        // prepend du groupe mais avant les middleware de route (auth:sanctum,
+        // tenant) — l'IdempotencyMiddleware ne lit que le header Authorization
+        // brut (jamais l'utilisateur résolu) ; en sortie, ils voient la réponse
+        // AVANT CompressResponse → ETag calculé sur le corps non compressé
+        // (stable quelle que soit l'encodage).
+        $middleware->api(append: [
+            IdempotencyMiddleware::class,
+            HttpCacheMiddleware::class,
+        ]);
 
         $middleware->web(append: [
             PartnerLinkMiddleware::class,
