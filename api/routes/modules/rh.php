@@ -16,6 +16,7 @@ use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CareerEventController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureNoticeController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeImportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
@@ -51,6 +52,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee')->middleware('tenant.country');
     Route::patch('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee')->middleware('tenant.country');
     Route::post('/employees/{employee}/archive', [EmployeeController::class, 'archive'])->whereNumber('employee');
+
+    // ── Départ (offboarding, issue #5324) ─────────────────────────────────
+    // Enregistrement HR (statut `departed` + révocation d'accès) ; le solde
+    // de tout compte et l'attestation restent Payroll (endpoints ci-dessus).
+    Route::post('/employees/{employee}/departure', [DepartureController::class, 'store'])->whereNumber('employee');
+    Route::get('/employees/{employee}/departure', [DepartureController::class, 'show'])->whereNumber('employee');
+    Route::get('/me/departure', [DepartureController::class, 'myDeparture']);
     Route::get('/employees/{employee}/end-of-contract', [EndOfContractController::class, 'settlement'])->whereNumber('employee');
     Route::get('/employees/{employee}/certificate-of-employment', [EndOfContractController::class, 'certificate'])->whereNumber('employee');
     // G2 (#5325) — récapitulatif du préavis légal par pays/ancienneté (lecture, règle Payroll consommée)

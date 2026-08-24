@@ -10,6 +10,7 @@ use App\Events\AbsenceRequested;
 use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
 use App\Events\EmployeeArchived;
+use App\Events\EmployeeDeparted;
 use App\Events\EmployeeCreated;
 use App\Events\PayrollValidated;
 use App\Modules\Billing\Infrastructure\Services\WebhookDispatcher;
@@ -24,6 +25,7 @@ class WebhookListener implements ShouldQueue
     private const EVENT_NAMES = [
         EmployeeCreated::class => 'employee.created',
         EmployeeArchived::class => 'employee.archived',
+        EmployeeDeparted::class => 'employee.departed',
         AttendanceCheckedIn::class => 'attendance.checked_in',
         AttendanceCheckedOut::class => 'attendance.checked_out',
         AbsenceRequested::class => 'absence.requested',

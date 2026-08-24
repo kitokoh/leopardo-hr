@@ -72,4 +72,14 @@ return [
     'career_event_reason_required' => 'Le motif est requis.',
     'career_event_nothing_to_apply' => 'Rien à appliquer : l\u{2019}événement n\u{2019}a ni poste, ni département, ni salaire cible.',
     'career_event_deleted' => 'Événement de carrière supprimé.',
+
+    // ── Départ (offboarding, issue #5324) ───────────────────────────────
+    'departure_registered' => "Départ enregistré. Statut : départ effectué — accès révoqué.",
+    'already_departed' => "Cet employé a déjà quitté l'entreprise (ou est archivé).",
+    'departure_type_invalid' => "Type de départ invalide.",
+    'departure_not_created' => "Impossible d'enregistrer le départ (transaction annulée).",
+    'departure_type_resignation' => "Démission",
+    'departure_type_termination' => "Licenciement",
+    'departure_type_end_of_contract' => "Fin de contrat",
+    'departure_type_retirement' => "Retraite",
 ];

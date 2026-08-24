@@ -56,7 +56,7 @@ class HrController extends Controller
                 ->count(),
 
             'total_employees' => Employee::where('company_id', $company_id)
-                ->whereNotIn('status', ['archived'])
+                ->whereNotIn('status', ['archived', 'departed'])
                 ->count(),
 
             'pending_invitations' => Employee::where('company_id', $company_id)
@@ -70,7 +70,7 @@ class HrController extends Controller
                 ->count(),
 
             'by_contract_type' => Employee::where('company_id', $company_id)
-                ->whereNotIn('status', ['archived'])
+                ->whereNotIn('status', ['archived', 'departed'])
                 ->selectRaw('contract_type, COUNT(*) as count')
                 ->groupBy('contract_type')
                 ->pluck('count', 'contract_type'),
@@ -96,7 +96,7 @@ class HrController extends Controller
         $employee = $request->user();
 
         $query = Employee::where('company_id', $employee->company_id)
-            ->whereNotIn('status', ['archived'])
+            ->whereNotIn('status', ['archived', 'departed'])
             ->with(['department', 'position', 'schedule', 'site'])
             ->orderBy('last_name');
 
@@ -257,7 +257,7 @@ class HrController extends Controller
         $actor = $request->user();
 
         $employees = Employee::where('company_id', $actor->company_id)
-            ->whereNotIn('status', ['archived'])
+            ->whereNotIn('status', ['archived', 'departed'])
             ->with(['department', 'position'])
             ->orderBy('last_name')
             ->get(['id', 'first_name', 'last_name', 'email', 'role', 'manager_role', 'status', 'photo_path', 'contract_type', 'department_id', 'position_id']);
