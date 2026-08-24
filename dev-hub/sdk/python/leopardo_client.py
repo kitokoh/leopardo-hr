@@ -1876,6 +1876,10 @@ class LeopardoClient:
         """Generer un export bancaire pour un run valide (alias chemin)"""
         return self.request("POST", "/payroll-runs/{payrollRun}/bank-export", **kwargs)
 
+    def get_payroll_runs_by_payrollrun_bordereau(self, **kwargs):
+        """Bordereau de paie d'un run (totaux par cotisation + recap, #5243)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/bordereau", **kwargs)
+
     def post_payroll_runs_by_payrollrun_bulk_pay(self, **kwargs):
         """Lancer le paiement groupé du run (virements)"""
         return self.request("POST", "/payroll-runs/{payrollRun}/bulk-pay", **kwargs)
@@ -2699,6 +2703,10 @@ class LeopardoClient:
     def generatecnssmadeclaration(self, **kwargs):
         """Generer la declaration trimestrielle CNSS (Maroc) pour tous les employes actifs"""
         return self.request("POST", "/social-declarations/cnss-ma", **kwargs)
+
+    def generatedasdzdeclaration(self, **kwargs):
+        """Generer la declaration annuelle des salaires DAS (Algerie, #5243)"""
+        return self.request("POST", "/social-declarations/das-dz", **kwargs)
 
     def generatedsnfrdeclaration(self, **kwargs):
         """Generer la DSN (Declaration Sociale Nominative, France) pour un mois donne"""

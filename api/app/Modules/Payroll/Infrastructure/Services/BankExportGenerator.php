@@ -43,6 +43,8 @@ class BankExportGenerator
             'ccp_dz' => $this->generateCcpAlgerie($run, $slips),
             'cpa_dz' => $this->generateCpaBna($run, $slips, 'CPA'),
             'bna_dz' => $this->generateCpaBna($run, $slips, 'BNA'),
+            'cnep_dz' => $this->generateCnep($run, $slips),
+            'edx_dz' => $this->generateEdx($run, $slips),
             'virement_ma' => $this->generateCsvGeneric($run, $slips, $currency),
             'csv_generic' => $this->generateCsvGeneric($run, $slips, $currency),
             default => throw new \InvalidArgumentException("Unsupported bank export format: {$format}"),
@@ -113,6 +115,8 @@ class BankExportGenerator
             'ccp_dz' => 'txt',
             'cpa_dz' => 'txt',
             'bna_dz' => 'txt',
+            'cnep_dz' => 'txt',
+            'edx_dz' => 'txt',
             'virement_ma' => 'csv',
             'csv_generic' => 'csv',
             default => 'dat',
@@ -126,6 +130,8 @@ class BankExportGenerator
             'ccp_dz' => 'text/plain',
             'cpa_dz' => 'text/plain',
             'bna_dz' => 'text/plain',
+            'cnep_dz' => 'text/plain',
+            'edx_dz' => 'text/plain',
             'virement_ma' => 'text/csv',
             'csv_generic' => 'text/csv',
             default => 'application/octet-stream',
@@ -280,6 +286,110 @@ class BankExportGenerator
             (string) $slips->count(),
             number_format($totalAmount, 2, '.', ''),
         ]);
+
+        return implode("\r\n", $lines)."\r\n";
+    }
+
+    /**
+     * #5243 — Ordre de virement CNEP Banque (Algérie) : convention interne
+     * pipe-delimited HEADER/DETAIL/FOOTER, en DZD (format 100 % local, comme
+     * ccp_dz/cpa_dz/bna_dz). Chaque DÉTAIL porte le RIB (bank_account),
+     * le nom, le montant net et la référence de paie.
+     *
+     * ⚠️ Format à valider avec CNEP Banque avant usage réel (même niveau de
+     * confiance `pilot` que les formats ccp_dz/cpa_dz/bna_dz existants).
+     *
+     * @param  Collection<int, PaySlip>  $slips
+     */
+    private function generateCnep(PayrollRun $run, Collection $slips): string
+    {
+        $lines = [];
+        $batchDate = now()->format('dmY');
+        $batchRef = 'CNEP-'.now()->format('YmdHis').'-'.$run->id;
+        $totalAmount = $slips->sum('net_salary');
+
+        $lines[] = implode('|', [
+            'HEADER',
+            'CNEP',
+            $batchRef,
+            $batchDate,
+            (string) $slips->count(),
+            number_format($totalAmount, 2, '.', ''),
+            'DZD',
+            'LEOPARDO RH',
+        ]);
+
+        $seq = 1;
+        foreach ($slips as $slip) {
+            $employee = $slip->employee;
+            $name = mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? '')));
+            $rib = $employee->bank_account ?? $employee->iban ?? '';
+
+            $lines[] = implode('|', [
+                'DETAIL',
+                str_pad((string) $seq, 6, '0', STR_PAD_LEFT),
+                $rib,
+                $name,
+                number_format($slip->net_salary, 2, '.', ''),
+                'DZD',
+                'SAL-'.$run->id.'-'.$slip->employee_id,
+                'Salaire '.$run->period_start->format('m/Y'),
+            ]);
+            $seq++;
+        }
+
+        $lines[] = implode('|', [
+            'FOOTER',
+            (string) $slips->count(),
+            number_format($totalAmount, 2, '.', ''),
+        ]);
+
+        return implode("\r\n", $lines)."\r\n";
+    }
+
+    /**
+     * #5243 — Ordre de virement EDX (échange de données interbancaire
+     * algérien) : enregistrements à largeur fixe H (entête) / D (détail) /
+     * F (fin), montants nets en DZD (format 100 % local). Le RIB source
+     * est celui de l'employé (bank_account, fallback IBAN), le RIB cible
+     * est omis volontairement (virement masse géré par la banque).
+     *
+     * ⚠️ Convention interne documentée — le gabarit exact des colonnes est
+     * à confirmer avec la banque émettrice avant usage en production.
+     *
+     * @param  Collection<int, PaySlip>  $slips
+     */
+    private function generateEdx(PayrollRun $run, Collection $slips): string
+    {
+        $lines = [];
+        $totalAmount = $slips->sum('net_salary');
+        $batchRef = 'EDX-'.now()->format('YmdHis').'-'.$run->id;
+
+        // Entête : H + référence lot + date (dmY) + nombre + total (15,2).
+        $lines[] = 'H'.str_pad(substr($batchRef, 0, 20), 20)
+            .str_pad(now()->format('dmY'), 8)
+            .str_pad((string) $slips->count(), 6, '0', STR_PAD_LEFT)
+            .str_pad(number_format($totalAmount, 2, '.', ''), 15, '0', STR_PAD_LEFT)
+            .str_pad('DZD', 3);
+
+        $seq = 1;
+        foreach ($slips as $slip) {
+            $employee = $slip->employee;
+            $name = mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? '')));
+            $rib = $employee->bank_account ?? $employee->iban ?? '';
+
+            // Détail : D + séquence (6) + RIB (20) + nom (30) + net (12,2) + référence (20).
+            $lines[] = 'D'.str_pad((string) $seq, 6, '0', STR_PAD_LEFT)
+                .str_pad(substr($rib, 0, 20), 20)
+                .str_pad(mb_substr($name, 0, 30), 30)
+                .str_pad(number_format($slip->net_salary, 2, '.', ''), 12, '0', STR_PAD_LEFT)
+                .str_pad(substr('SAL-'.$run->id.'-'.$slip->employee_id, 0, 20), 20);
+            $seq++;
+        }
+
+        // Fin : F + nombre (6) + total (15,2).
+        $lines[] = 'F'.str_pad((string) $slips->count(), 6, '0', STR_PAD_LEFT)
+            .str_pad(number_format($totalAmount, 2, '.', ''), 15, '0', STR_PAD_LEFT);
 
         return implode("\r\n", $lines)."\r\n";
     }
