@@ -39,6 +39,10 @@ jobs:
   lighthouse:
     timeout-minutes: 30
     runs-on: ubuntu-latest
+    env:
+      # Keep the production build deterministic; site-url.ts rejects the
+      # invalid historical default domain during Next.js static generation.
+      NEXT_PUBLIC_SITE_URL: https://gestionemployer-backend.vercel.app
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
