@@ -1427,3 +1427,9 @@ Note 2026-08-23 (issue #5229) : trésorerie Phase B — paiements + rapprochemen
 - Liste : `GET /accounting/payments?document_id=&status=` — RBAC comptable/principal (403 sinon).
 - Relances : `POST /accounting/reminders/run` + commande `accounting:send-payment-reminders` — stages J+7/J+15/J+30 paramétrables (`accounting_settings.payment_reminder_days`), cibles documents émis non soldés échus, unique (document, stage) → zéro doublon, notification in-app aux managers principal/comptable (template `accounting_payment_reminder`, i18n ×4), échec notification ≠ échec relance (log).
 - Couverture : `AccountingPaymentTest` (14 tests) — suite `tests/Feature/Accounting` 23/23 ; PHPStan 0 ; Pint PASS ; OpenAPI couverture 754/754.
+
+Note 2026-08-24 (issue #5235) : Expense → écritures comptables (Phase C) — notes de frais approuvées.
+- `GET /api/v1/expense-claims/{claim}/accounting-entries` : écritures d'une note approuvée (D 625 frais généraux / C 512 banque = total, référence `EXPENSE-CLAIM-{id}`), RBAC principal/comptable (RH/dept/marketing/employé 403), isolation tenant 404.
+- `POST /api/v1/expense-claims/{claim}/accounting-entries/regenerate` : régénération idempotente (comptable uniquement), exige statut `approved` (422 sinon).
+- Déclenchement automatique : observer Eloquent sur `ExpenseClaim` (`saved`, status `approved`) — le contrôleur `approve()` fait un `update()` d'instance, aucun hook à ajouter ; rejet après approbation → écritures supprimées (une note rejetée ne reste pas au passif) ; échec loggé, jamais propagé.
+- Couverture : `ExpenseAccountingEntriesFlowTest` (10) — OpenAPI couverture sans nouvelle erreur (les 21 erreurs `v1/v1` accounting sont préexistantes sur main), SDK régénérés (803 opérations).
