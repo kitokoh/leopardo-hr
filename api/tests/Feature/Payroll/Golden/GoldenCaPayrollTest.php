@@ -27,7 +27,7 @@ class GoldenCaPayrollTest extends TestCase
 {
     private function rules(): CanadaPayrollRules
     {
-        return new CanadaPayrollRules();
+        return new CanadaPayrollRules;
     }
 
     public function test_golden_ca_minimum_wage_federal_3146(): void

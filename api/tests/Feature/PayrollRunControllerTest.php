@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
-use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
+use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
@@ -15,15 +17,18 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
+use Mockery\Expectation;
+use Mockery\MockInterface;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class PayrollRunControllerTest extends TestCase
 {
-    use \Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     private function bindFakePayrollCalculator(string $confidenceLevel = 'production', bool $expectCalculateRun = true): void
     {
-        /** @var PayrollCalculator&\Mockery\MockInterface $calculator */
+        /** @var PayrollCalculator&MockInterface $calculator */
         $calculator = Mockery::mock(PayrollCalculator::class);
         if ($expectCalculateRun) {
             $calculator
@@ -70,26 +75,26 @@ class PayrollRunControllerTest extends TestCase
 
         // Issue #2332 — le contrôleur résout désormais les règles du pays
         // avant le calcul (garde placeholder) : le fake doit servir `getRules`.
-        /** @var \Mockery\Expectation $getRulesExpectation */
+        /** @var Expectation $getRulesExpectation */
         $getRulesExpectation = $calculator->shouldReceive('getRules');
-        $getRulesExpectation->andReturnUsing(function () use ($confidenceLevel): \App\Modules\Payroll\Domain\Contracts\CountryRulesInterface {
-                /** @var \App\Modules\Payroll\Domain\Contracts\CountryRulesInterface&\Mockery\MockInterface $rules */
-                $rules = Mockery::mock(\App\Modules\Payroll\Domain\Contracts\CountryRulesInterface::class);
-                /** @var \Mockery\Expectation $confidenceExpectation */
-                $confidenceExpectation = $rules->shouldReceive('confidenceLevel');
-                $confidenceExpectation->andReturn($confidenceLevel);
+        $getRulesExpectation->andReturnUsing(function () use ($confidenceLevel): CountryRulesInterface {
+            /** @var CountryRulesInterface&MockInterface $rules */
+            $rules = Mockery::mock(CountryRulesInterface::class);
+            /** @var Expectation $confidenceExpectation */
+            $confidenceExpectation = $rules->shouldReceive('confidenceLevel');
+            $confidenceExpectation->andReturn($confidenceLevel);
 
-                return $rules;
-            });
+            return $rules;
+        });
 
         $this->app->instance(PayrollCalculator::class, $calculator);
     }
 
     public function test_manager_can_list_payroll_runs(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         PayrollRun::create([
@@ -111,9 +116,9 @@ class PayrollRunControllerTest extends TestCase
     {
         // #1905 : le pays légal du tenant doit correspondre au country_code
         // du run — la factory tire un pays aléatoire sinon (test flaky).
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
@@ -131,9 +136,9 @@ class PayrollRunControllerTest extends TestCase
 
     public function test_manager_can_view_payroll_run(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $run = PayrollRun::create([
@@ -153,9 +158,9 @@ class PayrollRunControllerTest extends TestCase
 
     public function test_employee_cannot_create_payroll_run(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -172,9 +177,9 @@ class PayrollRunControllerTest extends TestCase
 
     public function test_payroll_run_summary(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $run = PayrollRun::create([
@@ -198,9 +203,9 @@ class PayrollRunControllerTest extends TestCase
     public function test_manager_can_calculate_payroll_run_with_calculator_contract(): void
     {
         $this->bindFakePayrollCalculator();
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
         $run = PayrollRun::create([
@@ -231,9 +236,9 @@ class PayrollRunControllerTest extends TestCase
         // confirmation explicite, le run ne doit PAS changer de statut et
         // calculateRun ne doit pas être appelé.
         $this->bindFakePayrollCalculator(confidenceLevel: 'placeholder', expectCalculateRun: false);
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
         $run = PayrollRun::create([
@@ -265,9 +270,9 @@ class PayrollRunControllerTest extends TestCase
         // Issue #2332 — confirmation explicite : le calcul s'exécute et
         // l'acceptation est tracée (AuditLog placeholder_warning_acknowledged).
         $this->bindFakePayrollCalculator(confidenceLevel: 'placeholder');
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
         $run = PayrollRun::create([
@@ -292,7 +297,7 @@ class PayrollRunControllerTest extends TestCase
             'user_id' => $manager->id,
         ]);
 
-        $log = \App\Core\Auth\Domain\Models\AuditLog::query()
+        $log = AuditLog::query()
             ->where('action', 'placeholder_warning_acknowledged')
             ->where('company_id', $company->id)
             ->firstOrFail();
@@ -305,9 +310,9 @@ class PayrollRunControllerTest extends TestCase
     {
         // Issue #2332 — pays pilot/production : aucun paramètre requis, aucun audit.
         $this->bindFakePayrollCalculator(confidenceLevel: 'pilot');
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
         $run = PayrollRun::create([
@@ -333,11 +338,11 @@ class PayrollRunControllerTest extends TestCase
     {
         Storage::fake('local');
 
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         $run = PayrollRun::create([
             'company_id' => $company->id,
@@ -393,11 +398,11 @@ class PayrollRunControllerTest extends TestCase
     {
         Queue::fake();
 
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         $run = PayrollRun::create([
             'company_id' => $company->id,
@@ -434,9 +439,9 @@ class PayrollRunControllerTest extends TestCase
 
     public function test_manager_can_cancel_draft_run_but_not_paid_run(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $draft = PayrollRun::create([
             'company_id' => $company->id,
@@ -465,11 +470,11 @@ class PayrollRunControllerTest extends TestCase
 
     public function test_payroll_runs_are_isolated_by_tenant(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Tenant\Domain\Models\Company $otherCompany */
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $ownRun = PayrollRun::create([
             'company_id' => $company->id,

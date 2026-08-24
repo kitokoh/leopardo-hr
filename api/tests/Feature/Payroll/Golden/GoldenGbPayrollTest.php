@@ -26,7 +26,7 @@ class GoldenGbPayrollTest extends TestCase
 {
     private function rules(): UnitedKingdomPayrollRules
     {
-        return new UnitedKingdomPayrollRules();
+        return new UnitedKingdomPayrollRules;
     }
 
     public function test_golden_gb_national_living_wage_2203(): void

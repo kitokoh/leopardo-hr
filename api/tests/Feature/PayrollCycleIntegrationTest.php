@@ -12,6 +12,7 @@ use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Carbon\Carbon;
 use Laravel\Sanctum\Sanctum;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -19,14 +20,14 @@ use Tests\TestCase;
  */
 class PayrollCycleIntegrationTest extends TestCase
 {
-    use \Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     public function test_full_payroll_cycle_create_compute_validate(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Employee::factory()->create(['company_id' => $company->id]);
@@ -66,9 +67,9 @@ class PayrollCycleIntegrationTest extends TestCase
         // paginator shape (current_page/data/links/... at the top level)
         // instead of the success/data/meta envelope used everywhere else in
         // the API (see ApiListQueryContractTest, PayrollRunControllerTest).
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         PayrollRun::create([
@@ -99,10 +100,10 @@ class PayrollCycleIntegrationTest extends TestCase
 
     public function test_employee_cannot_manage_payroll_runs(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -121,14 +122,14 @@ class PayrollCycleIntegrationTest extends TestCase
     {
         // #1905 : le pays légal du tenant doit correspondre au country_code
         // du run — la factory tire un pays aléatoire sinon (test flaky).
-        /** @var \App\Core\Tenant\Domain\Models\Company $companyA */
+        /** @var Company $companyA */
         $companyA = Company::factory()->create(['name' => 'Company A', 'country' => 'DZ', 'currency' => 'DZD']);
-        /** @var \App\Core\Tenant\Domain\Models\Company $companyB */
+        /** @var Company $companyB */
         $companyB = Company::factory()->create(['name' => 'Company B', 'country' => 'DZ', 'currency' => 'DZD']);
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $managerA */
+        /** @var Employee $managerA */
         $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $managerB */
+        /** @var Employee $managerB */
         $managerB = Employee::factory()->manager()->create(['company_id' => $companyB->id]);
 
         Sanctum::actingAs($managerA);
@@ -152,13 +153,13 @@ class PayrollCycleIntegrationTest extends TestCase
 
     public function test_employee_can_read_own_current_balance_with_advance_deducted(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create([
             'country' => 'DZ',
             'currency' => 'DZD',
             'metadata' => ['payroll' => ['pay_cycle' => 'monthly']],
         ]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -217,13 +218,13 @@ class PayrollCycleIntegrationTest extends TestCase
      */
     public function test_employee_balance_exposes_compliance_block(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create([
             'country' => 'DZ',
             'currency' => 'DZD',
             'metadata' => ['payroll' => ['pay_cycle' => 'monthly']],
         ]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -246,13 +247,13 @@ class PayrollCycleIntegrationTest extends TestCase
         // #1951 → #5255 : US avait « compliance: null » (pays display-only).
         // Depuis le pack EN, les règles US sont résolubles (pilot) : le bloc
         // compliance est exposé comme pour les autres pays supportés.
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create([
             'country' => 'US',
             'currency' => 'USD',
             'metadata' => ['payroll' => ['pay_cycle' => 'monthly']],
         ]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -270,13 +271,13 @@ class PayrollCycleIntegrationTest extends TestCase
 
     public function test_employee_balance_reports_next_payment_date_from_company_pay_day(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create([
             'country' => 'MA',
             'currency' => 'MAD',
             'metadata' => ['payroll' => ['pay_cycle' => 'monthly', 'pay_day' => 28]],
         ]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -296,11 +297,11 @@ class PayrollCycleIntegrationTest extends TestCase
 
     public function test_employee_cannot_read_another_employee_balance(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id, 'role' => 'employee']);
-        /** @var \App\Core\Auth\Domain\Models\Employee $other */
+        /** @var Employee $other */
         $other = Employee::factory()->create(['company_id' => $company->id, 'role' => 'employee']);
 
         Sanctum::actingAs($employee);
@@ -314,20 +315,20 @@ class PayrollCycleIntegrationTest extends TestCase
         // Issue #4500 : employeeBalance aplatissait le payload au niveau racine
         // ({data: {...}} + clés plates) — contrat incohérent avec /me/balance
         // et tous les autres endpoints payroll. Forme canonique : {data: {...}}.
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create([
             'country' => 'DZ',
             'currency' => 'DZD',
             'metadata' => ['payroll' => ['pay_cycle' => 'monthly']],
         ]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
             'salary_base' => 200000,
         ]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -350,9 +351,9 @@ class PayrollCycleIntegrationTest extends TestCase
     {
         // Issue #2144 — le bloc compliance (niveau de confiance paie) doit
         // être exposé sur /me/balance pour l'écran paie mobile employee.
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ']);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -372,7 +373,7 @@ class PayrollCycleIntegrationTest extends TestCase
     public function test_mobile_summary_exposes_compliance_block(): void
     {
         // Issue #2144 — même bloc sur /payroll/mobile-summary (manager).
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'MA']);
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
@@ -390,7 +391,7 @@ class PayrollCycleIntegrationTest extends TestCase
         // /payroll/mobile-summary : le rôle rh était exclu du groupe
         // principal/comptable → 403. Les lectures paie mobiles acceptent
         // désormais principal, comptable ET rh.
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ']);
         $rh = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
 
@@ -405,7 +406,7 @@ class PayrollCycleIntegrationTest extends TestCase
     {
         // Issue #2749 — seules les LECTURES mobiles sont ouvertes à rh ;
         // les écritures paie restent strictement principal/comptable.
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ']);
         $rh = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
 
@@ -419,18 +420,18 @@ class PayrollCycleIntegrationTest extends TestCase
 
     public function test_manager_mobile_summary_is_tenant_scoped(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $companyA */
+        /** @var Company $companyA */
         $companyA = Company::factory()->create(['currency' => 'DZD']);
-        /** @var \App\Core\Tenant\Domain\Models\Company $companyB */
+        /** @var Company $companyB */
         $companyB = Company::factory()->create(['currency' => 'EUR']);
         $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employeeA */
+        /** @var Employee $employeeA */
         $employeeA = Employee::factory()->create([
             'company_id' => $companyA->id,
             'first_name' => 'Amina',
             'salary_base' => 90000,
         ]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employeeB */
+        /** @var Employee $employeeB */
         $employeeB = Employee::factory()->create([
             'company_id' => $companyB->id,
             'first_name' => 'Karim',
@@ -448,13 +449,13 @@ class PayrollCycleIntegrationTest extends TestCase
 
     public function test_employee_balance_includes_overtime_hours_and_estimated_pay(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create([
             'country' => 'DZ',
             'currency' => 'DZD',
             'metadata' => ['payroll' => ['pay_cycle' => 'monthly']],
         ]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -486,7 +487,7 @@ class PayrollCycleIntegrationTest extends TestCase
         Sanctum::actingAs($employee);
 
         $resp = $this->getJson('/api/v1/me/balance');
-        fwrite(STDERR, "BALANCE=".$resp->getContent()."\n");
+        fwrite(STDERR, 'BALANCE='.$resp->getContent()."\n");
         $resp->assertOk()
             ->assertJsonPath('data.overtime_hours', 5)
             ->assertJsonPath('data.overtime_pay', 3750); // 5h * 500 * 1.5
@@ -494,15 +495,15 @@ class PayrollCycleIntegrationTest extends TestCase
 
     public function test_manager_mobile_summary_aggregates_team_overtime_totals(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create([
             'country' => 'DZ',
             'currency' => 'DZD',
             'metadata' => ['payroll' => ['pay_cycle' => 'monthly']],
         ]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'salary_base' => 0,

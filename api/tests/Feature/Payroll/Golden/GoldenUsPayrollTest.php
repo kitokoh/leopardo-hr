@@ -27,7 +27,7 @@ class GoldenUsPayrollTest extends TestCase
 {
     private function rules(): UnitedStatesPayrollRules
     {
-        return new UnitedStatesPayrollRules();
+        return new UnitedStatesPayrollRules;
     }
 
     public function test_golden_us_federal_minimum_wage_1256_64(): void

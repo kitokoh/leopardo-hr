@@ -30,7 +30,7 @@ class GoldenDzEndOfContractRulesTest extends TestCase
 
     public function test_dz_rules_expose_pilot_notice_and_severance_values(): void
     {
-        $rules = new AlgeriaPayrollRules();
+        $rules = new AlgeriaPayrollRules;
 
         // Issue #1819/#1943 — préavis DZ (usage dominant, Loi 90-11 art. 73-4/98 —
         // renvoi aux conventions collectives) : 1 mois < 10 ans, 2 mois ≥ 10 ans,
@@ -56,7 +56,7 @@ class GoldenDzEndOfContractRulesTest extends TestCase
             'contract_end' => '2026-01-01', // 60 mois = 5 ans exacts
         ]);
 
-        $service = new EndOfContractService();
+        $service = new EndOfContractService;
         $settlement = $service->settlement($employee, Carbon::parse('2026-01-01'), [
             'departure_reason' => 'dismissal', // licenciement CDI, préavis non effectué
         ]);
@@ -94,7 +94,7 @@ class GoldenDzEndOfContractRulesTest extends TestCase
             'contract_end' => '2026-01-01',
         ]);
 
-        $service = new EndOfContractService();
+        $service = new EndOfContractService;
         $settlement = $service->settlement($employee, Carbon::parse('2026-01-01'));
 
         $this->assertSame(0.0, $settlement['breakdown']['notice_pay']);
@@ -113,7 +113,7 @@ class GoldenDzEndOfContractRulesTest extends TestCase
             'contract_end' => '2026-01-01',
         ]);
 
-        $service = new EndOfContractService();
+        $service = new EndOfContractService;
 
         // Préavis EFFECTUÉ → rien à compenser.
         $served = $service->settlement($employee, Carbon::parse('2026-01-01'), [
@@ -152,7 +152,7 @@ class GoldenDzEndOfContractRulesTest extends TestCase
             'contract_end' => '2026-01-01',
         ]);
 
-        $service = new EndOfContractService();
+        $service = new EndOfContractService;
 
         $this->expectException(UnsupportedCountryRulesException::class);
         $service->settlement($employee, Carbon::parse('2026-01-01'));
