@@ -71,6 +71,11 @@ class ThirteenthMonthTest extends TestCase
             'company_id' => $company->id,
             'salary_type' => 'fixed',
             'salary_base' => 60000,
+            // Épinglé avant les périodes de run (déc.) : la factory tire un
+            // contract_start aléatoire (faker) qui pouvait tomber pendant la
+            // période → prorata → gross 40 636,36 au lieu de 60 000 (flake
+            // 2026-08-24, même classe que FamilyPartsRicfTest/PayrollAuditTest).
+            'contract_start' => '2026-01-01',
         ]);
     }
 

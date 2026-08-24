@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_hr/features/absences/providers/absence_provider.dart';
+import 'package:leopardo_core/features/absences/providers/absence_provider.dart';
 import 'package:leopardo_hr/features/absences/screens/absence_list_screen.dart';
 import 'package:leopardo_hr/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_hr/features/attendance/screens/monthly_summary_screen.dart';
