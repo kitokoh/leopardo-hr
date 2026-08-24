@@ -1250,7 +1250,8 @@
     "taxBrackets": "Vergi dilimleri",
     "legalRates": "Yasal oranlar",
     "account": "Hesabim",
-    "notFound": "Sayfa bulunamadi"
+    "notFound": "Sayfa bulunamadi",
+    "accountingSettings": "Muhasebe — Ayarlar"
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?",
@@ -3284,5 +3285,46 @@
   "smartAttendanceTapToReview": "Onaylamak veya reddetmek için dokunun",
   "smartAttendanceTitle": "Akıllı Yoklama",
   "smartAttendanceTodayTitle": "Bugün — {date}",
-  "smartAttendanceZoneSurveillance": "Bölge izleme"
+  "smartAttendanceZoneSurveillance": "Bölge izleme",
+  "accounting": {
+    "settings": {
+      "title": "Muhasebe ayarları",
+      "subtitle": "Şirketinizin para birimi, KDV, numaralandırma serileri, yasal ibareler ve belge dili.",
+      "company_title": "Şirket",
+      "company_subtitle": "Kimlik ve varsayılan faturalama tercihleri.",
+      "currency": "Para birimi",
+      "document_language": "Belge dili",
+      "template_style": "Belge şablonu",
+      "template_modern": "Modern",
+      "template_classic": "Klasik",
+      "payment_terms": "Varsayılan ödeme koşulları",
+      "tva_title": "KDV oranları",
+      "tva_subtitle": "Belgelere uygulanan varsayılan oranlar (oluştururken düzenlenebilir).",
+      "add_rate": "Oran ekle",
+      "remove_rate": "Bu oranı kaldır",
+      "rate_label": "Etiket",
+      "rate_value": "Oran (%)",
+      "rate_default_label": "Standart KDV",
+      "series_title": "Numaralandırma serileri",
+      "series_subtitle": "Türe göre belge numarası öneki (örn. FAT-2026-0001).",
+      "series_invoice": "Fatura",
+      "series_proforma": "Proforma",
+      "series_quote": "Teklif",
+      "series_credit_note": "İade faturası",
+      "series_delivery_note": "İrsaliye",
+      "series_receipt": "Makbuz",
+      "mentions_title": "Yasal ibareler",
+      "mentions_subtitle": "Belge alt bilgisinde görünen ibareler (ticaret sicili, vergi no, sermaye…).",
+      "mentions_placeholder": "Ticaret Sicili 123456 — Vergi No 9876543210 — Sermaye 1.000.000 TRY",
+      "save": "Kaydet",
+      "reload": "Sıfırla",
+      "saved": "Ayarlar kaydedildi.",
+      "load_error": "Muhasebe ayarları yüklenemedi.",
+      "save_error": "Ayarlar kaydedilemedi.",
+      "lang_fr": "Fransızca",
+      "lang_ar": "Arapça",
+      "lang_tr": "Türkçe",
+      "lang_en": "İngilizce"
+    }
+  }
 }

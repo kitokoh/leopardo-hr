@@ -86,26 +86,26 @@ CI verte (#5201), i18n mobile (#2755 suite), dedup mobile (#2601 suite), RTMX (P
 > (rituel hebdo — vendredi, pendant le bilan) et **à J+1 après chaque merge de wave**
 > (DoD #5286 : le tracker doit refléter la réalité). Un écart se signale par issue,
 > jamais par modification silencieuse du tracker.
-> **État consolidé** : 2026-08-22 (J4) · source : GitHub Issues (état réel), `CHANGELOG.md`, `.claim-marker`.
+> **État consolidé** : 2026-08-23 (J5) · source : GitHub Issues (état réel), `CHANGELOG.md`, `.claim-marker`.
 
 ### 6.1 Statut des waves
 
-| Wave | Contenu | Statut 2026-08-22 | Gate |
+| Wave | Contenu | Statut 2026-08-23 | Gate |
 |---|---|---|---|
 | **W0** | Fix CI #5201 (isolation workers) | ✅ **PASSÉE** — #5201 clos le 22/08, CI main verte (Tests, Architecture Quality, E2E prod smoke, OWASP ZAP en succès) | CI verte ✅ |
-| **W1** | Payroll DZ 100 % (#5240→#5247) | 🔵 **EN COURS** — fondations livrées par le plan 60 j : golden 43 méthodes/91 cas (#5149 clos), clôture 2 étapes + benchmark (#5150 clos), référentiel DZ validé expert-comptable 2026-08-08 | Pilote DZ : bulletin + virement réels |
-| **W2** | Pack MA (#5248) ‖ HR 100 % (#5258→#5263) ‖ Comptabilité Phase A (#5220→#5228) | ⚪ NON DÉMARRÉE (16 issues, toutes ouvertes) | 3 PR par semaine |
-| **W3** | Pointage 100 % (#5264→#5269) ‖ Pack TN (#5249) ‖ Comptabilité Phase B (#5229→#5233) | ⚪ NON DÉMARRÉE — **bloquée par l'ADR fusion Attendance (décision fondateur)** | Pointage → paie sans intervention |
-| **W4** | Packs SN/CI (#5250/#5251) ‖ Comptabilité Phase C (#5234→#5239) | ⚪ NON DÉMARRÉE — **bloquée par le choix de la passerelle de paiement** | Virement pilote exécuté + rapproché |
+| **W1** | Payroll DZ 100 % (#5240→#5247) | 🔵 **EN COURS** — fondations livrées (golden 43 méthodes/91 cas #5149, clôture 2 étapes + benchmark #5150, référentiel validé expert 08/08) ; **#5244 golden cas limites → PR #5336** (bornes abattement IRG + profils réalistes) ; **#5247 docs/recette → PR #5332** (`docs/payroll/dz/`) ; moteur #5241 (draft), exports #5243, congés→paie #5245 en cours par d'autres agents | Pilote DZ : bulletin + virement réels |
+| **W2** | Pack MA (#5248) ‖ HR 100 % (#5258→#5263) ‖ Comptabilité Phase A (#5220→#5228) | 🟡 **DÉMARRÉE** — **Pack MA #5248 ✅ MERGÉ (PR #5330, audit légal 2026 : IR LF 2025, IPE/AF/TFP, SMIG 3 422,72 + 18 golden)** ; HR : 4 PRs en cours (#5259/#5260/#5262/#5263) ; Comptabilité Phase A : #5221 → PR #5301 | 3 PR par semaine |
+| **W3** | Pointage 100 % (#5264→#5269) ‖ Pack TN (#5249) ‖ Comptabilité Phase B (#5229→#5233) | 🟡 **DÉMARRÉE (partiel)** — **Pack TN #5249 → PR #5334** (audit légal 2026 : IRPP 8 tranches LF 2025, PLE, ASSP, SMIG 554,736 + 15 golden) ; pointage : 4 PRs en cours (#5264/#5266/#5267/#5268) — l'ADR fusion reste à trancher pour le mode unifié #5265 | Pointage → paie sans intervention |
+| **W4** | Packs SN/CI (#5250/#5251) ‖ Comptabilité Phase C (#5234→#5239) | 🟡 **DÉMARRÉE (partiel)** — **Pack SN #5250 → PR #5338** (règles déjà `production` #1912 ; cas limites golden : TRIMF, plafond CSS, cap abattement, T2 par catégorie) ; Comptabilité Phase C toujours bloquée par le choix de passerelle | Virement pilote exécuté + rapproché |
 | **W5** | Packs CM/TR/FR/EN (#5252→#5255) ‖ i18n mobile (#5278) ‖ dedup mobile (#5279) | ⚪ NON DÉMARRÉE | i18n 0 hardcodé |
 | **W6** | Cross-cutting (#5280→#5286, #5277, #5289) | 🟡 PRÉPARATION — 3/9 issues déjà couvertes en partie par l'existant (voir 6.3) | Recette finale tous modules |
 
 ### 6.2 Détail par module (69 issues ouvertes / 71 au programme)
 
-| Module | Issues | Ouvertes | Avancement réel (2026-08-22) |
+| Module | Issues | Ouvertes | Avancement réel (2026-08-23) |
 |---|---|---|---|
 | **Comptabilité** (greenfield) | #5219 epic, #5220→#5228 (A), #5229→#5233 (B), #5234→#5239 (C), #5270→#5276, #5288 | **28** | **Zéro code** : `api/app/Modules/Accounting` n'existe pas encore (19ᵉ module DDD). Livré : conception v1 (#5238 clos, `docs/architecture/COMPTABILITE_CONCEPTION.md`), plan (#5287 clos). Toute la Phase A est à créer. |
-| **Payroll** (DZ + 9 packs) | #5240→#5247 (DZ), #5248→#5255 (packs MA/TN/SN/CI/CM/TR/FR/EN), #5256 (moteur multi-pays), #5257 (i18n) | **18** | DZ : référentiel + moteur cœur **validés** (IRG/abattement, CNAS 9/26 %, SMIG 20k — audit expert 08/08) ; golden 43 méthodes/91 cas (#5149) ; clôture 2 étapes + benchmark 10 k (#5150). Manque : complétion moteur selon audit (#5241), bulletin PDF officiel + RTL (#5242), exports CNEP/EDX/bordereau/DAS (#5243), congés→paie (#5245), RBAC simulation/validation (#5246), docs recette (#5247). Note : #5244 golden est couvert aux ~2/3 (IRG, abattement, prorata, HS, congés, primes, arrondis, fin de contrat) ; **maladie et 13ᵉ mois ne sont pas encore des fonctions du moteur** (→ #5241/#5245). Packs : zéro (seuls SN/TN/MA ont des rules + golden partiels existants en `CountryRules/`). |
+| **Payroll** (DZ + 9 packs) | #5240→#5247 (DZ), #5248→#5255 (packs MA/TN/SN/CI/CM/TR/FR/EN), #5256 (moteur multi-pays), #5257 (i18n) | **18** (MA ✅ mergé, TN/SN en PR) | DZ : référentiel + moteur cœur **validés** (IRG/abattement, CNAS 9/26 %, SMIG 20k — audit expert 08/08) ; golden 43 méthodes/91 cas (#5149) ; clôture 2 étapes + benchmark 10 k (#5150). Manque : complétion moteur selon audit (#5241), bulletin PDF officiel + RTL (#5242), exports CNEP/EDX/bordereau/DAS (#5243), congés→paie (#5245), RBAC simulation/validation (#5246), docs recette (#5247). Note : #5244 golden est couvert aux ~2/3 (IRG, abattement, prorata, HS, congés, primes, arrondis, fin de contrat) ; **maladie et 13ᵉ mois ne sont pas encore des fonctions du moteur** (→ #5241/#5245). Packs : **MA ✅ mergé (PR #5330)** — audit légal 2026 + 18 golden ; **TN → PR #5334** — IRPP 8 tranches LF 2025 + 15 golden ; **SN → PR #5338** — règles `production` (#1912) + 15 golden cas limites ; CI (#5251) non démarré. |
 | **HR 100 %** | #5258→#5263 | **6** | Socle MVP existant (cycle de vie partiel) ; rien du programme 100 % démarré. |
 | **Pointage 100 %** | #5264→#5269 | **6** | Attendance/SmartAttendance existent ; **ADR fusion non tranchée** (bloque la spec #5264 et le mode unifié #5265). |
 | **Cross-cutting** | #5277→#5286, #5289 | **11** | Voir 6.3 pour l'existant par issue. |

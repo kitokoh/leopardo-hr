@@ -211,11 +211,13 @@ log "[3/4] pg_restore -> RESTORE_DB_URL"
 
 # Nettoie d'abord la base cible (public ET shared_tenants, au cas ou un drill
 # precedent ait ete interrompu apres pg_restore mais avant le nettoyage final).
-# On NE recree PAS `public` : le dump contient son propre `CREATE SCHEMA public`
-# (PG 15+), et si on le pre-cree pg_restore logue un warning non fatal mais
-# sort en code 1, ce qui ferait echouer le script sous `set -e` alors que le
-# restore est OK. On laisse donc pg_restore recreer public depuis le dump.
-psql "${RESTORE_DB_URL}" -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS shared_tenants CASCADE; DROP SCHEMA IF EXISTS public CASCADE;" >/dev/null
+# `public` est recree IMMEDIATEMENT apres le DROP : pg_dump ne l'emets JAMAIS
+# dans le dump (« -- *not* creating schema, since initdb creates it -- »,
+# toutes versions, PG 14 comme 16) — le laisser absent apres le DROP ferait
+# echouer pg_restore sur « schema public does not exist » (constaté a
+# l'exercice de restauration #5283, 2026-08-22). Le trap de cleanup ci-dessous
+# recrée lui aussi public en fin de drill, meme en cas d'echec.
+psql "${RESTORE_DB_URL}" -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS shared_tenants CASCADE; DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;" >/dev/null
 
 restore_input="${dump_file}"
 if [[ "${dump_file}" == *.age ]]; then

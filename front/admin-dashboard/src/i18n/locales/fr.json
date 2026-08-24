@@ -1367,7 +1367,8 @@
     "taxBrackets": "Baremes fiscaux",
     "legalRates": "Taux legaux",
     "account": "Mon compte",
-    "notFound": "Page non trouvee"
+    "notFound": "Page non trouvee",
+    "accountingSettings": "Comptabilité — Paramétrage"
   },
   "a11y": {
     "skip_to_content": "Aller au contenu principal",
@@ -3284,5 +3285,46 @@
   "smartAttendanceTapToReview": "Appuyez pour valider ou rejeter",
   "smartAttendanceTitle": "Smart Attendance",
   "smartAttendanceTodayTitle": "Aujourd'hui — {date}",
-  "smartAttendanceZoneSurveillance": "Surveillance de zone"
+  "smartAttendanceZoneSurveillance": "Surveillance de zone",
+  "accounting": {
+    "settings": {
+      "title": "Paramétrage comptable",
+      "subtitle": "Devise, TVA, séries de numérotation, mentions légales et langue des documents de votre entreprise.",
+      "company_title": "Entreprise",
+      "company_subtitle": "Identité et préférences de facturation par défaut.",
+      "currency": "Devise",
+      "document_language": "Langue des documents",
+      "template_style": "Modèle de document",
+      "template_modern": "Moderne",
+      "template_classic": "Classique",
+      "payment_terms": "Conditions de paiement par défaut",
+      "tva_title": "Taux de TVA",
+      "tva_subtitle": "Taux par défaut appliqués aux documents (modifiables à la création).",
+      "add_rate": "Ajouter un taux",
+      "remove_rate": "Retirer ce taux",
+      "rate_label": "Libellé",
+      "rate_value": "Taux (%)",
+      "rate_default_label": "TVA standard",
+      "series_title": "Séries de numérotation",
+      "series_subtitle": "Préfixe des numéros de documents par type (ex. FAC-2026-0001).",
+      "series_invoice": "Facture",
+      "series_proforma": "Proforma",
+      "series_quote": "Devis",
+      "series_credit_note": "Avoir",
+      "series_delivery_note": "Bordereau de livraison",
+      "series_receipt": "Reçu",
+      "mentions_title": "Mentions légales",
+      "mentions_subtitle": "Mentions affichées en pied de document (RC, NIF, capital…).",
+      "mentions_placeholder": "RC 16/00-0000000B — NIF 000016000000000 — Capital 1 000 000 DZD",
+      "save": "Enregistrer",
+      "reload": "Réinitialiser",
+      "saved": "Paramétrage enregistré.",
+      "load_error": "Impossible de charger le paramétrage comptable.",
+      "save_error": "Impossible d'enregistrer le paramétrage.",
+      "lang_fr": "Français",
+      "lang_ar": "العربية",
+      "lang_tr": "Türkçe",
+      "lang_en": "English"
+    }
+  }
 }
