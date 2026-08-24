@@ -17,6 +17,14 @@ Use this file to record real drill executions (staging recommended).
 
 | ID | Drill | Deadline | Owner | Status |
 |---|---|---|---|---|
-| DR-01 | Backup restore test on staging | Monthly via `Database Backup & Restore Drill` or manual fallback | Project lead | SCHEDULED |
+| DR-01 | Backup restore test on staging | Monthly via `Database Backup & Restore Drill` or manual fallback | Project lead | PASS 2026-08-22 (exercice #5283, local scratch PG 16) — prochain : workflow mensuel prod |
 | DR-02 | Rollback deployment test on staging | Before first beta | Project lead | TODO |
 | DR-03 | Incident P1 tabletop exercise | Before first beta | Project lead | TODO |
+
+## Exercices exécutés
+
+| Date | Type | Environnement | Trigger | Result | Duration | Evidence | Actions |
+|---|---|---|---|---|---|---|---|
+| 2026-08-22 | restore | local scratch (PG 16, aligné prod Neon) | planned — exercice #5283 (DoD) | **pass** | ~1m | `docs/ops/DR.md` §6.2 (log complet du run 20260822-171810) + fix bug `CREATE SCHEMA public` dans `dev-hub/scripts/backup_drill.sh` | PR #5283 ; prochain drill mensuel workflow (1er du mois) |
+
+---
