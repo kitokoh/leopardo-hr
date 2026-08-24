@@ -25,7 +25,6 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -248,12 +247,6 @@ class PayrollRunController extends Controller
             ], 422);
         }
 
-        // Étape 2 : bascule des bulletins en `validated` (transaction propre —
-        // une panne ici ne doit pas laisser de bulletins non validés sur un run validé).
-        DB::transaction(function () use ($payrollRun): void {
-            $payrollRun->paySlips()->update(['status' => 'validated']);
-        });
-
         if (config('performance.payroll.queue_pdf_warmup', true)) {
             WarmPaySlipPdfPathsForPayrollRunJob::dispatch($payrollRun->id);
         }
@@ -310,9 +303,7 @@ class PayrollRunController extends Controller
                 'message' => $e->errorCode(),
                 'localized_message' => __('errors.'.$e->errorCode()),
             ], $e->statusCode());
-            // assertHasPaySlips() (lock) jette RuntimeException au runtime — le flow
-            // analysis PHPStan ne le voit pas à travers DB::transaction().
-            // @phpstan-ignore-next-line catch.neverThrown
+            // assertHasPaySlips() (lock) peut jeter une RuntimeException métier.
         } catch (\RuntimeException $e) {
             Log::error('payroll.run.lock_failed', ['run_id' => $payrollRun->id, 'error' => $e->getMessage()]);
 
@@ -357,8 +348,7 @@ class PayrollRunController extends Controller
                 'localized_message' => __('errors.'.$e->errorCode()),
             ], $e->statusCode());
             // unlock() jette des RuntimeException métier (run non verrouillé,
-            // raison manquante) — le flow analysis PHPStan ne les voit pas.
-            // @phpstan-ignore-next-line catch.neverThrown
+            // raison manquante).
         } catch (\RuntimeException $e) {
             Log::error('payroll.run.unlock_failed', ['run_id' => $payrollRun->id, 'error' => $e->getMessage()]);
 
