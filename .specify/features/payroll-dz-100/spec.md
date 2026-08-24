@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-22
 
-**Status**: Draft — en attente de validation fondateur + expert comptable DZ (DoD)
+**Status**: En exécution — audit #5240 clos (PR #5302) ; complétion moteur #5241 en cours (PR #5316) : E1/E3/E4 ✅, E5 règles ✅ (flux #5245), E2 (#5266) et E6 (#5247) ouverts. Validation fondateur + expert comptable DZ toujours requise pour le passage `production` (DoD).
 
 **Référentiel lié** : `docs/payroll/DZ_COMPLIANCE.md` (versionné, cœur validé expert comptable DZ le 2026-08-08).
 
@@ -36,21 +36,21 @@
 | R14 | Prorata mois incomplet, absence, congés sans solde | usage + loi 90-11 | `PayrollCalculator::computeWorkedDays()` + `aggregateWorkInputs()` | ✅ golden F-05 (`GoldenDzProrataOvertimeTest`, `GoldenDzFullSlipTest`, `GoldenDzSlipIntegrationTest`) |
 | R15 | Préavis licenciement : 1 mois (< 10 ans) / 2 mois (≥ 10 ans) | loi 90-11 art. 73-4 et 98 (usage dominant — pas de durée légale ferme) | `noticePeriodDays()` = 22 / 44 jours **ouvrés** | ⚠️ `pilot` — validation expert requise (E6) |
 | R16 | Indemnité de licenciement 1 mois/an | loi 90-11 art. 72 | `severanceMonthsPerYear()` = 1.0 | ⚠️ `pilot` — **plafond légal non appliqué** (E6) |
-| R17 | Primes exonérées IRG | barèmes LF (exonérations) | ❌ non gérées par le calculateur (la prime « fixe soumise » existe via la structure salariale — `GoldenDzSlipIntegrationTest` ; l'**exonération** est un écart) | ❌ → **écart E3** |
-| R18 | 13ᵉ mois | convention collective (usage) | mécanisme générique `ThirteenthMonth` présent dans le moteur ; **règle DZ non verrouillée** | ⚠️ → **écart E4** |
-| R19 | Maladie / arrêt de travail | loi 90-11 (maladie ordinaire / professionnelle) | ❌ non implémenté | ❌ → **écart E5** |
+| R17 | Primes exonérées IRG | barèmes LF (exonérations) | ✅ **implémenté (#5241, écart E3)** — `SalaryComponent.is_taxable=false` consommé par `computeSlipValues`/`computeNetBreakdown` : exclu de l'assiette IRG, maintenu dans l'assiette CNAS ; golden `GoldenDzEngineCompletionTest` | ✅ E3 fermé |
+| R18 | 13ᵉ mois | convention collective (usage) | ✅ **règle DZ verrouillée (#5241, écart E4)** — non statutaire (loi 90-11) → `thirteenthMonthMandatory()=false` explicite + doc `DZ_COMPLIANCE.md` §8.1 + golden (décembre sans ligne auto ; mécanisme générique fonctionnel si opt-in) | ✅ E4 fermé |
+| R19 | Maladie / arrêt de travail | loi 90-11 (maladie ordinaire / professionnelle) | ✅ **règles d'indemnisation implémentées (#5241, écart E5)** — `sickLeavePolicy()` DZ sourcée CNAS (carence 3 j, IJ 50 % J1-15 / 100 % J16+, max 180 j, maintien patronal 0) + `computeSickLeaveAllowance()` ; **flux absence → paie = #5245** | 🟡 E5 : règles ✅, flux → #5245 |
 | R20 | Démission / fin de contrat | loi 90-11 | solde de tout compte + préavis + indemnité | ✅ golden `GoldenDzEndOfContractRulesTest`, `GoldenDzEndOfContractFullTest`, `GoldenDzFinalSettlementTest` (hors plafonds → E6) |
 
 ## 2. Inventaire des écarts (barèmes 2026 + complétions du moteur)
 
-| Écart | Détail | Issue de complétion |
-|---|---|---|
-| **E1** | Plafond d'assiette CNAS : « aucun » non confirmé | #5241 |
-| **E2** | Heures sup : arbitrage paliers 25 %/50 % vs 50 % unique (règles légales DZ) | #5266 |
-| **E3** | Primes exonérées IRG : mécanique d'exonération à ajouter | #5241 |
-| **E4** | 13ᵉ mois : verrouiller la règle DZ sur le mécanisme générique + golden | #5241 |
-| **E5** | Maladie / arrêt : règles d'indemnisation à implémenter | #5241 (+ #5245 pour le flux absence → paie) |
-| **E6** | Préavis, indemnité, plafonds : validation expert comptable (`pilot` → `production`) | #5247 (docs légales + recette pilote) |
+| Écart | Détail | Issue de complétion | Statut 2026-08-23 |
+|---|---|---|---|
+| **E1** | Plafond d'assiette CNAS : « aucun » non confirmé | #5241 | ✅ **fermé** — confirmé sources 2026 (pas de plafond sur les branches principales) + golden `GoldenDzEngineCompletionTest::test_golden_dz_cnas_has_no_statutory_cap` |
+| **E2** | Heures sup : arbitrage paliers 25 %/50 % vs 50 % unique (règles légales DZ) | #5266 | ⏳ **ouvert** — porté par #5266 (arbitrage 25 %/50 % vs palier unique, seuil conventionnel à confirmer) |
+| **E3** | Primes exonérées IRG : mécanique d'exonération à ajouter | #5241 | ✅ **fermé** — `is_taxable=false` consommé (exclu IRG, inclus CNAS) + golden bulletin complet |
+| **E4** | 13ᵉ mois : verrouiller la règle DZ sur le mécanisme générique + golden | #5241 | ✅ **fermé** — non statutaire verrouillé (`thirteenthMonthMandatory()=false`) + golden décembre + mécanisme opt-in testé |
+| **E5** | Maladie / arrêt : règles d'indemnisation à implémenter | #5241 (+ #5245 pour le flux absence → paie) | 🟡 **règles ✅** (`sickLeavePolicy()` + `computeSickLeaveAllowance()` + golden) ; **flux absence → paie = #5245** |
+| **E6** | Préavis, indemnité, plafonds : validation expert comptable (`pilot` → `production`) | #5247 (docs légales + recette pilote) | ⏳ **ouvert** — validation experte requise (hors périmètre agent) |
 
 ## 3. Verrouillage du périmètre légal DZ v1
 

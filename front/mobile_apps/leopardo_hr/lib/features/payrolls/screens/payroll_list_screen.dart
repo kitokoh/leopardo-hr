@@ -8,7 +8,7 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/models/payment_document.dart';
 import 'package:leopardo_core/models/payroll_balance.dart';
 import 'package:leopardo_hr/core/providers/core_providers.dart';
-import 'package:leopardo_hr/features/payrolls/providers/payroll_provider.dart';
+import 'package:leopardo_core/features/payrolls/providers/payroll_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
