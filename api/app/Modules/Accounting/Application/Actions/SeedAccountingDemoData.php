@@ -58,8 +58,8 @@ final class SeedAccountingDemoData
 
     public function __construct()
     {
-        $this->workflow = new DocumentWorkflowService();
-        $this->numbering = new SequentialDocumentNumbering();
+        $this->workflow = new DocumentWorkflowService;
+        $this->numbering = new SequentialDocumentNumbering;
     }
 
     /**
@@ -469,6 +469,7 @@ final class SeedAccountingDemoData
 
             if ($hasRealPayment) {
                 $skipped++;
+
                 continue;
             }
 

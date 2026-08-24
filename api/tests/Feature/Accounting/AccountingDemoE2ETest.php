@@ -59,7 +59,7 @@ class AccountingDemoE2ETest extends TestCase
         $companyB = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD', 'timezone' => 'UTC']);
         $this->companyB = $companyB;
 
-        $this->workflow = new DocumentWorkflowService();
+        $this->workflow = new DocumentWorkflowService;
 
         // PDF : fake tant que l'implémentation #5224 n'est pas mergée.
         app()->instance(PdfRendererInterface::class, new class implements PdfRendererInterface
@@ -100,7 +100,7 @@ class AccountingDemoE2ETest extends TestCase
 
     public function test_demo_seed_creates_realistic_showcase(): void
     {
-        $seeder = new SeedAccountingDemoData();
+        $seeder = new SeedAccountingDemoData;
 
         $result = $seeder->seed($this->companyA);
 
@@ -150,7 +150,7 @@ class AccountingDemoE2ETest extends TestCase
 
     public function test_demo_seed_force_resets_only_demo_records(): void
     {
-        $seeder = new SeedAccountingDemoData();
+        $seeder = new SeedAccountingDemoData;
         $seeder->seed($this->companyA);
 
         // Donnée réelle créée AVANT le --force (jamais marquée demo).
@@ -178,7 +178,7 @@ class AccountingDemoE2ETest extends TestCase
 
     public function test_demo_seed_force_preserves_document_with_real_payment(): void
     {
-        $seeder = new SeedAccountingDemoData();
+        $seeder = new SeedAccountingDemoData;
         $seeder->seed($this->companyA);
 
         // Paiement RÉEL rattaché à une facture demo (scénario réaliste : un
@@ -212,7 +212,7 @@ class AccountingDemoE2ETest extends TestCase
 
     public function test_demo_contacts_tax_id_is_encrypted_at_rest(): void
     {
-        (new SeedAccountingDemoData())->seed($this->companyA);
+        (new SeedAccountingDemoData)->seed($this->companyA);
 
         $raw = DB::table('accounting_contacts')
             ->where('company_id', $this->companyA->id)
@@ -312,7 +312,7 @@ class AccountingDemoE2ETest extends TestCase
 
     public function test_overdue_relance_marks_past_due_invoices(): void
     {
-        $seeder = new SeedAccountingDemoData();
+        $seeder = new SeedAccountingDemoData;
         $seeder->seed($this->companyA);
 
         // La facture partielle de la vitrine demo (échéance J-5) est candidate.
@@ -361,7 +361,7 @@ class AccountingDemoE2ETest extends TestCase
 
     public function test_demo_data_is_tenant_isolated(): void
     {
-        (new SeedAccountingDemoData())->seed($this->companyA);
+        (new SeedAccountingDemoData)->seed($this->companyA);
 
         // L'entreprise B ne voit aucune donnée demo de A (API + modèles).
         Sanctum::actingAs($this->manager($this->companyB));
@@ -377,7 +377,7 @@ class AccountingDemoE2ETest extends TestCase
 
     private function createDraftDocument(DocumentType $type, AccountingContact $contact, Carbon $issueDate, ?Carbon $dueDate = null): AccountingDocument
     {
-        $numbering = new SequentialDocumentNumbering();
+        $numbering = new SequentialDocumentNumbering;
 
         /** @var AccountingDocument $document */
         $document = AccountingDocument::query()->create([
