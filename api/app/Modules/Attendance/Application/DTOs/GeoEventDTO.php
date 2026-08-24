@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Application\DTOs;
+namespace App\Modules\Attendance\Application\DTOs;
 
 use Illuminate\Support\Carbon;
 

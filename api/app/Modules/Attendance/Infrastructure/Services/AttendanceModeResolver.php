@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Infrastructure\Services;
+namespace App\Modules\Attendance\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\SmartAttendance\Application\DTOs\AttendanceModeConfigDTO;
-use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
-use App\Modules\SmartAttendance\Domain\Models\EmployeeAttendancePreference;
+use App\Modules\Attendance\Application\DTOs\AttendanceModeConfigDTO;
+use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
+use App\Modules\Attendance\Domain\Models\EmployeeAttendancePreference;
 
 /**
  * Résout le mode de pointage effectif pour un employé donné.

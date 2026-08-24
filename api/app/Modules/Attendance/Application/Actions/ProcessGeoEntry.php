@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Application\Actions;
+namespace App\Modules\Attendance\Application\Actions;
 
-use App\Modules\SmartAttendance\Application\DTOs\GeoEventDTO;
-use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
-use App\Modules\SmartAttendance\Infrastructure\Services\GeoSessionManager;
+use App\Modules\Attendance\Application\DTOs\GeoEventDTO;
+use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
+use App\Modules\Attendance\Infrastructure\Services\GeoSessionManager;
 
 /**
  * Cas d'usage : traiter un événement zone_enter depuis le mobile.

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Modules\SmartAttendance\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Modules\SmartAttendance\Application\Actions\SetCompanyAttendanceMode;
-use App\Modules\SmartAttendance\Application\Actions\SetEmployeeAttendanceMode;
-use App\Modules\SmartAttendance\Domain\Exceptions\GpsConsentMissingException;
-use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
-use App\Modules\SmartAttendance\Domain\Models\EmployeeAttendancePreference;
-use App\Modules\SmartAttendance\Infrastructure\Services\AttendanceModeResolver;
+use App\Modules\Attendance\Application\Actions\SetCompanyAttendanceMode;
+use App\Modules\Attendance\Application\Actions\SetEmployeeAttendanceMode;
+use App\Modules\Attendance\Domain\Exceptions\GpsConsentMissingException;
+use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
+use App\Modules\Attendance\Domain\Models\EmployeeAttendancePreference;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceModeResolver;
 use App\Modules\SmartAttendance\Interfaces\Api\V1\Requests\SetCompanyModeRequest;
 use App\Modules\SmartAttendance\Interfaces\Api\V1\Requests\SetModeRequest;
 use Illuminate\Http\JsonResponse;

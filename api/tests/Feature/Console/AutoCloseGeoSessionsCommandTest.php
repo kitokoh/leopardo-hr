@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Console;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
+use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Tests\RefreshTenantDatabase;

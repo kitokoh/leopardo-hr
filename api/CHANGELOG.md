@@ -5,6 +5,8 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
 
+- **feat(attendance): ADR-0016 Phase 4 — fusion modèles/services/commandes SmartAttendance dans le module Attendance (Closes #5355).** 4 modèles (`GeoAttendanceSession`, `EmployeeLocationEvent`, `AttendanceModeSettings`, `EmployeeAttendancePreference`), 2 services (`AttendanceModeResolver`, `GeoSessionManager`), 6 actions, 2 DTOs, 3 exceptions et le contrat `GeofenceValidatorInterface` déplacés dans `App\Modules\Attendance\*` avec classes de re-export `@deprecated` dans SmartAttendance (imports existants préservés). `AutoCloseGeoSessionsCommand` fusionnée dans `AutoCloseAttendanceCommand` (une seule fermeture automatique — pointages sans check-out + sessions GPS orphelines, options `--hours`/`--company`/`--logs-only`/`--sessions-only`) ; `smart-attendance:auto-close` conservée comme alias délégué `@deprecated` ; scheduler unifié sur `attendance:auto-close`. Tests : 6 fichiers `tests/Feature/SmartAttendance/*` migrés vers `tests/Feature/Attendance/Geo*` sans perte de scénarios. Garde géofence (`check-geofence-single-usage.sh`) mise à jour. Aucune route `/smart-attendance/*` cassée (surface conservée jusqu'à la Phase 5 #5356).
+
 ### Added
 - **Attendance reports by period (issue #5268)** — the monthly report endpoint `GET /attendance/monthly-report` is now a full report engine:
   - `period=day|week|month` (default `month`, backward compatible), anchors `date` (Y-m-d), `week` (Y-m-d — ISO week Monday→Sunday), `month` (Y-m)

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Application\Actions;
+namespace App\Modules\Attendance\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\SmartAttendance\Domain\Exceptions\GpsConsentMissingException;
-use App\Modules\SmartAttendance\Domain\Models\EmployeeAttendancePreference;
+use App\Modules\Attendance\Domain\Exceptions\GpsConsentMissingException;
+use App\Modules\Attendance\Domain\Models\EmployeeAttendancePreference;
 use Illuminate\Support\Carbon;
 
 /**
