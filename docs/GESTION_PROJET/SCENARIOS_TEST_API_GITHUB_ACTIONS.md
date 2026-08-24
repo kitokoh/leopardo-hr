@@ -1427,3 +1427,10 @@ Note 2026-08-23 (issue #5229) : trésorerie Phase B — paiements + rapprochemen
 - Liste : `GET /accounting/payments?document_id=&status=` — RBAC comptable/principal (403 sinon).
 - Relances : `POST /accounting/reminders/run` + commande `accounting:send-payment-reminders` — stages J+7/J+15/J+30 paramétrables (`accounting_settings.payment_reminder_days`), cibles documents émis non soldés échus, unique (document, stage) → zéro doublon, notification in-app aux managers principal/comptable (template `accounting_payment_reminder`, i18n ×4), échec notification ≠ échec relance (log).
 - Couverture : `AccountingPaymentTest` (14 tests) — suite `tests/Feature/Accounting` 23/23 ; PHPStan 0 ; Pint PASS ; OpenAPI couverture 754/754.
+Note 2026-08-24 (issue #5223) : cycle de vie des documents comptables via l'API — couverture HTTP complète du contrôleur.
+- `POST /api/v1/accounting/documents` crée un brouillon numéroté (type invoice/credit_note/proforma…, lignes requises → 422 sinon, totaux HT/TVA/TTC calculés, série paramétrable via `number_series`).
+- `GET /api/v1/accounting/documents` liste avec filtres (`type`, `status`, `contact_id`, `from`, `to`, `per_page`) ; `GET /api/v1/accounting/documents/{id}` détail lignes + paiements ; `GET /api/v1/accounting/documents/next-number?type=` aperçu du prochain numéro.
+- `POST /api/v1/accounting/documents/{id}/send` draft → sent (facture/avoir sans contact → 422) ; `POST .../payments` encaissement (partiel → `partially_paid`, solde → `paid`, excédent → 422) ; `POST .../cancel` annulation motivée ; `POST .../credit-note` avoir lié à une facture émise (montant borné au reste à payer, 422 si facture brouillon/annulée/payée).
+- Overdue : lecture rafraîchit les statuts échus (`due_date` dépassée sur sent/partially_paid → `overdue`).
+- RBAC : manager principal/comptable autorisés, employé → 403 ; isolation tenant → 404 cross-company.
+- Couverture : `tests/Feature/Accounting/AccountingDocumentApiTest.php` (12 tests) — gate coverage module Accounting ≥ 70 % (DoD #5228) : 67,4 % → 86,5 % sur #5230, 87,7 % sur #5288.
