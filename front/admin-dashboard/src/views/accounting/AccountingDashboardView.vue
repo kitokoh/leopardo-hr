@@ -142,7 +142,7 @@
                 <td class="py-2.5 pr-3 text-slate-500 dark:text-slate-400">{{ row.due_date }}</td>
                 <td class="py-2.5 pr-3">
                   <span
-                    v-if="row.days_late > 0"
+                    v-if="isLate(row)"
                     class="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-900/40 dark:text-red-300"
                   >
                     {{ row.days_late }} {{ $t('accounting.dashboard.days') }}
@@ -246,6 +246,10 @@ function bucketClass(bucket) {
 function statusLabel(status) {
   const key = `accounting.dashboard.status_${status}`
   return t(key) || status
+}
+
+function isLate(row) {
+  return Number(row.days_late ?? 0) > 0
 }
 
 function statusClass(status) {
