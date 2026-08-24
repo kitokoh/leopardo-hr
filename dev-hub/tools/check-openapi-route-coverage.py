@@ -49,6 +49,9 @@ HTTP_VERBS = {"get", "post", "put", "patch", "delete"}
 MODULE_ROUTE_FILES = [
     REPO_ROOT / "api" / "app" / "Modules" / "EdgeSync" / "routes" / "api.php",
     REPO_ROOT / "api" / "app" / "Modules" / "SmartAttendance" / "routes" / "smart_attendance.php",
+    # ADR-0016 Phase 3 (#5354) : routes géo consolidées sous /attendance/*
+    # (chargées par AttendanceServiceProvider via loadRoutesFrom).
+    REPO_ROOT / "api" / "app" / "Modules" / "Attendance" / "routes" / "geo.php",
 ]
 
 # Route::apiResource('users') → méthodes CRUD standard Laravel.
