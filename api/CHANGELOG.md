@@ -12,6 +12,11 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - Additive tenant migration: `accounting_number_counters` table + `accounting_documents.source_document_id` (self-FK for credit notes)
   - Provider binding; no API endpoints (exposed via #5226)
   - Tests: `DocumentWorkflowNumberingTest` (16) — sequences, custom series, upsert on pre-existing counter (race simulation, repo convention #4978), 100 unique numbers, full workflow, transition rules
+- **Accounting perf/scale audit (issue #5275)**:
+  - Composite indexes (additive migration `2026_08_23_000005`): `accounting_documents (company_id, status, due_date)`, `(company_id, issue_date)`, `accounting_payments (company_id, document_id, status)`
+  - `accounting:benchmark` command (F-12 protocol): seeds 10k realistic documents (dedicated company, chunked inserts) + measures paginated eager list (N+1 barrier ≤ 5 queries), reminder query (J+7), monthly aggregation
+  - Measured: 10k-document list 0.01 s (< 200 ms target), 1,763 reminder-eligible, 13 months
+  - `AccountingPerformanceTest` (3 tests) + `docs/accounting/BENCHMARK.md` (protocol, targets, index map, reference results)
 
 ### Added
 - **Attendance reports by period (issue #5268)** — the monthly report endpoint `GET /attendance/monthly-report` is now a full report engine:
