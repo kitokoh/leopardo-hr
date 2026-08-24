@@ -2693,6 +2693,12 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/HR/Domain/Models/Department.php
+		-
+			message: '#^Class App\\Modules\\HR\\Domain\\Models\\EmployeeDocument uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Modules/HR/Domain/Models/EmployeeDocument.php
+
 
 		-
 			message: '#^Class App\\Modules\\HR\\Domain\\Models\\Evaluation uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
