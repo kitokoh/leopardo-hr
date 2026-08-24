@@ -6,7 +6,6 @@ namespace App\Modules\Attendance\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Attendance\Infrastructure\Services\GeofenceZoneService;
 use App\Modules\Attendance\Application\DTOs\GeoEventDTO;
 use App\Modules\Attendance\Domain\Exceptions\OutsideGeofenceException;
 use App\Modules\Attendance\Domain\Exceptions\SessionAlreadyOpenException;
@@ -25,7 +24,8 @@ class GeoSessionManager
 {
     public function __construct(
         private readonly GeofenceZoneService $zoneService,
-    ) {}
+    ) {
+    }
 
     /**
      * Ouvrir une session GPS (événement zone_enter).

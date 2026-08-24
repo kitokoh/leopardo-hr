@@ -26,10 +26,11 @@ use Illuminate\Http\JsonResponse;
 class AttendanceModeController extends Controller
 {
     public function __construct(
-        private readonly AttendanceModeResolver    $resolver,
-        private readonly SetCompanyAttendanceMode  $setCompanyMode,
+        private readonly AttendanceModeResolver $resolver,
+        private readonly SetCompanyAttendanceMode $setCompanyMode,
         private readonly SetEmployeeAttendanceMode $setEmployeeMode,
-    ) {}
+    ) {
+    }
 
     /**
      * GET /api/v1/smart-attendance/config
@@ -40,19 +41,19 @@ class AttendanceModeController extends Controller
     {
         /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = request()->user();
-        $config   = $this->resolver->resolve($employee);
+        $config = $this->resolver->resolve($employee);
 
         return response()->json([
             'data' => [
-                'mode'                 => $config->mode,
-                'can_override'         => $config->canOverride,
-                'gps_enabled'          => $config->gpsEnabled,
-                'geofence'             => $config->gpsEnabled ? [
-                    'latitude'       => $config->geofenceLat,
-                    'longitude'      => $config->geofenceLng,
-                    'radius_meters'  => $config->geofenceRadius,
+                'mode' => $config->mode,
+                'can_override' => $config->canOverride,
+                'gps_enabled' => $config->gpsEnabled,
+                'geofence' => $config->gpsEnabled ? [
+                    'latitude' => $config->geofenceLat,
+                    'longitude' => $config->geofenceLng,
+                    'radius_meters' => $config->geofenceRadius,
                 ] : null,
-                'requires_consent'     => $config->requiresConsent,
+                'requires_consent' => $config->requiresConsent,
                 'requires_punch_photo' => $config->requiresPunchPhoto,
             ],
         ]);
@@ -66,21 +67,21 @@ class AttendanceModeController extends Controller
     {
         /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = request()->user();
-        $company  = currentCompany();
+        $company = currentCompany();
 
         // Vérifier que l'entreprise autorise l'override
         $settings = AttendanceModeSettings::where('company_id', $company->id)->first();
         if ($settings && $settings->hasForcedMode()) {
             return response()->json([
                 'message' => __('errors.COMPANY_MODE_FORCED'),
-                'code'    => 'COMPANY_MODE_FORCED',
+                'code' => 'COMPANY_MODE_FORCED',
             ], 403);
         }
 
         if ($settings && ! $settings->allow_employee_override) {
             return response()->json([
                 'message' => __('errors.ATTENDANCE_MODE_PERSONALIZATION_DISABLED'),
-                'code'    => 'OVERRIDE_NOT_ALLOWED',
+                'code' => 'OVERRIDE_NOT_ALLOWED',
             ], 403);
         }
 
@@ -89,16 +90,16 @@ class AttendanceModeController extends Controller
 
             return response()->json([
                 'message' => __('errors.PREFERENCE_UPDATED'),
-                'data'    => [
-                    'preferred_mode'    => $pref->preferred_mode,
+                'data' => [
+                    'preferred_mode' => $pref->preferred_mode,
                     'gps_consent_given' => $pref->gps_consent_given,
-                    'gps_consent_at'    => $pref->gps_consent_at?->toIso8601String(),
+                    'gps_consent_at' => $pref->gps_consent_at?->toIso8601String(),
                 ],
             ]);
         } catch (GpsConsentMissingException) {
             return response()->json([
                 'message' => __('errors.GPS_CONSENT_REQUIRED'),
-                'code'    => 'GPS_CONSENT_REQUIRED',
+                'code' => 'GPS_CONSENT_REQUIRED',
             ], 422);
         }
     }
@@ -109,17 +110,17 @@ class AttendanceModeController extends Controller
      */
     public function getCompanySettings(): JsonResponse
     {
-        $company  = currentCompany();
+        $company = currentCompany();
         $settings = AttendanceModeSettings::where('company_id', $company->id)->first();
 
         return response()->json([
             'data' => $settings ? [
-                'forced_mode'             => $settings->forced_mode,
-                'punch_photo_mode'        => $settings->punch_photo_mode,
-                'gps_enabled'             => $settings->gps_enabled,
-                'latitude'                => $settings->latitude,
-                'longitude'               => $settings->longitude,
-                'radius_meters'           => $settings->radius_meters,
+                'forced_mode' => $settings->forced_mode,
+                'punch_photo_mode' => $settings->punch_photo_mode,
+                'gps_enabled' => $settings->gps_enabled,
+                'latitude' => $settings->latitude,
+                'longitude' => $settings->longitude,
+                'radius_meters' => $settings->radius_meters,
                 'allow_employee_override' => $settings->allow_employee_override,
             ] : null,
         ]);
@@ -132,22 +133,22 @@ class AttendanceModeController extends Controller
     public function updateCompanySettings(SetCompanyModeRequest $request): JsonResponse
     {
         /** @var \App\Core\Auth\Domain\Models\Employee $manager */
-        $manager  = request()->user();
-        $company  = currentCompany();
+        $manager = request()->user();
+        $company = currentCompany();
 
         $settings = $this->setCompanyMode->handle(
             companyId: (string) $company->id,
-            data:      $request->validated(),
+            data: $request->validated(),
             updatedBy: $manager,
         );
 
         return response()->json([
             'message' => __('errors.CONFIG_UPDATED'),
-            'data'    => [
-                'forced_mode'             => $settings->forced_mode,
-                'punch_photo_mode'        => $settings->punch_photo_mode,
-                'gps_enabled'             => $settings->gps_enabled,
-                'radius_meters'           => $settings->radius_meters,
+            'data' => [
+                'forced_mode' => $settings->forced_mode,
+                'punch_photo_mode' => $settings->punch_photo_mode,
+                'gps_enabled' => $settings->gps_enabled,
+                'radius_meters' => $settings->radius_meters,
                 'allow_employee_override' => $settings->allow_employee_override,
             ],
         ]);
@@ -168,7 +169,7 @@ class AttendanceModeController extends Controller
 
         return response()->json([
             'data' => $pref ? [
-                'preferred_mode'    => $pref->preferred_mode,
+                'preferred_mode' => $pref->preferred_mode,
                 'gps_consent_given' => $pref->gps_consent_given,
             ] : null,
         ]);

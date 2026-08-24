@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Attendance\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Tenant\Domain\Models\Site;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
@@ -14,22 +13,22 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int         $id
- * @property int         $employee_id
- * @property string      $company_id
- * @property int|null    $site_id
- * @property Carbon      $started_at
+ * @property int $id
+ * @property int $employee_id
+ * @property string $company_id
+ * @property int|null $site_id
+ * @property Carbon $started_at
  * @property Carbon|null $ended_at
- * @property int|null    $duration_seconds
- * @property float       $check_in_lat
- * @property float       $check_in_lng
- * @property int|null    $check_in_accuracy_meters
- * @property float|null  $check_out_lat
- * @property float|null  $check_out_lng
- * @property int|null    $check_out_accuracy_meters
- * @property string      $status               detected|pending_validation|approved|rejected|cancelled
- * @property int|null    $attendance_log_id
- * @property int|null    $validated_by
+ * @property int|null $duration_seconds
+ * @property float $check_in_lat
+ * @property float $check_in_lng
+ * @property int|null $check_in_accuracy_meters
+ * @property float|null $check_out_lat
+ * @property float|null $check_out_lng
+ * @property int|null $check_out_accuracy_meters
+ * @property string $status detected|pending_validation|approved|rejected|cancelled
+ * @property int|null $attendance_log_id
+ * @property int|null $validated_by
  * @property Carbon|null $validated_at
  * @property string|null $validation_note
  * @property Carbon|null $created_at
@@ -39,6 +38,7 @@ use Illuminate\Support\Carbon;
  * @property-read Employee|null          $validatedBy
  * @property-read \Illuminate\Database\Eloquent\Collection<int, EmployeeLocationEvent> $locationEvents
  * @property-read AttendanceLog|null     $attendanceLog
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class GeoAttendanceSession extends Model
@@ -78,8 +78,8 @@ class GeoAttendanceSession extends Model
     ];
 
     protected $casts = [
-        'started_at'   => 'datetime',
-        'ended_at'     => 'datetime',
+        'started_at' => 'datetime',
+        'ended_at' => 'datetime',
         'validated_at' => 'datetime',
         'check_in_lat' => 'float',
         'check_in_lng' => 'float',
@@ -89,11 +89,15 @@ class GeoAttendanceSession extends Model
 
     // ── Statuts ──────────────────────────────────────────────────────────────
 
-    public const STATUS_DETECTED           = 'detected';
+    public const STATUS_DETECTED = 'detected';
+
     public const STATUS_PENDING_VALIDATION = 'pending_validation';
-    public const STATUS_APPROVED           = 'approved';
-    public const STATUS_REJECTED           = 'rejected';
-    public const STATUS_CANCELLED          = 'cancelled';
+
+    public const STATUS_APPROVED = 'approved';
+
+    public const STATUS_REJECTED = 'rejected';
+
+    public const STATUS_CANCELLED = 'cancelled';
 
     // ── Relations ────────────────────────────────────────────────────────────
 
@@ -152,4 +156,3 @@ class GeoAttendanceSession extends Model
         return round(($this->duration_seconds ?? 0) / 3600, 2);
     }
 }
-

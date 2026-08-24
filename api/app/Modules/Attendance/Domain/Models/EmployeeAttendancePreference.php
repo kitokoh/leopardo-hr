@@ -10,14 +10,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int         $id
- * @property int         $employee_id
- * @property string      $company_id
- * @property string      $preferred_mode      gps_auto | qr | manual
- * @property bool        $gps_consent_given
+ * @property int $id
+ * @property int $employee_id
+ * @property string $company_id
+ * @property string $preferred_mode gps_auto | qr | manual
+ * @property bool $gps_consent_given
  * @property Carbon|null $gps_consent_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class EmployeeAttendancePreference extends Model
@@ -34,7 +35,7 @@ class EmployeeAttendancePreference extends Model
 
     protected $casts = [
         'gps_consent_given' => 'boolean',
-        'gps_consent_at'    => 'datetime',
+        'gps_consent_at' => 'datetime',
     ];
 
     /** @return BelongsTo<Employee, $this> */

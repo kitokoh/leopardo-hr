@@ -22,14 +22,14 @@ class SetCompanyAttendanceMode
         $settings = AttendanceModeSettings::firstOrNew(['company_id' => $companyId]);
 
         $settings->fill([
-            'forced_mode'             => $data['forced_mode'] ?? null,
-            'punch_photo_mode'        => $data['punch_photo_mode'] ?? null,
-            'gps_enabled'             => $data['gps_enabled'] ?? false,
-            'latitude'                => $data['latitude'] ?? null,
-            'longitude'               => $data['longitude'] ?? null,
-            'radius_meters'           => $data['radius_meters'] ?? 100,
+            'forced_mode' => $data['forced_mode'] ?? null,
+            'punch_photo_mode' => $data['punch_photo_mode'] ?? null,
+            'gps_enabled' => $data['gps_enabled'] ?? false,
+            'latitude' => $data['latitude'] ?? null,
+            'longitude' => $data['longitude'] ?? null,
+            'radius_meters' => $data['radius_meters'] ?? 100,
             'allow_employee_override' => $data['allow_employee_override'] ?? true,
-            'updated_by'              => $updatedBy->id,
+            'updated_by' => $updatedBy->id,
         ]);
 
         $settings->save();
