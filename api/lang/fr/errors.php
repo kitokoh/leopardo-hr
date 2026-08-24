@@ -67,8 +67,6 @@ return [
 
     'PAYMENT_SESSION_FAILED' => 'Impossible de créer la session de paiement.',
     'NO_PAYMENT_ACCOUNT' => 'Aucun compte de paiement associé. Souscrivez d\'abord à un plan.',
-    'PAYMENT_EXCEEDS_TOTAL' => 'Le montant du paiement dépasse le solde restant du document.',
-    'PAYMENT_ON_UNSENT_DOCUMENT' => 'Impossible d\'enregistrer un paiement sur un document non émis.',
     'VERIFICATION_CODE_SENT' => 'Code de vérification envoyé.',
     'VERIFICATION_TEMPORARILY_UNAVAILABLE' => 'La vérification de votre demande est temporairement indisponible. Réessayez dans quelques instants.',
     'TRIAL_SPACE_READY' => 'Votre espace Leopardo est prêt !',

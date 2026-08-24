@@ -75,6 +75,8 @@ return [
 
     // Default VAT labels (issue #5227)
     'tva_label_standard' => 'Standard VAT',
+    'tva_label_sales_tax' => 'Sales tax',
+    'tva_label_gst' => 'GST',
     'tva_label_reduced' => 'Reduced VAT',
 
 ];

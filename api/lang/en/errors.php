@@ -67,8 +67,6 @@ return [
 
     'PAYMENT_SESSION_FAILED' => 'Unable to create the payment session.',
     'NO_PAYMENT_ACCOUNT' => 'No associated payment account. Subscribe to a plan first.',
-    'PAYMENT_EXCEEDS_TOTAL' => 'The payment amount exceeds the remaining balance of the document.',
-    'PAYMENT_ON_UNSENT_DOCUMENT' => 'Cannot register a payment on an unsent document.',
     'VERIFICATION_CODE_SENT' => 'Verification code sent.',
     'VERIFICATION_TEMPORARILY_UNAVAILABLE' => 'Verification of your request is temporarily unavailable. Please try again shortly.',
     'TRIAL_SPACE_READY' => 'Your Leopardo workspace is ready!',

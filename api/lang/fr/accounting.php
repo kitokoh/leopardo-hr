@@ -50,7 +50,6 @@ return [
     // Validation (issue #5227)
     'validation' => [
         'amount_required' => 'Le montant est requis.',
-        'amount_required' => 'Le montant est requis.',
         'amount_min' => 'Le montant doit être strictement positif.',
         'method_invalid' => 'Méthode de paiement invalide (cash, bank_transfer, check, card, other).',
         'series_unknown' => 'Série inconnue : « :key » n\'est pas un type de document (:allowed).',
@@ -76,6 +75,8 @@ return [
 
     // Labels TVA par défaut (issue #5227)
     'tva_label_standard' => 'TVA standard',
+    'tva_label_sales_tax' => 'Taxe de vente',
+    'tva_label_gst' => 'TPS',
     'tva_label_reduced' => 'TVA réduite',
 
 ];

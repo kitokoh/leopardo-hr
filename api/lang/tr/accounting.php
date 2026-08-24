@@ -75,6 +75,8 @@ return [
 
     // Varsayılan KDV etiketleri (issue #5227)
     'tva_label_standard' => 'Standart KDV',
+    'tva_label_sales_tax' => 'Satış vergisi',
+    'tva_label_gst' => 'GST',
     'tva_label_reduced' => 'İndirimli KDV',
 
 ];

@@ -48,9 +48,9 @@
 <body>
     <div class="header">
         <div class="company">
-            {{ $company->name }}
+            {{ $shape((string) $company->name) }}
             @if (! empty($company->address))
-                <small>{{ $company->address }}</small>
+                <small>{{ $shape((string) $company->address) }}</small>
             @endif
             @if (! empty($company->phone) || ! empty($company->email))
                 <small>{{ trim(($company->phone ?? '').' · '.($company->email ?? ''), ' ·') }}</small>
@@ -73,20 +73,20 @@
     <div class="parties">
         <div>
             <div class="muted">{{ $t('accounting.from') }}</div>
-            <div><strong>{{ $company->name }}</strong></div>
+            <div><strong>{{ $shape((string) $company->name) }}</strong></div>
             @if (! empty($company->address))
-                <div>{{ $company->address }}</div>
+                <div>{{ $shape((string) $company->address) }}</div>
             @endif
         </div>
         @if ($contact)
             <div class="to">
                 <div class="muted">{{ $t('accounting.to') }}</div>
-                <div><strong>{{ $contact->name }}</strong></div>
+                <div><strong>{{ $shape((string) $contact->name) }}</strong></div>
                 @if (! empty($contact->tax_id))
                     <div>{{ $t('accounting.nif') }}: {{ $contact->tax_id }}</div>
                 @endif
                 @if (! empty($contact->address))
-                    <div>{{ $contact->address }}</div>
+                    <div>{{ $shape((string) $contact->address) }}</div>
                 @endif
             </div>
         @endif
@@ -105,7 +105,7 @@
         <tbody>
             @forelse ($lines as $line)
                 <tr>
-                    <td>{{ $line['description'] }}</td>
+                    <td>{{ $shape((string) $line['description']) }}</td>
                     <td class="num">{{ $line['quantity'] }}</td>
                     <td class="num">{{ number_format($line['unit_price'], 2, ',', ' ') }}</td>
                     <td class="num">{{ $line['discount'] > 0 ? number_format($line['discount'], 2, ',', ' ') : '—' }}</td>
@@ -143,18 +143,18 @@
     </table>
 
     @if ($document->notes)
-        <div class="note">{{ $document->notes }}</div>
+        <div class="note">{{ $shape((string) $document->notes) }}</div>
     @endif
 
     @if ($legal_mentions)
         <div class="note">
             <strong>{{ $t('accounting.legal_mentions') }}</strong><br>
-            {{ $legal_mentions }}
+            {{ $shape((string) $legal_mentions) }}
         </div>
     @endif
 
     <div class="footer">
-        {{ $company->name }} — {{ $shape($document_type_label) }} {{ $document->number }}
+        {{ $shape((string) $company->name) }} — {{ $shape($document_type_label) }} {{ $document->number }}
     </div>
 </body>
 </html>

@@ -56,8 +56,8 @@ final class AccountingSettingsDefaults
         'FR' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 20]],
         'TR' => [['label' => 'KDV standart', 'label_key' => 'standard', 'rate' => 20]],
         'GB' => [['label' => 'VAT standard', 'label_key' => 'standard', 'rate' => 20]],
-        'US' => [['label' => 'Sales tax', 'label_key' => 'standard', 'rate' => 0]],
-        'CA' => [['label' => 'GST', 'label_key' => 'standard', 'rate' => 5]],
+        'US' => [['label' => 'Sales tax', 'label_key' => 'sales_tax', 'rate' => 0]],
+        'CA' => [['label' => 'GST', 'label_key' => 'gst', 'rate' => 5]],
     ];
 
     /**

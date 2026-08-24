@@ -75,6 +75,8 @@ return [
 
     // تسميات الضريبة الافتراضية (issue #5227)
     'tva_label_standard' => 'الضريبة القياسية',
+    'tva_label_sales_tax' => 'ضريبة المبيعات',
+    'tva_label_gst' => 'ضريبة السلع والخدمات',
     'tva_label_reduced' => 'الضريبة المخفضة',
 
 ];

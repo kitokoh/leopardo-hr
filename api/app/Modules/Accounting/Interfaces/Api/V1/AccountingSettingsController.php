@@ -110,8 +110,12 @@ class AccountingSettingsController extends Controller
 
             $labelKey = isset($row['label_key']) ? (string) $row['label_key'] : null;
 
+            // Seuls les label_key connus sont traduits ; une valeur inconnue
+            // (données legacy) retombe sur le label stocké (issue #5227).
+            $knownLabelKeys = ['standard', 'reduced', 'sales_tax', 'gst'];
+
             $out[] = [
-                'label' => $labelKey !== null
+                'label' => $labelKey !== null && in_array($labelKey, $knownLabelKeys, true)
                     ? (string) __('accounting.tva_label_'.$labelKey)
                     : (string) ($row['label'] ?? ''),
                 'label_key' => $labelKey,
