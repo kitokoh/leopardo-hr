@@ -110,7 +110,7 @@ class PayrollRunController extends Controller
         }
 
         if (in_array($payrollRun->status, ['draft', 'calculated'], true) === false) {
-            return response()->json(['message' => 'Payroll run cannot be recalculated in current status.'], 422);
+            return response()->json(['message' => __('payroll.run_cannot_recalculate')], 422);
         }
 
         // Issue #2555 — un pays sans règles enregistrées (ex. 'ZZ') fait

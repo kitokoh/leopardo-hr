@@ -267,7 +267,7 @@ class PaymentBatchController extends Controller
                 'document_version' => $confirmation->document_version,
                 'document_hash' => $confirmation->document_hash,
             ],
-            'message' => 'Reception du paiement confirmee.',
+            'message' => __('payroll.payment_reception_confirmed'),
         ]);
     }
 
