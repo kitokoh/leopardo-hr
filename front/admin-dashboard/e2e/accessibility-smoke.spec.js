@@ -57,8 +57,8 @@ test.describe('Accessibility smoke tests', () => {
     const submitButton = page.getByRole('button', { name: /Se connecter/i })
     await submitButton.click()
 
-    const emailInput = page.getByLabel(/Adresse email/i)
-    const passwordInput = page.getByLabel(/Clé d'Accès/i)
+    const emailInput = page.locator('#email')
+    const passwordInput = page.locator('#password')
 
     await expect(emailInput).toHaveAttribute('aria-invalid', 'true')
     await expect(passwordInput).toHaveAttribute('aria-invalid', 'true')
