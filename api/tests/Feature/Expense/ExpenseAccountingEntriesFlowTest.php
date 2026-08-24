@@ -42,7 +42,7 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
         // update() → event Eloquent `updated` (le signal observé).
         $claim->update([
             'status' => 'approved',
-            'approved_by' => (string) $company->id,
+            'approved_by' => (string) $claim->employee_id,
             'approved_at' => now(),
         ]);
 
@@ -316,6 +316,7 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
             'currency' => $company->currency ?? 'DZD',
             'submitted_at' => $status !== 'draft' ? now() : null,
             'approved_at' => $status === 'approved' ? now() : null,
+            'approved_by' => $status === 'approved' ? (string) $employee->id : null,
         ]);
 
         foreach ($items as $item) {
