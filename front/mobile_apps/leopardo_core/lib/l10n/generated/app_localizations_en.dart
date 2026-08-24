@@ -5236,4 +5236,78 @@ class AppLocalizationsEn extends AppLocalizations {
   String teamActionError(Object error) {
     return 'Error: $error';
   }
+  @override
+  String get personalProfileTitle => "Your Leopardo profile";
+  @override
+  String get personalOnboardingQuestion => "How would you like to use Leopardo?";
+  @override
+  String get personalOnboardingHelper => "You can select multiple answers. You can change these choices later in Settings.";
+  @override
+  String get personalOnboardingSelectOne => "Select at least one situation.";
+  @override
+  String get personalOnboardingSaveError => "Unable to save your profile.";
+  @override
+  String get personalOnboardingStudentTitle => "I am a student";
+  @override
+  String get personalOnboardingStudentDescription => "Organize my degrees, documents, and CV.";
+  @override
+  String get personalOnboardingEmployeeTitle => "I work";
+  @override
+  String get personalOnboardingEmployeeDescription => "Keep my professional space and join a company.";
+  @override
+  String get personalOnboardingEntrepreneurTitle => "I run a company";
+  @override
+  String get personalOnboardingEntrepreneurDescription => "Create or manage a company space.";
+  @override
+  String get personalOnboardingJobSeekerTitle => "I am looking for a job";
+  @override
+  String get personalOnboardingJobSeekerDescription => "Prepare my profile for upcoming opportunities.";
+  @override
+  String get personalOnboardingCompanyNotice => "Clock-in and company features become available only after a company accepts your link.";
+  @override
+  String get commonContinue => "Continue";
+  @override
+  String get userHomeCompanies => "My companies";
+  @override
+  String get userHomePendingRequests => "Pending requests";
+  @override
+  String get userHomeCompany => "Company";
+  @override
+  String userHomeGreeting(String name) => "Hello, $name";
+  @override
+  String get userHomeLogout => "Log out";
+  @override
+  String get userHomeWorkspace => "My space";
+  @override
+  String get userHomeCabinet => "Cabinet";
+  @override
+  String get userHomeJoinCompany => "Join a company";
+  @override
+  String get userHomeRecommendations => "Recommended jobs";
+  @override
+  String get userHomeApplications => "My applications";
+  @override
+  String get userHomeCreateCompany => "Create a company";
+  @override
+  String get userHomeEmployeeActive => "Active employee space";
+  @override
+  String get userHomeApproved => "Approved";
+  @override
+  String get userHomeRejected => "Rejected";
+  @override
+  String get userHomePending => "Pending";
+  @override
+  String get notificationsTitle => "Notifications";
+  @override
+  String get notificationsSubtitle => "HR, payroll, and approval alerts";
+  @override
+  String get commonRefresh => "Refresh";
+  @override
+  String get notificationsMarkAllRead => "Mark all as read";
+  @override
+  String get notificationsEmptyDescription => "You are all caught up. This page refreshes automatically.";
+  @override
+  String get notificationsMarkRead => "Mark as read";
+  @override
+  String get commonDelete => "Delete";
 }

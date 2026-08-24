@@ -18,16 +18,16 @@ class NotificationListScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: 'Notifications',
-        subtitle: 'Alertes RH, paie et validations',
+        title: context.l10n.notificationsTitle,
+        subtitle: context.l10n.notificationsSubtitle,
         actions: [
           IconButton(
-            tooltip: 'Actualiser',
+            tooltip: context.l10n.commonRefresh,
             icon: const Icon(Icons.refresh, color: MobileSurface.secondary),
             onPressed: () => ref.invalidate(notificationsProvider),
           ),
           IconButton(
-            tooltip: 'Tout marquer comme lu',
+            tooltip: context.l10n.notificationsMarkAllRead,
             icon: const Icon(Icons.done_all, color: MobileSurface.secondary),
             onPressed: () async {
               try {
@@ -63,7 +63,7 @@ class NotificationListScreen extends ConsumerWidget {
                       icon: Icons.notifications_none,
                       title: context.l10n.shellNonotifications,
                       description:
-                          'Vous etes a jour. Cette page se rafraichit automatiquement.',
+                          context.l10n.notificationsEmptyDescription,
                     ),
                   ],
                 )
@@ -250,11 +250,11 @@ class _NotificationTile extends StatelessWidget {
                     if (!isRead)
                       const PopupMenuItem(
                         value: 'read',
-                        child: Text('Marquer comme lue'),
+                        child: Text(context.l10n.notificationsMarkRead),
                       ),
                     const PopupMenuItem(
                       value: 'delete',
-                      child: Text('Supprimer'),
+                      child: Text(context.l10n.commonDelete),
                     ),
                   ],
                 ),

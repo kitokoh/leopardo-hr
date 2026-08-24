@@ -5241,4 +5241,78 @@ class AppLocalizationsTr extends AppLocalizations {
   String teamActionError(Object error) {
     return 'Hata: $error';
   }
+  @override
+  String get personalProfileTitle => "Leopardo profiliniz";
+  @override
+  String get personalOnboardingQuestion => "Leopardo’yu nasıl kullanmak istersiniz?";
+  @override
+  String get personalOnboardingHelper => "Birden fazla seçenek belirleyebilirsiniz. Bu seçimleri daha sonra Ayarlar’dan değiştirebilirsiniz.";
+  @override
+  String get personalOnboardingSelectOne => "En az bir durum seçin.";
+  @override
+  String get personalOnboardingSaveError => "Profiliniz kaydedilemedi.";
+  @override
+  String get personalOnboardingStudentTitle => "Öğrenciyim";
+  @override
+  String get personalOnboardingStudentDescription => "Diplomalarımı, belgelerimi ve özgeçmişimi düzenlemek.";
+  @override
+  String get personalOnboardingEmployeeTitle => "Çalışıyorum";
+  @override
+  String get personalOnboardingEmployeeDescription => "Profesyonel alanımı korumak ve bir şirkete katılmak.";
+  @override
+  String get personalOnboardingEntrepreneurTitle => "Şirket yönetiyorum";
+  @override
+  String get personalOnboardingEntrepreneurDescription => "Bir şirket alanı oluşturmak veya yönetmek.";
+  @override
+  String get personalOnboardingJobSeekerTitle => "İş arıyorum";
+  @override
+  String get personalOnboardingJobSeekerDescription => "Profilimi yaklaşan fırsatlar için hazırlamak.";
+  @override
+  String get personalOnboardingCompanyNotice => "Mesai girişi ve şirket özellikleri yalnızca bir şirket bağlantınızı kabul ettikten sonra kullanılabilir.";
+  @override
+  String get commonContinue => "Devam et";
+  @override
+  String get userHomeCompanies => "Şirketlerim";
+  @override
+  String get userHomePendingRequests => "Bekleyen talepler";
+  @override
+  String get userHomeCompany => "Şirket";
+  @override
+  String userHomeGreeting(String name) => "Merhaba, $name";
+  @override
+  String get userHomeLogout => "Çıkış yap";
+  @override
+  String get userHomeWorkspace => "Alanım";
+  @override
+  String get userHomeCabinet => "Dolabım";
+  @override
+  String get userHomeJoinCompany => "Bir şirkete katıl";
+  @override
+  String get userHomeRecommendations => "Önerilen işler";
+  @override
+  String get userHomeApplications => "Başvurularım";
+  @override
+  String get userHomeCreateCompany => "Şirket oluştur";
+  @override
+  String get userHomeEmployeeActive => "Çalışan alanı aktif";
+  @override
+  String get userHomeApproved => "Onaylandı";
+  @override
+  String get userHomeRejected => "Reddedildi";
+  @override
+  String get userHomePending => "Beklemede";
+  @override
+  String get notificationsTitle => "Bildirimler";
+  @override
+  String get notificationsSubtitle => "İK, bordro ve onay uyarıları";
+  @override
+  String get commonRefresh => "Yenile";
+  @override
+  String get notificationsMarkAllRead => "Tümünü okundu işaretle";
+  @override
+  String get notificationsEmptyDescription => "Güncelsiniz. Bu sayfa otomatik olarak yenilenir.";
+  @override
+  String get notificationsMarkRead => "Okundu işaretle";
+  @override
+  String get commonDelete => "Sil";
 }

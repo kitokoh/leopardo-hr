@@ -1623,5 +1623,49 @@
   "salaryAdvanceSemantics": "سلفة {amount}، السبب: {reason}، الحالة {status}.",
   "settingsJourneyToday": "اليوم",
   "settingsShareProfile": "شارك ملفك أو امسح رمز QR الشركة.",
-  "teamActionError": "فشل: {error}"
+  "teamActionError": "فشل: {error}",
+  "personalProfileTitle": "ملفك الشخصي في ليوباردو",
+  "personalOnboardingQuestion": "كيف تريد استخدام ليوباردو؟",
+  "personalOnboardingHelper": "يمكنك اختيار عدة إجابات. ويمكنك تعديل هذه الاختيارات لاحقًا من الإعدادات.",
+  "personalOnboardingSelectOne": "اختر حالة واحدة على الأقل.",
+  "personalOnboardingSaveError": "تعذر حفظ ملفك الشخصي.",
+  "personalOnboardingStudentTitle": "أنا طالب",
+  "personalOnboardingStudentDescription": "تنظيم شهاداتي ووثائقي وسيرتي الذاتية.",
+  "personalOnboardingEmployeeTitle": "أعمل",
+  "personalOnboardingEmployeeDescription": "الحفاظ على مساحتي المهنية والانضمام إلى شركة.",
+  "personalOnboardingEntrepreneurTitle": "أدير شركة",
+  "personalOnboardingEntrepreneurDescription": "إنشاء مساحة شركة أو إدارتها.",
+  "personalOnboardingJobSeekerTitle": "أبحث عن عمل",
+  "personalOnboardingJobSeekerDescription": "إعداد ملفي للفرص القادمة.",
+  "personalOnboardingCompanyNotice": "ستتوفر خدمة تسجيل الحضور ووظائف الشركة فقط بعد قبول الشركة لطلب الربط.",
+  "commonContinue": "متابعة",
+  "userHomeCompanies": "شركاتي",
+  "userHomePendingRequests": "الطلبات الجارية",
+  "userHomeCompany": "شركة",
+  "userHomeGreeting": "مرحبًا، {name}",
+  "@userHomeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userHomeLogout": "تسجيل الخروج",
+  "userHomeWorkspace": "مساحتي",
+  "userHomeCabinet": "خزانتي",
+  "userHomeJoinCompany": "الانضمام إلى شركة",
+  "userHomeRecommendations": "وظائف مقترحة",
+  "userHomeApplications": "طلباتي",
+  "userHomeCreateCompany": "إنشاء شركة",
+  "userHomeEmployeeActive": "مساحة الموظف نشطة",
+  "userHomeApproved": "تمت الموافقة",
+  "userHomeRejected": "مرفوض",
+  "userHomePending": "قيد الانتظار",
+  "notificationsTitle": "الإشعارات",
+  "notificationsSubtitle": "تنبيهات الموارد البشرية والرواتب والموافقات",
+  "commonRefresh": "تحديث",
+  "notificationsMarkAllRead": "تحديد الكل كمقروء",
+  "notificationsEmptyDescription": "أنت على اطلاع. يتم تحديث هذه الصفحة تلقائيًا.",
+  "notificationsMarkRead": "تحديد كمقروء",
+  "commonDelete": "حذف"
 }

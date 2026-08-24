@@ -1623,5 +1623,49 @@
   "salaryAdvanceSemantics": "Avance de {amount}, motif : {reason}, statut {status}.",
   "settingsJourneyToday": "Aujourd'hui",
   "settingsShareProfile": "Partagez votre profil ou scannez le QR d'une entreprise.",
-  "teamActionError": "Échec : {error}"
+  "teamActionError": "Échec : {error}",
+  "personalProfileTitle": "Votre profil Leopardo",
+  "personalOnboardingQuestion": "Comment souhaitez-vous utiliser Leopardo ?",
+  "personalOnboardingHelper": "Vous pouvez sélectionner plusieurs réponses. Ces choix resteront modifiables dans les paramètres.",
+  "personalOnboardingSelectOne": "Sélectionnez au moins une situation.",
+  "personalOnboardingSaveError": "Impossible d’enregistrer votre profil.",
+  "personalOnboardingStudentTitle": "Je suis étudiant(e)",
+  "personalOnboardingStudentDescription": "Organiser mes diplômes, documents et mon CV.",
+  "personalOnboardingEmployeeTitle": "Je travaille",
+  "personalOnboardingEmployeeDescription": "Garder mon espace professionnel et rejoindre une entreprise.",
+  "personalOnboardingEntrepreneurTitle": "Je dirige une entreprise",
+  "personalOnboardingEntrepreneurDescription": "Créer ou administrer un espace entreprise.",
+  "personalOnboardingJobSeekerTitle": "Je recherche un emploi",
+  "personalOnboardingJobSeekerDescription": "Préparer mon profil pour les opportunités à venir.",
+  "personalOnboardingCompanyNotice": "Le pointage et les fonctions d’entreprise seront disponibles uniquement après acceptation de votre rattachement par une entreprise.",
+  "commonContinue": "Continuer",
+  "userHomeCompanies": "Mes entreprises",
+  "userHomePendingRequests": "Demandes en cours",
+  "userHomeCompany": "Entreprise",
+  "userHomeGreeting": "Bonjour, {name}",
+  "@userHomeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userHomeLogout": "Déconnexion",
+  "userHomeWorkspace": "Mon espace",
+  "userHomeCabinet": "Placard",
+  "userHomeJoinCompany": "Rejoindre une entreprise",
+  "userHomeRecommendations": "Offres recommandées",
+  "userHomeApplications": "Mes candidatures",
+  "userHomeCreateCompany": "Créer une entreprise",
+  "userHomeEmployeeActive": "Espace employé actif",
+  "userHomeApproved": "Approuvé",
+  "userHomeRejected": "Refusé",
+  "userHomePending": "En attente",
+  "notificationsTitle": "Notifications",
+  "notificationsSubtitle": "Alertes RH, paie et validations",
+  "commonRefresh": "Actualiser",
+  "notificationsMarkAllRead": "Tout marquer comme lu",
+  "notificationsEmptyDescription": "Vous êtes à jour. Cette page se rafraîchit automatiquement.",
+  "notificationsMarkRead": "Marquer comme lue",
+  "commonDelete": "Supprimer"
 }

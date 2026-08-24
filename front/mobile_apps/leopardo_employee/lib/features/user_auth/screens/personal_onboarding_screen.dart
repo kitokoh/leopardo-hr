@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_employee/features/user_auth/providers/user_auth_provider.dart';
 
 class PersonalOnboardingScreen extends ConsumerStatefulWidget {
@@ -18,32 +19,32 @@ class _PersonalOnboardingScreenState
     extends ConsumerState<PersonalOnboardingScreen> {
   final Set<String> _selected = <String>{};
 
-  static const _options = <_StatusOption>[
+  List<_StatusOption> _options(BuildContext context) => <_StatusOption>[
     _StatusOption(
       key: 'student',
-      title: 'Je suis étudiant(e)',
-      description: 'Organiser mes diplômes, documents et mon CV.',
+      title: context.l10n.personalOnboardingStudentTitle,
+      description: context.l10n.personalOnboardingStudentDescription,
       icon: Icons.school_outlined,
       color: AppColors.ia,
     ),
     _StatusOption(
       key: 'employee',
-      title: 'Je travaille',
-      description: 'Garder mon espace professionnel et rejoindre une entreprise.',
+      title: context.l10n.personalOnboardingEmployeeTitle,
+      description: context.l10n.personalOnboardingEmployeeDescription,
       icon: Icons.badge_outlined,
       color: AppColors.rh,
     ),
     _StatusOption(
       key: 'entrepreneur',
-      title: 'Je dirige une entreprise',
-      description: 'Créer ou administrer un espace entreprise.',
+      title: context.l10n.personalOnboardingEntrepreneurTitle,
+      description: context.l10n.personalOnboardingEntrepreneurDescription,
       icon: Icons.business_outlined,
       color: AppColors.finance,
     ),
     _StatusOption(
       key: 'job_seeker',
-      title: 'Je recherche un emploi',
-      description: 'Préparer mon profil pour les opportunités à venir.',
+      title: context.l10n.personalOnboardingJobSeekerTitle,
+      description: context.l10n.personalOnboardingJobSeekerDescription,
       icon: Icons.work_outline,
       color: AppColors.info,
     ),
@@ -59,7 +60,7 @@ class _PersonalOnboardingScreenState
   Future<void> _continue() async {
     if (_selected.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sélectionnez au moins une situation.')),
+        SnackBar(content: Text(context.l10n.personalOnboardingSelectOne)),
       );
       return;
     }
@@ -73,7 +74,7 @@ class _PersonalOnboardingScreenState
     } else {
       final error = ref.read(userAuthProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error ?? 'Impossible d’enregistrer votre profil.')),
+        SnackBar(content: Text(error ?? context.l10n.personalOnboardingSaveError)),
       );
     }
   }
@@ -88,7 +89,7 @@ class _PersonalOnboardingScreenState
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        title: const Text('Votre profil Leopardo'),
+        title: Text(context.l10n.personalProfileTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/user-home'),
@@ -99,16 +100,16 @@ class _PersonalOnboardingScreenState
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
           children: [
             Text(
-              'Comment souhaitez-vous utiliser Leopardo ?',
+              context.l10n.personalOnboardingQuestion,
               style: AppTypography.title.copyWith(color: text),
             ),
             const SizedBox(height: 8),
             Text(
-              'Vous pouvez sélectionner plusieurs réponses. Ces choix resteront modifiables dans les paramètres.',
+              context.l10n.personalOnboardingHelper,
               style: AppTypography.body.copyWith(color: muted),
             ),
             const SizedBox(height: 24),
-            ..._options.map((option) {
+            ..._options(context).map((option) {
               final selected = _selected.contains(option.key);
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
@@ -183,7 +184,7 @@ class _PersonalOnboardingScreenState
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Text(
-                'Le pointage et les fonctions d’entreprise seront disponibles uniquement après acceptation de votre rattachement par une entreprise.',
+                context.l10n.personalOnboardingCompanyNotice,
                 style: AppTypography.bodySmall.copyWith(color: text),
               ),
             ),
@@ -198,7 +199,7 @@ class _PersonalOnboardingScreenState
                         width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Continuer'),
+                    : Text(context.l10n.commonContinue),
               ),
             ),
           ],

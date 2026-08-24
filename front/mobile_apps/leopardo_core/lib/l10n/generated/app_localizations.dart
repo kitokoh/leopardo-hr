@@ -9883,4 +9883,41 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       'an issue with the localizations generation tool. Please file an issue '
       'on GitHub with a reproducible sample app and the gen-l10n configuration '
       'that was used.');
+  String get personalProfileTitle;
+  String get personalOnboardingQuestion;
+  String get personalOnboardingHelper;
+  String get personalOnboardingSelectOne;
+  String get personalOnboardingSaveError;
+  String get personalOnboardingStudentTitle;
+  String get personalOnboardingStudentDescription;
+  String get personalOnboardingEmployeeTitle;
+  String get personalOnboardingEmployeeDescription;
+  String get personalOnboardingEntrepreneurTitle;
+  String get personalOnboardingEntrepreneurDescription;
+  String get personalOnboardingJobSeekerTitle;
+  String get personalOnboardingJobSeekerDescription;
+  String get personalOnboardingCompanyNotice;
+  String get commonContinue;
+  String get userHomeCompanies;
+  String get userHomePendingRequests;
+  String get userHomeCompany;
+  String userHomeGreeting(String name);
+  String get userHomeLogout;
+  String get userHomeWorkspace;
+  String get userHomeCabinet;
+  String get userHomeJoinCompany;
+  String get userHomeRecommendations;
+  String get userHomeApplications;
+  String get userHomeCreateCompany;
+  String get userHomeEmployeeActive;
+  String get userHomeApproved;
+  String get userHomeRejected;
+  String get userHomePending;
+  String get notificationsTitle;
+  String get notificationsSubtitle;
+  String get commonRefresh;
+  String get notificationsMarkAllRead;
+  String get notificationsEmptyDescription;
+  String get notificationsMarkRead;
+  String get commonDelete;
 }

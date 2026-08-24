@@ -1623,5 +1623,49 @@
   "salaryAdvanceSemantics": "Advance of {amount}, reason: {reason}, status {status}.",
   "settingsJourneyToday": "Today",
   "settingsShareProfile": "Share your profile or scan a company QR.",
-  "teamActionError": "Error: {error}"
+  "teamActionError": "Error: {error}",
+  "personalProfileTitle": "Your Leopardo profile",
+  "personalOnboardingQuestion": "How would you like to use Leopardo?",
+  "personalOnboardingHelper": "You can select multiple answers. You can change these choices later in Settings.",
+  "personalOnboardingSelectOne": "Select at least one situation.",
+  "personalOnboardingSaveError": "Unable to save your profile.",
+  "personalOnboardingStudentTitle": "I am a student",
+  "personalOnboardingStudentDescription": "Organize my degrees, documents, and CV.",
+  "personalOnboardingEmployeeTitle": "I work",
+  "personalOnboardingEmployeeDescription": "Keep my professional space and join a company.",
+  "personalOnboardingEntrepreneurTitle": "I run a company",
+  "personalOnboardingEntrepreneurDescription": "Create or manage a company space.",
+  "personalOnboardingJobSeekerTitle": "I am looking for a job",
+  "personalOnboardingJobSeekerDescription": "Prepare my profile for upcoming opportunities.",
+  "personalOnboardingCompanyNotice": "Clock-in and company features become available only after a company accepts your link.",
+  "commonContinue": "Continue",
+  "userHomeCompanies": "My companies",
+  "userHomePendingRequests": "Pending requests",
+  "userHomeCompany": "Company",
+  "userHomeGreeting": "Hello, {name}",
+  "@userHomeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userHomeLogout": "Log out",
+  "userHomeWorkspace": "My space",
+  "userHomeCabinet": "Cabinet",
+  "userHomeJoinCompany": "Join a company",
+  "userHomeRecommendations": "Recommended jobs",
+  "userHomeApplications": "My applications",
+  "userHomeCreateCompany": "Create a company",
+  "userHomeEmployeeActive": "Active employee space",
+  "userHomeApproved": "Approved",
+  "userHomeRejected": "Rejected",
+  "userHomePending": "Pending",
+  "notificationsTitle": "Notifications",
+  "notificationsSubtitle": "HR, payroll, and approval alerts",
+  "commonRefresh": "Refresh",
+  "notificationsMarkAllRead": "Mark all as read",
+  "notificationsEmptyDescription": "You are all caught up. This page refreshes automatically.",
+  "notificationsMarkRead": "Mark as read",
+  "commonDelete": "Delete"
 }

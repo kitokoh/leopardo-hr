@@ -5191,4 +5191,78 @@ class AppLocalizationsAr extends AppLocalizations {
   String teamActionError(Object error) {
     return 'فشل: $error';
   }
+  @override
+  String get personalProfileTitle => "ملفك الشخصي في ليوباردو";
+  @override
+  String get personalOnboardingQuestion => "كيف تريد استخدام ليوباردو؟";
+  @override
+  String get personalOnboardingHelper => "يمكنك اختيار عدة إجابات. ويمكنك تعديل هذه الاختيارات لاحقًا من الإعدادات.";
+  @override
+  String get personalOnboardingSelectOne => "اختر حالة واحدة على الأقل.";
+  @override
+  String get personalOnboardingSaveError => "تعذر حفظ ملفك الشخصي.";
+  @override
+  String get personalOnboardingStudentTitle => "أنا طالب";
+  @override
+  String get personalOnboardingStudentDescription => "تنظيم شهاداتي ووثائقي وسيرتي الذاتية.";
+  @override
+  String get personalOnboardingEmployeeTitle => "أعمل";
+  @override
+  String get personalOnboardingEmployeeDescription => "الحفاظ على مساحتي المهنية والانضمام إلى شركة.";
+  @override
+  String get personalOnboardingEntrepreneurTitle => "أدير شركة";
+  @override
+  String get personalOnboardingEntrepreneurDescription => "إنشاء مساحة شركة أو إدارتها.";
+  @override
+  String get personalOnboardingJobSeekerTitle => "أبحث عن عمل";
+  @override
+  String get personalOnboardingJobSeekerDescription => "إعداد ملفي للفرص القادمة.";
+  @override
+  String get personalOnboardingCompanyNotice => "ستتوفر خدمة تسجيل الحضور ووظائف الشركة فقط بعد قبول الشركة لطلب الربط.";
+  @override
+  String get commonContinue => "متابعة";
+  @override
+  String get userHomeCompanies => "شركاتي";
+  @override
+  String get userHomePendingRequests => "الطلبات الجارية";
+  @override
+  String get userHomeCompany => "شركة";
+  @override
+  String userHomeGreeting(String name) => "مرحبًا، $name";
+  @override
+  String get userHomeLogout => "تسجيل الخروج";
+  @override
+  String get userHomeWorkspace => "مساحتي";
+  @override
+  String get userHomeCabinet => "خزانتي";
+  @override
+  String get userHomeJoinCompany => "الانضمام إلى شركة";
+  @override
+  String get userHomeRecommendations => "وظائف مقترحة";
+  @override
+  String get userHomeApplications => "طلباتي";
+  @override
+  String get userHomeCreateCompany => "إنشاء شركة";
+  @override
+  String get userHomeEmployeeActive => "مساحة الموظف نشطة";
+  @override
+  String get userHomeApproved => "تمت الموافقة";
+  @override
+  String get userHomeRejected => "مرفوض";
+  @override
+  String get userHomePending => "قيد الانتظار";
+  @override
+  String get notificationsTitle => "الإشعارات";
+  @override
+  String get notificationsSubtitle => "تنبيهات الموارد البشرية والرواتب والموافقات";
+  @override
+  String get commonRefresh => "تحديث";
+  @override
+  String get notificationsMarkAllRead => "تحديد الكل كمقروء";
+  @override
+  String get notificationsEmptyDescription => "أنت على اطلاع. يتم تحديث هذه الصفحة تلقائيًا.";
+  @override
+  String get notificationsMarkRead => "تحديد كمقروء";
+  @override
+  String get commonDelete => "حذف";
 }

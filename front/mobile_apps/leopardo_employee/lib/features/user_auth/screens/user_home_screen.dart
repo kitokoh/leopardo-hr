@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_employee/features/user_auth/providers/user_auth_provider.dart';
 
 class UserHomeScreen extends ConsumerWidget {
@@ -48,11 +49,11 @@ class UserHomeScreen extends ConsumerWidget {
               _buildQuickActions(context, muted),
               const SizedBox(height: 24),
               if (user.employeeLinks.isNotEmpty) ...[
-                _buildSection('Mes entreprises', muted),
+                _buildSection(context.l10n.userHomeCompanies, muted),
                 const SizedBox(height: 8),
                 ...user.employeeLinks.map(
                   (link) => _EmployeeLinkGlassCard(
-                    companyName: link.companyName ?? 'Entreprise',
+                    companyName: link.companyName ?? context.l10n.userHomeCompany,
                     onTap: () {
                       HapticFeedback.lightImpact();
                     },
@@ -61,7 +62,7 @@ class UserHomeScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
               ],
               if (user.companyRequests.isNotEmpty) ...[
-                _buildSection('Demandes en cours', muted),
+                _buildSection(context.l10n.userHomePendingRequests, muted),
                 const SizedBox(height: 8),
                 ...user.companyRequests.map(
                   (req) => _CompanyRequestGlassCard(
@@ -116,7 +117,7 @@ class UserHomeScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Bonjour, $name',
+                  context.l10n.userHomeGreeting(name),
                   style: AppTypography.title.copyWith(color: text),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -133,7 +134,7 @@ class UserHomeScreen extends ConsumerWidget {
           ),
           IconButton(
             icon: const Icon(Icons.logout_outlined),
-            tooltip: 'Deconnexion',
+            tooltip: context.l10n.userHomeLogout,
             onPressed: () async {
               HapticFeedback.mediumImpact();
               await ref.read(userAuthProvider.notifier).logout();
@@ -149,14 +150,14 @@ class UserHomeScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSection('Mon espace', muted),
+        _buildSection(context.l10n.userHomeWorkspace, muted),
         const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
               child: _QuickActionCard(
                 icon: Icons.door_sliding_outlined,
-                label: 'Placard',
+                label: context.l10n.userHomeCabinet,
                 color: AppColors.cabinet,
                 onTap: () {
                   HapticFeedback.lightImpact();
@@ -168,7 +169,7 @@ class UserHomeScreen extends ConsumerWidget {
             Expanded(
               child: _QuickActionCard(
                 icon: Icons.person_search_outlined,
-                label: 'Rejoindre une entreprise',
+                label: context.l10n.userHomeJoinCompany,
                 color: AppColors.rh,
                 onTap: () {
                   HapticFeedback.lightImpact();
@@ -184,7 +185,7 @@ class UserHomeScreen extends ConsumerWidget {
             Expanded(
               child: _QuickActionCard(
                 icon: Icons.auto_awesome_outlined,
-                label: 'Offres recommandées',
+                label: context.l10n.userHomeRecommendations,
                 color: AppColors.info,
                 onTap: () {
                   HapticFeedback.lightImpact();
@@ -196,7 +197,7 @@ class UserHomeScreen extends ConsumerWidget {
             Expanded(
               child: _QuickActionCard(
                 icon: Icons.assignment_outlined,
-                label: 'Mes candidatures',
+                label: context.l10n.userHomeApplications,
                 color: AppColors.cabinet,
                 onTap: () {
                   HapticFeedback.lightImpact();
@@ -208,7 +209,7 @@ class UserHomeScreen extends ConsumerWidget {
             Expanded(
               child: _QuickActionCard(
                 icon: Icons.business_outlined,
-                label: 'Creer entreprise',
+                label: context.l10n.userHomeCreateCompany,
                 color: AppColors.ia,
                 onTap: () {
                   HapticFeedback.lightImpact();
@@ -304,7 +305,7 @@ class _EmployeeLinkGlassCard extends StatelessWidget {
         ),
         title: Text(companyName, style: AppTypography.subtitle),
         subtitle: Text(
-          'Espace employe actif',
+          context.l10n.userHomeEmployeeActive,
           style: AppTypography.caption.copyWith(
             color: AppColors.textSecondaryFor(context),
           ),
@@ -330,9 +331,9 @@ class _CompanyRequestGlassCard extends StatelessWidget {
       _ => AppColors.warning,
     };
     final statusLabel = switch (status) {
-      'approved' => 'Approuve',
-      'rejected' => 'Refuse',
-      _ => 'En attente',
+      'approved' => context.l10n.userHomeApproved,
+      'rejected' => context.l10n.userHomeRejected,
+      _ => context.l10n.userHomePending,
     };
 
     return GlassCard(

@@ -1623,5 +1623,49 @@
   "salaryAdvanceSemantics": "{amount} avans, gerekçe: {reason}, durum {status}.",
   "settingsJourneyToday": "Bugün",
   "settingsShareProfile": "Profilinizi paylaşın veya bir şirket QR kodunu tarayın.",
-  "teamActionError": "Hata: {error}"
+  "teamActionError": "Hata: {error}",
+  "personalProfileTitle": "Leopardo profiliniz",
+  "personalOnboardingQuestion": "Leopardo’yu nasıl kullanmak istersiniz?",
+  "personalOnboardingHelper": "Birden fazla seçenek belirleyebilirsiniz. Bu seçimleri daha sonra Ayarlar’dan değiştirebilirsiniz.",
+  "personalOnboardingSelectOne": "En az bir durum seçin.",
+  "personalOnboardingSaveError": "Profiliniz kaydedilemedi.",
+  "personalOnboardingStudentTitle": "Öğrenciyim",
+  "personalOnboardingStudentDescription": "Diplomalarımı, belgelerimi ve özgeçmişimi düzenlemek.",
+  "personalOnboardingEmployeeTitle": "Çalışıyorum",
+  "personalOnboardingEmployeeDescription": "Profesyonel alanımı korumak ve bir şirkete katılmak.",
+  "personalOnboardingEntrepreneurTitle": "Şirket yönetiyorum",
+  "personalOnboardingEntrepreneurDescription": "Bir şirket alanı oluşturmak veya yönetmek.",
+  "personalOnboardingJobSeekerTitle": "İş arıyorum",
+  "personalOnboardingJobSeekerDescription": "Profilimi yaklaşan fırsatlar için hazırlamak.",
+  "personalOnboardingCompanyNotice": "Mesai girişi ve şirket özellikleri yalnızca bir şirket bağlantınızı kabul ettikten sonra kullanılabilir.",
+  "commonContinue": "Devam et",
+  "userHomeCompanies": "Şirketlerim",
+  "userHomePendingRequests": "Bekleyen talepler",
+  "userHomeCompany": "Şirket",
+  "userHomeGreeting": "Merhaba, {name}",
+  "@userHomeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userHomeLogout": "Çıkış yap",
+  "userHomeWorkspace": "Alanım",
+  "userHomeCabinet": "Dolabım",
+  "userHomeJoinCompany": "Bir şirkete katıl",
+  "userHomeRecommendations": "Önerilen işler",
+  "userHomeApplications": "Başvurularım",
+  "userHomeCreateCompany": "Şirket oluştur",
+  "userHomeEmployeeActive": "Çalışan alanı aktif",
+  "userHomeApproved": "Onaylandı",
+  "userHomeRejected": "Reddedildi",
+  "userHomePending": "Beklemede",
+  "notificationsTitle": "Bildirimler",
+  "notificationsSubtitle": "İK, bordro ve onay uyarıları",
+  "commonRefresh": "Yenile",
+  "notificationsMarkAllRead": "Tümünü okundu işaretle",
+  "notificationsEmptyDescription": "Güncelsiniz. Bu sayfa otomatik olarak yenilenir.",
+  "notificationsMarkRead": "Okundu işaretle",
+  "commonDelete": "Sil"
 }
