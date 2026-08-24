@@ -251,8 +251,8 @@ class GeoSessionController extends Controller
                 'latitude' => $e->latitude,
                 'longitude' => $e->longitude,
                 'accuracy_meters' => $e->accuracy_meters,
-                'device_timestamp' => $e->device_timestamp->toIso8601String(),
-                'created_at' => $e->created_at?->toIso8601String(),
+                'device_timestamp' => $e->device_timestamp?->toIso8601String(),
+                'created_at' => $e->created_at->toIso8601String(),
             ]);
         }
 
