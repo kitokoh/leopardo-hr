@@ -179,6 +179,6 @@ final class VatDeclarationService
             ->where('company_id', $company->id)
             ->first();
 
-        return strtoupper($settings?->currency ?? (string) ($company->currency ?? 'DZD'));
+        return strtoupper($settings->currency ?? (string) ($company->currency ?? 'DZD'));
     }
 }

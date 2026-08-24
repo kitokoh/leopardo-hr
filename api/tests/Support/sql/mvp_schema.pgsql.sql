@@ -39,6 +39,7 @@ DROP TABLE IF EXISTS shared_tenants.employees CASCADE;
 DROP TABLE IF EXISTS shared_tenants.schedules CASCADE;
 DROP TABLE IF EXISTS shared_tenants.onboarding_steps CASCADE;
 DROP TABLE IF EXISTS shared_tenants.social_contributions CASCADE;
+DROP TABLE IF EXISTS shared_tenants.employee_documents CASCADE;
 
 CREATE TABLE public.plans (
     id serial PRIMARY KEY,
@@ -535,6 +536,32 @@ CREATE INDEX audit_logs_company_id_created_at_index
     ON shared_tenants.audit_logs (company_id, created_at);
 CREATE INDEX audit_logs_auditable_type_auditable_id_index
     ON shared_tenants.audit_logs (auditable_type, auditable_id);
+
+-- Issue #5326 (G3) : registre des documents du dossier employé. Table ajoutée
+-- au fixture MVP car la fiche employé (EmployeeResource) calcule le badge
+-- « dossier complet » sur la relation employeeDocuments (#5365 a créé le
+-- fixture avant cette migration tenant — miroir de
+-- 2026_08_23_000010_create_employee_documents_table).
+CREATE TABLE shared_tenants.employee_documents (
+    id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
+    employee_id integer NOT NULL,
+    type varchar(40) NOT NULL,
+    status varchar(20) NOT NULL DEFAULT 'received',
+    document_date date NULL,
+    reference varchar(100) NULL,
+    url text NULL,
+    notes text NULL,
+    uploaded_by integer NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+CREATE INDEX employee_documents_company_id_employee_id_index
+    ON shared_tenants.employee_documents (company_id, employee_id);
+CREATE INDEX employee_documents_company_id_index
+    ON shared_tenants.employee_documents (company_id);
+CREATE INDEX employee_documents_employee_id_index
+    ON shared_tenants.employee_documents (employee_id);
 
 CREATE TABLE shared_tenants.absence_types (
     id serial PRIMARY KEY,
