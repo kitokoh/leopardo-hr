@@ -7,7 +7,6 @@ namespace App\Modules\HR\Domain\Models;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -29,7 +28,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Employee|null $employee
  * @property-read Employee|null $uploader
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class EmployeeDocument extends Model
 {
@@ -39,12 +39,19 @@ class EmployeeDocument extends Model
     protected $table = 'employee_documents';
 
     public const TYPE_CONTRACT_SIGNED = 'contract_signed';
+
     public const TYPE_EMPLOYEE_FILE = 'employee_file';
+
     public const TYPE_CAREER_DECISION = 'career_decision';
+
     public const TYPE_DEPARTURE_RECORD = 'departure_record';
+
     public const TYPE_NOTICE_SUMMARY = 'notice_summary';
+
     public const TYPE_SETTLEMENT = 'settlement';
+
     public const TYPE_CERTIFICATE = 'certificate';
+
     public const TYPE_OTHER = 'other';
 
     /** Types de documents reconnus par la checklist (spec §5). */
@@ -60,8 +67,11 @@ class EmployeeDocument extends Model
     ];
 
     public const STATUS_RECEIVED = 'received';
+
     public const STATUS_UPLOADED = 'uploaded';
+
     public const STATUS_GENERATED = 'generated';
+
     public const STATUS_MISSING = 'missing';
 
     /** Statuts applicables à une ligne du registre. */
