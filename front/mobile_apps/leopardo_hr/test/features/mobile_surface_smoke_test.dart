@@ -11,7 +11,7 @@ import 'package:leopardo_core/features/notifications/providers/notification_prov
 import 'package:leopardo_core/features/notifications/screens/notification_list_screen.dart';
 import 'package:leopardo_core/features/payrolls/providers/payroll_provider.dart';
 import 'package:leopardo_hr/features/payrolls/screens/payroll_list_screen.dart';
-import 'package:leopardo_hr/features/team/providers/team_provider.dart';
+import 'package:leopardo_core/features/team/providers/team_provider.dart';
 import 'package:leopardo_hr/features/team/screens/team_screen.dart';
 import 'package:leopardo_hr/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_hr/features/attendance/screens/history_screen.dart';

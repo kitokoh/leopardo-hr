@@ -7,37 +7,46 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
-import 'package:leopardo_core/core/widgets/demo_user_bottom_sheet.dart';
-import 'package:leopardo_hr/features/user_auth/providers/user_auth_provider.dart';
+import 'package:leopardo_core/features/user_auth/providers/user_auth_provider.dart';
 
-class UserLoginScreen extends ConsumerStatefulWidget {
-  const UserLoginScreen({super.key});
+class UserRegisterScreen extends ConsumerStatefulWidget {
+  const UserRegisterScreen({super.key});
 
   @override
-  ConsumerState<UserLoginScreen> createState() => _UserLoginScreenState();
+  ConsumerState<UserRegisterScreen> createState() => _UserRegisterScreenState();
 }
 
-class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
+class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _firstNameCtrl = TextEditingController();
+  final _lastNameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
   bool _obscure = true;
   bool _googleLoading = false;
 
   @override
   void dispose() {
+    _firstNameCtrl.dispose();
+    _lastNameCtrl.dispose();
     _emailCtrl.dispose();
     _passwordCtrl.dispose();
+    _phoneCtrl.dispose();
     super.dispose();
   }
 
-  Future<void> _login() async {
+  Future<void> _register() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     HapticFeedback.mediumImpact();
 
-    final ok = await ref
-        .read(userAuthProvider.notifier)
-        .login(_emailCtrl.text.trim(), _passwordCtrl.text);
+    final ok = await ref.read(userAuthProvider.notifier).register(
+          firstName: _firstNameCtrl.text.trim(),
+          lastName: _lastNameCtrl.text.trim(),
+          email: _emailCtrl.text.trim(),
+          password: _passwordCtrl.text,
+          phone: _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
+        );
 
     if (ok && mounted) {
       context.go('/user-home');
@@ -93,9 +102,9 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.tint(context, AppColors.rh, lightAlpha: 0.08),
+              AppColors.tint(context, AppColors.ia, lightAlpha: 0.08),
               bg,
-              AppColors.tint(context, AppColors.ia, lightAlpha: 0.04),
+              AppColors.tint(context, AppColors.rh, lightAlpha: 0.04),
             ],
           ),
         ),
@@ -118,10 +127,10 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                     },
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 _buildHero(text, muted),
-                const SizedBox(height: 24),
-                _buildGoogleButton(),
+                const SizedBox(height: 18),
+                _buildGoogleButton(muted),
                 const SizedBox(height: 16),
                 _buildDivider(muted),
                 const SizedBox(height: 16),
@@ -143,22 +152,26 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: const LinearGradient(
-              colors: [AppColors.rh, AppColors.rhDark],
+              colors: [AppColors.ia, AppColors.rh],
             ),
           ),
-          child: const Icon(Icons.login, color: Colors.white, size: 30),
+          child: const Icon(
+            Icons.person_add_outlined,
+            color: Colors.white,
+            size: 30,
+          ),
         )
             .animate()
             .fadeIn(duration: 400.ms)
             .scale(begin: const Offset(0.8, 0.8), duration: 400.ms),
         const SizedBox(height: 12),
         Text(
-          'Connexion manager / RH',
+          'Creer un compte',
           style: AppTypography.title.copyWith(color: text),
         ).animate().fadeIn(delay: 100.ms, duration: 300.ms),
         const SizedBox(height: 4),
         Text(
-          'Retrouvez vos equipes, validations RH et demandes a traiter.',
+          'Accedez a votre espace personnel et organisez vos documents.',
           textAlign: TextAlign.center,
           style: AppTypography.bodySmall.copyWith(color: muted),
         ).animate().fadeIn(delay: 200.ms, duration: 300.ms),
@@ -166,7 +179,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
     );
   }
 
-  Widget _buildGoogleButton() {
+  Widget _buildGoogleButton(Color muted) {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(
@@ -213,6 +226,36 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _firstNameCtrl,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                      labelText: 'Prenom',
+                      prefixIcon: Icon(Icons.person_outlined),
+                    ),
+                    validator: (v) =>
+                        (v?.trim().isEmpty ?? true) ? 'Requis' : null,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _lastNameCtrl,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                      labelText: 'Nom',
+                      prefixIcon: Icon(Icons.person_outlined),
+                    ),
+                    validator: (v) =>
+                        (v?.trim().isEmpty ?? true) ? 'Requis' : null,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
             TextFormField(
               controller: _emailCtrl,
               keyboardType: TextInputType.emailAddress,
@@ -224,9 +267,21 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
               validator: (v) {
                 final email = v?.trim() ?? '';
                 if (email.isEmpty) return 'Email requis';
-                if (!email.contains('@')) return 'Email invalide';
+                if (!email.contains('@') || !email.contains('.')) {
+                  return 'Email invalide';
+                }
                 return null;
               },
+            ),
+            const SizedBox(height: 14),
+            TextFormField(
+              controller: _phoneCtrl,
+              keyboardType: TextInputType.phone,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(
+                labelText: 'Telephone (optionnel)',
+                prefixIcon: Icon(Icons.phone_outlined),
+              ),
             ),
             const SizedBox(height: 14),
             TextFormField(
@@ -244,13 +299,17 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                   onPressed: () => setState(() => _obscure = !_obscure),
                 ),
               ),
-              validator: (v) =>
-                  (v ?? '').isEmpty ? 'Mot de passe requis' : null,
-              onFieldSubmitted: (_) => _login(),
+              validator: (v) {
+                if ((v ?? '').length < 8) {
+                  return '8 caracteres minimum';
+                }
+                return null;
+              },
+              onFieldSubmitted: (_) => _register(),
             ),
             const SizedBox(height: 22),
             ElevatedButton(
-              onPressed: state.isLoading ? null : _login,
+              onPressed: state.isLoading ? null : _register,
               child: state.isLoading
                   ? const SizedBox(
                       height: 20,
@@ -260,37 +319,16 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text('Se connecter'),
+                  : const Text('Creer mon compte'),
             ),
             const SizedBox(height: 14),
             Center(
               child: TextButton(
-                onPressed: () => context.go('/user-register'),
+                onPressed: () => context.go('/user-login'),
                 child: Text(
-                  'Pas encore de compte ? S\'inscrire',
-                  style: TextStyle(color: AppColors.ia),
+                  'Deja un compte ? Se connecter',
+                  style: TextStyle(color: AppColors.rh),
                 ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Divider(),
-            const SizedBox(height: 8),
-            ElevatedButton.icon(
-              onPressed: () async {
-                final user = await showDemoUserBottomSheet(
-                  context,
-                  allowedRoles: {'manager'},
-                );
-                if (user != null) {
-                  _emailCtrl.text = user.email;
-                  _passwordCtrl.text = user.password;
-                }
-              },
-              icon: const Icon(Icons.group_outlined),
-              label: const Text('Acces Demo'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.rhDark,
-                foregroundColor: Colors.white,
               ),
             ),
           ],
