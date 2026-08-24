@@ -4886,6 +4886,58 @@ paths:
         "404":
           description: "Contact introuvable"
 
+  /accounting/settings:
+    get:
+      tags: ["Accounting"]
+      summary: "Parametrage comptable de l'entreprise"
+      description: |
+        Retourne la ligne AccountingSettings du tenant courant, ou les defauts
+        derives du pays de l'entreprise (registre CountryDefaults : devise,
+        langue, TVA standard, series de numerotation) si aucune ligne n'est
+        encore persistee. Une ligne unique par entreprise (company_id unique).
+      responses:
+        "200":
+          description: "Parametrage comptable (persiste ou defauts pays)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingSettings"
+        "403":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Accounting"]
+      summary: "Mettre a jour le parametrage comptable de l'entreprise"
+      description: |
+        Upsert (une ligne unique par entreprise). Chaque champ est optionnel ;
+        seuls les champs fournis remplacent la valeur existante. Devise limitee
+        aux devises du registre CountryDefaults (multi-devises hors perimetre
+        v1, #5270) ; langue des documents fr/ar/tr/en ; tva_rates : liste de
+        {label, rate} avec taux entre 0 et 100 % ; number_series : prefixe par
+        type de document (DocumentType).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountingSettingsPayload"
+      responses:
+        "200":
+          description: "Parametrage mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingSettings"
+        "422":
+          $ref: "#/components/responses/Validation422"
+        "403":
+          $ref: "#/components/responses/Error401"
+
   /attendance/check-in:
     post:
       tags: ["Attendance"]
@@ -22171,6 +22223,84 @@ components:
           type: object
           nullable: true
           additionalProperties: true
+
+    AccountingSettings:
+      type: object
+      description: "Parametrage comptable par entreprise (une ligne unique par company_id)."
+      properties:
+        currency:
+          type: string
+          nullable: true
+        document_language:
+          type: string
+          enum: ["fr", "ar", "tr", "en"]
+        template_style:
+          type: string
+          nullable: true
+        payment_terms:
+          type: string
+          nullable: true
+        legal_mentions:
+          type: string
+          nullable: true
+        tva_rates:
+          type: array
+          description: "Taux de TVA par defaut (modifiables), ex. [{label: 'TVA standard', rate: 19}]."
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              rate:
+                type: number
+        number_series:
+          type: object
+          description: "Prefixe de serie par type de document, ex. {invoice: 'FAC', quote: 'DEV'}."
+          additionalProperties:
+            type: string
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    AccountingSettingsPayload:
+      type: object
+      description: "Payload de mise a jour — chaque champ est optionnel et remplace la valeur existante."
+      properties:
+        currency:
+          type: string
+          nullable: true
+        document_language:
+          type: string
+          enum: ["fr", "ar", "tr", "en"]
+          nullable: true
+        template_style:
+          type: string
+          nullable: true
+        payment_terms:
+          type: string
+          nullable: true
+        legal_mentions:
+          type: string
+          nullable: true
+        tva_rates:
+          type: array
+          items:
+            type: object
+            required:
+              - label
+              - rate
+            properties:
+              label:
+                type: string
+              rate:
+                type: number
+                minimum: 0
+                maximum: 100
+        number_series:
+          type: object
+          additionalProperties:
+            type: string
 
     MarketingLeadContact:
       type: object

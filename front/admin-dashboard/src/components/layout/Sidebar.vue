@@ -181,6 +181,19 @@ const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
 
+/**
+ * Comptabilité — RBAC backend (api.manager:comptable,principal) : le menu
+ * Paramétrage comptable n'est proposé qu'aux managers comptable/principal.
+ * Le backend reste la source de vérité (403 sinon) ; ce filtre évite juste
+ * d'afficher une entrée inutile aux autres rôles.
+ */
+const canAccessAccounting = computed(() => {
+  const user = authStore.user
+  if (!user) return false
+  const managerRole = user.manager_role
+  return user.role === 'manager' && (managerRole === 'comptable' || managerRole === 'principal')
+})
+
 // Navigation items
 const navigation = computed(() => [
   {
@@ -255,6 +268,16 @@ const navigation = computed(() => [
     path: '/exports',
     icon: ArrowDownTrayIcon
   },
+  ...(canAccessAccounting.value
+    ? [
+        {
+          name: 'accounting-settings',
+          title: t('navigation.accountingSettings', 'Comptabilité — Paramétrage'),
+          path: '/accounting/settings',
+          icon: CogIcon
+        }
+      ]
+    : []),
   {
     name: 'support',
     title: t('navigation.support', 'Support'),
