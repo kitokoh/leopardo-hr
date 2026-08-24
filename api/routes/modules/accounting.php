@@ -56,6 +56,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use Illuminate\Support\Facades\Route;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
+
+/**
+ * Routes Comptabilité — documents (Phase A, #5223) + audit trail (#5273) + contacts (#5222).
+ */
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
+use Illuminate\Support\Facades\Route;
 
 /**
  * Routes Comptabilité — documents (Phase A, #5223).
@@ -76,3 +84,17 @@ Route::middleware(['api.manager:principal,comptable'])->prefix('accounting')->gr
     // #5273 — audit trail scope module (qui/quoi/quand).
     Route::get('/audit-logs', [AccountingAuditController::class, 'index']);
 });
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
+    ->prefix('accounting')
+    ->group(function (): void {
+
+        // ── Contacts client/fournisseur (RBAC comptable + principal) ────────
+        Route::middleware('api.manager:comptable,principal')->group(function (): void {
+            Route::get('/contacts', [AccountingContactController::class, 'index']);
+            Route::post('/contacts', [AccountingContactController::class, 'store']);
+            Route::get('/contacts/{contact}', [AccountingContactController::class, 'show'])->whereNumber('contact');
+            Route::put('/contacts/{contact}', [AccountingContactController::class, 'update'])->whereNumber('contact');
+            Route::delete('/contacts/{contact}', [AccountingContactController::class, 'destroy'])->whereNumber('contact');
+        });
+    });
+
