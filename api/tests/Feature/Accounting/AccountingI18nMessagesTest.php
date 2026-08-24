@@ -149,7 +149,12 @@ class AccountingI18nMessagesTest extends TestCase
             'key' => 'unknown_type',
             'allowed' => implode(', ', DocumentType::values()),
         ], 'tr');
-        $response->assertJsonPath(['errors', 'number_series.unknown_type', 0], $expected);
+        // assertJsonPath attend une chaîne (dot notation) ; la clé d'erreur de
+        // validation contient un point littéral (« number_series.unknown_type »),
+        // on lit donc le payload directement.
+        /** @var array<string, array<int, string>> $errors */
+        $errors = $response->json('errors');
+        $this->assertSame($expected, $errors['number_series.unknown_type'][0] ?? null);
     }
 
     public function test_vat_period_invalid_service_guard_carries_catalog_code(): void

@@ -179,6 +179,9 @@ final class VatDeclarationService
             ->where('company_id', $company->id)
             ->first();
 
-        return strtoupper($settings?->currency ?? (string) ($company->currency ?? 'DZD'));
+        // Les paramètres comptables sont provisionnés à la création de
+        // l'entreprise (ProvisionAccountingSettings, ligne unique par company),
+        // donc first() est non nul ici (même shape que GenerateDocumentPdf).
+        return strtoupper($settings->currency ?? (string) ($company->currency ?? 'DZD'));
     }
 }
