@@ -27,6 +27,7 @@ return [
     'legal_notice' => 'هذا المستند إعلامي ولا يشكل كشف راتب رسمي.',
 
     // كشف الراتب (payslip.blade.php)
+    'payslip_number' => 'كشف رقم :n',
     'payslip_title' => 'كشف الراتب',
     'payslip_company_fallback' => 'الشركة',
     'payslip_matricule' => 'رقم الموظف',

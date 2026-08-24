@@ -3,7 +3,7 @@
   "spec_sha256": "a59c23a42ef3fa742e941c10e703da741d6d0dc43a76b393639c8379d11ecaab",
   "openapi": "3.0.3",
   "api_version": "4.24.0",
-  "operation_count": 753,
+  "operation_count": 755,
   "targets": [
     "javascript",
     "python"

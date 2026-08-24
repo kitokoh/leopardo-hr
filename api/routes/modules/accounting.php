@@ -11,6 +11,7 @@
  */
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
@@ -24,5 +25,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/contacts/{contact}', [AccountingContactController::class, 'show'])->whereNumber('contact');
             Route::put('/contacts/{contact}', [AccountingContactController::class, 'update'])->whereNumber('contact');
             Route::delete('/contacts/{contact}', [AccountingContactController::class, 'destroy'])->whereNumber('contact');
+
+            // ── Paramétrage comptable (issue #5232) — une ligne par entreprise
+            // GET  : settings persistés ou défauts pays (CountryDefaults) ;
+            // PUT  : upsert avec validation (devise, TVA, séries, mentions).
+            Route::get('/settings', [AccountingSettingsController::class, 'show']);
+            Route::put('/settings', [AccountingSettingsController::class, 'update']);
         });
     });

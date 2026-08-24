@@ -101,7 +101,7 @@ class ApprovalController extends Controller
 
         $approvalWorkflow->update(['active' => false]);
 
-        return response()->json(['message' => 'Workflow deactivated.']);
+        return response()->json(['message' => __('attendance.workflow_deactivated')]);
     }
 
     public function pending(Request $request): JsonResponse
@@ -127,7 +127,7 @@ class ApprovalController extends Controller
             abort(404);
         }
         if ($approvalRequest->status !== 'pending') {
-            return response()->json(['message' => 'Request is not pending.'], 422);
+            return response()->json(['message' => __('attendance.request_not_pending')], 422);
         }
         // QA #3146 — la policy enregistrée n'était jamais invoquée : tout employé
         // authentifié pouvait approuver/rejeter n'importe quelle demande. La policy
@@ -171,7 +171,7 @@ class ApprovalController extends Controller
             abort(404);
         }
         if ($approvalRequest->status !== 'pending') {
-            return response()->json(['message' => 'Request is not pending.'], 422);
+            return response()->json(['message' => __('attendance.request_not_pending')], 422);
         }
         // QA #3146 — même garde que approve (policy ApprovalRequestPolicy).
         $this->authorize('reject', $approvalRequest);

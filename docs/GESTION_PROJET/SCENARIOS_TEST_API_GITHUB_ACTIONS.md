@@ -1386,3 +1386,10 @@ Note 2026-08-22 (issue #5260) : contrats par pays — modèles légaux + signatu
 - `POST /api/v1/contracts/{id}/sign` : signature explicite idempotente (`signed_at` + `signed_document_path` optionnel) ; 403 non-manager, 404 cross-tenant.
 - Scénarios à vérifier : bundles ×4 pays, seed au store (entreprise DZ → clauses loi 90-11), clauses explicites préservées, idempotence sign, historique amendements complet (list chronologique), isolation tenant.
 - Couverture : `tests/Feature/HR/ContractByCountryTest.php` (9 tests) — contrat OpenAPI documenté (745/745 routes couvertes).
+
+Note 2026-08-24 (issue #5232) : paramétrage comptable par entreprise — `GET/PUT /api/v1/accounting/settings`.
+- `GET /api/v1/accounting/settings` : renvoie la ligne de paramétrage de l'entreprise courante (devise, langue des documents, `tva_rates`, `number_series` par DocumentType, mentions légales, `template_style`) ; défauts dérivés du pays de l'entreprise via CountryDefaults si aucun paramétrage persisté.
+- `PUT /api/v1/accounting/settings` : upsert d'une ligne par entreprise (RBAC `api.manager:comptable,principal`, employé → 403) ; validation 422 (devise hors registre, langue hors fr/ar/tr/en, `tva_rates` {label,rate} invalide, mentions > 2000 caractères).
+- Provisioning : listener `ProvisionAccountingSettings` sur `CompanyCreated` (withinTenant, additif non bloquant, idempotent).
+- Scénarios à vérifier : défauts pays DZ (DZD, fr, TVA 19 %, série `FAC`), upsert puis relecture, validation 422 ×4, RBAC, isolation tenant, provisioning + idempotence.
+- Couverture : `tests/Feature/Accounting/AccountingSettingsTest.php` (12 tests) — OpenAPI documenté (756/756 routes couvertes), SDK régénérés.
