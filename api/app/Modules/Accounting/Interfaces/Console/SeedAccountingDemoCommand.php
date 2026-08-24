@@ -7,6 +7,7 @@ namespace App\Modules\Accounting\Interfaces\Console;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Application\Actions\SeedAccountingDemoData;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 /**
  * Commande de démonstration du module Comptabilité — issue #5274.
@@ -55,11 +56,13 @@ final class SeedAccountingDemoCommand extends Command
 
     private function resolveCompany(string $input): ?Company
     {
-        /** @var Company|null $byId */
-        $byId = Company::query()->where('id', $input)->first();
+        if (Str::isUuid($input)) {
+            /** @var Company|null $byId */
+            $byId = Company::query()->where('id', $input)->first();
 
-        if ($byId instanceof Company) {
-            return $byId;
+            if ($byId instanceof Company) {
+                return $byId;
+            }
         }
 
         /** @var Company|null $bySlug */
