@@ -97,6 +97,9 @@ class GeoSessionDashboardTest extends TestCase
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
+    /**
+     * @param  array<string, mixed>  $override
+     */
     private function createSession(array $override = []): GeoAttendanceSession
     {
         /** @var GeoAttendanceSession */
@@ -189,7 +192,7 @@ class GeoSessionDashboardTest extends TestCase
 
         $response->assertStatus(200);
 
-        $statuses = collect($response->json('data'))->pluck('status')->unique()->all();
+        $statuses = collect((array) $response->json('data'))->pluck('status')->unique()->all();
         $this->assertSame([GeoAttendanceSession::STATUS_PENDING_VALIDATION], $statuses);
     }
 
