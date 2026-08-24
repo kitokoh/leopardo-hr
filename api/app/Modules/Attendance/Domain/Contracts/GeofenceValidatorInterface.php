@@ -26,4 +26,3 @@ interface GeofenceValidatorInterface
         ?float $lng
     ): array;
 }
-

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\SmartAttendance\Providers;
 
-use App\Modules\Attendance\Infrastructure\Services\AttendanceGeofenceService;
 use App\Modules\Attendance\Domain\Contracts\GeofenceValidatorInterface;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceGeofenceService;
 use Illuminate\Support\ServiceProvider;
 
 class SmartAttendanceServiceProvider extends ServiceProvider
@@ -21,6 +21,6 @@ class SmartAttendanceServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->loadRoutesFrom(__DIR__ . '/../routes/smart_attendance.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/smart_attendance.php');
     }
 }

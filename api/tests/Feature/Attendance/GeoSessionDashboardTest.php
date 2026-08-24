@@ -6,9 +6,9 @@ namespace Tests\Feature\SmartAttendance;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\Attendance\Domain\Models\EmployeeLocationEvent;
 use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
+use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;

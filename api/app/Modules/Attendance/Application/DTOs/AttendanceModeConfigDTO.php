@@ -8,12 +8,13 @@ final class AttendanceModeConfigDTO
 {
     public function __construct(
         public readonly string $mode,           // gps_auto | qr | manual | mixed
-        public readonly bool   $canOverride,    // true = l'employé peut changer son mode
-        public readonly bool   $gpsEnabled,
+        public readonly bool $canOverride,    // true = l'employé peut changer son mode
+        public readonly bool $gpsEnabled,
         public readonly ?float $geofenceLat,
         public readonly ?float $geofenceLng,
-        public readonly int    $geofenceRadius,
-        public readonly bool   $requiresConsent,
-        public readonly bool   $requiresPunchPhoto = false, // true = photo obligatoire a chaque pointage (arrivee/depart)
-    ) {}
+        public readonly int $geofenceRadius,
+        public readonly bool $requiresConsent,
+        public readonly bool $requiresPunchPhoto = false, // true = photo obligatoire a chaque pointage (arrivee/depart)
+    ) {
+    }
 }

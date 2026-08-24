@@ -31,7 +31,8 @@ class GeofenceZoneService
 {
     public function __construct(
         private readonly AttendanceGeofenceService $geofenceService,
-    ) {}
+    ) {
+    }
 
     /**
      * Évaluation pure de la zone — ne jette jamais.

@@ -1396,3 +1396,9 @@ Note 2026-08-24 (issue #5232) : paramétrage comptable par entreprise — `GET/P
 - Provisioning : listener `ProvisionAccountingSettings` sur `CompanyCreated` (withinTenant, additif non bloquant, idempotent).
 - Scénarios à vérifier : défauts pays DZ (DZD, fr, TVA 19 %, série `FAC`), upsert puis relecture, validation 422 ×4, RBAC, isolation tenant, provisioning + idempotence.
 - Couverture : `tests/Feature/Accounting/AccountingSettingsTest.php` (12 tests) — OpenAPI documenté (756/756 routes couvertes), SDK régénérés.
+
+Note 2026-08-24 (issues #5353/#5354/#5355) : ADR-0016 — consolidation des routes pointage sous `/api/v1/attendance/*` + fusion SmartAttendance.
+- Phases 2-3 : chemin d'usage unique de la géofence (`GeofenceZoneService`) et surface API pointage consolidée sous `/attendance/*` (sessions, geo-events, mode) — alias `/smart-attendance/*` conservés (BC mobile, Phase 5 #5265).
+- Phase 4 : fusion des modèles/services/commandes SmartAttendance → Attendance (shims `@deprecated` dans SmartAttendance pour BC) ; commande console `AutoCloseGeoSessionsCommand` → `AutoCloseAttendanceCommand` (alias conservé, `api/routes/console.php`).
+- Scénarios à vérifier : routes `/attendance/*` (sessions/geo-events/mode), rétro-compat `/smart-attendance/*`, migration console (schedule), isolation tenant géofence, PHPStan Strict vert sur les fichiers fusionnés.
+- Couverture : `tests/Feature/Attendance/Geo*` (6 tests migrés) + `GeoRoutesMigrationTest`.

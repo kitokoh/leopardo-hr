@@ -29,13 +29,13 @@ class AttendanceModeResolver
         // ── Niveau 1 : mode entreprise forcé ─────────────────────────────────
         if ($companySettings && $companySettings->hasForcedMode()) {
             return new AttendanceModeConfigDTO(
-                mode:              (string) $companySettings->forced_mode,
-                canOverride:       false,
-                gpsEnabled:        $companySettings->gps_enabled,
-                geofenceLat:       $companySettings->latitude,
-                geofenceLng:       $companySettings->longitude,
-                geofenceRadius:    $companySettings->radius_meters,
-                requiresConsent:   $companySettings->forced_mode === 'gps_auto',
+                mode: (string) $companySettings->forced_mode,
+                canOverride: false,
+                gpsEnabled: $companySettings->gps_enabled,
+                geofenceLat: $companySettings->latitude,
+                geofenceLng: $companySettings->longitude,
+                geofenceRadius: $companySettings->radius_meters,
+                requiresConsent: $companySettings->forced_mode === 'gps_auto',
                 requiresPunchPhoto: $companySettings->requiresPunchPhoto(),
             );
         }
@@ -46,19 +46,19 @@ class AttendanceModeResolver
         /** @var EmployeeAttendancePreference|null $pref */
         $pref = EmployeeAttendancePreference::where('employee_id', $employee->id)->first();
 
-        $mode      = $pref->preferred_mode ?? 'manual';
-        $gpsEnabled = $companySettings?->gps_enabled
+        $mode = $pref->preferred_mode ?? 'manual';
+        $gpsEnabled = $companySettings->gps_enabled
             ?? ($mode === 'gps_auto');
 
         return new AttendanceModeConfigDTO(
-            mode:              $mode,
-            canOverride:       $canOverride,
-            gpsEnabled:        $gpsEnabled,
-            geofenceLat:       $companySettings?->latitude,
-            geofenceLng:       $companySettings?->longitude,
-            geofenceRadius:    $companySettings->radius_meters ?? 100,
-            requiresConsent:   $mode === 'gps_auto' && ! ($pref->hasGpsConsent() ?? false),
-            requiresPunchPhoto: $companySettings->requiresPunchPhoto() ?? false,
+            mode: $mode,
+            canOverride: $canOverride,
+            gpsEnabled: $gpsEnabled,
+            geofenceLat: $companySettings?->latitude,
+            geofenceLng: $companySettings?->longitude,
+            geofenceRadius: $companySettings->radius_meters ?? 100,
+            requiresConsent: $mode === 'gps_auto' && ! ($pref?->hasGpsConsent() ?? false),
+            requiresPunchPhoto: $companySettings?->requiresPunchPhoto() ?? false,
         );
     }
 }

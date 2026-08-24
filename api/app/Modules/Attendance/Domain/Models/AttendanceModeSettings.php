@@ -10,18 +10,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int         $id
- * @property string      $company_id
- * @property string|null $forced_mode         null | gps_auto | qr | manual | mixed
- * @property string|null $punch_photo_mode    null | kiosk | photo_required — mode de pointage mobile (clic vs photo obligatoire)
- * @property bool        $gps_enabled
- * @property float|null  $latitude
- * @property float|null  $longitude
- * @property int         $radius_meters
- * @property bool        $allow_employee_override
- * @property int|null    $updated_by
+ * @property int $id
+ * @property string $company_id
+ * @property string|null $forced_mode null | gps_auto | qr | manual | mixed
+ * @property string|null $punch_photo_mode null | kiosk | photo_required — mode de pointage mobile (clic vs photo obligatoire)
+ * @property bool $gps_enabled
+ * @property float|null $latitude
+ * @property float|null $longitude
+ * @property int $radius_meters
+ * @property bool $allow_employee_override
+ * @property int|null $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AttendanceModeSettings extends Model
@@ -41,10 +42,10 @@ class AttendanceModeSettings extends Model
     ];
 
     protected $casts = [
-        'gps_enabled'             => 'boolean',
-        'latitude'                => 'float',
-        'longitude'               => 'float',
-        'radius_meters'           => 'integer',
+        'gps_enabled' => 'boolean',
+        'latitude' => 'float',
+        'longitude' => 'float',
+        'radius_meters' => 'integer',
         'allow_employee_override' => 'boolean',
     ];
 

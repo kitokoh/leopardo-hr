@@ -6,8 +6,8 @@ namespace Tests\Feature\SmartAttendance;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
+use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -202,7 +202,7 @@ class GeoMultiTenantIsolationTest extends TestCase
 
         $response->assertStatus(200);
 
-        $ids = collect($response->json('data'))->pluck('id')->all();
+        $ids = collect((array) $response->json('data'))->pluck('id')->all();
         $this->assertContains($sessionA->id, $ids, 'La session A doit être visible pour employé A');
         $this->assertNotContains($sessionB->id, $ids, 'La session B ne doit PAS être visible pour employé A');
     }
@@ -222,7 +222,7 @@ class GeoMultiTenantIsolationTest extends TestCase
 
         $response->assertStatus(200);
 
-        $ids = collect($response->json('data'))->pluck('id')->all();
+        $ids = collect((array) $response->json('data'))->pluck('id')->all();
         $this->assertContains($sessionA->id, $ids, 'La session A doit être visible pour manager A');
         $this->assertNotContains($sessionB->id, $ids, 'La session B ne doit PAS être visible pour manager A');
     }
@@ -251,13 +251,14 @@ class GeoMultiTenantIsolationTest extends TestCase
         $response->assertJsonPath('data.status', GeoAttendanceSession::STATUS_DETECTED);
 
         // La session doit être liée à companyB
+        /** @var GeoAttendanceSession $session */
         $session = GeoAttendanceSession::query()->findOrFail($response->json('data.session_id'));
         $this->assertSame((string) $this->companyB->id, $session->company_id);
 
         // L'employé A (géofence = Alger) ne voit pas cette session
         Sanctum::actingAs($this->employeeA);
         $mySessionsResponse = $this->getJson('/api/v1/smart-attendance/my-sessions');
-        $ids = collect($mySessionsResponse->json('data'))->pluck('id')->all();
+        $ids = collect((array) $mySessionsResponse->json('data'))->pluck('id')->all();
         $this->assertNotContains($session->id, $ids);
     }
 }

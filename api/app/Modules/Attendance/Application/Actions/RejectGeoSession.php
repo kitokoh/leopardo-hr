@@ -18,9 +18,9 @@ class RejectGeoSession
         string $reason
     ): GeoAttendanceSession {
         $session->update([
-            'status'          => GeoAttendanceSession::STATUS_REJECTED,
-            'validated_by'    => $validator->id,
-            'validated_at'    => now(),
+            'status' => GeoAttendanceSession::STATUS_REJECTED,
+            'validated_by' => $validator->id,
+            'validated_at' => now(),
             'validation_note' => $reason,
         ]);
 
