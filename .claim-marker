@@ -1,1 +1,0 @@
-claim marker — fix/5201-ci-green-batch (PR #5293) — PHPStan Strict : findings résiduels (TraccarService #3148 + drift baseline OnboardingStepControllerTest/WebhookSsrfGuardTest) corrigés — 0 erreur sur la branche (le claim antérieur fix/main-phpstan-strict-tests est résolu : 7 erreurs fixtures corrigées dans e636070b2)
