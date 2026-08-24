@@ -4,6 +4,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(ci/mobile): contrat workflow notifications manager aligné sur core.** Le validateur vérifie désormais la vue partagée `leopardo_core` lorsque la copie manager a été supprimée par la déduplication, sans réduire les contrôles de routes, endpoints ni actions utilisateur.
 - **fix(ci/mobile): guard notifications compatible avec la déduplication core.** La preuve de production accepte désormais la vue notifications partagée de `leopardo_core` lorsque l’application manager ne conserve plus de copie locale ; les assertions de cycle de token, suppression et lecture restent obligatoires.
 - **chore(i18n): checksums admin régénérés par le synchroniseur canonique.** `shared/i18n/versions/versions.json` correspond à nouveau aux catalogues générés et passe `I18N_VALIDATION_OK` pour les quatre locales.
 - **fix(ci/mobile): réexport employee du barrel core.** `leopardo_employee` réutilise désormais `leopardo_core/core/providers/core_providers.dart` pour les providers communs ; seuls ses providers Edge et métier spécifiques restent locaux, conformément au guard de déduplication.
