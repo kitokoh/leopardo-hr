@@ -479,7 +479,9 @@ final class SeedAccountingDemoData
             ->where('company_id', $company->id)
             ->get()
             ->filter(static fn (AccountingContact $contact): bool => ($contact->metadata['demo_seed'] ?? false) === true)
-            ->each(static fn (AccountingContact $contact): void => $contact->delete());
+            ->each(static function (AccountingContact $contact): void {
+                $contact->delete();
+            });
 
         return $skipped;
     }
