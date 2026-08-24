@@ -103,9 +103,12 @@ class ExpenseAccountingEntryService
     public function voidForClaim(ExpenseClaim $claim, ?Employee $actor = null): int
     {
         $deleted = DB::transaction(function () use ($claim): int {
-            return ExpenseAccountingEntry::query()
+            /** @var int $deletedRows */
+            $deletedRows = ExpenseAccountingEntry::query()
                 ->where('expense_claim_id', $claim->id)
                 ->delete();
+
+            return $deletedRows;
         });
 
         if ($deleted > 0) {
@@ -133,10 +136,12 @@ class ExpenseAccountingEntryService
     /** Écart débit − crédit de la note (0.0 = équilibré). */
     public function balanceForClaim(ExpenseClaim $claim): float
     {
-        return (float) ExpenseAccountingEntry::query()
+        $balance = ExpenseAccountingEntry::query()
             ->where('expense_claim_id', $claim->id)
             ->selectRaw('COALESCE(SUM(debit), 0) - COALESCE(SUM(credit), 0) AS balance')
             ->value('balance');
+
+        return (float) (is_numeric($balance) ? $balance : 0.0);
     }
 
     /**
@@ -224,8 +229,22 @@ class ExpenseAccountingEntryService
      */
     private function balanceOf(array $lines): float
     {
-        $debits = array_sum(array_map(fn (array $l): float => (float) ($l['debit'] ?? 0), $lines));
-        $credits = array_sum(array_map(fn (array $l): float => (float) ($l['credit'] ?? 0), $lines));
+        $debits = array_sum(array_map(
+            static function (array $l): float {
+                $debit = $l['debit'] ?? 0;
+
+                return is_numeric($debit) ? (float) $debit : 0.0;
+            },
+            $lines
+        ));
+        $credits = array_sum(array_map(
+            static function (array $l): float {
+                $credit = $l['credit'] ?? 0;
+
+                return is_numeric($credit) ? (float) $credit : 0.0;
+            },
+            $lines
+        ));
 
         return round($debits - $credits, 2);
     }
