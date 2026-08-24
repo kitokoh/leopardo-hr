@@ -108,7 +108,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Position|null $position
  * @property-read Schedule|null $schedule
  * @property-read Site|null $site
- * @property-read \Illuminate\Support\Collection<int, \App\Modules\HR\Domain\Models\EmployeeDocument>|null $employeeDocuments
+ * @property-read Collection<int, EmployeeDocument>|null $employeeDocuments
  *
  * @mixin Builder
  *

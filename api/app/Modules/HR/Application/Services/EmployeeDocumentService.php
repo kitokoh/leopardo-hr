@@ -21,9 +21,7 @@ use Illuminate\Support\Collection;
  */
 final class EmployeeDocumentService
 {
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * Statut employé → types de documents requis pour considérer le dossier
@@ -67,8 +65,7 @@ final class EmployeeDocumentService
      * ligne du registre existe pour ce type avec un statut différent de
      * `missing`.
      *
-     * @param Collection<int, EmployeeDocument> $documents
-     *
+     * @param  Collection<int, EmployeeDocument>  $documents
      * @return array{
      *     complete: bool,
      *     required: list<string>,
