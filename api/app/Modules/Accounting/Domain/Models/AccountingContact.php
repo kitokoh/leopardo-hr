@@ -41,6 +41,10 @@ class AccountingContact extends Model
 
     protected $table = 'accounting_contacts';
 
+    // Aligné sur le défaut SQL (migration tenant) : un contact créé sans
+    // `source` explicite est un contact saisi manuellement.
+    protected $attributes = ['source' => 'manual'];
+
     protected $fillable = [
         'company_id',
         'type',

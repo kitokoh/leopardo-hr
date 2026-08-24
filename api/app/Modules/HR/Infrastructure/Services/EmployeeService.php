@@ -142,7 +142,7 @@ class EmployeeService
             unset($payload['role'], $payload['manager_role'], $payload['status'], $payload['manager_id']);
         }
 
-        if (isset($payload['status']) && $payload['status'] === 'archived') {
+        if (isset($payload['status']) && in_array($payload['status'], ['archived', 'departed'], true)) {
             unset($payload['status']);
         }
 

@@ -230,4 +230,17 @@ return [
     'JOB_POSTING_DELETED' => 'Job posting deleted.',
     'TASK_DELETED' => 'Task deleted.',
     'TRIAL_SIGNUP_UNAVAILABLE' => 'The trial signup service is temporarily unavailable. Please try again shortly.',
+
+    // Platform — RTMX (#5277): idempotent replay of mobile writes
+    'INVALID_IDEMPOTENCY_KEY' => 'Invalid idempotency key.',
+    'IDEMPOTENCY_IN_PROGRESS' => 'An identical request is already in progress. Retry shortly.',
+    'DEPARTMENT_DELETED' => 'Department deleted.',
+    'POSITION_DELETED' => 'Position deleted.',
+    'SITE_DELETED' => 'Site deleted.',
+    'EVALUATION_DELETED' => 'Evaluation deleted.',
+    'EMPLOYEE_CREATED' => 'Employee created successfully.',
+    'EMPLOYEE_UPDATED' => 'Employee updated successfully.',
+    'CONTRACT_NOT_FOUND_EMPLOYEE' => 'No contract found for this employee.',
+    'ALREADY_ENROLLED_SESSION' => 'Already enrolled in this session.',
+    'DELETION_REQUEST_RECEIVED' => 'Deletion request received for HR/legal review.',
 ];

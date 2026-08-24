@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Modules\Planning\Domain\Models\Absence;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Planning\Domain\Models\ExpenseClaim;
-use App\Modules\Payroll\Domain\Models\PaySlip;
-use App\Modules\HR\Domain\Models\PrivacyRequest;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Http\Controllers\Controller;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\HR\Domain\Models\PrivacyRequest;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -78,7 +78,7 @@ class PrivacyController extends Controller
                 'id' => $privacyRequest->id,
                 'type' => $privacyRequest->type,
                 'status' => $privacyRequest->status,
-                'message' => 'Deletion request received for HR/legal review.',
+                'message' => __('errors.DELETION_REQUEST_RECEIVED'),
             ],
         ], 202);
     }
@@ -162,4 +162,3 @@ class PrivacyController extends Controller
             ->count();
     }
 }
-

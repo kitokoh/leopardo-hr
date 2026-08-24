@@ -223,4 +223,17 @@ return [
     'JOB_POSTING_DELETED' => 'İlan silindi.',
     'TASK_DELETED' => 'Görev silindi.',
     'TRIAL_SIGNUP_UNAVAILABLE' => 'Deneme kayıt hizmeti geçici olarak kullanılamıyor. Lütfen kısa süre sonra tekrar deneyin.',
+
+    // Platform — RTMX (#5277): mobil yazma işlemlerinin idempotent tekrarı
+    'INVALID_IDEMPOTENCY_KEY' => 'Geçersiz idempotency anahtarı.',
+    'IDEMPOTENCY_IN_PROGRESS' => 'Aynı istek zaten işleniyor. Birazdan tekrar deneyin.',
+    'DEPARTMENT_DELETED' => 'Departman silindi.',
+    'POSITION_DELETED' => 'Pozisyon silindi.',
+    'SITE_DELETED' => 'Lokasyon silindi.',
+    'EVALUATION_DELETED' => 'Değerlendirme silindi.',
+    'EMPLOYEE_CREATED' => 'Çalışan başarıyla oluşturuldu.',
+    'EMPLOYEE_UPDATED' => 'Çalışan başarıyla güncellendi.',
+    'CONTRACT_NOT_FOUND_EMPLOYEE' => 'Bu çalışan için sözleşme bulunamadı.',
+    'ALREADY_ENROLLED_SESSION' => 'Bu oturuma zaten kayıtlısınız.',
+    'DELETION_REQUEST_RECEIVED' => 'Silme talebi İK/hukuk incelemesi için alındı.',
 ];

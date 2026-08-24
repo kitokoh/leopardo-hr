@@ -9,6 +9,8 @@ return [
     'attendance_geofence_alert_phase_check_out' => 'checked out',
 
     'generic_title' => 'Leopardo HR notification',
+    'accounting_payment_reminder_title' => 'Payment reminder',
+    'accounting_payment_reminder_body' => 'Invoice {document_number} ({document_total}) is unpaid since {due_date} — reminder day {days_overdue}.',
     'generic_body' => 'New information is available in your space.',
 
     'absence_approved_title' => 'Leave request approved',

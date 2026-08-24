@@ -401,6 +401,18 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - Self-service : un employe ne peut pas consulter, generer le PDF ou lire les avenants du contrat d'un collegue
 - Scheduler : `contracts:alert-expiring` alerte a 30/15/7 jours
 
+### Module L — Checklist documents du dossier employe (issue #5326, gap G3)
+- `POST /api/v1/employee-documents` enregistre un document (type, statut, date, reference, url) — RBAC : principal/rh uniquement (403 employe)
+- `GET /api/v1/employee-documents` liste les documents du tenant (filtres `employee_id`, `type`, pagination `per_page`)
+- `GET /api/v1/employee-documents/{id}` detail d'un document du tenant
+- `PUT|PATCH /api/v1/employee-documents/{id}` met a jour type/statut/reference/url/notes
+- `DELETE /api/v1/employee-documents/{id}` supprime un document du dossier
+- `GET /api/v1/me/documents` self-service : l'employe lit UNIQUEMENT les documents de son propre dossier
+- Badge dossier : `GET /api/v1/employees/{id}` expose `documents_status` (complete/present/missing, types requis par statut employe)
+- Isolation : un document d'un autre tenant repond 404 (scope `BelongsToCompany` fail-closed #3727)
+- Validation : type hors liste ou `employee_id` d'un autre tenant repond 422
+- Tests : `tests/Feature/HR/EmployeeDocumentTest.php` (8 scenarios)
+
 ### Module C â Avances salaire mobile
 - `GET /api/v1/salary-advances` retourne les avances de l'employe connecte, et la liste tenant pour manager/RH autorise.
 - `POST /api/v1/salary-advances` permet a un employe de demander une avance avec `amount`, `reason` et `repayment_months`.
@@ -1402,3 +1414,21 @@ Note 2026-08-24 (issues #5353/#5354/#5355) : ADR-0016 — consolidation des rout
 - Phase 4 : fusion des modèles/services/commandes SmartAttendance → Attendance (shims `@deprecated` dans SmartAttendance pour BC) ; commande console `AutoCloseGeoSessionsCommand` → `AutoCloseAttendanceCommand` (alias conservé, `api/routes/console.php`).
 - Scénarios à vérifier : routes `/attendance/*` uniquement (sessions/geo-events/mode), 404 sur `/smart-attendance/*` (alias supprimés Phase 5 #5356), migration console (schedule `attendance:auto-close` unique), isolation tenant géofence, PHPStan Strict vert sur les fichiers fusionnés.
 - Couverture : `tests/Feature/Attendance/Geo*` (6 tests migrés) + `GeoRoutesMigrationTest`.
+Note 2026-08-24 (issue #5271) : déclaration TVA simplifiée par période — `GET /api/v1/accounting/reports/vat-declaration`.
+- `GET /api/v1/accounting/reports/vat-declaration?period=YYYY-MM[&format=json|csv]` : déclaration mensuelle du tenant courant (RBAC `api.manager:comptable,principal`, employé → 403) — TVA collectée (factures + reçus), déductible (avoirs), net, détail par taux (assiette HT, taxe, TTC) ; brouillons et annulés exclus ; période invalide → 422 ; `format=csv` → export `vat-declaration-<period>.csv`.
+- Multi-taux TVA par pays dans les défauts settings (DZ 19/9, MA 20, TN 19, SN 18, CI 18, TR 20, FR 20…) + mentions légales par défaut par pays.
+- Scénarios à vérifier : golden août 2026 (collectée 6 200/678/6 878 · déductible 300/57/357 · net 5 900/621/6 521), période vide → zéros, exclusion brouillon/annulé/hors période/proforma, isolation tenant, CSV, RBAC.
+- Couverture : `tests/Feature/Accounting/VatDeclarationTest.php` (8 tests) — OpenAPI documenté (757/757 routes couvertes), SDK régénérés.
+Note 2026-08-22 (issue #5282) : supervision queue prod — la commande `php artisan queue:health-check` couvre désormais le driver `database` (table `jobs`, driver prod 0 €) en plus de Redis : profondeur par queue (jobs prêts, non réservés), jobs réservés > 10 min (worker mort → `stale_reserved_jobs`), `failed_jobs` ; sortie JSON ; exit FAILURE si seuils dépassés (`--max-pending=50`, `--max-failed=10`, `--max-stale-minutes=10`) + alerte Slack opt-in (`SLACK_MONITORING_WEBHOOK_URL`, silencieux si absent). Workflow `.github/workflows/queue-supervision.yml` (cron 5 min, offset +2 min du drain `queue-worker-fallback.yml`) → run rouge < 15 min après une panne (DoD #5282). `GET /api/v1/health` expose `failed_jobs` (scrapers d'uptime externe).
+- Scénarios à vérifier : queue vide → SUCCESS ; backlog > seuil → FAILURE (exit 1) ; job réservé > 10 min → FAILURE avec `stale_reserved_jobs` ; job réservé récent → SUCCESS (pas de faux positif) ; `failed_jobs` > seuil → FAILURE ; driver `sync` → SUCCESS (pas de check Redis en test).
+- Couverture : `QueueSupervisionDatabaseTest` (5 tests) + `QueueFailedJobsTableTest` (existant).
+Note 2026-08-22 (issue #5259) : plans de carrière — événements de carrière (promotion/raise/transfer/title_change).
+- `GET|POST /api/v1/career-events`, `GET|PUT|PATCH|DELETE /api/v1/career-events/{id}` (édit/suppression `pending` uniquement), `PUT /api/v1/career-events/{id}/approve|reject|apply`. Workflow `pending → approved → applied` (ou `rejected`) ; `apply` met à jour l'employé (position_id, department_id, salary_base) en transaction → impact paie au run suivant.
+- Scénarios à vérifier : création manager avec snapshot `from_*` (poste/département/salaire courants de l'employé), employé → 403 sur create et lecture limitée à son propre parcours, manager `dept` scopé (PA2-SEC-002) / `superviseur` (PA2-SEC-003), isolation tenant (ressource d'une autre société → 404, cible poste/département cross-tenant → 422), transitions invalides (apply sur `pending` → 403, apply sans cible → 422 CAREER_EVENT_NOTHING_TO_APPLY, edit/delete hors `pending` → 403), `GET /me/career` expose `data.career_events` (parcours complet contrats + événements).
+- Couverture : `tests/Feature/HR/CareerEventTest.php` (12 tests) — contrat OpenAPI documenté (9 opérations, 753/753 routes couvertes).
+Note 2026-08-23 (issue #5229) : trésorerie Phase B — paiements + rapprochement + relances.
+- Enregistrement : `POST /accounting/documents/{document}/payments` — règle « jamais payé > total » (422 `PAYMENT_EXCEEDS_TOTAL`, rien n'est écrit), documents émis uniquement (422 `PAYMENT_ON_UNSENT_DOCUMENT`), `paid_amount` + statut document mis à jour (partially_paid/paid — transition minimale, workflow complet via #5223).
+- Rapprochement : `POST /accounting/payments/{payment}/reconcile` — pending/recorded → matched + `reconciled_at`, idempotent.
+- Liste : `GET /accounting/payments?document_id=&status=` — RBAC comptable/principal (403 sinon).
+- Relances : `POST /accounting/reminders/run` + commande `accounting:send-payment-reminders` — stages J+7/J+15/J+30 paramétrables (`accounting_settings.payment_reminder_days`), cibles documents émis non soldés échus, unique (document, stage) → zéro doublon, notification in-app aux managers principal/comptable (template `accounting_payment_reminder`, i18n ×4), échec notification ≠ échec relance (log).
+- Couverture : `AccountingPaymentTest` (14 tests) — suite `tests/Feature/Accounting` 23/23 ; PHPStan 0 ; Pint PASS ; OpenAPI couverture 754/754.

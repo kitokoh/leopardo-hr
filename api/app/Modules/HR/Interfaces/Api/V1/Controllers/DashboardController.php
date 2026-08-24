@@ -217,7 +217,7 @@ class DashboardController extends Controller
 
         // Enrich with role counts
         $roleCounts = Employee::where('company_id', $employee->company_id)
-            ->where('status', '!=', 'archived')
+            ->whereNotIn('status', ['archived', 'departed'])
             ->selectRaw('role, manager_role, COUNT(*) as count')
             ->groupBy('role', 'manager_role')
             ->get();
