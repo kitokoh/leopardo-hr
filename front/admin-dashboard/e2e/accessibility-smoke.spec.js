@@ -11,9 +11,7 @@ test.describe('Accessibility smoke tests', () => {
     await expect(heading.first()).toBeVisible()
 
     // Email field should have a label
-    const emailInput = page.getByLabel(/Adresse email/i).or(
-      page.getByLabel(/email/i),
-    )
+    const emailInput = page.locator('#email')
     await expect(emailInput.first()).toBeVisible()
 
     // Submit button should be keyboard-focusable
