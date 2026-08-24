@@ -3,9 +3,10 @@
 namespace App\Http\Resources\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Shared\Models\Language;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Modules\HR\Infrastructure\Services\MobileExperienceService;
+use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
+use App\Shared\Models\Language;
 use DateTimeInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -28,6 +29,19 @@ class EmployeeResource extends JsonResource
         $company = $this->company;
         $photoPath = $this->employeeAttribute('photo_path');
         $contractStart = $this->employeeAttribute('contract_start');
+
+        // Issue #5262 — RBAC fine-grained : les données salariales ne sont
+        // exposées qu'aux rôles autorisés (principal/rh/comptable), au
+        // manager d'équipe scopé (dept/superviseur) pour ses collaborateurs,
+        // et à l'employé pour SON propre dossier. Masquage défensif : tout
+        // autre contexte (fuite cross-rôle, contexte public) reçoit null.
+        $viewer = $request->user();
+        $canViewSalary = $viewer instanceof Employee
+            && (
+                (int) $viewer->id === (int) $employee->id
+                || $viewer->hasManagerRole('principal', 'rh', 'comptable')
+                || ($viewer->isTeamScoped() && $viewer->managesTeamMemberOf($employee))
+            );
 
         return [
             'id' => $this->id,
@@ -59,9 +73,9 @@ class EmployeeResource extends JsonResource
             'photo_path' => $photoPath,
             'photo_url' => $photoPath,
             'hire_date' => $contractStart instanceof DateTimeInterface ? $contractStart->format('Y-m-d') : null,
-            'salary_type' => $this->employeeAttribute('salary_type'),
-            'salary_base' => $this->employeeAttribute('salary_base'),
-            'hourly_rate' => $this->employeeAttribute('hourly_rate'),
+            'salary_type' => $canViewSalary ? $this->employeeAttribute('salary_type') : null,
+            'salary_base' => $canViewSalary ? $this->employeeAttribute('salary_base') : null,
+            'hourly_rate' => $canViewSalary ? $this->employeeAttribute('hourly_rate') : null,
             'currency' => $company?->currency,
             'biometric_face_enabled' => (bool) ($this->employeeAttribute('biometric_face_enabled') ?? false),
             'biometric_fingerprint_enabled' => (bool) ($this->employeeAttribute('biometric_fingerprint_enabled') ?? false),
@@ -84,7 +98,7 @@ class EmployeeResource extends JsonResource
             'features' => FeatureFlag::for($company),
             'mobile_experience' => app(MobileExperienceService::class)->for($employee),
             'suggested_home_route' => $this->homeRoute(),
-            'app_links' => \App\Modules\HR\Infrastructure\Services\RoleInvitationService::getAppDownloadLink(
+            'app_links' => RoleInvitationService::getAppDownloadLink(
                 $this->role,
                 $this->manager_role ?? 'employee'
             ),
@@ -122,4 +136,3 @@ class EmployeeResource extends JsonResource
         ];
     }
 }
-

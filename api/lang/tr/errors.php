@@ -223,4 +223,8 @@ return [
     'JOB_POSTING_DELETED' => 'İlan silindi.',
     'TASK_DELETED' => 'Görev silindi.',
     'TRIAL_SIGNUP_UNAVAILABLE' => 'Deneme kayıt hizmeti geçici olarak kullanılamıyor. Lütfen kısa süre sonra tekrar deneyin.',
+
+    // Platform — RTMX (#5277): mobil yazma işlemlerinin idempotent tekrarı
+    'INVALID_IDEMPOTENCY_KEY' => 'Geçersiz idempotency anahtarı.',
+    'IDEMPOTENCY_IN_PROGRESS' => 'Aynı istek zaten işleniyor. Birazdan tekrar deneyin.',
 ];

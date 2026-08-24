@@ -230,4 +230,8 @@ return [
     'JOB_POSTING_DELETED' => 'Job posting deleted.',
     'TASK_DELETED' => 'Task deleted.',
     'TRIAL_SIGNUP_UNAVAILABLE' => 'The trial signup service is temporarily unavailable. Please try again shortly.',
+
+    // Platform — RTMX (#5277): idempotent replay of mobile writes
+    'INVALID_IDEMPOTENCY_KEY' => 'Invalid idempotency key.',
+    'IDEMPOTENCY_IN_PROGRESS' => 'An identical request is already in progress. Retry shortly.',
 ];
