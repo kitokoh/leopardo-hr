@@ -32,6 +32,10 @@ class AccountingServiceProvider extends ServiceProvider
         );
 
         // #5224 — rendu PDF (fr + ar RTL) fourni par l'issue #5224.
+        // Issue #5274 — démo exploitable en 1 clic (données vitrine, jamais réelles).
+        $this->commands([
+            \App\Modules\Accounting\Interfaces\Console\SeedAccountingDemoCommand::class,
+        ]);
     }
 
     public function boot(): void
