@@ -26,6 +26,7 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - `AttendanceMonthlyReportService`/`AttendanceMonthlyReportRequest` renamed to `AttendanceReportService`/`AttendanceReportRequest`; controller method `monthlyReport` → `report` (route URL unchanged)
   - Employee rows now include `department_id`/`department_name`; `data.period` adds `type` while keeping `month` for backward compatibility
   - Tests: `AttendanceReportTest` (9 scenarios: daily, weekly, monthly, defaults, filters, CSV/PDF exports, scoped RBAC, invalid period)
+- **Audit sécurité OWASP + scan secrets consolidé (issue #5281).** Rapport `docs/security/AUDIT_SECURITE_2026-08-23.md` : checklist OWASP Top 10 par surface (API/web/admin/mobile) avec preuves (CI scans ZAP/TruffleHog/Semgrep/CodeQL/Dependabot verts sur main, suites de tests sécurité re-vérifiées) ; **0 vulnérabilité critique ouverte** (DoD) ; plan de remédiation chiffré P0/P1/P2 (P0 = #5171 Google signup, P1 = merge #5292 + rotations secrets, P2 = MASVS mobile + pen-test tiers). Index mis à jour dans `docs/security/README.md`.
 
 ### Fixed
 - **Trial signup slug-collision retries preserve PostgreSQL transactions.** Each bounded retry now uses an explicit savepoint when invoked inside an existing transaction, so an expected `23505` collision cannot poison subsequent queries or unrelated tests.

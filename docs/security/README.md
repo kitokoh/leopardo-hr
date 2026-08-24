@@ -19,6 +19,9 @@ Index de la documentation sécurité. **MAJ : 2026-08-17 (revue PM).**
 
 ## Audits & conformité
 
+- `AUDIT_SECURITE_2026-08-23.md` — audit sécurité consolidé OWASP Top 10 + scan secrets (issue #5281, 0 critique ouvert)
+
+
 - `AUDIT_API_2026-07-19.md` — audit API (SSRF, Sanctum, CORS)
 - `REVUE_SECURITE_MULTI_TENANT_PAIE_2026-08-09.md` — revue multi-tenant paie (F-19, 5 tests adversarial)
 - `ADMIN_CSRF_XSS_AUDIT.md` (15/08) · `SQL_INJECTION_AUDIT.md` · `RBAC_ROUTE_MATRIX.md` (16/08)
