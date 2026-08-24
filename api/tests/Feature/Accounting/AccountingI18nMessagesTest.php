@@ -44,7 +44,7 @@ class AccountingI18nMessagesTest extends TestCase
         app()->instance('current_company', $company);
     }
 
-    private function manager(): Employee
+    private function manager(string $locale = 'fr'): Employee
     {
         /** @var Employee $manager */
         $manager = Employee::factory()->create([
@@ -53,6 +53,11 @@ class AccountingI18nMessagesTest extends TestCase
             'manager_role' => 'comptable',
             'status' => 'active',
         ]);
+
+        // SetLocale : la préférence de l'utilisateur authentifié prime sur
+        // Accept-Language — on pilote la locale via preferred_language
+        // (pattern #4592).
+        $manager->forceFill(['preferred_language' => $locale])->save();
 
         return $manager;
     }
@@ -90,7 +95,7 @@ class AccountingI18nMessagesTest extends TestCase
 
     public function test_send_draft_without_lines_returns_localized_workflow_message(): void
     {
-        Sanctum::actingAs($this->manager());
+        Sanctum::actingAs($this->manager('en'));
         $document = $this->draftDocument();
         $document->lines()->delete(); // plus aucune ligne → refus à l'envoi
 
@@ -132,7 +137,7 @@ class AccountingI18nMessagesTest extends TestCase
 
     public function test_unknown_number_series_key_is_localized(): void
     {
-        Sanctum::actingAs($this->manager());
+        Sanctum::actingAs($this->manager('tr'));
 
         $response = $this->withHeader('Accept-Language', 'tr')
             ->putJson('/api/v1/accounting/settings', [
@@ -165,7 +170,7 @@ class AccountingI18nMessagesTest extends TestCase
 
     public function test_vat_period_validation_error_is_localized(): void
     {
-        Sanctum::actingAs($this->manager());
+        Sanctum::actingAs($this->manager('ar'));
 
         $response = $this->withHeader('Accept-Language', 'ar')
             ->getJson('/api/v1/accounting/reports/vat-declaration?period=2026-13');

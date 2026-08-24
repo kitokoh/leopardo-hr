@@ -92,7 +92,9 @@ class AccountingSettingsTest extends TestCase
 
     public function test_default_tva_label_is_translated_via_label_key(): void
     {
-        Sanctum::actingAs($this->manager($this->companyA)); // DZ → défauts pays
+        $manager = $this->manager($this->companyA); // DZ → défauts pays
+        $manager->forceFill(['preferred_language' => 'en'])->save();
+        Sanctum::actingAs($manager);
 
         $response = $this->withHeader('Accept-Language', 'en')->getJson('/api/v1/accounting/settings');
 
@@ -104,11 +106,15 @@ class AccountingSettingsTest extends TestCase
 
     public function test_custom_tva_label_without_label_key_is_served_as_is(): void
     {
-        Sanctum::actingAs($this->manager($this->companyA));
+        $manager = $this->manager($this->companyA);
+        $manager->forceFill(['preferred_language' => 'fr'])->save();
+        Sanctum::actingAs($manager);
 
         $this->putJson('/api/v1/accounting/settings', [
             'tva_rates' => [['label' => 'Label personnalisé', 'rate' => 20]],
         ])->assertStatus(200);
+
+        $manager->forceFill(['preferred_language' => 'ar'])->save();
 
         $response = $this->withHeader('Accept-Language', 'ar')->getJson('/api/v1/accounting/settings');
 
