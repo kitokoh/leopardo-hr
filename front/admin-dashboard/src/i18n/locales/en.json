@@ -1250,7 +1250,8 @@
     "taxBrackets": "Tax brackets",
     "legalRates": "Legal rates",
     "account": "My account",
-    "notFound": "Page not found"
+    "notFound": "Page not found",
+    "accountingSettings": "Accounting — Settings"
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?",
@@ -3130,6 +3131,47 @@
     "card": {
       "periodDefault": "/month",
       "customPriceDefault": "Custom"
+    }
+  },
+  "accounting": {
+    "settings": {
+      "title": "Accounting settings",
+      "subtitle": "Currency, VAT, document numbering, legal mentions and document language for your company.",
+      "company_title": "Company",
+      "company_subtitle": "Identity and default billing preferences.",
+      "currency": "Currency",
+      "document_language": "Document language",
+      "template_style": "Document template",
+      "template_modern": "Modern",
+      "template_classic": "Classic",
+      "payment_terms": "Default payment terms",
+      "tva_title": "VAT rates",
+      "tva_subtitle": "Default rates applied to documents (editable at creation).",
+      "add_rate": "Add a rate",
+      "remove_rate": "Remove this rate",
+      "rate_label": "Label",
+      "rate_value": "Rate (%)",
+      "rate_default_label": "Standard VAT",
+      "series_title": "Numbering series",
+      "series_subtitle": "Document number prefix by type (e.g. INV-2026-0001).",
+      "series_invoice": "Invoice",
+      "series_proforma": "Proforma",
+      "series_quote": "Quote",
+      "series_credit_note": "Credit note",
+      "series_delivery_note": "Delivery note",
+      "series_receipt": "Receipt",
+      "mentions_title": "Legal mentions",
+      "mentions_subtitle": "Mentions displayed in the document footer (RC, NIF, share capital…).",
+      "mentions_placeholder": "RC 16/00-0000000B — NIF 000016000000000 — Share capital 1,000,000 DZD",
+      "save": "Save",
+      "reload": "Reset",
+      "saved": "Settings saved.",
+      "load_error": "Unable to load accounting settings.",
+      "save_error": "Unable to save the settings.",
+      "lang_fr": "French",
+      "lang_ar": "Arabic",
+      "lang_tr": "Turkish",
+      "lang_en": "English"
     }
   }
 }

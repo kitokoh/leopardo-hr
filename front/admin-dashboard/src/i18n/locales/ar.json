@@ -1250,7 +1250,8 @@
     "taxBrackets": "شرائح الضرائب",
     "legalRates": "المعدلات القانونية",
     "account": "حسابي",
-    "notFound": "الصفحة غير موجودة"
+    "notFound": "الصفحة غير موجودة",
+    "accountingSettings": "المحاسبة — الإعدادات"
   },
   "webhooks": {
     "confirm_delete": "حذف خطاف الويب هذا؟",
@@ -3130,6 +3131,47 @@
     "card": {
       "periodDefault": "/شهر",
       "customPriceDefault": "حسب الطلب"
+    }
+  },
+  "accounting": {
+    "settings": {
+      "title": "إعدادات المحاسبة",
+      "subtitle": "عملة الشركة، الضريبة على القيمة المضافة، سلاسل الترقيم، البيانات القانونية ولغة المستندات.",
+      "company_title": "الشركة",
+      "company_subtitle": "الهوية والتفضيلات الافتراضية للفوترة.",
+      "currency": "العملة",
+      "document_language": "لغة المستندات",
+      "template_style": "قالب المستند",
+      "template_modern": "حديث",
+      "template_classic": "كلاسيكي",
+      "payment_terms": "شروط الدفع الافتراضية",
+      "tva_title": "معدلات الضريبة على القيمة المضافة",
+      "tva_subtitle": "المعدلات الافتراضية المطبقة على المستندات (قابلة للتعديل عند الإنشاء).",
+      "add_rate": "إضافة معدل",
+      "remove_rate": "إزالة هذا المعدل",
+      "rate_label": "التسمية",
+      "rate_value": "المعدل (%)",
+      "rate_default_label": "ض.ق.م قياسية",
+      "series_title": "سلاسل الترقيم",
+      "series_subtitle": "بادئة أرقام المستندات حسب النوع (مثال: FAC-2026-0001).",
+      "series_invoice": "فاتورة",
+      "series_proforma": "فاتورة أولية",
+      "series_quote": "عرض سعر",
+      "series_credit_note": "إشعار دائن",
+      "series_delivery_note": "إذن تسليم",
+      "series_receipt": "إيصال",
+      "mentions_title": "البيانات القانونية",
+      "mentions_subtitle": "البيانات الظاهرة في تذييل المستند (السجل التجاري، الرقم الجبائي، رأس المال…).",
+      "mentions_placeholder": "السجل التجاري 16/00-0000000B — الرقم الجبائي 000016000000000 — رأس المال 1,000,000 دج",
+      "save": "حفظ",
+      "reload": "إعادة تعيين",
+      "saved": "تم حفظ الإعدادات.",
+      "load_error": "تعذر تحميل إعدادات المحاسبة.",
+      "save_error": "تعذر حفظ الإعدادات.",
+      "lang_fr": "الفرنسية",
+      "lang_ar": "العربية",
+      "lang_tr": "التركية",
+      "lang_en": "الإنجليزية"
     }
   }
 }
