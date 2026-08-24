@@ -24,8 +24,7 @@ class AccountingReportController extends Controller
 {
     public function __construct(
         private readonly VatDeclarationService $vatDeclarationService,
-    ) {
-    }
+    ) {}
 
     /**
      * Déclaration TVA simplifiée par période (YYYY-MM).

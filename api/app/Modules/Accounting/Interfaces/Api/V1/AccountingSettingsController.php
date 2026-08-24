@@ -96,7 +96,6 @@ class AccountingSettingsController extends Controller
      * Traduit le label d'un taux par `label_key` (défauts pays, issue #5227) ;
      * un label personnalisé (sans `label_key`) est servi tel quel.
      *
-     * @param  mixed  $rates
      * @return array<int, array{label: string, label_key: string|null, rate: mixed}>
      */
     private function serializeTvaRates(mixed $rates): array

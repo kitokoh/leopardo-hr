@@ -6,6 +6,7 @@ namespace Tests\Feature\Accounting;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Exceptions\DomainException;
 use App\Modules\Accounting\Application\Services\DocumentWorkflowService;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
@@ -166,7 +167,7 @@ class AccountingI18nMessagesTest extends TestCase
         try {
             $service->declaration($this->company, '2026/13');
             $this->fail('Une période mal formée doit lever DomainException.');
-        } catch (\App\Exceptions\DomainException $exception) {
+        } catch (DomainException $exception) {
             $this->assertSame('ACCOUNTING_VAT_PERIOD_INVALID', $exception->errorCode());
             $this->assertSame(422, $exception->statusCode());
             $this->assertNotSame('errors.ACCOUNTING_VAT_PERIOD_INVALID', __('errors.ACCOUNTING_VAT_PERIOD_INVALID', [], 'ar'));

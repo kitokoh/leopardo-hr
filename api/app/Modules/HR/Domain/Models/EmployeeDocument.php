@@ -112,7 +112,7 @@ class EmployeeDocument extends Model
     }
 
     /**
-     * @param Builder<static> $query
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeForEmployee(Builder $query, int $employeeId): Builder
