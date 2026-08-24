@@ -7,6 +7,8 @@ namespace App\Modules\Attendance\Domain\Models;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Site;
 use App\Shared\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -36,10 +38,10 @@ use Illuminate\Support\Carbon;
  * @property-read Employee|null          $employee
  * @property-read Site|null              $site
  * @property-read Employee|null          $validatedBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, EmployeeLocationEvent> $locationEvents
+ * @property-read Collection<int, EmployeeLocationEvent> $locationEvents
  * @property-read AttendanceLog|null     $attendanceLog
  *
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ * @mixin Builder<static>
  */
 class GeoAttendanceSession extends Model
 {

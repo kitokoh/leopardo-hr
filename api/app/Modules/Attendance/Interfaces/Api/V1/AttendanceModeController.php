@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Application\Actions\SetCompanyAttendanceMode;
 use App\Modules\Attendance\Application\Actions\SetEmployeeAttendanceMode;
@@ -29,8 +30,7 @@ class AttendanceModeController extends Controller
         private readonly AttendanceModeResolver $resolver,
         private readonly SetCompanyAttendanceMode $setCompanyMode,
         private readonly SetEmployeeAttendanceMode $setEmployeeMode,
-    ) {
-    }
+    ) {}
 
     /**
      * GET /api/v1/attendance/config
@@ -39,7 +39,7 @@ class AttendanceModeController extends Controller
      */
     public function config(): JsonResponse
     {
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = request()->user();
         $config = $this->resolver->resolve($employee);
 
@@ -65,7 +65,7 @@ class AttendanceModeController extends Controller
      */
     public function updatePreference(SetModeRequest $request): JsonResponse
     {
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = request()->user();
         $company = currentCompany();
 
@@ -132,7 +132,7 @@ class AttendanceModeController extends Controller
      */
     public function updateCompanySettings(SetCompanyModeRequest $request): JsonResponse
     {
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = request()->user();
         $company = currentCompany();
 

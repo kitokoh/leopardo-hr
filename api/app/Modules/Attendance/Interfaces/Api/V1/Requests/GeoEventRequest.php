@@ -16,12 +16,12 @@ class GeoEventRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'event_type'       => ['required', 'string', 'in:zone_enter,zone_exit'],
-            'latitude'         => ['required', 'numeric', 'between:-90,90'],
-            'longitude'        => ['required', 'numeric', 'between:-180,180'],
-            'accuracy_meters'  => ['nullable', 'integer', 'min:0', 'max:9999'],
+            'event_type' => ['required', 'string', 'in:zone_enter,zone_exit'],
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
+            'accuracy_meters' => ['nullable', 'integer', 'min:0', 'max:9999'],
             'device_timestamp' => ['nullable', 'date'],
-            'metadata'         => ['nullable', 'array'],
+            'metadata' => ['nullable', 'array'],
         ];
     }
 }

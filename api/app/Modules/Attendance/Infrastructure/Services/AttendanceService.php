@@ -40,8 +40,7 @@ class AttendanceService
     public function __construct(
         private readonly GeofenceZoneService $zoneService,
         private readonly CommunicationService $communicationService,
-    ) {
-    }
+    ) {}
 
     public function checkIn(Employee $employee, CheckInDTO|float|null $dto = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
     {

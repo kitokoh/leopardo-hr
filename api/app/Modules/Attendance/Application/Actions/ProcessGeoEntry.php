@@ -16,8 +16,7 @@ class ProcessGeoEntry
 {
     public function __construct(
         private readonly GeoSessionManager $sessionManager,
-    ) {
-    }
+    ) {}
 
     public function handle(GeoEventDTO $dto): GeoAttendanceSession
     {

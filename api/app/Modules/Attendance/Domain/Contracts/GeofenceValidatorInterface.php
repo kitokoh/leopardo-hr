@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Domain\Contracts;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+
 /**
  * Contrat pour la validation de zone géographique.
  * Implémenté par l'AttendanceGeofenceService existant (réutilisé, pas recréé).
@@ -20,8 +23,8 @@ interface GeofenceValidatorInterface
      * }
      */
     public function evaluate(
-        \App\Core\Tenant\Domain\Models\Company $company,
-        \App\Core\Auth\Domain\Models\Employee $employee,
+        Company $company,
+        Employee $employee,
         ?float $lat,
         ?float $lng
     ): array;

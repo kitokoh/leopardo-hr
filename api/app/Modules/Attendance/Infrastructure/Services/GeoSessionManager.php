@@ -24,8 +24,7 @@ class GeoSessionManager
 {
     public function __construct(
         private readonly GeofenceZoneService $zoneService,
-    ) {
-    }
+    ) {}
 
     /**
      * Ouvrir une session GPS (événement zone_enter).
