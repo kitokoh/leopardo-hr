@@ -14,10 +14,10 @@ class SmartAttendanceRepository {
   static const _writeTimeout = Duration(seconds: 8);
 
   /// Récupère la configuration de pointage GPS de l'entreprise.
-  /// GET /api/v1/smart-attendance/config
+  /// GET /api/v1/attendance/config
   Future<SmartAttendanceConfig> getConfig() async {
     final response = await apiClient.requestWithRetry(
-      '/smart-attendance/config',
+      '/attendance/config',
       timeoutOverride: _readTimeout,
     );
     final data = extractDataMap(response.data);
@@ -25,7 +25,7 @@ class SmartAttendanceRepository {
   }
 
   /// Envoie un événement géographique (entrée ou sortie de zone).
-  /// POST /api/v1/smart-attendance/geo-events
+  /// POST /api/v1/attendance/geo-events
   ///
   /// [eventType] : 'zone_enter' ou 'zone_exit'
   /// [latitude] : latitude courante de l'employé
@@ -43,7 +43,7 @@ class SmartAttendanceRepository {
     );
 
     await apiClient.requestWithRetry(
-      '/smart-attendance/geo-events',
+      '/attendance/geo-events',
       method: 'POST',
       data: {
         'event_type': eventType,
@@ -57,12 +57,12 @@ class SmartAttendanceRepository {
   }
 
   /// Met à jour la préférence de mode de pointage de l'employé.
-  /// PUT /api/v1/smart-attendance/preferences
+  /// PUT /api/v1/attendance/preferences
   ///
   /// [preferredMode] : 'gps_auto' | 'qr_code' | 'manual'
   Future<void> updatePreference(String preferredMode) async {
     await apiClient.requestWithRetry(
-      '/smart-attendance/preferences',
+      '/attendance/preferences',
       method: 'PUT',
       data: {'preferred_mode': preferredMode},
       maxRetriesOverride: 0,
@@ -71,10 +71,10 @@ class SmartAttendanceRepository {
   }
 
   /// Récupère la liste des sessions GPS de l'employé connecté.
-  /// GET /api/v1/smart-attendance/my-sessions
+  /// GET /api/v1/attendance/my-sessions
   Future<List<GeoAttendanceSession>> getMySessions() async {
     final response = await apiClient.requestWithRetry(
-      '/smart-attendance/my-sessions',
+      '/attendance/my-sessions',
       timeoutOverride: _readTimeout,
     );
     final items = extractDataList(response.data);

@@ -536,6 +536,10 @@ class LeopardoClient:
         """Check-out"""
         return self.request("POST", "/attendance/check-out", **kwargs)
 
+    def get_attendance_config(self, **kwargs):
+        """Lire la configuration de mode active pour l'employe connecte"""
+        return self.request("GET", "/attendance/config", **kwargs)
+
     def get_attendance_corrections(self, **kwargs):
         """Lister les demandes de correction de pointage"""
         return self.request("GET", "/attendance/corrections", **kwargs)
@@ -560,9 +564,53 @@ class LeopardoClient:
         """Refuser une correction de pointage (déprécié — utiliser POST)"""
         return self.request("PUT", "/attendance/corrections/{correction}/reject", **kwargs)
 
+    def get_attendance_dashboard(self, **kwargs):
+        """Statistiques du jour — Smart Attendance (manager/RH)"""
+        return self.request("GET", "/attendance/dashboard", **kwargs)
+
+    def get_attendance_employees_by_employeeid_preference(self, **kwargs):
+        """Préférence mode géolocalisation d'un employé (manager/RH)"""
+        return self.request("GET", "/attendance/employees/{employeeId}/preference", **kwargs)
+
+    def post_attendance_geo_events(self, **kwargs):
+        """Envoyer un événement géographique (entrée/sortie de zone)"""
+        return self.request("POST", "/attendance/geo-events", **kwargs)
+
+    def get_attendance_geo_sessions(self, **kwargs):
+        """Lister les sessions GPS"""
+        return self.request("GET", "/attendance/geo-sessions", **kwargs)
+
+    def get_attendance_geo_sessions_by_id(self, **kwargs):
+        """Détail d'une session GPS"""
+        return self.request("GET", "/attendance/geo-sessions/{id}", **kwargs)
+
+    def post_attendance_geo_sessions_by_id_approve(self, **kwargs):
+        """Approuver une session GPS (manager/RH)"""
+        return self.request("POST", "/attendance/geo-sessions/{id}/approve", **kwargs)
+
+    def post_attendance_geo_sessions_by_id_reject(self, **kwargs):
+        """Rejeter une session GPS (manager/RH)"""
+        return self.request("POST", "/attendance/geo-sessions/{id}/reject", **kwargs)
+
+    def get_attendance_mode_settings(self, **kwargs):
+        """Parametres du mode de pointage de l'entreprise"""
+        return self.request("GET", "/attendance/mode-settings", **kwargs)
+
+    def put_attendance_mode_settings(self, **kwargs):
+        """Configurer le mode de pointage (principal)"""
+        return self.request("PUT", "/attendance/mode-settings", **kwargs)
+
     def get_attendance_monthly_report(self, **kwargs):
         """Rapport de pointage (journalier, hebdomadaire ou mensuel)"""
         return self.request("GET", "/attendance/monthly-report", **kwargs)
+
+    def get_attendance_my_sessions(self, **kwargs):
+        """Sessions GPS de l'employé courant"""
+        return self.request("GET", "/attendance/my-sessions", **kwargs)
+
+    def put_attendance_preferences(self, **kwargs):
+        """Mettre à jour les préférences de pointage"""
+        return self.request("PUT", "/attendance/preferences", **kwargs)
 
     def get_attendance_regularity(self, **kwargs):
         """Régularité de présence (manager/RH)"""
