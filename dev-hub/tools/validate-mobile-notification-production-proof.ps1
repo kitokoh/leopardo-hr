@@ -50,7 +50,14 @@ foreach ($app in @("employee", "manager")) {
     Assert-Contains $repository "method: 'DELETE'" "$app notifications delete"
     Assert-Contains $repository "requestWithRetry" "$app notifications retry"
 
-    $screen = Read-RepoFile "front/mobile_apps/leopardo_$app/lib/features/notifications/screens/notification_list_screen.dart"
+    # Issue #5279 (dé-duplication mobile) : le screen notifications du
+    # manager a été déplacé dans leopardo_core — fallback sur le core si le
+    # fichier local de l'app n'existe plus (même pattern que #5373).
+    $screenPath = "front/mobile_apps/leopardo_$app/lib/features/notifications/screens/notification_list_screen.dart"
+    if (-not (Test-Path (Join-Path $Root $screenPath))) {
+        $screenPath = "front/mobile_apps/leopardo_core/lib/features/notifications/screens/notification_list_screen.dart"
+    }
+    $screen = Read-RepoFile $screenPath
     Assert-Contains $screen "RefreshIndicator" "$app notifications refresh"
     Assert-Contains $screen "Dismissible" "$app notifications delete gesture"
     Assert-Contains $screen "markAsRead" "$app notifications mark read"

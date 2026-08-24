@@ -51,7 +51,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           tooltip: 'Retour',
           onPressed: () => context.pop(),
         ),
-        title: const Text('Mon mois'),
+        title: Text(context.l10n.attendanceMyMonth),
       ),
       body: RefreshIndicator(
         onRefresh: () async => ref.refresh(monthlySummaryProvider(_month)),
@@ -95,13 +95,13 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
         IconButton(
           onPressed: () => _shiftMonth(-1),
           icon: const Icon(Icons.chevron_left),
-          tooltip: 'Mois precedent',
+          tooltip: context.l10n.attendancePreviousMonth,
         ),
         Text(label, style: Theme.of(context).textTheme.titleLarge),
         IconButton(
           onPressed: _isCurrentOrFutureMonth() ? null : () => _shiftMonth(1),
           icon: const Icon(Icons.chevron_right),
-          tooltip: 'Mois suivant',
+          tooltip: context.l10n.attendanceNextMonth,
         ),
       ],
     );
@@ -140,41 +140,42 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
         _metricGlassCard(
           context,
           icon: Icons.schedule,
-          label: 'Heures travaillees',
+          label: context.l10n.attendanceHoursWorkedLabel,
           value: '${summary.hours.toStringAsFixed(2)} h',
-          sub:
-              '${summary.daysPresent} jours presents / ${summary.workingDays} ouvres',
+          sub: context.l10n.attendanceDaysPresentRatio(
+              summary.daysPresent, summary.workingDays),
         ),
         const SizedBox(height: 12),
         _metricGlassCard(
           context,
           icon: Icons.timelapse,
-          label: 'Heures supplementaires',
+          label: context.l10n.attendanceOvertimeLabel,
           value: '${summary.overtimeHours.toStringAsFixed(2)} h',
-          sub: 'Incluses dans le gain brut',
+          sub: context.l10n.attendanceIncludedGross,
           accent: AppColors.warning,
         ),
         const SizedBox(height: 12),
         _metricGlassCard(
           context,
           icon: Icons.account_balance_wallet,
-          label: 'Gain brut estime',
+          label: context.l10n.attendanceGrossEstimate,
           value: currencyFormat.format(summary.gross),
-          sub: 'Avant deductions legales',
+          sub: context.l10n.attendanceBeforeDeductions,
         ),
         const SizedBox(height: 12),
         _metricGlassCard(
           context,
           icon: Icons.paid,
-          label: 'Du net estime',
+          label: context.l10n.attendanceNetEstimate,
           value: currencyFormat.format(summary.net),
-          sub: 'Deductions: ${currencyFormat.format(summary.deductions)}',
+          sub: context.l10n.attendanceDeductionsSub(
+              currencyFormat.format(summary.deductions)),
           accent: Theme.of(context).colorScheme.primary,
         ),
         const SizedBox(height: 24),
         if (summary.breakdown.isNotEmpty) ...[
           Text(
-            'Detail par jour',
+            context.l10n.attendanceDayDetail,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -202,7 +203,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
         const SizedBox(height: 24),
         Text(
           summary.disclaimer.isEmpty
-              ? 'Estimation non officielle - le bulletin de paie fait foi.'
+              ? context.l10n.attendanceEstimateDisclaimer
               : summary.disclaimer,
           textAlign: TextAlign.center,
           style: const TextStyle(
@@ -277,13 +278,13 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           const Icon(Icons.error_outline, size: 56, color: AppColors.danger),
           const SizedBox(height: 12),
           Text(
-            'Impossible de charger les donnees : $err',
+            context.l10n.attendanceLoadFailed(err),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
           ElevatedButton(
             onPressed: () => ref.refresh(monthlySummaryProvider(_month)),
-            child: const Text('Reessayer'),
+            child: Text(context.l10n.attendanceRetry),
           ),
         ],
       ),

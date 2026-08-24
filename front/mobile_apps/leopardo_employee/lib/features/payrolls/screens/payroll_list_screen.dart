@@ -43,7 +43,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('PDF telecharge: $path'),
+            content: Text(context.l10n.payrollPdfDownloaded(path)),
             backgroundColor: AppColors.success,
           ),
         );
@@ -77,7 +77,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Document telecharge: $path'),
+            content: Text(context.l10n.payrollDocumentDownloaded(path)),
             backgroundColor: AppColors.success,
           ),
         );
@@ -112,8 +112,8 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
     return Scaffold(
       backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: 'Paie et solde',
-        subtitle: 'Solde courant, avances et bulletins',
+        title: context.l10n.payrollTitle,
+        subtitle: context.l10n.payrollSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           tooltip: 'Retour',
@@ -155,8 +155,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                   child: EmptyState(
                     icon: Icons.description,
                     title: context.l10n.emptyPayslips,
-                    description:
-                        'Vos fiches de paie apparaitront ici des qu elles seront validees.',
+                    description: context.l10n.payrollEmptyHint,
                   ),
                 );
               }
@@ -177,7 +176,8 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Mois ${payroll.month}/${payroll.year}',
+                            context.l10n
+                                .payrollMonthLabel(payroll.month, payroll.year),
                             style: AppTypography.bodySmall.copyWith(
                               color: MobileSurface.text,
                               fontWeight: FontWeight.w700,
@@ -213,12 +213,12 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                       ),
                     ),
                     isDownloading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              semanticsLabel: 'Telechargement en cours',
+                              semanticsLabel: context.l10n.payrollDownloading,
                             ),
                           )
                         : IconButton(
@@ -226,7 +226,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                               Icons.picture_as_pdf,
                               color: AppColors.info,
                             ),
-                            tooltip: 'Telecharger le bulletin PDF',
+                            tooltip: context.l10n.payrollDownloadPayslip,
                             onPressed: payroll.pdfPath != null
                                 ? () => _downloadPdf(payroll.id)
                                 : null,
@@ -248,9 +248,9 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                 onDownload: _downloadPaymentDocument,
               ),
               const SizedBox(height: 120),
-              const Center(
+              Center(
                 child: CircularProgressIndicator(
-                  semanticsLabel: 'Chargement des fiches de paie',
+                  semanticsLabel: context.l10n.payrollLoading,
                 ),
               ),
             ],
@@ -308,7 +308,7 @@ class _PaymentDocumentsCard extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Documents paiement',
+                      context.l10n.payrollPaymentDocuments,
                       style: AppTypography.bodySmall.copyWith(
                         color: MobileSurface.text,
                         fontWeight: FontWeight.w800,
@@ -324,7 +324,7 @@ class _PaymentDocumentsCard extends StatelessWidget {
               const SizedBox(height: 12),
               if (visible.isEmpty)
                 Text(
-                  'Aucun recu ou bordereau disponible pour le moment.',
+                  context.l10n.payrollNoReceipts,
                   style: AppTypography.caption.copyWith(
                     color: MobileSurface.secondary,
                   ),
@@ -346,7 +346,7 @@ class _PaymentDocumentsCard extends StatelessWidget {
           backgroundColor: MobileSurface.surface,
         ),
         error: (_, __) => Text(
-          'Documents temporairement indisponibles',
+          context.l10n.payrollDocsUnavailable,
           style: AppTypography.caption.copyWith(
             color: MobileSurface.secondary,
           ),
@@ -446,14 +446,15 @@ class _BalanceCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Mon solde',
+                        context.l10n.payrollMyBalance,
                         style: AppTypography.bodySmall.copyWith(
                           color: MobileSurface.text,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                       Text(
-                        '${balance.periodStart} - ${balance.periodEnd}',
+                        context.l10n.payrollPeriodRange(
+                            balance.periodStart, balance.periodEnd),
                         style: AppTypography.caption.copyWith(
                           color: MobileSurface.secondary,
                         ),
@@ -465,21 +466,21 @@ class _BalanceCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _MoneyLine(
-              label: 'Reste a recevoir',
+              label: context.l10n.payrollRemainingToReceive,
               value: balance.remaining,
               currency: balance.currency,
               color: AppColors.rh,
             ),
             const SizedBox(height: 8),
             _MoneyLine(
-              label: 'Avances deduites',
+              label: context.l10n.payrollAdvancesDeducted,
               value: balance.advances,
               currency: balance.currency,
               color: AppColors.warning,
             ),
             const SizedBox(height: 8),
             _MoneyLine(
-              label: 'Deja paye',
+              label: context.l10n.payrollAlreadyPaid,
               value: balance.paid,
               currency: balance.currency,
               color: AppColors.info,
@@ -496,7 +497,7 @@ class _BalanceCard extends StatelessWidget {
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      'Prochaine paie prevue le ${balance.nextPaymentDate}',
+                      context.l10n.payrollNextPayment(balance.nextPaymentDate),
                       style: AppTypography.caption.copyWith(
                         color: MobileSurface.secondary,
                       ),
@@ -526,9 +527,9 @@ class _BalanceCard extends StatelessWidget {
           backgroundColor: MobileSurface.surface,
         ),
       ),
-      error: (_, __) => const MobilePanel(
+      error: (_, __) => MobilePanel(
         child: Text(
-          'Solde temporairement indisponible',
+          context.l10n.payrollBalanceUnavailable,
           style: TextStyle(color: MobileSurface.secondary),
         ),
       ),

@@ -18,12 +18,12 @@ use App\Modules\Payroll\Interfaces\Api\V1\BulkPaymentController;
 use App\Modules\Payroll\Interfaces\Api\V1\CotisationSimulationController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaymentBatchController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaymentDocumentController;
-use App\Modules\Payroll\Interfaces\Api\V1\PublicHolidayController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollAuditController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollRunController;
-use App\Modules\Payroll\Interfaces\Api\V1\PayrollAuditController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaySlipController;
+use App\Modules\Payroll\Interfaces\Api\V1\PublicHolidayController;
 use App\Modules\Payroll\Interfaces\Api\V1\SalaryComponentController;
 use App\Modules\Payroll\Interfaces\Api\V1\SalaryStructureController;
 use App\Modules\Payroll\Interfaces\Api\V1\SocialContributionController;
@@ -109,6 +109,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/payroll-runs/{payrollRun}/anomalies', [PayrollRunController::class, 'anomalies'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/export', [PayrollRunController::class, 'export'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/journal', [PayrollRunController::class, 'journal'])->whereNumber('payrollRun');
+        // #5243 — Bordereau de paie (totaux par cotisation + récap run).
+        Route::get('/payroll-runs/{payrollRun}/bordereau', [PayrollRunController::class, 'bordereau'])->whereNumber('payrollRun');
 
         // Pay Slips (manager view)
         Route::get('/pay-slips', [PaySlipController::class, 'index']);
@@ -130,6 +132,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/social-declarations/cnas-dz', [SocialDeclarationController::class, 'generateCnasDz']);
         Route::post('/social-declarations/cnss-ma', [SocialDeclarationController::class, 'generateCnssMa']);
         Route::post('/social-declarations/dsn-fr', [SocialDeclarationController::class, 'generateDsnFr']);
+        // #5243 — Déclaration Annuelle des Salaires DZ (CSV annuel).
+        Route::post('/social-declarations/das-dz', [SocialDeclarationController::class, 'generateDasDz']);
 
         // Social Declarations — CNSS CI + IPRES/CSS SN (CEDEAO #1830)
         Route::get('/payroll-runs/{payrollRun}/declarations/cnss-ci', [SocialDeclarationController::class, 'generateCnssCiDeclaration'])->whereNumber('payrollRun');

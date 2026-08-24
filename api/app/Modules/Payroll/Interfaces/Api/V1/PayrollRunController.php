@@ -18,13 +18,13 @@ use App\Modules\Payroll\Domain\Exceptions\PayrollRunNotLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollAnomalyService;
+use App\Modules\Payroll\Infrastructure\Services\PayrollBordereauGenerator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -217,8 +217,12 @@ class PayrollRunController extends Controller
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false) {
-            abort(403);
+        // Issue #5246 — workflow de validation RBAC : la validation (vérification
+        // / vise) est réservée aux managers principal/comptable (contrat
+        // documenté RBAC_ROUTE_MATRIX.md F-11/#1541). Un `rh` peut PRÉPARER
+        // (calculer) mais pas auto-valider sa propre préparation.
+        if ($actor->hasManagerRole('principal', 'comptable') === false) {
+            abort(403, 'INSUFFICIENT_ROLE');
         }
 
         try {
@@ -242,12 +246,6 @@ class PayrollRunController extends Controller
                 'localized_message' => __('errors.PAYROLL_RUN_VALIDATION_FAILED'),
             ], 422);
         }
-
-        // Étape 2 : bascule des bulletins en `validated` (transaction propre —
-        // une panne ici ne doit pas laisser de bulletins non validés sur un run validé).
-        DB::transaction(function () use ($payrollRun): void {
-            $payrollRun->paySlips()->update(['status' => 'validated']);
-        });
 
         if (config('performance.payroll.queue_pdf_warmup', true)) {
             WarmPaySlipPdfPathsForPayrollRunJob::dispatch($payrollRun->id);
@@ -288,8 +286,11 @@ class PayrollRunController extends Controller
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false) {
-            abort(403);
+        // Issue #5246 — l'approbation finale (clôture comptable / verrouillage)
+        // est réservée aux managers principal/comptable : un `rh` ne peut pas
+        // clôturer ce qu'il a préparé (séparation des tâches).
+        if ($actor->hasManagerRole('principal', 'comptable') === false) {
+            abort(403, 'INSUFFICIENT_ROLE');
         }
 
         try {
@@ -302,9 +303,7 @@ class PayrollRunController extends Controller
                 'message' => $e->errorCode(),
                 'localized_message' => __('errors.'.$e->errorCode()),
             ], $e->statusCode());
-            // assertHasPaySlips() (lock) jette RuntimeException au runtime — le flow
-            // analysis PHPStan ne le voit pas à travers DB::transaction().
-            // @phpstan-ignore-next-line catch.neverThrown
+            // assertHasPaySlips() (lock) peut jeter une RuntimeException métier.
         } catch (\RuntimeException $e) {
             Log::error('payroll.run.lock_failed', ['run_id' => $payrollRun->id, 'error' => $e->getMessage()]);
 
@@ -329,8 +328,10 @@ class PayrollRunController extends Controller
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false) {
-            abort(403);
+        // Issue #5246 — la réversion d'une clôture est une décision sensible :
+        // réservée aux managers principal/comptable (même règle que lock).
+        if ($actor->hasManagerRole('principal', 'comptable') === false) {
+            abort(403, 'INSUFFICIENT_ROLE');
         }
 
         $validated = $request->validate([
@@ -347,8 +348,7 @@ class PayrollRunController extends Controller
                 'localized_message' => __('errors.'.$e->errorCode()),
             ], $e->statusCode());
             // unlock() jette des RuntimeException métier (run non verrouillé,
-            // raison manquante) — le flow analysis PHPStan ne les voit pas.
-            // @phpstan-ignore-next-line catch.neverThrown
+            // raison manquante).
         } catch (\RuntimeException $e) {
             Log::error('payroll.run.unlock_failed', ['run_id' => $payrollRun->id, 'error' => $e->getMessage()]);
 
@@ -488,6 +488,39 @@ class PayrollRunController extends Controller
 
         return response()->streamDownload(function () use ($payrollRun): void {
             echo (new PayrollJournalGenerator)->generate($payrollRun);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    /**
+     * #5243 — Bordereau de paie d'un run (totaux par cotisation + récapitulatif) :
+     * CSV téléchargeable, réservé aux managers, garde pays DZ (422 sinon) et
+     * isolation tenant (404), comme les autres documents par run.
+     */
+    public function bordereau(Request $request, PayrollRun $payrollRun): StreamedResponse|JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+
+        if ($payrollRun->country_code !== 'DZ') {
+            return response()->json([
+                'message' => __('errors.PAYROLL_RUN_NOT_FOR_COUNTRY', ['country' => 'l’Algérie (DZ)']),
+            ], 422);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.bordereau', $payrollRun);
+
+        $filename = 'bordereau_paie_'.$payrollRun->period_start->toDateString().'_'.$payrollRun->period_end->toDateString().'.csv';
+
+        return response()->streamDownload(function () use ($payrollRun): void {
+            echo (new PayrollBordereauGenerator)->generate($payrollRun);
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);

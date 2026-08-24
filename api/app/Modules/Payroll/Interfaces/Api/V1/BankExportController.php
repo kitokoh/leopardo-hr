@@ -68,7 +68,7 @@ class BankExportController extends Controller
 
         $validated = $request->validate([
             'payroll_run_id' => ['required', 'integer'],
-            'format' => ['required', 'in:sepa_xml,ccp_dz,virement_ma,csv_generic'],
+            'format' => ['required', 'in:sepa_xml,ccp_dz,cpa_dz,bna_dz,cnep_dz,edx_dz,virement_ma,csv_generic'],
         ]);
 
         /** @var PayrollRun|null $payrollRun */
@@ -120,7 +120,7 @@ class BankExportController extends Controller
         }
 
         $validated = $request->validate([
-            'format' => 'required|in:sepa_xml,ccp_dz,virement_ma,csv_generic',
+            'format' => 'required|in:sepa_xml,ccp_dz,cpa_dz,bna_dz,cnep_dz,edx_dz,virement_ma,csv_generic',
         ]);
 
         $format = $validated['format'];

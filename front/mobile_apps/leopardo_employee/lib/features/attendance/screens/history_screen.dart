@@ -55,7 +55,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           tooltip: 'Retour',
           onPressed: () => context.pop(),
         ),
-        title: const Text('Historique'),
+        title: Text(context.l10n.attendanceHistoryTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
@@ -103,12 +103,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             if (errorText.contains('403') || errorText.contains('FORBIDDEN')) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  SizedBox(height: 100),
+                children: [
+                  const SizedBox(height: 100),
                   Center(
                     child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Text('Compte suspendu ou acces refuse.'),
+                      padding: const EdgeInsets.all(24),
+                      child: Text(context.l10n.attendanceAccountSuspended),
                     ),
                   ),
                 ],
@@ -152,7 +152,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 const SizedBox(height: 100),
-                Center(child: Text('Erreur : $err')),
+                Center(child: Text(context.l10n.errorPrefix(err))),
               ],
             );
           },
@@ -165,8 +165,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   EmptyState(
                     icon: Icons.history_toggle_off,
                     title: context.l10n.emptyHistory,
-                    description:
-                        'Rien ici pour le moment. Vos pointages apparaitront au fur et a mesure.',
+                    description: context.l10n.attendanceHistoryEmpty,
                   ),
                 ],
               );
@@ -186,7 +185,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Mois actuel',
+                        context.l10n.attendanceCurrentMonth,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ],
@@ -273,9 +272,14 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             ),
                             subtitle: Text(
                               log.checkIn != null
-                                  ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
-                                      '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
-                                  : 'Absence',
+                                  ? context.l10n.attendanceTimeRange(
+                                      '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')}',
+                                      log.checkOut != null
+                                          ? '${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}'
+                                          : context
+                                              .l10n.attendanceStatusInProgress,
+                                    )
+                                  : context.l10n.attendanceAbsent,
                             ),
                             trailing: Text(
                               '${log.workedHours ?? 0}h',
@@ -303,7 +307,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Total jours'),
+                            Text(context.l10n.attendanceTotalDays),
                             Text(
                               '$totalJours',
                               style: const TextStyle(
@@ -316,7 +320,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Total heures'),
+                            Text(context.l10n.attendanceTotalHours),
                             Text(
                               '${totalHeures.toStringAsFixed(1)}h',
                               style: const TextStyle(

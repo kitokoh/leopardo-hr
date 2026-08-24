@@ -532,6 +532,11 @@ class PayrollCalculator
                     'working_days' => $corrected['working_days'],
                     'actual_days_worked' => $corrected['actual_days_worked'],
                     'overtime_hours' => $corrected['overtime_hours'],
+                    // Issue #5245 — snapshot des entrées congés/absences/fériés
+                    // du calcul corrigé (transparence du différentiel).
+                    'paid_leave_days' => $corrected['paid_leave_days'],
+                    'unpaid_leave_days' => $corrected['unpaid_leave_days'],
+                    'public_holiday_days' => $corrected['public_holiday_days'],
                     'has_attendance_data' => $corrected['has_attendance_data'],
                     'status' => 'calculated',
                     'original_slip_id' => $originalSlip->id,
@@ -642,6 +647,9 @@ class PayrollCalculator
             'working_days' => $values['working_days'],
             'actual_days_worked' => $values['actual_days_worked'],
             'overtime_hours' => $values['overtime_hours'],
+            'paid_leave_days' => $values['paid_leave_days'],
+            'unpaid_leave_days' => $values['unpaid_leave_days'],
+            'public_holiday_days' => $values['public_holiday_days'],
             'has_attendance_data' => $values['has_attendance_data'],
             'status' => 'calculated',
         ]);
@@ -670,6 +678,9 @@ class PayrollCalculator
      *     working_days: float,
      *     actual_days_worked: float,
      *     overtime_hours: float,
+     *     paid_leave_days: float,
+     *     unpaid_leave_days: float,
+     *     public_holiday_days: float,
      *     has_attendance_data: bool,
      *     lines: list<array<string, mixed>>,
      * }
@@ -717,7 +728,9 @@ class PayrollCalculator
         $worked['overtime_hours'] = $inputs['overtime_hours'];
 
         $basePaid = $this->computeProratedBase($baseSalary, $worked['working_days'], $worked['actual_days_worked']);
-        $overtimePay = $this->computeOvertimePay($baseSalary, $worked['overtime_hours']);
+        // #5266 — les paliers LÉGAUX du pays (overtimeRateTiers) pilotent le
+        // calcul des HS dès que les règles du pays sont disponibles.
+        $overtimePay = $this->computeOvertimePay($baseSalary, $worked['overtime_hours'], 10, $rules);
         $leaveIndemnity = $inputs['paid_leave_days'] > 0.0
             ? $this->computeLeaveIndemnity(
                 $baseSalary,
@@ -946,9 +959,62 @@ class PayrollCalculator
             'working_days' => $worked['working_days'],
             'actual_days_worked' => $worked['actual_days_worked'],
             'overtime_hours' => $worked['overtime_hours'],
+            // Issue #5245 — snapshot des entrées de travail utilisées par le
+            // calcul (congés payés pris, congés sans solde, jours fériés
+            // payés) : persisté sur le bulletin pour l'affichage du détail
+            // par employé dans la simulation du run et l'audit paie.
+            'paid_leave_days' => $inputs['paid_leave_days'],
+            'unpaid_leave_days' => $inputs['unpaid_leave_days'],
+            'public_holiday_days' => $this->publicHolidayDaysInPeriod($run),
             'has_attendance_data' => $worked['has_attendance_data'],
             'lines' => $lines,
         ];
+    }
+
+    /**
+     * Issue #5245 — jours fériés PAYÉS tombant dans la période du run
+     * (fériés nationaux + overrides entreprise, fusion islamique comprise).
+     *
+     * Les fériés sont déjà exclus des jours ouvrés (workingDaysBetween) : un
+     * employé qui ne pointe pas un jour férié n'est PAS déduit — le férié est
+     * payé par construction. Cette méthode rend ce fait EXPLICITE (détail
+     * par employé dans la simulation du run) sans changer la mécanique.
+     *
+     * @return float nombre de jours fériés (fraction .0/.5 — arrondi affichage)
+     */
+    private function publicHolidayDaysInPeriod(PayrollRun $run): float
+    {
+        if ($this->publicHolidayService === null) {
+            return 0.0;
+        }
+
+        $year = (int) $run->period_start->format('Y');
+        $companyId = $run->company_id !== null ? (string) $run->company_id : null;
+
+        try {
+            $holidays = $this->publicHolidayService->getHolidays(
+                (string) $run->country_code,
+                $year,
+                $companyId,
+            );
+        } catch (\Throwable) {
+            // Garde défensive : un calendrier indisponible (ex. table absente
+            // d'un schéma tenant historique) ne doit pas bloquer le calcul.
+            return 0.0;
+        }
+
+        $start = $run->period_start->copy()->startOfDay();
+        $end = $run->period_end->copy()->startOfDay();
+
+        $days = 0.0;
+        foreach ($holidays as $holiday) {
+            $date = Carbon::parse((string) $holiday['date'])->startOfDay();
+            if ($date->gte($start) && $date->lte($end)) {
+                $days += 1.0;
+            }
+        }
+
+        return $days;
     }
 
     /**
@@ -975,12 +1041,22 @@ class PayrollCalculator
      * Programme FOCUS (F-05) — paiement des heures supplémentaires.
      *
      * Taux horaire = base / 173,33 h (mensuel légal de référence).
-     * Majorations : 25 % jusqu'à $standardRateHours h/mois, 50 % au-delà
-     * (seuil conventionnel paramétrable — à confirmer par la convention
-     * collective applicable, voir docs/payroll/DZ_COMPLIANCE.md §5).
+     *
+     * Issue #5266 (écart E2 de la spec `payroll-dz-100`) : quand les règles
+     * du pays sont fournies, les paliers LÉGAUX pays
+     * (CountryRulesInterface::overtimeRateTiers()) priment — ex. DZ :
+     * majoration unique ≥ 50 % (loi 90-11 art. 32), FR : 8 h @ 25 % puis
+     * 50 %, MA : 25 % unique... Le fallback historique « 25 % jusqu'à
+     * $standardRateHours h/mois puis 50 % » reste actif pour les appels
+     * sans règles (mécanique générique F-05 — docs/payroll/DZ_COMPLIANCE.md
+     * §5, seuil conventionnel non confirmé).
      */
-    public function computeOvertimePay(float $baseSalary, float $overtimeHours, int $standardRateHours = 10): float
-    {
+    public function computeOvertimePay(
+        float $baseSalary,
+        float $overtimeHours,
+        int $standardRateHours = 10,
+        ?CountryRulesInterface $rules = null
+    ): float {
         if ($overtimeHours <= 0.0 || $baseSalary <= 0.0) {
             return 0.0;
         }
@@ -990,10 +1066,45 @@ class PayrollCalculator
         // systématique (ex. base 100 000 → taux 576,85 au lieu de 576,879…).
         // La précision complète est conservée jusqu'à l'arrondi final.
         $hourlyRate = $baseSalary / self::MONTHLY_HOURS;
+
+        $tiers = $rules?->overtimeRateTiers() ?? [];
+        if ($tiers !== []) {
+            return $this->computeOvertimePayByTiers($hourlyRate, $overtimeHours, $tiers);
+        }
+
         $standard = min($overtimeHours, (float) $standardRateHours);
         $premium = max(0.0, $overtimeHours - (float) $standardRateHours);
 
         return round(($standard * $hourlyRate * 1.25) + ($premium * $hourlyRate * 1.50), 2);
+    }
+
+    /**
+     * #5266 — applique les paliers légaux du pays à un volume d'heures
+     * supplémentaires. Chaque palier consomme sa largeur (`up_to_hours`,
+     * `null` = illimité) au multiplicateur indiqué ; l'arrondi n'intervient
+     * qu'en sortie (précision #2685). Un volume non consommé par un palier
+     * borné passe au palier suivant (les règles pays garantissent un palier
+     * terminal `up_to_hours => null`).
+     *
+     * @param  array<int, array{up_to_hours: float|null, multiplier: float}>  $tiers
+     */
+    private function computeOvertimePayByTiers(float $hourlyRate, float $overtimeHours, array $tiers): float
+    {
+        $remaining = $overtimeHours;
+        $pay = 0.0;
+
+        foreach ($tiers as $tier) {
+            if ($remaining <= 0.0) {
+                break;
+            }
+
+            $width = $tier['up_to_hours'];
+            $hoursInTier = $width === null ? $remaining : min($remaining, $width);
+            $pay += $hoursInTier * $hourlyRate * $tier['multiplier'];
+            $remaining -= $hoursInTier;
+        }
+
+        return round($pay, 2);
     }
 
     /**
