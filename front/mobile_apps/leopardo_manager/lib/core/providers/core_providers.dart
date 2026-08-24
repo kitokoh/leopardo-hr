@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_manager/features/auth/data/auth_repository.dart';
 import 'package:leopardo_manager/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_manager/features/settings/data/settings_repository.dart';
-import 'package:leopardo_manager/features/user_auth/data/user_auth_repository.dart';
 import 'package:leopardo_manager/features/onboarding/data/onboarding_repository.dart';
 import 'package:leopardo_manager/features/ai_chat/data/ai_chat_repository.dart';
 import 'package:leopardo_manager/features/vehicle_position/data/vehicle_position_repository.dart';
@@ -30,13 +29,6 @@ final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   final preferences = ref.watch(appPreferencesProvider);
   return SettingsRepository(apiClient, preferences);
-});
-
-final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  final storage = ref.watch(secureStorageProvider);
-  final preferences = ref.watch(appPreferencesProvider);
-  return UserAuthRepository(apiClient, storage, preferences);
 });
 
 final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {

@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_hr/features/auth/data/auth_repository.dart';
 import 'package:leopardo_hr/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_hr/features/settings/data/settings_repository.dart';
-import 'package:leopardo_hr/features/user_auth/data/user_auth_repository.dart';
 import 'package:leopardo_hr/features/contracts/data/contract_repository.dart';
 import 'package:leopardo_hr/features/onboarding/data/onboarding_repository.dart';
 
@@ -28,13 +27,6 @@ final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   final preferences = ref.watch(appPreferencesProvider);
   return SettingsRepository(apiClient, preferences);
-});
-
-final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  final storage = ref.watch(secureStorageProvider);
-  final preferences = ref.watch(appPreferencesProvider);
-  return UserAuthRepository(apiClient, storage, preferences);
 });
 
 final contractRepositoryProvider = Provider<ContractRepository>((ref) {
