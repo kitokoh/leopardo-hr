@@ -43,6 +43,18 @@ class StripeServiceTest extends TestCase
         $this->assertSame('checkout.session.completed', $result['type']);
     }
 
+    public function test_verify_webhook_signature_rejects_malformed_signature_header(): void
+    {
+        config()->set('services.stripe.webhook_secret', 'whsec_test_secret');
+
+        $service = new StripeService;
+
+        $this->assertNull($service->verifyWebhookSignature(
+            '{"type":"checkout.session.completed"}',
+            'malformed-header',
+        ));
+    }
+
     public function test_verify_webhook_signature_rejects_invalid_signature(): void
     {
         config()->set('services.stripe.webhook_secret', 'whsec_test_secret');

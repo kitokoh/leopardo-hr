@@ -14,7 +14,7 @@ test.describe('Dashboard cockpit', () => {
   })
 
   test('login form shows validation on empty submit', async ({ page }) => {
-    const emailInput = page.getByLabel(/Adresse email/i)
+    const emailInput = page.locator('#email')
     const submitButton = page.getByRole('button', { name: /Se connecter/i })
 
     await emailInput.clear()
@@ -37,7 +37,7 @@ test.describe('Dashboard cockpit', () => {
       })
     })
 
-    await page.getByLabel(/Adresse email/i).fill('invalid@example.com')
+    await page.locator('#email').fill('invalid@example.com')
     await page.locator('#password').fill('wrongpassword')
     await page.getByRole('button', { name: /Se connecter/i }).click()
 

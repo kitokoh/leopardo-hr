@@ -8,6 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ReceiptRequest extends FormRequest
 {
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         return [

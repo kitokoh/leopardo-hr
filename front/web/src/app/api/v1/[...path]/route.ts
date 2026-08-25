@@ -136,7 +136,7 @@ export async function OPTIONS(request: NextRequest) {
   return new Response(null, {
     status: 204,
     headers: {
-      'Access-Control-Allow-Headers': 'Authorization, Content-Type, Accept, Accept-Language',
+      'Access-Control-Allow-Headers': 'Authorization, Content-Type, Accept, Accept-Language, If-None-Match, Idempotency-Key, Idempotent-Replayed',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
       ...(allowOrigin ? { 'Access-Control-Allow-Origin': allowOrigin, 'Vary': 'Origin' } : {}),
       'Cache-Control': 'no-store',

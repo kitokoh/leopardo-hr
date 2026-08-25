@@ -84,7 +84,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.qr_code_2_rounded),
-            tooltip: 'QR entreprise',
+            tooltip: context.l10n.commonCompanyQr,
             onPressed: () => _openCompanyQrSheet(context),
           ),
         ],
@@ -598,7 +598,7 @@ class _TeamOperationalSummary extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Vue operationnelle',
+            context.l10n.teamOperationalView,
             style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
           ),
           const SizedBox(height: 4),
@@ -639,7 +639,7 @@ class _TeamOperationalSummary extends StatelessWidget {
                 color: AppColors.danger,
               ),
               _TeamStateChip(
-                label: 'Hors ligne',
+                label: context.l10n.commonOffline,
                 value: counts['offline'] ?? 0,
                 color: MobileSurface.disabled,
               ),
@@ -695,7 +695,7 @@ class _InvitationsTab extends ConsumerWidget {
       },
       child: async.when(
         loading: () =>
-            const MobileEmptyLoading(label: 'Chargement des invitations'),
+            MobileEmptyLoading(label: context.l10n.teamLoadingInvites),
         error: (err, _) => ListView(
           padding: const EdgeInsets.all(20),
           children: [
@@ -708,13 +708,12 @@ class _InvitationsTab extends ConsumerWidget {
         data: (invitations) {
           if (invitations.isEmpty) {
             return ListView(
-              children: const [
+              children: [
                 SizedBox(height: 80),
                 EmptyState(
                   icon: Icons.mark_email_read_outlined,
-                  title: 'Aucune invitation en cours',
-                  description:
-                      'Les invitations envoyees a vos futurs collaborateurs s afficheront ici.',
+                  title: context.l10n.teamNoPendingInvites,
+                  description: context.l10n.teamInvitesHint,
                 ),
               ],
             );
@@ -755,7 +754,7 @@ class _InvitationsTab extends ConsumerWidget {
   }
 
   String _invitationLabel(String status) => switch (status) {
-        'pending' => 'En attente',
+        'pending' => deviceL10n.smartAttendancePending,
         'sent' => 'Envoyee',
         'accepted' => 'Acceptee',
         'expired' => 'Expiree',
@@ -781,7 +780,7 @@ class _InvitationsTab extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Invitation renvoyee.')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.teamInviteResent)));
       }
     } catch (e) {
       if (context.mounted) {
@@ -848,27 +847,31 @@ class _EmployeeProfileSheet extends StatelessWidget {
                   _ProfileLine(
                     icon: Icons.phone_outlined,
                     label: 'Telephone',
-                    value: employee.phone ?? 'Non renseigne',
+                    value: employee.phone ?? context.l10n.dashboardNotprovided,
                   ),
                   _ProfileLine(
                     icon: Icons.work_outline_rounded,
                     label: 'Poste',
-                    value: employee.jobTitle ?? 'Non renseigne',
+                    value:
+                        employee.jobTitle ?? context.l10n.dashboardNotprovided,
                   ),
                   _ProfileLine(
                     icon: Icons.apartment_rounded,
                     label: 'Departement',
-                    value: employee.department ?? 'Non renseigne',
+                    value: employee.department ??
+                        context.l10n.dashboardNotprovided,
                   ),
                   _ProfileLine(
                     icon: Icons.place_outlined,
                     label: 'Lieu',
-                    value: employee.workLocation ?? 'Non renseigne',
+                    value: employee.workLocation ??
+                        context.l10n.dashboardNotprovided,
                   ),
                   _ProfileLine(
                     icon: Icons.schedule_outlined,
                     label: 'Horaire',
-                    value: employee.scheduleName ?? 'Horaire par defaut',
+                    value: employee.scheduleName ??
+                        context.l10n.teamDefaultSchedule,
                   ),
                   _ProfileLine(
                     icon: Icons.payments_outlined,
@@ -951,7 +954,7 @@ class _CompanyQrSheet extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'QR entreprise',
+                context.l10n.commonCompanyQr,
                 style: AppTypography.subtitle.copyWith(
                   color: MobileSurface.text,
                 ),
@@ -966,11 +969,10 @@ class _CompanyQrSheet extends ConsumerWidget {
               const SizedBox(height: 16),
               LeopardoQrCard(
                 data: payload.token,
-                title: 'QR entreprise scannable',
-                subtitle:
-                    'L employe le scanne depuis son espace compte pour demander son integration.',
+                title: context.l10n.teamCompanyQrScannable,
+                subtitle: context.l10n.teamQrEmployeeScanHint,
                 expiresAt: payload.expiresAt,
-                copyLabel: 'Copier aussi le jeton',
+                copyLabel: context.l10n.settingsQrCopyToken,
               ),
             ],
           ),
@@ -1015,12 +1017,12 @@ class _EmployeeQrImportSheetState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Importer depuis QR',
+            context.l10n.teamImportFromQr,
             style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
           ),
           const SizedBox(height: 6),
           Text(
-            'Collez le code QR employe. Le formulaire restera modifiable avant invitation.',
+            context.l10n.teamPasteEmployeeQrHint,
             style: AppTypography.bodySmall.copyWith(
               color: MobileSurface.secondary,
             ),
@@ -1032,7 +1034,7 @@ class _EmployeeQrImportSheetState
                 child: OutlinedButton.icon(
                   onPressed: _pasteFromClipboard,
                   icon: const Icon(Icons.content_paste_rounded),
-                  label: const Text('Coller le QR scanne'),
+                  label: Text(context.l10n.teamPasteScannedQr),
                 ),
               ),
             ],
@@ -1043,8 +1045,8 @@ class _EmployeeQrImportSheetState
             minLines: 3,
             maxLines: 5,
             style: const TextStyle(color: MobileSurface.text),
-            decoration: const InputDecoration(
-              labelText: 'Code QR employe',
+            decoration: InputDecoration(
+              labelText: context.l10n.teamEmployeeQrCode,
               alignLabelWithHint: true,
             ),
           ),
@@ -1058,7 +1060,7 @@ class _EmployeeQrImportSheetState
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.qr_code_scanner_rounded),
-            label: const Text('Lire et pre-remplir'),
+            label: Text(context.l10n.teamReadAndPrefill),
           ),
         ],
       ),
@@ -1071,7 +1073,7 @@ class _EmployeeQrImportSheetState
     if (text == null || text.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Aucun code QR dans le presse-papiers.')),
+        SnackBar(content: Text(context.l10n.teamQrNoneInClipboard)),
       );
       return;
     }
@@ -1083,7 +1085,7 @@ class _EmployeeQrImportSheetState
     if (token.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Collez le code QR.')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.teamPasteQrHint)));
       return;
     }
 
@@ -1132,7 +1134,7 @@ class _ScheduleSelector extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Aucun horaire cree. Vous pourrez en definir dans le module Horaires.',
+                context.l10n.teamNoScheduleYet,
                 style: AppTypography.caption.copyWith(
                   color: MobileSurface.secondary,
                 ),
@@ -1150,14 +1152,14 @@ class _ScheduleSelector extends StatelessWidget {
     return DropdownButtonFormField<int?>(
       initialValue: selectedId,
       dropdownColor: MobileSurface.surface,
-      decoration: const InputDecoration(
-        labelText: 'Horaire de travail',
+      decoration: InputDecoration(
+        labelText: context.l10n.teamWorkSchedule,
         prefixIcon: Icon(Icons.schedule_outlined),
       ),
       items: [
-        const DropdownMenuItem<int?>(
+        DropdownMenuItem<int?>(
           value: null,
-          child: Text('Horaire par defaut'),
+          child: Text(context.l10n.teamDefaultSchedule),
         ),
         ...schedules.map(
           (schedule) => DropdownMenuItem<int?>(
@@ -1301,7 +1303,7 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) => value == null || !value.contains('@')
-                    ? 'Email invalide'
+                    ? context.l10n.settingsEmailInvalid
                     : null,
               ),
               const SizedBox(height: 10),
@@ -1314,8 +1316,8 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
               TextFormField(
                 controller: _hireDate,
                 readOnly: true,
-                decoration: const InputDecoration(
-                  labelText: 'Date d embauche',
+                decoration: InputDecoration(
+                  labelText: context.l10n.teamHireDate,
                   suffixIcon: Icon(Icons.calendar_today_outlined),
                 ),
                 onTap: _pickHireDate,
@@ -1334,15 +1336,16 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                 error: (error, stackTrace) => TextButton.icon(
                   onPressed: () => ref.invalidate(schedulesProvider),
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Recharger les horaires'),
+                  label: Text(context.l10n.teamReloadSchedules),
                 ),
               ),
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
                 initialValue: _salaryType,
                 dropdownColor: MobileSurface.surface,
-                decoration: const InputDecoration(labelText: 'Mode salaire'),
-                items: const [
+                decoration:
+                    InputDecoration(labelText: context.l10n.teamSalaryMode),
+                items: [
                   DropdownMenuItem(value: 'fixed', child: Text('Mensuel')),
                   DropdownMenuItem(value: 'hourly', child: Text('Horaire')),
                   DropdownMenuItem(value: 'daily', child: Text('Journalier')),
@@ -1356,8 +1359,8 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: _salaryType == 'hourly'
-                      ? 'Taux horaire'
-                      : 'Salaire de base',
+                      ? context.l10n.teamHourlyRate
+                      : context.l10n.teamBaseSalary,
                   suffixText: _salaryType == 'hourly'
                       ? '${currencySuffix(currency)}/h'
                       : currencySuffix(currency),
@@ -1376,7 +1379,8 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
               const SizedBox(height: 10),
               TextFormField(
                 controller: _workLocation,
-                decoration: const InputDecoration(labelText: 'Lieu de travail'),
+                decoration:
+                    InputDecoration(labelText: context.l10n.teamWorkLocation),
               ),
               const SizedBox(height: 18),
               ElevatedButton.icon(
@@ -1440,7 +1444,7 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
       if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Fiche collaborateur mise a jour.')),
+        SnackBar(content: Text(context.l10n.teamEmployeeRecordUpdated)),
       );
     } catch (e) {
       if (mounted) {
@@ -1549,8 +1553,8 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 18),
               Text(
                 widget.prefill == null
-                    ? 'Nouvel employe'
-                    : 'Nouvel employe via QR',
+                    ? context.l10n.teamNewEmployee
+                    : context.l10n.teamNewEmployeeViaQr,
                 style: AppTypography.subtitle.copyWith(
                   color: MobileSurface.text,
                 ),
@@ -1558,8 +1562,8 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 4),
               Text(
                 widget.prefill == null
-                    ? 'Invitation, role, date d embauche et base salariale sont envoyes a l API.'
-                    : 'Profil pre-rempli depuis QR. Renseignez l email professionnel unique de cette entreprise.',
+                    ? context.l10n.teamInviteSummary
+                    : context.l10n.teamQrPrefilledHint,
                 style: AppTypography.bodySmall.copyWith(
                   color: MobileSurface.secondary,
                 ),
@@ -1584,8 +1588,8 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               TextFormField(
                 controller: _email,
                 style: const TextStyle(color: MobileSurface.text),
-                decoration: const InputDecoration(
-                  labelText: 'Email professionnel',
+                decoration: InputDecoration(
+                  labelText: context.l10n.signupLabelemail,
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (v) {
@@ -1598,8 +1602,8 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               TextFormField(
                 controller: _phone,
                 style: const TextStyle(color: MobileSurface.text),
-                decoration: const InputDecoration(
-                  labelText: 'Telephone (optionnel)',
+                decoration: InputDecoration(
+                  labelText: context.l10n.userAuthPhoneOptional,
                 ),
                 keyboardType: TextInputType.phone,
               ),
@@ -1607,8 +1611,8 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               TextFormField(
                 controller: _matricule,
                 style: const TextStyle(color: MobileSurface.text),
-                decoration: const InputDecoration(
-                  labelText: 'Matricule (optionnel)',
+                decoration: InputDecoration(
+                  labelText: context.l10n.teamEmployeeIdOptional,
                 ),
               ),
               const SizedBox(height: 8),
@@ -1616,8 +1620,8 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                 controller: _hireDate,
                 style: const TextStyle(color: MobileSurface.text),
                 readOnly: true,
-                decoration: const InputDecoration(
-                  labelText: 'Date d embauche',
+                decoration: InputDecoration(
+                  labelText: context.l10n.teamHireDate,
                   suffixIcon: Icon(Icons.calendar_today_outlined),
                 ),
                 onTap: _pickHireDate,
@@ -1638,7 +1642,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                 error: (error, stackTrace) => TextButton.icon(
                   onPressed: () => ref.invalidate(schedulesProvider),
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Recharger les horaires'),
+                  label: Text(context.l10n.teamReloadSchedules),
                 ),
               ),
               const SizedBox(height: 16),
@@ -1663,10 +1667,10 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                 DropdownButtonFormField<String>(
                   initialValue: _managerRole,
                   dropdownColor: MobileSurface.surface,
-                  decoration: const InputDecoration(
-                    labelText: 'Type de manager',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.teamManagerType,
                   ),
-                  items: const [
+                  items: [
                     DropdownMenuItem(value: 'rh', child: Text('RH')),
                     DropdownMenuItem(value: 'dept', child: Text('Departement')),
                     DropdownMenuItem(
@@ -1680,20 +1684,21 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                   ],
                   validator: (v) =>
                       (_role == 'manager' && (v == null || v.isEmpty))
-                          ? 'Selectionnez un type'
+                          ? context.l10n.teamSelectType
                           : null,
                   onChanged: (v) => setState(() => _managerRole = v),
                 ),
               ],
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: _salaryType,
                 dropdownColor: MobileSurface.surface,
-                decoration: const InputDecoration(labelText: 'Type de paie'),
-                items: const [
+                decoration:
+                    InputDecoration(labelText: context.l10n.teamPayType),
+                items: [
                   DropdownMenuItem(
                     value: 'fixed',
-                    child: Text('Mensuel / fixe'),
+                    child: Text(context.l10n.teamMonthlyFixed),
                   ),
                   DropdownMenuItem(value: 'hourly', child: Text('Horaire')),
                   DropdownMenuItem(value: 'daily', child: Text('Journalier')),
@@ -1706,7 +1711,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                   controller: _hourlyRate,
                   style: const TextStyle(color: MobileSurface.text),
                   decoration: InputDecoration(
-                    labelText: 'Taux horaire',
+                    labelText: context.l10n.teamHourlyRate,
                     suffixText: '${currencySuffix(currency)}/h',
                   ),
                   keyboardType: const TextInputType.numberWithOptions(
@@ -1720,8 +1725,8 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                   style: const TextStyle(color: MobileSurface.text),
                   decoration: InputDecoration(
                     labelText: _salaryType == 'daily'
-                        ? 'Salaire journalier'
-                        : 'Salaire mensuel brut',
+                        ? context.l10n.teamDailySalary
+                        : context.l10n.teamMonthlyGrossSalary,
                     suffixText: currency,
                   ),
                   keyboardType: const TextInputType.numberWithOptions(
@@ -1733,24 +1738,24 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               TextFormField(
                 controller: _jobTitle,
                 style: const TextStyle(color: MobileSurface.text),
-                decoration: const InputDecoration(
-                  labelText: 'Poste (optionnel)',
+                decoration: InputDecoration(
+                  labelText: context.l10n.teamPositionOptional,
                 ),
               ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _department,
                 style: const TextStyle(color: MobileSurface.text),
-                decoration: const InputDecoration(
-                  labelText: 'Departement (optionnel)',
+                decoration: InputDecoration(
+                  labelText: context.l10n.teamDepartmentOptional,
                 ),
               ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _workLocation,
                 style: const TextStyle(color: MobileSurface.text),
-                decoration: const InputDecoration(
-                  labelText: 'Lieu de travail (optionnel)',
+                decoration: InputDecoration(
+                  labelText: context.l10n.teamWorkLocationOptional,
                 ),
               ),
               const SizedBox(height: 24),
@@ -1764,8 +1769,8 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                       )
                     : Text(
                         widget.prefill == null
-                            ? 'Envoyer l invitation'
-                            : 'Creer depuis QR et inviter',
+                            ? context.l10n.teamSendInvite
+                            : context.l10n.teamCreateFromQrAndInvite,
                       ),
               ),
             ],
@@ -1827,7 +1832,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Employe ajoute.')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.teamEmployeeAdded)));
       }
     } catch (e) {
       if (mounted) {
@@ -1854,7 +1859,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
 
   String? _positiveNumberValidator(String? value) {
     final parsed = _parseAmount(value ?? '');
-    if (parsed == null || parsed <= 0) return 'Montant obligatoire';
+    if (parsed == null || parsed <= 0) return context.l10n.teamAmountRequired;
     return null;
   }
 

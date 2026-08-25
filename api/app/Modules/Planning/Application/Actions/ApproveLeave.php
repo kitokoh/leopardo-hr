@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Planning\Application\Actions;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Exceptions\AbsenceNotPendingException;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Infrastructure\Services\AbsenceService;
@@ -25,6 +26,8 @@ class ApproveLeave
             throw new AbsenceNotPendingException($absenceId);
         }
 
-        return $this->absenceService->approve($absence, $approvedById);
+        $approver = Employee::query()->findOrFail($approvedById);
+
+        return $this->absenceService->approve($absence, $approver);
     }
 }
