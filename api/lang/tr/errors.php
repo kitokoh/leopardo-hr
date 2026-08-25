@@ -241,6 +241,10 @@ return [
     // Muhasebe (issue #5227)
     'PAYMENT_EXCEEDS_TOTAL' => 'Ödeme tutarı, belgenin kalan bakiyesini aşıyor.',
     'PAYMENT_ON_UNSENT_DOCUMENT' => 'Düzenlenmemiş bir belge üzerinde ödeme kaydedilemez.',
+    'PAYMENT_GATEWAY_NOT_CONFIGURED' => 'Bu şirketin ülkesi için çevrimiçi ödeme sağlayıcısı yapılandırılmamış.',
+    'DOCUMENT_NOT_SENDABLE' => 'Bu belge çevrimiçi ödenemez (düzenlenmemiş veya zaten ödenmiş).',
+    'PAYMENT_AMOUNT_MISMATCH' => 'Sağlayıcı tarafından bildirilen tutar, belge bakiyesiyle eşleşmiyor.',
+    'WEBHOOK_SIGNATURE_INVALID' => 'Geçersiz veya eksik webhook imzası.',
     'CREDIT_NOTE_REQUIRES_SOURCE_INVOICE' => 'İade faturası, kaynak faturasına bağlı olmalıdır.',
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'İrsaliye, teslim tarihini içermelidir.',
     'DOCUMENT_NOT_FULLY_PAID' => 'Toplam tutar ödenmeden belge ödendi olarak işaretlenemez.',
