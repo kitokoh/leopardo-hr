@@ -26,7 +26,7 @@ use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceTodayRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckInRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckOutRequest;
 use App\Modules\Planning\Infrastructure\Services\EstimationService;
-use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
+use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
