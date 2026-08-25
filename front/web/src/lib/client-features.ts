@@ -4,7 +4,7 @@ export type ClientModuleKey =
   | 'dashboard'
   | 'employees'
   | 'attendance'
-  | 'smart_attendance'
+  | 'attendance_geo'
   | 'absences'
   | 'contracts'
   | 'payroll'
@@ -66,9 +66,9 @@ export const CLIENT_MODULES: ClientModule[] = [
     upgradeLabel: 'Pointage et presence',
   },
   {
-    key: 'smart_attendance',
-    href: '/smart-attendance',
-    label: 'Smart Attendance',
+    key: 'attendance_geo',
+    href: '/attendance/geo',
+    label: 'Attendance — Sessions GPS',
     group: 'hr',
     capabilityKeys: ['smart_attendance', 'can_view_smart_attendance'],
     featureKeys: ['smart_attendance', 'geo_attendance', 'attendance', 'rh'],
@@ -171,7 +171,7 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/dashboard': 'dashboard',
   '/employees': 'employees',
   '/attendance': 'attendance',
-  '/smart-attendance': 'smart_attendance',
+  '/attendance/geo': 'attendance_geo',
   '/absences': 'absences',
   '/contracts': 'contracts',
   '/payroll': 'payroll',
@@ -304,7 +304,7 @@ export function getModuleAccessForPath(pathname: string, user?: StoredAuthUser |
   // Try exact match first
   let moduleKey: ClientModuleKey | undefined = ROUTE_TO_MODULE[pathname];
 
-  // Fall back to prefix match for nested routes (e.g. /smart-attendance/sessions)
+  // Fall back to prefix match for nested routes (e.g. /attendance/geo/sessions)
   if (!moduleKey) {
     const matched = Object.entries(ROUTE_TO_MODULE).find(([route]) => pathname.startsWith(route + '/'));
     moduleKey = matched?.[1];
