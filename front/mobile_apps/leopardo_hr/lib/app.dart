@@ -40,8 +40,8 @@ import 'package:leopardo_hr/features/schedules/screens/schedule_list_screen.dart
 import 'package:leopardo_hr/features/tasks/screens/task_list_screen.dart';
 import 'package:leopardo_hr/features/company_branding/screens/company_branding_screen.dart';
 import 'package:leopardo_hr/features/company_branding/providers/tenant_branding_provider.dart';
-import 'package:leopardo_hr/features/smart_attendance/screens/smart_attendance_dashboard_screen.dart';
-import 'package:leopardo_hr/features/smart_attendance/screens/pending_sessions_screen.dart';
+import 'package:leopardo_hr/features/attendance_geo/screens/attendance_geo_dashboard_screen.dart';
+import 'package:leopardo_hr/features/attendance_geo/screens/pending_sessions_screen.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -251,11 +251,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           // ── Smart Attendance ──────────────────────────────────────────
           GoRoute(
-            path: '/smart-attendance',
-            builder: (context, state) => const SmartAttendanceDashboardScreen(),
+            path: '/attendance/geo',
+            builder: (context, state) => const AttendanceGeoDashboardScreen(),
           ),
           GoRoute(
-            path: '/smart-attendance/pending',
+            path: '/attendance/geo/pending',
             builder: (context, state) => const PendingGeoSessionsScreen(),
           ),
         ],

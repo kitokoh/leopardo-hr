@@ -6,13 +6,13 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
-import 'package:leopardo_manager/features/smart_attendance/providers/smart_attendance_provider.dart';
+import 'package:leopardo_manager/features/attendance_geo/providers/attendance_geo_provider.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 /// Tableau de bord Smart Attendance — Manager
-class SmartAttendanceDashboardScreen extends ConsumerWidget {
-  const SmartAttendanceDashboardScreen({super.key});
+class AttendanceGeoDashboardScreen extends ConsumerWidget {
+  const AttendanceGeoDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -69,7 +69,7 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
               pendingAsync.when(
                 data: (sessions) => _PendingCard(
                   count: sessions.length,
-                  onTap: () => context.push('/smart-attendance/pending'),
+                  onTap: () => context.push('/attendance/geo/pending'),
                 ),
                 loading: () => const SizedBox.shrink(),
                 error: (_, __) => const SizedBox.shrink(),

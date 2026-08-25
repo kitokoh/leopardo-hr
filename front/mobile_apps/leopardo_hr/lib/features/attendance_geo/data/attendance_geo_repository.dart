@@ -1,11 +1,11 @@
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
-import 'package:leopardo_core/features/smart_attendance/data/models/geo_attendance_session.dart';
+import 'package:leopardo_core/features/attendance_geo/data/models/geo_attendance_session.dart';
 
 /// Repository Smart Attendance — app Manager.
 /// Expose validation des sessions GPS et dashboard stats.
-class HrSmartAttendanceRepository {
-  const HrSmartAttendanceRepository(this._apiClient);
+class HrAttendanceGeoRepository {
+  const HrAttendanceGeoRepository(this._apiClient);
 
   final ApiClient _apiClient;
 

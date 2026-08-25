@@ -4,26 +4,28 @@ import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/core/api/idempotency_keys.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/geo_attendance_session.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
+import 'package:leopardo_employee/features/attendance_geo/data/models/geo_attendance_session.dart';
+import 'package:leopardo_employee/features/attendance_geo/data/models/attendance_geo_config.dart';
 
 /// Repository pour le module Pointage Intelligent (Smart Attendance).
 /// Effectue tous les appels API liés à la géolocalisation et aux préférences employé.
-class SmartAttendanceRepository {
+class AttendanceGeoRepository {
   final ApiClient apiClient;
 
-  SmartAttendanceRepository(this.apiClient);
+  AttendanceGeoRepository(this.apiClient);
 
   static const _readTimeout = Duration(seconds: 6);
   static const _writeTimeout = Duration(seconds: 8);
 
   /// Récupère la configuration de pointage GPS de l'entreprise.
   /// GET /api/v1/attendance/config
-  Future<SmartAttendanceConfig> getConfig() async {
+  Future<AttendanceGeoConfig> getConfig() async {
     final response = await apiClient.requestWithRetry(
       '/attendance/config',
       timeoutOverride: _readTimeout,
     );
     final data = extractDataMap(response.data);
-    return SmartAttendanceConfig.fromJson(data);
+    return AttendanceGeoConfig.fromJson(data);
   }
 
   /// Envoie un événement géographique (entrée ou sortie de zone).

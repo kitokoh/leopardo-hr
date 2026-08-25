@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
-import 'package:leopardo_employee/features/smart_attendance/services/geofence_service.dart';
+import 'package:leopardo_employee/features/attendance_geo/data/models/attendance_geo_config.dart';
+import 'package:leopardo_employee/features/attendance_geo/services/geofence_service.dart';
 
 /// Tests critiques du géofencing (F-21, #1551).
 ///
@@ -13,13 +13,13 @@ void main() {
   const centerLng = 3.0588;
   const radius = 500.0;
 
-  SmartAttendanceConfig config({
+  AttendanceGeoConfig config({
     bool gpsEnabled = true,
     double? lat = centerLat,
     double? lng = centerLng,
     double? r = radius,
   }) {
-    return SmartAttendanceConfig(
+    return AttendanceGeoConfig(
       gpsEnabled: gpsEnabled,
       latitude: lat,
       longitude: lng,

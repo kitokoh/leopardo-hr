@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
-import 'package:leopardo_hr/features/smart_attendance/providers/smart_attendance_provider.dart';
+import 'package:leopardo_hr/features/attendance_geo/providers/attendance_geo_provider.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
@@ -14,8 +14,8 @@ import 'package:leopardo_core/l10n/l10n.dart';
 /// Affiche :
 /// - Compteurs du jour (sessions détectées, en attente, approuvées, rejetées)
 /// - Bouton vers la liste des sessions à valider
-class SmartAttendanceDashboardScreen extends ConsumerWidget {
-  const SmartAttendanceDashboardScreen({super.key});
+class AttendanceGeoDashboardScreen extends ConsumerWidget {
+  const AttendanceGeoDashboardScreen({super.key});
 
   static const Color _bg = AppColors.mobileDarkBg;
 
@@ -70,7 +70,7 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
             pendingAsync.when(
               data: (sessions) => _PendingCard(
                 count: sessions.length,
-                onTap: () => context.push('/smart-attendance/pending'),
+                onTap: () => context.push('/attendance/geo/pending'),
               ),
               loading: () => const SizedBox.shrink(),
               error: (_, __) => const SizedBox.shrink(),

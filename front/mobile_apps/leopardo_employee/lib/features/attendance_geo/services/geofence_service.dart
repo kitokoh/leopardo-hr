@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
+import 'package:leopardo_employee/features/attendance_geo/data/models/attendance_geo_config.dart';
 
 /// Événement de zone détecté par le service de géofencing.
 enum ZoneEvent {
@@ -56,7 +56,7 @@ class GeofenceService {
   ZoneEvent checkPosition(
     double lat,
     double lng,
-    SmartAttendanceConfig config, {
+    AttendanceGeoConfig config, {
     double? accuracyMeters,
   }) {
     // Vérification que la configuration GPS est valide

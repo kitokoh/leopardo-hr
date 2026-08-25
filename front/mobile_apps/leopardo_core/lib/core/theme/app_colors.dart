@@ -68,7 +68,7 @@ class AppColors {
   static const Color textOnDark = textDark;
 
   // â”€â”€â”€ Palette mobile sombre "pointage" (PA2-MOB-011) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  // Ecrans attendance/ + smart_attendance/ + widgets core partages sur les 3
+  // Ecrans attendance/ + attendance_geo/ + widgets core partages sur les 3
   // apps mobiles (employee/manager/hr) redefinissaient chacun les memes
   // Color(0x...) litteraux au lieu de partager une seule source de verite.
   // Ces tokens couvrent le theme sombre dedie "pointage" utilise par ces

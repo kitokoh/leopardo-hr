@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
-import 'package:leopardo_employee/features/smart_attendance/data/models/geo_attendance_session.dart';
-import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
-import 'package:leopardo_employee/features/smart_attendance/providers/smart_attendance_provider.dart';
+import 'package:leopardo_employee/features/attendance_geo/data/models/geo_attendance_session.dart';
+import 'package:leopardo_employee/features/attendance_geo/data/models/attendance_geo_config.dart';
+import 'package:leopardo_employee/features/attendance_geo/providers/attendance_geo_provider.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 /// Écran principal du module Pointage Intelligent.
@@ -17,15 +17,15 @@ import 'package:leopardo_core/l10n/l10n.dart';
 /// - Bouton d'activation du monitoring GPS si non démarré
 /// - Liste des dernières sessions GPS avec badge de statut
 /// - Bouton pour changer sa préférence (si non forcé par l'entreprise)
-class SmartAttendanceScreen extends ConsumerStatefulWidget {
-  const SmartAttendanceScreen({super.key});
+class AttendanceGeoScreen extends ConsumerStatefulWidget {
+  const AttendanceGeoScreen({super.key});
 
   @override
-  ConsumerState<SmartAttendanceScreen> createState() =>
-      _SmartAttendanceScreenState();
+  ConsumerState<AttendanceGeoScreen> createState() =>
+      _AttendanceGeoScreenState();
 }
 
-class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
+class _AttendanceGeoScreenState extends ConsumerState<AttendanceGeoScreen> {
   // Palette de couleurs cohérente avec le reste de l'app
   static const Color _bg = AppColors.mobileDarkBg;
   static const Color _card = AppColors.mobileDarkSurface;
@@ -99,7 +99,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
 
   Widget _buildBody({
     required BuildContext context,
-    required SmartAttendanceConfig config,
+    required AttendanceGeoConfig config,
     required ActiveGeoSessionState sessionState,
     required String effectiveMode,
     required bool canChangeMode,
@@ -197,12 +197,12 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
 
   /// Ouvre l'écran de sélection du mode de pointage.
   ///
-  /// #3958 : navigation par route GoRouter (/smart-attendance/mode) — plus de
+  /// #3958 : navigation par route GoRouter (/attendance/geo/mode) — plus de
   /// push MaterialPageRoute hors table de routes (deep-links, état de
   /// navigation, retour arrière système cohérents).
   Future<void> _openModePicker(String currentMode) async {
     final result = await context.push<bool>(
-      '/smart-attendance/mode',
+      '/attendance/geo/mode',
       extra: currentMode,
     );
 
@@ -220,7 +220,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
 /// Carte affichant le mode de pointage actif.
 class _ModeStatusCard extends StatelessWidget {
   final String effectiveMode;
-  final SmartAttendanceConfig config;
+  final AttendanceGeoConfig config;
   final bool canChangeMode;
   final VoidCallback onChangeTap;
 
@@ -369,7 +369,7 @@ class _ModeStatusCard extends StatelessWidget {
 
 /// Carte affichant l'état de la zone GPS et les contrôles de monitoring.
 class _GpsZoneStatusCard extends StatelessWidget {
-  final SmartAttendanceConfig config;
+  final AttendanceGeoConfig config;
   final ActiveGeoSessionState sessionState;
   final VoidCallback onStartMonitoring;
   final VoidCallback onStopMonitoring;

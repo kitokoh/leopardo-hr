@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import 'package:geolocator/geolocator.dart';
-import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
-import 'package:leopardo_employee/features/smart_attendance/data/smart_attendance_repository.dart';
-import 'package:leopardo_employee/features/smart_attendance/services/geofence_service.dart';
+import 'package:leopardo_employee/features/attendance_geo/data/models/attendance_geo_config.dart';
+import 'package:leopardo_employee/features/attendance_geo/data/attendance_geo_repository.dart';
+import 'package:leopardo_employee/features/attendance_geo/services/geofence_service.dart';
 
 /// ─────────────────────────────────────────────────────────────────────────────
 /// Pourquoi on n'utilise PAS le tracking continu ?
@@ -32,7 +32,7 @@ import 'package:leopardo_employee/features/smart_attendance/services/geofence_se
 /// • Sur iOS, declarerBGTaskIdentifier dans Info.plist est obligatoire.
 /// ─────────────────────────────────────────────────────────────────────────────
 class BackgroundLocationService {
-  final SmartAttendanceRepository _repository;
+  final AttendanceGeoRepository _repository;
   final GeofenceService _geofenceService;
 
   /// Intervalle de polling en background (5 minutes)
@@ -48,7 +48,7 @@ class BackgroundLocationService {
   Timer? _pollingTimer;
 
   /// Configuration active
-  SmartAttendanceConfig? _activeConfig;
+  AttendanceGeoConfig? _activeConfig;
 
   /// Indique si le service est en cours d'exécution
   bool _isRunning = false;
@@ -65,7 +65,7 @@ class BackgroundLocationService {
   static const int _maxPendingGeoEvents = 20;
 
   BackgroundLocationService({
-    required SmartAttendanceRepository repository,
+    required AttendanceGeoRepository repository,
     required GeofenceService geofenceService,
   }) : _repository = repository,
        _geofenceService = geofenceService;
@@ -78,7 +78,7 @@ class BackgroundLocationService {
   /// configuré ou permission refusée) — #4960 : l'appelant doit pouvoir
   /// distinguer « ça tourne » de « rien ne tourne » (avant, un refus de
   /// permission rendait l'UI « Surveillance active » factice).
-  Future<bool> startMonitoring(SmartAttendanceConfig config) async {
+  Future<bool> startMonitoring(AttendanceGeoConfig config) async {
     if (_isRunning) {
       // Mise à jour de la config sans relancer le timer
       _activeConfig = config;
@@ -121,7 +121,7 @@ class BackgroundLocationService {
   bool get isRunning => _isRunning;
 
   /// Configuration actuellement utilisée.
-  SmartAttendanceConfig? get activeConfig => _activeConfig;
+  AttendanceGeoConfig? get activeConfig => _activeConfig;
 
   // ─────────────────────────────────────────────────────────────────────────
   // Méthodes internes

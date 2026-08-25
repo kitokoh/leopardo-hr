@@ -1,6 +1,6 @@
 /// Modèle de configuration du pointage intelligent retourné par l'API.
 /// Endpoint : GET /api/v1/attendance/config
-class SmartAttendanceConfig {
+class AttendanceGeoConfig {
   /// Mode forcé par l'entreprise : 'gps_auto' | 'qr_code' | 'manual' | null
   final String? forcedMode;
 
@@ -16,7 +16,7 @@ class SmartAttendanceConfig {
   /// Rayon de la zone géographique autorisée en mètres
   final double? radius;
 
-  const SmartAttendanceConfig({
+  const AttendanceGeoConfig({
     this.forcedMode,
     required this.gpsEnabled,
     this.latitude,
@@ -24,8 +24,8 @@ class SmartAttendanceConfig {
     this.radius,
   });
 
-  factory SmartAttendanceConfig.fromJson(Map<String, dynamic> json) {
-    return SmartAttendanceConfig(
+  factory AttendanceGeoConfig.fromJson(Map<String, dynamic> json) {
+    return AttendanceGeoConfig(
       forcedMode: json['forced_mode'] as String?,
       gpsEnabled: (json['gps_enabled'] as bool?) ?? false,
       latitude: (json['latitude'] as num?)?.toDouble(),
@@ -54,6 +54,6 @@ class SmartAttendanceConfig {
 
   @override
   String toString() =>
-      'SmartAttendanceConfig(forcedMode: $forcedMode, gpsEnabled: $gpsEnabled, '
+      'AttendanceGeoConfig(forcedMode: $forcedMode, gpsEnabled: $gpsEnabled, '
       'lat: $latitude, lng: $longitude, radius: $radius)';
 }

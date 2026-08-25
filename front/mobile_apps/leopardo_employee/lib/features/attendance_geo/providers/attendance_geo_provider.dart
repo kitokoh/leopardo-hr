@@ -1,22 +1,22 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
-import 'package:leopardo_employee/features/smart_attendance/data/models/geo_attendance_session.dart';
-import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
-import 'package:leopardo_employee/features/smart_attendance/data/smart_attendance_repository.dart';
-import 'package:leopardo_employee/features/smart_attendance/services/background_location_service.dart';
-import 'package:leopardo_employee/features/smart_attendance/services/geofence_service.dart';
+import 'package:leopardo_employee/features/attendance_geo/data/models/geo_attendance_session.dart';
+import 'package:leopardo_employee/features/attendance_geo/data/models/attendance_geo_config.dart';
+import 'package:leopardo_employee/features/attendance_geo/data/attendance_geo_repository.dart';
+import 'package:leopardo_employee/features/attendance_geo/services/background_location_service.dart';
+import 'package:leopardo_employee/features/attendance_geo/services/geofence_service.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Providers d'infrastructure
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Repository d'accès aux APIs Smart Attendance.
-final smartAttendanceRepositoryProvider = Provider<SmartAttendanceRepository>((
+final smartAttendanceRepositoryProvider = Provider<AttendanceGeoRepository>((
   ref,
 ) {
   final apiClient = ref.watch(apiClientProvider);
-  return SmartAttendanceRepository(apiClient);
+  return AttendanceGeoRepository(apiClient);
 });
 
 /// Service de géofencing (calcul zone/distance Haversine).
@@ -48,7 +48,7 @@ final backgroundLocationServiceProvider = Provider<BackgroundLocationService>((
 
 /// Charge la configuration Smart Attendance de l'entreprise.
 /// Ex: GPS activé, mode forcé, coordonnées du centre, rayon.
-final smartAttendanceConfigProvider = FutureProvider<SmartAttendanceConfig>((
+final smartAttendanceConfigProvider = FutureProvider<AttendanceGeoConfig>((
   ref,
 ) async {
   final repository = ref.watch(smartAttendanceRepositoryProvider);
@@ -141,7 +141,7 @@ class ActiveGeoSessionState {
 
 /// Notifier gérant la session GPS active et le démarrage/arrêt de la surveillance.
 class ActiveGeoSessionNotifier extends StateNotifier<ActiveGeoSessionState> {
-  final SmartAttendanceRepository _repository;
+  final AttendanceGeoRepository _repository;
   final BackgroundLocationService _backgroundService;
 
   ActiveGeoSessionNotifier(this._repository, this._backgroundService)
@@ -187,7 +187,7 @@ class ActiveGeoSessionNotifier extends StateNotifier<ActiveGeoSessionState> {
   /// plateforme non supportée…) est capturée et traduite en état d'erreur
   /// visible — l'appelant (bouton UI) ne reçoit jamais d'exception non
   /// gérée et peut afficher un retour utilisateur.
-  Future<void> startMonitoring(SmartAttendanceConfig config) async {
+  Future<void> startMonitoring(AttendanceGeoConfig config) async {
     if (state.isMonitoring) return;
 
     try {

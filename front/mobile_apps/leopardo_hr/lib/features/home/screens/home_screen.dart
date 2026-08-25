@@ -658,7 +658,7 @@ class _ManagerDigestContent extends StatelessWidget {
               child: _DigestActionButton(
                 icon: Icons.my_location_rounded,
                 label: 'GPS Pointage',
-                onTap: () => context.push('/smart-attendance'),
+                onTap: () => context.push('/attendance/geo'),
               ),
             ),
             const SizedBox(width: 8),

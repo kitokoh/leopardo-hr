@@ -32,8 +32,8 @@ import 'package:leopardo_employee/features/user_auth/screens/user_login_screen.d
 import 'package:leopardo_employee/features/user_auth/screens/user_home_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/company_request_screen.dart';
 import 'package:leopardo_employee/features/onboarding/screens/onboarding_screen.dart';
-import 'package:leopardo_employee/features/smart_attendance/screens/smart_attendance_screen.dart';
-import 'package:leopardo_employee/features/smart_attendance/screens/attendance_mode_picker_screen.dart';
+import 'package:leopardo_employee/features/attendance_geo/screens/attendance_geo_screen.dart';
+import 'package:leopardo_employee/features/attendance_geo/screens/attendance_mode_picker_screen.dart';
 import 'package:leopardo_employee/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_employee/offline_wrapper.dart';
@@ -209,8 +209,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const OnboardingScreen(),
           ),
           GoRoute(
-            path: '/smart-attendance',
-            builder: (context, state) => const SmartAttendanceScreen(),
+            path: '/attendance/geo',
+            builder: (context, state) => const AttendanceGeoScreen(),
             routes: [
               // #3958 : sélecteur de mode de pointage déclaré dans GoRouter
               // (deep-links + état de navigation) au lieu d'un push
