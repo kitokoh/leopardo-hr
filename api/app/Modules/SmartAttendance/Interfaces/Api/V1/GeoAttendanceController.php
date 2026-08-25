@@ -6,11 +6,11 @@ namespace App\Modules\SmartAttendance\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\SmartAttendance\Application\Actions\ProcessGeoEntry;
-use App\Modules\SmartAttendance\Application\Actions\ProcessGeoExit;
-use App\Modules\SmartAttendance\Application\DTOs\GeoEventDTO;
-use App\Modules\SmartAttendance\Domain\Exceptions\OutsideGeofenceException;
-use App\Modules\SmartAttendance\Domain\Exceptions\SessionAlreadyOpenException;
+use App\Modules\Attendance\Application\Actions\ProcessGeoEntry;
+use App\Modules\Attendance\Application\Actions\ProcessGeoExit;
+use App\Modules\Attendance\Application\DTOs\GeoEventDTO;
+use App\Modules\Attendance\Domain\Exceptions\OutsideGeofenceException;
+use App\Modules\Attendance\Domain\Exceptions\SessionAlreadyOpenException;
 use App\Modules\SmartAttendance\Interfaces\Api\V1\Requests\GeoEventRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -24,7 +24,8 @@ class GeoAttendanceController extends Controller
     public function __construct(
         private readonly ProcessGeoEntry $processEntry,
         private readonly ProcessGeoExit $processExit,
-    ) {}
+    ) {
+    }
 
     /**
      * POST /api/v1/smart-attendance/geo-events
