@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Events\AttendanceCheckedIn;
@@ -40,8 +41,7 @@ class AttendanceService
     public function __construct(
         private readonly GeofenceZoneService $zoneService,
         private readonly CommunicationService $communicationService,
-    ) {
-    }
+    ) {}
 
     public function checkIn(Employee $employee, CheckInDTO|float|null $dto = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
     {
@@ -316,6 +316,16 @@ class AttendanceService
         // as a direct mobile check-in.
         AttendanceCheckedIn::dispatch($log);
 
+        // #5439 — journal d'audit global : import/correction de pointage tracé.
+        AuditLog::record(
+            'attendance',
+            'attendance.import',
+            $log,
+            $employee,
+            [],
+            ['check_in' => $log->check_in?->toISOString(), 'method' => $log->method, 'external_event_id' => $externalEventId],
+        );
+
         return $log;
     }
 
@@ -363,6 +373,22 @@ class AttendanceService
         }
 
         $log->save();
+
+        // #5439 — journal d'audit global : recalcul/correction tracé
+        // (avant/après sur les champs recalculés).
+        AuditLog::record(
+            'attendance',
+            'attendance.recalculate',
+            $log,
+            null,
+            [],
+            [
+                'hours_worked' => $log->hours_worked,
+                'overtime_hours' => $log->overtime_hours,
+                'late_minutes' => $log->late_minutes,
+                'status' => $log->status,
+            ],
+        );
 
         return $log->fresh();
     }
