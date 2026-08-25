@@ -9,6 +9,29 @@
       </p>
     </div>
 
+    <!-- Check-list d'activation (issue #5288) : visible tant que le module
+         n'est pas activé (comptable/principal). -->
+    <div
+      v-if="activationIncomplete"
+      class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-300/70 dark:border-amber-700/60 bg-amber-50/80 dark:bg-amber-950/40 p-4"
+      role="status"
+    >
+      <div class="flex items-center gap-3">
+        <SparklesIcon class="h-6 w-6 text-amber-500" aria-hidden="true" />
+        <div>
+          <p class="text-sm font-bold text-amber-800 dark:text-amber-300">
+            {{ $t('accounting.activation.banner_title') }}
+          </p>
+          <p class="text-sm text-amber-700/90 dark:text-amber-400/80">
+            {{ $t('accounting.activation.banner_text') }}
+          </p>
+        </div>
+      </div>
+      <router-link to="/accounting/activation" class="btn-primary">
+        {{ $t('accounting.activation.banner_cta') }}
+      </router-link>
+    </div>
+
     <div v-if="loading" class="glass-card p-6 text-slate-500 dark:text-slate-400">
       {{ $t('common.busy', 'Chargement…') }}
     </div>
@@ -136,6 +159,7 @@
 
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
+import { SparklesIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
@@ -174,6 +198,22 @@ const seriesTypes = [
 const loading = ref(true)
 const saving = ref(false)
 const saved = ref(false)
+
+/**
+ * Check-list d'activation (issue #5288) : la bannière reste visible tant que
+ * le module Comptabilité n'est pas activé (état GET /accounting/activation).
+ */
+const activationIncomplete = ref(false)
+
+async function loadActivationStatus() {
+  try {
+    const { data } = await api.get('/accounting/activation')
+    activationIncomplete.value = data?.data?.completed === false
+  } catch {
+    // Non bloquant : la bannière ne doit jamais masquer les settings.
+    activationIncomplete.value = false
+  }
+}
 
 const form = reactive({
   currency: 'DZD',
@@ -276,5 +316,8 @@ async function save() {
   }
 }
 
-onMounted(load)
+onMounted(() => {
+  load()
+  loadActivationStatus()
+})
 </script>

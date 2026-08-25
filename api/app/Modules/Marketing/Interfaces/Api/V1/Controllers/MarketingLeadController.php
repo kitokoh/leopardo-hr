@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Marketing\Application\Actions\CaptureMarketingLead;
 use App\Modules\Marketing\Application\DTOs\CreateMarketingLeadDTO;
 use App\Modules\Marketing\Interfaces\Api\V1\Requests\StoreMarketingLeadRequest;
+use App\Modules\Platform\Infrastructure\Services\WebhookEventRegistry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -40,6 +41,7 @@ class MarketingLeadController extends Controller
 {
     public function __construct(
         private readonly CaptureMarketingLead $captureMarketingLead,
+        private readonly WebhookEventRegistry $registry,
     ) {}
 
     public function store(StoreMarketingLeadRequest $request): JsonResponse
@@ -64,16 +66,51 @@ class MarketingLeadController extends Controller
             return new JsonResponse(['error' => 'Invalid signature'], 400);
         }
 
-        $dto = CreateMarketingLeadDTO::fromArray($request->validated());
-        $lead = $this->captureMarketingLead->execute($dto);
+        // #5444 : idempotence persistée — pas d'identifiant d'événement dans
+        // le payload, la clé est le hash du payload brut : une redelivrance
+        // identique (retry vitrine/réseau) ne crée pas de lead en double.
+        $payload = $request->getContent();
+        $eventId = $this->registry->eventId($payload);
+        $replay = $this->registry->begin('marketing-lead', $eventId, hash('sha256', $payload));
 
-        return new JsonResponse([
-            'data' => [
-                'id' => $lead->id,
-                'external_id' => $lead->external_id,
-                'status' => $lead->status,
-            ],
-        ], 201);
+        if ($replay !== null) {
+            $this->registry->logReplay('marketing-lead', $eventId, $replay['code']);
+
+            return new JsonResponse(
+                $this->registry->replayBody($replay['body'], ['received' => true, 'replayed' => true]),
+                $replay['code'],
+            );
+        }
+
+        try {
+            $dto = CreateMarketingLeadDTO::fromArray($request->validated());
+            $lead = $this->captureMarketingLead->execute($dto);
+
+            $body = json_encode([
+                'data' => [
+                    'id' => $lead->id,
+                    'external_id' => $lead->external_id,
+                    'status' => $lead->status,
+                ],
+            ]);
+
+            $this->registry->complete('marketing-lead', $eventId, 201, $body);
+
+            return new JsonResponse([
+                'data' => [
+                    'id' => $lead->id,
+                    'external_id' => $lead->external_id,
+                    'status' => $lead->status,
+                ],
+            ], 201);
+        } catch (\Throwable $e) {
+            $this->registry->release('marketing-lead', $eventId);
+            Log::error('Marketing lead ingest: error handling webhook', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return new JsonResponse(['received' => false, 'error' => 'processing_error'], 500);
+        }
     }
 
     private function extractBearerOrHeader(Request $request, string $headerValue): string
