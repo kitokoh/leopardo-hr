@@ -48,3 +48,24 @@ gelé** — suivi #2601. Détail : `DEDUP_T008_INVENTAIRE.md` §2026-08-25.
 Tout code dupliqué détecté entre apps doit être extrait vers `leopardo_core`
 (imports inter-apps interdits — verrouillé par `validate-mobile-apps-split.ps1`).
 Mettre à jour ce tableau à chaque extraction.
+
+## État au 2026-08-24 (après lots 1-2 #5279 et lot 3)
+
+| App | Fichiers lib/ | Import `leopardo_core` | Chantier |
+|---|---|---|---|
+| `leopardo_hr` | 36 | oui | #2601/#5279 — extraction vers core |
+| `leopardo_manager` | 42 | oui | #2601/#5279 — extraction vers core |
+
+**Lot 3 (2026-08-24, PR #5428)** : 3 écrans extraits (version manager « glass » canonique,
+identiques après normalisation de préfixe, hr modernisé au passage) :
+`features/tasks/screens/task_list_screen.dart`,
+`features/evaluations/screens/evaluation_list_screen.dart`,
+`features/schedules/screens/schedule_list_screen.dart` (import `core/providers/core_providers.dart`
+remplacé par l'import core explicite). 3 paires éliminées (6 instances). Callers mis à jour
+(`app.dart` ×2). Cumul lots 1+2+3 : 20 paires éliminées (40 instances).
+
+**Reste à extraire (lots suivants)** : écrans dépendant d'`authProvider` (team, absences,
+salary_advances — nécessitent l'extraction du cluster auth), `company_branding`
+(`tenant_branding_provider` dépend d'`authProvider`), `auth/*` (register/login/access_denied,
+0.98-1.00), `home/*` (0.97), `attendance/screens/*` (après stabilisation PRs #5406/#5314/#5355),
+`smart_attendance/*`, `settings/screens` (0.81).
