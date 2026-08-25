@@ -132,6 +132,10 @@ class LeopardoClient:
         """Refuser une absence (déprécié — utiliser POST)"""
         return self.request("PUT", "/absences/{absence}/reject", **kwargs)
 
+    def get_accounting_audit_logs(self, **kwargs):
+        """Audit trail du module Comptabilité (qui/quoi/quand, #5273)"""
+        return self.request("GET", "/accounting/audit-logs", **kwargs)
+
     def get_accounting_contacts(self, **kwargs):
         """Lister les contacts client/fournisseur"""
         return self.request("GET", "/accounting/contacts", **kwargs)
