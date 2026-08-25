@@ -40,8 +40,8 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
 
     return MobilePage(
       appBar: MobileTopBar(
-        title: 'Mon mois complet',
-        subtitle: employee?.fullName ?? 'Suivi personnel',
+        title: context.l10n.attendanceMenuMonthly,
+        subtitle: employee?.fullName ?? context.l10n.attendancePersonalTracking,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: context.l10n.back,
@@ -118,7 +118,7 @@ class _MonthSelector extends StatelessWidget {
             onPressed: onPrevious,
             icon: const Icon(Icons.chevron_left),
             color: MobileSurface.secondary,
-            tooltip: 'Mois precedent',
+            tooltip: context.l10n.attendancePreviousMonth,
           ),
           Expanded(
             child: Text(
@@ -136,7 +136,7 @@ class _MonthSelector extends StatelessWidget {
             icon: const Icon(Icons.chevron_right),
             color: MobileSurface.secondary,
             disabledColor: MobileSurface.disabled,
-            tooltip: 'Mois suivant',
+            tooltip: context.l10n.attendanceNextMonth,
           ),
         ],
       ),
@@ -149,18 +149,18 @@ class _MonthlyLoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MobilePanel(
+    return MobilePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          LinearProgressIndicator(
+          const LinearProgressIndicator(
             minHeight: 3,
             color: AppColors.rh,
             backgroundColor: MobileSurface.border,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
-            'Synchronisation du mois...',
+            context.l10n.attendanceMonthSyncing,
             style: TextStyle(
               color: MobileSurface.text,
               fontSize: 16,
@@ -169,7 +169,7 @@ class _MonthlyLoadingState extends StatelessWidget {
           ),
           SizedBox(height: 6),
           Text(
-            'Si aucune donnee n existe encore, un resume vide sera affiche.',
+            context.l10n.attendanceMonthEmptyHint,
             style: TextStyle(color: MobileSurface.muted, fontSize: 13),
           ),
         ],
@@ -195,8 +195,8 @@ class _MonthlyErrorState extends StatelessWidget {
             color: AppColors.danger,
           ),
           const SizedBox(height: 14),
-          const Text(
-            'Resume indisponible',
+          Text(
+            context.l10n.attendanceSummaryUnavailable,
             style: TextStyle(
               color: MobileSurface.text,
               fontSize: 18,
@@ -254,9 +254,10 @@ class _MonthlySummaryBody extends StatelessWidget {
           children: [
             Expanded(
               child: _MetricTile(
-                label: 'Presence',
+                label: context.l10n.attendancePresence,
                 value: '${summary.daysPresent}/${summary.workingDays}',
-                detail: '${summary.daysAbsent} abs.',
+                detail:
+                    context.l10n.attendanceDaysAbsentShort(summary.daysAbsent),
                 icon: Icons.event_available,
                 color: AppColors.rh,
               ),
@@ -264,9 +265,9 @@ class _MonthlySummaryBody extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: _MetricTile(
-                label: 'Heures sup.',
+                label: context.l10n.attendanceOvertimeShortLabel,
                 value: '${summary.overtimeHours.toStringAsFixed(1)} h',
-                detail: 'Incluses brut',
+                detail: context.l10n.attendanceIncludedGrossShort,
                 icon: Icons.timelapse,
                 color: AppColors.warning,
               ),
@@ -277,13 +278,13 @@ class _MonthlySummaryBody extends StatelessWidget {
         if (_isEmpty)
           _EmptyMonthPanel(onHistory: onHistory)
         else ...[
-          const MobileSectionLabel('Detail par jour'),
+          MobileSectionLabel(context.l10n.attendanceDayDetail),
           ...summary.breakdown.map((entry) => _BreakdownRow(entry: entry)),
         ],
         const SizedBox(height: 18),
         Text(
           summary.disclaimer.isEmpty
-              ? 'Estimation non officielle. Le bulletin de paie fait foi.'
+              ? context.l10n.attendanceEstimateDisclaimer
               : summary.disclaimer,
           textAlign: TextAlign.center,
           style: const TextStyle(
@@ -322,8 +323,8 @@ class _HeroPanel extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 18),
-          const Text(
-            'Net estime',
+          Text(
+            context.l10n.attendanceNetEstimate,
             style: TextStyle(color: MobileSurface.muted, fontSize: 12),
           ),
           const SizedBox(height: 4),
@@ -341,19 +342,19 @@ class _HeroPanel extends StatelessWidget {
             children: [
               Expanded(
                 child: _InlineFigure(
-                  label: 'Heures',
+                  label: context.l10n.attendanceHoursLabel,
                   value: '${summary.hours.toStringAsFixed(1)} h',
                 ),
               ),
               Expanded(
                 child: _InlineFigure(
-                  label: 'Brut',
+                  label: context.l10n.attendanceGrossLabel,
                   value: currency.format(summary.gross),
                 ),
               ),
               Expanded(
                 child: _InlineFigure(
-                  label: 'Retenues',
+                  label: context.l10n.attendanceDeductionsLabel,
                   value: currency.format(summary.deductions),
                 ),
               ),
@@ -468,15 +469,15 @@ class _EmptyMonthPanel extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'Le mois est bien charge. Les gains et heures resteront a zero tant qu aucun pointage valide n existe.',
+          Text(
+            context.l10n.attendanceMonthLoadedHint,
             style: TextStyle(color: MobileSurface.muted, fontSize: 13),
           ),
           const SizedBox(height: 16),
           OutlinedButton.icon(
             onPressed: onHistory,
             icon: const Icon(Icons.history),
-            label: const Text('Voir l historique'),
+            label: Text(context.l10n.attendanceSeeHistory),
             style: OutlinedButton.styleFrom(
               foregroundColor: MobileSurface.secondary,
               side: const BorderSide(color: MobileSurface.border),

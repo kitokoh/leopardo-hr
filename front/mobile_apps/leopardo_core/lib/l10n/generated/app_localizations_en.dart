@@ -5240,4 +5240,537 @@ class AppLocalizationsEn extends AppLocalizations {
   String teamActionError(Object error) {
     return 'Error: $error';
   }
+
+  @override
+  String get attendanceAccountSuspended =>
+      'Account suspended or access denied.';
+
+  @override
+  String get attendanceBeforeDeductions => 'Before legal deductions';
+
+  @override
+  String get attendanceBreakRegistered => 'Break recorded.';
+
+  @override
+  String get attendanceCheckinConfirmed => 'Check-in confirmed.';
+
+  @override
+  String get attendanceCheckinNormal => 'Normal check-in';
+
+  @override
+  String get attendanceCheckinNotConfirmed => 'Check-in not confirmed';
+
+  @override
+  String get attendanceCheckinRegistered => 'Check-in recorded just now.';
+
+  @override
+  String get attendanceCheckoutConfirmed => 'Check-out confirmed.';
+
+  @override
+  String get attendanceCheckoutNotConfirmed => 'Check-out not confirmed';
+
+  @override
+  String get attendanceCheckoutRegistered => 'Check-out recorded just now.';
+
+  @override
+  String get attendanceCloseTask => 'Close the task';
+
+  @override
+  String get attendanceCorrectionApplied =>
+      'The correction will be applied to the attendance record.';
+
+  @override
+  String get attendanceCorrectionDirectBody =>
+      'Correct this punch line directly.';
+
+  @override
+  String attendanceCorrectionDirectSnack(Object date) {
+    return 'Punch for $date modified.';
+  }
+
+  @override
+  String attendanceCorrectionEditDateTitle(Object date) {
+    return 'Edit $date';
+  }
+
+  @override
+  String get attendanceCorrectionRequestBody =>
+      'Submit a correction to HR for validation.';
+
+  @override
+  String attendanceCorrectionRequestSnack(Object date) {
+    return 'Request for $date submitted to HR - you will be notified of the decision.';
+  }
+
+  @override
+  String get attendanceCorrectionSentToHr =>
+      'The request will be sent to HR for validation.';
+
+  @override
+  String get attendanceCurrentMonth => 'Current month';
+
+  @override
+  String get attendanceDayDetail => 'Daily detail';
+
+  @override
+  String get attendanceDayDetails => 'Day details';
+
+  @override
+  String get attendanceDayDetailsBody =>
+      'View punches, breaks, overtime and real time.';
+
+  @override
+  String get attendanceDayNoSessionsYet =>
+      'This day does not contain any punch yet.';
+
+  @override
+  String attendanceDaySessionsSummary(Object hours, Object sessions) {
+    return '$sessions session(s) - $hours worked.';
+  }
+
+  @override
+  String get attendanceDayTodayLabel => 'Today';
+
+  @override
+  String get attendanceDayYesterdayLabel => 'Yesterday';
+
+  @override
+  String attendanceDaysAbsentShort(Object count) {
+    return '$count abs.';
+  }
+
+  @override
+  String attendanceDaysPresentRatio(Object present, Object working) {
+    return '$present days present / $working working days';
+  }
+
+  @override
+  String get attendanceDeductionsLabel => 'Deductions';
+
+  @override
+  String attendanceDeductionsSub(Object amount) {
+    return 'Deductions: $amount';
+  }
+
+  @override
+  String get attendanceEndWork => 'Finish work';
+
+  @override
+  String get attendanceEstimateDisclaimer =>
+      'Unofficial estimate. The payslip is authoritative.';
+
+  @override
+  String get attendanceEstimatedEarnings => 'Estimated earnings';
+
+  @override
+  String get attendanceFinish => 'Finish';
+
+  @override
+  String get attendanceGrossEstimate => 'Estimated gross earnings';
+
+  @override
+  String get attendanceGrossLabel => 'Gross';
+
+  @override
+  String get attendanceHistoryEmpty =>
+      'Nothing here yet. Your punches will appear over time.';
+
+  @override
+  String get attendanceHoursLabel => 'Hours';
+
+  @override
+  String get attendanceHoursWorkedLabel => 'Hours worked';
+
+  @override
+  String get attendanceIncludedGross => 'Included in gross earnings';
+
+  @override
+  String get attendanceIncludedGrossShort => 'Included gross';
+
+  @override
+  String get attendanceInvalidDuration => 'Invalid duration';
+
+  @override
+  String get attendanceInvalidPayload => 'Invalid attendance/today payload.';
+
+  @override
+  String attendanceLateMinutes(Object minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get attendanceLoadDegradedNotice =>
+      'Today\'s data is taking longer than expected. The screen remains usable, you can refresh.';
+
+  @override
+  String attendanceLoadFailed(Object error) {
+    return 'Unable to load data: $error';
+  }
+
+  @override
+  String get attendanceMarkDone => 'Mark as done';
+
+  @override
+  String get attendanceMonthEmptyHint =>
+      'If no data exists yet, an empty summary will be shown.';
+
+  @override
+  String get attendanceMonthLoadedHint =>
+      'The month is loaded. Earnings and hours stay at zero until a valid punch exists.';
+
+  @override
+  String get attendanceMonthSyncing => 'Syncing the month...';
+
+  @override
+  String get attendanceMyMonth => 'My month';
+
+  @override
+  String get attendanceNetEstimate => 'Estimated net';
+
+  @override
+  String get attendanceNextMonth => 'Next month';
+
+  @override
+  String get attendanceNoHistory => 'No history';
+
+  @override
+  String get attendanceNoLogToEdit =>
+      'No existing punch line to edit for this day.';
+
+  @override
+  String get attendanceNoPunchForDay => 'No punch recorded for this day.';
+
+  @override
+  String get attendanceNoSession => 'No session';
+
+  @override
+  String attendanceOutsideZoneManagerNotice(Object fallback) {
+    return '$fallback Out-of-zone punch detected; check the context before HR validation.';
+  }
+
+  @override
+  String attendanceOutsideZoneNotice(Object fallback) {
+    return '$fallback You appear to be outside the allowed zone; your manager will be notified if the company rule requires it.';
+  }
+
+  @override
+  String get attendanceOvertimeLabel => 'Overtime hours';
+
+  @override
+  String get attendanceOvertimeShortLabel => 'Overtime';
+
+  @override
+  String get attendancePersonalTracking => 'Personal tracking';
+
+  @override
+  String get attendancePresence => 'Presence';
+
+  @override
+  String get attendancePreviousMonth => 'Previous month';
+
+  @override
+  String get attendancePunchFailed =>
+      'The punch could not be confirmed. Check your connection and try again.';
+
+  @override
+  String get attendanceRealCheckinRequired => 'Real check-in *';
+
+  @override
+  String get attendanceRealCheckout => 'Real check-out';
+
+  @override
+  String get attendanceRealTime => 'Real time';
+
+  @override
+  String get attendanceRealTimeHint =>
+      'Enter the real time and a short note before leaving.';
+
+  @override
+  String get attendanceRefresh => 'Refresh';
+
+  @override
+  String get attendanceRequestCorrection => 'Request a correction';
+
+  @override
+  String get attendanceRetry => 'Retry';
+
+  @override
+  String get attendanceRoleForbidden =>
+      'Your role does not allow this attendance action.';
+
+  @override
+  String get attendanceSaveDeparture => 'Record the departure of this session';
+
+  @override
+  String get attendanceSeeHistory => 'View history';
+
+  @override
+  String get attendanceSendCheckin => 'Sending check-in';
+
+  @override
+  String get attendanceSendCheckout => 'Sending check-out';
+
+  @override
+  String get attendanceSendModificationFailed =>
+      'Unable to send the modification right now.';
+
+  @override
+  String attendanceSessionRange(Object from, Object to) {
+    return '$from -> $to';
+  }
+
+  @override
+  String get attendanceStartDay => 'Start the day';
+
+  @override
+  String get attendanceSummaryUnavailable => 'Summary unavailable';
+
+  @override
+  String get attendanceTask => 'Task';
+
+  @override
+  String get attendanceTaskDone => 'Task completed.';
+
+  @override
+  String attendanceTaskFailed(Object error) {
+    return 'Failure: $error';
+  }
+
+  @override
+  String get attendanceTaskNote => 'Completion note';
+
+  @override
+  String get attendanceTasksSectionTitle => 'TODAY\'S TASKS';
+
+  @override
+  String get attendanceTasksSyncing => 'Syncing today\'s tasks...';
+
+  @override
+  String get attendanceToPunch => 'To punch';
+
+  @override
+  String get attendanceTotalDays => 'Total days';
+
+  @override
+  String get attendanceTotalHours => 'Total hours';
+
+  @override
+  String get attendanceTotalLate => 'Cumulative lateness';
+
+  @override
+  String get attendanceWorkedTime => 'Worked time';
+
+  @override
+  String get payrollAdvancesDeducted => 'Advances deducted';
+
+  @override
+  String get payrollAlreadyPaid => 'Already paid';
+
+  @override
+  String get payrollBalanceUnavailable => 'Balance temporarily unavailable';
+
+  @override
+  String get payrollDocsUnavailable => 'Documents temporarily unavailable';
+
+  @override
+  String payrollDocumentDownloaded(Object path) {
+    return 'Document downloaded: $path';
+  }
+
+  @override
+  String get payrollDownloadPayslip => 'Download the PDF payslip';
+
+  @override
+  String get payrollDownloading => 'Downloading';
+
+  @override
+  String get payrollEmptyHint =>
+      'Your payslips will appear here once validated.';
+
+  @override
+  String payrollError(Object error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get payrollLoading => 'Loading payslips';
+
+  @override
+  String payrollMonthLabel(Object month, Object year) {
+    return 'Month $month/$year';
+  }
+
+  @override
+  String get payrollMyBalance => 'My balance';
+
+  @override
+  String payrollNextPayment(Object date) {
+    return 'Next payroll scheduled for $date';
+  }
+
+  @override
+  String get payrollNoCycleDocuments =>
+      'No document generated for this cycle. Receipts will appear after payment.';
+
+  @override
+  String get payrollNoPayslips => 'No payslip';
+
+  @override
+  String get payrollNoReceipts => 'No receipt or slip available for now.';
+
+  @override
+  String get payrollOvertimeLabel => 'overtime';
+
+  @override
+  String get payrollPaymentDocuments => 'Payment documents';
+
+  @override
+  String get payrollPaymentDocumentsTitle => 'Payment documents';
+
+  @override
+  String payrollPdfDownloaded(Object path) {
+    return 'PDF downloaded: $path';
+  }
+
+  @override
+  String payrollPeriodRange(Object end, Object start) {
+    return '$start - $end';
+  }
+
+  @override
+  String get payrollRecentPayslips => 'Recent payslips';
+
+  @override
+  String get payrollRemainingToPay => 'Remaining to pay';
+
+  @override
+  String get payrollRemainingToReceive => 'Remaining to receive';
+
+  @override
+  String get payrollSubtitle => 'Current balance, advances and payslips';
+
+  @override
+  String get payrollSummaryUnavailable =>
+      'Payroll summary temporarily unavailable';
+
+  @override
+  String get payrollTeamBalance => 'Team balance';
+
+  @override
+  String payrollTeamMembers(Object count) {
+    return '$count employee(s)';
+  }
+
+  @override
+  String get payrollTeamSubtitle => 'Balances, advances and payslips';
+
+  @override
+  String get payrollTeamTitle => 'Team payroll';
+
+  @override
+  String get payrollTitle => 'Payroll & balance';
+
+  @override
+  String get payrollValidatedHint =>
+      'Valid payslips will appear here after processing.';
+
+  @override
+  String get smartAttendanceActiveMode => 'Active mode';
+
+  @override
+  String get smartAttendanceApprove => 'Approve';
+
+  @override
+  String get smartAttendanceCancel => 'Cancel';
+
+  @override
+  String get smartAttendanceChangeMode => 'Change my attendance mode';
+
+  @override
+  String get smartAttendanceConfirm => 'Confirm';
+
+  @override
+  String get smartAttendanceDashboard => 'GPS attendance — dashboard';
+
+  @override
+  String get smartAttendanceDashboardTitle => 'GPS attendance — dashboard';
+
+  @override
+  String smartAttendanceError(Object message) {
+    return 'Error: $message';
+  }
+
+  @override
+  String get smartAttendanceForced => 'Enforced';
+
+  @override
+  String get smartAttendanceGpsAuto => 'Automatic GPS';
+
+  @override
+  String get smartAttendanceGpsTitle => 'Smart Attendance — GPS';
+
+  @override
+  String get smartAttendanceManual => 'Manual';
+
+  @override
+  String get smartAttendanceNoGpsSessions => 'No GPS session for now.';
+
+  @override
+  String get smartAttendanceNoPending => 'No pending session';
+
+  @override
+  String get smartAttendanceNoPendingSessions =>
+      'No session pending validation';
+
+  @override
+  String get smartAttendancePending => 'Pending';
+
+  @override
+  String smartAttendancePendingCount(Object count) {
+    return '$count pending';
+  }
+
+  @override
+  String get smartAttendanceQr => 'QR Code';
+
+  @override
+  String get smartAttendanceReject => 'Reject';
+
+  @override
+  String get smartAttendanceRejectHint =>
+      'Explain the reason for the rejection...';
+
+  @override
+  String get smartAttendanceRejectReason => 'Rejection reason';
+
+  @override
+  String smartAttendanceSessionExit(Object duration, Object time) {
+    return 'Exit: $time · $duration';
+  }
+
+  @override
+  String get smartAttendanceSessionsTitle => 'Smart Attendance sessions';
+
+  @override
+  String get smartAttendanceSmart => 'Smart punching';
+
+  @override
+  String get smartAttendanceSurveillanceActive => 'Active surveillance';
+
+  @override
+  String get smartAttendanceSurveillanceInactive => 'Inactive surveillance';
+
+  @override
+  String get smartAttendanceTapToReview => 'Tap to approve or reject';
+
+  @override
+  String get smartAttendanceTitle => 'Smart Attendance';
+
+  @override
+  String smartAttendanceTodayTitle(Object date) {
+    return 'Today — $date';
+  }
+
+  @override
+  String get smartAttendanceZoneSurveillance => 'Zone surveillance';
 }

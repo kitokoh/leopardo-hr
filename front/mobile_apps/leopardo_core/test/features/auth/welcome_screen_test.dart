@@ -24,10 +24,9 @@ void main() {
 
     // Brand header.
     expect(find.text('Leopardo RH'), findsOneWidget);
-    expect(
-      find.text('Votre journée commence ici, pas dans un back-office.'),
-      findsOneWidget,
-    );
+
+    // Hero title is localized via the ARB catalog (fr).
+    expect(find.text(AppLocalizations.of(tester.element(find.byType(WelcomeScreen))).welcomeHeroTitle), findsOneWidget);
 
     // The first current capability is visible.
     expect(find.text('Mon équipe'), findsOneWidget);

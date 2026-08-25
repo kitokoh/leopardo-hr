@@ -150,6 +150,6 @@ class PayrollController extends Controller
 
         $this->payrollService->delete($payroll);
 
-        return response()->json(['message' => 'Payroll deleted successfully']);
+        return response()->json(['message' => __('payroll.payroll_deleted')]);
     }
 }

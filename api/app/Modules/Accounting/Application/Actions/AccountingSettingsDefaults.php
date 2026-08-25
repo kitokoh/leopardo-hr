@@ -12,8 +12,9 @@ use App\Support\CountryDefaults;
  * Issue #5232 : à la création d'une entreprise (événement CompanyCreated), une
  * ligne AccountingSettings est provisionnée avec :
  *   - devise + langue dérivées du registre pays existant (CountryDefaults) ;
- *   - taux de TVA standard par pays (défauts légaux, modifiables ensuite dans
- *     l'UI settings) ;
+ *   - taux de TVA par pays (défauts légaux 2026, modifiables ensuite dans
+ *     l'UI settings) — multi-taux quand le pays en a plusieurs (ex. DZ 19/9) ;
+ *   - mentions légales par défaut par pays ;
  *   - séries de numérotation par défaut (préfixe par type de document).
  *
  * Les mêmes défauts sont exposés à la volée par GET /accounting/settings quand
@@ -23,36 +24,56 @@ use App\Support\CountryDefaults;
 final class AccountingSettingsDefaults
 {
     /**
-     * Taux de TVA standard par pays (en %) — défauts légaux 2026, modifiables
-     * par l'entreprise (la TVA est paramétrable, jamais codée en dur dans les
-     * calculs : COMPTABILITE_CONCEPTION.md §8). Un pays absent du registre
-     * retombe sur 19 % (défaut documenté) ; la devise/langue, elles, viennent
-     * toujours de CountryDefaults.
+     * Taux de TVA par pays (en %) — défauts légaux 2026, modifiables par
+     * l'entreprise (la TVA est paramétrable, jamais codée en dur dans les
+     * calculs : COMPTABILITE_CONCEPTION.md §8). Issue #5271 : multi-taux par
+     * pays (DZ 19/9, MA 20, TN 19, SN 18, CI 18, ML 18, BF 18, BJ 18, TG 18,
+     * NE 19, CM 19,25, GA 18, CG 18,9, TD 18, CF 19, GQ 15, FR 20, TR 20,
+     * GB 20, US 0, CA 5). Un pays absent retombe sur le taux standard 19 %.
      *
-     * @var array<string, int|float>
+     * @var array<string, array<int, array{label: string, rate: int|float}>>
      */
-    private const TVA_STANDARD_BY_COUNTRY = [
-        'DZ' => 19.0,
-        'MA' => 20.0,
-        'TN' => 19.0,
-        'SN' => 18.0,
-        'CI' => 18.0,
-        'ML' => 18.0,
-        'BF' => 18.0,
-        'BJ' => 18.0,
-        'TG' => 18.0,
-        'NE' => 19.0,
-        'CM' => 19.25,
-        'GA' => 18.0,
-        'CG' => 18.9,
-        'TD' => 18.0,
-        'CF' => 19.0,
-        'GQ' => 15.0,
-        'FR' => 20.0,
-        'TR' => 20.0,
-        'GB' => 20.0,
-        'US' => 0.0,
-        'CA' => 5.0,
+    private const TVA_RATES_BY_COUNTRY = [
+        'DZ' => [
+            ['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 19],
+            ['label' => 'TVA réduite', 'label_key' => 'reduced', 'rate' => 9],
+        ],
+        'MA' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 20]],
+        'TN' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 19]],
+        'SN' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 18]],
+        'CI' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 18]],
+        'ML' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 18]],
+        'BF' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 18]],
+        'BJ' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 18]],
+        'TG' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 18]],
+        'NE' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 19]],
+        'CM' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 19.25]],
+        'GA' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 18]],
+        'CG' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 18.9]],
+        'TD' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 18]],
+        'CF' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 19]],
+        'GQ' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 15]],
+        'FR' => [['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 20]],
+        'TR' => [['label' => 'KDV standart', 'label_key' => 'standard', 'rate' => 20]],
+        'GB' => [['label' => 'VAT standard', 'label_key' => 'standard', 'rate' => 20]],
+        'US' => [['label' => 'Sales tax', 'label_key' => 'sales_tax', 'rate' => 0]],
+        'CA' => [['label' => 'GST', 'label_key' => 'gst', 'rate' => 5]],
+    ];
+
+    /**
+     * Mentions légales par défaut par pays (issue #5271) — exemples types,
+     * modifiables par l'entreprise. Un pays absent → aucune mention (null).
+     *
+     * @var array<string, string>
+     */
+    private const LEGAL_MENTIONS_BY_COUNTRY = [
+        'DZ' => 'RC {rc} — NIF {nif} — Article 54 de la loi de finances (TVA) — Capital social : {capital} DZD',
+        'MA' => 'RC {rc} — IF {if} — ICE {ice} — Patente : {patente} — Capital social : {capital} MAD',
+        'TN' => 'Matricule fiscal {matricule} — Registre de commerce {rc} — Capital social : {capital} TND',
+        'SN' => 'RCCM {rccm} — NINEA {ninea} — Capital social : {capital} XOF',
+        'CI' => 'RCCM {rccm} — NIF {nif} — Capital social : {capital} XOF',
+        'FR' => 'SIRET {siret} — TVA intracommunautaire : {tva_intra} — Capital social : {capital} EUR',
+        'TR' => 'Vergi No {vergi_no} — Ticaret Sicil No {sicil_no} — Sermaye : {capital} TRY',
     ];
 
     /**
@@ -86,12 +107,9 @@ final class AccountingSettingsDefaults
             'document_language' => strtolower($defaults['language']),
             'template_style' => 'modern',
             'payment_terms' => null,
-            'legal_mentions' => null,
-            'tva_rates' => [
-                [
-                    'label' => 'TVA standard',
-                    'rate' => self::TVA_STANDARD_BY_COUNTRY[$countryCode] ?? 19.0,
-                ],
+            'legal_mentions' => self::LEGAL_MENTIONS_BY_COUNTRY[$countryCode] ?? null,
+            'tva_rates' => self::TVA_RATES_BY_COUNTRY[$countryCode] ?? [
+                ['label' => 'TVA standard', 'label_key' => 'standard', 'rate' => 19],
             ],
             'number_series' => self::DEFAULT_SERIES,
         ];

@@ -135,7 +135,7 @@ abstract class TestCase extends BaseTestCase
             Schema::createDatabase($database);
         } catch (QueryException $exception) {
             // 42P04 duplicate_database → base déjà créée par un test précédent.
-            if (! str_contains($exception->getMessage(), '42P04')) {
+            if ($exception->getCode() !== '42P04' && ! str_contains($exception->getMessage(), '42P04')) {
                 throw $exception;
             }
         }

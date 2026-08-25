@@ -9852,6 +9852,930 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Échec : {error}'**
   String teamActionError(Object error);
+
+  /// No description provided for @attendanceAccountSuspended.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte suspendu ou accès refusé.'**
+  String get attendanceAccountSuspended;
+
+  /// No description provided for @attendanceBeforeDeductions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant déductions légales'**
+  String get attendanceBeforeDeductions;
+
+  /// No description provided for @attendanceBreakRegistered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pause enregistrée.'**
+  String get attendanceBreakRegistered;
+
+  /// No description provided for @attendanceCheckinConfirmed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrivée confirmée.'**
+  String get attendanceCheckinConfirmed;
+
+  /// No description provided for @attendanceCheckinNormal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrivée normale'**
+  String get attendanceCheckinNormal;
+
+  /// No description provided for @attendanceCheckinNotConfirmed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrivée non confirmée'**
+  String get attendanceCheckinNotConfirmed;
+
+  /// No description provided for @attendanceCheckinRegistered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrivée enregistrée à l\'instant.'**
+  String get attendanceCheckinRegistered;
+
+  /// No description provided for @attendanceCheckoutConfirmed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Départ confirmé.'**
+  String get attendanceCheckoutConfirmed;
+
+  /// No description provided for @attendanceCheckoutNotConfirmed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Départ non confirmé'**
+  String get attendanceCheckoutNotConfirmed;
+
+  /// No description provided for @attendanceCheckoutRegistered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Départ enregistré à l\'instant.'**
+  String get attendanceCheckoutRegistered;
+
+  /// No description provided for @attendanceCloseTask.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clôturer la tâche'**
+  String get attendanceCloseTask;
+
+  /// No description provided for @attendanceCorrectionApplied.
+  ///
+  /// In fr, this message translates to:
+  /// **'La correction sera appliquée au dossier de pointage.'**
+  String get attendanceCorrectionApplied;
+
+  /// No description provided for @attendanceCorrectionDirectBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Corriger directement cette ligne de pointage.'**
+  String get attendanceCorrectionDirectBody;
+
+  /// No description provided for @attendanceCorrectionDirectSnack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointage du {date} modifié.'**
+  String attendanceCorrectionDirectSnack(Object date);
+
+  /// No description provided for @attendanceCorrectionEditDateTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le {date}'**
+  String attendanceCorrectionEditDateTitle(Object date);
+
+  /// No description provided for @attendanceCorrectionRequestBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumettre une correction au RH pour validation.'**
+  String get attendanceCorrectionRequestBody;
+
+  /// No description provided for @attendanceCorrectionRequestSnack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande du {date} soumise au RH - vous serez notifié de la décision.'**
+  String attendanceCorrectionRequestSnack(Object date);
+
+  /// No description provided for @attendanceCorrectionSentToHr.
+  ///
+  /// In fr, this message translates to:
+  /// **'La demande sera transmise au RH pour validation.'**
+  String get attendanceCorrectionSentToHr;
+
+  /// No description provided for @attendanceCurrentMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois actuel'**
+  String get attendanceCurrentMonth;
+
+  /// No description provided for @attendanceDayDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détail par jour'**
+  String get attendanceDayDetail;
+
+  /// No description provided for @attendanceDayDetails.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détails de la journée'**
+  String get attendanceDayDetails;
+
+  /// No description provided for @attendanceDayDetailsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les pointages, pauses, heures supp et temps réel.'**
+  String get attendanceDayDetailsBody;
+
+  /// No description provided for @attendanceDayNoSessionsYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette journée ne contient pas encore de pointage.'**
+  String get attendanceDayNoSessionsYet;
+
+  /// No description provided for @attendanceDaySessionsSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'{sessions} session(s) - {hours} travaillées.'**
+  String attendanceDaySessionsSummary(Object hours, Object sessions);
+
+  /// No description provided for @attendanceDayTodayLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get attendanceDayTodayLabel;
+
+  /// No description provided for @attendanceDayYesterdayLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hier'**
+  String get attendanceDayYesterdayLabel;
+
+  /// No description provided for @attendanceDaysAbsentShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} abs.'**
+  String attendanceDaysAbsentShort(Object count);
+
+  /// No description provided for @attendanceDaysPresentRatio.
+  ///
+  /// In fr, this message translates to:
+  /// **'{present} jours présents / {working} ouvrés'**
+  String attendanceDaysPresentRatio(Object present, Object working);
+
+  /// No description provided for @attendanceDeductionsLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retenues'**
+  String get attendanceDeductionsLabel;
+
+  /// No description provided for @attendanceDeductionsSub.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déductions : {amount}'**
+  String attendanceDeductionsSub(Object amount);
+
+  /// No description provided for @attendanceEndWork.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminer le travail'**
+  String get attendanceEndWork;
+
+  /// No description provided for @attendanceEstimateDisclaimer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Estimation non officielle. Le bulletin de paie fait foi.'**
+  String get attendanceEstimateDisclaimer;
+
+  /// No description provided for @attendanceEstimatedEarnings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gain estimé'**
+  String get attendanceEstimatedEarnings;
+
+  /// No description provided for @attendanceFinish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminer'**
+  String get attendanceFinish;
+
+  /// No description provided for @attendanceGrossEstimate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gain brut estimé'**
+  String get attendanceGrossEstimate;
+
+  /// No description provided for @attendanceGrossLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brut'**
+  String get attendanceGrossLabel;
+
+  /// No description provided for @attendanceHistoryEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rien ici pour le moment. Vos pointages apparaîtront au fur et à mesure.'**
+  String get attendanceHistoryEmpty;
+
+  /// No description provided for @attendanceHoursLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Heures'**
+  String get attendanceHoursLabel;
+
+  /// No description provided for @attendanceHoursWorkedLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Heures travaillées'**
+  String get attendanceHoursWorkedLabel;
+
+  /// No description provided for @attendanceIncludedGross.
+  ///
+  /// In fr, this message translates to:
+  /// **'Incluses dans le gain brut'**
+  String get attendanceIncludedGross;
+
+  /// No description provided for @attendanceIncludedGrossShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Incluses brut'**
+  String get attendanceIncludedGrossShort;
+
+  /// No description provided for @attendanceInvalidDuration.
+  ///
+  /// In fr, this message translates to:
+  /// **'Durée invalide'**
+  String get attendanceInvalidDuration;
+
+  /// No description provided for @attendanceInvalidPayload.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données de pointage invalides.'**
+  String get attendanceInvalidPayload;
+
+  /// No description provided for @attendanceLateMinutes.
+  ///
+  /// In fr, this message translates to:
+  /// **'{minutes} min'**
+  String attendanceLateMinutes(Object minutes);
+
+  /// No description provided for @attendanceLoadDegradedNotice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les données du jour prennent plus de temps que prévu. L\'écran reste utilisable, vous pouvez actualiser.'**
+  String get attendanceLoadDegradedNotice;
+
+  /// No description provided for @attendanceLoadFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les données : {error}'**
+  String attendanceLoadFailed(Object error);
+
+  /// No description provided for @attendanceMarkDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marquer terminée'**
+  String get attendanceMarkDone;
+
+  /// No description provided for @attendanceMonthEmptyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Si aucune donnée n\'existe encore, un résumé vide sera affiché.'**
+  String get attendanceMonthEmptyHint;
+
+  /// No description provided for @attendanceMonthLoadedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le mois est bien chargé. Les gains et heures resteront à zéro tant qu\'aucun pointage valide n\'existe.'**
+  String get attendanceMonthLoadedHint;
+
+  /// No description provided for @attendanceMonthSyncing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Synchronisation du mois...'**
+  String get attendanceMonthSyncing;
+
+  /// No description provided for @attendanceMyMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon mois'**
+  String get attendanceMyMonth;
+
+  /// No description provided for @attendanceNetEstimate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Net estimé'**
+  String get attendanceNetEstimate;
+
+  /// No description provided for @attendanceNextMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois suivant'**
+  String get attendanceNextMonth;
+
+  /// No description provided for @attendanceNoHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun historique'**
+  String get attendanceNoHistory;
+
+  /// No description provided for @attendanceNoLogToEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune ligne de pointage existante à modifier pour ce jour.'**
+  String get attendanceNoLogToEdit;
+
+  /// No description provided for @attendanceNoPunchForDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun pointage enregistré pour cette journée.'**
+  String get attendanceNoPunchForDay;
+
+  /// No description provided for @attendanceNoSession.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune session'**
+  String get attendanceNoSession;
+
+  /// No description provided for @attendanceOutsideZoneManagerNotice.
+  ///
+  /// In fr, this message translates to:
+  /// **'{fallback} Pointage hors zone détecté; contrôlez le contexte avant validation RH.'**
+  String attendanceOutsideZoneManagerNotice(Object fallback);
+
+  /// No description provided for @attendanceOutsideZoneNotice.
+  ///
+  /// In fr, this message translates to:
+  /// **'{fallback} Vous semblez hors de la zone autorisée; votre manager sera notifié si la règle entreprise l\'exige.'**
+  String attendanceOutsideZoneNotice(Object fallback);
+
+  /// No description provided for @attendanceOvertimeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Heures supplémentaires'**
+  String get attendanceOvertimeLabel;
+
+  /// No description provided for @attendanceOvertimeShortLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Heures supp'**
+  String get attendanceOvertimeShortLabel;
+
+  /// No description provided for @attendancePersonalTracking.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivi personnel'**
+  String get attendancePersonalTracking;
+
+  /// No description provided for @attendancePresence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présence'**
+  String get attendancePresence;
+
+  /// No description provided for @attendancePreviousMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois précédent'**
+  String get attendancePreviousMonth;
+
+  /// No description provided for @attendancePunchFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le pointage n\'a pas pu être confirmé. Vérifiez la connexion puis réessayez.'**
+  String get attendancePunchFailed;
+
+  /// No description provided for @attendanceRealCheckinRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrivée réelle *'**
+  String get attendanceRealCheckinRequired;
+
+  /// No description provided for @attendanceRealCheckout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Départ réel'**
+  String get attendanceRealCheckout;
+
+  /// No description provided for @attendanceRealTime.
+  ///
+  /// In fr, this message translates to:
+  /// **'Temps réel'**
+  String get attendanceRealTime;
+
+  /// No description provided for @attendanceRealTimeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Indiquez le temps réel et une note courte avant le départ.'**
+  String get attendanceRealTimeHint;
+
+  /// No description provided for @attendanceRefresh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actualiser'**
+  String get attendanceRefresh;
+
+  /// No description provided for @attendanceRequestCorrection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demander une modification'**
+  String get attendanceRequestCorrection;
+
+  /// No description provided for @attendanceRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get attendanceRetry;
+
+  /// No description provided for @attendanceRoleForbidden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre rôle ne permet pas cette action de pointage.'**
+  String get attendanceRoleForbidden;
+
+  /// No description provided for @attendanceSaveDeparture.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer le départ de cette session'**
+  String get attendanceSaveDeparture;
+
+  /// No description provided for @attendanceSeeHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir l\'historique'**
+  String get attendanceSeeHistory;
+
+  /// No description provided for @attendanceSendCheckin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi de l\'arrivée'**
+  String get attendanceSendCheckin;
+
+  /// No description provided for @attendanceSendCheckout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi du départ'**
+  String get attendanceSendCheckout;
+
+  /// No description provided for @attendanceSendModificationFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'envoyer la modification pour le moment.'**
+  String get attendanceSendModificationFailed;
+
+  /// No description provided for @attendanceSessionRange.
+  ///
+  /// In fr, this message translates to:
+  /// **'{from} -> {to}'**
+  String attendanceSessionRange(Object from, Object to);
+
+  /// No description provided for @attendanceStartDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Démarrer la journée'**
+  String get attendanceStartDay;
+
+  /// No description provided for @attendanceSummaryUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résumé indisponible'**
+  String get attendanceSummaryUnavailable;
+
+  /// No description provided for @attendanceTask.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâche'**
+  String get attendanceTask;
+
+  /// No description provided for @attendanceTaskDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâche terminée.'**
+  String get attendanceTaskDone;
+
+  /// No description provided for @attendanceTaskFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec : {error}'**
+  String attendanceTaskFailed(Object error);
+
+  /// No description provided for @attendanceTaskNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Note de réalisation'**
+  String get attendanceTaskNote;
+
+  /// No description provided for @attendanceTasksSectionTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'TACHES DU JOUR'**
+  String get attendanceTasksSectionTitle;
+
+  /// No description provided for @attendanceTasksSyncing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Synchronisation des tâches du jour...'**
+  String get attendanceTasksSyncing;
+
+  /// No description provided for @attendanceToPunch.
+  ///
+  /// In fr, this message translates to:
+  /// **'À pointer'**
+  String get attendanceToPunch;
+
+  /// No description provided for @attendanceTotalDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total jours'**
+  String get attendanceTotalDays;
+
+  /// No description provided for @attendanceTotalHours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total heures'**
+  String get attendanceTotalHours;
+
+  /// No description provided for @attendanceTotalLate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retard cumulé'**
+  String get attendanceTotalLate;
+
+  /// No description provided for @attendanceWorkedTime.
+  ///
+  /// In fr, this message translates to:
+  /// **'Temps travaillé'**
+  String get attendanceWorkedTime;
+
+  /// No description provided for @payrollAdvancesDeducted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avances déduites'**
+  String get payrollAdvancesDeducted;
+
+  /// No description provided for @payrollAlreadyPaid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déjà payé'**
+  String get payrollAlreadyPaid;
+
+  /// No description provided for @payrollBalanceUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Solde temporairement indisponible'**
+  String get payrollBalanceUnavailable;
+
+  /// No description provided for @payrollDocsUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Documents temporairement indisponibles'**
+  String get payrollDocsUnavailable;
+
+  /// No description provided for @payrollDocumentDownloaded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Document téléchargé : {path}'**
+  String payrollDocumentDownloaded(Object path);
+
+  /// No description provided for @payrollDownloadPayslip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Télécharger le bulletin PDF'**
+  String get payrollDownloadPayslip;
+
+  /// No description provided for @payrollDownloading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléchargement en cours'**
+  String get payrollDownloading;
+
+  /// No description provided for @payrollEmptyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos fiches de paie apparaîtront ici dès qu\'elles seront validées.'**
+  String get payrollEmptyHint;
+
+  /// No description provided for @payrollError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur : {error}'**
+  String payrollError(Object error);
+
+  /// No description provided for @payrollLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des fiches de paie'**
+  String get payrollLoading;
+
+  /// No description provided for @payrollMonthLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois {month}/{year}'**
+  String payrollMonthLabel(Object month, Object year);
+
+  /// No description provided for @payrollMyBalance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon solde'**
+  String get payrollMyBalance;
+
+  /// No description provided for @payrollNextPayment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prochaine paie prévue le {date}'**
+  String payrollNextPayment(Object date);
+
+  /// No description provided for @payrollNoCycleDocuments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun document généré pour ce cycle. Les reçus apparaîtront après paiement.'**
+  String get payrollNoCycleDocuments;
+
+  /// No description provided for @payrollNoPayslips.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune fiche de paie'**
+  String get payrollNoPayslips;
+
+  /// No description provided for @payrollNoReceipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun reçu ou bordereau disponible pour le moment.'**
+  String get payrollNoReceipts;
+
+  /// No description provided for @payrollOvertimeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'heures supp'**
+  String get payrollOvertimeLabel;
+
+  /// No description provided for @payrollPaymentDocuments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Documents paiement'**
+  String get payrollPaymentDocuments;
+
+  /// No description provided for @payrollPaymentDocumentsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Documents de paiement'**
+  String get payrollPaymentDocumentsTitle;
+
+  /// No description provided for @payrollPdfDownloaded.
+  ///
+  /// In fr, this message translates to:
+  /// **'PDF téléchargé : {path}'**
+  String payrollPdfDownloaded(Object path);
+
+  /// No description provided for @payrollPeriodRange.
+  ///
+  /// In fr, this message translates to:
+  /// **'{start} - {end}'**
+  String payrollPeriodRange(Object end, Object start);
+
+  /// No description provided for @payrollRecentPayslips.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bulletins récents'**
+  String get payrollRecentPayslips;
+
+  /// No description provided for @payrollRemainingToPay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reste à payer'**
+  String get payrollRemainingToPay;
+
+  /// No description provided for @payrollRemainingToReceive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reste à recevoir'**
+  String get payrollRemainingToReceive;
+
+  /// No description provided for @payrollSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Solde courant, avances et bulletins'**
+  String get payrollSubtitle;
+
+  /// No description provided for @payrollSummaryUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résumé paie temporairement indisponible'**
+  String get payrollSummaryUnavailable;
+
+  /// No description provided for @payrollTeamBalance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Solde équipe'**
+  String get payrollTeamBalance;
+
+  /// No description provided for @payrollTeamMembers.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} collaborateur(s)'**
+  String payrollTeamMembers(Object count);
+
+  /// No description provided for @payrollTeamSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soldes, avances et bulletins'**
+  String get payrollTeamSubtitle;
+
+  /// No description provided for @payrollTeamTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paie équipe'**
+  String get payrollTeamTitle;
+
+  /// No description provided for @payrollTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paie et solde'**
+  String get payrollTitle;
+
+  /// No description provided for @payrollValidatedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les bulletins valides apparaîtront ici après traitement.'**
+  String get payrollValidatedHint;
+
+  /// No description provided for @smartAttendanceActiveMode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mode actif'**
+  String get smartAttendanceActiveMode;
+
+  /// No description provided for @smartAttendanceApprove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Approuver'**
+  String get smartAttendanceApprove;
+
+  /// No description provided for @smartAttendanceCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get smartAttendanceCancel;
+
+  /// No description provided for @smartAttendanceChangeMode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer mon mode de pointage'**
+  String get smartAttendanceChangeMode;
+
+  /// No description provided for @smartAttendanceConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer'**
+  String get smartAttendanceConfirm;
+
+  /// No description provided for @smartAttendanceDashboard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointage GPS — tableau de bord'**
+  String get smartAttendanceDashboard;
+
+  /// No description provided for @smartAttendanceDashboardTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointage GPS — tableau de bord'**
+  String get smartAttendanceDashboardTitle;
+
+  /// No description provided for @smartAttendanceError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur : {message}'**
+  String smartAttendanceError(Object message);
+
+  /// No description provided for @smartAttendanceForced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Imposé'**
+  String get smartAttendanceForced;
+
+  /// No description provided for @smartAttendanceGpsAuto.
+  ///
+  /// In fr, this message translates to:
+  /// **'GPS Automatique'**
+  String get smartAttendanceGpsAuto;
+
+  /// No description provided for @smartAttendanceGpsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Smart Attendance — GPS'**
+  String get smartAttendanceGpsTitle;
+
+  /// No description provided for @smartAttendanceManual.
+  ///
+  /// In fr, this message translates to:
+  /// **'Manuel'**
+  String get smartAttendanceManual;
+
+  /// No description provided for @smartAttendanceNoGpsSessions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune session GPS pour le moment.'**
+  String get smartAttendanceNoGpsSessions;
+
+  /// No description provided for @smartAttendanceNoPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune session en attente'**
+  String get smartAttendanceNoPending;
+
+  /// No description provided for @smartAttendanceNoPendingSessions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune session en attente de validation'**
+  String get smartAttendanceNoPendingSessions;
+
+  /// No description provided for @smartAttendancePending.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente'**
+  String get smartAttendancePending;
+
+  /// No description provided for @smartAttendancePendingCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} en attente'**
+  String smartAttendancePendingCount(Object count);
+
+  /// No description provided for @smartAttendanceQr.
+  ///
+  /// In fr, this message translates to:
+  /// **'QR Code'**
+  String get smartAttendanceQr;
+
+  /// No description provided for @smartAttendanceReject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejeter'**
+  String get smartAttendanceReject;
+
+  /// No description provided for @smartAttendanceRejectHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expliquez la raison du rejet...'**
+  String get smartAttendanceRejectHint;
+
+  /// No description provided for @smartAttendanceRejectReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif du rejet'**
+  String get smartAttendanceRejectReason;
+
+  /// No description provided for @smartAttendanceSessionExit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sortie : {time} · {duration}'**
+  String smartAttendanceSessionExit(Object duration, Object time);
+
+  /// No description provided for @smartAttendanceSessionsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sessions Smart Attendance'**
+  String get smartAttendanceSessionsTitle;
+
+  /// No description provided for @smartAttendanceSmart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointage Intelligent'**
+  String get smartAttendanceSmart;
+
+  /// No description provided for @smartAttendanceSurveillanceActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Surveillance active'**
+  String get smartAttendanceSurveillanceActive;
+
+  /// No description provided for @smartAttendanceSurveillanceInactive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Surveillance inactive'**
+  String get smartAttendanceSurveillanceInactive;
+
+  /// No description provided for @smartAttendanceTapToReview.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appuyez pour valider ou rejeter'**
+  String get smartAttendanceTapToReview;
+
+  /// No description provided for @smartAttendanceTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Smart Attendance'**
+  String get smartAttendanceTitle;
+
+  /// No description provided for @smartAttendanceTodayTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui — {date}'**
+  String smartAttendanceTodayTitle(Object date);
+
+  /// No description provided for @smartAttendanceZoneSurveillance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Surveillance de zone'**
+  String get smartAttendanceZoneSurveillance;
 }
 
 class _AppLocalizationsDelegate

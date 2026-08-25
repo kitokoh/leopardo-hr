@@ -69,7 +69,10 @@ class TrialProvisioningStatusTest extends TestCase
 
     public function test_status_returns_ready_with_login_url(): void
     {
-        $provisionedAt = now();
+        // Valeur FIXE : la version initiale comparait deux now() (insertion
+        // vs assertion) — course temporelle microseconde (timestampTz) →
+        // échec intermittent ~2/3 des runs. Déterministe désormais.
+        $provisionedAt = \Illuminate\Support\Carbon::parse('2026-01-15T10:00:00+00:00');
 
         DB::table('trial_provisionings')->insert([
             'email' => 'prospect@demo.com',

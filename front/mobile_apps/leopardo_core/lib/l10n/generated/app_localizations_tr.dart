@@ -5245,4 +5245,536 @@ class AppLocalizationsTr extends AppLocalizations {
   String teamActionError(Object error) {
     return 'Hata: $error';
   }
+
+  @override
+  String get attendanceAccountSuspended =>
+      'Hesap askıya alındı veya erişim reddedildi.';
+
+  @override
+  String get attendanceBeforeDeductions => 'Yasal kesintilerden önce';
+
+  @override
+  String get attendanceBreakRegistered => 'Mola kaydedildi.';
+
+  @override
+  String get attendanceCheckinConfirmed => 'Giriş onaylandı.';
+
+  @override
+  String get attendanceCheckinNormal => 'Normal giriş';
+
+  @override
+  String get attendanceCheckinNotConfirmed => 'Giriş onaylanmadı';
+
+  @override
+  String get attendanceCheckinRegistered => 'Giriş az önce kaydedildi.';
+
+  @override
+  String get attendanceCheckoutConfirmed => 'Çıkış onaylandı.';
+
+  @override
+  String get attendanceCheckoutNotConfirmed => 'Çıkış onaylanmadı';
+
+  @override
+  String get attendanceCheckoutRegistered => 'Çıkış az önce kaydedildi.';
+
+  @override
+  String get attendanceCloseTask => 'Görevi kapat';
+
+  @override
+  String get attendanceCorrectionApplied =>
+      'Düzeltme yoklama kaydına uygulanacak.';
+
+  @override
+  String get attendanceCorrectionDirectBody =>
+      'Bu yoklama satırını doğrudan düzeltin.';
+
+  @override
+  String attendanceCorrectionDirectSnack(Object date) {
+    return '$date yoklaması düzenlendi.';
+  }
+
+  @override
+  String attendanceCorrectionEditDateTitle(Object date) {
+    return '$date düzenle';
+  }
+
+  @override
+  String get attendanceCorrectionRequestBody =>
+      'Onay için İK\'ya bir düzeltme gönderin.';
+
+  @override
+  String attendanceCorrectionRequestSnack(Object date) {
+    return '$date talebi İK\'ya iletildi - karardan haberdar edileceksiniz.';
+  }
+
+  @override
+  String get attendanceCorrectionSentToHr =>
+      'Talep, onay için İK\'ya iletilecek.';
+
+  @override
+  String get attendanceCurrentMonth => 'Geçerli ay';
+
+  @override
+  String get attendanceDayDetail => 'Günlük detay';
+
+  @override
+  String get attendanceDayDetails => 'Gün detayları';
+
+  @override
+  String get attendanceDayDetailsBody =>
+      'Yoklamaları, molaları, fazla mesaiyi ve gerçek zamanı görün.';
+
+  @override
+  String get attendanceDayNoSessionsYet => 'Bu gün henüz yoklama içermiyor.';
+
+  @override
+  String attendanceDaySessionsSummary(Object hours, Object sessions) {
+    return '$sessions oturum - $hours çalışıldı.';
+  }
+
+  @override
+  String get attendanceDayTodayLabel => 'Bugün';
+
+  @override
+  String get attendanceDayYesterdayLabel => 'Dün';
+
+  @override
+  String attendanceDaysAbsentShort(Object count) {
+    return '$count devamsızlık';
+  }
+
+  @override
+  String attendanceDaysPresentRatio(Object present, Object working) {
+    return '$present gün devam / $working iş günü';
+  }
+
+  @override
+  String get attendanceDeductionsLabel => 'Kesintiler';
+
+  @override
+  String attendanceDeductionsSub(Object amount) {
+    return 'Kesintiler: $amount';
+  }
+
+  @override
+  String get attendanceEndWork => 'İşi bitir';
+
+  @override
+  String get attendanceEstimateDisclaimer =>
+      'Resmi olmayan tahmin. Maaş bordrosu esastır.';
+
+  @override
+  String get attendanceEstimatedEarnings => 'Tahmini kazanç';
+
+  @override
+  String get attendanceFinish => 'Bitir';
+
+  @override
+  String get attendanceGrossEstimate => 'Tahmini brüt kazanç';
+
+  @override
+  String get attendanceGrossLabel => 'Brüt';
+
+  @override
+  String get attendanceHistoryEmpty =>
+      'Şu anda bir şey yok. Yoklamalarınız zamanla görünecek.';
+
+  @override
+  String get attendanceHoursLabel => 'Saatler';
+
+  @override
+  String get attendanceHoursWorkedLabel => 'Çalışılan saat';
+
+  @override
+  String get attendanceIncludedGross => 'Brüt kazanca dahil';
+
+  @override
+  String get attendanceIncludedGrossShort => 'Brüte dahil';
+
+  @override
+  String get attendanceInvalidDuration => 'Geçersiz süre';
+
+  @override
+  String get attendanceInvalidPayload => 'Geçersiz yoklama verisi.';
+
+  @override
+  String attendanceLateMinutes(Object minutes) {
+    return '$minutes dk';
+  }
+
+  @override
+  String get attendanceLoadDegradedNotice =>
+      'Bugünün verileri beklenenden uzun sürüyor. Ekran kullanılabilir durumda, yenileyebilirsiniz.';
+
+  @override
+  String attendanceLoadFailed(Object error) {
+    return 'Veriler yüklenemedi: $error';
+  }
+
+  @override
+  String get attendanceMarkDone => 'Tamamlandı olarak işaretle';
+
+  @override
+  String get attendanceMonthEmptyHint =>
+      'Henüz veri yoksa boş bir özet gösterilecek.';
+
+  @override
+  String get attendanceMonthLoadedHint =>
+      'Ay yüklendi. Geçerli bir yoklama olana kadar kazanç ve saatler sıfır kalır.';
+
+  @override
+  String get attendanceMonthSyncing => 'Ay senkronize ediliyor...';
+
+  @override
+  String get attendanceMyMonth => 'Ayım';
+
+  @override
+  String get attendanceNetEstimate => 'Tahmini net';
+
+  @override
+  String get attendanceNextMonth => 'Sonraki ay';
+
+  @override
+  String get attendanceNoHistory => 'Geçmiş yok';
+
+  @override
+  String get attendanceNoLogToEdit =>
+      'Bu gün için düzenlenecek yoklama satırı yok.';
+
+  @override
+  String get attendanceNoPunchForDay => 'Bu gün için yoklama kaydedilmedi.';
+
+  @override
+  String get attendanceNoSession => 'Oturum yok';
+
+  @override
+  String attendanceOutsideZoneManagerNotice(Object fallback) {
+    return '$fallback Bölge dışı yoklama algılandı; İK onayından önce bağlamı kontrol edin.';
+  }
+
+  @override
+  String attendanceOutsideZoneNotice(Object fallback) {
+    return '$fallback İzin verilen bölgenin dışındasınız; şirket kuralı gerektiriyorsa yöneticiniz bilgilendirilecek.';
+  }
+
+  @override
+  String get attendanceOvertimeLabel => 'Fazla mesai saatleri';
+
+  @override
+  String get attendanceOvertimeShortLabel => 'Fazla mesai';
+
+  @override
+  String get attendancePersonalTracking => 'Kişisel takip';
+
+  @override
+  String get attendancePresence => 'Devam';
+
+  @override
+  String get attendancePreviousMonth => 'Önceki ay';
+
+  @override
+  String get attendancePunchFailed =>
+      'Yoklama onaylanamadı. Bağlantınızı kontrol edip tekrar deneyin.';
+
+  @override
+  String get attendanceRealCheckinRequired => 'Gerçek giriş *';
+
+  @override
+  String get attendanceRealCheckout => 'Gerçek çıkış';
+
+  @override
+  String get attendanceRealTime => 'Gerçek süre';
+
+  @override
+  String get attendanceRealTimeHint =>
+      'Çıkmadan önce gerçek süreyi ve kısa bir not girin.';
+
+  @override
+  String get attendanceRefresh => 'Yenile';
+
+  @override
+  String get attendanceRequestCorrection => 'Düzeltme talep et';
+
+  @override
+  String get attendanceRetry => 'Tekrar dene';
+
+  @override
+  String get attendanceRoleForbidden =>
+      'Rolünüz bu yoklama işlemine izin vermiyor.';
+
+  @override
+  String get attendanceSaveDeparture => 'Bu oturumun çıkışını kaydet';
+
+  @override
+  String get attendanceSeeHistory => 'Geçmişi gör';
+
+  @override
+  String get attendanceSendCheckin => 'Giriş gönderiliyor';
+
+  @override
+  String get attendanceSendCheckout => 'Çıkış gönderiliyor';
+
+  @override
+  String get attendanceSendModificationFailed =>
+      'Değişiklik şu anda gönderilemiyor.';
+
+  @override
+  String attendanceSessionRange(Object from, Object to) {
+    return '$from -> $to';
+  }
+
+  @override
+  String get attendanceStartDay => 'Güne başla';
+
+  @override
+  String get attendanceSummaryUnavailable => 'Özet kullanılamıyor';
+
+  @override
+  String get attendanceTask => 'Görev';
+
+  @override
+  String get attendanceTaskDone => 'Görev tamamlandı.';
+
+  @override
+  String attendanceTaskFailed(Object error) {
+    return 'Başarısız: $error';
+  }
+
+  @override
+  String get attendanceTaskNote => 'Tamamlama notu';
+
+  @override
+  String get attendanceTasksSectionTitle => 'BUGÜNÜN GÖREVLERİ';
+
+  @override
+  String get attendanceTasksSyncing =>
+      'Bugünün görevleri senkronize ediliyor...';
+
+  @override
+  String get attendanceToPunch => 'Yoklama bekleniyor';
+
+  @override
+  String get attendanceTotalDays => 'Toplam gün';
+
+  @override
+  String get attendanceTotalHours => 'Toplam saat';
+
+  @override
+  String get attendanceTotalLate => 'Toplam gecikme';
+
+  @override
+  String get attendanceWorkedTime => 'Çalışılan süre';
+
+  @override
+  String get payrollAdvancesDeducted => 'Kesilen avanslar';
+
+  @override
+  String get payrollAlreadyPaid => 'Zaten ödendi';
+
+  @override
+  String get payrollBalanceUnavailable => 'Bakiye geçici olarak kullanılamıyor';
+
+  @override
+  String get payrollDocsUnavailable => 'Belgeler geçici olarak kullanılamıyor';
+
+  @override
+  String payrollDocumentDownloaded(Object path) {
+    return 'Belge indirildi: $path';
+  }
+
+  @override
+  String get payrollDownloadPayslip => 'PDF bordroyu indir';
+
+  @override
+  String get payrollDownloading => 'İndiriliyor';
+
+  @override
+  String get payrollEmptyHint =>
+      'Bordrolarınız onaylandığında burada görünecek.';
+
+  @override
+  String payrollError(Object error) {
+    return 'Hata: $error';
+  }
+
+  @override
+  String get payrollLoading => 'Bordrolar yükleniyor';
+
+  @override
+  String payrollMonthLabel(Object month, Object year) {
+    return 'Ay $month/$year';
+  }
+
+  @override
+  String get payrollMyBalance => 'Bakiyem';
+
+  @override
+  String payrollNextPayment(Object date) {
+    return 'Sonraki maaş $date';
+  }
+
+  @override
+  String get payrollNoCycleDocuments =>
+      'Bu dönem için belge oluşturulmadı. Makbuzlar ödemeden sonra görünecek.';
+
+  @override
+  String get payrollNoPayslips => 'Bordro yok';
+
+  @override
+  String get payrollNoReceipts => 'Şu anda mevcut makbuz veya slip yok.';
+
+  @override
+  String get payrollOvertimeLabel => 'fazla mesai';
+
+  @override
+  String get payrollPaymentDocuments => 'Ödeme belgeleri';
+
+  @override
+  String get payrollPaymentDocumentsTitle => 'Ödeme belgeleri';
+
+  @override
+  String payrollPdfDownloaded(Object path) {
+    return 'PDF indirildi: $path';
+  }
+
+  @override
+  String payrollPeriodRange(Object end, Object start) {
+    return '$start - $end';
+  }
+
+  @override
+  String get payrollRecentPayslips => 'Son bordrolar';
+
+  @override
+  String get payrollRemainingToPay => 'Ödenecek kalan';
+
+  @override
+  String get payrollRemainingToReceive => 'Alınacak kalan';
+
+  @override
+  String get payrollSubtitle => 'Güncel bakiye, avanslar ve bordrolar';
+
+  @override
+  String get payrollSummaryUnavailable =>
+      'Maaş özeti geçici olarak kullanılamıyor';
+
+  @override
+  String get payrollTeamBalance => 'Ekip bakiyesi';
+
+  @override
+  String payrollTeamMembers(Object count) {
+    return '$count çalışan';
+  }
+
+  @override
+  String get payrollTeamSubtitle => 'Bakiyeler, avanslar ve bordrolar';
+
+  @override
+  String get payrollTeamTitle => 'Ekip maaşı';
+
+  @override
+  String get payrollTitle => 'Maaş ve bakiye';
+
+  @override
+  String get payrollValidatedHint =>
+      'Geçerli bordrolar işlem sonrasında burada görünecek.';
+
+  @override
+  String get smartAttendanceActiveMode => 'Aktif mod';
+
+  @override
+  String get smartAttendanceApprove => 'Onayla';
+
+  @override
+  String get smartAttendanceCancel => 'İptal';
+
+  @override
+  String get smartAttendanceChangeMode => 'Yoklama modumu değiştir';
+
+  @override
+  String get smartAttendanceConfirm => 'Onayla';
+
+  @override
+  String get smartAttendanceDashboard => 'GPS yoklama — panel';
+
+  @override
+  String get smartAttendanceDashboardTitle => 'GPS yoklama — panel';
+
+  @override
+  String smartAttendanceError(Object message) {
+    return 'Hata: $message';
+  }
+
+  @override
+  String get smartAttendanceForced => 'Zorunlu';
+
+  @override
+  String get smartAttendanceGpsAuto => 'Otomatik GPS';
+
+  @override
+  String get smartAttendanceGpsTitle => 'Akıllı Yoklama — GPS';
+
+  @override
+  String get smartAttendanceManual => 'Manuel';
+
+  @override
+  String get smartAttendanceNoGpsSessions => 'Şu anda GPS oturumu yok.';
+
+  @override
+  String get smartAttendanceNoPending => 'Bekleyen oturum yok';
+
+  @override
+  String get smartAttendanceNoPendingSessions => 'Onay bekleyen oturum yok';
+
+  @override
+  String get smartAttendancePending => 'Beklemede';
+
+  @override
+  String smartAttendancePendingCount(Object count) {
+    return '$count bekliyor';
+  }
+
+  @override
+  String get smartAttendanceQr => 'QR Kod';
+
+  @override
+  String get smartAttendanceReject => 'Reddet';
+
+  @override
+  String get smartAttendanceRejectHint => 'Ret nedenini açıklayın...';
+
+  @override
+  String get smartAttendanceRejectReason => 'Ret nedeni';
+
+  @override
+  String smartAttendanceSessionExit(Object duration, Object time) {
+    return 'Çıkış: $time · $duration';
+  }
+
+  @override
+  String get smartAttendanceSessionsTitle => 'Akıllı yoklama oturumları';
+
+  @override
+  String get smartAttendanceSmart => 'Akıllı yoklama';
+
+  @override
+  String get smartAttendanceSurveillanceActive => 'İzleme aktif';
+
+  @override
+  String get smartAttendanceSurveillanceInactive => 'İzleme pasif';
+
+  @override
+  String get smartAttendanceTapToReview =>
+      'Onaylamak veya reddetmek için dokunun';
+
+  @override
+  String get smartAttendanceTitle => 'Akıllı Yoklama';
+
+  @override
+  String smartAttendanceTodayTitle(Object date) {
+    return 'Bugün — $date';
+  }
+
+  @override
+  String get smartAttendanceZoneSurveillance => 'Bölge izleme';
 }

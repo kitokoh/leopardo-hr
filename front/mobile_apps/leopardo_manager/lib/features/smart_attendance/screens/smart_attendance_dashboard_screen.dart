@@ -21,8 +21,8 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
 
     return MobilePage(
       appBar: MobileTopBar(
-        title: 'Smart Attendance',
-        subtitle: 'Pointage GPS — tableau de bord',
+        title: context.l10n.smartAttendanceTitle,
+        subtitle: context.l10n.smartAttendanceDashboardTitle,
         leading: IconButton(
           tooltip: context.l10n.back,
           icon: const Icon(Icons.arrow_back_rounded),
@@ -93,8 +93,7 @@ class _StatsGrid extends StatelessWidget {
     final pending = counters['pending_validation'] ?? 0;
     final approved = counters['approved'] ?? 0;
     final rejected = counters['rejected'] ?? 0;
-    final dateLabel =
-        (stats['today'] as String?) ??
+    final dateLabel = (stats['today'] as String?) ??
         DateFormat('yyyy-MM-dd').format(DateTime.now());
     DateTime? parsedDate;
     try {
@@ -127,7 +126,7 @@ class _StatsGrid extends StatelessWidget {
               icon: Icons.radar_outlined,
             ),
             _StatCard(
-              label: 'En attente',
+              label: context.l10n.smartAttendancePending,
               value: pending,
               color: AppColors.warning,
               icon: Icons.pending_actions_outlined,
@@ -220,7 +219,7 @@ class _PendingCard extends StatelessWidget {
             const SizedBox(width: 16),
             Expanded(
               child: Text(
-                'Aucune session en attente',
+                context.l10n.smartAttendanceNoPending,
                 style: AppTypography.body.copyWith(
                   color: MobileSurface.text,
                   fontWeight: FontWeight.w500,
@@ -257,7 +256,7 @@ class _PendingCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '$count session${count > 1 ? 's' : ''} en attente',
+                    context.l10n.smartAttendancePendingCount(count),
                     style: AppTypography.subtitle.copyWith(
                       color: AppColors.warning,
                       fontWeight: FontWeight.bold,
@@ -265,7 +264,7 @@ class _PendingCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Appuyez pour valider ou rejeter',
+                    context.l10n.smartAttendanceTapToReview,
                     style: AppTypography.bodySmall.copyWith(
                       color: MobileSurface.muted,
                     ),
@@ -296,7 +295,7 @@ class _ErrorCard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Erreur : $message',
+              context.l10n.smartAttendanceError(message),
               style: AppTypography.bodySmall.copyWith(color: AppColors.danger),
             ),
           ),

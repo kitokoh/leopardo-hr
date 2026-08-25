@@ -1,0 +1,82 @@
+<?php
+
+return [
+    // Document types (issue #5224)
+    'document_type_invoice' => 'Invoice',
+    'document_type_proforma' => 'Proforma',
+    'document_type_quote' => 'Quote',
+    'document_type_credit_note' => 'Credit note',
+    'document_type_delivery_note' => 'Delivery note',
+    'document_type_receipt' => 'Receipt',
+
+    // Statuses
+    'status_draft' => 'Draft',
+    'status_sent' => 'Sent',
+    'status_partially_paid' => 'Partially paid',
+    'status_paid' => 'Paid',
+    'status_cancelled' => 'Cancelled',
+    'status_overdue' => 'Overdue',
+
+    // Header / parties
+    'number' => 'No.',
+    'issue_date' => 'Issue date',
+    'due_date' => 'Due date',
+    'delivery_date' => 'Delivery date',
+    'from' => 'From',
+    'to' => 'Bill to',
+    'nif' => 'Tax ID',
+
+    // Lines
+    'description' => 'Description',
+    'quantity' => 'Qty',
+    'unit_price' => 'Unit price',
+    'discount' => 'Discount',
+    'amount' => 'Amount',
+
+    // Totals
+    'subtotal_ht' => 'Subtotal',
+    'tax' => 'Tax',
+    'total_ttc' => 'Total',
+    'paid' => 'Paid',
+    'remaining' => 'Balance due',
+    'page' => 'Page',
+    'page_of' => 'of',
+
+    'no_lines' => 'No lines',
+
+    // Footer
+    'legal_mentions' => 'Legal mentions',
+
+    // Validation (issue #5227)
+    'validation' => [
+        'amount_required' => 'The amount is required.',
+        'amount_min' => 'The amount must be strictly positive.',
+        'method_invalid' => 'Invalid payment method (cash, bank_transfer, check, card, other).',
+        'series_unknown' => 'Unknown series: « :key » is not a document type (:allowed).',
+    ],
+
+    // Business errors (issue #5227)
+    'errors' => [
+        'payment_amount_positive' => 'The payment amount must be strictly positive.',
+        'wf_invalid_type' => 'Invalid document type.',
+        'wf_requires_lines' => 'A document must have at least one line.',
+        'wf_send_draft_only' => 'Only a draft can be sent.',
+        'wf_send_no_lines' => 'Cannot send a document without lines.',
+        'wf_send_requires_contact' => 'A client contact is required to send an invoice or a credit note.',
+        'wf_payment_receive_status' => 'A paid or cancelled document cannot receive a payment.',
+        'wf_payment_over_total' => 'The total payments exceed the total amount of the document.',
+        'wf_cancel_status' => 'A paid document cannot be cancelled.',
+        'wf_credit_note_requires_invoice' => 'A credit note must be linked to an invoice.',
+        'wf_source_invoice_not_issuable' => 'A cancelled or draft invoice cannot generate a credit note.',
+        'wf_source_invoice_paid' => 'The source invoice is already fully paid: no credit note is possible.',
+        'wf_credit_exceeds_remaining' => 'The credit note amount exceeds the remaining balance of the source invoice.',
+        'wf_company_context' => 'Company context required.',
+    ],
+
+    // Default VAT labels (issue #5227)
+    'tva_label_standard' => 'Standard VAT',
+    'tva_label_sales_tax' => 'Sales tax',
+    'tva_label_gst' => 'GST',
+    'tva_label_reduced' => 'Reduced VAT',
+
+];

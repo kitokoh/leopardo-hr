@@ -84,7 +84,7 @@
             ".checkOut(",
             "requestCorrection",
             "_showCorrectionSheet",
-            "Mon mois complet",
+            "attendanceMenuMonthly",
             "attendanceNoClock"
           ]
         },
@@ -149,7 +149,7 @@
             "getMyBalance",
             "getPaymentDocuments",
             "downloadPaymentDocument",
-            "Documents paiement",
+            "payrollPaymentDocuments",
             "RefreshIndicator"
           ]
         },
@@ -329,8 +329,8 @@
             "getMobileSummary",
             "getPaymentDocumentsForPayrollRun",
             "downloadPaymentDocument",
-            "Solde equipe",
-            "Documents paiement",
+            "payrollTeamBalance",
+            "payrollPaymentDocuments",
             "_downloadPdf",
             "RefreshIndicator"
           ]

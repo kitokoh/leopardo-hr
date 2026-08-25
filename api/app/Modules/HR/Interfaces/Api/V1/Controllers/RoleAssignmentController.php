@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Events\EmployeeRoleAssigned;
-use App\Mail\RoleAssignmentMail;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Events\EmployeeRoleAssigned;
+use App\Http\Controllers\Controller;
+use App\Mail\RoleAssignmentMail;
 use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -70,10 +70,10 @@ class RoleAssignmentController extends Controller
                 : __('employees.role_removed'),
             'data' => [
                 'employee_id' => $employee->id,
-                'role'        => $employee->role,
+                'role' => $employee->role,
                 'manager_role' => $employee->manager_role,
-                'app_links'   => $newRole ? RoleInvitationService::getAppDownloadLink('manager', $newRole) : null,
-                'email_sent'  => (bool) $newRole,
+                'app_links' => $newRole ? RoleInvitationService::getAppDownloadLink('manager', $newRole) : null,
+                'email_sent' => (bool) $newRole,
             ],
         ]);
     }
@@ -93,22 +93,22 @@ class RoleAssignmentController extends Controller
         }
 
         $employees = Employee::where('company_id', $actor->company_id)
-            ->where('status', '!=', 'archived')
+            ->whereNotIn('status', ['archived', 'departed'])
             ->orderBy('last_name')
             ->get(['id', 'first_name', 'last_name', 'email', 'role', 'manager_role', 'status', 'photo_path']);
 
         return response()->json([
             'data' => $employees->map(fn (Employee $e) => [
-                'id'           => $e->id,
-                'name'         => trim("{$e->first_name} {$e->last_name}"),
-                'email'        => $e->email,
-                'role'         => $e->role,
+                'id' => $e->id,
+                'name' => trim("{$e->first_name} {$e->last_name}"),
+                'email' => $e->email,
+                'role' => $e->role,
                 'manager_role' => $e->manager_role,
-                'role_label'   => $e->manager_role
+                'role_label' => $e->manager_role
                     ? RoleInvitationService::getRoleLabel($e->manager_role)
                     : ($e->isManager() ? __('employees.role_manager') : __('employees.role_employee')),
-                'status'       => $e->status,
-                'photo_path'   => $e->photo_path,
+                'status' => $e->status,
+                'photo_path' => $e->photo_path,
             ]),
         ]);
     }

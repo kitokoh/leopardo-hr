@@ -1,0 +1,157 @@
+name: Accounting CI — Module Gate
+
+# Programme 100 % (Phase A, issue #5228) : pipeline dédié au module
+# Comptabilité — tests Feature + gate de coverage module ≥ 70 % (DoD #5228),
+# pattern `payroll-ci.yml` (F-14). Déclenché sur les chemins du module.
+#
+# Jobs :
+#   accounting-tests — tests Feature du module (modèles, enums, isolation tenant)
+#   coverage         — gate de coverage module Accounting ≥ 70 % (DoD #5228)
+#   i18n-scan        — #5227 : zéro chaîne hardcodée utilisateur + parité ×4
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/app/Modules/Accounting/**'
+      - 'api/database/migrations/**'
+      - 'api/tests/Feature/Accounting/**'
+      - 'api/lang/**'
+      - 'api/resources/views/pdf/**'
+      - 'front/admin-dashboard/src/i18n/**'
+      - 'docs/architecture/COMPTABILITE_CONCEPTION.md'
+      - 'dev-hub/tools/check-accounting-i18n.py'
+      - '.github/workflows/accounting-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'api/app/Modules/Accounting/**'
+      - 'api/database/migrations/**'
+      - 'api/tests/Feature/Accounting/**'
+      - 'api/lang/**'
+      - 'api/resources/views/pdf/**'
+      - 'front/admin-dashboard/src/i18n/**'
+      - 'docs/architecture/COMPTABILITE_CONCEPTION.md'
+      - 'dev-hub/tools/check-accounting-i18n.py'
+      - '.github/workflows/accounting-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: accounting-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  accounting-tests:
+    timeout-minutes: 45
+    name: Tests module Accounting
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: leopardo_test
+          POSTGRES_USER: leopardo_user
+          POSTGRES_PASSWORD: leopardo_pass_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U leopardo_user -d leopardo_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Setup backend (PHP + Composer + multi-tenant DB)
+        uses: ./.github/actions/setup-backend-db
+        with:
+          coverage: pcov
+
+      - name: Tests module Accounting
+        working-directory: api
+        run: |
+          set -euo pipefail
+          mkdir -p storage/coverage
+          php artisan test \
+            tests/Feature/Accounting \
+            --coverage-clover=storage/coverage/accounting-clover.xml \
+            --coverage-text 2>&1 | tee storage/coverage/accounting-summary.txt
+
+      - name: Gate coverage Accounting ≥ 70 % (DoD #5228)
+        id: coverage
+        run: |
+          # Calcule le coverage uniquement sur app/Modules/Accounting depuis
+          # le clover (même logique que payroll-ci.yml F-14 — les compteurs
+          # sont sur l'élément <metrics> enfant de <file>).
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          import os, sys
+
+          clover_path = 'api/storage/coverage/accounting-clover.xml'
+          if not os.path.exists(clover_path):
+              print('::error::accounting-clover.xml introuvable — la génération de coverage a peut-être échoué.')
+              sys.exit(1)
+
+          tree = ET.parse(clover_path)
+          root = tree.getroot()
+          total_stmt = 0
+          covered_stmt = 0
+          for f in root.iter('file'):
+              path = f.get('name', '').replace('\\', '/')
+              if '/app/Modules/Accounting/' not in path:
+                  continue
+              m = f.find('metrics')
+              if m is None:
+                  continue
+              total_stmt += int(m.get('statements', 0))
+              covered_stmt += int(m.get('coveredstatements', 0))
+
+          if total_stmt == 0:
+              print('::error::Aucun statement sous app/Modules/Accounting dans le clover.')
+              sys.exit(1)
+
+          pct = round(covered_stmt / total_stmt * 100, 2)
+          print(f'Coverage module Accounting : {covered_stmt}/{total_stmt} = {pct}% (seuil 70 %)')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+              out.write(f'coverage={pct}\n')
+          if pct < 70.0:
+              print(f'::error::Coverage module Accounting {pct}% < 70 % (DoD #5228).')
+              sys.exit(1)
+
+          print('::notice::Gate coverage Accounting OK (≥ 70 %).')
+          PY
+
+  i18n-scan:
+    timeout-minutes: 10
+    name: i18n Comptabilité ×4 (littéraux + parité)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      # Issue #5227 — zéro chaîne hardcodée utilisateur dans le module
+      # Accounting (messages API via __('accounting.*')) + parité des clés ×4
+      # (fr/en/tr/ar) + libellés PDF (types/statuts) + codes errors.* des
+      # DomainException (renderer #4171). Miroir du check-payroll-i18n.py #5257.
+      - name: Scan i18n module Accounting
+        run: python3 dev-hub/tools/check-accounting-i18n.py

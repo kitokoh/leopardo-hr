@@ -1,5 +1,5 @@
 /// Modèle d'une session de présence GPS de l'employé.
-/// Endpoint : GET /api/v1/smart-attendance/my-sessions
+/// Endpoint : GET /api/v1/attendance/my-sessions
 class GeoAttendanceSession {
   /// Identifiant unique de la session
   final int id;

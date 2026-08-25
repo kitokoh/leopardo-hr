@@ -13,9 +13,9 @@ use App\Exceptions\MissingCheckInException;
 use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Exceptions\PunchPhotoRequiredException;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -38,9 +38,10 @@ class AttendanceService
     private const NON_WORK_TYPES = ['break', 'resume'];
 
     public function __construct(
-        private readonly AttendanceGeofenceService $geofenceService,
+        private readonly GeofenceZoneService $zoneService,
         private readonly CommunicationService $communicationService,
-    ) {}
+    ) {
+    }
 
     public function checkIn(Employee $employee, CheckInDTO|float|null $dto = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
     {
@@ -504,7 +505,7 @@ class AttendanceService
     private function buildPunchMeta(Company $company, Employee $employee, CheckInDTO $dto, string $phase): array
     {
         $timezone = $dto->device_timezone ?: $this->timezoneFor($company);
-        $geofence = $this->geofenceService->evaluate($company, $employee, $dto->gps_lat, $dto->gps_lng);
+        $geofence = $this->zoneService->evaluateZone($company, $employee, $dto->gps_lat, $dto->gps_lng);
 
         return [
             'phase' => $phase,

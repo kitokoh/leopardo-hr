@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Domain\Models;
 
+use App\Modules\Payroll\Infrastructure\Services\PayrollLineLabels;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -17,7 +19,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float $rate
  * @property float $amount
  * @property int $order
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class PaySlipLine extends Model
 {
@@ -45,5 +48,16 @@ class PaySlipLine extends Model
     public function salaryComponent(): BelongsTo
     {
         return $this->belongsTo(SalaryComponent::class, 'salary_component_id');
+    }
+
+    /**
+     * Issue #5257 — libellé localisé de la ligne (i18n ×4) : les noms de
+     * lignes sont persistés en FR par le moteur ; ce accessor expose le
+     * libellé traduit (locale courante) via PayrollLineLabels, avec repli sur
+     * le libellé brut pour les composants personnalisés.
+     */
+    public function getLabelAttribute(): string
+    {
+        return PayrollLineLabels::label((string) $this->name);
     }
 }

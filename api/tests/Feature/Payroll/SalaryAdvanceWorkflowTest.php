@@ -7,7 +7,6 @@ namespace Tests\Feature\Payroll;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
-use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -99,7 +98,7 @@ class SalaryAdvanceWorkflowTest extends TestCase
         Sanctum::actingAs($this->manager);
         $this->putJson("/api/v1/salary-advances/{$created['id']}/mark-paid")
             ->assertStatus(422)
-            ->assertJsonPath('message', 'Advance must be manager-approved before declaring payment.');
+            ->assertJsonPath('message', 'L\'avance doit être approuvée par le manager avant de déclarer le paiement.');
     }
 
     public function test_mark_paid_second_call_is_rejected_no_duplicate_document(): void
@@ -119,7 +118,7 @@ class SalaryAdvanceWorkflowTest extends TestCase
         // 2e appel : l'update conditionnel ne matche plus → 422, pas de doublon.
         $this->putJson("/api/v1/salary-advances/{$advanceId}/mark-paid")
             ->assertStatus(422)
-            ->assertJsonPath('message', 'Advance must be manager-approved before declaring payment.');
+            ->assertJsonPath('message', 'L\'avance doit être approuvée par le manager avant de déclarer le paiement.');
 
         $this->assertDatabaseCount('payment_documents', 1);
         $this->assertDatabaseCount('ledger_entries', 1);
@@ -132,7 +131,7 @@ class SalaryAdvanceWorkflowTest extends TestCase
 
         $this->putJson("/api/v1/salary-advances/{$created['id']}/confirm-received")
             ->assertStatus(422)
-            ->assertJsonPath('message', 'Payment must be declared before employee confirmation.');
+            ->assertJsonPath('message', 'Le paiement doit être déclaré avant la confirmation de l\'employé.');
     }
 
     public function test_only_owner_can_confirm_reception(): void
