@@ -895,8 +895,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 if (value == null || value.isEmpty) {
                   return context.l10n.settingsFieldRequired;
                 }
-                if (value.length < 8)
+                if (value.length < 8) {
                   return context.l10n.settingsPasswordMinLength;
+                }
                 return null;
               },
             ),
