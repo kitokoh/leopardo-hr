@@ -175,6 +175,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/accounting/contacts/{contact}", options);
     },
 
+    /** Convertir un montant entre deux devises (multi-devises #5270) */
+    postAccountingCurrencyConvert(options = {}) {
+      return request("POST", "/accounting/currency/convert", options);
+    },
+
     /** Tableau de bord comptable — factures emises, encaissements, impayes, depenses */
     getAccountingDashboard(options = {}) {
       return request("GET", "/accounting/dashboard", options);
@@ -210,7 +215,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/accounting/documents/{document}/credit-note", options);
     },
 
-    /** Enregistrer un paiement */
+    /** Enregistrer un encaissement (→ partiellement paye / paye, #5223) */
     postAccountingDocumentsByDocumentPayments(options = {}) {
       return request("POST", "/accounting/documents/{document}/payments", options);
     },
@@ -750,6 +755,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/attendance/corrections/{correction}/approve", options);
     },
 
+    /** Télécharger le justificatif d'une demande de correction */
+    getAttendanceCorrectionsByCorrectionProof(options = {}) {
+      return request("GET", "/attendance/corrections/{correction}/proof", options);
+    },
+
     /** Refuser une demande de correction de pointage */
     postAttendanceCorrectionsByCorrectionReject(options = {}) {
       return request("POST", "/attendance/corrections/{correction}/reject", options);
@@ -760,7 +770,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/attendance/corrections/{correction}/reject", options);
     },
 
-    /** Statistiques du jour — Smart Attendance (manager/RH) */
+    /** Statistiques du jour — Attendance (manager/RH) */
     getAttendanceDashboard(options = {}) {
       return request("GET", "/attendance/dashboard", options);
     },
@@ -3185,9 +3195,29 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/recruitment/applicants/{applicant}/interviews", options);
     },
 
+    /** Supprimer une candidature (manager) */
+    deleteRecruitmentApplicantsById(options = {}) {
+      return request("DELETE", "/recruitment/applicants/{id}", options);
+    },
+
+    /** Détail d'une candidature (manager) */
+    getRecruitmentApplicantsById(options = {}) {
+      return request("GET", "/recruitment/applicants/{id}", options);
+    },
+
     /** Changer le statut d'une candidature (principal/rh) */
     patchRecruitmentApplicantsByIdStatus(options = {}) {
       return request("PATCH", "/recruitment/applicants/{id}/status", options);
+    },
+
+    /** Supprimer un entretien (manager) */
+    deleteRecruitmentInterviewsById(options = {}) {
+      return request("DELETE", "/recruitment/interviews/{id}", options);
+    },
+
+    /** Saisir le feedback d'un entretien (le clôture) */
+    patchRecruitmentInterviewsByIdFeedback(options = {}) {
+      return request("PATCH", "/recruitment/interviews/{id}/feedback", options);
     },
 
     /** Supprimer un entretien (manager) */
@@ -3213,6 +3243,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Creer une offre d'emploi */
     postRecruitmentJobs(options = {}) {
       return request("POST", "/recruitment/jobs", options);
+    },
+
+    /** Supprimer une offre d'emploi (manager) */
+    deleteRecruitmentJobsById(options = {}) {
+      return request("DELETE", "/recruitment/jobs/{id}", options);
     },
 
     /** Supprimer une offre d'emploi (manager) */
