@@ -205,6 +205,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/accounting/documents/{document}/credit-note", options);
     },
 
+    /** Poster (ou re-poster) un document au journal */
+    postAccountingDocumentsByDocumentJournal(options = {}) {
+      return request("POST", "/accounting/documents/{document}/journal", options);
+    },
+
     /** Enregistrer un encaissement (→ partiellement paye / paye, #5223) */
     postAccountingDocumentsByDocumentPayments(options = {}) {
       return request("POST", "/accounting/documents/{document}/payments", options);
@@ -228,6 +233,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Portail client — téléchargement du PDF partagé (token) */
     getAccountingDocumentsSharedByTokenDownload(options = {}) {
       return request("GET", "/accounting/documents/shared/{token}/download", options);
+    },
+
+    /** Journal comptable par periode */
+    getAccountingJournal(options = {}) {
+      return request("GET", "/accounting/journal", options);
+    },
+
+    /** Export CSV du journal (expert-comptable) */
+    getAccountingJournalExportCsv(options = {}) {
+      return request("GET", "/accounting/journal/export.csv", options);
+    },
+
+    /** Cloturer une periode comptable */
+    postAccountingJournalPeriodsByPeriodClose(options = {}) {
+      return request("POST", "/accounting/journal/periods/{period}/close", options);
     },
 
     /** Lister les paiements */
@@ -2570,6 +2590,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/payment-confirmations/{paymentItem}/confirm", options);
     },
 
+    /** Lister les ordres de virement du tenant (pagine) */
+    getPaymentOrders(options = {}) {
+      return request("GET", "/payment-orders", options);
+    },
+
+    /** Detail d'un ordre de virement */
+    getPaymentOrdersByPaymentOrder(options = {}) {
+      return request("GET", "/payment-orders/{paymentOrder}", options);
+    },
+
+    /** Executer un ordre de virement prepare (comptable) */
+    postPaymentOrdersByPaymentOrderExecute(options = {}) {
+      return request("POST", "/payment-orders/{paymentOrder}/execute", options);
+    },
+
+    /** Rapprocher un ordre de virement execute (comptable) */
+    postPaymentOrdersByPaymentOrderReconcile(options = {}) {
+      return request("POST", "/payment-orders/{paymentOrder}/reconcile", options);
+    },
+
     /** Documents de paiement d.un cycle paie */
     getPaymentsByPayrollRunDocuments(options = {}) {
       return request("GET", "/payments/{payrollRun}/documents", options);
@@ -2588,6 +2628,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Voir une session de paie */
     getPayrollRunsByPayrollRun(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}", options);
+    },
+
+    /** Ecrires comptables d'un run de paie valide (#5239) */
+    getPayrollRunsByPayrollRunAccountingEntries(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/accounting-entries", options);
+    },
+
+    /** Regenerer les ecritures comptables d'un run (comptable, idempotent) */
+    postPayrollRunsByPayrollRunAccountingEntriesRegenerate(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/accounting-entries/regenerate", options);
     },
 
     /** Rapport d'anomalies pre-cloture (F-20) */
@@ -2678,6 +2728,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Lister les bulletins de paie d'une session */
     listPayrollRunPaySlips(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/pay-slips", options);
+    },
+
+    /** Preparer un ordre de virement pour un run valide (comptable) */
+    postPayrollRunsByPayrollRunPaymentOrder(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/payment-order", options);
     },
 
     /** Lister les régularisations d'un run (DZ-DEPTH #1818) */
@@ -3533,6 +3588,66 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier un site */
     putSitesBySite(options = {}) {
       return request("PUT", "/sites/{site}", options);
+    },
+
+    /** Lire la configuration de mode active pour l'employe connecte */
+    getSmartAttendanceConfig(options = {}) {
+      return request("GET", "/smart-attendance/config", options);
+    },
+
+    /** Statistiques du jour — Smart Attendance (manager/RH) */
+    getSmartAttendanceDashboard(options = {}) {
+      return request("GET", "/smart-attendance/dashboard", options);
+    },
+
+    /** Préférence mode géolocalisation d'un employé (manager/RH) */
+    getSmartAttendanceEmployeesByEmployeeIdPreference(options = {}) {
+      return request("GET", "/smart-attendance/employees/{employeeId}/preference", options);
+    },
+
+    /** Envoyer un événement géographique (entrée/sortie de zone) */
+    postSmartAttendanceGeoEvents(options = {}) {
+      return request("POST", "/smart-attendance/geo-events", options);
+    },
+
+    /** Parametres du mode de pointage de l'entreprise */
+    getSmartAttendanceModeSettings(options = {}) {
+      return request("GET", "/smart-attendance/mode-settings", options);
+    },
+
+    /** Configurer le mode de pointage (principal) */
+    putSmartAttendanceModeSettings(options = {}) {
+      return request("PUT", "/smart-attendance/mode-settings", options);
+    },
+
+    /** Sessions GPS de l'employé courant */
+    getSmartAttendanceMySessions(options = {}) {
+      return request("GET", "/smart-attendance/my-sessions", options);
+    },
+
+    /** Mettre à jour les préférences de pointage */
+    putSmartAttendancePreferences(options = {}) {
+      return request("PUT", "/smart-attendance/preferences", options);
+    },
+
+    /** Lister les sessions GPS */
+    getSmartAttendanceSessions(options = {}) {
+      return request("GET", "/smart-attendance/sessions", options);
+    },
+
+    /** Détail d'une session GPS */
+    getSmartAttendanceSessionsById(options = {}) {
+      return request("GET", "/smart-attendance/sessions/{id}", options);
+    },
+
+    /** Approuver une session GPS (manager/RH) */
+    postSmartAttendanceSessionsByIdApprove(options = {}) {
+      return request("POST", "/smart-attendance/sessions/{id}/approve", options);
+    },
+
+    /** Rejeter une session GPS (manager/RH) */
+    postSmartAttendanceSessionsByIdReject(options = {}) {
+      return request("POST", "/smart-attendance/sessions/{id}/reject", options);
     },
 
     /** Lister les regles de cotisations sociales (manager) */

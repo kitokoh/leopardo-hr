@@ -237,6 +237,7 @@ return [
     'CONTRACT_NOT_FOUND_EMPLOYEE' => 'Bu çalışan için sözleşme bulunamadı.',
     'ALREADY_ENROLLED_SESSION' => 'Bu oturuma zaten kayıtlısınız.',
     'DELETION_REQUEST_RECEIVED' => 'Silme talebi İK/hukuk incelemesi için alındı.',
+    'PERIOD_CLOSED' => 'Muhasebe dönemi zaten kapatıldı — kayıt yapılamaz.',
     // Muhasebe (issue #5227)
     'PAYMENT_EXCEEDS_TOTAL' => 'Ödeme tutarı, belgenin kalan bakiyesini aşıyor.',
     'PAYMENT_ON_UNSENT_DOCUMENT' => 'Düzenlenmemiş bir belge üzerinde ödeme kaydedilemez.',

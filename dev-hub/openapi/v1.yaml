@@ -11822,6 +11822,224 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /payroll-runs/{payrollRun}/accounting-entries:
+    get:
+      tags: ["Payroll"]
+      summary: "Ecrires comptables d'un run de paie valide (#5239)"
+      description: "Lignes d'ecriture (D 641 brut, D 645 patronales, C 421 net, C 431 cotisations, C 4421 impot, C 425 residu) generees automatiquement a la validation du run (observer AuditLog) depuis PayrollAccountingExportService::journalLines(). Reserve aux managers principal/comptable, isolation tenant (404)."
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des ecritures du run"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PayrollAccountingEntry"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          description: "Run introuvable (isolation tenant)"
+
+  /payroll-runs/{payrollRun}/accounting-entries/regenerate:
+    post:
+      tags: ["Payroll"]
+      summary: "Regenerer les ecritures comptables d'un run (comptable, idempotent)"
+      description: "Remplace les lignes existantes du run (contrainte unique run/bulletin/compte). Reserve au role comptable (403 sinon). Refuse un journal desequilibre (422)."
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Regeneration effectuee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payroll_run_id: { type: integer }
+                  generated_lines: { type: integer }
+                  balance: { type: number, format: float }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Role comptable requis"
+        "404":
+          description: "Run introuvable (isolation tenant)"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/payment-order:
+    post:
+      tags: ["Payroll"]
+      summary: "Preparer un ordre de virement pour un run valide (comptable)"
+      description: "Agrege le net par employe (bulletins valides), genere le fichier banque via BankExportGenerator (formats SEPA/CSV/CNEP existants) et cree l'ordre au statut prepared. Reserve au role comptable (403 sinon)."
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                format:
+                  type: string
+                  enum: [sepa_xml, ccp_dz, cpa_dz, bna_dz, cnep_dz, edx_dz, virement_ma, csv_generic]
+                  default: sepa_xml
+      responses:
+        "201":
+          description: "Ordre de virement prepare"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayrollPaymentOrder"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Role comptable requis"
+        "404":
+          description: "Run introuvable (isolation tenant)"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payment-orders:
+    get:
+      tags: ["Payroll"]
+      summary: "Lister les ordres de virement du tenant (pagine)"
+      parameters:
+        - name: per_page
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        "200":
+          description: "Liste paginee des ordres de virement"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PayrollPaymentOrder"
+                  meta:
+                    type: object
+                    properties:
+                      current_page: { type: integer }
+                      last_page: { type: integer }
+                      per_page: { type: integer }
+                      total: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /payment-orders/{paymentOrder}:
+    get:
+      tags: ["Payroll"]
+      summary: "Detail d'un ordre de virement"
+      parameters:
+        - name: paymentOrder
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Ordre de virement (items compris)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayrollPaymentOrder"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          description: "Ordre introuvable (isolation tenant)"
+
+  /payment-orders/{paymentOrder}/execute:
+    post:
+      tags: ["Payroll"]
+      summary: "Executer un ordre de virement prepare (comptable)"
+      description: "Passe l'ordre au statut executed avec reference banque + date. Reserve au role comptable (403 sinon)."
+      parameters:
+        - name: paymentOrder
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bank_reference]
+              properties:
+                bank_reference:
+                  type: string
+                  maxLength: 128
+                executed_at:
+                  type: string
+                  format: date-time
+      responses:
+        "200":
+          description: "Ordre execute"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayrollPaymentOrder"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Role comptable requis"
+        "404":
+          description: "Ordre introuvable (isolation tenant)"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payment-orders/{paymentOrder}/reconcile:
+    post:
+      tags: ["Payroll"]
+      summary: "Rapprocher un ordre de virement execute (comptable)"
+      description: "Passe l'ordre au statut reconciled. Reserve au role comptable (403 sinon)."
+      parameters:
+        - name: paymentOrder
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Ordre rapproche"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayrollPaymentOrder"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Role comptable requis"
+        "404":
+          description: "Ordre introuvable (isolation tenant)"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /payments/{payrollRun}/documents:
     get:
       tags: ["Payroll"]
@@ -19916,6 +20134,405 @@ paths:
           description: "Entretien supprimé"
         "401":
           $ref: "#/components/responses/Error401"
+  /smart-attendance/mode-settings:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Parametres du mode de pointage de l'entreprise"
+      deprecated: true
+      responses:
+        "200":
+          description: "Configuration (forced_mode, punch_photo_mode, gps_enabled, latitude, longitude, radius_meters, allow_employee_override)"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["SmartAttendance"]
+      summary: "Configurer le mode de pointage (principal)"
+      deprecated: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forced_mode:
+                  type: string
+                  enum: [gps_auto, qr, manual, mixed]
+                punch_photo_mode:
+                  type: string
+                  enum: [kiosk, photo_required]
+                gps_enabled:
+                  type: boolean
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                radius_meters:
+                  type: integer
+                  minimum: 10
+                  maximum: 5000
+                allow_employee_override:
+                  type: boolean
+      responses:
+        "200":
+          description: "Configuration mise a jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+  /smart-attendance/config:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Lire la configuration de mode active pour l'employe connecte"
+      deprecated: true
+      description: "Resout le mode de pointage effectif (GPS/QR/manuel) et indique si une photo de pointage est obligatoire (punch_photo_mode=photo_required)."
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Configuration de mode active"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      mode: { type: string, enum: [manual, gps_auto, qr, mixed] }
+                      can_override: { type: boolean }
+                      gps_enabled: { type: boolean }
+                      geofence:
+                        type: object
+                        nullable: true
+                        properties:
+                          latitude: { type: number, nullable: true }
+                          longitude: { type: number, nullable: true }
+                          radius_meters: { type: integer, nullable: true }
+                      requires_consent: { type: boolean }
+                      requires_punch_photo:
+                        type: boolean
+                        description: "true si l'entreprise impose une photo a chaque pointage mobile (arrivee/depart)."
+        "401":
+          $ref: "#/components/responses/Error401"
+  /smart-attendance/preferences:
+    put:
+      tags: ["SmartAttendance"]
+      summary: "Mettre à jour les préférences de pointage"
+      deprecated: true
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [preferred_mode]
+              properties:
+                preferred_mode:
+                  type: string
+                  enum: [gps_auto, qr, manual]
+                gps_consent_given:
+                  type: boolean
+                revoke_consent:
+                  type: boolean
+      responses:
+        "200":
+          description: "Préférences mises à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: "#/components/schemas/EmployeeAttendancePreference"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+  /smart-attendance/geo-events:
+    post:
+      tags: ["SmartAttendance"]
+      summary: "Envoyer un événement géographique (entrée/sortie de zone)"
+      deprecated: true
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GeoEventRequest"
+      responses:
+        "200":
+          description: "Événement enregistré"
+        "422":
+          $ref: "#/components/responses/Validation422"
+  /smart-attendance/sessions:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Lister les sessions GPS"
+      deprecated: true
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [detected, pending_validation, approved, rejected, cancelled]
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: "Liste paginée des sessions GPS"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/GeoAttendanceSession"
+  /smart-attendance/sessions/{id}:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Détail d'une session GPS"
+      deprecated: true
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Session GPS"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/GeoAttendanceSession"
+        "404":
+          $ref: "#/components/responses/Error404"
+  /smart-attendance/sessions/{id}/approve:
+    post:
+      tags: ["SmartAttendance"]
+      summary: "Approuver une session GPS (manager/RH)"
+      deprecated: true
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Session mise à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+  /smart-attendance/sessions/{id}/reject:
+    post:
+      tags: ["SmartAttendance"]
+      summary: "Rejeter une session GPS (manager/RH)"
+      deprecated: true
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Session mise à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+  /smart-attendance/dashboard:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Statistiques du jour — Smart Attendance (manager/RH)"
+      deprecated: true
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Statistiques du jour"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmartAttendanceDashboard"
+
+  # --- ZKTeco (pointeuses biometriques) ---
+  /smart-attendance/my-sessions:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Sessions GPS de l'employé courant"
+      deprecated: true
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Sessions de l'employé"
+        "401":
+          $ref: "#/components/responses/Error401"
+  /smart-attendance/employees/{employeeId}/preference:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Préférence mode géolocalisation d'un employé (manager/RH)"
+      deprecated: true
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Préférence de l'employé"
+        "401":
+          $ref: "#/components/responses/Error401"
+  /accounting/journal:
+    get:
+      tags: ["Accounting"]
+      summary: "Journal comptable par periode"
+      description: "Ecritures debit/credit d'une periode comptable (YYYY-MM) avec totaux et invariant d'equilibre debit=credit (issue #5234). Accessible comptable/principal."
+      parameters:
+        - name: period
+          in: query
+          required: true
+          description: "Periode comptable (YYYY-MM)."
+          schema: { type: string, pattern: "^\\d{4}-(0[1-9]|1[0-2])$" }
+      responses:
+        "200":
+          description: "Journal de la periode (entries, totals, balanced, closed)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  period: { type: string }
+                  balanced: { type: boolean }
+                  closed: { type: boolean }
+                  totals:
+                    type: object
+                    properties:
+                      debit: { type: number, format: double }
+                      credit: { type: number, format: double }
+                  entries:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        date: { type: string, format: date }
+                        piece: { type: string, nullable: true }
+                        description: { type: string, nullable: true }
+                        account_code: { type: string }
+                        account_label: { type: string }
+                        debit: { type: number, format: double }
+                        credit: { type: number, format: double }
+                        source_type: { type: string }
+                        source_id: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+  /accounting/journal/export.csv:
+    get:
+      tags: ["Accounting"]
+      summary: "Export CSV du journal (expert-comptable)"
+      description: "CSV UTF-8 (BOM), separateur ';', colonnes date;piece;libelle;compte;intitule;debit;credit + ligne de totaux. Cellules texte neutralisees anti-injection CSV (issue #4169)."
+      parameters:
+        - name: period
+          in: query
+          required: true
+          description: "Periode comptable (YYYY-MM)."
+          schema: { type: string, pattern: "^\\d{4}-(0[1-9]|1[0-2])$" }
+      responses:
+        "200":
+          description: "Fichier CSV du journal"
+          content:
+            text/csv:
+              schema: { type: string, format: binary }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+  /accounting/journal/periods/{period}/close:
+    post:
+      tags: ["Accounting"]
+      summary: "Cloturer une periode comptable"
+      description: "Fige le journal de la periode : plus aucun posting (document/paiement date dans la periode) n'est accepte (422 PERIOD_CLOSED). Idempotent."
+      parameters:
+        - name: period
+          in: path
+          required: true
+          description: "Periode comptable (YYYY-MM)."
+          schema: { type: string, pattern: "^\\d{4}-(0[1-9]|1[0-2])$" }
+      responses:
+        "201":
+          description: "Periode cloturee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  period: { type: string }
+                  closed_at: { type: string, format: date-time, nullable: true }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+  /accounting/documents/{document}/journal:
+    post:
+      tags: ["Accounting"]
+      summary: "Poster (ou re-poster) un document au journal"
+      description: "Passe les ecritures du document (invoice/credit_note) + de ses paiements. Idempotent (updateOrCreate). 422 si la periode du document est cloturee."
+      parameters:
+        - name: document
+          in: path
+          required: true
+          description: "ID du document comptable."
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Nombre d'ecritures creees/mises a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  document_id: { type: integer }
+                  entries: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          description: "Periode cloturee (PERIOD_CLOSED) — aucun posting possible."
 components:
 
   TwoFactorStatusResponse:
@@ -25204,6 +25821,50 @@ components:
               type: integer
               nullable: true
 
+    PayrollAccountingEntry:
+      type: object
+      properties:
+        id: { type: integer }
+        payroll_run_id: { type: integer }
+        pay_slip_id: { type: integer, nullable: true }
+        employee_id: { type: integer, nullable: true }
+        date: { type: string, format: date }
+        account_code: { type: string }
+        account_label: { type: string }
+        debit: { type: number, format: float }
+        credit: { type: number, format: float }
+        reference: { type: string }
+        created_by: { type: integer, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }
+
+    PayrollPaymentOrder:
+      type: object
+      properties:
+        id: { type: integer }
+        payroll_run_id: { type: integer }
+        status: { type: string, enum: [prepared, executed, reconciled] }
+        format: { type: string }
+        file_path: { type: string, nullable: true }
+        total_amount: { type: number, format: float }
+        transfer_count: { type: integer }
+        bank_reference: { type: string, nullable: true }
+        executed_by: { type: integer, nullable: true }
+        executed_at: { type: string, format: date-time, nullable: true }
+        reconciled_at: { type: string, format: date-time, nullable: true }
+        created_by: { type: integer, nullable: true }
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              payment_order_id: { type: integer }
+              employee_id: { type: integer }
+              net_amount: { type: number, format: float }
+              iban: { type: string, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }
+        updated_at: { type: string, format: date-time, nullable: true }
+
     BankExport:
       type: object
       properties:
@@ -26354,3 +27015,22 @@ components:
         duration_days: { type: integer, minimum: 1, maximum: 5 }
         confirmed: { type: boolean, default: true }
         source: { type: string, enum: [manual, api, computed], default: manual }
+
+    SmartAttendanceDashboard:
+      type: object
+      properties:
+        today:
+          type: object
+          properties:
+            detected: { type: integer }
+            pending_validation: { type: integer }
+            approved: { type: integer }
+            rejected: { type: integer }
+            cancelled: { type: integer }
+            total_employees_present: { type: integer }
+        week:
+          type: object
+          properties:
+            total_sessions: { type: integer }
+            auto_approved_rate: { type: number, format: float }
+    # ── End SmartAttendance schemas ──
