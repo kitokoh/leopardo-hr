@@ -132,6 +132,26 @@ class LeopardoClient:
         """Refuser une absence (déprécié — utiliser POST)"""
         return self.request("PUT", "/absences/{absence}/reject", **kwargs)
 
+    def get_accounting_contacts(self, **kwargs):
+        """Lister les contacts client/fournisseur"""
+        return self.request("GET", "/accounting/contacts", **kwargs)
+
+    def post_accounting_contacts(self, **kwargs):
+        """Creer un contact client/fournisseur"""
+        return self.request("POST", "/accounting/contacts", **kwargs)
+
+    def delete_accounting_contacts_by_contact(self, **kwargs):
+        """Supprimer un contact client/fournisseur"""
+        return self.request("DELETE", "/accounting/contacts/{contact}", **kwargs)
+
+    def get_accounting_contacts_by_contact(self, **kwargs):
+        """Detail d'un contact client/fournisseur"""
+        return self.request("GET", "/accounting/contacts/{contact}", **kwargs)
+
+    def put_accounting_contacts_by_contact(self, **kwargs):
+        """Mettre a jour un contact client/fournisseur"""
+        return self.request("PUT", "/accounting/contacts/{contact}", **kwargs)
+
     def get_accounting_documents(self, **kwargs):
         """Lister les documents comptables du tenant (pagine, filtres, #5223)"""
         return self.request("GET", "/accounting/documents", **kwargs)
@@ -191,6 +211,18 @@ class LeopardoClient:
     def post_accounting_reminders_run(self, **kwargs):
         """Declencher les relances de paiement"""
         return self.request("POST", "/accounting/reminders/run", **kwargs)
+
+    def get_accounting_reports_vat_declaration(self, **kwargs):
+        """Declaration TVA simplifiee par periode"""
+        return self.request("GET", "/accounting/reports/vat-declaration", **kwargs)
+
+    def get_accounting_settings(self, **kwargs):
+        """Parametrage comptable de l'entreprise"""
+        return self.request("GET", "/accounting/settings", **kwargs)
+
+    def put_accounting_settings(self, **kwargs):
+        """Mettre a jour le parametrage comptable de l'entreprise"""
+        return self.request("PUT", "/accounting/settings", **kwargs)
 
     def post_admin_ai_chat(self, **kwargs):
         """Envoyer un message a l'assistant IA (super-admin)"""
@@ -568,6 +600,10 @@ class LeopardoClient:
         """Check-out"""
         return self.request("POST", "/attendance/check-out", **kwargs)
 
+    def get_attendance_config(self, **kwargs):
+        """Lire la configuration de mode active pour l'employe connecte"""
+        return self.request("GET", "/attendance/config", **kwargs)
+
     def get_attendance_corrections(self, **kwargs):
         """Lister les demandes de correction de pointage"""
         return self.request("GET", "/attendance/corrections", **kwargs)
@@ -635,6 +671,10 @@ class LeopardoClient:
     def get_attendance_my_sessions(self, **kwargs):
         """Sessions GPS de l'employé courant"""
         return self.request("GET", "/attendance/my-sessions", **kwargs)
+
+    def put_attendance_preferences(self, **kwargs):
+        """Mettre à jour les préférences de pointage"""
+        return self.request("PUT", "/attendance/preferences", **kwargs)
 
     def get_attendance_regularity(self, **kwargs):
         """Régularité de présence (manager/RH)"""
@@ -928,6 +968,42 @@ class LeopardoClient:
         """Tester une URL RTSP"""
         return self.request("POST", "/cameras/test-rtsp", **kwargs)
 
+    def get_career_events(self, **kwargs):
+        """Lister les evenements de carriere (plans de carriere, issue #5259)"""
+        return self.request("GET", "/career-events", **kwargs)
+
+    def post_career_events(self, **kwargs):
+        """Creer un evenement de carriere (manager)"""
+        return self.request("POST", "/career-events", **kwargs)
+
+    def delete_career_events_by_careerevent(self, **kwargs):
+        """Supprimer un evenement de carriere (pending uniquement)"""
+        return self.request("DELETE", "/career-events/{careerEvent}", **kwargs)
+
+    def get_career_events_by_careerevent(self, **kwargs):
+        """Voir un evenement de carriere"""
+        return self.request("GET", "/career-events/{careerEvent}", **kwargs)
+
+    def patch_career_events_by_careerevent(self, **kwargs):
+        """Modifier partiellement un evenement de carriere (pending uniquement)"""
+        return self.request("PATCH", "/career-events/{careerEvent}", **kwargs)
+
+    def put_career_events_by_careerevent(self, **kwargs):
+        """Modifier un evenement de carriere (pending uniquement)"""
+        return self.request("PUT", "/career-events/{careerEvent}", **kwargs)
+
+    def put_career_events_by_careerevent_apply(self, **kwargs):
+        """Appliquer un evenement approuve (approved → applied) — met a jour l'employe (poste/departement/salaire de base, impact paie)"""
+        return self.request("PUT", "/career-events/{careerEvent}/apply", **kwargs)
+
+    def put_career_events_by_careerevent_approve(self, **kwargs):
+        """Approuver un evenement de carriere (pending → approved)"""
+        return self.request("PUT", "/career-events/{careerEvent}/approve", **kwargs)
+
+    def put_career_events_by_careerevent_reject(self, **kwargs):
+        """Rejeter un evenement de carriere (pending → rejected)"""
+        return self.request("PUT", "/career-events/{careerEvent}/reject", **kwargs)
+
     def post_client_events(self, **kwargs):
         """Persister un evenement UX client tenant-scope"""
         return self.request("POST", "/client-events", **kwargs)
@@ -1208,6 +1284,30 @@ class LeopardoClient:
         """Readiness probe du nœud edge (schéma SQLite)"""
         return self.request("GET", "/edge/readiness", **kwargs)
 
+    def get_employee_documents(self, **kwargs):
+        """Lister les documents des dossiers employes (checklist G3)"""
+        return self.request("GET", "/employee-documents", **kwargs)
+
+    def post_employee_documents(self, **kwargs):
+        """Enregistrer un document du dossier employe"""
+        return self.request("POST", "/employee-documents", **kwargs)
+
+    def delete_employee_documents_by_employeedocument(self, **kwargs):
+        """Supprimer un document du dossier employe"""
+        return self.request("DELETE", "/employee-documents/{employeeDocument}", **kwargs)
+
+    def get_employee_documents_by_employeedocument(self, **kwargs):
+        """Lire un document du dossier employe"""
+        return self.request("GET", "/employee-documents/{employeeDocument}", **kwargs)
+
+    def patch_employee_documents_by_employeedocument(self, **kwargs):
+        """Patch un document du dossier employe"""
+        return self.request("PATCH", "/employee-documents/{employeeDocument}", **kwargs)
+
+    def put_employee_documents_by_employeedocument(self, **kwargs):
+        """Mettre a jour un document du dossier employe"""
+        return self.request("PUT", "/employee-documents/{employeeDocument}", **kwargs)
+
     def get_employees(self, **kwargs):
         """Lister les employes"""
         return self.request("GET", "/employees", **kwargs)
@@ -1247,6 +1347,14 @@ class LeopardoClient:
     def get_employees_by_employee_daily_summary(self, **kwargs):
         """Resume journalier d'un employe"""
         return self.request("GET", "/employees/{employee}/daily-summary", **kwargs)
+
+    def get_employees_by_employee_departure(self, **kwargs):
+        """Lire le depart d'un employe (manager : entreprise ; employe : le sien)"""
+        return self.request("GET", "/employees/{employee}/departure", **kwargs)
+
+    def post_employees_by_employee_departure(self, **kwargs):
+        """Enregistrer le depart d'un employe (offboarding, issue #5324)"""
+        return self.request("POST", "/employees/{employee}/departure", **kwargs)
 
     def get_employees_by_employee_departure_notice(self, **kwargs):
         """Récapitulatif du préavis légal (issue #5325, G2)"""
@@ -1624,6 +1732,14 @@ class LeopardoClient:
         """Persister un lead marketing (vitrine)"""
         return self.request("POST", "/marketing/leads", **kwargs)
 
+    def get_marketing_leads_by_lead_contact(self, **kwargs):
+        """Lire le contact comptabilite cree depuis un lead qualifie"""
+        return self.request("GET", "/marketing/leads/{lead}/contact", **kwargs)
+
+    def post_marketing_leads_by_lead_qualify(self, **kwargs):
+        """Qualifier un lead et creer le contact comptabilite associe"""
+        return self.request("POST", "/marketing/leads/{lead}/qualify", **kwargs)
+
     def get_marketing_posts(self, **kwargs):
         """Lister les publications (alias court de /social-posts)"""
         return self.request("GET", "/marketing/posts", **kwargs)
@@ -1723,6 +1839,14 @@ class LeopardoClient:
     def get_me_daily_summary(self, **kwargs):
         """Resume journalier utilisateur courant"""
         return self.request("GET", "/me/daily-summary", **kwargs)
+
+    def get_me_departure(self, **kwargs):
+        """Mon depart (self-service, issue #5324)"""
+        return self.request("GET", "/me/departure", **kwargs)
+
+    def get_me_documents(self, **kwargs):
+        """Lire les documents de SON dossier employe (self-service)"""
+        return self.request("GET", "/me/documents", **kwargs)
 
     def get_me_leave_balances(self, **kwargs):
         """Mes soldes de conges"""
@@ -1939,6 +2063,10 @@ class LeopardoClient:
     def post_payroll_runs_by_payrollrun_bank_export(self, **kwargs):
         """Generer un export bancaire pour un run valide (alias chemin)"""
         return self.request("POST", "/payroll-runs/{payrollRun}/bank-export", **kwargs)
+
+    def get_payroll_runs_by_payrollrun_bordereau(self, **kwargs):
+        """Bordereau de paie d'un run (totaux par cotisation + recap, #5243)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/bordereau", **kwargs)
 
     def post_payroll_runs_by_payrollrun_bulk_pay(self, **kwargs):
         """Lancer le paiement groupé du run (virements)"""
@@ -2456,6 +2584,10 @@ class LeopardoClient:
         """Modifier un entretien"""
         return self.request("PUT", "/recruitment/interviews/{interview}", **kwargs)
 
+    def patch_recruitment_interviews_by_interview_feedback(self, **kwargs):
+        """Saisir le feedback d'un entretien (le clôture)"""
+        return self.request("PATCH", "/recruitment/interviews/{interview}/feedback", **kwargs)
+
     def get_recruitment_jobs(self, **kwargs):
         """Lister les offres d'emploi"""
         return self.request("GET", "/recruitment/jobs", **kwargs)
@@ -2763,6 +2895,10 @@ class LeopardoClient:
     def generatecnssmadeclaration(self, **kwargs):
         """Generer la declaration trimestrielle CNSS (Maroc) pour tous les employes actifs"""
         return self.request("POST", "/social-declarations/cnss-ma", **kwargs)
+
+    def generatedasdzdeclaration(self, **kwargs):
+        """Generer la declaration annuelle des salaires DAS (Algerie, #5243)"""
+        return self.request("POST", "/social-declarations/das-dz", **kwargs)
 
     def generatedsnfrdeclaration(self, **kwargs):
         """Generer la DSN (Declaration Sociale Nominative, France) pour un mois donne"""
