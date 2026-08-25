@@ -6079,7 +6079,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsPersonalEmailHint =>
-      'Opsiyonel, hesabınızı şirket dışında tutar';
+      'İsteğe bağlı, hesabınızı şirket dışında tutar';
 
   @override
   String get settingsPhoneHint =>
@@ -6480,4 +6480,36 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get dashboardEdgeNodesHint =>
       'Şirket içi siteler — durum ve senkronizasyon.';
+
+  @override
+  String get settingsEdgeRemoved => 'Edge eşleştirme kaldırıldı.';
+
+  @override
+  String get settingsViewProfile => 'Profilimi görüntüle';
+
+  @override
+  String get settingsRecoveryEmailHint =>
+      'İsteğe bağlı, erişimi kurtarmak için';
+
+  @override
+  String get settingsPersonalPhoneHint =>
+      'İsteğe bağlı, gelecekteki seçimlerinize göre görünür';
+
+  @override
+  String get settingsPortableIdentityTitle => 'Taşınabilir kimlik';
+
+  @override
+  String get settingsPortableIdentitySubtitle =>
+      'Şirket geçmişi, pozisyon, durum ve müsaitlik.';
+
+  @override
+  String get settingsPortableIdentityHint =>
+      'Kişisel e-posta, kurtarma ve telefon hesaba bağlı kalır.';
+
+  @override
+  String get settingsDigitalLockerTitle => 'Dijital kasa';
+
+  @override
+  String get settingsDigitalLockerSubtitle =>
+      'Kontrollü görünürlükle CV, sözleşmeler, diplomalar ve belgeler.';
 }

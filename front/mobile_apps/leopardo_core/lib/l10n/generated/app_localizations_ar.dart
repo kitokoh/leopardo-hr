@@ -6410,4 +6410,35 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dashboardEdgeNodesHint => 'مواقع محلية — الحالة والمزامنة.';
+
+  @override
+  String get settingsEdgeRemoved => 'تمت إزالة اقتران Edge.';
+
+  @override
+  String get settingsViewProfile => 'عرض ملفي الشخصي';
+
+  @override
+  String get settingsRecoveryEmailHint => 'اختياري لاستعادة الوصول';
+
+  @override
+  String get settingsPersonalPhoneHint =>
+      'اختياري، مرئي حسب اختياراتك المستقبلية';
+
+  @override
+  String get settingsPortableIdentityTitle => 'هوية محمولة';
+
+  @override
+  String get settingsPortableIdentitySubtitle =>
+      'سجل الشركة والمنصب والحالة والتوفر.';
+
+  @override
+  String get settingsPortableIdentityHint =>
+      'يبقى البريد الشخصي والاسترداد والهاتف مرتبطين بالحساب.';
+
+  @override
+  String get settingsDigitalLockerTitle => 'خزانة رقمية';
+
+  @override
+  String get settingsDigitalLockerSubtitle =>
+      'السيرة الذاتية والعقود والشهادات والمستندات برؤية خاضعة للتحكم.';
 }

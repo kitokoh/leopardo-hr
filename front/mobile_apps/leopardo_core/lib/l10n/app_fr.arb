@@ -1825,7 +1825,7 @@
   "attendanceEmployeeRequestsPending": "Demandes employees en attente RH",
   "teamDepartmentOptional": "Departement (optionnel)",
   "settingsAvailableForNewCompany": "Disponible pour une nouvelle entreprise",
-  "settingsRecoveryEmailLabel": "Email de recuperation",
+  "settingsRecoveryEmailLabel": "Email de récupération",
   "settingsPersonalEmailLabel": "Email personnel",
   "teamEmployeeAdded": "Employe ajoute.",
   "settingsBiometryFingerprintDesired": "Empreinte digitale souhaitee",
@@ -1905,7 +1905,7 @@
   "attendanceSyncingPresence": "Synchronisation des presences...",
   "settingsNotifTasksHint": "Taches, decisions RH, pointage et rappels.",
   "teamHourlyRate": "Taux horaire",
-  "settingsPersonalPhoneLabel": "Telephone personnel",
+  "settingsPersonalPhoneLabel": "Téléphone personnel",
   "notifMarkAllAsRead": "Tout marquer comme lu",
   "teamManagerType": "Type de manager",
   "teamPayType": "Type de paie",
@@ -2005,5 +2005,14 @@
   "dashboardSupportClient": "Support client",
   "dashboardTicketsHint": "Tickets tenant — repondre et trier.",
   "dashboardEdgeNodes": "Noeuds Edge",
-  "dashboardEdgeNodesHint": "Sites on-premise — statut et synchronisation."
+  "dashboardEdgeNodesHint": "Sites on-premise — statut et synchronisation.",
+  "settingsEdgeRemoved": "Appairage Edge supprimé.",
+  "settingsViewProfile": "Voir mon profil",
+  "settingsRecoveryEmailHint": "Optionnel pour récupérer l'accès",
+  "settingsPersonalPhoneHint": "Optionnel, visible selon vos choix futurs",
+  "settingsPortableIdentityTitle": "Identité portable",
+  "settingsPortableIdentitySubtitle": "Historique entreprise, poste, statut et disponibilité.",
+  "settingsPortableIdentityHint": "Email personnel, récupération et téléphone restent attachés au compte.",
+  "settingsDigitalLockerTitle": "Placard numérique",
+  "settingsDigitalLockerSubtitle": "CV, contrats, diplômes et documents avec visibilité contrôlée."
 }

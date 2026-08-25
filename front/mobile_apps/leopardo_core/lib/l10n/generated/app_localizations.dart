@@ -11056,7 +11056,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsRecoveryEmailLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Email de recuperation'**
+  /// **'Email de récupération'**
   String get settingsRecoveryEmailLabel;
 
   /// No description provided for @settingsPersonalEmailLabel.
@@ -11536,7 +11536,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPersonalPhoneLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Telephone personnel'**
+  /// **'Téléphone personnel'**
   String get settingsPersonalPhoneLabel;
 
   /// No description provided for @notifMarkAllAsRead.
@@ -12060,6 +12060,60 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Sites on-premise — statut et synchronisation.'**
   String get dashboardEdgeNodesHint;
+
+  /// No description provided for @settingsEdgeRemoved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appairage Edge supprimé.'**
+  String get settingsEdgeRemoved;
+
+  /// No description provided for @settingsViewProfile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir mon profil'**
+  String get settingsViewProfile;
+
+  /// No description provided for @settingsRecoveryEmailHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Optionnel pour récupérer l\'accès'**
+  String get settingsRecoveryEmailHint;
+
+  /// No description provided for @settingsPersonalPhoneHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Optionnel, visible selon vos choix futurs'**
+  String get settingsPersonalPhoneHint;
+
+  /// No description provided for @settingsPortableIdentityTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identité portable'**
+  String get settingsPortableIdentityTitle;
+
+  /// No description provided for @settingsPortableIdentitySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique entreprise, poste, statut et disponibilité.'**
+  String get settingsPortableIdentitySubtitle;
+
+  /// No description provided for @settingsPortableIdentityHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email personnel, récupération et téléphone restent attachés au compte.'**
+  String get settingsPortableIdentityHint;
+
+  /// No description provided for @settingsDigitalLockerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Placard numérique'**
+  String get settingsDigitalLockerTitle;
+
+  /// No description provided for @settingsDigitalLockerSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'CV, contrats, diplômes et documents avec visibilité contrôlée.'**
+  String get settingsDigitalLockerSubtitle;
 }
 
 class _AppLocalizationsDelegate

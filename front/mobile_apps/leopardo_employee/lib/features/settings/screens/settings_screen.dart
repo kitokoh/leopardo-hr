@@ -136,9 +136,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(
-        SnackBar(content: Text(context.l10n.settingsEdgePairingRemoved)));
-  }
+    ).showSnackBar(SnackBar(content: Text(context.l10n.settingsEdgeRemoved)));  }
 
   Future<void> _loadLocalSettings() async {
     final settings =
@@ -207,7 +205,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         children: [
           _buildIdentityGlassCard(context),
           const SizedBox(height: 20),
-          _buildAccountOverviewSection(),
+          _buildAccountOverviewSection(context),
           const SizedBox(height: 20),
           _buildProfileSection(context, authState),
           const SizedBox(height: 20),
@@ -256,8 +254,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           OutlinedButton.icon(
             onPressed: () => context.push('/profile'),
             icon: const Icon(Icons.person_outline_rounded),
-            label: Text(context.l10n.settingsViewMyProfile),
-            style: OutlinedButton.styleFrom(
+            label: Text(context.l10n.settingsViewProfile),            style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(44),
             ),
           ),
@@ -282,7 +279,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _firstNameController,
-              decoration: const InputDecoration(labelText: 'Prenom'),
+              decoration:
+                  InputDecoration(labelText: context.l10n.settingsFirstName),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? context.l10n.settingsFirstNameRequired
                   : null,
@@ -290,8 +288,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _lastNameController,
-              decoration: const InputDecoration(labelText: 'Nom'),
-              validator: (value) => (value == null || value.trim().isEmpty)
+              decoration: InputDecoration(
+                  labelText: context.l10n.settingsLastNameLabel),              validator: (value) => (value == null || value.trim().isEmpty)
                   ? context.l10n.settingsLastNameRequired
                   : null,
             ),
@@ -299,7 +297,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration:
+                  InputDecoration(labelText: context.l10n.settingsEmailLabel),
               validator: (value) {
                 final trimmed = value?.trim() ?? '';
                 if (trimmed.isEmpty) return context.l10n.settingsEmailRequired;
@@ -325,8 +324,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 labelText: context.l10n.settingsRecoveryEmailLabel,
-                helperText: context.l10n.settingsRecoveryEmailOptionalHint,
-              ),
+                helperText: context.l10n.settingsRecoveryEmailHint,              ),
               validator: _optionalEmailValidator,
             ),
             const SizedBox(height: 12),
@@ -335,8 +333,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                 labelText: context.l10n.settingsPersonalPhoneLabel,
-                helperText: context.l10n.settingsPhoneHint,
-              ),
+                helperText: context.l10n.settingsPersonalPhoneHint,              ),
             ),
             const SizedBox(height: 16),
             if (authState.error != null)
@@ -361,27 +358,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _buildAccountOverviewSection() {
+  Widget _buildAccountOverviewSection(BuildContext context) {
     final items = [
       (
         icon: Icons.badge_outlined,
         color: AppColors.rh,
-        title: context.l10n.settingsPortableIdentity,
-        subtitle:
-            'Email personnel, recuperation et telephone restent attaches au compte.',
-      ),
+        title: context.l10n.settingsPortableIdentityTitle,
+        subtitle: context.l10n.settingsPortableIdentityHint,      ),
       (
         icon: Icons.work_history_outlined,
         color: AppColors.info,
-        title: 'Parcours',
-        subtitle: context.l10n.settingsJourneyHint,
-      ),
+        title: context.l10n.settingsJourneyTitle,
+        subtitle: context.l10n.settingsPortableIdentitySubtitle,      ),
       (
         icon: Icons.folder_copy_outlined,
         color: AppColors.warning,
-        title: context.l10n.settingsDigitalLocker,
-        subtitle: context.l10n.settingsLockerDocsVisibility,
-      ),
+        title: context.l10n.settingsDigitalLockerTitle,
+        subtitle: context.l10n.settingsDigitalLockerSubtitle,      ),
       (
         icon: Icons.qr_code_2_rounded,
         color: AppColors.rhDark,

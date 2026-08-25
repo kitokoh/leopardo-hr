@@ -1871,7 +1871,7 @@
   "teamNewEmployee": "Yeni çalışan",
   "teamNewEmployeeViaQr": "QR ile yeni çalışan",
   "settingsRecoveryEmailOptionalHint": "Erişimi kurtarmak için opsiyonel",
-  "settingsPersonalEmailHint": "Opsiyonel, hesabınızı şirket dışında tutar",
+  "settingsPersonalEmailHint": "İsteğe bağlı, hesabınızı şirket dışında tutar",
   "settingsPhoneHint": "Opsiyonel, gelecekteki seçimlerinize göre görünür",
   "settingsOpenMyLocker": "Dolabımı aç",
   "settingsShareProfileOrScan": "Profilinizi paylaşın veya bir şirketi tarayın.",
@@ -2005,5 +2005,14 @@
   "dashboardSupportClient": "Müşteri desteği",
   "dashboardTicketsHint": "Kiracı biletleri — yanıtla ve sırala.",
   "dashboardEdgeNodes": "Uç düğümler",
-  "dashboardEdgeNodesHint": "Şirket içi siteler — durum ve senkronizasyon."
+  "dashboardEdgeNodesHint": "Şirket içi siteler — durum ve senkronizasyon.",
+  "settingsEdgeRemoved": "Edge eşleştirme kaldırıldı.",
+  "settingsViewProfile": "Profilimi görüntüle",
+  "settingsRecoveryEmailHint": "İsteğe bağlı, erişimi kurtarmak için",
+  "settingsPersonalPhoneHint": "İsteğe bağlı, gelecekteki seçimlerinize göre görünür",
+  "settingsPortableIdentityTitle": "Taşınabilir kimlik",
+  "settingsPortableIdentitySubtitle": "Şirket geçmişi, pozisyon, durum ve müsaitlik.",
+  "settingsPortableIdentityHint": "Kişisel e-posta, kurtarma ve telefon hesaba bağlı kalır.",
+  "settingsDigitalLockerTitle": "Dijital kasa",
+  "settingsDigitalLockerSubtitle": "Kontrollü görünürlükle CV, sözleşmeler, diplomalar ve belgeler."
 }

@@ -2005,5 +2005,14 @@
   "dashboardSupportClient": "Client support",
   "dashboardTicketsHint": "Tenant tickets — answer and triage.",
   "dashboardEdgeNodes": "Edge nodes",
-  "dashboardEdgeNodesHint": "On-premise sites — status and sync."
+  "dashboardEdgeNodesHint": "On-premise sites — status and sync.",
+  "settingsEdgeRemoved": "Edge pairing removed.",
+  "settingsViewProfile": "View my profile",
+  "settingsRecoveryEmailHint": "Optional, to recover access",
+  "settingsPersonalPhoneHint": "Optional, visible according to your future choices",
+  "settingsPortableIdentityTitle": "Portable identity",
+  "settingsPortableIdentitySubtitle": "Company history, position, status and availability.",
+  "settingsPortableIdentityHint": "Personal email, recovery and phone remain attached to the account.",
+  "settingsDigitalLockerTitle": "Digital locker",
+  "settingsDigitalLockerSubtitle": "CV, contracts, diplomas and documents with controlled visibility."
 }
