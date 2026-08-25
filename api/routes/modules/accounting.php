@@ -19,7 +19,9 @@ declare(strict_types=1);
  * BelongsToCompany (scope global fail-closed #3727).
  */
 
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingActivationController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
+
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDashboardController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
@@ -40,7 +42,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     ->prefix('accounting')
     ->group(function (): void {
 
-        // ── Contacts / settings / TVA / dashboard (RBAC comptable + principal)
+        // ── Contacts / settings / TVA / activation / dashboard (RBAC comptable + principal)
         Route::middleware('api.manager:comptable,principal')->group(function (): void {
             Route::get('/contacts', [AccountingContactController::class, 'index']);
             Route::post('/contacts', [AccountingContactController::class, 'store']);
@@ -54,6 +56,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
             // Déclaration TVA par période (issue #5271).
             Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
+
+            // Wizard d'activation Comptabilité (issue #5288) — check-list + complétion idempotente.
+            Route::get('/activation', [AccountingActivationController::class, 'show']);
+            Route::post('/activation', [AccountingActivationController::class, 'complete']);
+
+            // Activation guidée du module (issue #5288) — wizard comptable/principal.
+            Route::get('/activation', [AccountingActivationController::class, 'show']);
+            Route::post('/activation', [AccountingActivationController::class, 'complete']);
 
             // Tableaux de bord comptables (issue #5230) — rapports manager/comptable.
             Route::get('/dashboard', [AccountingDashboardController::class, 'show']);
