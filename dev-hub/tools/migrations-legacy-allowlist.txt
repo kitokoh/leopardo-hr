@@ -1,3 +1,4 @@
+# Whitelist des migrations existantes (règle #5431) — générée le 2026-08-25.
 2026_04_01_000001_create_plans_table.php
 2026_04_01_000002_create_companies_table.php
 2026_04_01_000003_create_public_support_tables.php
@@ -181,3 +182,6 @@
 2026_08_24_000001_add_candidate_id_to_employees.php
 2026_08_24_000002_extend_bank_exports_formats.php
 2026_08_25_000001_add_gateway_payment_id_to_accounting_payments.php
+2026_08_23_000002_add_proof_and_closures_to_attendance_corrections.php
+2026_08_25_000001_add_gateway_payment_id_to_accounting_payments.php
+2026_08_23_000002_create_accounting_document_shares_table.php
