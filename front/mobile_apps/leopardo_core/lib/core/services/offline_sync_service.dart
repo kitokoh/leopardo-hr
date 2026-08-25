@@ -1,11 +1,19 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
 
 /// Signature d'envoi d'un pointage vers l'API (injectable pour les tests).
-typedef SyncPunchSender = Future<void> Function(String path, Map<String, dynamic> payload);
+/// [idempotencyKey] est la clé RTMX (#5407) stockée dans l'entrée de la file
+/// : le rejeu doit réutiliser la MÊME clé que l'appel initial pour que le
+/// serveur rejoue la 1ʳᵉ réponse au lieu de créer un doublon.
+typedef SyncPunchSender = Future<void> Function(
+  String path,
+  Map<String, dynamic> payload, {
+  String? idempotencyKey,
+});
 
 class OfflineSyncService {
   final ApiClient apiClient;
@@ -17,7 +25,8 @@ class OfflineSyncService {
   late final Box<Map<dynamic, dynamic>> _offlineBox;
   StreamSubscription? _connectivitySub;
 
-  OfflineSyncService(this.apiClient, this.connectivity, {this.sendPunchOverride});
+  OfflineSyncService(this.apiClient, this.connectivity,
+      {this.sendPunchOverride});
 
   bool _initialized = false;
 
@@ -33,7 +42,8 @@ class OfflineSyncService {
         : await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
 
     // Listen to network changes
-    _connectivitySub = connectivity.onConnectivityChanged.listen((List<ConnectivityResult> results) {
+    _connectivitySub = connectivity.onConnectivityChanged
+        .listen((List<ConnectivityResult> results) {
       if (results.any((result) => result != ConnectivityResult.none)) {
         syncPendingPunches();
       }
@@ -46,10 +56,17 @@ class OfflineSyncService {
     }
   }
 
-  Future<void> saveOfflinePunch(Map<String, dynamic> payload, bool isCheckIn) async {
+  Future<void> saveOfflinePunch(
+    Map<String, dynamic> payload,
+    bool isCheckIn, {
+    String? idempotencyKey,
+  }) async {
     await _offlineBox.add({
       'type': isCheckIn ? 'check-in' : 'check-out',
       'payload': payload,
+      // RTMX (#5407) : la clé générée au moment du pointage est conservée pour
+      // que le rejeu réutilise la MÊME clé (idempotence serveur #5277).
+      if (idempotencyKey != null) 'idempotencyKey': idempotencyKey,
       'timestamp': DateTime.now().toIso8601String(),
     });
   }
@@ -65,18 +82,29 @@ class OfflineSyncService {
 
       final type = item['type'] as String;
       final payload = Map<String, dynamic>.from(item['payload'] as Map);
+      // RTMX (#5407) : clé d'idempotence générée au pointage initial et
+      // stockée dans l'entrée — le rejeu réutilise la MÊME clé (le serveur
+      // rejoue la 1ʳᵉ réponse 2xx au lieu de créer un doublon).
+      final idempotencyKey = item['idempotencyKey'] as String?;
 
       try {
-        final path = type == 'check-in' ? '/attendance/check-in' : '/attendance/check-out';
+        final path = type == 'check-in'
+            ? '/attendance/check-in'
+            : '/attendance/check-out';
         final sender = sendPunchOverride;
         if (sender != null) {
-          await sender(path, payload);
+          await sender(path, payload, idempotencyKey: idempotencyKey);
         } else {
           await apiClient.requestWithRetry(
             path,
             method: 'POST',
             data: payload,
             maxRetriesOverride: 0,
+            options: Options(
+              headers: {
+                if (idempotencyKey != null) 'Idempotency-Key': idempotencyKey,
+              },
+            ),
           );
         }
         // Success : purge l'entrée (règle « 1er pointage gagne » — le serveur

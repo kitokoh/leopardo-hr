@@ -7,6 +7,7 @@ namespace Tests\Feature\HR;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
@@ -248,11 +249,12 @@ class DepartureNoticeTest extends TestCase
         bool $noticeServed,
         ?int $daysServed,
     ): void {
-        \Illuminate\Support\Facades\DB::table('employee_departures')->insert([
+        DB::table('employee_departures')->insert([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'departure_type' => 'resignation',
             'reason' => 'Test',
+            'last_work_day' => Carbon::now()->toDateString(),
             'notice_served' => $noticeServed,
             'notice_days_served' => $daysServed,
             'last_work_day' => Carbon::now()->toDateString(),

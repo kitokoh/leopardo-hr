@@ -62,6 +62,7 @@
             <input
               v-model="row.label"
               type="text"
+              @input="onTvaLabelEdit(row)"
               maxlength="80"
               :placeholder="$t('accounting.settings.rate_label')"
               class="min-w-0 flex-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm"
@@ -190,7 +191,7 @@ function emptyForm() {
   form.template_style = 'modern'
   form.payment_terms = ''
   form.legal_mentions = ''
-  form.tva_rates = [{ label: t('accounting.settings.rate_default_label', 'TVA standard'), rate: 19 }]
+  form.tva_rates = [{ label: t('accounting.settings.rate_default_label', 'TVA standard'), label_key: 'standard', rate: 19 }]
   form.series = seriesTypes.map((type) => ({ key: type.key, labelKey: type.labelKey, prefix: '' }))
 }
 
@@ -201,8 +202,8 @@ function applySettings(settings) {
   form.payment_terms = settings.payment_terms || ''
   form.legal_mentions = settings.legal_mentions || ''
   form.tva_rates = Array.isArray(settings.tva_rates) && settings.tva_rates.length > 0
-    ? settings.tva_rates.map((row) => ({ label: row.label || '', rate: Number(row.rate) }))
-    : [{ label: t('accounting.settings.rate_default_label', 'TVA standard'), rate: 19 }]
+    ? settings.tva_rates.map((row) => ({ label: row.label || '', label_key: row.label_key || null, rate: Number(row.rate) }))
+    : [{ label: t('accounting.settings.rate_default_label', 'TVA standard'), label_key: 'standard', rate: 19 }]
   const storedSeries = settings.number_series || {}
   form.series = seriesTypes.map((type) => ({
     key: type.key,
@@ -217,6 +218,15 @@ function addTvaRate() {
 
 function removeTvaRate(index) {
   form.tva_rates.splice(index, 1)
+}
+
+/**
+ * Dès que l'utilisateur modifie le libellé d'un taux, le label devient
+ * personnalisé : on retire le label_key pour que le serveur ne retraduise
+ * pas le texte saisi (issue #5227).
+ */
+function onTvaLabelEdit(row) {
+  if (row.label_key) row.label_key = null
 }
 
 async function load() {
@@ -245,6 +255,7 @@ async function save() {
       legal_mentions: form.legal_mentions || null,
       tva_rates: form.tva_rates.map((row) => ({
         label: row.label,
+        label_key: row.label_key || null,
         rate: Number(row.rate),
       })),
       number_series: Object.fromEntries(

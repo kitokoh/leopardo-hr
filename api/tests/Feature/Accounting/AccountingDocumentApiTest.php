@@ -8,7 +8,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
-use Illuminate\Testing\TestResponse;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -106,19 +105,6 @@ class AccountingDocumentApiTest extends TestCase
         ];
     }
 
-    /**
-     * Extrait l'id du document depuis la réponse de création.
-     */
-    private function documentIdFromResponse(mixed $response): int
-    {
-        $this->assertInstanceOf(TestResponse::class, $response);
-
-        $id = $response->json('data.id');
-        $this->assertIsInt($id);
-
-        return $id;
-    }
-
     public function test_store_creates_draft_with_number_and_lines(): void
     {
         Sanctum::actingAs($this->manager($this->companyA));
@@ -130,11 +116,8 @@ class AccountingDocumentApiTest extends TestCase
             ->assertJsonPath('data.status', 'draft');
 
         $number = $response->json('data.number');
-        $this->assertIsString($number);
         $this->assertMatchesRegularExpression('/^FAC-\d{4}-\d{4}$/', $number);
-        $lines = $response->json('data.lines');
-        $this->assertIsArray($lines);
-        $this->assertCount(2, $lines);
+        $this->assertCount(2, $response->json('data.lines'));
     }
 
     public function test_store_requires_lines_and_valid_type(): void
@@ -174,7 +157,7 @@ class AccountingDocumentApiTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $document = AccountingDocument::query()->findOrFail($this->documentIdFromResponse($this->postJson('/api/v1/accounting/documents', $this->invoicePayload())));
+        $document = AccountingDocument::query()->findOrFail((int) $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->json('data.id'));
 
         $this->getJson('/api/v1/accounting/documents/'.$document->id)
             ->assertOk()
@@ -204,7 +187,7 @@ class AccountingDocumentApiTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $document = AccountingDocument::query()->findOrFail($this->documentIdFromResponse($this->postJson('/api/v1/accounting/documents', $this->invoicePayload())));
+        $document = AccountingDocument::query()->findOrFail((int) $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->json('data.id'));
 
         $this->postJson('/api/v1/accounting/documents/'.$document->id.'/send')
             ->assertOk()
@@ -215,7 +198,7 @@ class AccountingDocumentApiTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $document = AccountingDocument::query()->findOrFail($this->documentIdFromResponse($this->postJson('/api/v1/accounting/documents', $this->invoicePayload())));
+        $document = AccountingDocument::query()->findOrFail((int) $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->json('data.id'));
 
         $this->postJson('/api/v1/accounting/documents/'.$document->id.'/send')->assertOk();
 
@@ -242,7 +225,7 @@ class AccountingDocumentApiTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $document = AccountingDocument::query()->findOrFail($this->documentIdFromResponse($this->postJson('/api/v1/accounting/documents', $this->invoicePayload())));
+        $document = AccountingDocument::query()->findOrFail((int) $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->json('data.id'));
 
         $this->postJson('/api/v1/accounting/documents/'.$document->id.'/cancel', ['reason' => 'Erreur de saisie'])
             ->assertOk()
@@ -253,7 +236,7 @@ class AccountingDocumentApiTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $document = AccountingDocument::query()->findOrFail($this->documentIdFromResponse($this->postJson('/api/v1/accounting/documents', $this->invoicePayload())));
+        $document = AccountingDocument::query()->findOrFail((int) $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->json('data.id'));
         $this->postJson('/api/v1/accounting/documents/'.$document->id.'/send')->assertOk();
 
         $response = $this->postJson('/api/v1/accounting/documents/'.$document->id.'/credit-note', [
@@ -266,7 +249,7 @@ class AccountingDocumentApiTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonPath('data.type', 'credit_note');
 
-        $creditNote = AccountingDocument::query()->findOrFail($this->documentIdFromResponse($response));
+        $creditNote = AccountingDocument::query()->findOrFail((int) $response->json('data.id'));
         $this->assertSame($document->id, $creditNote->metadata['source_document_id'] ?? null);
     }
 
@@ -281,7 +264,7 @@ class AccountingDocumentApiTest extends TestCase
     public function test_tenant_isolation_returns_404(): void
     {
         Sanctum::actingAs($this->manager($this->companyA));
-        $document = AccountingDocument::query()->findOrFail($this->documentIdFromResponse($this->postJson('/api/v1/accounting/documents', $this->invoicePayload())));
+        $document = AccountingDocument::query()->findOrFail((int) $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->json('data.id'));
 
         // L'entreprise B ne peut pas voir/modifier le document de A.
         Sanctum::actingAs($this->manager($this->companyB));

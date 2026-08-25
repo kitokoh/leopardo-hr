@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Console;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
+use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Tests\RefreshTenantDatabase;
@@ -42,21 +42,21 @@ class AutoCloseGeoSessionsCommandTest extends TestCase
         ]);
 
         $this->staleSession = GeoAttendanceSession::create([
-            'company_id'       => $this->company->id,
-            'employee_id'      => $employee->id,
-            'started_at'       => Carbon::now()->subHours(20),
-            'status'           => GeoAttendanceSession::STATUS_DETECTED,
-            'check_in_lat'     => 36.75,
-            'check_in_lng'     => 3.05,
+            'company_id' => $this->company->id,
+            'employee_id' => $employee->id,
+            'started_at' => Carbon::now()->subHours(20),
+            'status' => GeoAttendanceSession::STATUS_DETECTED,
+            'check_in_lat' => 36.75,
+            'check_in_lng' => 3.05,
         ]);
 
         $this->recentSession = GeoAttendanceSession::create([
-            'company_id'       => $this->company->id,
-            'employee_id'      => $employee->id,
-            'started_at'       => Carbon::now()->subHours(2),
-            'status'           => GeoAttendanceSession::STATUS_DETECTED,
-            'check_in_lat'     => 36.75,
-            'check_in_lng'     => 3.05,
+            'company_id' => $this->company->id,
+            'employee_id' => $employee->id,
+            'started_at' => Carbon::now()->subHours(2),
+            'status' => GeoAttendanceSession::STATUS_DETECTED,
+            'check_in_lat' => 36.75,
+            'check_in_lng' => 3.05,
         ]);
     }
 
@@ -101,12 +101,12 @@ class AutoCloseGeoSessionsCommandTest extends TestCase
         ]);
 
         $otherStale = GeoAttendanceSession::create([
-            'company_id'       => $otherCompany->id,
-            'employee_id'      => $otherEmployee->id,
-            'started_at'       => Carbon::now()->subHours(30),
-            'status'           => GeoAttendanceSession::STATUS_DETECTED,
-            'check_in_lat'     => 36.75,
-            'check_in_lng'     => 3.05,
+            'company_id' => $otherCompany->id,
+            'employee_id' => $otherEmployee->id,
+            'started_at' => Carbon::now()->subHours(30),
+            'status' => GeoAttendanceSession::STATUS_DETECTED,
+            'check_in_lat' => 36.75,
+            'check_in_lng' => 3.05,
         ]);
 
         $exit = Artisan::call('smart-attendance:auto-close', [

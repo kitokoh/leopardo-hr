@@ -1434,3 +1434,16 @@ Note 2026-08-24 (issue #5223) : cycle de vie des documents comptables via l'API 
 - Overdue : lecture rafraîchit les statuts échus (`due_date` dépassée sur sent/partially_paid → `overdue`).
 - RBAC : manager principal/comptable autorisés, employé → 403 ; isolation tenant → 404 cross-company.
 - Couverture : `tests/Feature/Accounting/AccountingDocumentApiTest.php` (12 tests) — gate coverage module Accounting ≥ 70 % (DoD #5228) : 67,4 % → 86,5 % sur #5230, 87,7 % sur #5288.
+
+
+Note 2026-08-24 (issue #5227) : i18n ×4 du module Comptabilité — messages API localisés (fr/en/tr/ar), zéro chaîne hardcodée, parité des catalogues.
+- Surface API : les messages d'erreur et de validation du module Accounting passent par `__('accounting.*')` / `__('errors.*')` (renderer #4171) — plus aucun littéral `message => '...'` ni `throw '...'` français brut (hors codes machine MAJUSCULES et clés de catalogue) dans `api/app/Modules/Accounting/**` ; la locale est pilotée par `preferred_language` de l'utilisateur authentifié (pattern #4592, fallback Accept-Language).
+- Catalogues : `api/lang/{fr,en,tr,ar}/accounting.php` (labels documents `document_type_*` ×6, statuts `status_*` ×6, TVA, workflow) et `errors.php` (codes des DomainException : `PAYMENT_EXCEEDS_TOTAL`, `PAYMENT_ON_UNSENT_DOCUMENT`, `CREDIT_NOTE_REQUIRES_SOURCE_INVOICE`, `DELIVERY_NOTE_REQUIRES_DELIVERY_DATE`, `DOCUMENT_NOT_FULLY_PAID`, `INVALID_DOCUMENT_TRANSITION`…) — parité stricte des clés ×4 (garde CI `dev-hub/tools/check-accounting-i18n.py`, job « i18n Comptabilité ×4 » du workflow `accounting-ci.yml`).
+- PDF : labels des documents comptables (`accounting-document.blade.php`) localisés ×4 via les mêmes catalogues ; RTL arabe vérifié ; libellés de données (ex. TVA `label_key`) laissés aux données seed.
+- Scénarios à vérifier : chaque erreur métier renvoie un message dans la langue de l'utilisateur (fr/en/tr/ar) sans retomber sur la clé brute ; parité des clés ×4 des deux catalogues ; zéro littéral non localisé dans le module (scan CI) ; libellés PDF ×4 (type + statut) ; RTL arabe.
+- Couverture : `tests/Feature/Accounting/AccountingI18nTest.php`, `AccountingI18nMessagesTest.php`, `DocumentPdfRendererTest.php` + suite module Accounting (coverage 86,45 % ≥ 70 % DoD #5228) — garde `check-accounting-i18n.py` verte.
+Note 2026-08-24 (issues #5353/#5354/#5355) : ADR-0016 — consolidation des routes pointage sous `/api/v1/attendance/*` + fusion SmartAttendance.
+- Phases 2-3 : chemin d'usage unique de la géofence (`GeofenceZoneService`) et surface API pointage consolidée sous `/attendance/*` (sessions, geo-events, mode) — alias `/smart-attendance/*` conservés (BC mobile, Phase 5 #5265).
+- Phase 4 : fusion des modèles/services/commandes SmartAttendance → Attendance (shims `@deprecated` dans SmartAttendance pour BC) ; commande console `AutoCloseGeoSessionsCommand` → `AutoCloseAttendanceCommand` (alias conservé, `api/routes/console.php`).
+- Scénarios à vérifier : routes `/attendance/*` (sessions/geo-events/mode), rétro-compat `/smart-attendance/*`, migration console (schedule), isolation tenant géofence, PHPStan Strict vert sur les fichiers fusionnés.
+- Couverture : `tests/Feature/Attendance/Geo*` (6 tests migrés) + `GeoRoutesMigrationTest`.
