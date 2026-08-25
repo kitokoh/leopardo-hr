@@ -2129,6 +2129,44 @@ trait CreatesMvpSchema
                     ->cascadeOnDelete();
             });
         }
+
+        // HR — cycle de vie employé (issues #5324/#5326) : tables requises par
+        // EmployeeResource (badge documents_status) et le workflow de départ.
+        if (! Schema::hasTable($this->moduleTable('employee_documents'))) {
+            Schema::create($this->moduleTable('employee_documents'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->index();
+                $table->string('type', 40);
+                $table->string('status', 20)->default('received');
+                $table->date('document_date')->nullable();
+                $table->string('reference', 100)->nullable();
+                $table->text('url')->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedInteger('uploaded_by')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'employee_id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('employee_departures'))) {
+            Schema::create($this->moduleTable('employee_departures'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id');
+                $table->string('departure_type', 30)->default('resignation');
+                $table->string('reason', 500)->nullable();
+                $table->date('last_work_day')->nullable();
+                $table->boolean('notice_served')->default(false);
+                $table->unsignedSmallInteger('notice_days_served')->nullable();
+                $table->date('departed_at')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'employee_id']);
+            });
+        }
     }
 
     private function dropMvpTables(): void
