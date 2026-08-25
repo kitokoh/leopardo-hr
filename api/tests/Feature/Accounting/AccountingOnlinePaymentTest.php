@@ -266,8 +266,9 @@ class AccountingOnlinePaymentTest extends TestCase
      * Laravel encode $data avec json_encode + JSON_THROW_ON_ERROR, identique).
      *
      * @param  array<string, mixed>  $data
+     * @return TestResponse<Response>
      */
-    private function postChargilyWebhook(string $url, array $data): TestResponse<Response>
+    private function postChargilyWebhook(string $url, array $data): TestResponse
     {
         $payload = json_encode($data, JSON_THROW_ON_ERROR);
 
@@ -276,8 +277,9 @@ class AccountingOnlinePaymentTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $data
+     * @return TestResponse<Response>
      */
-    private function postStripeWebhook(string $url, array $data): TestResponse<Response>
+    private function postStripeWebhook(string $url, array $data): TestResponse
     {
         $payload = json_encode($data, JSON_THROW_ON_ERROR);
 
