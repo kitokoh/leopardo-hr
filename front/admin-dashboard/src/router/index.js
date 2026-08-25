@@ -173,6 +173,24 @@ const routes = [
         }
       },
       {
+        path: '/accounting/activation',
+        name: 'accounting-activation',
+        component: () => import(`@/views/accounting/AccountingActivationView.vue`),
+        meta: {
+          title: 'navigation.accountingActivation',
+          icon: 'SparklesIcon'
+        }
+      },
+      {
+        path: '/accounting/dashboard',
+        name: 'accounting-dashboard',
+        component: () => import(`@/views/accounting/AccountingDashboardView.vue`),
+        meta: {
+          title: 'navigation.accountingDashboard',
+          icon: 'ChartBarIcon'
+        }
+      },
+      {
         path: '/training',
         name: 'training',
         component: () => import('@/views/training/TrainingView.vue'),
