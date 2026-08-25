@@ -180,6 +180,10 @@ class LeopardoClient:
         """Annuler un document non paye (#5223)"""
         return self.request("POST", "/accounting/documents/{document}/cancel", **kwargs)
 
+    def post_accounting_documents_by_document_checkout(self, **kwargs):
+        """Initier le paiement en ligne d'un document (portail client)"""
+        return self.request("POST", "/accounting/documents/{document}/checkout", **kwargs)
+
     def post_accounting_documents_by_document_credit_note(self, **kwargs):
         """Creer un avoir lie a une facture source (#5223)"""
         return self.request("POST", "/accounting/documents/{document}/credit-note", **kwargs)
@@ -203,6 +207,10 @@ class LeopardoClient:
     def post_accounting_payments_by_payment_reconcile(self, **kwargs):
         """Rapprocher un paiement"""
         return self.request("POST", "/accounting/payments/{payment}/reconcile", **kwargs)
+
+    def post_accounting_payments_webhook_by_gateway(self, **kwargs):
+        """Webhook passerelle de paiement (Chargily / Stripe)"""
+        return self.request("POST", "/accounting/payments/webhook/{gateway}", **kwargs)
 
     def post_accounting_reminders_run(self, **kwargs):
         """Declencher les relances de paiement"""

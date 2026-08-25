@@ -88,6 +88,16 @@ fantôme.
 - [ ] i18n ×4 des messages (échec, expiration, lien de paiement) ; RBAC portail/comptable/principal
 - [ ] CI verte ; CHANGELOG
 
+## Implémentation (2026-08-25 — issue #5272)
+
+Implémenté par la PR de clôture #5272 (branche `mod/accounting/5272-online-payment`) :
+`PaymentGatewayInterface` + `PaymentGatewayFactory` (routage pays), `ChargilyPaymentGateway`
+(API v2) et `StripePaymentGateway` (Checkout Session), `OnlinePaymentService` (checkout +
+webhook idempotent), migration `gateway_payment_id` (index UNIQUE), 14 tests Feature
+`AccountingOnlinePaymentTest` (US1-3 + idempotence + anti-fraude + isolation tenant),
+OpenAPI 2 opérations (804/804), i18n ×4. Les 3 décisions fondateur de l'ADR-0017 restent
+ouvertes (elles ne bloquent pas l'option A retenue par défaut).
+
 ## Hors périmètre (cette décision d'architecture)
 
 - Choix des passerelles MA/TN/TR (phase 2)
