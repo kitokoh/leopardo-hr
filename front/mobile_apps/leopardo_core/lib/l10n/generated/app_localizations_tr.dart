@@ -6304,4 +6304,272 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get settingsDigitalLockerSubtitle =>
       'Kontrollü görünürlükle CV, sözleşmeler, diplomalar ve belgeler.';
+
+  @override
+  String get settingsQrOnboardingTitle => 'QR kayıt';
+
+  @override
+  String get settingsQrOnboardingSubtitle =>
+      'Profilinizi paylaşın veya bir şirketi tarayın.';
+
+  @override
+  String get settingsJourneyAvailable => 'Yeni bir şirket için müsait';
+
+  @override
+  String settingsJourneyAttachedTo(String company) {
+    return '$company şirketine bağlı';
+  }
+
+  @override
+  String get settingsJourneyYourCompany => 'şirketiniz';
+
+  @override
+  String get settingsProfessionalQr => 'Profesyonel QR';
+
+  @override
+  String get settingsQrEmployeeHint =>
+      'Yönetici, daveti önceden doldurmak için tarar.';
+
+  @override
+  String get settingsPasteQrButton => 'Şirket QR\'ını yapıştır';
+
+  @override
+  String get settingsCompanyQrLabel => 'Şirket QR';
+
+  @override
+  String get settingsRequestIntegration => 'Entegrasyon iste';
+
+  @override
+  String get settingsCabinetSubtitle =>
+      'CV, sözleşmeler, diplomalar ve idari belgeler.';
+
+  @override
+  String get settingsCabinetDocuments => 'belgeler';
+
+  @override
+  String get settingsCabinetShared => 'paylaşılan';
+
+  @override
+  String get settingsCabinetPublic => 'genel';
+
+  @override
+  String get settingsOpenLocker => 'Kasamı aç';
+
+  @override
+  String get settingsLanguageSyncHint =>
+      'Bu tercih hesabınızla senkronizedir ve RTL modunu da yönetir.';
+
+  @override
+  String get settingsUpdating => 'Güncelleniyor...';
+
+  @override
+  String get settingsUpdateLanguage => 'Dili güncelle';
+
+  @override
+  String settingsJourneyCompanyPeriod(String company, String period) {
+    return '$company - $period';
+  }
+
+  @override
+  String get settingsPasswordModernizationHint =>
+      'Modernizasyon adımlarından önce şifrenizi değiştirin.';
+
+  @override
+  String get settingsUpdatePassword => 'Şifreyi güncelle';
+
+  @override
+  String get settingsBiometricPreparationTitle => 'Biyometrik hazırlık';
+
+  @override
+  String get settingsBiometricExplanation =>
+      'Yüz, mobil cihazdan yakalanıp yönetici/İK onayına sunulabilir. Parmak izi için Android/iOS, kayıtlı bir parmak kullandığınızı yerel olarak doğrulayabilir ancak ham şablona erişim sağlamaz; nokta atışı tarafındaki etkin aktivasyon, onaylandıktan sonra şirket terminali tarafından kullanılır.';
+
+  @override
+  String settingsBiometricTodayStatus(String face, String fingerprint) {
+    return 'Bugün aktif - yüz: $face | parmak izi: $fingerprint';
+  }
+
+  @override
+  String get settingsYes => 'evet';
+
+  @override
+  String get settingsNo => 'hayır';
+
+  @override
+  String get settingsBiometricEnablePreparation =>
+      'Biyometrik hazırlığı etkinleştir';
+
+  @override
+  String get settingsBiometricFingerprintWanted => 'Parmak izi isteniyor';
+
+  @override
+  String get settingsBiometricFaceWanted => 'Yüz tanıma isteniyor';
+
+  @override
+  String get settingsBiometricFutureConsent =>
+      'Gelecekteki biyometrik yoklamaya rıza';
+
+  @override
+  String get settingsBiometricSensorLabel =>
+      'Parmak izi sensörü / terminal kimliği';
+
+  @override
+  String get settingsBiometricSensorHint =>
+      'Örnek: FP-ENTREE-01 veya biyometrik kimlik';
+
+  @override
+  String get settingsBiometricNotesTitle => 'Notlar ve rıza';
+
+  @override
+  String get settingsBiometricNotesHint =>
+      'Örnek: selfie izinli, ana giriş terminali tercih, yüz fotoğrafı onayı...';
+
+  @override
+  String get settingsBiometricCaptureFace => 'Yüzümü yakala / seç';
+
+  @override
+  String get settingsBiometricFaceSelected => 'Yüz görüntüsü seçildi';
+
+  @override
+  String get settingsSavingShort => 'Kaydediliyor...';
+
+  @override
+  String get settingsSubmitBiometric => 'Yöneticiye / İK\'ya gönder';
+
+  @override
+  String get settingsSubmitting => 'Gönderiliyor...';
+
+  @override
+  String get settingsBiometricPendingExplanation =>
+      'Gönderildikten sonra biyometrik verileriniz beklemede kalır. İlk aktivasyon veya değişiklik yönetici/İK onayı gerektirir.';
+
+  @override
+  String get settingsEdgeNodeTitle => 'Edge düğümü (yerel ağ)';
+
+  @override
+  String get settingsEdgeNodeHint =>
+      'İsteğe bağlı: İnternet olmadan yoklama için sitedeki bir Edge sunucusuna bağlanın.';
+
+  @override
+  String get settingsEdgeCloudStatus => 'Buluta bağlı';
+
+  @override
+  String get settingsEdgeLocalStatus => 'Yerel Edge düğümüne bağlı';
+
+  @override
+  String get settingsEdgeOfflineStatus => 'Çevrimdışı';
+
+  @override
+  String settingsEdgeCurrentStatus(String label) {
+    return 'Mevcut durum: $label';
+  }
+
+  @override
+  String get settingsEdgeAddressLabel => 'Edge düğümü adresi';
+
+  @override
+  String get settingsEdgeUuidLabel => 'Düğüm kimliği (UUID)';
+
+  @override
+  String get settingsEdgeTokenLabel => 'Edge jetonu';
+
+  @override
+  String get settingsEdgeUuidHint => 'Yöneticiniz tarafından sağlanır';
+
+  @override
+  String get settingsEdgeTokenHint => 'Kayıt sırasında bir kez sağlanır';
+
+  @override
+  String get settingsRemove => 'Kaldır';
+
+  @override
+  String get settingsSessionLogoutHint =>
+      'Bu alandan bu telefonda temiz bir şekilde çık.';
+
+  @override
+  String get settingsNotificationsUnavailable =>
+      'Tercihler şu anda kullanılamıyor. Daha sonra yenilemek için çekin.';
+
+  @override
+  String get settingsNotificationsSaved => 'Bildirim tercihleri güncellendi.';
+
+  @override
+  String settingsNotificationsSaveFailed(String error) {
+    return 'Güncelleme başarısız: $error';
+  }
+
+  @override
+  String get settingsNotificationsIntro =>
+      'Önemli İK uyarılarını kaçırmadan faydalı kanalları seçin.';
+
+  @override
+  String get settingsChannelInApp => 'Uygulama içi uyarılar';
+
+  @override
+  String get settingsChannelInAppHint =>
+      'Görevler, İK kararları, yoklama ve hatırlatmalar.';
+
+  @override
+  String get settingsChannelPush => 'Mobil push';
+
+  @override
+  String get settingsChannelPushHint => 'Bu telefonda anlık bildirimler.';
+
+  @override
+  String get settingsChannelEmailHint => 'Özet ve önemli onaylar.';
+
+  @override
+  String get settingsChannelSmsHint =>
+      'Acil durumlar için ayrılmış kısa kanal, opt-in sonrası aktif.';
+
+  @override
+  String get settingsChannelWhatsappHint =>
+      'Konuşma kanalı, açık onayınızı gerektirir.';
+
+  @override
+  String get settingsNotificationsLanguage => 'Bildirim dili';
+
+  @override
+  String get settingsQrPasted => 'Şirket QR\'ı yapıştırıldı.';
+
+  @override
+  String settingsQrRejected(String error) {
+    return 'QR reddedildi: $error';
+  }
+
+  @override
+  String get settingsLanguageUpdated => 'Dil güncellendi.';
+
+  @override
+  String get settingsBiometricSavedLocal =>
+      'Biyometrik hazırlık yerel olarak kaydedildi.';
+
+  @override
+  String get settingsBiometricEnableFirst =>
+      'Önce biyometrik hazırlığı etkinleştirin.';
+
+  @override
+  String get settingsBiometricConsentRequired =>
+      'Herhangi bir gönderimden önce rıza gereklidir.';
+
+  @override
+  String get settingsBiometricFaceRequired =>
+      'Göndermeden önce bir yüz yakalaması ekleyin.';
+
+  @override
+  String get settingsBiometricLocalVerifyCancel =>
+      'Yerel biyometrik doğrulama iptal edildi.';
+
+  @override
+  String get settingsBiometricSubmitted =>
+      'Talep doğrulama için yöneticiye / İK\'ya gönderildi.';
+
+  @override
+  String settingsBiometricSubmitFailed(String error) {
+    return 'Gönderim başarısız: $error';
+  }
+
+  @override
+  String get settingsBiometricConfirmIdentity =>
+      'Biyometrik talebinizi göndermek için kimliğinizi doğrulayın';
 }

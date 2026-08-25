@@ -6375,4 +6375,277 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settingsDigitalLockerSubtitle =>
       'CV, contrats, diplômes et documents avec visibilité contrôlée.';
+
+  @override
+  String get settingsQrOnboardingTitle => 'QR onboarding';
+
+  @override
+  String get settingsQrOnboardingSubtitle =>
+      'Partager votre profil ou scanner une entreprise.';
+
+  @override
+  String get settingsJourneyAvailable =>
+      'Disponible pour une nouvelle entreprise';
+
+  @override
+  String settingsJourneyAttachedTo(String company) {
+    return 'Rattaché à $company';
+  }
+
+  @override
+  String get settingsJourneyYourCompany => 'votre entreprise';
+
+  @override
+  String get settingsProfessionalQr => 'QR professionnel';
+
+  @override
+  String get settingsQrEmployeeHint =>
+      'Le manager le scanne pour pré-remplir une invitation.';
+
+  @override
+  String get settingsPasteQrButton => 'Coller le QR entreprise';
+
+  @override
+  String get settingsCompanyQrLabel => 'QR entreprise';
+
+  @override
+  String get settingsRequestIntegration => 'Demander l\'intégration';
+
+  @override
+  String get settingsCabinetSubtitle =>
+      'CV, contrats, diplômes et documents administratifs.';
+
+  @override
+  String get settingsCabinetDocuments => 'documents';
+
+  @override
+  String get settingsCabinetShared => 'partagés';
+
+  @override
+  String get settingsCabinetPublic => 'publics';
+
+  @override
+  String get settingsOpenLocker => 'Ouvrir mon placard';
+
+  @override
+  String get settingsLanguageSyncHint =>
+      'Cette préférence est synchronisée avec votre compte et pilote aussi le mode RTL.';
+
+  @override
+  String get settingsUpdating => 'Mise à jour...';
+
+  @override
+  String get settingsUpdateLanguage => 'Mettre à jour la langue';
+
+  @override
+  String settingsJourneyCompanyPeriod(String company, String period) {
+    return '$company - $period';
+  }
+
+  @override
+  String get settingsPasswordModernizationHint =>
+      'Changez votre mot de passe avant les prochaines étapes de modernisation.';
+
+  @override
+  String get settingsUpdatePassword => 'Mettre à jour le mot de passe';
+
+  @override
+  String get settingsBiometricPreparationTitle => 'Préparation biométrie';
+
+  @override
+  String get settingsBiometricExplanation =>
+      'Le visage peut être capturé depuis le mobile puis soumis à validation manager / RH. Pour l\'empreinte, Android/iOS permettent de vérifier localement que vous utilisez bien un doigt enregistré, mais ne donnent pas accès au gabarit brut ; l\'activation effective côté pointage restera donc approuvée puis exploitée par la borne entreprise.';
+
+  @override
+  String settingsBiometricTodayStatus(String face, String fingerprint) {
+    return 'Actif aujourd\'hui - visage: $face | empreinte: $fingerprint';
+  }
+
+  @override
+  String get settingsYes => 'oui';
+
+  @override
+  String get settingsNo => 'non';
+
+  @override
+  String get settingsBiometricEnablePreparation =>
+      'Activer la préparation biométrie';
+
+  @override
+  String get settingsBiometricFingerprintWanted =>
+      'Empreinte digitale souhaitée';
+
+  @override
+  String get settingsBiometricFaceWanted => 'Reconnaissance faciale souhaitée';
+
+  @override
+  String get settingsBiometricFutureConsent =>
+      'Consentement au futur pointage biométrie';
+
+  @override
+  String get settingsBiometricSensorLabel =>
+      'Identifiant capteur empreinte / borne';
+
+  @override
+  String get settingsBiometricSensorHint =>
+      'Exemple : FP-ENTREE-01 ou matricule biométrie';
+
+  @override
+  String get settingsBiometricNotesTitle => 'Notes et consentement';
+
+  @override
+  String get settingsBiometricNotesHint =>
+      'Exemple : selfie autorisé, préfère borne entrée principale, accord photo visage...';
+
+  @override
+  String get settingsBiometricCaptureFace => 'Capturer / choisir mon visage';
+
+  @override
+  String get settingsBiometricFaceSelected => 'Image visage sélectionnée';
+
+  @override
+  String get settingsSavingShort => 'Enregistrement...';
+
+  @override
+  String get settingsSubmitBiometric => 'Soumettre au manager / RH';
+
+  @override
+  String get settingsSubmitting => 'Soumission...';
+
+  @override
+  String get settingsBiometricPendingExplanation =>
+      'Une fois soumises, vos données biométrie restent en attente. Toute première activation ou modification nécessite une approbation manager/RH.';
+
+  @override
+  String get settingsEdgeNodeTitle => 'Nœud Edge (réseau local)';
+
+  @override
+  String get settingsEdgeNodeHint =>
+      'Optionnel : pointer vers un serveur Edge installé sur site pour pointer sans Internet.';
+
+  @override
+  String get settingsEdgeCloudStatus => 'Connecté au Cloud';
+
+  @override
+  String get settingsEdgeLocalStatus => 'Connecté au nœud Edge local';
+
+  @override
+  String get settingsEdgeOfflineStatus => 'Hors ligne';
+
+  @override
+  String settingsEdgeCurrentStatus(String label) {
+    return 'Statut actuel : $label';
+  }
+
+  @override
+  String get settingsEdgeAddressLabel => 'Adresse du nœud Edge';
+
+  @override
+  String get settingsEdgeUuidLabel => 'Identifiant du nœud (UUID)';
+
+  @override
+  String get settingsEdgeTokenLabel => 'Jeton Edge';
+
+  @override
+  String get settingsEdgeUuidHint => 'Fourni par votre administrateur';
+
+  @override
+  String get settingsEdgeTokenHint =>
+      'Fourni une seule fois à l\'enregistrement';
+
+  @override
+  String get settingsRemove => 'Retirer';
+
+  @override
+  String get settingsSessionLogoutHint =>
+      'Quitter proprement cet espace sur ce téléphone.';
+
+  @override
+  String get settingsNotificationsUnavailable =>
+      'Préférences indisponibles pour le moment. Tirez pour recharger plus tard.';
+
+  @override
+  String get settingsNotificationsSaved =>
+      'Préférences notifications mises à jour.';
+
+  @override
+  String settingsNotificationsSaveFailed(String error) {
+    return 'Mise à jour impossible : $error';
+  }
+
+  @override
+  String get settingsNotificationsIntro =>
+      'Choisissez les canaux utiles sans perdre les alertes RH importantes.';
+
+  @override
+  String get settingsChannelInApp => 'Alertes dans l\'application';
+
+  @override
+  String get settingsChannelInAppHint =>
+      'Tâches, décisions RH, pointage et rappels.';
+
+  @override
+  String get settingsChannelPush => 'Push mobile';
+
+  @override
+  String get settingsChannelPushHint =>
+      'Notifications immédiates sur ce téléphone.';
+
+  @override
+  String get settingsChannelEmailHint => 'Résumé et confirmations importantes.';
+
+  @override
+  String get settingsChannelSmsHint =>
+      'Canal court réservé aux urgences, actif après opt-in.';
+
+  @override
+  String get settingsChannelWhatsappHint =>
+      'Canal conversationnel, nécessite votre opt-in explicite.';
+
+  @override
+  String get settingsNotificationsLanguage => 'Langue des notifications';
+
+  @override
+  String get settingsQrPasted => 'Collez le QR entreprise.';
+
+  @override
+  String settingsQrRejected(String error) {
+    return 'QR refusé : $error';
+  }
+
+  @override
+  String get settingsLanguageUpdated => 'Langue mise à jour.';
+
+  @override
+  String get settingsBiometricSavedLocal =>
+      'Préparation biométrie enregistrée localement.';
+
+  @override
+  String get settingsBiometricEnableFirst =>
+      'Active d\'abord la préparation biométrie.';
+
+  @override
+  String get settingsBiometricConsentRequired =>
+      'Le consentement est requis avant toute soumission.';
+
+  @override
+  String get settingsBiometricFaceRequired =>
+      'Ajoute une capture visage avant soumission.';
+
+  @override
+  String get settingsBiometricLocalVerifyCancel =>
+      'Vérification biométrie locale annulée.';
+
+  @override
+  String get settingsBiometricSubmitted =>
+      'Demande envoyée au manager / RH pour validation.';
+
+  @override
+  String settingsBiometricSubmitFailed(String error) {
+    return 'Échec de soumission : $error';
+  }
+
+  @override
+  String get settingsBiometricConfirmIdentity =>
+      'Confirmer votre identité pour soumettre votre demande biométrie';
 }

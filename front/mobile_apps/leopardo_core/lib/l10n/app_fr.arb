@@ -1779,7 +1779,6 @@
   "smartAttendanceTitle": "Smart Attendance",
   "smartAttendanceTodayTitle": "Aujourd'hui — {date}",
   "smartAttendanceZoneSurveillance": "Surveillance de zone",
-<<<<<<< HEAD
   "attendanceToProcess": "A traiter",
   "settingsBiometryEnableFirst": "Active d abord la preparation biometrie.",
   "settingsBiometryEnableAction": "Activer la preparation biometrie",
@@ -1932,19 +1931,141 @@
   "settingsEdgeRemoved": "Appairage Edge supprimé.",
   "settingsViewProfile": "Voir mon profil",
   "settingsRecoveryEmailHint": "Optionnel pour récupérer l'accès",
-=======
-  "settingsEdgeRemoved": "Appairage Edge supprimé.",
-  "settingsViewProfile": "Voir mon profil",
-  "settingsPersonalEmailLabel": "Email personnel",
-  "settingsPersonalEmailHint": "Optionnel, conserve votre compte hors entreprise",
-  "settingsRecoveryEmailLabel": "Email de récupération",
-  "settingsRecoveryEmailHint": "Optionnel pour récupérer l'accès",
-  "settingsPersonalPhoneLabel": "Téléphone personnel",
->>>>>>> 7d2a54ade (feat(mobile/i18n): lot 1 dette i18n — compte/profil/identité employee localisés ×4 (progrès #2755))
   "settingsPersonalPhoneHint": "Optionnel, visible selon vos choix futurs",
   "settingsPortableIdentityTitle": "Identité portable",
   "settingsPortableIdentitySubtitle": "Historique entreprise, poste, statut et disponibilité.",
   "settingsPortableIdentityHint": "Email personnel, récupération et téléphone restent attachés au compte.",
   "settingsDigitalLockerTitle": "Placard numérique",
-  "settingsDigitalLockerSubtitle": "CV, contrats, diplômes et documents avec visibilité contrôlée."
+  "settingsDigitalLockerSubtitle": "CV, contrats, diplômes et documents avec visibilité contrôlée.",
+  "settingsQrOnboardingTitle": "QR onboarding",
+  "settingsQrOnboardingSubtitle": "Partager votre profil ou scanner une entreprise.",
+  "settingsJourneyAvailable": "Disponible pour une nouvelle entreprise",
+  "settingsJourneyAttachedTo": "Rattaché à {company}",
+  "settingsJourneyYourCompany": "votre entreprise",
+  "settingsProfessionalQr": "QR professionnel",
+  "settingsQrEmployeeHint": "Le manager le scanne pour pré-remplir une invitation.",
+  "settingsPasteQrButton": "Coller le QR entreprise",
+  "settingsCompanyQrLabel": "QR entreprise",
+  "settingsRequestIntegration": "Demander l'intégration",
+  "@settingsJourneyAttachedTo": {
+    "placeholders": {
+      "company": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsCabinetSubtitle": "CV, contrats, diplômes et documents administratifs.",
+  "settingsCabinetDocuments": "documents",
+  "settingsCabinetShared": "partagés",
+  "settingsCabinetPublic": "publics",
+  "settingsOpenLocker": "Ouvrir mon placard",
+  "settingsLanguageSyncHint": "Cette préférence est synchronisée avec votre compte et pilote aussi le mode RTL.",
+  "settingsUpdating": "Mise à jour...",
+  "settingsUpdateLanguage": "Mettre à jour la langue",
+  "settingsJourneyCompanyPeriod": "{company} - {period}",
+  "@settingsJourneyCompanyPeriod": {
+    "placeholders": {
+      "company": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsPasswordModernizationHint": "Changez votre mot de passe avant les prochaines étapes de modernisation.",
+  "settingsUpdatePassword": "Mettre à jour le mot de passe",
+  "settingsBiometricPreparationTitle": "Préparation biométrie",
+  "settingsBiometricExplanation": "Le visage peut être capturé depuis le mobile puis soumis à validation manager / RH. Pour l'empreinte, Android/iOS permettent de vérifier localement que vous utilisez bien un doigt enregistré, mais ne donnent pas accès au gabarit brut ; l'activation effective côté pointage restera donc approuvée puis exploitée par la borne entreprise.",
+  "settingsBiometricTodayStatus": "Actif aujourd'hui - visage: {face} | empreinte: {fingerprint}",
+  "settingsYes": "oui",
+  "settingsNo": "non",
+  "@settingsBiometricTodayStatus": {
+    "placeholders": {
+      "face": {
+        "type": "String"
+      },
+      "fingerprint": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsBiometricEnablePreparation": "Activer la préparation biométrie",
+  "settingsBiometricFingerprintWanted": "Empreinte digitale souhaitée",
+  "settingsBiometricFaceWanted": "Reconnaissance faciale souhaitée",
+  "settingsBiometricFutureConsent": "Consentement au futur pointage biométrie",
+  "settingsBiometricSensorLabel": "Identifiant capteur empreinte / borne",
+  "settingsBiometricSensorHint": "Exemple : FP-ENTREE-01 ou matricule biométrie",
+  "settingsBiometricNotesTitle": "Notes et consentement",
+  "settingsBiometricNotesHint": "Exemple : selfie autorisé, préfère borne entrée principale, accord photo visage...",
+  "settingsBiometricCaptureFace": "Capturer / choisir mon visage",
+  "settingsBiometricFaceSelected": "Image visage sélectionnée",
+  "settingsSavingShort": "Enregistrement...",
+  "settingsSubmitBiometric": "Soumettre au manager / RH",
+  "settingsSubmitting": "Soumission...",
+  "settingsBiometricPendingExplanation": "Une fois soumises, vos données biométrie restent en attente. Toute première activation ou modification nécessite une approbation manager/RH.",
+  "settingsEdgeNodeTitle": "Nœud Edge (réseau local)",
+  "settingsEdgeNodeHint": "Optionnel : pointer vers un serveur Edge installé sur site pour pointer sans Internet.",
+  "settingsEdgeCloudStatus": "Connecté au Cloud",
+  "settingsEdgeLocalStatus": "Connecté au nœud Edge local",
+  "settingsEdgeOfflineStatus": "Hors ligne",
+  "settingsEdgeCurrentStatus": "Statut actuel : {label}",
+  "settingsEdgeAddressLabel": "Adresse du nœud Edge",
+  "settingsEdgeUuidLabel": "Identifiant du nœud (UUID)",
+  "settingsEdgeTokenLabel": "Jeton Edge",
+  "settingsEdgeUuidHint": "Fourni par votre administrateur",
+  "settingsEdgeTokenHint": "Fourni une seule fois à l'enregistrement",
+  "@settingsEdgeCurrentStatus": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsRemove": "Retirer",
+  "settingsSessionLogoutHint": "Quitter proprement cet espace sur ce téléphone.",
+  "settingsNotificationsUnavailable": "Préférences indisponibles pour le moment. Tirez pour recharger plus tard.",
+  "settingsNotificationsSaved": "Préférences notifications mises à jour.",
+  "settingsNotificationsSaveFailed": "Mise à jour impossible : {error}",
+  "settingsNotificationsIntro": "Choisissez les canaux utiles sans perdre les alertes RH importantes.",
+  "settingsChannelInApp": "Alertes dans l'application",
+  "settingsChannelInAppHint": "Tâches, décisions RH, pointage et rappels.",
+  "settingsChannelPush": "Push mobile",
+  "settingsChannelPushHint": "Notifications immédiates sur ce téléphone.",
+  "settingsChannelEmailHint": "Résumé et confirmations importantes.",
+  "settingsChannelSmsHint": "Canal court réservé aux urgences, actif après opt-in.",
+  "settingsChannelWhatsappHint": "Canal conversationnel, nécessite votre opt-in explicite.",
+  "settingsNotificationsLanguage": "Langue des notifications",
+  "settingsQrPasted": "Collez le QR entreprise.",
+  "settingsQrRejected": "QR refusé : {error}",
+  "@settingsNotificationsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@settingsQrRejected": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLanguageUpdated": "Langue mise à jour.",
+  "settingsBiometricSavedLocal": "Préparation biométrie enregistrée localement.",
+  "settingsBiometricEnableFirst": "Active d'abord la préparation biométrie.",
+  "settingsBiometricConsentRequired": "Le consentement est requis avant toute soumission.",
+  "settingsBiometricFaceRequired": "Ajoute une capture visage avant soumission.",
+  "settingsBiometricLocalVerifyCancel": "Vérification biométrie locale annulée.",
+  "settingsBiometricSubmitted": "Demande envoyée au manager / RH pour validation.",
+  "settingsBiometricSubmitFailed": "Échec de soumission : {error}",
+  "settingsBiometricConfirmIdentity": "Confirmer votre identité pour soumettre votre demande biométrie",
+  "@settingsBiometricSubmitFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
