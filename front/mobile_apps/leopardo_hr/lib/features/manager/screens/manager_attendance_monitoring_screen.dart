@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
@@ -20,25 +21,25 @@ class ManagerAttendanceMonitoringScreen extends ConsumerWidget {
 
     return MobilePage(
       appBar: MobileTopBar(
-        title: 'Presences equipe',
-        subtitle: 'Pointages du jour et sessions ouvertes',
+        title: context.l10n.attendanceTeamPresence,
+        subtitle: context.l10n.attendanceTodayPunchesOpenSessions,
         leading: IconButton(
           tooltip: 'Retour',
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
             tooltip: 'Actualiser',
-            icon: const Icon(Icons.refresh_rounded),
+            icon: Icon(Icons.refresh_rounded),
             onPressed: () => ref.invalidate(managerAttendanceTodayProvider),
           ),
         ],
       ),
       children: [
         attendance.when(
-          loading: () => const MobileEmptyLoading(
-            label: 'Synchronisation des presences...',
+          loading: () => MobileEmptyLoading(
+            label: context.l10n.attendanceSyncingPresence,
           ),
           error: (error, _) => MobileErrorPanel(
             message: error.toString(),
@@ -66,8 +67,7 @@ Future<void> showEmployeeDayDetailSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (sheetContext) =>
-        _EmployeeDayDetailSheet(employeeId: employeeId),
+    builder: (sheetContext) => _EmployeeDayDetailSheet(employeeId: employeeId),
   );
 }
 
@@ -87,17 +87,17 @@ class _EmployeeDayDetailSheet extends ConsumerWidget {
       expand: false,
       builder: (context, scrollController) {
         return Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: MobileSurface.background,
             borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
           ),
           child: SafeArea(
             top: false,
             child: detail.when(
-              loading: () => const Padding(
+              loading: () => Padding(
                 padding: EdgeInsets.symmetric(vertical: 64),
                 child: MobileEmptyLoading(
-                  label: 'Chargement du detail employe...',
+                  label: context.l10n.attendanceLoadingEmployeeDetail,
                 ),
               ),
               error: (error, _) => Padding(
@@ -167,13 +167,13 @@ class _EmployeeDayDetailSheet extends ConsumerWidget {
                     children: [
                       MobileMetricTile(
                         value: '${day.hoursWorked.toStringAsFixed(2)}h',
-                        label: 'Temps travaille',
+                        label: context.l10n.attendanceWorkedTime,
                         color: AppColors.rh,
                       ),
                       const SizedBox(width: 10),
                       MobileMetricTile(
                         value: '${day.overtimeHours.toStringAsFixed(2)}h',
-                        label: 'Heures supp',
+                        label: context.l10n.attendanceOvertimeShortLabel,
                         color: AppColors.warning,
                       ),
                     ],
@@ -190,7 +190,7 @@ class _EmployeeDayDetailSheet extends ConsumerWidget {
                       MobileMetricTile(
                         value:
                             '${day.totalEstimated.toStringAsFixed(0)} ${day.currency}',
-                        label: 'Gain estime',
+                        label: context.l10n.attendanceEstimatedEarnings,
                         color: AppColors.rh,
                       ),
                     ],
@@ -225,11 +225,10 @@ class _EmployeeDayDetailSheet extends ConsumerWidget {
                   ),
                   const SizedBox(height: 6),
                   if (day.sessions.isEmpty)
-                    const _EmptyState(
+                    _EmptyState(
                       icon: Icons.schedule_outlined,
-                      title: 'Aucun pointage aujourd hui',
-                      message:
-                          'Cet employe n a pas encore pointe pour la journee en cours.',
+                      title: context.l10n.attendanceNoPunchToday,
+                      message: context.l10n.attendanceEmployeeNotPunchedToday,
                     )
                   else
                     ...day.sessions.map((session) => _DaySessionRow(session)),
@@ -358,13 +357,12 @@ class _AttendanceBody extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-        const MobileSectionLabel('Sessions du jour'),
+        MobileSectionLabel(context.l10n.attendanceTodaySessions),
         if (items.isEmpty)
-          const _EmptyState(
+          _EmptyState(
             icon: Icons.groups_2_outlined,
-            title: 'Aucun pointage aujourd hui',
-            message:
-                'Les pointages equipe apparaitront ici des qu ils arrivent depuis mobile ou kiosque.',
+            title: context.l10n.attendanceNoPunchToday,
+            message: context.l10n.attendanceTeamPunchesHint,
           )
         else
           ...items.map(
@@ -388,7 +386,7 @@ class ManagerAnomaliesScreen extends ConsumerWidget {
     return MobilePage(
       appBar: MobileTopBar(
         title: 'Anomalies',
-        subtitle: 'Retards, oublis et pointages a verifier',
+        subtitle: context.l10n.attendanceLateMissedToCheck,
         leading: IconButton(
           tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_rounded),
@@ -404,8 +402,8 @@ class ManagerAnomaliesScreen extends ConsumerWidget {
       ),
       children: [
         report.when(
-          loading: () =>
-              const MobileEmptyLoading(label: 'Analyse des anomalies...'),
+          loading: () => MobileEmptyLoading(
+              label: context.l10n.attendanceAnalyzingAnomalies),
           error: (error, _) => MobileErrorPanel(
             message: error.toString(),
             onRetry: () => ref.invalidate(managerAnomaliesProvider),
@@ -456,13 +454,12 @@ class _AnomalyBody extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-        const MobileSectionLabel('A traiter'),
+        MobileSectionLabel(context.l10n.attendanceToProcess),
         if (report.items.isEmpty)
-          const _EmptyState(
+          _EmptyState(
             icon: Icons.verified_user_outlined,
-            title: 'Aucune anomalie recente',
-            message:
-                'Les alertes de pointage, sorties manquantes et heures supplementaires apparaitront ici.',
+            title: context.l10n.attendanceNoRecentAnomalies,
+            message: context.l10n.attendanceAnomaliesHint,
           )
         else
           ...report.items.map((item) => _AnomalyRow(item: item)),
@@ -497,7 +494,9 @@ class _ManagerCorrectionsScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            approve ? 'Correction appliquee.' : 'Correction refusee.',
+            approve
+                ? context.l10n.attendanceCorrectionAppliedToast
+                : context.l10n.attendanceCorrectionRejected,
           ),
           backgroundColor: approve ? AppColors.rh : AppColors.warning,
         ),
@@ -522,7 +521,7 @@ class _ManagerCorrectionsScreenState
     return MobilePage(
       appBar: MobileTopBar(
         title: 'Corrections',
-        subtitle: 'Demandes employees en attente RH',
+        subtitle: context.l10n.attendanceEmployeeRequestsPending,
         leading: IconButton(
           tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_rounded),
@@ -539,7 +538,7 @@ class _ManagerCorrectionsScreenState
       children: [
         corrections.when(
           loading: () =>
-              const MobileEmptyLoading(label: 'Chargement des demandes...'),
+              MobileEmptyLoading(label: context.l10n.attendanceLoadingRequests),
           error: (error, _) => MobileErrorPanel(
             message: error.toString(),
             onRetry: () => ref.invalidate(managerCorrectionsProvider),
@@ -568,11 +567,10 @@ class _ManagerCorrectionsScreenState
               ),
               const SizedBox(height: 14),
               if (items.isEmpty)
-                const _EmptyState(
+                _EmptyState(
                   icon: Icons.task_alt_rounded,
-                  title: 'File de correction vide',
-                  message:
-                      'Les demandes envoyees depuis les trois points du pointage seront listees ici.',
+                  title: context.l10n.attendanceEmptyCorrectionQueue,
+                  message: context.l10n.attendanceRequestsHint,
                 )
               else
                 ...items.map(
