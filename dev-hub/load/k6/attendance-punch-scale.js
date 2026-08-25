@@ -96,7 +96,7 @@ function pathBasedPunch(token) {
       longitude,
       accuracy_meters: accuracyMeters,
     });
-    const zoneEnter = http.post(`${baseUrl}/api/v1/smart-attendance/geo-events`, enterPayload, headers(token, true));
+    const zoneEnter = http.post(`${baseUrl}/api/v1/attendance/geo-events`, enterPayload, headers(token, true));
     recordAcceptedOrRejected(zoneEnter, 'geo zone_enter');
 
     sleep(Number(__ENV.GEO_DWELL_SECONDS || 1));
@@ -107,7 +107,7 @@ function pathBasedPunch(token) {
       longitude,
       accuracy_meters: accuracyMeters,
     });
-    const zoneExit = http.post(`${baseUrl}/api/v1/smart-attendance/geo-events`, exitPayload, headers(token, true));
+    const zoneExit = http.post(`${baseUrl}/api/v1/attendance/geo-events`, exitPayload, headers(token, true));
     recordAcceptedOrRejected(zoneExit, 'geo zone_exit');
   });
 }
