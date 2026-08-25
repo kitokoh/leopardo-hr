@@ -29,6 +29,7 @@ return [
         //    le job Web E2E échoue en masse sur le health-check CORS bloqué.
         'http://localhost:3000',
         'http://localhost:3001',
+        // Isolated admin E2E preview (Vite preview on loopback).
         'http://127.0.0.1:4173',
         env('FRONTEND_URL', 'http://localhost:3000'),
         env('APP_URL', 'http://localhost'),
@@ -73,9 +74,19 @@ return [
         'X-Request-Id',
         'X-API-Version',
         'X-App-Context',
+        // RTMX (#5277/#5446) : GET conditionnels (ETag/If-None-Match) et
+        // rejeu idempotent des écritures (Idempotency-Key) depuis les clients
+        // web cross-origin (admin-dashboard Vue).
+        'If-None-Match',
+        'Idempotency-Key',
     ],
 
-    'exposed_headers' => [],
+    'exposed_headers' => [
+        // RTMX : l'ETag et le marqueur de rejeu doivent être lisibles par le
+        // JS des clients web cross-origin (sinon cache ETag inutilisable).
+        'ETag',
+        'Idempotent-Replayed',
+    ],
 
     'max_age' => 0,
 

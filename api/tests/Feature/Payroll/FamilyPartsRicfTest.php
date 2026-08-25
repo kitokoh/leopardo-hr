@@ -105,6 +105,7 @@ class FamilyPartsRicfTest extends TestCase
             'company_id' => $this->company->id,
             'salary_type' => 'fixed',
             'salary_base' => 300000,
+            'contract_start' => '2026-01-01',
             'family_parts' => 3.0,
             // #5321 : contract_start figé (voir test précédent).
             'contract_start' => '2026-01-01',
@@ -127,6 +128,7 @@ class FamilyPartsRicfTest extends TestCase
             'company_id' => $this->company->id,
             'salary_type' => 'fixed',
             'salary_base' => 300000,
+            'contract_start' => '2026-01-01',
             'family_parts' => 5.0,
             // #5321 : contract_start figé (voir test précédent).
             'contract_start' => '2026-01-01',

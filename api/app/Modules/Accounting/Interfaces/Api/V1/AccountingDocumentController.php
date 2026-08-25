@@ -104,13 +104,14 @@ class AccountingDocumentController extends Controller
             'lines.*.tax_id' => ['nullable', 'string', 'max:60'],
         ]);
 
-        $this->auditLogger->recordSensitive($request, $actor, 'accounting.document_created');
-
         try {
             $document = $this->workflow->createDraft($validated, (string) $actor->company_id);
         } catch (DocumentWorkflowException $exception) {
             return $this->workflowError($exception);
         }
+
+        // #5273 — trail complet : qui (acteur), quoi (document), quand.
+        $this->auditLogger->recordSensitive($request, $actor, 'accounting.document_created', $document);
 
         return response()->json(['data' => $this->payload($document)], 201);
     }

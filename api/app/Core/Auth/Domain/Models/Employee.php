@@ -101,6 +101,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $locked_until
  * @property Carbon|null $email_bounced_at
  * @property string|null $email_bounce_reason
+ * @property string|null $two_fa_secret
+ * @property Carbon|null $two_fa_enabled_at
+ * @property list<string>|null $two_fa_recovery_codes
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company|null $company
