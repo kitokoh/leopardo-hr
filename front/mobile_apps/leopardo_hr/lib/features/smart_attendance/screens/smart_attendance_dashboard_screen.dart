@@ -27,7 +27,7 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: _bg,
       appBar: MobileTopBar(
-        title: 'Smart Attendance',
+        title: context.l10n.smartAttendanceTitle,
         subtitle: context.l10n.saDashboardTitle,
         leading: IconButton(
           tooltip: context.l10n.back,
@@ -94,8 +94,7 @@ class _StatsGrid extends StatelessWidget {
     final pending = counters['pending_validation'] ?? 0;
     final approved = counters['approved'] ?? 0;
     final rejected = counters['rejected'] ?? 0;
-    final dateLabel =
-        (stats['today'] as String?) ??
+    final dateLabel = (stats['today'] as String?) ??
         DateFormat('yyyy-MM-dd').format(DateTime.now());
     DateTime? parsedDate;
     try {
@@ -106,7 +105,10 @@ class _StatsGrid extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Aujourd'hui — ${parsedDate != null ? DateFormat('d MMM yyyy', deviceIntlDateLocale).format(parsedDate) : dateLabel}",
+          context.l10n.smartAttendanceTodayTitle(parsedDate != null
+              ? DateFormat('d MMM yyyy', deviceIntlDateLocale)
+                  .format(parsedDate)
+              : dateLabel),
           style: AppTypography.bodySmall.copyWith(
             color: AppColors.textMutedDark,
           ),
@@ -126,7 +128,7 @@ class _StatsGrid extends StatelessWidget {
               color: AppColors.info,
             ),
             _StatCard(
-              label: 'En attente',
+              label: context.l10n.smartAttendancePending,
               value: pending,
               color: Colors.orange,
             ),
@@ -203,7 +205,7 @@ class _PendingCard extends StatelessWidget {
             const Icon(Icons.check_circle_outline, color: Colors.green),
             const SizedBox(width: 12),
             Text(
-              'Aucune session en attente de validation',
+              context.l10n.smartAttendanceNoPendingSessions,
               style: AppTypography.bodySmall.copyWith(
                 color: AppColors.textDark,
               ),
@@ -235,13 +237,13 @@ class _PendingCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '$count session${count > 1 ? 's' : ''} en attente',
+                    context.l10n.smartAttendancePendingCount(count),
                     style: AppTypography.subtitle.copyWith(
                       color: Colors.orange,
                     ),
                   ),
                   Text(
-                    'Appuyez pour valider ou rejeter',
+                    context.l10n.smartAttendanceTapToReview,
                     style: AppTypography.bodySmall.copyWith(
                       color: AppColors.textMutedDark,
                     ),
@@ -270,7 +272,7 @@ class _ErrorCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        'Erreur : $message',
+        context.l10n.smartAttendanceError(message),
         style: AppTypography.bodySmall.copyWith(color: AppColors.danger),
       ),
     );

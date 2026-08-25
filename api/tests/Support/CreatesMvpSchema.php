@@ -1205,6 +1205,24 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('employee_documents'))) {
+            Schema::create($this->moduleTable('employee_documents'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->index();
+                $table->string('type', 40);
+                $table->string('status', 20)->default('received');
+                $table->date('document_date')->nullable();
+                $table->string('reference', 100)->nullable();
+                $table->text('url')->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedInteger('uploaded_by')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'employee_id']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('ai_tool_registry'))) {
             Schema::create($this->moduleTable('ai_tool_registry'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
@@ -2052,15 +2070,33 @@ trait CreatesMvpSchema
         // schéma : hasTable est true mais les colonnes récentes manquent.
         // Même garde `hasColumn` que les migrations tenant.
         $zktecoAdditive = [
-            ['sync_token_hash', function (Blueprint $t): void { $t->string('sync_token_hash', 255)->nullable(); }],
-            ['location_label', function (Blueprint $t): void { $t->string('location_label', 120)->nullable(); }],
-            ['model', function (Blueprint $t): void { $t->string('model', 60)->nullable(); }],
-            ['firmware_version', function (Blueprint $t): void { $t->string('firmware_version', 60)->nullable(); }],
-            ['employee_capacity', function (Blueprint $t): void { $t->unsignedInteger('employee_capacity')->default(1000); }],
-            ['fingerprint_capacity', function (Blueprint $t): void { $t->unsignedInteger('fingerprint_capacity')->default(3000); }],
-            ['face_capacity', function (Blueprint $t): void { $t->unsignedInteger('face_capacity')->default(500); }],
-            ['capabilities', function (Blueprint $t): void { $t->json('capabilities')->nullable(); }],
-            ['punch_methods', function (Blueprint $t): void { $t->json('punch_methods')->nullable(); }],
+            ['sync_token_hash', function (Blueprint $t): void {
+                $t->string('sync_token_hash', 255)->nullable();
+            }],
+            ['location_label', function (Blueprint $t): void {
+                $t->string('location_label', 120)->nullable();
+            }],
+            ['model', function (Blueprint $t): void {
+                $t->string('model', 60)->nullable();
+            }],
+            ['firmware_version', function (Blueprint $t): void {
+                $t->string('firmware_version', 60)->nullable();
+            }],
+            ['employee_capacity', function (Blueprint $t): void {
+                $t->unsignedInteger('employee_capacity')->default(1000);
+            }],
+            ['fingerprint_capacity', function (Blueprint $t): void {
+                $t->unsignedInteger('fingerprint_capacity')->default(3000);
+            }],
+            ['face_capacity', function (Blueprint $t): void {
+                $t->unsignedInteger('face_capacity')->default(500);
+            }],
+            ['capabilities', function (Blueprint $t): void {
+                $t->json('capabilities')->nullable();
+            }],
+            ['punch_methods', function (Blueprint $t): void {
+                $t->json('punch_methods')->nullable();
+            }],
         ];
         foreach ($zktecoAdditive as [$column, $columnDef]) {
             if (! Schema::hasColumn($this->moduleTable('zkteco_devices'), $column)) {

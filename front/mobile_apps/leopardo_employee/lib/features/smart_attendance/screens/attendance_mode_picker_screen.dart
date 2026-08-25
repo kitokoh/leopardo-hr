@@ -41,31 +41,31 @@ class _AttendanceModePickerScreenState
 
   /// Liste des modes disponibles avec leur libellé, icône et description.
   List<Map<String, dynamic>> get _modes => [
-    {
-      'id': 'gps_auto',
-      'label': 'GPS Automatique',
-      'icon': Icons.location_on_rounded,
-      'color': AppColors.mobileAccentGreen,
-      'description': context.l10n.ampAutoDetectDesc,
-      'badge': context.l10n.ampRecommended,
-    },
-    {
-      'id': 'qr_code',
-      'label': 'QR Code',
-      'icon': Icons.qr_code_scanner_rounded,
-      'color': AppColors.mobileAccentPurple,
-      'description': context.l10n.ampQrScanDesc,
-      'badge': null,
-    },
-    {
-      'id': 'manual',
-      'label': 'Manuel',
-      'icon': Icons.touch_app_rounded,
-      'color': _muted,
-      'description': context.l10n.ampManualDesc,
-      'badge': null,
-    },
-  ];
+        {
+          'id': 'gps_auto',
+          'label': context.l10n.smartAttendanceGpsAuto,
+          'icon': Icons.location_on_rounded,
+          'color': AppColors.mobileAccentGreen,
+          'description': context.l10n.ampAutoDetectDesc,
+          'badge': context.l10n.ampRecommended,
+        },
+        {
+          'id': 'qr_code',
+          'label': context.l10n.smartAttendanceQr,
+          'icon': Icons.qr_code_scanner_rounded,
+          'color': AppColors.mobileAccentPurple,
+          'description': context.l10n.ampQrScanDesc,
+          'badge': null,
+        },
+        {
+          'id': 'manual',
+          'label': context.l10n.smartAttendanceManual,
+          'icon': Icons.touch_app_rounded,
+          'color': _muted,
+          'description': context.l10n.ampManualDesc,
+          'badge': null,
+        },
+      ];
 
   Future<void> _confirmSelection() async {
     if (_isSaving) return;
@@ -197,8 +197,8 @@ class _AttendanceModePickerScreenState
                             color: Colors.white,
                           ),
                         )
-                      : const Text(
-                          'Confirmer',
+                      : Text(
+                          context.l10n.smartAttendanceConfirm,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,

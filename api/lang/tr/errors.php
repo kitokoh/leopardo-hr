@@ -223,4 +223,26 @@ return [
     'JOB_POSTING_DELETED' => 'İlan silindi.',
     'TASK_DELETED' => 'Görev silindi.',
     'TRIAL_SIGNUP_UNAVAILABLE' => 'Deneme kayıt hizmeti geçici olarak kullanılamıyor. Lütfen kısa süre sonra tekrar deneyin.',
+
+    // Platform — RTMX (#5277): mobil yazma işlemlerinin idempotent tekrarı
+    'INVALID_IDEMPOTENCY_KEY' => 'Geçersiz idempotency anahtarı.',
+    'IDEMPOTENCY_IN_PROGRESS' => 'Aynı istek zaten işleniyor. Birazdan tekrar deneyin.',
+    'ATTENDANCE_PERIOD_CLOSED' => 'Devam süresi kapatıldı: düzeltmeler kilitli.',
+    'DEPARTMENT_DELETED' => 'Departman silindi.',
+    'POSITION_DELETED' => 'Pozisyon silindi.',
+    'SITE_DELETED' => 'Lokasyon silindi.',
+    'EVALUATION_DELETED' => 'Değerlendirme silindi.',
+    'EMPLOYEE_CREATED' => 'Çalışan başarıyla oluşturuldu.',
+    'EMPLOYEE_UPDATED' => 'Çalışan başarıyla güncellendi.',
+    'CONTRACT_NOT_FOUND_EMPLOYEE' => 'Bu çalışan için sözleşme bulunamadı.',
+    'ALREADY_ENROLLED_SESSION' => 'Bu oturuma zaten kayıtlısınız.',
+    'DELETION_REQUEST_RECEIVED' => 'Silme talebi İK/hukuk incelemesi için alındı.',
+    // Muhasebe (issue #5227)
+    'PAYMENT_EXCEEDS_TOTAL' => 'Ödeme tutarı, belgenin kalan bakiyesini aşıyor.',
+    'PAYMENT_ON_UNSENT_DOCUMENT' => 'Düzenlenmemiş bir belge üzerinde ödeme kaydedilemez.',
+    'CREDIT_NOTE_REQUIRES_SOURCE_INVOICE' => 'İade faturası, kaynak faturasına bağlı olmalıdır.',
+    'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'İrsaliye, teslim tarihini içermelidir.',
+    'DOCUMENT_NOT_FULLY_PAID' => 'Toplam tutar ödenmeden belge ödendi olarak işaretlenemez.',
+    'INVALID_DOCUMENT_TRANSITION' => 'Bu belge için durum geçişine izin verilmiyor.',
+    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.',
 ];

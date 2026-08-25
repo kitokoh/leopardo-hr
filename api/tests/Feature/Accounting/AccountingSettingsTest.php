@@ -90,6 +90,38 @@ class AccountingSettingsTest extends TestCase
         $response->assertJsonPath('data.template_style', 'modern');
     }
 
+    public function test_default_tva_label_is_translated_via_label_key(): void
+    {
+        $manager = $this->manager($this->companyA); // DZ → défauts pays
+        $manager->forceFill(['preferred_language' => 'en'])->save();
+        Sanctum::actingAs($manager);
+
+        $response = $this->withHeader('Accept-Language', 'en')->getJson('/api/v1/accounting/settings');
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('data.tva_rates.0.rate', 19);
+        $response->assertJsonPath('data.tva_rates.0.label_key', 'standard');
+        $response->assertJsonPath('data.tva_rates.0.label', __('accounting.tva_label_standard', [], 'en'));
+    }
+
+    public function test_custom_tva_label_without_label_key_is_served_as_is(): void
+    {
+        $manager = $this->manager($this->companyA);
+        $manager->forceFill(['preferred_language' => 'fr'])->save();
+        Sanctum::actingAs($manager);
+
+        $this->putJson('/api/v1/accounting/settings', [
+            'tva_rates' => [['label' => 'Label personnalisé', 'rate' => 20]],
+        ])->assertStatus(200);
+
+        $manager->forceFill(['preferred_language' => 'ar'])->save();
+
+        $response = $this->withHeader('Accept-Language', 'ar')->getJson('/api/v1/accounting/settings');
+
+        $response->assertJsonPath('data.tva_rates.0.label', 'Label personnalisé');
+        $response->assertJsonPath('data.tva_rates.0.label_key', null);
+    }
+
     public function test_show_returns_persisted_settings(): void
     {
         app()->instance('current_company', $this->companyA);

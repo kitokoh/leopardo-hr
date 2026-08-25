@@ -4,7 +4,7 @@
 > Source d'architecture : **ADR 0016** (`docs/architecture/adr/0016-attendance-smartattendance-fusion.md`).
 > Spec cible : **`.specify/features/attendance-target/spec.md`**.
 
-**État** : 2026-08-23 — ADR proposée (décision fondateur requise), spec draft, plan chiffré.
+**État** : 2026-08-24 — ADR-0016 validée (PR #5318), phases 2-4 MERGÉES (#5362/#5364/#5381), **Phase 5 livrée (PR #5398)** — module SmartAttendance supprimé, contrat unique `/attendance/*`.
 
 ## Cadrage
 
@@ -30,7 +30,8 @@ sans rupture de contrat API ni migration de données destructive.
 
 | Issue | Sujet | Statut 2026-08-23 |
 |---|---|---|
-| #5264 | ADR fusion + spec cible (ce document) | 🔵 PR en cours |
+| #5264 | ADR fusion + spec cible (ce document) | ✅ ADR-0016 mergée (PR #5318) — phases 2-5 créées |
+| #5353 | ADR Phase 2 — unifier les chemins d'usage géofence + mode | 🔵 PR (agent plateforme) |
 | #5265 | Modes unifiés (kiosque, géo, ZKTeco, mobile) + règles de calcul | ⚪ ouverte |
 | #5266 | Heures supplémentaires DZ — règles légales + intégration paie | ⚪ ouverte |
 | #5267 | Corrections/validations — workflow d'approbation + audit | 🔵 PR #5314 (agent en cours) |
@@ -47,7 +48,7 @@ sans rupture de contrat API ni migration de données destructive.
 ## Garde-fous
 
 - Toute nouvelle route de pointage → `/api/v1/attendance/*` (jamais `/smart-attendance/*`).
-- Géofence : implémentation unique `AttendanceGeofenceService`.
+- Géofence : implémentation unique `AttendanceGeofenceService` **+ chemin d'usage unique `GeofenceZoneService`** (ADR-0016 Phase 2, #5353 — garde CI `check-geofence-single-usage.sh`).
 - Fermeture automatique : `AutoCloseAttendanceCommand` unique.
 - Mode entreprise : `attendance_mode_settings` = source de vérité.
 - Approbations : trait `Approvable` partagé (absences, frais, sessions, corrections).

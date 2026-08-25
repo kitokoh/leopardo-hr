@@ -10,6 +10,7 @@ Leopardo RH is an **Enterprise-Grade** platform. We maintain high standards for 
 -   **Frontend:** Next.js 16, TypeScript, Tailwind CSS.
 -   **Mobile:** Flutter 3.x, Riverpod for state management.
 -   **Architecture:** Modular Monolith & Domain-Driven Design (DDD).
+-   **Claim protocol:** a claim is a **local lock** — never commit a `.claim-marker` file (PLAN_100PCT.md §6.4, issue #5447). Use an untracked local file or an empty `claim marker #N` commit (protocol #2400). CI fails on any PR adding a `.claim-marker` (`check-no-claim-marker.sh`).
 
 ---
 

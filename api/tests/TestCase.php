@@ -7,7 +7,6 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\QueryException;
-use Illuminate\Database\Schema\Blueprint;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -34,7 +33,6 @@ abstract class TestCase extends BaseTestCase
         $this->configureTestingDatabaseConnection();
 
         parent::setUp();
-        $this->ensurePersonalOnboardingColumns();
         $this->resetTestSearchPath();
     }
 
@@ -133,39 +131,16 @@ abstract class TestCase extends BaseTestCase
             return;
         }
 
-        $lockKey = 'leopardo_test_database_creation_'.$database;
-        DB::select('SELECT pg_advisory_lock(hashtext(?))', [$lockKey]);
-
         try {
-            try {
-                Schema::createDatabase($database);
-            } catch (QueryException $exception) {
-                // 42P04 duplicate_database → base déjà créée par un test précédent.
-                if (! str_contains($exception->getMessage(), '42P04')) {
-                    throw $exception;
-                }
+            Schema::createDatabase($database);
+        } catch (QueryException $exception) {
+            // 42P04 duplicate_database → base déjà créée par un test précédent.
+            if ($exception->getCode() !== '42P04' && ! str_contains($exception->getMessage(), '42P04')) {
+                throw $exception;
             }
-        } finally {
-            DB::select('SELECT pg_advisory_unlock(hashtext(?))', [$lockKey]);
         }
 
-        $connection = DB::getDefaultConnection();
-        $originalDatabase = config("database.connections.{$connection}.database");
-
-        // La base worker doit être sélectionnée AVANT les migrations. Sinon
-        // plusieurs processus migrent la base commune `leopardo_test`, ce qui
-        // produit à la fois des colonnes dupliquées et des workers incomplets.
-        config(["database.connections.{$connection}.database" => $database]);
-        DB::purge($connection);
-        DB::reconnect($connection);
-
-        try {
-            $this->ensureWorkerPublicSchema($database);
-        } finally {
-            config(["database.connections.{$connection}.database" => $originalDatabase]);
-            DB::purge($connection);
-            DB::reconnect($connection);
-        }
+        $this->ensureWorkerPublicSchema($database);
     }
 
     /**
@@ -194,82 +169,20 @@ abstract class TestCase extends BaseTestCase
         DB::purge($connection);
         DB::reconnect($connection);
 
-        // Plusieurs processus d’un même worker peuvent entrer ici en même temps.
-        // Le tableau statique ne protège que le processus courant ; le verrou
-        // advisory protège donc la création du schéma entre processus.
-        $lockKey = 'leopardo_test_public_schema_'.$database;
-        DB::select('SELECT pg_advisory_lock(hashtext(?))', [$lockKey]);
+        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
 
         try {
-            DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
-
             $this->artisan('migrate', [
                 '--path' => 'database/migrations/public',
                 '--force' => true,
             ]);
-
-            $this->ensurePersonalOnboardingColumns();
-            self::$parallelPublicMigrated[$database] = true;
         } finally {
-            DB::select('SELECT pg_advisory_unlock(hashtext(?))', [$lockKey]);
             config(["database.connections.{$connection}.search_path" => $originalSearchPath]);
             DB::purge($connection);
             DB::reconnect($connection);
         }
-    }
 
-    private function ensurePersonalOnboardingColumns(): void
-    {
-        if (DB::getDriverName() !== 'pgsql') {
-            return;
-        }
-
-        $connection = DB::getDefaultConnection();
-        $originalSearchPath = $this->configString(
-            "database.connections.{$connection}.search_path",
-            'shared_tenants,public'
-        );
-
-        DB::statement('SET search_path TO public');
-
-        try {
-            if (! Schema::hasTable('users')) {
-                return;
-            }
-
-            $missing = [];
-
-            foreach ([
-                'personal_statuses' => static function (Blueprint $table): void {
-                    $table->json('personal_statuses')->nullable();
-                },
-                'personal_onboarding_completed_at' => static function (Blueprint $table): void {
-                    $table->timestamp('personal_onboarding_completed_at')->nullable();
-                },
-                'job_search_preferences' => static function (Blueprint $table): void {
-                    $table->json('job_search_preferences')->nullable();
-                },
-                'job_search_profile_updated_at' => static function (Blueprint $table): void {
-                    $table->timestamp('job_search_profile_updated_at')->nullable();
-                },
-            ] as $column => $definition) {
-                if (! Schema::hasColumn('users', $column)) {
-                    $missing[$column] = $definition;
-                }
-            }
-
-            if ($missing === []) {
-                return;
-            }
-
-            Schema::table('users', function (Blueprint $table) use ($missing): void {
-                foreach ($missing as $definition) {
-                    $definition($table);
-                }
-            });
-        } finally {
-            DB::statement('SET search_path TO '.$originalSearchPath);
-        }
+        self::$parallelPublicMigrated[$database] = true;
     }
 
     private function envValueForTesting(string $key, string $fallback): string

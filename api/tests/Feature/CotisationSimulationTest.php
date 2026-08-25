@@ -450,6 +450,12 @@ class CotisationSimulationTest extends TestCase
             'salary_base' => 60000,
             'contract_start' => '2026-01-01',
             'status' => 'active',
+            // #5321 : contract_start figé AVANT la période du run — le défaut
+            // de la factory (date aléatoire −3 ans/−1 mois) pouvait tomber
+            // DANS le mois du run (ex. 2026-07-07) → prorata d'entrée en
+            // cours de mois → net ≠ 47 558 (flake CI, check requis Backend
+            // Coverage). Déterministe : mois complet.
+            'contract_start' => '2026-01-01',
         ]);
 
         (new PayrollCalculator)->calculateRun($run);
@@ -526,6 +532,11 @@ class CotisationSimulationTest extends TestCase
             'salary_type' => 'fixed',
             'salary_base' => 100000,
             'status' => 'active',
+            // #5321 : contract_start figé AVANT la période du run (même
+            // raison que test_contract_simulation_matches_payslip_for_same_case)
+            // — le défaut aléatoire de la factory pouvait déclencher un prorata
+            // d'entrée en cours de mois (net ≠ 92 020, flake CI #5321).
+            'contract_start' => '2026-01-01',
         ]);
 
         (new PayrollCalculator)->calculateRun($run);

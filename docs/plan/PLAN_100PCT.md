@@ -90,38 +90,38 @@ CI verte (#5201), i18n mobile (#2755 suite), dedup mobile (#2601 suite), RTMX (P
 
 ### 6.1 Statut des waves
 
-| Wave | Contenu | Statut 2026-08-23 | Gate |
+| Wave | Contenu | Statut 2026-08-24 | Gate |
 |---|---|---|---|
-| **W0** | Fix CI #5201 (isolation workers) | ✅ **PASSÉE** — #5201 clos le 22/08, CI main verte (Tests, Architecture Quality, E2E prod smoke, OWASP ZAP en succès) | CI verte ✅ |
-| **W1** | Payroll DZ 100 % (#5240→#5247) | 🔵 **EN COURS** — fondations livrées (golden 43 méthodes/91 cas #5149, clôture 2 étapes + benchmark #5150, référentiel validé expert 08/08) ; **#5244 golden cas limites → PR #5336** (bornes abattement IRG + profils réalistes) ; **#5247 docs/recette → PR #5332** (`docs/payroll/dz/`) ; moteur #5241 (draft), exports #5243, congés→paie #5245 en cours par d'autres agents | Pilote DZ : bulletin + virement réels |
-| **W2** | Pack MA (#5248) ‖ HR 100 % (#5258→#5263) ‖ Comptabilité Phase A (#5220→#5228) | 🟡 **DÉMARRÉE** — **Pack MA #5248 ✅ MERGÉ (PR #5330, audit légal 2026 : IR LF 2025, IPE/AF/TFP, SMIG 3 422,72 + 18 golden)** ; HR : 4 PRs en cours (#5259/#5260/#5262/#5263) ; Comptabilité Phase A : #5221 → PR #5301 | 3 PR par semaine |
-| **W3** | Pointage 100 % (#5264→#5269) ‖ Pack TN (#5249) ‖ Comptabilité Phase B (#5229→#5233) | 🟡 **DÉMARRÉE (partiel)** — **Pack TN #5249 → PR #5334** (audit légal 2026 : IRPP 8 tranches LF 2025, PLE, ASSP, SMIG 554,736 + 15 golden) ; pointage : 4 PRs en cours (#5264/#5266/#5267/#5268) — l'ADR fusion reste à trancher pour le mode unifié #5265 | Pointage → paie sans intervention |
-| **W4** | Packs SN/CI (#5250/#5251) ‖ Comptabilité Phase C (#5234→#5239) | 🟡 **DÉMARRÉE (partiel)** — **Pack SN #5250 → PR #5338** (règles déjà `production` #1912 ; cas limites golden : TRIMF, plafond CSS, cap abattement, T2 par catégorie) ; Comptabilité Phase C toujours bloquée par le choix de passerelle | Virement pilote exécuté + rapproché |
-| **W5** | Packs CM/TR/FR/EN (#5252→#5255) ‖ i18n mobile (#5278) ‖ dedup mobile (#5279) | ⚪ NON DÉMARRÉE | i18n 0 hardcodé |
-| **W6** | Cross-cutting (#5280→#5286, #5277, #5289) | 🟡 PRÉPARATION — 3/9 issues déjà couvertes en partie par l'existant (voir 6.3) | Recette finale tous modules |
+| **W0** | Fix CI #5201 (isolation workers) | ✅ **PASSÉE** — CI main verte (Tests, Architecture Quality, E2E prod smoke, OWASP ZAP) | CI verte ✅ |
+| **W1** | Payroll DZ 100 % (#5240→#5247) | 🔵 **PRESQUE FINIE** — **#5241 moteur DZ ✅ MERGÉ (PR #5316)** ; **#5242 bulletin PDF ✅ MERGÉ (PR #5344, rendu arabe RTL : ArabicPdfText + Almarai)** ; **#5245 congés→paie ✅ MERGÉ (PR #5321)** ; **#5257 i18n ✅ MERGÉ (PR #5343)** ; #5244 → PRs #5336/#5366 ; #5243 → PR #5322 ; #5246 → PRs #5339/#5358 ; #5247 → PR #5332 | Pilote DZ : bulletin ✅ + virement 🔜 |
+| **W2** | Pack MA (#5248) ‖ HR 100 % (#5258→#5263) ‖ Comptabilité Phase A (#5220→#5228) | 🟡 **BIEN AVANCÉE** — **Pack MA ✅ MERGÉ** ; **HR : #5261 candidat→employé ✅ MERGÉ (PR #5383, DoD bulletin réel)** ; #5259 → PR #5303, #5262 → PR #5310, #5263 → PR #5311, #5324/#5326/#5328 → PRs #5331/#5345/#5347 ; **Comptabilité A : #5221 ✅, #5222 ✅, #5228 ✅ (gate ≥ 70 %)**, #5223/#5224/#5225 → PRs #5341/#5346/#5352/#5357 | 3 PR/semaine ✅ |
+| **W3** | Pointage 100 % (#5264→#5269) ‖ Pack TN (#5249) ‖ Comptabilité B | 🟡 **EN COURS** — **ADR-0016 VALIDÉE (PR #5318), phases 2-3 MERGÉES : #5353 ✅ (PR #5362), #5354 ✅ (PR #5364)** ; Phase 4 → PR #5381, Phase 5 (#5356) libre ; #5268 ✅ MERGÉ ; #5267 → PR #5314, #5266 → PR #5317, #5269 → PR #5351 ; **Pack TN → PR #5334** ; Comptabilité B : #5234 → PR #5363, #5229 → PR #5365 | Pointage → paie 🔜 |
+| **W4** | Packs SN/CI ‖ Comptabilité Phase C | 🟡 **EN COURS** — **Pack SN ✅ MERGÉ** ; CI → PR #5359 ; #5256 → PR #5375, #5239 (bridge) | Virement pilote + rapproché |
+| **W5** | Packs CM/TR/FR/EN ‖ i18n mobile ‖ dedup mobile | 🟡 **EN COURS** — TR → PR #5368, FR → PR #5367, EN → PR #5380, CM → PR #5360 ; **dedup mobile #5279 ✅ MERGÉ (#5370/#5372/#5373)** ; i18n → PR #5333 | i18n 0 hardcodé |
+| **W6** | Cross-cutting (#5280→#5286, #5277, #5289) | 🟢 **PRESQUE FINIE** — **#5280 ✅, #5281 ✅, #5283 ✅ (PR #5305), #5285 ✅ (PR #5312), #5286 ✅** ; #5282 → PRs #5306/#5307, #5284 → PR #5313, #5289 → PR #5308 ; #5277 RTMX reste | Recette finale 🔜 |
 
 ### 6.2 Détail par module (69 issues ouvertes / 71 au programme)
 
-| Module | Issues | Ouvertes | Avancement réel (2026-08-23) |
+| Module | Issues | Ouvertes | Avancement réel (2026-08-24) |
 |---|---|---|---|
-| **Comptabilité** (greenfield) | #5219 epic, #5220→#5228 (A), #5229→#5233 (B), #5234→#5239 (C), #5270→#5276, #5288 | **28** | **Zéro code** : `api/app/Modules/Accounting` n'existe pas encore (19ᵉ module DDD). Livré : conception v1 (#5238 clos, `docs/architecture/COMPTABILITE_CONCEPTION.md`), plan (#5287 clos). Toute la Phase A est à créer. |
-| **Payroll** (DZ + 9 packs) | #5240→#5247 (DZ), #5248→#5255 (packs MA/TN/SN/CI/CM/TR/FR/EN), #5256 (moteur multi-pays), #5257 (i18n) | **18** (MA ✅ mergé, TN/SN en PR) | DZ : référentiel + moteur cœur **validés** (IRG/abattement, CNAS 9/26 %, SMIG 20k — audit expert 08/08) ; golden 43 méthodes/91 cas (#5149) ; clôture 2 étapes + benchmark 10 k (#5150). Manque : complétion moteur selon audit (#5241), bulletin PDF officiel + RTL (#5242), exports CNEP/EDX/bordereau/DAS (#5243), congés→paie (#5245), RBAC simulation/validation (#5246), docs recette (#5247). Note : #5244 golden est couvert aux ~2/3 (IRG, abattement, prorata, HS, congés, primes, arrondis, fin de contrat) ; **maladie et 13ᵉ mois ne sont pas encore des fonctions du moteur** (→ #5241/#5245). Packs : **MA ✅ mergé (PR #5330)** — audit légal 2026 + 18 golden ; **TN → PR #5334** — IRPP 8 tranches LF 2025 + 15 golden ; **SN → PR #5338** — règles `production` (#1912) + 15 golden cas limites ; CI (#5251) non démarré. |
-| **HR 100 %** | #5258→#5263 | **6** | Socle MVP existant (cycle de vie partiel) ; rien du programme 100 % démarré. |
-| **Pointage 100 %** | #5264→#5269 | **6** | Attendance/SmartAttendance existent ; **ADR fusion non tranchée** (bloque la spec #5264 et le mode unifié #5265). |
-| **Cross-cutting** | #5277→#5286, #5289 | **11** | Voir 6.3 pour l'existant par issue. |
+| **Comptabilité** (greenfield) | #5219 epic, #5220→#5228 (A), #5229→#5233 (B), #5234→#5239 (C), #5270→#5276, #5288 | **~20** | **Phase A quasi complète** : socle ✅ (#5221), CRUD ✅ (#5222), tests+gate ✅ (#5228), lead marketing ✅ (#5231) ; en PR : #5223/#5224/#5225 (→ #5341/#5346/#5352/#5357). B/C : journal → #5363, paiements → #5365, retention → #5377, perf → #5374. |
+| **Payroll** (DZ + 9 packs) | #5240→#5247 (DZ), #5248→#5255 (packs), #5256, #5257 | **~12** | **DZ : moteur ✅ + bulletin PDF RTL ✅ + congés→paie ✅ + i18n ✅** ; reste #5243/#5244/#5246/#5247 en PR. Packs : **MA ✅, SN ✅** ; TN/CI/CM/TR/FR/EN en PR ; #5256 → PR #5375. |
+| **HR 100 %** | #5258→#5263 + #5324/#5326/#5328 | **~6** | **#5261 candidat→employé ✅ MERGÉ (PR #5383)** ; career/RBAC/i18n/offboarding/documents/timeline en PR (#5303/#5310/#5311/#5331/#5345/#5347). |
+| **Pointage 100 %** | #5264→#5269 + #5353→#5356 | **~4** | **ADR-0016 VALIDÉE — phases 2-3 MERGÉES** (#5353 ✅, #5354 ✅) ; #5268 ✅ ; #5266/#5267/#5269 en PR ; Phase 4 → #5381, Phase 5 (#5356) libre. |
+| **Cross-cutting** | #5277→#5286, #5289 | **~3** | **6/9 livrées** (#5280/#5281/#5283/#5285/#5286 + tracker) ; #5282/#5284/#5289 en PR ; #5277 RTMX reste. |
 
 ### 6.3 Cross-cutting — état de l'existant (ne pas refaire ce qui est fait)
 
 | Issue | Existant (vérifié le 22/08) | Reste à faire |
 |---|---|---|
-| #5280 OpenAPI | ✅ `openapi-ci.yml` (lint Redocly + mirror SDK + garde couverture), **744/744 routes couvertes**, allowlists vide | Audit de complétude/qualité des schémas (recette finale) |
+| #5280 OpenAPI | ✅ **MERGÉ (PR #5319)** — contrat vérifié à chaque PR | Audit de complétude restant |
 | #5281 Sécurité | ✅ OWASP ZAP baseline (workflow actif), TruffleHog + secret-history scan, Semgrep, CodeQL, Dependabot | Pen-test basique + rapport consolidé |
 | #5282 Monitoring | 🟡 `ALERTS_CONFIGURATION.md` (guide, cibles aspirationnelles à adapter), launch-observability-smoke | Mise en œuvre réelle (uptime externe, Sentry alertes seuils), runbook `docs/ops/INCIDENTS.md` + exercice |
-| #5283 Backup/DR | 🟡 `database-backup.yml` (backup quotidien 02:15 + drill mensuel, S3 + age) | `docs/ops/DR.md` avec RPO/RTO + **exercice de restauration réussi consigné** |
-| #5285 E2E critiques | 🟡 Spec funnel prospect livrée (#5146 clos, `.specify/features/e2e-funnel-prospect/`), E2E prod smoke actif | Parcours signup→paie→bulletin ; parcours facture **bloqué par le greenfield Comptabilité** |
+| #5283 Backup/DR | ✅ **MERGÉ (PR #5305)** — DR.md (RPO ≤ 24 h / RTO ≤ 4 h), **restauration réelle réussie** (6/6 tables), fix `CREATE SCHEMA public` | — |
+| #5285 E2E critiques | ✅ **MERGÉ (PR #5312)** — `CriticalFunnelPayrollE2ETest` (signup → provision → employé → run → calculate → validate → bulletin %PDF) | Parcours facture bloqué Comptabilité (pas de faux vert) |
 | #5286 Tracker | ✅ Ce document (livré) | Rituel hebdo |
-| #5277 RTMX | ⚪ Rien | Pointage mobile temps réel (gap Phase 1 roadmap) |
-| #5289 Congés légaux pays | ⚪ Rien | Soldes/acquisition/fériés DZ/MA/TN/SN → paie (W3/W4) |
+| #5277 RTMX | 🟡 `HttpCacheMiddleware` (ETag/304) + `IdempotencyMiddleware` (rejeu `Idempotency-Key`) livrés, PR ouverte (branche `mod/platform/5277-rtmx`) | Pointage mobile temps réel (gap Phase 1 roadmap) — socle serveur livré ; recette pilote « < 3 s » en cours (#5277) ; bascule client `If-None-Match`/`Idempotency-Key` → issue de suite (convergence #2601) |
+| #5289 Congés légaux pays | 🔵 → PR #5308 | Soldes/acquisition/fériés DZ/MA/TN/SN → paie |
 
 ### 6.4 Règles d'allocation (rappel, anti-collision §2)
 
@@ -134,7 +134,7 @@ CI verte (#5201), i18n mobile (#2755 suite), dedup mobile (#2601 suite), RTMX (P
 
 | Décision | Pour | Bloque | Statut |
 |---|---|---|---|
-| ADR fusion Attendance/SmartAttendance | W3 | #5264, #5265 | ⏳ fondateur |
+| ADR fusion Attendance/SmartAttendance | W3 | #5264, #5265 | ✅ **ADR-0016 VALIDÉE (PR #5318) — phases 2-3 mergées (#5362/#5364), 4-5 en cours** |
 | Passerelle de paiement en ligne | W4 | #5272, #5229 | ⏳ fondateur |
 | Nom produit / domaine | indépendant | communication | ⏳ fondateur |
 | Création de compte Google (hors programme) | #5171 (P0 prod) | onboarding Google | ⏳ fondateur |

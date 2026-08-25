@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   group: architecture-check-${{ github.workflow }}-${{ github.ref }}
@@ -46,6 +47,13 @@ jobs:
       - name: Migration basename collision guard (issue #1962)
         run: bash dev-hub/tools/check-migration-basename-collisions.sh
 
+      - name: Migration prefix inter-PR guard (issue #5437)
+        run: node dev-hub/tools/check-migration-prefixes.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+
       - name: Country catalog guard (issue #2600)
         run: bash dev-hub/tools/check-country-catalog.sh
 
@@ -57,6 +65,18 @@ jobs:
 
       - name: Migrations tenant — convention #1613 (search_path, audit PM 2026-08-17)
         run: bash dev-hub/tools/check-migrations-tenant-schema.sh
+      - name: Geofence single usage path guard (ADR-0016 Phase 2, issue #5353)
+        run: bash dev-hub/tools/check-geofence-single-usage.sh
+
+      - name: SmartAttendance purge guard (ADR-0016 Phase 5, issue #5356)
+        run: bash dev-hub/tools/check-smartattendance-purged.sh
+
+      - name: MVP schema parity guard — CreatesMvpSchema ↔ migrations tenant (issue #5443)
+        run: bash dev-hub/tools/check-mvp-schema-parity.sh api
+
+      - name: .claim-marker forbidden in working tree (issue #5447)
+        run: bash dev-hub/tools/check-no-claim-marker.sh
+
 
   phpstan-modules:
     timeout-minutes: 45

@@ -45,10 +45,12 @@ REVERSE_ALLOWLIST_FILE = Path(__file__).resolve().parent / "openapi-reverse-allo
 HTTP_VERBS = {"get", "post", "put", "patch", "delete"}
 
 # Les routes des modules DDD peuvent être enregistrées par leur provider
-# (loadRoutesFrom) en dehors de api/routes/ : EdgeSync et SmartAttendance.
+# (loadRoutesFrom) en dehors de api/routes/ : EdgeSync (SmartAttendance supprimé en Phase 5 #5356).
 MODULE_ROUTE_FILES = [
     REPO_ROOT / "api" / "app" / "Modules" / "EdgeSync" / "routes" / "api.php",
-    REPO_ROOT / "api" / "app" / "Modules" / "SmartAttendance" / "routes" / "smart_attendance.php",
+    # ADR-0016 Phase 3 (#5354) : routes géo consolidées sous /attendance/*
+    # (chargées par AttendanceServiceProvider via loadRoutesFrom).
+    REPO_ROOT / "api" / "app" / "Modules" / "Attendance" / "routes" / "geo.php",
 ]
 
 # Route::apiResource('users') → méthodes CRUD standard Laravel.
@@ -114,7 +116,7 @@ def parse_routes() -> list[dict]:
         try:
             rel = file.relative_to(ROUTES_DIR).as_posix()
         except ValueError:
-            # Fichier hors api/routes/ (modules DDD EdgeSync/SmartAttendance) :
+            # Fichier hors api/routes/ (modules DDD EdgeSync/Attendance) :
             # étiquette lisible dans le rapport (repo-relative).
             rel = file.relative_to(REPO_ROOT).as_posix()
         # Issue #2489 (régression #2431) : le contexte de préfixe hérité du
@@ -253,7 +255,7 @@ def parse_routes() -> list[dict]:
         parse_file(api_file)
 
     # 3) Routes des modules DDD enregistrées par leur provider via
-    #    loadRoutesFrom (hors api/routes/) : EdgeSync, SmartAttendance.
+    #    loadRoutesFrom (hors api/routes/) : EdgeSync, Attendance.
     #    QA 2026-08-15 (#2662) : elles étaient invisibles à la passe directe
     #    de cette garde (seule la passe inverse les couvrait via
     #    scripts/route_openapi_compare.py). Chemins absolus (api/v1/...),
@@ -335,7 +337,7 @@ def canonical_spec_path(path: str) -> str | None:
     cette fonction rétablit la forme documentée (`/admin/...`).
 
     Gère aussi la forme `api/v1/...` des routes de modules DDD enregistrées
-    par provider (EdgeSync, SmartAttendance).
+    par provider (EdgeSync, Attendance).
 
     Renvoie None si le chemin ne commence pas par un préfixe de version
     (les routes sans préfixe `v1` sont comparées telles quelles).
@@ -354,7 +356,7 @@ def spec_form(path: str) -> str | None:
     """Forme spec (hors préfixes version/api) d'un chemin de route réel.
 
     Les routes de modules DDD enregistrées par provider (EdgeSync,
-    SmartAttendance) portent un préfixe absolu `api/v1/...` ; le parseur
+    Attendance) portent un préfixe absolu `api/v1/...` ; le parseur
     précis les voit sous `v1/api/v1/...` (préfixe `v1` hérité + préfixe
     absolu du fichier). La spec omet TOUS ces préfixes : les `servers`
     portent `/api/v1` et les chemins documentés commencent à la ressource
@@ -423,7 +425,7 @@ def main() -> int:
         if spec is not None:
             route_ops.add((r["method"], spec))
     # Passe inverse : parseur précis (préfixes composés avec '/') qui couvre
-    # aussi les fichiers de routes DDD (EdgeSync, SmartAttendance).
+    # aussi les fichiers de routes DDD (EdgeSync, Attendance).
     route_ops |= parse_routes_accurate()
 
     # ── Passe inverse : opérations documentées mais non routées (issue #2181) ──
@@ -447,7 +449,7 @@ def main() -> int:
         if canonical is not None and (r["method"], canonical) in openapi_ops:
             covered += 1
             continue
-        # Modules DDD à préfixe absolu (EdgeSync, SmartAttendance) : la spec
+        # Modules DDD à préfixe absolu (EdgeSync, Attendance) : la spec
         # omet api/v1 (porté par servers) — comparer sous forme spec.
         spec = spec_form(r["path"])
         if spec is not None and (r["method"], spec) in openapi_ops:

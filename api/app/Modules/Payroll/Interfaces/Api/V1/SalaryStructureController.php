@@ -132,7 +132,7 @@ class SalaryStructureController extends Controller
 
         $salaryStructure->delete();
 
-        return response()->json(['message' => 'Salary structure deleted successfully.']);
+        return response()->json(['message' => __('payroll.salary_structure_deleted')]);
     }
 
     /**

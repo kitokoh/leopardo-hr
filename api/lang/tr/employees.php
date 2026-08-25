@@ -65,4 +65,21 @@ return [
     'departure_notice_rule_reference' => 'Kural referansı',
     'departure_notice_confidence_level' => 'Güven düzeyi',
     'departure_notice_not_available' => 'Bu ülke için varsayılan yasal ihbar süresi yok (sözleşme belirler).',
+    'career_event_employee_not_found' => 'Çalışan şirketinizde bulunamadı.',
+    'career_event_position_not_found' => 'Pozisyon şirketinizde bulunamadı.',
+    'career_event_department_not_found' => 'Departman şirketinizde bulunamadı.',
+    'career_event_effective_date_required' => 'Yürürlük tarihi zorunludur.',
+    'career_event_reason_required' => 'Gerekçe zorunludur.',
+    'career_event_nothing_to_apply' => 'Uygulanacak bir şey yok: etkinliğin hedef pozisyonu, departmanı veya maaşı yok.',
+    'career_event_deleted' => 'Kariyer etkinliği silindi.',
+
+    // ── Départ (offboarding, issue #5324) ───────────────────────────────
+    'departure_registered' => "Ayrılış kaydedildi. Durum: ayrıldı — erişim iptal edildi.",
+    'already_departed' => "Bu çalışan şirketten zaten ayrıldı (veya arşivlendi).",
+    'departure_type_invalid' => "Geçersiz ayrılış türü.",
+    'departure_not_created' => "Ayrılış kaydedilemedi (işlem geri alındı).",
+    'departure_type_resignation' => "İstifa",
+    'departure_type_termination' => "İşten çıkarma",
+    'departure_type_end_of_contract' => "Sözleşme sonu",
+    'departure_type_retirement' => "Emeklilik",
 ];

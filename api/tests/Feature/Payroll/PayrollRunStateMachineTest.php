@@ -84,7 +84,7 @@ class PayrollRunStateMachineTest extends TestCase
 
         $this->postJson("/api/v1/payroll-runs/{$run->id}/bulk-pay")
             ->assertStatus(422)
-            ->assertJsonPath('message', 'PayrollRun must be validated (or locked) before bulk payment.');
+            ->assertJsonPath('message', 'Le run doit être validé (ou verrouillé) avant le paiement en masse.');
 
         $this->assertDatabaseHas('payroll_runs', [
             'id' => $run->id,

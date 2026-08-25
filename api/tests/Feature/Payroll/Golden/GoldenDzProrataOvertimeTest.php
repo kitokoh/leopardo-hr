@@ -6,6 +6,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\RefreshTenantDatabase;
@@ -53,16 +54,20 @@ class GoldenDzProrataOvertimeTest extends TestCase
             'zéro heure' => [60000.0, 0.0, 0.0],
             // Issue #2685 : précision complète jusqu'à l'arrondi final —
             // 60000/173,33 = 346,160503… (non arrondi avant les majorations).
-            '10 h à 25 % (seuil)' => [60000.0, 10.0, 4327.01],
-            '10 h 25 % + 5 h 50 %' => [60000.0, 15.0, 6923.21],
-            '11 h (1 h à 50 %)' => [60000.0, 11.0, 4846.25],
+            // Issue #5266 (écart E2) : palier unique ≥ 50 % (art. 32 loi
+            // 90-11) — l'ancien barème conventionnel « 10 h @ 25 % puis
+            // 50 % » est écarté (sous le minimum légal pour les 10 1res h).
+            '5 h à 50 %' => [60000.0, 5.0, 2596.20],
+            '10 h à 50 %' => [60000.0, 10.0, 5192.41],
+            '15 h à 50 %' => [60000.0, 15.0, 7788.61],
+            '11 h à 50 %' => [60000.0, 11.0, 5711.65],
         ];
     }
 
     #[DataProvider('overtimeProvider')]
     public function test_golden_dz_overtime_pay(float $base, float $hours, float $expected): void
     {
-        $this->assertSame($expected, (new PayrollCalculator)->computeOvertimePay($base, $hours));
+        $this->assertSame($expected, (new PayrollCalculator)->computeOvertimePay($base, $hours, 10, new AlgeriaPayrollRules));
     }
 
     public static function workedDaysProvider(): array

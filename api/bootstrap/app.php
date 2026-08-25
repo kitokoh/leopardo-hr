@@ -1,8 +1,11 @@
 <?php
 
+use App\Core\Http\Middleware\HttpCacheMiddleware;
+use App\Core\Http\Middleware\IdempotencyMiddleware;
 use App\Exceptions\DomainException;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ApiVersionMiddleware;
+use App\Http\Middleware\AuthenticateZktecoDevice;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
@@ -102,6 +105,19 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->api(prepend: [RequestIdMiddleware::class, ApiVersionMiddleware::class, SetLocale::class, StructuredLogging::class, SentryContextMiddleware::class, CompressResponse::class]);
 
+        // RTMX (#5277) — socle plateforme temps réel / réseau faible :
+        // GET conditionnels (ETag/304) + rejeu idempotent des écritures.
+        // Append : sur la requête, ces middleware s'exécutent après les
+        // prepend du groupe mais avant les middleware de route (auth:sanctum,
+        // tenant) — l'IdempotencyMiddleware ne lit que le header Authorization
+        // brut (jamais l'utilisateur résolu) ; en sortie, ils voient la réponse
+        // AVANT CompressResponse → ETag calculé sur le corps non compressé
+        // (stable quelle que soit l'encodage).
+        $middleware->api(append: [
+            IdempotencyMiddleware::class,
+            HttpCacheMiddleware::class,
+        ]);
+
         $middleware->web(append: [
             PartnerLinkMiddleware::class,
         ]);
@@ -127,7 +143,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'kiosk.search_path' => EnsureKioskSearchPathReset::class,
             // #4934 (audit web client 2026-08-17) : auth device ZKTeco
             // (heartbeat / sync-attendance) — fail-closed, search_path-safe.
-            'zkteco.device' => \App\Http\Middleware\AuthenticateZktecoDevice::class,
+            'zkteco.device' => AuthenticateZktecoDevice::class,
             // Issue #1774 : variante résiliente du middleware de throttling —
             // un échec du stockage du compteur répond 429 dégradé (au lieu d'un
             // 500) et les exceptions du pipeline en aval ne sont jamais masquées.

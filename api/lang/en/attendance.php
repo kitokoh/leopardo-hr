@@ -26,7 +26,7 @@ return [
     'monthly_summary' => 'Monthly summary',
     'history' => 'History',
 
-    // Geo sessions (SmartAttendance)
+    // Geo sessions (Attendance)
     'geo_session_approved' => 'Session approved. The attendance record has been created.',
     'geo_session_rejected' => 'Session rejected.',
 

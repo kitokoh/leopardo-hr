@@ -16,36 +16,69 @@ class TunisiaPayrollRules extends AbstractCountryRules
         return 'TND';
     }
 
+    /**
+     * SMIG secteur non agricole 2026 — régime 48 h/semaine : 554,736 TND/mois
+     * (décret n° 2026-67, revalorisation en vigueur au 01/01/2026, publiée
+     * avril 2026 ; 470,251 TND en régime 40 h). Référence :
+     * docs/payroll/TN_COMPLIANCE.md §3.
+     */
     public function minimumWage(): float
     {
-        return 480.0;
+        return 554.736;
     }
 
+    /**
+     * Audit légal 2026 (issue #5249) — sources : CNSS.tn (régime non
+     * agricole), CLEISS (fiche Tunisie), SmartPaie 2026, LF 2025 art. 17
+     * (loi n° 2024-48 du 09/12/2024).
+     *
+     *   CNSS régime non agricole : 9,18 % sal. / 16,57 % pat. — SANS plafond
+     *   général (le seuil « 6 × SMIG » concerne le régime complémentaire).
+     *   Fonds perte d'emploi (LF 2025) : 0,50 % sal. / 0,50 % pat.
+     *   ASSP accidents du travail : 0,4 % à 4 % patronal selon le secteur —
+     *   valeur pilote retenue 1,00 % (commerce/services), surchargeable en
+     *   base via social_contributions.
+     */
     public function socialContributions(): array
     {
         return [
-            ['name' => 'CNSS Salariale', 'code' => 'CNSS_TN_EMP', 'type' => 'employee', 'rate' => 9.18, 'cap' => null],
-            ['name' => 'CNSS Patronale', 'code' => 'CNSS_TN_PAT', 'type' => 'employer', 'rate' => 16.57, 'cap' => null],
+            ['name' => 'CNSS Salariale (régime non agricole)', 'code' => 'CNSS_TN_EMP', 'type' => 'employee', 'rate' => 9.18, 'cap' => null],
+            ['name' => 'CNSS Patronale (régime non agricole)', 'code' => 'CNSS_TN_PAT', 'type' => 'employer', 'rate' => 16.57, 'cap' => null],
+            ['name' => 'Fonds perte d\'emploi salarié', 'code' => 'PLE_TN_EMP', 'type' => 'employee', 'rate' => 0.50, 'cap' => null],
+            ['name' => 'Fonds perte d\'emploi patronal', 'code' => 'PLE_TN_PAT', 'type' => 'employer', 'rate' => 0.50, 'cap' => null],
+            ['name' => 'ASSP — accidents du travail et maladies professionnelles (patronale)', 'code' => 'ASSP_TN_PAT', 'type' => 'employer', 'rate' => 1.00, 'cap' => null],
         ];
     }
 
+    /**
+     * Barème IRPP 2026 (CGI TN — art. 36 de la loi n° 2024-48 du 09/12/2024,
+     * LF 2025, en vigueur depuis le 01/01/2025) : 8 tranches ANNUELES
+     * progressives sur le revenu net imposable (brut − cotisations
+     * salariales − abattement frais professionnels art. 39) :
+     *   0–5 000 0 % · 5 001–10 000 15 % · 10 001–20 000 25 % ·
+     *   20 001–30 000 30 % · 30 001–40 000 33 % · 40 001–50 000 36 % ·
+     *   50 001–70 000 38 % · > 70 000 40 %.
+     */
     protected function defaultTaxSlabs(): array
     {
         return [
             ['min' => 0, 'max' => 5000, 'rate' => 0, 'fixed_deduction' => 0],
-            ['min' => 5001, 'max' => 20000, 'rate' => 26, 'fixed_deduction' => 0],
-            ['min' => 20001, 'max' => 30000, 'rate' => 28, 'fixed_deduction' => 0],
-            ['min' => 30001, 'max' => 50000, 'rate' => 32, 'fixed_deduction' => 0],
-            ['min' => 50001, 'max' => null, 'rate' => 35, 'fixed_deduction' => 0],
+            ['min' => 5001, 'max' => 10000, 'rate' => 15, 'fixed_deduction' => 0],
+            ['min' => 10001, 'max' => 20000, 'rate' => 25, 'fixed_deduction' => 0],
+            ['min' => 20001, 'max' => 30000, 'rate' => 30, 'fixed_deduction' => 0],
+            ['min' => 30001, 'max' => 40000, 'rate' => 33, 'fixed_deduction' => 0],
+            ['min' => 40001, 'max' => 50000, 'rate' => 36, 'fixed_deduction' => 0],
+            ['min' => 50001, 'max' => 70000, 'rate' => 38, 'fixed_deduction' => 0],
+            ['min' => 70001, 'max' => null, 'rate' => 40, 'fixed_deduction' => 0],
         ];
     }
 
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
     {
-        // Issue #2261 — CGI TN art. 39 : abattement de 10 % sur le revenu
-        // imposable ANNUEL (plancher 1 000 / plafond 1 500 TND/an) appliqué
-        // AVANT le barème progressif. Méthode dédiée (constitution §III) :
-        // la valeur légale vit dans une méthode, pas inline.
+        // CGI TN art. 39 : abattement de 10 % sur le revenu imposable ANNUEL
+        // (plancher 1 000 / plafond 1 500 TND/an) appliqué AVANT le barème
+        // progressif (méthode dédiée applyAnnualAbatement() — constitution
+        // §III). Barème LF 2025 art. 36 (8 tranches, max 40 %).
         $annualTaxable = $this->applyAnnualAbatement($grossTaxable * $annualBasis);
         $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());
 
@@ -67,12 +100,25 @@ class TunisiaPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
-        $employeeRate = $this->resolveContributionRate('CNSS_TN_EMP', 9.18);
-        $employerRate = $this->resolveContributionRate('CNSS_TN_PAT', 16.57);
+        // ZONE-INFRA (#1820) : chaque cotisation via computeContribution()
+        // (constitution §III). Salarié = CNSS 9,18 % + perte d'emploi 0,50 % ;
+        // employeur = CNSS 16,57 % + perte d'emploi 0,50 % + ASSP (pilot 1,00 %).
+        $employee = round(
+            $this->computeContribution($grossSalary, 'CNSS_TN_EMP', 9.18, null)
+            + $this->computeContribution($grossSalary, 'PLE_TN_EMP', 0.50, null),
+            2,
+        );
+
+        $employer = round(
+            $this->computeContribution($grossSalary, 'CNSS_TN_PAT', 16.57, null)
+            + $this->computeContribution($grossSalary, 'PLE_TN_PAT', 0.50, null)
+            + $this->computeContribution($grossSalary, 'ASSP_TN_PAT', 1.00, null),
+            2,
+        );
 
         return [
-            'employee' => round($grossSalary * $employeeRate / 100, 2),
-            'employer' => round($grossSalary * $employerRate / 100, 2),
+            'employee' => $employee,
+            'employer' => $employer,
         ];
     }
 
