@@ -1,11 +1,26 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hive/hive.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_hr/features/attendance/data/attendance_repository.dart';
 
 import '../../helpers/mobile_test_harness.dart';
 
 void main() {
+  late Directory tempDir;
+
+  setUpAll(() async {
+    tempDir = await Directory.systemTemp.createTemp('hive_test');
+    Hive.init(tempDir.path);
+  });
+
+  tearDownAll(() async {
+    await Hive.deleteFromDisk();
+    tempDir.deleteSync(recursive: true);
+  });
+
   ApiClient clientWithHandler(
     void Function(RequestOptions options, RequestInterceptorHandler handler)
         onRequest,
@@ -99,10 +114,12 @@ void main() {
   test('checkIn and checkOut use resilient attendance actions', () async {
     final paths = <String>[];
     final payloads = <Map<String, dynamic>>[];
+    final headers = <String?>[];
     final repo = AttendanceRepository(
       clientWithHandler((options, handler) {
         paths.add('${options.method} ${options.path}');
         payloads.add((options.data as Map).cast<String, dynamic>());
+        headers.add(options.headers['Idempotency-Key']?.toString());
         handler.resolve(
           Response(
             requestOptions: options,
@@ -133,6 +150,14 @@ void main() {
     expect(paths, ['POST /attendance/check-in', 'POST /attendance/check-out']);
     expect(payloads.first['device_timezone'], isA<String>());
     expect(payloads.last['device_timezone'], isA<String>());
+    // RTMX (#5407) : une clé d'idempotence par pointage logique (check-in ET
+    // check-out), conforme au motif serveur [A-Za-z0-9._:-]{8,255}.
+    expect(headers.first, isNotNull);
+    expect(headers.first!.length, greaterThanOrEqualTo(8));
+    expect(headers.last, isNotNull);
+    expect(headers.last!.length, greaterThanOrEqualTo(8));
+    expect(headers.first, isNot(headers.last),
+        reason: 'chaque pointage logique a sa propre clé');
     expect(checkIn.id, 1);
     expect(checkIn.checkOut, isNull);
     expect(checkOut.id, 2);
@@ -214,5 +239,35 @@ void main() {
     expect(today['log'].employeeName, 'Samia RH');
     expect(today['log'].employeePhotoUrl, '/profiles/samia.png');
     expect(today['context']['timezone'], 'Africa/Algiers');
+  });
+
+  test('checkIn hors-ligne : la clé stockée dans offline_punches = clé envoyée',
+      () async {
+    RequestOptions? captured;
+    final repo = AttendanceRepository(
+      clientWithHandler((options, handler) {
+        captured = options;
+        handler.reject(
+          DioException(
+            requestOptions: options,
+            type: DioExceptionType.connectionError,
+            message: 'connection refused',
+          ),
+        );
+      }),
+    );
+
+    final log = await repo.checkIn();
+
+    expect(log.status, 'offline_sync_pending');
+    expect(captured, isNotNull);
+    final sentKey = captured!.headers['Idempotency-Key']?.toString();
+    expect(sentKey, isNotNull);
+
+    final box = await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
+    expect(box.length, 1);
+    expect(box.getAt(0)!['idempotencyKey'], sentKey,
+        reason: 'le rejeu (OfflineSyncService) réutilisera la MÊME clé');
+    await box.clear();
   });
 }
