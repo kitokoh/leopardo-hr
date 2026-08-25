@@ -17,13 +17,13 @@ class VoiceController extends Controller
 {
     public function transcribe(Request $request): JsonResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'audio' => 'required|file|mimes:wav,mp3,webm,ogg,m4a|max:10240',
             'language' => 'nullable|in:fr,ar,tr,en',
         ]);
 
         $audio = $request->file('audio');
-        $language = $request->input('language', 'fr');
+        $language = $validated['language'] ?? 'fr';
 
         $provider = config('ai.voice.stt_provider', 'whisper');
         $text = $this->speechToText($audio, $language, $provider);
@@ -42,7 +42,7 @@ class VoiceController extends Controller
         $validated = $request->validate([
             'text' => 'required|string|max:2000',
             'language' => 'nullable|in:fr,ar,tr,en',
-            'voice' => 'nullable|string|max:50',
+            'voice' => ['nullable', 'string', 'max:80', 'regex:/^[A-Za-z0-9._-]+$/'],
         ]);
 
         $provider = config('ai.voice.tts_provider', 'edge_tts');
@@ -63,21 +63,21 @@ class VoiceController extends Controller
 
     public function command(Request $request): JsonResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'audio' => 'required|file|mimes:wav,mp3,webm,ogg,m4a|max:10240',
             'language' => 'nullable|in:fr,ar,tr,en',
-            'conversation_id' => 'nullable|string',
+            'conversation_id' => 'nullable|integer|min:1|max:2147483647',
         ]);
 
         $audio = $request->file('audio');
-        $language = $request->input('language', 'fr');
+        $language = $validated['language'] ?? 'fr';
 
         $sttProvider = config('ai.voice.stt_provider', 'whisper');
         $transcribedText = $this->speechToText($audio, $language, $sttProvider);
 
         $orchestrator = app(Orchestrator::class);
         $user = $request->user();
-        $conversationId = $request->input('conversation_id');
+        $conversationId = $validated['conversation_id'] ?? null;
         $aiResponse = $orchestrator->handle(new AIRequest(
             message: $transcribedText,
             userId: (int) $user->id,

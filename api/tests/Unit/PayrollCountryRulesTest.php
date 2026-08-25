@@ -25,7 +25,12 @@ class PayrollCountryRulesTest extends TestCase
             // TN 2026 (#5249) : salarié 9,68 ‰ (CNSS 9,18 + perte d'emploi 0,50)
             // · employeur 18,07 ‰ (CNSS 16,57 + PLE 0,50 + ASSP 1,00).
             'TN' => [new TunisiaPayrollRules, 96.8, 180.7],
-            'FR' => [new FrancePayrollRules, 170.3, 300.0],
+            // FR 2026 (#5438) : URSSAF détaillée — salarié 21,48 % (vieillesse
+            // plaf. 6,9 + déplaf. 0,4 + retraite T1 3,15 + prévoyance 1,5 +
+            // CSG/CRDS 9,53 sur 98,25 %) / employeur 34,22 % (maladie 13 +
+            // vieillesse plaf. 8,55 + déplaf. 1,9 + retraite T1 4,72 +
+            // prévoyance 1,5 + chômage 4,05 + FNGS 0,5).
+            'FR' => [new FrancePayrollRules, 214.8, 342.2],
             // TR 2026 (#5253) : salarié 15 % (SGK 14 + chômage 1), employeur
             // 23,75 % (SGK 21,75 + chômage 2) — sans teşvik. Sur 1 000 TRY :
             // 150,00 / 237,50.

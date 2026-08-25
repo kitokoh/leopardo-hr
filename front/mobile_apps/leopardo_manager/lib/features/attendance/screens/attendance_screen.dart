@@ -10,7 +10,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/pulse_button.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_manager/features/attendance/providers/attendance_provider.dart';
-import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
