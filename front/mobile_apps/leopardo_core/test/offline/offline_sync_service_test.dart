@@ -54,7 +54,12 @@ void main() {
     await tempDir.delete(recursive: true);
   });
 
-  OfflineSyncService buildService(Future<void> Function(String path, Map<String, dynamic> payload) sender) {
+  OfflineSyncService buildService(
+      Future<void> Function(
+        String path,
+        Map<String, dynamic> payload, {
+        String? idempotencyKey,
+      }) sender) {
     final apiClient = ApiClient(SecureStorage(), AppPreferences());
     return OfflineSyncService(
       apiClient,
@@ -63,7 +68,8 @@ void main() {
     );
   }
 
-  Future<Box<Map<dynamic, dynamic>>> seedBox(List<Map<dynamic, dynamic>> items) async {
+  Future<Box<Map<dynamic, dynamic>>> seedBox(
+      List<Map<dynamic, dynamic>> items) async {
     final box = await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
     for (final item in items) {
       await box.add(item);
@@ -79,19 +85,20 @@ void main() {
 
   test('4xx définitif (422 double check-in) : purge la file', () async {
     final box = await seedBox(<Map<dynamic, dynamic>>[punch('check-in')]);
-    final service = buildService((path, payload) async {
+    final service = buildService((path, payload, {idempotencyKey}) async {
       throw ApiException('Double check-in rejeté', statusCode: 422);
     });
     await service.init();
 
     await service.syncPendingPunches();
 
-    expect(box.length, 0, reason: '422 est définitif : l\'entrée doit être purgée');
+    expect(box.length, 0,
+        reason: '422 est définitif : l\'entrée doit être purgée');
   });
 
   test('4xx définitif (404) : purge la file', () async {
     final box = await seedBox(<Map<dynamic, dynamic>>[punch('check-out')]);
-    final service = buildService((path, payload) async {
+    final service = buildService((path, payload, {idempotencyKey}) async {
       throw ApiException('Inconnu', statusCode: 404);
     });
     await service.init();
@@ -103,19 +110,20 @@ void main() {
 
   test('429 (rate limit) : conservé pour retry', () async {
     final box = await seedBox(<Map<dynamic, dynamic>>[punch('check-in')]);
-    final service = buildService((path, payload) async {
+    final service = buildService((path, payload, {idempotencyKey}) async {
       throw ApiException('Too many requests', statusCode: 429);
     });
     await service.init();
 
     await service.syncPendingPunches();
 
-    expect(box.length, 1, reason: '429 est transitoire : l\'entrée reste en file');
+    expect(box.length, 1,
+        reason: '429 est transitoire : l\'entrée reste en file');
   });
 
   test('401 (session expirée) : conservé (re-login possible)', () async {
     final box = await seedBox(<Map<dynamic, dynamic>>[punch('check-in')]);
-    final service = buildService((path, payload) async {
+    final service = buildService((path, payload, {idempotencyKey}) async {
       throw ApiException('Unauthorized', statusCode: 401);
     });
     await service.init();
@@ -127,7 +135,7 @@ void main() {
 
   test('erreur réseau (statusCode null) : conservé', () async {
     final box = await seedBox(<Map<dynamic, dynamic>>[punch('check-in')]);
-    final service = buildService((path, payload) async {
+    final service = buildService((path, payload, {idempotencyKey}) async {
       throw ApiException('Connection failed', statusCode: null);
     });
     await service.init();
@@ -139,7 +147,7 @@ void main() {
 
   test('5xx (500) : conservé', () async {
     final box = await seedBox(<Map<dynamic, dynamic>>[punch('check-in')]);
-    final service = buildService((path, payload) async {
+    final service = buildService((path, payload, {idempotencyKey}) async {
       throw ApiException('Server error', statusCode: 500);
     });
     await service.init();
@@ -152,7 +160,7 @@ void main() {
   test('succès : purge la file', () async {
     final box = await seedBox(<Map<dynamic, dynamic>>[punch('check-in')]);
     var sentPath = '';
-    final service = buildService((path, payload) async {
+    final service = buildService((path, payload, {idempotencyKey}) async {
       sentPath = path;
     });
     await service.init();
@@ -170,7 +178,7 @@ void main() {
       punch('check-in'),
     ]);
     var calls = 0;
-    final service = buildService((path, payload) async {
+    final service = buildService((path, payload, {idempotencyKey}) async {
       calls++;
       if (calls == 2) {
         throw ApiException('Rate limit', statusCode: 429);
@@ -184,5 +192,66 @@ void main() {
     // 1er : 422 -> purgé ; 2e : 429 -> conservé ; 3e : 422 -> purgé
     expect(box.length, 1);
     expect(calls, 3);
+  });
+
+  // ── RTMX (#5407) : rejeu idempotent — la clé stockée est réutilisée ──────
+  test('rejeu : la même Idempotency-Key stockée est transmise au sender',
+      () async {
+    const key = 'a1b2c3d4-1111-4222-8333-444455556666';
+    final box = await seedBox(<Map<dynamic, dynamic>>[
+      <dynamic, dynamic>{
+        'type': 'check-in',
+        'payload': <String, dynamic>{'work_type': 'normal'},
+        'idempotencyKey': key,
+        'timestamp': DateTime.now().toIso8601String(),
+      },
+    ]);
+    String? receivedKey;
+    final service = buildService(
+      (path, payload, {idempotencyKey}) async {
+        receivedKey = idempotencyKey;
+      },
+    );
+    await service.init();
+
+    await service.syncPendingPunches();
+
+    expect(receivedKey, key,
+        reason: 'le rejeu doit réutiliser la clé du pointage initial');
+    expect(box.length, 0, reason: 'succès -> purge');
+  });
+
+  test('rejeu : entrée sans clé (données pré-#5407) → idempotencyKey null',
+      () async {
+    await seedBox(<Map<dynamic, dynamic>>[punch('check-in')]);
+    String? receivedKey = 'sentinel';
+    final service = buildService(
+      (path, payload, {idempotencyKey}) async {
+        receivedKey = idempotencyKey;
+      },
+    );
+    await service.init();
+
+    await service.syncPendingPunches();
+
+    expect(receivedKey, isNull,
+        reason: 'rétro-compatibilité : pas de header sans clé stockée');
+  });
+
+  test('saveOfflinePunch stocke la clé fournie dans l’entrée de la file',
+      () async {
+    const key = 'b2c3d4e5-2222-4333-9444-555566667777';
+    final service = buildService((path, payload, {idempotencyKey}) async {});
+    await service.init();
+
+    await service.saveOfflinePunch(
+      <String, dynamic>{'work_type': 'normal'},
+      true,
+      idempotencyKey: key,
+    );
+
+    final box = Hive.box<Map<dynamic, dynamic>>('offline_punches');
+    expect(box.length, 1);
+    expect(box.getAt(0)!['idempotencyKey'], key);
   });
 }
