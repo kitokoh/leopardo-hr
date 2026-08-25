@@ -30,7 +30,6 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/reports',
   '/training',
   '/settings',
-  '/smart-attendance',
   '/social',
   '/social-marketing',
 ];
@@ -83,7 +82,6 @@ export const config = {
     '/reports/:path*',
     '/training/:path*',
     '/settings/:path*',
-    '/smart-attendance/:path*',
     '/social/:path*',
     '/social-marketing/:path*',
     // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
