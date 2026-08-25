@@ -12,7 +12,6 @@ use App\Modules\Accounting\Domain\Exceptions\PaymentAmountMismatchException;
 use App\Modules\Accounting\Domain\Exceptions\WebhookSignatureInvalidException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
-use App\Modules\Accounting\Infrastructure\Services\ChargilyPaymentGateway;
 use App\Modules\Accounting\Infrastructure\Services\GatewayMoney;
 use App\Modules\Accounting\Infrastructure\Services\PaymentGatewayFactory;
 use App\Modules\Accounting\Infrastructure\Services\PaymentRegistrationService;
@@ -81,12 +80,12 @@ final class OnlinePaymentService
         if ($gateway === null) {
             Log::warning('Accounting webhook: unknown gateway', ['gateway' => $gatewayName]);
 
-            throw new WebhookSignatureInvalidException();
+            throw new WebhookSignatureInvalidException;
         }
 
         $data = $gateway->verifyWebhookSignature($payload, $signatureHeader);
         if ($data === null) {
-            throw new WebhookSignatureInvalidException();
+            throw new WebhookSignatureInvalidException;
         }
 
         $payment = $gateway->extractPayment($data);
