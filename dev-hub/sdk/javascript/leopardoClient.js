@@ -2175,6 +2175,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/health/ready", options);
     },
 
+    /** Embauche d'un candidat (principal/RH) */
+    postHrCandidatesByApplicantHire(options = {}) {
+      return request("POST", "/hr/candidates/{applicant}/hire", options);
+    },
+
     /** Dashboard RH — indicateurs et actions en attente */
     getHrDashboard(options = {}) {
       return request("GET", "/hr/dashboard", options);

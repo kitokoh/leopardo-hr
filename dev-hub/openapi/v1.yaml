@@ -23821,6 +23821,39 @@ paths:
           description: "Rôle insuffisant (manager requis)"
           $ref: "#/components/responses/Error403"
 
+
+  /hr/candidates/{applicant}/hire:
+    post:
+      tags:
+      - HR
+      summary: Embauche d'un candidat (principal/RH)
+      description: "Convertit un candidat en employé (parcours candidat → employé, issue #5261). RBAC principal/RH."
+      parameters:
+      - name: applicant
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Candidat embauché
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      employee_id:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+
 components:
   securitySchemes:
     BearerAuth:
