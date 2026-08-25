@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Planning\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TaskCommentResource;
 use App\Http\Resources\Api\V1\TaskResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Planning\Domain\Models\Task;
 use App\Modules\Planning\Domain\Models\TaskComment;
@@ -104,7 +104,7 @@ class TaskController extends Controller
         if ($task->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager() && ! in_array($actor->id, $task->assigned_to ?? []) && $task->created_by !== $actor->id) {
+        if (! $actor->isManager() && ! in_array($actor->id, $task->assigned_to ?? []) && (string) $task->created_by !== (string) $actor->id) {
             abort(403);
         }
 
@@ -119,7 +119,7 @@ class TaskController extends Controller
             abort(404);
         }
 
-        $canUpdate = $actor->isManager() || $task->created_by === $actor->id || in_array($actor->id, $task->assigned_to ?? []);
+        $canUpdate = $actor->isManager() || (string) $task->created_by === (string) $actor->id || in_array($actor->id, $task->assigned_to ?? []);
         if (! $canUpdate) {
             abort(403);
         }
@@ -168,7 +168,7 @@ class TaskController extends Controller
         if ($task->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager() && $task->created_by !== $actor->id) {
+        if (! $actor->isManager() && (string) $task->created_by !== (string) $actor->id) {
             abort(403);
         }
 
@@ -221,7 +221,7 @@ class TaskController extends Controller
     {
         return $actor->isManager()
             || in_array($actor->id, $task->assigned_to ?? [], true)
-            || $task->created_by === $actor->id;
+            || (string) $task->created_by === (string) $actor->id;
     }
 
     /**
@@ -326,4 +326,3 @@ class TaskController extends Controller
         return $data;
     }
 }
-
