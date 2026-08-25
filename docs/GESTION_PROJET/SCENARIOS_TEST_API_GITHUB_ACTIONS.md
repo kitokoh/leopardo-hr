@@ -403,18 +403,6 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - Self-service : un employe ne peut pas consulter, generer le PDF ou lire les avenants du contrat d'un collegue
 - Scheduler : `contracts:alert-expiring` alerte a 30/15/7 jours
 
-### Module L — Checklist documents du dossier employe (issue #5326, gap G3)
-- `POST /api/v1/employee-documents` enregistre un document (type, statut, date, reference, url) — RBAC : principal/rh uniquement (403 employe)
-- `GET /api/v1/employee-documents` liste les documents du tenant (filtres `employee_id`, `type`, pagination `per_page`)
-- `GET /api/v1/employee-documents/{id}` detail d'un document du tenant
-- `PUT|PATCH /api/v1/employee-documents/{id}` met a jour type/statut/reference/url/notes
-- `DELETE /api/v1/employee-documents/{id}` supprime un document du dossier
-- `GET /api/v1/me/documents` self-service : l'employe lit UNIQUEMENT les documents de son propre dossier
-- Badge dossier : `GET /api/v1/employees/{id}` expose `documents_status` (complete/present/missing, types requis par statut employe)
-- Isolation : un document d'un autre tenant repond 404 (scope `BelongsToCompany` fail-closed #3727)
-- Validation : type hors liste ou `employee_id` d'un autre tenant repond 422
-- Tests : `tests/Feature/HR/EmployeeDocumentTest.php` (8 scenarios)
-
 ### Module C â Avances salaire mobile
 - `GET /api/v1/salary-advances` retourne les avances de l'employe connecte, et la liste tenant pour manager/RH autorise.
 - `POST /api/v1/salary-advances` permet a un employe de demander une avance avec `amount`, `reason` et `repayment_months`.
@@ -1413,6 +1401,12 @@ Note 2026-08-24 (issue #5232) : paramétrage comptable par entreprise — `GET/P
 - Scénarios à vérifier : défauts pays DZ (DZD, fr, TVA 19 %, série `FAC`), upsert puis relecture, validation 422 ×4, RBAC, isolation tenant, provisioning + idempotence.
 - Couverture : `tests/Feature/Accounting/AccountingSettingsTest.php` (12 tests) — OpenAPI documenté (756/756 routes couvertes), SDK régénérés.
 
+Note 2026-08-24 (issue #5288) : activation guidée de la Comptabilité — `GET/POST /api/v1/accounting/activation`.
+- `GET /api/v1/accounting/activation` : check-list d'activation de l'entreprise courante (`settings`, `contact`, `example_invoice`) — RBAC `api.manager:comptable,principal`, employé → 403.
+- `POST /api/v1/accounting/activation` : exécution idempotente de l'activation complète (paramétrage + contact démo + facture EXEMPLE) — rejouable sans effet de bord (re-poster = même état).
+- Scénarios à vérifier : GET avant activation (check-list vide), POST complet puis relecture GET (check-list remplie), idempotence du POST (2e appel), RBAC employé → 403, isolation tenant.
+- Couverture : `tests/Feature/Accounting/AccountingActivationTest.php` — OpenAPI documenté, SDK régénérés.
+
 Note 2026-08-24 (issue #5271) : déclaration TVA simplifiée par période — `GET /api/v1/accounting/reports/vat-declaration`.
 - `GET /api/v1/accounting/reports/vat-declaration?period=YYYY-MM[&format=json|csv]` : déclaration mensuelle du tenant courant (RBAC `api.manager:comptable,principal`, employé → 403) — TVA collectée (factures + reçus), déductible (avoirs), net, détail par taux (assiette HT, taxe, TTC) ; brouillons et annulés exclus ; période invalide → 422 ; `format=csv` → export `vat-declaration-<period>.csv`.
 - Multi-taux TVA par pays dans les défauts settings (DZ 19/9, MA 20, TN 19, SN 18, CI 18, TR 20, FR 20…) + mentions légales par défaut par pays.
@@ -1452,6 +1446,14 @@ Note 2026-08-23 (issue #5229) : trésorerie Phase B — paiements + rapprochemen
 - Liste : `GET /accounting/payments?document_id=&status=` — RBAC comptable/principal (403 sinon).
 - Relances : `POST /accounting/reminders/run` + commande `accounting:send-payment-reminders` — stages J+7/J+15/J+30 paramétrables (`accounting_settings.payment_reminder_days`), cibles documents émis non soldés échus, unique (document, stage) → zéro doublon, notification in-app aux managers principal/comptable (template `accounting_payment_reminder`, i18n ×4), échec notification ≠ échec relance (log).
 - Couverture : `AccountingPaymentTest` (14 tests) — suite `tests/Feature/Accounting` 23/23 ; PHPStan 0 ; Pint PASS ; OpenAPI couverture 754/754.
+Note 2026-08-24 (issue #5223) : cycle de vie des documents comptables via l'API — couverture HTTP complète du contrôleur.
+- `POST /api/v1/accounting/documents` crée un brouillon numéroté (type invoice/credit_note/proforma…, lignes requises → 422 sinon, totaux HT/TVA/TTC calculés, série paramétrable via `number_series`).
+- `GET /api/v1/accounting/documents` liste avec filtres (`type`, `status`, `contact_id`, `from`, `to`, `per_page`) ; `GET /api/v1/accounting/documents/{id}` détail lignes + paiements ; `GET /api/v1/accounting/documents/next-number?type=` aperçu du prochain numéro.
+- `POST /api/v1/accounting/documents/{id}/send` draft → sent (facture/avoir sans contact → 422) ; `POST .../payments` encaissement (partiel → `partially_paid`, solde → `paid`, excédent → 422) ; `POST .../cancel` annulation motivée ; `POST .../credit-note` avoir lié à une facture émise (montant borné au reste à payer, 422 si facture brouillon/annulée/payée).
+- Overdue : lecture rafraîchit les statuts échus (`due_date` dépassée sur sent/partially_paid → `overdue`).
+- RBAC : manager principal/comptable autorisés, employé → 403 ; isolation tenant → 404 cross-company.
+- Couverture : `tests/Feature/Accounting/AccountingDocumentApiTest.php` (12 tests) — gate coverage module Accounting ≥ 70 % (DoD #5228) : 67,4 % → 86,5 % sur #5230, 87,7 % sur #5288.
+
 
 Note 2026-08-24 (issue #5227) : i18n ×4 du module Comptabilité — messages API localisés (fr/en/tr/ar), zéro chaîne hardcodée, parité des catalogues.
 - Surface API : les messages d'erreur et de validation du module Accounting passent par `__('accounting.*')` / `__('errors.*')` (renderer #4171) — plus aucun littéral `message => '...'` ni `throw '...'` français brut (hors codes machine MAJUSCULES et clés de catalogue) dans `api/app/Modules/Accounting/**` ; la locale est pilotée par `preferred_language` de l'utilisateur authentifié (pattern #4592, fallback Accept-Language).
@@ -1477,3 +1479,11 @@ Note 2026-08-25 (issue #5439) : journal d'audit global — écriture unifiée `A
 - Scénarios à vérifier : chaque action sensible crée une entrée tracée ; 403 employé ; filtre module ; 404 cross-tenant ; purge respecte la rétention de l'entreprise et journalise ; non-régression suites HR/Attendance/Planning/Payroll.
 - Couverture : `tests/Feature/Audit/AuditLogGlobalTest.php` (9 tests) + suite existante `AuditLogExportTest`.
 >>>>>>> origin/main
+
+
+## Rapprochement bancaire (Phase D, #5435) — scénarios Feature
+
+- `BankStatementImportTest` : import CSV valide (201, 2 lignes) ; en-tête invalide (422, rien d'inséré) ; doublon d'import (409 `BANK_STATEMENT_DUPLICATE_IMPORT`) ; lignes partielles signalées (`errors[]` avec numéros de ligne) ; RBAC employé (403) ; relevé cross-tenant (404).
+- `BankReconciliationTest` : matching exact (score 100 → paiement `matched`, ligne `matched`, relevé `reconciled`) ; approximatif (score < 100 → ligne `pending` + proposition, relevé `reconciling`) ; sans candidat (ligne `pending`) ; idempotence (second passage sans nouvel auto-match).
+- `BankReconciliationManualTest` : rapprochement manuel + lettrage (`reconciled_at`) ; re-match d'une ligne déjà rapprochée (409) ; ligne cross-tenant (404).
+- `BankStatementStatusTest` : soldes attendus/réels, lignes matched/pending, écart de clôture.

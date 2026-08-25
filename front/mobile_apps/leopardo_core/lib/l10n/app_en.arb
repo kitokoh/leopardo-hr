@@ -1927,5 +1927,141 @@
   "settingsEdgeOptionalHint": "Optional: point to an on-site Edge server to clock in without Internet.",
   "settingsPrefsUnavailable": "Preferences unavailable right now. Pull to refresh later.",
   "teamQrPrefilledHint": "Profile pre-filled from QR. Fill in the unique work email for this company.",
-  "settingsBiometryPendingHint": "Once submitted, your biometric data stays pending. Any first activation or change requires manager/HR approval."
+  "settingsBiometryPendingHint": "Once submitted, your biometric data stays pending. Any first activation or change requires manager/HR approval.",
+  "companiesRequiredField": "Required field",
+  "companiesCompanyCreated": "Company created",
+  "companiesNewClient": "New client",
+  "companiesProvisioning": "Platform provisioning",
+  "companiesCompanyEmail": "Company email",
+  "companiesCreateClient": "Create the client",
+  "companiesCreating": "Creating...",
+  "companiesActiveImmediatelyHint": "The client will be created with active status.",
+  "companiesTrialHint": "The client starts on trial, then can be activated from its profile.",
+  "companydetailClientFile": "Client profile",
+  "companydetailProductAdoption": "Product adoption",
+  "companydetailActiveEmployees": "Active employees",
+  "companydetailAnomaliesCritical": "Critical anomalies",
+  "commonBack": "Back",
+  "companydetailClientReference": "Client reference",
+  "companydetailTenantIdHint": "Tenant identifier to show to support or scan on site to find this client instantly.",
+  "companydetailCopyId": "Copy identifier",
+  "companydetailSubscription": "Subscription",
+  "companydetailPlan": "Plan",
+  "companydetailStatus": "Status",
+  "companydetailMonthlyPrice": "Monthly price",
+  "companydetailEmployeeLimit": "Employee limit",
+  "companydetailUnlimited": "Unlimited",
+  "companydetailSubscriptionEnd": "Subscription end",
+  "companydetailUndefined": "Undefined",
+  "companydetailActivateClient": "Activate client",
+  "companydetailEditSubscription": "Edit subscription",
+  "companydetailActiveModules": "Active modules",
+  "companydetailEditModules": "Edit modules",
+  "companydetailNextActions": "Next actions",
+  "companydetailNoUrgentActions": "No urgent action detected for this client.",
+  "companydetailRecommendedActionHint": "Recommended action from the platform cockpit.",
+  "companydetailPlanNotFound": "Current plan not found",
+  "companydetailClientActivated": "Client activated",
+  "companydetailChoosePlan": "Choose a plan",
+  "companydetailSubscriptionUpdated": "Subscription updated",
+  "companydetailOptionalInternalNote": "Optional internal note",
+  "companydetailSaving": "Saving...",
+  "commonSave": "Save",
+  "companydetailLoadingPlans": "Loading plans",
+  "companydetailPlanWithPrice": "{planName} - {price}/month",
+  "companydetailSaveModules": "Save modules",
+  "companydetailCoreModuleAlwaysActive": "Core module always active",
+  "companydetailModulesUpdated": "Modules updated",
+  "@companydetailPlanWithPrice": {
+    "description": "Dropdown item for a plan with its monthly price.",
+    "placeholders": {
+      "planName": {
+        "type": "String",
+        "example": "Essentiel"
+      },
+      "price": {
+        "type": "String",
+        "example": "990"
+      }
+    }
+  },
+  "companiesTenantsPlatform": "Platform tenants",
+  "companiesEmpty": "No company to display.",
+  "companyrequestsValidationSuperadmin": "Super-admin validation",
+  "companyrequestsApprovedToast": "Request approved",
+  "companyrequestsRejectedToast": "Request rejected",
+  "dashboardPlatformAdministration": "Platform administration",
+  "dashboardSuperAdmin": "Super-admin",
+  "dashboardExecutiveView": "Executive view",
+  "dashboardActiveLabel": "Active",
+  "dashboardTrials": "Trials",
+  "dashboardLoadingCockpit": "Loading cockpit",
+  "dashboardPlatformActions": "Platform actions",
+  "dashboardClientCompanies": "Client companies",
+  "dashboardClientCompaniesHint": "Track tenants, their status and plan.",
+  "dashboardCreateCompany": "Create a company",
+  "dashboardCreateCompanyHint": "Provision a new client and its main manager.",
+  "dashboardClientRequestsHint": "Approve or reject creation requests.",
+  "dashboardSupportClient": "Client support",
+  "dashboardTicketsHint": "Tenant tickets — answer and triage.",
+  "dashboardEdgeNodes": "Edge nodes",
+  "dashboardEdgeNodesHint": "On-premise sites — status and sync.",
+  "settingsEdgeRemoved": "Edge pairing removed.",
+  "settingsViewProfile": "View my profile",
+  "settingsRecoveryEmailHint": "Optional, to recover access",
+  "settingsPersonalPhoneHint": "Optional, visible according to your future choices",
+  "settingsPortableIdentityTitle": "Portable identity",
+  "settingsPortableIdentitySubtitle": "Company history, position, status and availability.",
+  "settingsPortableIdentityHint": "Personal email, recovery and phone remain attached to the account.",
+  "settingsDigitalLockerTitle": "Digital locker",
+  "settingsDigitalLockerSubtitle": "CV, contracts, diplomas and documents with controlled visibility.",
+  "settingsHistoryCompanyPeriod": "{companyName} - {period}",
+  "@settingsHistoryCompanyPeriod": {
+    "placeholders": {
+      "companyName": {
+        "type": "String",
+        "example": "Acme"
+      },
+      "period": {
+        "type": "String",
+        "example": "2026-08"
+      }
+    }
+  },
+  "settingsStatusCurrent": "Current status: {label}",
+  "@settingsStatusCurrent": {
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "En ligne"
+      }
+    }
+  },
+  "settingsUpdateFailed": "Update failed: {error}",
+  "@settingsUpdateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsQrRejected": "QR rejected: {error}",
+  "@settingsQrRejected": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsSubmitFailed": "Submission failed: {error}",
+  "@settingsSubmitFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  }
 }

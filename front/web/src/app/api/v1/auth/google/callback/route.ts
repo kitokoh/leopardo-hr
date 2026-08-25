@@ -61,18 +61,24 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     clearTimeout(timeout);
   }
 
-  if (backendResponse.status >= 400) {
-    return NextResponse.redirect(
-      new URL("/auth/login?error=google_auth_failed", request.url),
-    );
-  }
-
-  let payload: Record<string, unknown>;
+  // Issue #5171 : le 401 UNKNOWN_ACCOUNT (email Google inconnu) doit afficher
+  // le message dédié « demandez une invitation » (labels.login.errors.googleNoAccount),
+  // pas l'erreur générique — sinon le parcours invitation-first est muet pour
+  // le nouvel utilisateur. Tout autre échec backend reste générique.
+  let payload: Record<string, unknown> | null = null;
   try {
     payload = (await backendResponse.json()) as Record<string, unknown>;
   } catch {
+    payload = null;
+  }
+
+  if (backendResponse.status >= 400) {
+    const backendError = typeof payload?.error === 'string' ? payload.error : '';
+    const errorCode =
+      backendError === 'UNKNOWN_ACCOUNT' ? 'google_no_account' : 'google_auth_failed';
+
     return NextResponse.redirect(
-      new URL("/auth/login?error=google_auth_failed", request.url),
+      new URL(`/auth/login?error=${errorCode}`, request.url),
     );
   }
 

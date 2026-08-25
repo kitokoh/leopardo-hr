@@ -2,6 +2,7 @@ name: leopardo-hr
 repository: https://github.com/kitokoh/leopardo-hr
 
 packages:
+  - front/mobile_apps/leopardo_accounting
   - front/mobile_apps/leopardo_core
   - front/mobile_apps/leopardo_employee
   - front/mobile_apps/leopardo_hr

@@ -2,6 +2,7 @@
 
 return [
     // Auth
+        'UNKNOWN_ACCOUNT' => "Aucun compte Leopardo RH n\'est associé à cet email Google. Demandez une invitation à votre administrateur.",
     'INVALID_CREDENTIALS' => 'Email ou mot de passe incorrect.',
     'ACCOUNT_SUSPENDED' => 'Votre compte a été suspendu. Contactez votre responsable.',
     'ACCOUNT_ARCHIVED' => 'Ce compte est archivé.',
@@ -238,6 +239,7 @@ return [
     'CONTRACT_NOT_FOUND_EMPLOYEE' => 'Aucun contrat trouvé pour cet employé.',
     'ALREADY_ENROLLED_SESSION' => 'Déjà inscrit à cette session.',
     'DELETION_REQUEST_RECEIVED' => 'Demande de suppression reçue pour revue RH/juridique.',
+    'PERIOD_CLOSED' => 'La période comptable est déjà clôturée — aucun posting possible.',
     // Comptabilité (issue #5227)
     'PAYMENT_EXCEEDS_TOTAL' => 'Le montant du paiement dépasse le solde restant du document.',
     'PAYMENT_ON_UNSENT_DOCUMENT' => 'Impossible d\'enregistrer un paiement sur un document non émis.',
@@ -254,4 +256,9 @@ return [
     'TWO_FACTOR_REQUIRED' => 'La double authentification est obligatoire pour ce compte. Activez-la avant de vous connecter.',
     'TWO_FACTOR_ALREADY_ENABLED' => 'La double authentification est déjà activée sur ce compte.',
     'TWO_FACTOR_CHALLENGE_EXPIRED' => 'Session de double authentification expirée. Reconnectez-vous.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'Lien de partage introuvable ou expiré.',
+    'DOCUMENT_PDF_NOT_READY' => 'Le PDF du document n\'est pas encore disponible.',
+    'BANK_STATEMENT_DUPLICATE_IMPORT' => 'Ce relevé bancaire a déjà été importé pour cette période.',
+    'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'Cette ligne ou ce paiement est déjà rapproché.',
+    'BANK_STATEMENT_IMPORT_FORMAT' => 'Le format du fichier de relevé est invalide.',
 ];

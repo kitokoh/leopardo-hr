@@ -1,4 +1,4 @@
-# leopardo_marketing
+# leopardo_accounting
 
 A new Flutter project.
 

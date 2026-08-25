@@ -63,7 +63,13 @@ return [
         'series_unknown' => 'سلسلة غير معروفة: « :key » ليست نوع مستند (:allowed).',
     ],
 
-    // أخطاء الأعمال (issue #5227)
+        'bank_file_required' => 'ملف CSV مطلوب.',
+        'bank_file_mimes' => 'يجب أن يكون الملف بصيغة CSV.',
+        'bank_period_required' => 'فترة الكشف مطلوبة (YYYY-MM).',
+        'bank_period_format' => 'يجب أن تكون الفترة بصيغة YYYY-MM.',
+        'bank_reference_required' => 'مرجع الاستيراد مطلوب.',
+        'bank_payment_required' => 'الدفعة المراد مطابقتها مطلوبة.',
+        'bank_payment_exists' => 'الدفعة المحددة غير موجودة.',
     'errors' => [
         'gateway_checkout_failed' => 'بوابة الدفع غير متاحة مؤقتًا. يرجى المحاولة لاحقًا.',
         'payment_amount_positive' => 'يجب أن يكون مبلغ الدفع موجباً تماماً.',
@@ -79,6 +85,12 @@ return [
         'wf_source_invoice_not_issuable' => 'لا يمكن للفاتورة الملغاة أو المسودة توليد إشعار دائن.',
         'wf_source_invoice_paid' => 'الفاتورة المصدرية مدفوعة بالكامل بالفعل: لا يمكن إصدار إشعار دائن.',
         'wf_credit_exceeds_remaining' => 'مبلغ الإشعار الدائن يتجاوز الرصيد المتبقي للفاتورة المصدرية.',
+        'bank_line_empty' => 'تم تخطي السطر الفارغ.',
+        'bank_line_invalid_date' => 'تاريخ غير صالح: «:value».',
+        'bank_line_missing_label' => 'البيان مفقود.',
+        'bank_line_invalid_amount' => 'مبلغ غير صالح: «:value».',
+        'bank_empty_file' => 'ملف CSV فارغ.',
+        'bank_missing_columns' => 'ترويسة غير صالحة: أعمدة مطلوبة مفقودة (:columns).',
         'wf_company_context' => 'سياق الشركة مطلوب.',
     ],
 

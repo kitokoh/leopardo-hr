@@ -2,6 +2,7 @@
 
 return [
     // Auth
+        'UNKNOWN_ACCOUNT' => 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
     'INVALID_CREDENTIALS' => 'Invalid email or password.',
     'ACCOUNT_SUSPENDED' => 'Your account has been suspended. Contact your manager.',
     'ACCOUNT_ARCHIVED' => 'This account is archived.',
@@ -244,6 +245,7 @@ return [
     'CONTRACT_NOT_FOUND_EMPLOYEE' => 'No contract found for this employee.',
     'ALREADY_ENROLLED_SESSION' => 'Already enrolled in this session.',
     'DELETION_REQUEST_RECEIVED' => 'Deletion request received for HR/legal review.',
+    'PERIOD_CLOSED' => 'The accounting period is already closed — no posting allowed.',
     // Accounting (issue #5227)
     'PAYMENT_EXCEEDS_TOTAL' => 'The payment amount exceeds the remaining balance of the document.',
     'PAYMENT_ON_UNSENT_DOCUMENT' => 'Cannot record a payment on a document that has not been issued.',
@@ -259,5 +261,10 @@ return [
     'TWO_FACTOR_INVALID' => 'Invalid or expired two-factor authentication code.',
     'TWO_FACTOR_REQUIRED' => 'Two-factor authentication is required for this account. Enable it before signing in.',
     'TWO_FACTOR_ALREADY_ENABLED' => 'Two-factor authentication is already enabled on this account.',
-    'TWO_FACTOR_CHALLENGE_EXPIRED' => 'Two-factor authentication session expired. Please sign in again.',
+    'TWO_FACTOR_CHALLENGE_EXPIRED' => 'Two-factor authentication session expired. Sign in again.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'Share link not found or expired.',
+    'DOCUMENT_PDF_NOT_READY' => 'The document PDF is not available yet.',
+    'BANK_STATEMENT_DUPLICATE_IMPORT' => 'This bank statement has already been imported for this period.',
+    'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'This line or payment is already reconciled.',
+    'BANK_STATEMENT_IMPORT_FORMAT' => 'The statement file format is invalid.',
 ];

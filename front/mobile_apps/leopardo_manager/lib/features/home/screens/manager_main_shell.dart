@@ -33,7 +33,7 @@ class ManagerMainShell extends StatelessWidget {
       icon: Icons.fingerprint_outlined,
       activeIcon: Icons.fingerprint,
       label: 'Pointage',
-      route: '/smart-attendance',
+      route: '/attendance/geo',
     ),
     LeopardoNavItem(
       icon: Icons.checklist_outlined,
