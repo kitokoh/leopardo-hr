@@ -93,7 +93,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get accountingportalDownloaderror =>
       'فشل التحميل. يرجى المحاولة مرة أخرى.';
 
-
   @override
   String get welcomeBrandSubtitle =>
       'تجربة محادثية، موجهة للهاتف، وقابلة للتوسع.';

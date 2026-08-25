@@ -94,7 +94,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get accountingportalDownloaderror =>
       'Le téléchargement a échoué. Merci de réessayer.';
 
-
   @override
   String get welcomeBrandSubtitle =>
       'Conversationnelle, mobile-first, modulaire.';

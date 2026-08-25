@@ -122,9 +122,10 @@ class _StartupRuntimeError extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Text(
-             'Erreur d affichage Leopardo RH\n${details.exceptionAsString()}',
+            'Erreur d affichage Leopardo RH\n${details.exceptionAsString()}',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.mobileDarkText, fontSize: 13),
+            style:
+                const TextStyle(color: AppColors.mobileDarkText, fontSize: 13),
           ),
         ),
       ),

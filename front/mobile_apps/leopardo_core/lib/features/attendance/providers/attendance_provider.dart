@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:leopardo_hr/features/attendance/data/attendance_repository.dart';
+import 'package:leopardo_core/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
 import 'package:leopardo_core/models/employee_day_detail.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
-import 'package:leopardo_hr/core/providers/core_providers.dart';
+import 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/location/attendance_location_context.dart';
@@ -307,6 +307,11 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
     return fallback;
   }
 }
+
+/// Provider du repository attendance (unifié hr/manager, issue #5279 lot 7).
+final attendanceRepositoryProvider = Provider<AttendanceRepository>((ref) {
+  return AttendanceRepository(ref.watch(apiClientProvider));
+});
 
 final attendanceProvider =
     StateNotifierProvider<AttendanceNotifier, AttendanceState>((ref) {

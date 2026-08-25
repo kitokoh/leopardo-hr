@@ -45,8 +45,8 @@ class AccountingServiceProvider extends ServiceProvider
         // Issue #5232 — défauts pays appliqués à la création d'entreprise.
         // Enregistrement local au module (Event::listen) pour ne pas toucher
         // EventServiceProvider central (isolation module, anti-collision).
-        // Issue #5422 — plan comptable provisionné à la création d'entreprise.
         Event::listen(CompanyCreated::class, ProvisionAccountingSettings::class);
+        // #5422 — plan comptable par défaut provisionné à la création d'entreprise.
         Event::listen(CompanyCreated::class, ProvisionChartOfAccounts::class);
     }
 }

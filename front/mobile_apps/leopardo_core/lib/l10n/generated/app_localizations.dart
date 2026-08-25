@@ -264,7 +264,6 @@ abstract class AppLocalizations {
   /// **'Le téléchargement a échoué. Merci de réessayer.'**
   String get accountingportalDownloaderror;
 
-
   /// No description provided for @welcomeBrandSubtitle.
   ///
   /// In fr, this message translates to:

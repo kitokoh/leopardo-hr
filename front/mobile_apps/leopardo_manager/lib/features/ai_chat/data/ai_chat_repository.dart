@@ -9,7 +9,8 @@ class AiChatRepository {
   Future<String> sendMessage(String message, {int? conversationId}) async {
     final response = await apiClient.requestWithRetry(
       '/ai/chat',
-      method: 'POST', maxRetriesOverride: 0,
+      method: 'POST',
+      maxRetriesOverride: 0,
       timeoutOverride: const Duration(seconds: 30),
       data: {
         'message': message,
