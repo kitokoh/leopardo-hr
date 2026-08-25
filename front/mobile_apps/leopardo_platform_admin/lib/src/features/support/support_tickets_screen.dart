@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod/legacy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
@@ -9,7 +8,14 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import '../../core/platform_providers.dart';
 import '../platform/platform_models.dart';
 
-final _statusFilterProvider = StateProvider<String?>((ref) => null);
+class _StatusFilter extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void set(String? value) => state = value;
+}
+
+final _statusFilterProvider = NotifierProvider<_StatusFilter, String?>(_StatusFilter.new);
 
 final platformSupportTicketsProvider =
     FutureProvider.family<List<PlatformSupportTicket>, String?>(
@@ -64,7 +70,7 @@ class SupportTicketsScreen extends ConsumerWidget {
                         selected ? FontWeight.w700 : FontWeight.normal,
                   ),
                   onSelected: (_) =>
-                      ref.read(_statusFilterProvider.notifier).state = s,
+                      ref.read(_statusFilterProvider.notifier).set(s),
                 ),
               );
             }).toList(),

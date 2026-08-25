@@ -8,7 +8,14 @@ import 'package:leopardo_marketing/features/marketing/models/social_post.dart';
 
 import '../data/social_post_repository.dart';
 
-final _statusFilterProvider = StateProvider<String?>((ref) => null);
+class _StatusFilter extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void set(String? value) => state = value;
+}
+
+final _statusFilterProvider = NotifierProvider<_StatusFilter, String?>(_StatusFilter.new);
 
 final socialPostRepositoryProvider = Provider<SocialPostRepository>((ref) {
   return SocialPostRepository(ref.watch(apiClientProvider));
@@ -80,7 +87,7 @@ class SocialPostsScreen extends ConsumerWidget {
                     ),
                     backgroundColor: Colors.white10,
                     onSelected: (_) =>
-                        ref.read(_statusFilterProvider.notifier).state = s,
+                        ref.read(_statusFilterProvider.notifier).set(s),
                   ),
                 );
               }).toList(),
