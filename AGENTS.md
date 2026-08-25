@@ -970,3 +970,17 @@ Référence : issue Spec Kit #4359.
 - Un test qui vérifie volontairement le rejet runtime d’un type interdit peut garder son appel invalide avec un commentaire explicite `// @phpstan-ignore argument.type` immédiatement avant l’appel. Cette suppression doit rester locale et ne doit jamais devenir une règle globale.
 - Avant toute mise à jour de `phpstan-strict-baseline.neon`, corriger les types et réexécuter PHPStan. Pour #4642, la baseline n’a pas eu besoin d’un nouveau pattern : la commande termine avec `[OK] No errors`.
 - La suite PHPUnit locale de cette session a été tentée avec `php artisan test --parallel`, mais le sandbox ne possède pas le pilote `pdo_pgsql` et échoue sur `could not find driver`; l’exécution complète doit être reprise par un runner CI équipé de PostgreSQL.
+
+## Lecon 2026-08-25 — `.claim-marker` jamais commité (issue #5447)
+
+- **Convention (PLAN_100PCT.md §6.4)** : le marqueur de claim est un LOCK LOCAL.
+  Il se crée côté agent (fichier non tracké) ou via un commit vide
+  « claim marker #N » (protocole #2400) — **jamais** un fichier `.claim-marker`
+  commité. Constat du 2026-08-25 : 52 branches + main portaient le marqueur
+  (#5261) → conflits de merge en cascade et bruit de revue.
+- **Garde CI** : `dev-hub/tools/check-no-claim-marker.sh` (branché dans
+  `architecture-check.yml` hygiene-guards) échoue si un `.claim-marker` est
+  présent dans l'arbre de travail d'une PR. Avant tout push, vérifier
+  `git ls-files | grep claim-marker` et retirer le fichier (`git rm`) le cas échéant.
+- **Purge** : marqueurs retirés de main et des branches actives le 2026-08-25
+  (PR dédiée issue #5447).
