@@ -7,6 +7,7 @@ name: Accounting CI — Module Gate
 # Jobs :
 #   accounting-tests — tests Feature du module (modèles, enums, isolation tenant)
 #   coverage         — gate de coverage module Accounting ≥ 70 % (DoD #5228)
+#   i18n-scan        — #5227 : zéro chaîne hardcodée utilisateur + parité ×4
 
 on:
   pull_request:
@@ -15,7 +16,11 @@ on:
       - 'api/app/Modules/Accounting/**'
       - 'api/database/migrations/**'
       - 'api/tests/Feature/Accounting/**'
+      - 'api/lang/**'
+      - 'api/resources/views/pdf/**'
+      - 'front/admin-dashboard/src/i18n/**'
       - 'docs/architecture/COMPTABILITE_CONCEPTION.md'
+      - 'dev-hub/tools/check-accounting-i18n.py'
       - '.github/workflows/accounting-ci.yml'
   push:
     branches: [main]
@@ -23,7 +28,11 @@ on:
       - 'api/app/Modules/Accounting/**'
       - 'api/database/migrations/**'
       - 'api/tests/Feature/Accounting/**'
+      - 'api/lang/**'
+      - 'api/resources/views/pdf/**'
+      - 'front/admin-dashboard/src/i18n/**'
       - 'docs/architecture/COMPTABILITE_CONCEPTION.md'
+      - 'dev-hub/tools/check-accounting-i18n.py'
       - '.github/workflows/accounting-ci.yml'
   workflow_dispatch:
 
@@ -130,3 +139,19 @@ jobs:
 
           print('::notice::Gate coverage Accounting OK (≥ 70 %).')
           PY
+
+  i18n-scan:
+    timeout-minutes: 10
+    name: i18n Comptabilité ×4 (littéraux + parité)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      # Issue #5227 — zéro chaîne hardcodée utilisateur dans le module
+      # Accounting (messages API via __('accounting.*')) + parité des clés ×4
+      # (fr/en/tr/ar) + libellés PDF (types/statuts) + codes errors.* des
+      # DomainException (renderer #4171). Miroir du check-payroll-i18n.py #5257.
+      - name: Scan i18n module Accounting
+        run: python3 dev-hub/tools/check-accounting-i18n.py

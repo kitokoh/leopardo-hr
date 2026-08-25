@@ -98,7 +98,9 @@ class EmployeeDocumentTest extends TestCase
         // Sans filtre : tous les documents du tenant A uniquement.
         $all = $this->getJson('/api/v1/employee-documents');
         $all->assertOk()->assertJsonCount(2, 'data');
-        $ids = collect($all->json('data'))->pluck('id')->all();
+        /** @var list<array{id: int}> $documents */
+        $documents = $all->json('data');
+        $ids = collect($documents)->pluck('id')->all();
         $this->assertNotContains($otherDoc->id, $ids);
     }
 
