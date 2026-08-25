@@ -147,13 +147,6 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/webhooks/email-bounce', EmailBounceWebhookController::class);
     });
 
-    // #5225/#5357 — portail client : liens de partage de documents comptables.
-    // Public par conception : le token de partage EST la credential (PA2-AUTH
-    // fail-closed, #5428) ; la résolution du document ignore le scope tenant
-    // (le token est global), isolation RGPD limitée au document partagé.
-    Route::get('/accounting/documents/shared/{token}', [PublicDocumentShareController::class, 'info']);
-    Route::get('/accounting/documents/shared/{token}/download', [PublicDocumentShareController::class, 'download']);
-
     // Public careers portal (ATS): unauthenticated job listing/detail, the
     // Google Jobs / Indeed XML feed, and candidate application submission.
     // Tenant is resolved from {companySlug}, not from Sanctum, since visitors
