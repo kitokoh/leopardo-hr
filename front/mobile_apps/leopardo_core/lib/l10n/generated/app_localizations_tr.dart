@@ -12,6 +12,91 @@ class AppLocalizationsTr extends AppLocalizations {
   String get appTitle => 'Leopardo IK';
 
   @override
+  String get accountingportalTitle => 'Güvenli belge alanı';
+
+  @override
+  String get accountingportalSubtitle =>
+      'Erişim, gönderenin paylaştığı belgeyle sınırlıdır';
+
+  @override
+  String get accountingportalNumber => 'Belge no.';
+
+  @override
+  String get accountingportalType => 'Belge türü';
+
+  @override
+  String get accountingportalStatus => 'Durum';
+
+  @override
+  String get accountingportalIssuedate => 'Düzenlenme tarihi';
+
+  @override
+  String get accountingportalTotal => 'Toplam tutar';
+
+  @override
+  String get accountingportalCurrency => 'Para birimi';
+
+  @override
+  String get accountingportalExpiresat =>
+      'Bağlantı :date tarihine kadar geçerli';
+
+  @override
+  String get accountingportalDownload => 'PDF indir';
+
+  @override
+  String get accountingportalDownloadhint => 'Belgeyi PDF olarak indir';
+
+  @override
+  String get accountingportalNotfoundtitle =>
+      'Geçersiz veya süresi dolmuş bağlantı';
+
+  @override
+  String get accountingportalNotfoundbody =>
+      'Bu bağlantı artık geçerli değil veya süresi doldu. Yeni bir bağlantı almak için gönderenle iletişime geçin.';
+
+  @override
+  String get accountingportalErrortitle => 'Belge yüklenemedi';
+
+  @override
+  String get accountingportalErrorbody =>
+      'Bir hata oluştu. Lütfen birkaç dakika sonra tekrar deneyin.';
+
+  @override
+  String get accountingportalRetry => 'Tekrar dene';
+
+  @override
+  String get accountingportalBacktosite => 'Siteye dön';
+
+  @override
+  String get accountingportalSecuritynote =>
+      'Güvenli paylaşım — bu bağlantıyı iletmeyin';
+
+  @override
+  String get accountingportalStatusdraft => 'Taslak';
+
+  @override
+  String get accountingportalStatussent => 'Gönderildi';
+
+  @override
+  String get accountingportalStatuspartiallypaid => 'Kısmen ödendi';
+
+  @override
+  String get accountingportalStatuspaid => 'Ödendi';
+
+  @override
+  String get accountingportalStatuscancelled => 'İptal edildi';
+
+  @override
+  String get accountingportalStatusoverdue => 'Gecikmiş';
+
+  @override
+  String get accountingportalLoading => 'Yükleniyor…';
+
+  @override
+  String get accountingportalDownloaderror =>
+      'İndirme başarısız oldu. Lütfen tekrar deneyin.';
+
+  @override
   String get welcomeBrandSubtitle => 'Sohbet odakli, mobil oncelikli, moduler.';
 
   @override
@@ -6274,6 +6359,214 @@ class AppLocalizationsTr extends AppLocalizations {
       'Gönderildikten sonra biyometrik verileriniz beklemede kalır. Her ilk aktivasyon veya değişiklik yönetici/İK onayı gerektirir.';
 
   @override
+  String get companiesRequiredField => 'Zorunlu alan';
+
+  @override
+  String get companiesCompanyCreated => 'Şirket oluşturuldu';
+
+  @override
+  String get companiesNewClient => 'Yeni müşteri';
+
+  @override
+  String get companiesProvisioning => 'Platform sağlama';
+
+  @override
+  String get companiesCompanyEmail => 'Şirket e-postası';
+
+  @override
+  String get companiesCreateClient => 'Müşteriyi oluştur';
+
+  @override
+  String get companiesCreating => 'Oluşturuluyor...';
+
+  @override
+  String get companiesActiveImmediatelyHint =>
+      'Müşteri aktif durumda oluşturulacak.';
+
+  @override
+  String get companiesTrialHint =>
+      'Müşteri deneme ile başlar, ardından profilinden etkinleştirilebilir.';
+
+  @override
+  String get companydetailClientFile => 'Müşteri profili';
+
+  @override
+  String get companydetailProductAdoption => 'Ürün benimsenmesi';
+
+  @override
+  String get companydetailActiveEmployees => 'Aktif çalışanlar';
+
+  @override
+  String get companydetailAnomaliesCritical => 'Kritik anormallikler';
+
+  @override
+  String get commonBack => 'Geri';
+
+  @override
+  String get companydetailClientReference => 'Müşteri referansı';
+
+  @override
+  String get companydetailTenantIdHint =>
+      'Desteğe göstermek veya sahada taratmak için kiracı kimliği — müşteriyi anında bulur.';
+
+  @override
+  String get companydetailCopyId => 'Kimliği kopyala';
+
+  @override
+  String get companydetailSubscription => 'Abonelik';
+
+  @override
+  String get companydetailPlan => 'Plan';
+
+  @override
+  String get companydetailStatus => 'Durum';
+
+  @override
+  String get companydetailMonthlyPrice => 'Aylık fiyat';
+
+  @override
+  String get companydetailEmployeeLimit => 'Çalışan limiti';
+
+  @override
+  String get companydetailUnlimited => 'Sınırsız';
+
+  @override
+  String get companydetailSubscriptionEnd => 'Abonelik bitişi';
+
+  @override
+  String get companydetailUndefined => 'Tanımsız';
+
+  @override
+  String get companydetailActivateClient => 'Müşteriyi etkinleştir';
+
+  @override
+  String get companydetailEditSubscription => 'Aboneliği düzenle';
+
+  @override
+  String get companydetailActiveModules => 'Aktif modüller';
+
+  @override
+  String get companydetailEditModules => 'Modülleri düzenle';
+
+  @override
+  String get companydetailNextActions => 'Sonraki eylemler';
+
+  @override
+  String get companydetailNoUrgentActions =>
+      'Bu müşteri için acil eylem tespit edilmedi.';
+
+  @override
+  String get companydetailRecommendedActionHint =>
+      'Platform kokpitinden önerilen eylem.';
+
+  @override
+  String get companydetailPlanNotFound => 'Geçerli plan bulunamadı';
+
+  @override
+  String get companydetailClientActivated => 'Müşteri etkinleştirildi';
+
+  @override
+  String get companydetailChoosePlan => 'Bir plan seçin';
+
+  @override
+  String get companydetailSubscriptionUpdated => 'Abonelik güncellendi';
+
+  @override
+  String get companydetailOptionalInternalNote => 'İsteğe bağlı dahili not';
+
+  @override
+  String get companydetailSaving => 'Kaydediliyor...';
+
+  @override
+  String get commonSave => 'Kaydet';
+
+  @override
+  String get companydetailLoadingPlans => 'Planlar yükleniyor';
+
+  @override
+  String companydetailPlanWithPrice(String planName, String price) {
+    return '$planName - $price/ay';
+  }
+
+  @override
+  String get companydetailSaveModules => 'Modülleri kaydet';
+
+  @override
+  String get companydetailCoreModuleAlwaysActive =>
+      'Çekirdek modül her zaman aktiftir';
+
+  @override
+  String get companydetailModulesUpdated => 'Modüller güncellendi';
+
+  @override
+  String get companiesTenantsPlatform => 'Platform kiracıları';
+
+  @override
+  String get companiesEmpty => 'Görüntülenecek şirket yok.';
+
+  @override
+  String get companyrequestsValidationSuperadmin =>
+      'Süper yönetici doğrulaması';
+
+  @override
+  String get companyrequestsApprovedToast => 'Talep onaylandı';
+
+  @override
+  String get companyrequestsRejectedToast => 'Talep reddedildi';
+
+  @override
+  String get dashboardPlatformAdministration => 'Platform yönetimi';
+
+  @override
+  String get dashboardSuperAdmin => 'Süper yönetici';
+
+  @override
+  String get dashboardExecutiveView => 'Yönetici görünümü';
+
+  @override
+  String get dashboardActiveLabel => 'Aktif';
+
+  @override
+  String get dashboardTrials => 'Denemeler';
+
+  @override
+  String get dashboardLoadingCockpit => 'Kokpit yükleniyor';
+
+  @override
+  String get dashboardPlatformActions => 'Platform eylemleri';
+
+  @override
+  String get dashboardClientCompanies => 'Müşteri şirketleri';
+
+  @override
+  String get dashboardClientCompaniesHint =>
+      'Kiracıları, durumlarını ve planlarını takip edin.';
+
+  @override
+  String get dashboardCreateCompany => 'Şirket oluştur';
+
+  @override
+  String get dashboardCreateCompanyHint =>
+      'Yeni bir müşteri ve ana yöneticisini sağlayın.';
+
+  @override
+  String get dashboardClientRequestsHint =>
+      'Oluşturma taleplerini onaylayın veya reddedin.';
+
+  @override
+  String get dashboardSupportClient => 'Müşteri desteği';
+
+  @override
+  String get dashboardTicketsHint => 'Kiracı biletleri — yanıtla ve sırala.';
+
+  @override
+  String get dashboardEdgeNodes => 'Uç düğümler';
+
+  @override
+  String get dashboardEdgeNodesHint =>
+      'Şirket içi siteler — durum ve senkronizasyon.';
+
+  @override
   String get settingsEdgeRemoved => 'Edge eşleştirme kaldırıldı.';
 
   @override
@@ -6304,6 +6597,31 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get settingsDigitalLockerSubtitle =>
       'Kontrollü görünürlükle CV, sözleşmeler, diplomalar ve belgeler.';
+
+  @override
+  String settingsHistoryCompanyPeriod(String companyName, String period) {
+    return '$companyName - $period';
+  }
+
+  @override
+  String settingsStatusCurrent(String label) {
+    return 'Güncel durum: $label';
+  }
+
+  @override
+  String settingsUpdateFailed(String error) {
+    return 'Güncelleme başarısız: $error';
+  }
+
+  @override
+  String settingsQrRejected(String error) {
+    return 'QR reddedildi: $error';
+  }
+
+  @override
+  String settingsSubmitFailed(String error) {
+    return 'Gönderim başarısız: $error';
+  }
 
   @override
   String get settingsQrOnboardingTitle => 'QR kayıt';
@@ -6531,11 +6849,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsQrPasted => 'Şirket QR\'ı yapıştırıldı.';
-
-  @override
-  String settingsQrRejected(String error) {
-    return 'QR reddedildi: $error';
-  }
 
   @override
   String get settingsLanguageUpdated => 'Dil güncellendi.';

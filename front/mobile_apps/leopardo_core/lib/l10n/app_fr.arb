@@ -2076,7 +2076,8 @@
   "@settingsQrRejected": {
     "placeholders": {
       "error": {
-        "type": "String"
+        "type": "String",
+        "example": "détail"
       }
     }
   },

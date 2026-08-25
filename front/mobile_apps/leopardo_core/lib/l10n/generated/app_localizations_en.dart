@@ -12,6 +12,89 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Leopardo HR';
 
   @override
+  String get accountingportalTitle => 'Secure document space';
+
+  @override
+  String get accountingportalSubtitle =>
+      'Access limited to the document shared by the issuer';
+
+  @override
+  String get accountingportalNumber => 'Document no.';
+
+  @override
+  String get accountingportalType => 'Document type';
+
+  @override
+  String get accountingportalStatus => 'Status';
+
+  @override
+  String get accountingportalIssuedate => 'Issue date';
+
+  @override
+  String get accountingportalTotal => 'Total amount';
+
+  @override
+  String get accountingportalCurrency => 'Currency';
+
+  @override
+  String get accountingportalExpiresat => 'Link valid until :date';
+
+  @override
+  String get accountingportalDownload => 'Download PDF';
+
+  @override
+  String get accountingportalDownloadhint => 'Download the document as PDF';
+
+  @override
+  String get accountingportalNotfoundtitle => 'Invalid or expired link';
+
+  @override
+  String get accountingportalNotfoundbody =>
+      'This link is no longer valid or has expired. Contact the issuer to receive a new link.';
+
+  @override
+  String get accountingportalErrortitle => 'Unable to load the document';
+
+  @override
+  String get accountingportalErrorbody =>
+      'Something went wrong. Please try again in a few moments.';
+
+  @override
+  String get accountingportalRetry => 'Try again';
+
+  @override
+  String get accountingportalBacktosite => 'Back to website';
+
+  @override
+  String get accountingportalSecuritynote =>
+      'Secure share — do not forward this link';
+
+  @override
+  String get accountingportalStatusdraft => 'Draft';
+
+  @override
+  String get accountingportalStatussent => 'Sent';
+
+  @override
+  String get accountingportalStatuspartiallypaid => 'Partially paid';
+
+  @override
+  String get accountingportalStatuspaid => 'Paid';
+
+  @override
+  String get accountingportalStatuscancelled => 'Cancelled';
+
+  @override
+  String get accountingportalStatusoverdue => 'Overdue';
+
+  @override
+  String get accountingportalLoading => 'Loading…';
+
+  @override
+  String get accountingportalDownloaderror =>
+      'Download failed. Please try again.';
+
+  @override
   String get welcomeBrandSubtitle => 'Conversational, mobile-first, modular.';
 
   @override
@@ -6270,6 +6353,211 @@ class AppLocalizationsEn extends AppLocalizations {
       'Once submitted, your biometric data stays pending. Any first activation or change requires manager/HR approval.';
 
   @override
+  String get companiesRequiredField => 'Required field';
+
+  @override
+  String get companiesCompanyCreated => 'Company created';
+
+  @override
+  String get companiesNewClient => 'New client';
+
+  @override
+  String get companiesProvisioning => 'Platform provisioning';
+
+  @override
+  String get companiesCompanyEmail => 'Company email';
+
+  @override
+  String get companiesCreateClient => 'Create the client';
+
+  @override
+  String get companiesCreating => 'Creating...';
+
+  @override
+  String get companiesActiveImmediatelyHint =>
+      'The client will be created with active status.';
+
+  @override
+  String get companiesTrialHint =>
+      'The client starts on trial, then can be activated from its profile.';
+
+  @override
+  String get companydetailClientFile => 'Client profile';
+
+  @override
+  String get companydetailProductAdoption => 'Product adoption';
+
+  @override
+  String get companydetailActiveEmployees => 'Active employees';
+
+  @override
+  String get companydetailAnomaliesCritical => 'Critical anomalies';
+
+  @override
+  String get commonBack => 'Back';
+
+  @override
+  String get companydetailClientReference => 'Client reference';
+
+  @override
+  String get companydetailTenantIdHint =>
+      'Tenant identifier to show to support or scan on site to find this client instantly.';
+
+  @override
+  String get companydetailCopyId => 'Copy identifier';
+
+  @override
+  String get companydetailSubscription => 'Subscription';
+
+  @override
+  String get companydetailPlan => 'Plan';
+
+  @override
+  String get companydetailStatus => 'Status';
+
+  @override
+  String get companydetailMonthlyPrice => 'Monthly price';
+
+  @override
+  String get companydetailEmployeeLimit => 'Employee limit';
+
+  @override
+  String get companydetailUnlimited => 'Unlimited';
+
+  @override
+  String get companydetailSubscriptionEnd => 'Subscription end';
+
+  @override
+  String get companydetailUndefined => 'Undefined';
+
+  @override
+  String get companydetailActivateClient => 'Activate client';
+
+  @override
+  String get companydetailEditSubscription => 'Edit subscription';
+
+  @override
+  String get companydetailActiveModules => 'Active modules';
+
+  @override
+  String get companydetailEditModules => 'Edit modules';
+
+  @override
+  String get companydetailNextActions => 'Next actions';
+
+  @override
+  String get companydetailNoUrgentActions =>
+      'No urgent action detected for this client.';
+
+  @override
+  String get companydetailRecommendedActionHint =>
+      'Recommended action from the platform cockpit.';
+
+  @override
+  String get companydetailPlanNotFound => 'Current plan not found';
+
+  @override
+  String get companydetailClientActivated => 'Client activated';
+
+  @override
+  String get companydetailChoosePlan => 'Choose a plan';
+
+  @override
+  String get companydetailSubscriptionUpdated => 'Subscription updated';
+
+  @override
+  String get companydetailOptionalInternalNote => 'Optional internal note';
+
+  @override
+  String get companydetailSaving => 'Saving...';
+
+  @override
+  String get commonSave => 'Save';
+
+  @override
+  String get companydetailLoadingPlans => 'Loading plans';
+
+  @override
+  String companydetailPlanWithPrice(String planName, String price) {
+    return '$planName - $price/month';
+  }
+
+  @override
+  String get companydetailSaveModules => 'Save modules';
+
+  @override
+  String get companydetailCoreModuleAlwaysActive => 'Core module always active';
+
+  @override
+  String get companydetailModulesUpdated => 'Modules updated';
+
+  @override
+  String get companiesTenantsPlatform => 'Platform tenants';
+
+  @override
+  String get companiesEmpty => 'No company to display.';
+
+  @override
+  String get companyrequestsValidationSuperadmin => 'Super-admin validation';
+
+  @override
+  String get companyrequestsApprovedToast => 'Request approved';
+
+  @override
+  String get companyrequestsRejectedToast => 'Request rejected';
+
+  @override
+  String get dashboardPlatformAdministration => 'Platform administration';
+
+  @override
+  String get dashboardSuperAdmin => 'Super-admin';
+
+  @override
+  String get dashboardExecutiveView => 'Executive view';
+
+  @override
+  String get dashboardActiveLabel => 'Active';
+
+  @override
+  String get dashboardTrials => 'Trials';
+
+  @override
+  String get dashboardLoadingCockpit => 'Loading cockpit';
+
+  @override
+  String get dashboardPlatformActions => 'Platform actions';
+
+  @override
+  String get dashboardClientCompanies => 'Client companies';
+
+  @override
+  String get dashboardClientCompaniesHint =>
+      'Track tenants, their status and plan.';
+
+  @override
+  String get dashboardCreateCompany => 'Create a company';
+
+  @override
+  String get dashboardCreateCompanyHint =>
+      'Provision a new client and its main manager.';
+
+  @override
+  String get dashboardClientRequestsHint =>
+      'Approve or reject creation requests.';
+
+  @override
+  String get dashboardSupportClient => 'Client support';
+
+  @override
+  String get dashboardTicketsHint => 'Tenant tickets — answer and triage.';
+
+  @override
+  String get dashboardEdgeNodes => 'Edge nodes';
+
+  @override
+  String get dashboardEdgeNodesHint => 'On-premise sites — status and sync.';
+
+  @override
   String get settingsEdgeRemoved => 'Edge pairing removed.';
 
   @override
@@ -6299,6 +6587,31 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsDigitalLockerSubtitle =>
       'CV, contracts, diplomas and documents with controlled visibility.';
+
+  @override
+  String settingsHistoryCompanyPeriod(String companyName, String period) {
+    return '$companyName - $period';
+  }
+
+  @override
+  String settingsStatusCurrent(String label) {
+    return 'Current status: $label';
+  }
+
+  @override
+  String settingsUpdateFailed(String error) {
+    return 'Update failed: $error';
+  }
+
+  @override
+  String settingsQrRejected(String error) {
+    return 'QR rejected: $error';
+  }
+
+  @override
+  String settingsSubmitFailed(String error) {
+    return 'Submission failed: $error';
+  }
 
   @override
   String get settingsQrOnboardingTitle => 'QR onboarding';
@@ -6525,11 +6838,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsQrPasted => 'Company QR pasted.';
-
-  @override
-  String settingsQrRejected(String error) {
-    return 'QR rejected: $error';
-  }
 
   @override
   String get settingsLanguageUpdated => 'Language updated.';

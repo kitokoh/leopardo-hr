@@ -51,12 +51,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final TextEditingController _edgeNodeIdController = TextEditingController();
   final TextEditingController _edgeTokenController = TextEditingController();
   final TextEditingController _edgeBaseUrlController = TextEditingController();
-  static const Map<String, String> _languageLabels = {
-    'fr': 'Francais',
-    'ar': 'العربية',
-    'tr': 'Turkce',
-    'en': 'English',
-  };
+  static Map<String, String> get _languageLabels => {
+        'fr': 'Francais',
+        'ar': deviceL10n.commonLanguageArabic,
+        'tr': 'Turkce',
+        'en': 'English',
+      };
 
   bool _profileSaving = false;
   bool _passwordSaving = false;
