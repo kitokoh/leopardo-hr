@@ -40,8 +40,8 @@ import 'package:leopardo_core/features/company_branding/screens/company_branding
 import 'package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/features/schedules/screens/schedule_list_screen.dart';
 import 'package:leopardo_core/features/tasks/screens/task_list_screen.dart';
-import 'package:leopardo_hr/features/attendance_geo/screens/attendance_geo_dashboard_screen.dart';
-import 'package:leopardo_hr/features/attendance_geo/screens/pending_sessions_screen.dart';
+import 'package:leopardo_core/features/attendance_geo/screens/attendance_geo_dashboard_screen.dart';
+import 'package:leopardo_core/features/attendance_geo/screens/pending_sessions_screen.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
