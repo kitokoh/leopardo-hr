@@ -11,11 +11,11 @@ use App\Events\AbsenceRequested;
 use App\Exceptions\AbsenceDateConflictException;
 use App\Exceptions\AbsenceNotPendingException;
 use App\Exceptions\InsufficientLeaveBalanceException;
+use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
-use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -24,12 +24,12 @@ class AbsenceService
 {
     public function __construct(
         private readonly PublicHolidayService $publicHolidays,
-    ) {
-    }
+    ) {}
 
+    /** @param array<string, mixed> $data */
     public function create(Employee $employee, array $data, ?UploadedFile $proof = null): Absence
     {
-        $type = AbsenceType::findOrFail($data['absence_type_id']);
+        $type = AbsenceType::query()->where('id', $data['absence_type_id'])->firstOrFail();
 
         if ($type->company_id !== $employee->company_id) {
             abort(404);
@@ -157,7 +157,7 @@ class AbsenceService
         DB::transaction(function () use ($absence, $approver) {
             $type = $absence->absenceType;
 
-            if ($type->deducts_leave) {
+            if ($type !== null && $type->deducts_leave) {
                 // Issue #2666 (QA 2026-08-15) — le snapshot `leave_balances` est
                 // la source de vérité du solde : les chemins de crédit
                 // (LeavePolicyController::credit, accruals, carry-forward)
@@ -217,7 +217,7 @@ class AbsenceService
                 $newBalance = max(0.0, (float) $snapshot->balance - (float) $snapshot->used);
 
                 $this->logBalanceChange(
-                    $absence->employee_id,
+                    (int) $absence->employee_id,
                     $absence->company_id,
                     -$days,
                     'absence_approved',
@@ -232,7 +232,8 @@ class AbsenceService
             ]);
         });
 
-        $absence = $absence->fresh();
+        $absence = $absence->fresh()
+            ?? throw new \RuntimeException('Absence introuvable après approbation.');
 
         AbsenceApproved::dispatch($absence, $approver);
 
@@ -277,7 +278,7 @@ class AbsenceService
                 }
 
                 $this->logBalanceChange(
-                    $absence->employee_id,
+                    (int) $absence->employee_id,
                     $absence->company_id,
                     $days,
                     'absence_rejected',
@@ -302,7 +303,8 @@ class AbsenceService
             ]);
         });
 
-        $absence = $absence->fresh();
+        $absence = $absence->fresh()
+            ?? throw new \RuntimeException('Absence introuvable après rejet.');
 
         AbsenceRejected::dispatch($absence);
 
@@ -320,7 +322,8 @@ class AbsenceService
         // Issue #2329: a cancelled pending absence releases its pending days.
         $this->syncLeaveBalanceSnapshot($absence, 'cancel');
 
-        return $absence->fresh();
+        return $absence->fresh()
+            ?? throw new \RuntimeException('Absence introuvable après annulation.');
     }
 
     public function currentBalance(Employee $employee): float

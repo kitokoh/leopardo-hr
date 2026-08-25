@@ -355,6 +355,16 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        Schema::create($this->tenantTable('attendance_period_closures'), function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->date('period_start');
+            $table->date('period_end');
+            $table->unsignedInteger('closed_by')->nullable();
+            $table->timestampTz('closed_at')->useCurrent();
+            $table->unique(['company_id', 'period_start', 'period_end'], 'attendance_period_closures_unique');
+        });
+
         Schema::create($this->tenantTable('biometric_enrollment_requests'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
@@ -2187,6 +2197,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "attendance_kiosks"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "biometric_enrollment_requests"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_correction_requests"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "attendance_period_closures"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "camera_access_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "camera_permissions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "camera_access_tokens"'.$cascade);
@@ -2238,6 +2249,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_correction_requests"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "attendance_period_closures"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "salary_advances"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "evaluations"'.$cascade);
