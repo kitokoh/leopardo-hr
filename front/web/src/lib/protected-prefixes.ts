@@ -24,7 +24,6 @@ export const PROTECTED_PREFIXES = [
   '/reports',
   '/training',
   '/settings',
-  '/smart-attendance',
   '/social',
   '/social-marketing',
 ] as const;

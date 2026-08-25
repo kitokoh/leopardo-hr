@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
+import 'package:leopardo_core/core/api/idempotency_keys.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/geo_attendance_session.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
 
@@ -42,6 +44,9 @@ class SmartAttendanceRepository {
       'eventType doit être "zone_enter" ou "zone_exit"',
     );
 
+    // RTMX (#5407) : une clé d'idempotence par événement géo — un rejeu
+    // réseau (timeout après commit serveur) ne crée pas de doublon (le
+    // serveur rejoue la 1ʳᵉ réponse 2xx, #5277).
     await apiClient.requestWithRetry(
       '/attendance/geo-events',
       method: 'POST',
@@ -53,6 +58,9 @@ class SmartAttendanceRepository {
       },
       maxRetriesOverride: 0,
       timeoutOverride: _writeTimeout,
+      options: Options(
+        headers: {'Idempotency-Key': IdempotencyKeys.newKey()},
+      ),
     );
   }
 
