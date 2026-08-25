@@ -119,7 +119,7 @@ test('falls back to REST polling when the push (Socket.IO) channel is unavailabl
   })
 
   await page.goto('/login')
-  await page.getByLabel(/Adresse email/i).fill('admin@leopardo-rh.com')
+  await page.locator('#email').fill('admin@leopardo-rh.com')
   await page.locator('#password').fill(E2E_ADMIN_PASSWORD)
   await page.getByRole('button', { name: /^Se connecter$/i }).click()
 

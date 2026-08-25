@@ -62,7 +62,7 @@ test.describe('Recruitment flow', () => {
     await page.goto('/recruitment')
 
     await expect(page).toHaveURL(/\/recruitment$/, { timeout: 10_000 })
-    await expect(page.getByText(/Page non trouvée|404/i)).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Page non trouvée/i })).toBeVisible()
     await expect(page.getByText(/Fonctionnalité entreprise/i)).toHaveCount(0)
   })
 })

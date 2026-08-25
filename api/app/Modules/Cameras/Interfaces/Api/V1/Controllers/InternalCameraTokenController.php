@@ -28,12 +28,20 @@ class InternalCameraTokenController extends Controller
             return new JsonResponse(['allowed' => false, 'reason' => 'unauthorized'], 401);
         }
 
-        $token = (string) $request->query('token', '');
-        $cameraId = (int) $request->query('camera_id', 0);
-        $clientIp = $request->query('client_ip');
-        $clientIp = is_string($clientIp) ? $clientIp : null;
+        $tokenInput = $request->query('token');
+        $cameraIdInput = $request->query('camera_id');
+        $clientIpInput = $request->query('client_ip');
 
-        if ($token === '' || $cameraId <= 0) {
+        $token = is_string($tokenInput) ? trim($tokenInput) : '';
+        $cameraId = is_string($cameraIdInput) && ctype_digit($cameraIdInput)
+            ? (int) $cameraIdInput
+            : 0;
+        $clientIp = is_string($clientIpInput) ? trim($clientIpInput) : null;
+
+        if (
+            $token === '' || strlen($token) > 2048 || $cameraId <= 0 ||
+            ($clientIp !== null && filter_var($clientIp, FILTER_VALIDATE_IP) === false)
+        ) {
             return new JsonResponse(['allowed' => false, 'reason' => 'invalid_request']);
         }
 
