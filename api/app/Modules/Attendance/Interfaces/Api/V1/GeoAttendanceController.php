@@ -24,8 +24,7 @@ class GeoAttendanceController extends Controller
     public function __construct(
         private readonly ProcessGeoEntry $processEntry,
         private readonly ProcessGeoExit $processExit,
-    ) {
-    }
+    ) {}
 
     /**
      * POST /api/v1/attendance/geo-events

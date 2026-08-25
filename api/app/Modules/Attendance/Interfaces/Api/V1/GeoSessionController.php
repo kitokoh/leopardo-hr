@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Application\Actions\ApproveGeoSession;
 use App\Modules\Attendance\Application\Actions\RejectGeoSession;
@@ -22,8 +23,7 @@ class GeoSessionController extends Controller
     public function __construct(
         private readonly ApproveGeoSession $approveAction,
         private readonly RejectGeoSession $rejectAction,
-    ) {
-    }
+    ) {}
 
     /**
      * GET /api/v1/attendance/sessions
@@ -98,7 +98,7 @@ class GeoSessionController extends Controller
      */
     public function mySessions(Request $request): JsonResponse
     {
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = request()->user();
         $company = currentCompany();
 
@@ -133,7 +133,7 @@ class GeoSessionController extends Controller
             ])
             ->findOrFail($id);
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $validator */
+        /** @var Employee $validator */
         $validator = request()->user();
 
         $session = $this->approveAction->handle(
@@ -163,7 +163,7 @@ class GeoSessionController extends Controller
             ])
             ->findOrFail($id);
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $validator */
+        /** @var Employee $validator */
         $validator = request()->user();
 
         $session = $this->rejectAction->handle(

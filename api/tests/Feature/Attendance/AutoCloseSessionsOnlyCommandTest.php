@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Attendance;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Carbon;
@@ -36,8 +37,8 @@ class AutoCloseSessionsOnlyCommandTest extends TestCase
         ]);
         $this->company = $company;
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
-        $employee = \App\Core\Auth\Domain\Models\Employee::factory()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
         ]);
 
@@ -76,7 +77,7 @@ class AutoCloseSessionsOnlyCommandTest extends TestCase
 
     public function test_command_dry_run_does_not_modify(): void
     {
-        $exit = Artisan::call('attendance:auto-close', ['--sessions-only' => true, 
+        $exit = Artisan::call('attendance:auto-close', ['--sessions-only' => true,
             '--hours' => 14,
             '--dry-run' => true,
         ]);
@@ -95,8 +96,8 @@ class AutoCloseSessionsOnlyCommandTest extends TestCase
             'status' => 'active',
         ]);
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $otherEmployee */
-        $otherEmployee = \App\Core\Auth\Domain\Models\Employee::factory()->create([
+        /** @var Employee $otherEmployee */
+        $otherEmployee = Employee::factory()->create([
             'company_id' => $otherCompany->id,
         ]);
 
@@ -109,7 +110,7 @@ class AutoCloseSessionsOnlyCommandTest extends TestCase
             'check_in_lng' => 3.05,
         ]);
 
-        $exit = Artisan::call('attendance:auto-close', ['--sessions-only' => true, 
+        $exit = Artisan::call('attendance:auto-close', ['--sessions-only' => true,
             '--hours' => 14,
             '--company' => $this->company->id,
         ]);
