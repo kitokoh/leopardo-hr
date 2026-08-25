@@ -50,7 +50,7 @@ test.describe('Navigation and routing', () => {
     await expect(
       page.getByText(/Connectez-vous a votre espace/i),
     ).toBeVisible()
-    await expect(page.getByLabel(/Adresse email/i)).toBeVisible()
+    await expect(page.locator('#email')).toBeVisible()
     await expect(page.locator('#password')).toBeVisible()
     await expect(page.getByRole('button', { name: /Se connecter/i })).toBeVisible()
     await expect(page.getByLabel(/Se souvenir de moi/i)).toBeVisible()
@@ -59,7 +59,7 @@ test.describe('Navigation and routing', () => {
   test('login form fields accept input', async ({ page }) => {
     await page.goto('/login')
 
-    const email = page.getByLabel(/Adresse email/i)
+    const email = page.locator('#email')
     const password = page.locator('#password')
 
     await email.fill('admin@leopardo.rh')

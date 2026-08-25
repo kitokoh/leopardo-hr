@@ -19,13 +19,13 @@
  * go through this Next.js proxy layer.
  */
 
-import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 
-import { resolveBackendBaseUrl } from '@/lib/backend-url';
-import { t as i18nT } from '@/lib/i18n/locale-catalog';
-import { normalizeLocale } from '@/lib/i18n';
-const COOKIE_NAME = 'leopardo_token';
+import { resolveBackendBaseUrl } from "@/lib/backend-url";
+import { t as i18nT } from "@/lib/i18n/locale-catalog";
+import { normalizeLocale } from "@/lib/i18n";
+const COOKIE_NAME = "leopardo_token";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days — matches Sanctum SANCTUM_TOKEN_EXPIRATION default (10080 min)
 const LOGIN_TIMEOUT_MS = 60_000;
 
@@ -34,13 +34,20 @@ const LOGIN_TIMEOUT_MS = 60_000;
 export async function POST(request: NextRequest): Promise<NextResponse> {
   let body: unknown;
 
-  const locale = normalizeLocale(request.headers.get('Accept-Language'));
+  const locale = normalizeLocale(request.headers.get("Accept-Language"));
 
   try {
     body = await request.json();
   } catch {
     return NextResponse.json(
-      { error: 'INVALID_JSON', message: i18nT(locale, 'api.login_invalid_json', 'Corps de requête invalide.') },
+      {
+        error: "INVALID_JSON",
+        message: i18nT(
+          locale,
+          "api.login_invalid_json",
+          "Corps de requête invalide.",
+        ),
+      },
       { status: 400 },
     );
   }
@@ -52,26 +59,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     backendResponse = await fetch(`${resolveBackendBaseUrl()}/auth/login`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Accept-Language': request.headers.get('Accept-Language') || 'fr',
-        'X-Forwarded-For': request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '',
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Accept-Language": request.headers.get("Accept-Language") || "fr",
       },
       body: JSON.stringify(body),
       signal: controller.signal,
-      cache: 'no-store',
+      cache: "no-store",
     });
   } catch (error) {
     clearTimeout(timeout);
-    const isTimeout = error instanceof DOMException && error.name === 'AbortError';
+    const isTimeout =
+      error instanceof DOMException && error.name === "AbortError";
     return NextResponse.json(
       {
-        error: isTimeout ? 'TIMEOUT' : 'NETWORK_ERROR',
+        error: isTimeout ? "TIMEOUT" : "NETWORK_ERROR",
         message: isTimeout
-          ? i18nT(locale, 'api.login_timeout', 'Le serveur met trop de temps à répondre. Réessayez dans quelques instants.')
-          : i18nT(locale, 'api.login_network_error', 'Impossible de contacter le serveur.'),
+          ? i18nT(
+              locale,
+              "api.login_timeout",
+              "Le serveur met trop de temps à répondre. Réessayez dans quelques instants.",
+            )
+          : i18nT(
+              locale,
+              "api.login_network_error",
+              "Impossible de contacter le serveur.",
+            ),
       },
       { status: isTimeout ? 408 : 502 },
     );
@@ -84,11 +99,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     payload = (await backendResponse.json()) as Record<string, unknown>;
   } catch {
-    return NextResponse.json({ error: 'BACKEND_ERROR', message: i18nT(locale, 'api.login_backend_error', 'Réponse serveur inattendue.') }, { status: 502 });
+    return NextResponse.json(
+      {
+        error: "BACKEND_ERROR",
+        message: i18nT(
+          locale,
+          "api.login_backend_error",
+          "Réponse serveur inattendue.",
+        ),
+      },
+      { status: 502 },
+    );
   }
 
   // 2FA required — pass through without touching token
-  if (backendResponse.status === 202 || payload?.error === 'TWO_FA_REQUIRED') {
+  if (backendResponse.status === 202 || payload?.error === "TWO_FA_REQUIRED") {
     return NextResponse.json(payload, { status: backendResponse.status });
   }
 
@@ -105,16 +130,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(payload, { status: backendResponse.status });
   }
 
-  const isSecure = request.nextUrl.protocol === 'https:' || process.env.NODE_ENV === 'production';
+  const isSecure =
+    request.nextUrl.protocol === "https:" ||
+    process.env.NODE_ENV === "production";
 
   // Store the token in a httpOnly cookie — never accessible to page JS
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: isSecure,
-    sameSite: 'strict',
+    sameSite: "strict",
     maxAge: COOKIE_MAX_AGE,
-    path: '/',
+    path: "/",
   });
 
   // Return user data to the browser, but strip the raw token from the JSON
@@ -123,6 +150,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   return NextResponse.json(safePayload, {
     status: 200,
-    headers: { 'Cache-Control': 'no-store' },
+    headers: { "Cache-Control": "no-store" },
   });
 }

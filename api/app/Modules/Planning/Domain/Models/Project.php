@@ -7,7 +7,6 @@ namespace App\Modules\Planning\Domain\Models;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -24,12 +23,12 @@ use Illuminate\Support\Carbon;
  * @property string $status
  * @property string|null $created_by
  * @property Carbon|null $created_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class Project extends Model
 {
     use BelongsToCompany;
-    use HasFactory;
 
     protected $table = 'projects';
 

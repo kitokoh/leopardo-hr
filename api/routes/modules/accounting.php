@@ -16,10 +16,19 @@ declare(strict_types=1);
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCheckoutController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
+use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
 use Illuminate\Support\Facades\Route;
+
+// Public: consultation + téléchargement d'un document partagé (token + throttle).
+// Issue #5225 — le token de partage est la credential (pas d'auth Sanctum),
+// accès RGPD limité au document partagé (pattern CabinetShare #1817).
+Route::get('/accounting/documents/shared/{token}', [PublicDocumentShareController::class, 'info'])
+    ->middleware('throttle:60,1');
+Route::get('/accounting/documents/shared/{token}/download', [PublicDocumentShareController::class, 'download'])
+    ->middleware('throttle:60,1');
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
     ->prefix('accounting')
@@ -39,13 +48,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/settings', [AccountingSettingsController::class, 'show']);
             Route::put('/settings', [AccountingSettingsController::class, 'update']);
 
+            // ── Conversion multi-devises (issue #5270) — utilitaire de
+            // conversion HT/TVA/TTC (calcul pur, aucun enregistrement).
+            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
+
             // ── Rapports (issue #5271) — déclaration TVA par période.
             Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
-
-            // ── Conversion multi-devises (issue #5270) — calcul pur, aucun
-            // état persistant : HT/TVA/TTC entre devise de document et devise
-            // de référence. Taux manuel requis dès que les devises diffèrent.
-            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
         });
 
         // ── Documents (Phase A, #5223) — RBAC principal/comptable ───────────
