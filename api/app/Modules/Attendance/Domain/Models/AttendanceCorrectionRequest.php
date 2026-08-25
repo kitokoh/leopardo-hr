@@ -5,23 +5,26 @@ declare(strict_types=1);
 namespace App\Modules\Attendance\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property string $company_id
  * @property int $employee_id
  * @property int|null $attendance_log_id
- * @property \Illuminate\Support\Carbon $date
- * @property \Illuminate\Support\Carbon $requested_check_in
- * @property \Illuminate\Support\Carbon|null $requested_check_out
+ * @property Carbon $date
+ * @property Carbon $requested_check_in
+ * @property Carbon|null $requested_check_out
  * @property string $reason
+ * @property string|null $proof_path
  * @property string $status
  * @property int|null $reviewed_by
- * @property \Illuminate\Support\Carbon|null $reviewed_at
+ * @property Carbon|null $reviewed_at
  *
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ * @mixin Builder<static>
  */
 class AttendanceCorrectionRequest extends Model
 {
@@ -33,6 +36,7 @@ class AttendanceCorrectionRequest extends Model
         'requested_check_in',
         'requested_check_out',
         'reason',
+        'proof_path',
         'status',
         'reviewed_by',
         'reviewed_at',
@@ -57,4 +61,3 @@ class AttendanceCorrectionRequest extends Model
         return $this->belongsTo(AttendanceLog::class);
     }
 }
-
