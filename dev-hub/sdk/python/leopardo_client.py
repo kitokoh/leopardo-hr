@@ -2552,22 +2552,6 @@ class LeopardoClient:
         """Envoyer une notification push de test a un employe"""
         return self.request("POST", "/push-notifications/send", **kwargs)
 
-    def delete_recruitment_applicants_by_applicant(self, **kwargs):
-        """Supprimer une candidature (manager)"""
-        return self.request("DELETE", "/recruitment/applicants/{applicant}", **kwargs)
-
-    def get_recruitment_applicants_by_applicant(self, **kwargs):
-        """Détail d'une candidature (manager)"""
-        return self.request("GET", "/recruitment/applicants/{applicant}", **kwargs)
-
-    def put_recruitment_applicants_by_applicant(self, **kwargs):
-        """Modifier un candidat"""
-        return self.request("PUT", "/recruitment/applicants/{applicant}", **kwargs)
-
-    def post_recruitment_applicants_by_applicant_interviews(self, **kwargs):
-        """Planifier un entretien"""
-        return self.request("POST", "/recruitment/applicants/{applicant}/interviews", **kwargs)
-
     def delete_recruitment_applicants_by_id(self, **kwargs):
         """Supprimer une candidature (manager)"""
         return self.request("DELETE", "/recruitment/applicants/{id}", **kwargs)
@@ -2575,6 +2559,14 @@ class LeopardoClient:
     def get_recruitment_applicants_by_id(self, **kwargs):
         """Détail d'une candidature (manager)"""
         return self.request("GET", "/recruitment/applicants/{id}", **kwargs)
+
+    def put_recruitment_applicants_by_id(self, **kwargs):
+        """Modifier un candidat"""
+        return self.request("PUT", "/recruitment/applicants/{id}", **kwargs)
+
+    def post_recruitment_applicants_by_id_interviews(self, **kwargs):
+        """Planifier un entretien"""
+        return self.request("POST", "/recruitment/applicants/{id}/interviews", **kwargs)
 
     def patch_recruitment_applicants_by_id_status(self, **kwargs):
         """Changer le statut d'une candidature (principal/rh)"""
@@ -2584,21 +2576,13 @@ class LeopardoClient:
         """Supprimer un entretien (manager)"""
         return self.request("DELETE", "/recruitment/interviews/{id}", **kwargs)
 
+    def put_recruitment_interviews_by_id(self, **kwargs):
+        """Modifier un entretien"""
+        return self.request("PUT", "/recruitment/interviews/{id}", **kwargs)
+
     def patch_recruitment_interviews_by_id_feedback(self, **kwargs):
         """Saisir le feedback d'un entretien (le clôture)"""
         return self.request("PATCH", "/recruitment/interviews/{id}/feedback", **kwargs)
-
-    def delete_recruitment_interviews_by_interview(self, **kwargs):
-        """Supprimer un entretien (manager)"""
-        return self.request("DELETE", "/recruitment/interviews/{interview}", **kwargs)
-
-    def put_recruitment_interviews_by_interview(self, **kwargs):
-        """Modifier un entretien"""
-        return self.request("PUT", "/recruitment/interviews/{interview}", **kwargs)
-
-    def patch_recruitment_interviews_by_interview_feedback(self, **kwargs):
-        """Saisir le feedback d'un entretien (le clôture)"""
-        return self.request("PATCH", "/recruitment/interviews/{interview}/feedback", **kwargs)
 
     def get_recruitment_jobs(self, **kwargs):
         """Lister les offres d'emploi"""
@@ -2612,17 +2596,13 @@ class LeopardoClient:
         """Supprimer une offre d'emploi (manager)"""
         return self.request("DELETE", "/recruitment/jobs/{id}", **kwargs)
 
-    def delete_recruitment_jobs_by_jobposting(self, **kwargs):
-        """Supprimer une offre d'emploi (manager)"""
-        return self.request("DELETE", "/recruitment/jobs/{jobPosting}", **kwargs)
-
-    def get_recruitment_jobs_by_jobposting(self, **kwargs):
+    def get_recruitment_jobs_by_id(self, **kwargs):
         """Voir une offre"""
-        return self.request("GET", "/recruitment/jobs/{jobPosting}", **kwargs)
+        return self.request("GET", "/recruitment/jobs/{id}", **kwargs)
 
-    def put_recruitment_jobs_by_jobposting(self, **kwargs):
+    def put_recruitment_jobs_by_id(self, **kwargs):
         """Modifier une offre"""
-        return self.request("PUT", "/recruitment/jobs/{jobPosting}", **kwargs)
+        return self.request("PUT", "/recruitment/jobs/{id}", **kwargs)
 
     def get_recruitment_jobs_by_jobposting_applicants(self, **kwargs):
         """Lister les candidats"""
