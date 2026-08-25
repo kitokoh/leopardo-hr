@@ -265,16 +265,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/accounting/documents/shared/{token}/download", options);
     },
 
-    /** Journal comptable par periode */
-    getAccountingJournal(options = {}) {
-      return request("GET", "/accounting/journal", options);
-    },
-
-    /** Export CSV du journal (expert-comptable) */
-    getAccountingJournalExportCsv(options = {}) {
-      return request("GET", "/accounting/journal/export.csv", options);
-    },
-
     /** Cloturer une periode comptable */
     postAccountingJournalPeriodsByPeriodClose(options = {}) {
       return request("POST", "/accounting/journal/periods/{period}/close", options);
@@ -1908,6 +1898,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier une note de frais */
     putExpenseClaimsByExpenseClaim(options = {}) {
       return request("PUT", "/expense-claims/{expenseClaim}", options);
+    },
+
+    /** Ecritures comptables d'une note de frais approuvee (#5235) */
+    getExpenseClaimsByExpenseClaimAccountingEntries(options = {}) {
+      return request("GET", "/expense-claims/{expenseClaim}/accounting-entries", options);
+    },
+
+    /** Journal comptable par periode */
+    getExpenseClaimsByExpenseClaimAccountingEntries2(options = {}) {
+      return request("GET", "/expense-claims/{expenseClaim}/accounting-entries", options);
+    },
+
+    /** Export CSV du journal (expert-comptable) */
+    getExpenseClaimsByExpenseClaimAccountingEntriesRegenerate(options = {}) {
+      return request("GET", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", options);
+    },
+
+    /** Regenerer les ecritures comptables d'une note (comptable, idempotent) */
+    postExpenseClaimsByExpenseClaimAccountingEntriesRegenerate(options = {}) {
+      return request("POST", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", options);
     },
 
     /** Approuver une note de frais */

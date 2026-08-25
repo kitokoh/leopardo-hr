@@ -72,9 +72,21 @@ jobs:
         working-directory: ./api
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
+      - name: Vérifier secrets DB (diagnostic actionnable)
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_DATABASE: ${{ secrets.DB_DATABASE }}
+        run: |
+          if [[ -z "$DB_HOST" || -z "$DB_DATABASE" ]]; then
+            echo "::error::Secrets DB Actions vides (DB_HOST/DB_DATABASE) — la supervision ne peut pas vérifier la queue sans accès à la DB prod. Remplir les secrets dans les settings du repo (issue #5306)."
+            exit 1
+          fi
+          echo "Secrets DB présents — supervision opérationnelle."
+
       - name: Supervise queue (seuils DoD #5282)
         working-directory: ./api
         env:
+          DB_PORT: ${{ secrets.DB_PORT || '5432' }}
           QUEUE_MAX_PENDING: ${{ vars.QUEUE_MAX_PENDING || '50' }}
           QUEUE_MAX_FAILED: ${{ vars.QUEUE_MAX_FAILED || '10' }}
           QUEUE_MAX_STALE_MINUTES: ${{ vars.QUEUE_MAX_STALE_MINUTES || '10' }}

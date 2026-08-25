@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Support\CountryDefaults;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,7 +25,7 @@ class SupportedCountryController extends Controller
 {
     public function __construct(private readonly PayrollCalculator $payrollCalculator) {}
 
-    public function index(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function index(Request $request): Response
     {
         $registry = [];
 
@@ -38,8 +37,10 @@ class SupportedCountryController extends Controller
                 $confidence = $rules->confidenceLevel();
                 $available = true;
             } catch (UnsupportedCountryRulesException) {
-                // Pays référencé mais sans règles de paie dédiées (ex. GB/US) :
-                // indisponible pour un calcul, pas une erreur.
+                // Pays référencé mais sans règles de paie dédiées : indisponible
+                // pour un calcul, pas une erreur. (Depuis #5255, plus aucun pays
+                // CountryDefaults n'est sans règles — GB/US livrés — mais la
+                // garde reste pour un futur pays display-only.)
                 $rules = null;
                 $confidence = 'unknown';
                 $available = false;

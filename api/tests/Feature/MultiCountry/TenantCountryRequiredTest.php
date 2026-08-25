@@ -65,12 +65,15 @@ class TenantCountryRequiredTest extends TestCase
         $this->assertNotEmpty($dz['compliance']['warning_localized']);
         $this->assertSame('docs/payroll/DZ_COMPLIANCE.md', $dz['compliance']['source']);
 
-        // Pays référencé sans règles de paie (ex. US) : disponible = false.
+        // #1951 → #5255 : US était « référencé sans règles de paie »
+        // (available = false, level = unknown). Depuis le pack EN, les règles
+        // US sont résolubles (pilot) : available = true, level = pilot.
         /** @var array{country: string, currency: string, timezone: string, language: string, available: bool, confidence: string, compliance: array{level: string, warning: string, warning_localized: string, source: string, verified_at: string|null}}|null $us */
         $us = $countries->get('US');
         $this->assertNotNull($us);
-        $this->assertFalse($us['available']);
-        $this->assertSame('unknown', $us['compliance']['level']);
+        $this->assertTrue($us['available']);
+        $this->assertSame('pilot', $us['compliance']['level']);
+        $this->assertSame('docs/payroll/US_COMPLIANCE.md', $us['compliance']['source']);
         $this->assertNotEmpty($us['compliance']['warning_localized']);
     }
 

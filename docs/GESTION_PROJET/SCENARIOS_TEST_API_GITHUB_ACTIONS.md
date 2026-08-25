@@ -1387,7 +1387,7 @@ Note 2026-08-22 (issue #5268) : rapports de pointage par période — `GET /atte
 - RBAC : scope manager `visibleToManager` conservé (PA2-SEC-002/003) — un manager `dept` filtrant sur un AUTRE département reçoit zéro ligne (combinaison AND filtres × scope, jamais d'élargissement).
 - Contrat : `data.period.type` ajouté, `data.period.month` conservé (rétro-compat) ; chaque ligne employé expose `department_id`/`department_name` ; exports nommés `attendance-report-<period>-<from>_<to>.<ext>` (CSV neutralisé #4169, PDF i18n ×4).
 - Scénarios : journalier (borne jour), hebdomadaire (borne lundi→dimanche, hors-semaine exclue), mensuel (rétro-compat), défaut `month`, filtre équipe, filtre employé, export CSV hebdo (en-tête + valeurs), export PDF jour (Content-Disposition), RBAC scoped manager, `period` invalide → 422.
-- Couverture : `AttendanceReportTest` (10 tests) + `AttendanceMonthlyReportTest` (rétro-compat intacte) — suite `tests/Feature/Attendance` 62/62.
+- Couverture : `AttendanceReportTest` (13 tests) + `AttendanceMonthlyReportTest` (rétro-compat intacte) — suite `tests/Feature/Attendance` 62/62.
 
 Note 2026-08-22 (issue #5260) : contrats par pays — modèles légaux + signature explicite.
 - `GET /api/v1/contracts/templates?country=DZ|MA|TN|SN[&contract_type=cdi|cdd]` (principal/rh) : bundle légal (références, période d'essai, préavis, congés, HS, SMIG, cotisations, clauses CDI/CDD) ; pays inconnu → 422 `CONTRACT_TEMPLATE_NOT_FOUND`, employé → 403.
@@ -1453,6 +1453,13 @@ Note 2026-08-24 (issue #5223) : cycle de vie des documents comptables via l'API 
 - RBAC : manager principal/comptable autorisés, employé → 403 ; isolation tenant → 404 cross-company.
 - Couverture : `tests/Feature/Accounting/AccountingDocumentApiTest.php` (12 tests) — gate coverage module Accounting ≥ 70 % (DoD #5228) : 67,4 % → 86,5 % sur #5230, 87,7 % sur #5288.
 
+
+Note 2026-08-24 (issue #5235) : notes de frais approuvées → écritures comptables automatiques (Phase C expense → comptabilité).
+- Déclenchement automatique : à l'approbation d'une `ExpenseClaim`, l'observer `ExpenseAccountingEntryObserver` génère la partie double (D charge catégorie dominante 6251/6256/6064/626/658 / C 425 personnel), équilibre débit = crédit garanti (`UnbalancedExpenseEntriesException`), référence traçable `EXPENSE-{id}` ; rejet d'une note approuvée → écritures annulées ; régénération IDEMPOTENTE (contrainte unique note/compte).
+- `GET /api/v1/expense-claims/{id}/accounting-entries` : lignes d'écriture d'une note (RBAC `api.manager:principal,comptable`, employé → 403, isolation tenant fail-closed → 404).
+- `POST /api/v1/expense-claims/{id}/accounting-entries/regenerate` : régénération des lignes (réservée comptable, 403 `INSUFFICIENT_ROLE` sinon).
+- Scénarios à vérifier : golden 10 000 → D 6251 / C 425 balance 0, déclenchement auto à l'approbation, idempotence de la régénération, rejet → void, RBAC ×3, isolation tenant, refus d'un journal déséquilibré.
+- Couverture : `tests/Feature/Expense/ExpenseAccountingEntriesFlowTest.php` (13 tests) — OpenAPI documenté (2 opérations + schéma `ExpenseAccountingEntry`, 803 routes couvertes), SDK JS/Python régénérés.
 
 Note 2026-08-24 (issue #5227) : i18n ×4 du module Comptabilité — messages API localisés (fr/en/tr/ar), zéro chaîne hardcodée, parité des catalogues.
 - Surface API : les messages d'erreur et de validation du module Accounting passent par `__('accounting.*')` / `__('errors.*')` (renderer #4171) — plus aucun littéral `message => '...'` ni `throw '...'` français brut (hors codes machine MAJUSCULES et clés de catalogue) dans `api/app/Modules/Accounting/**` ; la locale est pilotée par `preferred_language` de l'utilisateur authentifié (pattern #4592, fallback Accept-Language).
