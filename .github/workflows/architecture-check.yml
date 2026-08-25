@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   group: architecture-check-${{ github.workflow }}-${{ github.ref }}
@@ -45,6 +46,13 @@ jobs:
 
       - name: Migration basename collision guard (issue #1962)
         run: bash dev-hub/tools/check-migration-basename-collisions.sh
+
+      - name: Migration prefix inter-PR guard (issue #5437)
+        run: node dev-hub/tools/check-migration-prefixes.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
 
       - name: Country catalog guard (issue #2600)
         run: bash dev-hub/tools/check-country-catalog.sh
