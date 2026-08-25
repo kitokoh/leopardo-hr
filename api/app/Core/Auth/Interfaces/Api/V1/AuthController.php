@@ -71,12 +71,14 @@ class AuthController extends Controller
 
             $employee->tokens()->latest('id')->first()?->delete();
 
+            $deviceName = $request->validated('device_name');
+
             $challenge = $this->twoFactorService->issueChallenge([
                 'employee_id' => $employee->id,
                 'company_id' => (string) $employee->company_id,
                 'tenant_schema' => $result['tenant_schema'],
                 'email' => (string) $employee->email,
-                'device_name' => $request->validated('device_name'),
+                'device_name' => is_string($deviceName) ? $deviceName : null,
             ]);
 
             return new JsonResponse([
