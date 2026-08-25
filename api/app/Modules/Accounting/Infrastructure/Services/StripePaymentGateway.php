@@ -115,7 +115,13 @@ final class StripePaymentGateway implements PaymentGatewayInterface
 
         $elements = [];
         foreach (explode(',', $signatureHeader) as $part) {
-            [$key, $value] = explode('=', trim($part), 2);
+            $part = trim($part);
+            if ($part === '' || ! str_contains($part, '=')) {
+                // Segment sans « clé=valeur » (ex. timestamp nu) : ignoré — le
+                // format Stripe est `t=<ts>,v1=<sig>`, chaque segment porte « = ».
+                continue;
+            }
+            [$key, $value] = explode('=', $part, 2);
             $elements[$key] = $value;
         }
 
