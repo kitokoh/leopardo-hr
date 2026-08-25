@@ -145,6 +145,9 @@ final class AccountingLedgerService
      * des écritures de la période antérieures à la première écriture de page
      * + cumul séquentiel débit−crédit sur la page.
      */
+    /**
+     * @param  LengthAwarePaginator<int, AccountingJournalEntry>  $paginator
+     */
     private function attachRunningBalance(LengthAwarePaginator $paginator, string $companyId, ?string $accountCode, string $period): void
     {
         $items = $paginator->getCollection();

@@ -63,7 +63,7 @@ class PayrollPaymentOrderService
         }
 
         // Contenu du fichier banque : réutilisation des formats existants.
-        $content = $this->bankExportGenerator->generate($run, $format, $companyBank);
+        $content = $this->bankExportGenerator->generate($run, $format, $this->normalizeCompanyBank($companyBank));
         $fileName = sprintf(
             'payroll-%s-%s.%s',
             $run->id,
@@ -98,7 +98,7 @@ class PayrollPaymentOrderService
                 'payment_order_id' => $order->id,
                 'employee_id' => $slip->employee_id,
                 'net_amount' => (float) $slip->net_salary,
-                'iban' => $slip->employee?->iban ?? null,
+                'iban' => $slip->employee?->iban,
                 'created_at' => now(),
                 'updated_at' => now(),
             ])->all();
@@ -150,7 +150,36 @@ class PayrollPaymentOrderService
             'by' => $actor?->id,
         ]);
 
-        return $order->fresh();
+        $fresh = $order->fresh();
+        if (! $fresh instanceof PayrollPaymentOrder) {
+            throw new \RuntimeException('Impossible de recharger l\'ordre de virement après exécution.');
+        }
+
+        return $fresh;
+    }
+
+    /**
+     * Normalise les données banque de l'entreprise vers le contrat attendu
+     * par BankExportGenerator (shape partiel, tolérant aux champs absents).
+     *
+     * @param  array<string, mixed>|null  $companyBank
+     * @return array{name?: string, iban: string|null, bic: string|null}|null
+     */
+    private function normalizeCompanyBank(?array $companyBank): ?array
+    {
+        if ($companyBank === null) {
+            return null;
+        }
+
+        $normalized = [
+            'iban' => isset($companyBank['iban']) ? (string) $companyBank['iban'] : null,
+            'bic' => isset($companyBank['bic']) ? (string) $companyBank['bic'] : null,
+        ];
+        if (isset($companyBank['name']) && $companyBank['name'] !== '') {
+            $normalized['name'] = (string) $companyBank['name'];
+        }
+
+        return $normalized;
     }
 
     /** Rapproche l'ordre exécuté avec les paiements (marquage + audit). */
@@ -172,6 +201,11 @@ class PayrollPaymentOrderService
             'by' => $actor?->id,
         ]);
 
-        return $order->fresh();
+        $fresh = $order->fresh();
+        if (! $fresh instanceof PayrollPaymentOrder) {
+            throw new \RuntimeException('Impossible de recharger l\'ordre de virement après rapprochement.');
+        }
+
+        return $fresh;
     }
 }
