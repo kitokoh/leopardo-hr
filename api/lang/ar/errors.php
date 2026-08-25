@@ -239,6 +239,10 @@ return [
     // المحاسبة (issue #5227)
     'PAYMENT_EXCEEDS_TOTAL' => 'يتجاوز مبلغ الدفع الرصيد المتبقي للمستند.',
     'PAYMENT_ON_UNSENT_DOCUMENT' => 'لا يمكن تسجيل دفعة على مستند لم يُصدر بعد.',
+    'PAYMENT_GATEWAY_NOT_CONFIGURED' => 'لا توجد بوابة دفع عبر الإنترنت مهيأة لبلد هذه الشركة.',
+    'DOCUMENT_NOT_SENDABLE' => 'لا يمكن دفع هذا المستند عبر الإنترنت (غير مصدر أو مسدد بالكامل).',
+    'PAYMENT_AMOUNT_MISMATCH' => 'المبلغ المُبلغ من البوابة لا يطابق رصيد المستند.',
+    'WEBHOOK_SIGNATURE_INVALID' => 'توقيع الويب هوك غير صالح أو مفقود.',
     'CREDIT_NOTE_REQUIRES_SOURCE_INVOICE' => 'يجب ربط الإشعار الدائن بفاتورته المصدرية.',
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'يجب أن يتضمن سند التسليم تاريخ التسليم.',
     'DOCUMENT_NOT_FULLY_PAID' => 'لا يمكن وضع علامة مدفوعة على المستند قبل تسديد المبلغ كاملاً.',

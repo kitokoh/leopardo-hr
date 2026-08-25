@@ -17,6 +17,7 @@ use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingCheckoutController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
@@ -51,6 +52,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/documents/{document}/payments', [AccountingDocumentController::class, 'payments'])->whereNumber('document');
             Route::post('/documents/{document}/cancel', [AccountingDocumentController::class, 'cancel'])->whereNumber('document');
             Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
+            // #5272 — paiement en ligne : initiation d'une session de checkout
+            // (Chargily DZ / Stripe), routée par pays de l'entreprise (ADR-0017).
+            Route::post('/documents/{document}/checkout', [AccountingCheckoutController::class, 'store'])->whereNumber('document');
         });
     });
 /**
