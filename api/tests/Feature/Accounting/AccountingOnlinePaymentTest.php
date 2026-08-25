@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Testing\TestResponse;
@@ -266,7 +267,7 @@ class AccountingOnlinePaymentTest extends TestCase
      *
      * @param  array<string, mixed>  $data
      */
-    private function postChargilyWebhook(string $url, array $data): TestResponse
+    private function postChargilyWebhook(string $url, array $data): TestResponse<Response>
     {
         $payload = json_encode($data, JSON_THROW_ON_ERROR);
 
@@ -276,7 +277,7 @@ class AccountingOnlinePaymentTest extends TestCase
     /**
      * @param  array<string, mixed>  $data
      */
-    private function postStripeWebhook(string $url, array $data): TestResponse
+    private function postStripeWebhook(string $url, array $data): TestResponse<Response>
     {
         $payload = json_encode($data, JSON_THROW_ON_ERROR);
 
