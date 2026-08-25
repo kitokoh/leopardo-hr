@@ -10,8 +10,8 @@ the counts below only reflect strings a real user could actually see on screen.
 
 ## Summary
 
-- Total user-visible signals: 11441
-- P1 (priority screens: login/attendance/account/...): 1408
+- Total user-visible signals: 11488
+- P1 (priority screens: login/attendance/account/...): 1455
 - P2 (other screens): 10033
 - Developer/log-only signals (informational, not counted above): 80
 
@@ -121,37 +121,37 @@ the counts below only reflect strings a real user could actually see on screen.
 
 ### mobile_platform_admin
 
-- Signals: 36
-- P1: 4
+- Signals: 83
+- P1: 51
 - P2: 32
 - Dev/log-only (informational): 4
 
 - [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/auth/platform_login_screen.dart:31` admin@leopardo-rh.com
-- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:374` Activation directe depuis app mobile platform admin.
-- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_requests_screen.dart:109` Approuve depuis Leopardo Platform Admin mobile
-- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_requests_screen.dart:110` Refuse depuis Leopardo Platform Admin mobile
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/main.dart:40` Leopardo Platform Admin
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/main.dart:55` Hive offline cache
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/main.dart:56` Locale formatting
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:25` Nœuds Edge
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:26` Sites on-premise connectés
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:33` Rafraîchir
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:53` Aucun nœud Edge enregistré.
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:72` En ligne
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:78` Hors ligne
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:84` Nœuds
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:89` Chargement nœuds
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:168` Forcer la synchronisation
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:177` Sync déclenchée.
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_models.dart:17` Super admin
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_repository.dart:41` Code 2FA requis pour ce compte super-admin.
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_repository.dart:49` Token plateforme manquant
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_repository.dart:59` Session plateforme absente
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:29` En cours
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:30` Résolus
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:31` Fermés
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:41` Support client
-- ... 11 more signals
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_create_screen.dart:49` Cote d Ivoire
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_create_screen.dart:63` Burkina Faso
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_create_screen.dart:119` Republique Centrafricaine
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_create_screen.dart:126` Guinee Equatoriale
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:231` Reference client
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:236` Identifiant tenant a presenter au support ou scanner sur site pour retrouver ce client ...
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:237` Copier l\'identifiant
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:247` Prix mensuel
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:251` Limite employes
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:255` Fin abonnement
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:256` Non definie
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:262` Activer client
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:274` Modifier abonnement
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:294` Modules actifs
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:316` Modifier modules
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:336` Prochaines actions
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:340` Aucune action urgente detectee pour ce client.
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:350` Action recommandee par le cockpit plateforme.
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:366` Plan actuel introuvable
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:375` Activation directe depuis app mobile platform admin.
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:383` Client active
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:432` Choisir un plan
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:449` Abonnement mis a jour
+- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:549` Note interne optionnelle
+- ... 58 more signals
 
 ### web_client
 
