@@ -17,37 +17,37 @@ class ManagerMainShell extends StatelessWidget {
   final Widget child;
 
   List<LeopardoNavItem> _items(BuildContext context) => [
-    LeopardoNavItem(
-      icon: Icons.dashboard_outlined,
-      activeIcon: Icons.dashboard_rounded,
-      label: 'Accueil',
-      route: '/',
-    ),
-    LeopardoNavItem(
-      icon: Icons.group_outlined,
-      activeIcon: Icons.group,
-      label: context.l10n.shellTeam,
-      route: '/team',
-    ),
-    LeopardoNavItem(
-      icon: Icons.fingerprint_outlined,
-      activeIcon: Icons.fingerprint,
-      label: 'Pointage',
-      route: '/attendance/geo',
-    ),
-    LeopardoNavItem(
-      icon: Icons.checklist_outlined,
-      activeIcon: Icons.checklist,
-      label: 'Validations',
-      route: '/approvals',
-    ),
-    LeopardoNavItem(
-      icon: Icons.settings_outlined,
-      activeIcon: Icons.settings,
-      label: context.l10n.shellSettings,
-      route: '/settings',
-    ),
-  ];
+        LeopardoNavItem(
+          icon: Icons.dashboard_outlined,
+          activeIcon: Icons.dashboard_rounded,
+          label: 'Accueil',
+          route: '/',
+        ),
+        LeopardoNavItem(
+          icon: Icons.group_outlined,
+          activeIcon: Icons.group,
+          label: context.l10n.shellTeam,
+          route: '/team',
+        ),
+        LeopardoNavItem(
+          icon: Icons.fingerprint_outlined,
+          activeIcon: Icons.fingerprint,
+          label: 'Pointage',
+          route: '/attendance/geo',
+        ),
+        LeopardoNavItem(
+          icon: Icons.checklist_outlined,
+          activeIcon: Icons.checklist,
+          label: 'Validations',
+          route: '/approvals',
+        ),
+        LeopardoNavItem(
+          icon: Icons.settings_outlined,
+          activeIcon: Icons.settings,
+          label: context.l10n.shellSettings,
+          route: '/settings',
+        ),
+      ];
 
   @override
   Widget build(BuildContext context) {
