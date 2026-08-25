@@ -18,8 +18,6 @@ use App\Core\Tenant\Domain\Models\Company;
  */
 class PurgeAuditLogsCommandTest extends TestCase
 {
-    private Company $company;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -53,7 +51,9 @@ class PurgeAuditLogsCommandTest extends TestCase
         // ne traite rien et la purge ne s'exécute pas. Une société par défaut
         // (schéma shared_tenants) suffit — les lignes d'audit insérées dans le
         // schéma ambiant (shared_tenants) sont celles visées par withinTenant.
-        $this->company = Company::factory()->create(['country' => 'DZ']);
+        // La factory est typée Model par Larastan : le résultat n'est pas
+        // stocké (propriété jamais lue), seule la création compte.
+        Company::factory()->create(['country' => 'DZ']);
     }
 
     protected function tearDown(): void

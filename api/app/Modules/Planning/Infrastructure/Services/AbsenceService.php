@@ -314,6 +314,7 @@ class AbsenceService
             ]);
         });
 
+<<<<<<< HEAD
         $absence = $absence->fresh()
             ?? throw new \RuntimeException('Absence introuvable après rejet.');
 
