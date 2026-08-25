@@ -204,6 +204,25 @@ paths:
       responses:
         "200":
           description: "Liste paginée des sessions GPS"
+  /accounting/payments:
+    get:
+      tags: ["Accounting"]
+      summary: "Lister les paiements"
+      description: "Paiements du tenant (filtres document_id/status), du plus recent au plus ancien. RBAC comptable/principal. Issue #5229."
+      parameters:
+        - name: document_id
+          in: query
+          required: false
+          description: "Filtre par document."
+          schema: { type: integer }
+        - name: status
+          in: query
+          required: false
+          description: "Filtre par statut (pending, recorded, matched)."
+          schema: { type: string, enum: [pending, recorded, matched] }
+      responses:
+        "200":
+          description: "Liste des paiements"
           content:
             application/json:
               schema:
@@ -353,6 +372,53 @@ paths:
           description: "Préférence de l'employé"
         "401":
           $ref: "#/components/responses/Error401"
+  /accounting/payments/{payment}/reconcile:
+    post:
+      tags: ["Accounting"]
+      summary: "Rapprocher un paiement"
+      description: "Rapprochement manuel : pending/recorded -> matched + reconciled_at. Idempotent. Issue #5229."
+      parameters:
+        - name: payment
+          in: path
+          required: true
+          description: "ID du paiement."
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Paiement rapproche"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id: { type: integer }
+                      status: { type: string }
+                      reconciled_at: { type: string, format: date-time, nullable: true }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+  /accounting/reminders/run:
+    post:
+      tags: ["Accounting"]
+      summary: "Declencher les relances de paiement"
+      description: "Relances J+7/J+15/J+30 (parametrables via accounting_settings.payment_reminder_days) pour les documents emis non soldes echus. Idempotent : une relance par (document, stage), jamais de doublon. Notification in-app aux managers principal/comptable. Issue #5229."
+      responses:
+        "200":
+          description: "Nombre de relances envoyees"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reminders_sent: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
   /employees/{employee}/certificate-of-employment:
     get:
       tags: ["Payroll"]
@@ -4679,6 +4745,76 @@ paths:
           $ref: "#/components/responses/Error404"
         "422":
           $ref: "#/components/responses/Validation422"
+
+  /employees/{employee}/departure:
+    post:
+      tags: ["Employees"]
+      summary: "Enregistrer le depart d'un employe (offboarding, issue #5324)"
+      parameters:
+        - $ref: "#/components/parameters/EmployeeId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreDepartureRequest"
+      responses:
+        "201":
+          description: "Depart enregistre — statut employe departed, acces revoque"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeDeparturePayload"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    get:
+      tags: ["Employees"]
+      summary: "Lire le depart d'un employe (manager : entreprise ; employe : le sien)"
+      parameters:
+        - $ref: "#/components/parameters/EmployeeId"
+      responses:
+        "200":
+          description: "Depart (ou null si aucun)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    nullable: true
+                    allOf:
+                      - $ref: "#/components/schemas/EmployeeDeparturePayload"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+  /me/departure:
+    get:
+      tags: ["SelfService"]
+      summary: "Mon depart (self-service, issue #5324)"
+      responses:
+        "200":
+          description: "Dernier enregistrement de depart de l'employe connecte (ou null)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    nullable: true
+                    allOf:
+                      - $ref: "#/components/schemas/EmployeeDeparturePayload"
+        "401":
+          $ref: "#/components/responses/Error401"
 
   /employees/{employee}/archive:
     post:
@@ -13790,6 +13926,254 @@ paths:
           $ref: "#/components/responses/Validation422"
 
   # --- Bank Export ---
+  /accounting/documents:
+    get:
+      tags: ["Accounting"]
+      summary: "Lister les documents comptables du tenant (pagine, filtres, #5223)"
+      description: "Documents (facture, proforma, devis, avoir, irsaliye, recu). Statuts d'echeance rafraichis a la lecture (overdue). Reserve aux managers principal/comptable."
+      parameters:
+        - name: per_page
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+        - name: type
+          in: query
+          required: false
+          schema: { type: string, enum: [invoice, proforma, quote, credit_note, delivery_note, receipt] }
+        - name: status
+          in: query
+          required: false
+          schema: { type: string }
+        - name: contact_id
+          in: query
+          required: false
+          schema: { type: integer }
+        - name: from
+          in: query
+          required: false
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          required: false
+          schema: { type: string, format: date }
+      responses:
+        "200":
+          description: "Liste paginee des documents"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+    post:
+      tags: ["Accounting"]
+      summary: "Creer un brouillon de document numerote (facture, proforma, devis, avoir, irsaliye, recu, #5223)"
+      description: "Numero attribue a la creation (serie parametrable via accounting_settings.number_series, ex. FAC-2026-0001), concurrent-safe (contrainte unique + retry). Totaux calcules depuis les lignes (TVA incluse)."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, lines]
+              properties:
+                type: { type: string, enum: [invoice, proforma, quote, credit_note, delivery_note, receipt] }
+                contact_id: { type: integer, nullable: true }
+                project_ref: { type: string, maxLength: 120 }
+                issue_date: { type: string, format: date }
+                due_date: { type: string, format: date, nullable: true }
+                delivery_date: { type: string, format: date, nullable: true }
+                currency: { type: string, maxLength: 10 }
+                tva_rate: { type: number, minimum: 0, maximum: 100 }
+                notes: { type: string, maxLength: 2000 }
+                source_document_id: { type: integer, nullable: true }
+                lines:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [description]
+                    properties:
+                      description: { type: string, maxLength: 500 }
+                      quantity: { type: number, minimum: 0 }
+                      unit_price: { type: number, minimum: 0 }
+                      discount: { type: number, minimum: 0 }
+                      tax_id: { type: string, maxLength: 60 }
+      responses:
+        "201":
+          description: "Brouillon cree (numero + totaux)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/documents/next-number:
+    get:
+      tags: ["Accounting"]
+      summary: "Apercu du prochain numero de la serie configuree (#5223)"
+      parameters:
+        - name: type
+          in: query
+          required: true
+          schema: { type: string, enum: [invoice, proforma, quote, credit_note, delivery_note, receipt] }
+      responses:
+        "200":
+          description: "Prochain numero (ex. FAC-2026-0001)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/documents/{document}:
+    get:
+      tags: ["Accounting"]
+      summary: "Detail d'un document comptable (lignes + paiements, #5223)"
+      parameters:
+        - name: document
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Document avec lignes et paiements"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /accounting/documents/{document}/send:
+    post:
+      tags: ["Accounting"]
+      summary: "Envoyer un brouillon (draft → sent, #5223)"
+      description: "Exige des lignes ; facture/avoir exigent un contact. Pose sent_at."
+      parameters:
+        - name: document
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Document envoye"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/documents/{document}/payments:
+    post:
+      tags: ["Accounting"]
+      summary: "Enregistrer un encaissement (→ partiellement paye / paye, #5223)"
+      description: "Cumul des paiements borne au total TTC. Un document paye ou annule refuse tout paiement. Statut paye jamais atteint sans paiement."
+      parameters:
+        - name: document
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount, method]
+              properties:
+                amount: { type: number, minimum: 0, exclusiveMinimum: true }
+                method: { type: string, enum: [cash, bank_transfer, check, card, other] }
+                received_at: { type: string, format: date }
+                reference: { type: string, maxLength: 120 }
+      responses:
+        "201":
+          description: "Paiement enregistre"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/documents/{document}/cancel:
+    post:
+      tags: ["Accounting"]
+      summary: "Annuler un document non paye (#5223)"
+      parameters:
+        - name: document
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason: { type: string, maxLength: 500 }
+      responses:
+        "200":
+          description: "Document annule"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/documents/{document}/credit-note:
+    post:
+      tags: ["Accounting"]
+      summary: "Creer un avoir lie a une facture source (#5223)"
+      description: "Lien via metadata.source_document_id ; montant borne au reste a payer de la source (422 sinon)."
+      parameters:
+        - name: document
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lines]
+              properties:
+                issue_date: { type: string, format: date }
+                notes: { type: string, maxLength: 2000 }
+                lines:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [description]
+                    properties:
+                      description: { type: string, maxLength: 500 }
+                      quantity: { type: number, minimum: 0 }
+                      unit_price: { type: number, minimum: 0 }
+                      discount: { type: number, minimum: 0 }
+                      tax_id: { type: string, maxLength: 60 }
+      responses:
+        "201":
+          description: "Avoir cree"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /bank-exports:
     get:
       tags: ["Payroll"]
@@ -21755,6 +22139,67 @@ components:
           type: string
           nullable: true
 
+    EmployeeDeparturePayload:
+      type: object
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        employee_status:
+          type: string
+          enum: ["active", "suspended", "archived", "departed"]
+        departure_type:
+          type: string
+          enum: ["resignation", "termination", "end_of_contract", "retirement"]
+        reason:
+          type: string
+          nullable: true
+        last_work_day:
+          type: string
+          format: date
+          nullable: true
+        notice_served:
+          type: boolean
+        notice_days_served:
+          type: integer
+          nullable: true
+        departed_at:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    StoreDepartureRequest:
+      type: object
+      required:
+        - departure_type
+        - last_work_day
+      properties:
+        departure_type:
+          type: string
+          enum: ["resignation", "termination", "end_of_contract", "retirement"]
+        reason:
+          type: string
+          maxLength: 500
+          nullable: true
+        last_work_day:
+          type: string
+          format: date
+        notice_served:
+          type: boolean
+          default: false
+        notice_days_served:
+          type: integer
+          minimum: 0
+          maximum: 365
+          nullable: true
+        departed_at:
+          type: string
+          format: date
+          nullable: true
     EmployeeDetail:
       type: object
       properties:

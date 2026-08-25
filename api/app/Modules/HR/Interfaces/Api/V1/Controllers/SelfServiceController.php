@@ -268,7 +268,7 @@ class SelfServiceController extends Controller
             ->exists();
 
         if ($exists) {
-            return response()->json(['message' => 'Already enrolled in this session.'], 422);
+            return response()->json(['message' => __('errors.ALREADY_ENROLLED_SESSION')], 422);
         }
 
         try {
@@ -291,7 +291,7 @@ class SelfServiceController extends Controller
             if ($e->getCode() === '23505') {
                 Log::warning("Training enrollment race for session {$sessionId}, employee {$user->id} — concurrent create won.");
 
-                return response()->json(['message' => 'Already enrolled in this session.'], 422);
+                return response()->json(['message' => __('errors.ALREADY_ENROLLED_SESSION')], 422);
             }
 
             throw $e;

@@ -10,6 +10,7 @@ use App\Events\AbsenceRequested;
 use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
 use App\Events\EmployeeArchived;
+use App\Events\EmployeeDeparted;
 use App\Events\EmployeeCreated;
 use App\Events\EmployeeRoleAssigned;
 use App\Events\PayrollValidated;
@@ -25,6 +26,7 @@ class AuditLogger implements ShouldQueue
     private const EVENT_MAP = [
         EmployeeCreated::class => ['action' => 'created', 'model' => 'employee'],
         EmployeeArchived::class => ['action' => 'archived', 'model' => 'employee'],
+        EmployeeDeparted::class => ['action' => 'departed', 'model' => 'employee'],
         AttendanceCheckedIn::class => ['action' => 'checked_in', 'model' => 'log'],
         AttendanceCheckedOut::class => ['action' => 'checked_out', 'model' => 'log'],
         AbsenceRequested::class => ['action' => 'requested', 'model' => 'absence'],

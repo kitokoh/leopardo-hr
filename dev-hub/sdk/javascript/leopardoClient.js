@@ -165,6 +165,61 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/accounting/contacts/{contact}", options);
     },
 
+    /** Lister les documents comptables du tenant (pagine, filtres, #5223) */
+    getAccountingDocuments(options = {}) {
+      return request("GET", "/accounting/documents", options);
+    },
+
+    /** Creer un brouillon de document numerote (facture, proforma, devis, avoir, irsaliye, recu, #5223) */
+    postAccountingDocuments(options = {}) {
+      return request("POST", "/accounting/documents", options);
+    },
+
+    /** Detail d'un document comptable (lignes + paiements, #5223) */
+    getAccountingDocumentsByDocument(options = {}) {
+      return request("GET", "/accounting/documents/{document}", options);
+    },
+
+    /** Annuler un document non paye (#5223) */
+    postAccountingDocumentsByDocumentCancel(options = {}) {
+      return request("POST", "/accounting/documents/{document}/cancel", options);
+    },
+
+    /** Creer un avoir lie a une facture source (#5223) */
+    postAccountingDocumentsByDocumentCreditNote(options = {}) {
+      return request("POST", "/accounting/documents/{document}/credit-note", options);
+    },
+
+    /** Enregistrer un encaissement (→ partiellement paye / paye, #5223) */
+    postAccountingDocumentsByDocumentPayments(options = {}) {
+      return request("POST", "/accounting/documents/{document}/payments", options);
+    },
+
+    /** Envoyer un brouillon (draft → sent, #5223) */
+    postAccountingDocumentsByDocumentSend(options = {}) {
+      return request("POST", "/accounting/documents/{document}/send", options);
+    },
+
+    /** Apercu du prochain numero de la serie configuree (#5223) */
+    getAccountingDocumentsNextNumber(options = {}) {
+      return request("GET", "/accounting/documents/next-number", options);
+    },
+
+    /** Lister les paiements */
+    getAccountingPayments(options = {}) {
+      return request("GET", "/accounting/payments", options);
+    },
+
+    /** Rapprocher un paiement */
+    postAccountingPaymentsByPaymentReconcile(options = {}) {
+      return request("POST", "/accounting/payments/{payment}/reconcile", options);
+    },
+
+    /** Declencher les relances de paiement */
+    postAccountingRemindersRun(options = {}) {
+      return request("POST", "/accounting/reminders/run", options);
+    },
+
     /** Declaration TVA simplifiee par periode */
     getAccountingReportsVatDeclaration(options = {}) {
       return request("GET", "/accounting/reports/vat-declaration", options);
@@ -1585,6 +1640,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/employees/{employee}/daily-summary", options);
     },
 
+    /** Lire le depart d'un employe (manager : entreprise ; employe : le sien) */
+    getEmployeesByEmployeeDeparture(options = {}) {
+      return request("GET", "/employees/{employee}/departure", options);
+    },
+
+    /** Enregistrer le depart d'un employe (offboarding, issue #5324) */
+    postEmployeesByEmployeeDeparture(options = {}) {
+      return request("POST", "/employees/{employee}/departure", options);
+    },
+
     /** Récapitulatif du préavis légal (issue #5325, G2) */
     getEmployeesByEmployeeDepartureNotice(options = {}) {
       return request("GET", "/employees/{employee}/departure/notice", options);
@@ -2188,6 +2253,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Resume journalier utilisateur courant */
     getMeDailySummary(options = {}) {
       return request("GET", "/me/daily-summary", options);
+    },
+
+    /** Mon depart (self-service, issue #5324) */
+    getMeDeparture(options = {}) {
+      return request("GET", "/me/departure", options);
     },
 
     /** Lire les documents de SON dossier employe (self-service) */
