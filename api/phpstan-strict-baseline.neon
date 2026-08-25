@@ -8015,4 +8015,50 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Unit/SocialDeclarationGeneratorTest.php
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/GeoAttendanceController.php
 
+		-
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\GeoSessionController\:\:formatSession\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/GeoSessionController.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Modules/Attendance/Interfaces/Api/V1/GeoSessionController.php
+
+		-
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Requests\\ApproveSessionRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/Requests/ApproveSessionRequest.php
+
+		-
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Requests\\GeoEventRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/Requests/GeoEventRequest.php
+
+		-
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Requests\\RejectSessionRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/Requests/RejectSessionRequest.php
+
+		-
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Requests\\SetCompanyModeRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/Requests/SetCompanyModeRequest.php
+
+		-
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Requests\\SetModeRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/Requests/SetModeRequest.php

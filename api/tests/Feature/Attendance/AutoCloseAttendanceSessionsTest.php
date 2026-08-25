@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Attendance;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Carbon;
@@ -40,8 +41,8 @@ class AutoCloseAttendanceSessionsTest extends TestCase
         ]);
         $this->company = $company;
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
-        $employee = \App\Core\Auth\Domain\Models\Employee::factory()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
         ]);
 
@@ -103,8 +104,8 @@ class AutoCloseAttendanceSessionsTest extends TestCase
             'status' => 'active',
         ]);
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $otherEmployee */
-        $otherEmployee = \App\Core\Auth\Domain\Models\Employee::factory()->create([
+        /** @var Employee $otherEmployee */
+        $otherEmployee = Employee::factory()->create([
             'company_id' => $otherCompany->id,
         ]);
 

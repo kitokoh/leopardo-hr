@@ -3911,4 +3911,176 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: tests/Unit/Services/ReflectionServiceTest.php
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 3
+			path: app/Console/Commands/AutoCloseAttendanceCommand.php
 
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/GeoAttendanceController.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 2
+			path: app/Modules/Attendance/Interfaces/Api/V1/GeoSessionController.php
+
+		-
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\GeoSessionController\:\:formatSession\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/GeoSessionController.php
+
+		-
+			message: '#^Parameter \#3 \$value of method Illuminate\\Database\\Eloquent\\Builder\<App\\Modules\\Attendance\\Domain\\Models\\GeoAttendanceSession\>\:\:whereDate\(\) expects DateTimeInterface\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Modules/Attendance/Interfaces/Api/V1/GeoSessionController.php
+
+		-
+			message: '#^Parameter \$note of method App\\Modules\\Attendance\\Application\\Actions\\ApproveGeoSession\:\:handle\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/GeoSessionController.php
+
+		-
+			message: '#^Parameter \$reason of method App\\Modules\\Attendance\\Application\\Actions\\RejectGeoSession\:\:handle\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/GeoSessionController.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Modules/Attendance/Interfaces/Api/V1/GeoSessionController.php
+
+		-
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Requests\\ApproveSessionRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/Requests/ApproveSessionRequest.php
+
+		-
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Requests\\GeoEventRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/Requests/GeoEventRequest.php
+
+		-
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Requests\\RejectSessionRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/Requests/RejectSessionRequest.php
+
+		-
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Requests\\SetCompanyModeRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/Requests/SetCompanyModeRequest.php
+
+		-
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Requests\\SetModeRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/Requests/SetModeRequest.php
+
+		-
+			message: '#^Array has 2 duplicate keys with value ''correction_already_processed'' \(''correction_already_processed'', ''correction_already_processed''\)\.$#'
+			identifier: array.duplicateKey
+			count: 1
+			path: lang/ar/attendance.php
+
+		-
+			message: '#^Array has 2 duplicate keys with value ''correction_already_processed'' \(''correction_already_processed'', ''correction_already_processed''\)\.$#'
+			identifier: array.duplicateKey
+			count: 1
+			path: lang/en/attendance.php
+
+		-
+			message: '#^Array has 2 duplicate keys with value ''correction_already_processed'' \(''correction_already_processed'', ''correction_already_processed''\)\.$#'
+			identifier: array.duplicateKey
+			count: 1
+			path: lang/fr/attendance.php
+
+		-
+			message: '#^Array has 2 duplicate keys with value ''correction_already_processed'' \(''correction_already_processed'', ''correction_already_processed''\)\.$#'
+			identifier: array.duplicateKey
+			count: 1
+			path: lang/tr/attendance.php
+
+		-
+			message: '#^Cannot access offset ''employee'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/Attendance/GeoAttendanceFlowTest.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/Attendance/GeoAttendanceFlowTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/Attendance/GeoAttendanceFlowTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertCount\(\) expects Countable\|iterable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/Attendance/GeoAttendanceFlowTest.php
+
+		-
+			message: '#^Cannot access offset ''duration_seconds'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/Attendance/GeoEntryExitTest.php
+
+		-
+			message: '#^Cannot access offset ''ended_at'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/Attendance/GeoEntryExitTest.php
+
+		-
+			message: '#^Cannot access offset ''event_type'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/Attendance/GeoSessionDashboardTest.php
+
+		-
+			message: '#^Cannot access offset ''pending'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/Attendance/GeoSessionDashboardTest.php
+
+		-
+			message: '#^Cannot access offset ''stats'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/Attendance/GeoSessionDashboardTest.php
+
+		-
+			message: '#^Cannot access offset ''today'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/Attendance/GeoSessionDashboardTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/Attendance/GeoSessionDashboardTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertCount\(\) expects Countable\|iterable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/Attendance/GeoSessionDashboardTest.php

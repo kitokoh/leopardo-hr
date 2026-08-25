@@ -218,7 +218,7 @@ class GeoMultiTenantIsolationTest extends TestCase
 
         Sanctum::actingAs($this->managerA);
 
-        $response = $this->getJson('/api/v1/attendance/sessions');
+        $response = $this->getJson('/api/v1/attendance/geo-sessions');
 
         $response->assertStatus(200);
 

@@ -225,11 +225,11 @@ class GeoAttendanceFlowTest extends TestCase
     {
         // Employé ordinary → 403.
         Sanctum::actingAs($this->employee);
-        $this->getJson('/api/v1/attendance/sessions')->assertForbidden();
+        $this->getJson('/api/v1/attendance/geo-sessions')->assertForbidden();
 
         // Manager RH → OK.
         Sanctum::actingAs($this->managerRh);
-        $this->getJson('/api/v1/attendance/sessions')->assertOk();
+        $this->getJson('/api/v1/attendance/geo-sessions')->assertOk();
     }
 
     public function test_manager_can_approve_a_session(): void
@@ -245,7 +245,7 @@ class GeoAttendanceFlowTest extends TestCase
 
         Sanctum::actingAs($this->managerRh);
         $this->assertNotNull($session);
-        $response = $this->postJson("/api/v1/attendance/sessions/{$session->id}/approve");
+        $response = $this->postJson("/api/v1/attendance/geo-sessions/{$session->id}/approve");
 
         $response->assertOk();
         $this->assertDatabaseHas('geo_attendance_sessions', [
