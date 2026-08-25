@@ -38,7 +38,8 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final employee = ref.watch(authProvider).employee;
-    final experience = employee?.mobileExperience ??
+    final experience =
+        employee?.mobileExperience ??
         const MobileExperience(
           stage: 'regular',
           modules: <MobileModule>[],
@@ -179,9 +180,10 @@ class _HeroHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     const text = MobileSurface.text;
     const muted = MobileSurface.muted;
-    final dateLabel = DateFormat.EEEE(
-      deviceIntlDateLocale,
-    ).add_d().add_MMMM().format(DateTime.now());
+    final dateLabel = DateFormat.EEEE(deviceIntlDateLocale)
+        .add_d()
+        .add_MMMM()
+        .format(DateTime.now());
 
     return GlassCard(
       padding: const EdgeInsets.all(20),
@@ -436,15 +438,15 @@ class ManagerDigest {
   });
 
   const ManagerDigest.empty()
-      : teamScope = 'company',
-        teamSize = 0,
-        present = 0,
-        late = 0,
-        openSessions = 0,
-        pendingActions = 0,
-        pendingAbsences = 0,
-        pendingSalaryAdvances = 0,
-        pendingCorrections = 0;
+    : teamScope = 'company',
+      teamSize = 0,
+      present = 0,
+      late = 0,
+      openSessions = 0,
+      pendingActions = 0,
+      pendingAbsences = 0,
+      pendingSalaryAdvances = 0,
+      pendingCorrections = 0;
 
   final String teamScope;
   final int teamSize;
@@ -631,7 +633,7 @@ class _ManagerDigestContent extends StatelessWidget {
               child: _DigestActionButton(
                 icon: Icons.my_location_rounded,
                 label: 'GPS Pointage',
-                onTap: () => context.push('/smart-attendance'),
+                onTap: () => context.push('/attendance/geo'),
               ),
             ),
             const SizedBox(width: 8),

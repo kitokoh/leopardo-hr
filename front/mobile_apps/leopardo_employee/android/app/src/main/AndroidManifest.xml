@@ -8,7 +8,7 @@
     <!-- Requis pour le service foreground WorkManager (Android 9+) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <!-- Issue #2762 — Android 14+ : un service foreground de localisation
-         (géofencing smart-attendance) doit déclarer le type + la permission
+         (géofencing attendance géo) doit déclarer le type + la permission
          dédiée, sinon SecurityException au démarrage du service. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
     <!-- Requis sur Android 13+ pour recevoir les notifications push -->
@@ -79,7 +79,7 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/leopardo_icon_accent" />
-        <!-- Service WorkManager requis pour le géofencing arrière-plan SmartAttendance -->
+        <!-- Service WorkManager requis pour le géofencing arrière-plan AttendanceGeo -->
         <service
             android:name="be.tramckrijte.workmanager.BackgroundWorker"
             android:permission="android.permission.BIND_JOB_SERVICE"

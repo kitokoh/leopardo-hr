@@ -40,8 +40,15 @@ import 'package:leopardo_manager/features/manager/screens/manager_attendance_mon
 import 'package:leopardo_core/features/company_branding/screens/company_branding_screen.dart';
 import 'package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/features/schedules/screens/schedule_list_screen.dart';
+<<<<<<< HEAD
+import 'package:leopardo_manager/features/company_branding/screens/company_branding_screen.dart';
+import 'package:leopardo_manager/features/company_branding/providers/tenant_branding_provider.dart';
+import 'package:leopardo_manager/features/attendance_geo/screens/attendance_geo_dashboard_screen.dart';
+import 'package:leopardo_manager/features/attendance_geo/screens/pending_sessions_screen.dart';
+=======
 import 'package:leopardo_manager/features/smart_attendance/screens/smart_attendance_dashboard_screen.dart';
 import 'package:leopardo_manager/features/smart_attendance/screens/pending_sessions_screen.dart';
+>>>>>>> origin/main
 import 'package:leopardo_core/l10n/l10n.dart';
 
 import 'package:leopardo_manager/features/home/screens/manager_main_shell.dart';
@@ -75,8 +82,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               const SizedBox(height: 12),
               Text(
                 context.l10n.errorUnexpected,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               Text(context.l10n.pageNotFound, textAlign: TextAlign.center),
@@ -271,11 +280,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           // ── Smart Attendance ──────────────────────────────────────────
           GoRoute(
-            path: '/smart-attendance',
-            builder: (context, state) => const SmartAttendanceDashboardScreen(),
+            path: '/attendance/geo',
+            builder: (context, state) => const AttendanceGeoDashboardScreen(),
           ),
           GoRoute(
-            path: '/smart-attendance/pending',
+            path: '/attendance/geo/pending',
             builder: (context, state) => const PendingGeoSessionsScreen(),
           ),
         ],
@@ -289,8 +298,10 @@ class LeopardoApp extends ConsumerWidget {
 
   Locale _resolveLocale(String rawLocale) {
     final normalized = rawLocale.trim().replaceAll('_', '-');
-    final parts =
-        normalized.split('-').where((part) => part.isNotEmpty).toList();
+    final parts = normalized
+        .split('-')
+        .where((part) => part.isNotEmpty)
+        .toList();
 
     if (parts.isEmpty) {
       return const Locale('fr');
@@ -331,9 +342,11 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final deviceLanguage =
-        PlatformDispatcher.instance.locale.toLanguageTag().toLowerCase();
-    final languageCode = authState.employee?.language ??
+    final deviceLanguage = PlatformDispatcher.instance.locale
+        .toLanguageTag()
+        .toLowerCase();
+    final languageCode =
+        authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);
