@@ -2,7 +2,7 @@
 
 return [
     // Auth
-        'UNKNOWN_ACCOUNT' => 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
+    'UNKNOWN_ACCOUNT' => 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
     'INVALID_CREDENTIALS' => 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
     'ACCOUNT_SUSPENDED' => 'تم تعليق حسابك. تواصل مع المسؤول.',
     'ACCOUNT_ARCHIVED' => 'هذا الحساب مؤرشف.',
@@ -112,7 +112,6 @@ return [
     'GOOGLE_AUTH_FAILED' => 'مصادقة Google غير متاحة.',
     'GOOGLE_TOKEN_INVALID' => 'رمز Google غير صالح أو منتهي الصلاحية.',
     'GOOGLE_ACCOUNT_NOT_FOUND' => 'لا يوجد حساب مرتبط بحساب Google هذا.',
-    'GOOGLE_OAUTH_NOT_CONFIGURED' => 'تسجيل الدخول عبر Google غير متاح مؤقتًا (نقص في الإعدادات). يرجى التواصل مع المسؤول.',
     'GOOGLE_INVITATION_REQUIRED' => 'لا يوجد حساب لهذا البريد الإلكتروني الخاص بـ Google. اطلب دعوة من المسؤول.',
     'GOOGLE_OAUTH_NOT_CONFIGURED' => 'تسجيل الدخول عبر Google غير مهيأ بعد. يرجى المحاولة لاحقًا.',
     'NO_ACTIVE_SUBSCRIPTION' => 'لا يوجد اشتراك نشط.',
@@ -268,4 +267,3 @@ return [
     'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.',
     'ALREADY_SEEDED' => 'تم بالفعل إنشاء البيانات التجريبية لهذه الشركة.',
 ];
-

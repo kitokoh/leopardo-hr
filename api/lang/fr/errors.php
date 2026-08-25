@@ -2,7 +2,7 @@
 
 return [
     // Auth
-        'UNKNOWN_ACCOUNT' => "Aucun compte Leopardo RH n\'est associé à cet email Google. Demandez une invitation à votre administrateur.",
+    'UNKNOWN_ACCOUNT' => "Aucun compte Leopardo RH n\'est associé à cet email Google. Demandez une invitation à votre administrateur.",
     'INVALID_CREDENTIALS' => 'Email ou mot de passe incorrect.',
     'ACCOUNT_SUSPENDED' => 'Votre compte a été suspendu. Contactez votre responsable.',
     'ACCOUNT_ARCHIVED' => 'Ce compte est archivé.',
@@ -113,7 +113,6 @@ return [
     'GOOGLE_AUTH_FAILED' => 'Authentification Google indisponible.',
     'GOOGLE_TOKEN_INVALID' => 'Le jeton Google est invalide ou expiré.',
     'GOOGLE_ACCOUNT_NOT_FOUND' => 'Aucun compte associé à ce compte Google.',
-    'GOOGLE_OAUTH_NOT_CONFIGURED' => 'La connexion Google est temporairement indisponible (configuration manquante). Contactez votre administrateur.',
     'GOOGLE_INVITATION_REQUIRED' => 'Aucun compte n\'existe pour cet email Google. Demandez une invitation à votre administrateur.',
     'GOOGLE_OAUTH_NOT_CONFIGURED' => 'La connexion via Google n\'est pas encore configurée. Réessayez plus tard.',
     'NO_ACTIVE_SUBSCRIPTION' => 'Aucun abonnement actif.',
@@ -252,8 +251,6 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'Un bordereau de livraison doit porter sa date de livraison.',
     'DOCUMENT_NOT_FULLY_PAID' => 'Le document ne peut pas être marqué payé tant que le montant total n\'est pas réglé.',
     'INVALID_DOCUMENT_TRANSITION' => 'Transition de statut non autorisée pour ce document.',
-    'DOCUMENT_PDF_NOT_READY' => 'Le PDF du document n\'est pas encore prêt.',
-    'DOCUMENT_SHARE_NOT_FOUND' => 'Lien de partage introuvable ou expiré.',
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Période invalide. Utilisez le format AAAA-MM.',
     'TWO_FACTOR_INVALID' => 'Code de double authentification invalide ou expiré.',
     'TWO_FACTOR_REQUIRED' => 'La double authentification est obligatoire pour ce compte. Activez-la avant de vous connecter.',

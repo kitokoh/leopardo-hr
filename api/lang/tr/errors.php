@@ -2,7 +2,7 @@
 
 return [
     // Auth
-        'UNKNOWN_ACCOUNT' => 'Bu Google e-postasıyla ilişkili bir Leopardo RH hesabı yok. Yöneticinizden davet isteyin.',
+    'UNKNOWN_ACCOUNT' => 'Bu Google e-postasıyla ilişkili bir Leopardo RH hesabı yok. Yöneticinizden davet isteyin.',
     'INVALID_CREDENTIALS' => 'E-posta veya şifre hatalı.',
     'ACCOUNT_SUSPENDED' => 'Hesabınız askıya alındı. Yöneticinizle iletişime geçin.',
     'ACCOUNT_ARCHIVED' => 'Bu hesap arşivlenmiş.',
@@ -112,7 +112,6 @@ return [
     'GOOGLE_AUTH_FAILED' => 'Google kimlik doğrulaması kullanılamıyor.',
     'GOOGLE_TOKEN_INVALID' => 'Google jetonu geçersiz veya süresi dolmuş.',
     'GOOGLE_ACCOUNT_NOT_FOUND' => 'Bu Google hesabıyla eşleşen hesap bulunamadı.',
-    'GOOGLE_OAUTH_NOT_CONFIGURED' => 'Google ile giriş geçici olarak kullanılamıyor (yapılandırma eksik). Lütfen yöneticinizle iletişime geçin.',
     'GOOGLE_INVITATION_REQUIRED' => 'Bu Google e-postası için hesap yok. Yöneticinizden davet isteyin.',
     'GOOGLE_OAUTH_NOT_CONFIGURED' => 'Google ile giriş henüz yapılandırılmadı. Lütfen daha sonra tekrar deneyin.',
     'NO_ACTIVE_SUBSCRIPTION' => 'Aktif abonelik yok.',
@@ -251,8 +250,6 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'İrsaliye, teslim tarihini içermelidir.',
     'DOCUMENT_NOT_FULLY_PAID' => 'Toplam tutar ödenmeden belge ödendi olarak işaretlenemez.',
     'INVALID_DOCUMENT_TRANSITION' => 'Bu belge için durum geçişine izin verilmiyor.',
-    'DOCUMENT_PDF_NOT_READY' => 'Belgenin PDF\'i henüz hazır değil.',
-    'DOCUMENT_SHARE_NOT_FOUND' => 'Paylaşım bağlantısı bulunamadı veya süresi doldu.',
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.',
     'TWO_FACTOR_INVALID' => 'Geçersiz veya süresi dolmuş iki faktörlü doğrulama kodu.',
     'TWO_FACTOR_REQUIRED' => 'Bu hesap için iki faktörlü doğrulama zorunludur. Giriş yapmadan önce etkinleştirin.',
@@ -270,6 +267,3 @@ return [
     'LETTERING_UNBALANCED' => 'Mutabakat dengeli olmalıdır: toplam borçlar toplam alacaklara eşit olmalıdır.',
     'ALREADY_SEEDED' => 'Bu şirket için demo veriler zaten oluşturuldu.',
 ];
-
-
-
