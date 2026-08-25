@@ -32,6 +32,14 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - API (RBAC principal/comptable): `GET /accounting/payments`, `POST /accounting/documents/{document}/payments`, `POST /accounting/payments/{payment}/reconcile`, `POST /accounting/reminders/run`
   - OpenAPI: 4 paths documented + mirror/SDK regenerated (750 ops, route coverage 754/754)
   - Tests: `AccountingPaymentTest` (14) — suite `tests/Feature/Accounting` 23/23
+- **Accounting journal — debit/credit entries + period closure (issue #5234)**:
+  - `accounting_journal_entries` (tenant): one row per account, exclusive debit XOR credit (CHECK), unique (company, source_type, source_id, account_code) for idempotent reposting; `accounting_closed_periods` for period closure
+  - `JournalPostingService`: post document (invoice/credit_note only, status != draft/cancelled) + payment (non-pending), PCF/SYSCOHADA simplified chart (411/70/709/4457/512/53), balance invariant enforced (UnbalancedJournalEntryException), closed period -> 422 `PERIOD_CLOSED`
+  - `JournalCsvExporter`: streamed CSV (UTF-8 BOM, `;`, formula-injection guard #4169, TOTAL row)
+  - API (RBAC principal/comptable): `GET /accounting/journal`, `GET /accounting/journal/export.csv`, `POST /accounting/journal/periods/{period}/close`, `POST /accounting/documents/{document}/journal`
+  - i18n: `errors.*` ×4 gains `PERIOD_CLOSED`
+  - OpenAPI: 4 paths documented + mirror/SDK regenerated (750 ops, route coverage 751/751)
+  - Tests: `AccountingJournalTest` (15) — suite `tests/Feature/Accounting` 24/24
 
 ### Added
 - **Attendance reports by period (issue #5268)** — the monthly report endpoint `GET /attendance/monthly-report` is now a full report engine:

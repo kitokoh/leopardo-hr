@@ -250,5 +250,7 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'A delivery note must include its delivery date.',
     'DOCUMENT_NOT_FULLY_PAID' => 'The document cannot be marked paid until the full amount is settled.',
     'INVALID_DOCUMENT_TRANSITION' => 'Status transition not allowed for this document.',
-    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Invalid period. Use the YYYY-MM format.',
+    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Invalid period. Use the YYYY-MM format.'
+    // Journal (issue #5234)
+    'PERIOD_CLOSED' => 'The accounting period is already closed — no posting allowed.'
 ];

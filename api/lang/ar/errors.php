@@ -243,5 +243,7 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'يجب أن يتضمن سند التسليم تاريخ التسليم.',
     'DOCUMENT_NOT_FULLY_PAID' => 'لا يمكن وضع علامة مدفوعة على المستند قبل تسديد المبلغ كاملاً.',
     'INVALID_DOCUMENT_TRANSITION' => 'تغيير الحالة غير مسموح به لهذا المستند.',
-    'ACCOUNTING_VAT_PERIOD_INVALID' => 'فترة غير صالحة. استخدم صيغة YYYY-MM.',
+    'ACCOUNTING_VAT_PERIOD_INVALID' => 'فترة غير صالحة. استخدم صيغة YYYY-MM.'
+    // Journal (issue #5234)
+    'PERIOD_CLOSED' => 'الفترة المحاسبية مغلقة بالفعل — لا يمكن تمرير أي قيد.'
 ];

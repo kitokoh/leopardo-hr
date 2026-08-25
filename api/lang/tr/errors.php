@@ -243,5 +243,7 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'İrsaliye, teslim tarihini içermelidir.',
     'DOCUMENT_NOT_FULLY_PAID' => 'Toplam tutar ödenmeden belge ödendi olarak işaretlenemez.',
     'INVALID_DOCUMENT_TRANSITION' => 'Bu belge için durum geçişine izin verilmiyor.',
-    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.',
+    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.'
+    // Journal (issue #5234)
+    'PERIOD_CLOSED' => 'Muhasebe dönemi zaten kapatıldı — kayıt yapılamaz.'
 ];

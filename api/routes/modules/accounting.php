@@ -3,17 +3,20 @@
 declare(strict_types=1);
 
 /**
- * Routes Module Comptabilité — issue #5222 (CRUD contacts) et #5223 (documents).
+ * Routes Module Comptabilité — issues #5222 (contacts), #5223 (documents),
+ * #5229 (trésorerie), #5234 (journal), #5271 (TVA).
  *
  * RBAC (matrice comptabilité) : contacts client/fournisseur —
  * `comptable` (CRUD complet), `principal` (lecture + paramétrage) ;
- * documents (Phase A, #5223) — `principal`/`comptable`.
+ * documents, trésorerie et journal (Phase A/B/C) — `principal`/`comptable`.
  * Toutes les routes exigent un employé manager du tenant courant
  * (middleware api.manager) ; l'isolation tenant est portée par le trait
  * BelongsToCompany (scope global fail-closed #3727).
  */
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
@@ -53,19 +56,20 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
         });
     });
-/**
- * Routes API du module Comptabilité — trésorerie : paiements, rapprochement,
- * relances (issue #5229).
- *
- * RBAC : `api.manager:principal,comptable` — la trésorerie est réservée à la
- * direction et aux comptables (aucun accès RH/marketing).
- */
 
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
-
+// ── Trésorerie : paiements, rapprochement, relances (issue #5229) ──────────
+// RBAC : `api.manager:principal,comptable` — réservé direction + comptables.
 Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
     Route::get('accounting/payments', [AccountingPaymentController::class, 'index']);
     Route::post('accounting/documents/{document}/payments', [AccountingPaymentController::class, 'store']);
     Route::post('accounting/payments/{payment}/reconcile', [AccountingPaymentController::class, 'reconcile']);
     Route::post('accounting/reminders/run', [AccountingPaymentController::class, 'runReminders']);
+});
+
+// ── Journal des écritures (issue #5234) — RBAC principal/comptable ─────────
+Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
+    Route::get('accounting/journal', [AccountingJournalController::class, 'index']);
+    Route::get('accounting/journal/export.csv', [AccountingJournalController::class, 'export']);
+    Route::post('accounting/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
+    Route::post('accounting/documents/{document}/journal', [AccountingJournalController::class, 'postDocument']);
 });
