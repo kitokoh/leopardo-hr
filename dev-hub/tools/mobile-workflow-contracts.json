@@ -388,7 +388,7 @@
             "/device-tokens"
           ],
           "screenFiles": [
-            "lib/features/notifications/screens/notification_list_screen.dart"
+            "../leopardo_core/lib/features/notifications/screens/notification_list_screen.dart"
           ],
           "sourceTokens": [
             "markAllAsRead",

@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 
 class QuickEstimateRequest extends FormRequest
 {
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         return [
@@ -25,8 +26,8 @@ class QuickEstimateRequest extends FormRequest
                     }
 
                     try {
-                        $fromDate = Carbon::createFromFormat('Y-m-d', $from)->startOfDay();
-                        $toDate = Carbon::createFromFormat('Y-m-d', $value)->startOfDay();
+                        $fromDate = (Carbon::createFromFormat('Y-m-d', $from) ?? now())->startOfDay();
+                        $toDate = (Carbon::createFromFormat('Y-m-d', $value) ?? now())->startOfDay();
                     } catch (\Throwable) {
                         return;
                     }

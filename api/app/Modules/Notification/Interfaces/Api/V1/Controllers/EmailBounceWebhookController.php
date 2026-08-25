@@ -48,14 +48,21 @@ class EmailBounceWebhookController extends Controller
             return new JsonResponse(['error' => 'Invalid signature'], 400);
         }
 
-        $email = (string) $request->input('email', '');
-        $event = (string) $request->input('event', 'bounce');
-        $reason = $request->input('reason');
-        $reason = is_string($reason) ? substr($reason, 0, 255) : null;
+        /** @var array{email: string, event: string, reason?: string|null} $payload */
+        $payload = $request->validate([
+            'email' => ['required', 'string', 'email:rfc', 'max:320'],
+            'event' => [
+                'required',
+                'string',
+                'max:64',
+                'in:bounce,hard_bounce,complaint,spam_complaint,delivered,opened,clicked,deferred',
+            ],
+            'reason' => ['nullable', 'string', 'max:255'],
+        ]);
 
-        if ($email === '') {
-            return new JsonResponse(['received' => true]);
-        }
+        $email = $payload['email'];
+        $event = $payload['event'];
+        $reason = $payload['reason'] ?? null;
 
         $employee = $this->lookup->resolve($email);
 
