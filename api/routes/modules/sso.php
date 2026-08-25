@@ -17,11 +17,11 @@ Route::get('/sso/providers', [SSOController::class, 'providers'])->middleware('t
 // QA #3000 : throttles sur les endpoints publics (anti abuse SAMLResponse/redirects)
 // + whereUuid sur {companyId} SAML (cohérent avec OIDC).
 Route::post('/sso/saml/{companyId}/callback', [SSOController::class, 'samlCallback'])
-    ->whereUuid('companyId')->middleware('throttle:api');
+    ->whereUuid('companyId')->middleware('throttle:10,1');
 Route::get('/sso/oidc/{companyId}/authorize', [SSOController::class, 'oidcAuthorize'])
-    ->whereUuid('companyId')->middleware('throttle:api');
+    ->whereUuid('companyId')->middleware('throttle:10,1');
 Route::get('/sso/oidc/{companyId}/callback', [SSOController::class, 'oidcCallback'])
-    ->whereUuid('companyId')->middleware('throttle:api');
+    ->whereUuid('companyId')->middleware('throttle:10,1');
 
 // Authenticated: SSO management (manager principal only)
 // #2635 : aligné sur le groupe standard (token.refresh + throttle:api-plan).
