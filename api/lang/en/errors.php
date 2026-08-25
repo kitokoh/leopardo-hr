@@ -257,6 +257,8 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'A delivery note must include its delivery date.',
     'DOCUMENT_NOT_FULLY_PAID' => 'The document cannot be marked paid until the full amount is settled.',
     'INVALID_DOCUMENT_TRANSITION' => 'Status transition not allowed for this document.',
+    'DOCUMENT_PDF_NOT_READY' => 'The document PDF is not ready yet.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'Share link not found or expired.',
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Invalid period. Use the YYYY-MM format.',
     'TWO_FACTOR_INVALID' => 'Invalid or expired two-factor authentication code.',
     'TWO_FACTOR_REQUIRED' => 'Two-factor authentication is required for this account. Enable it before signing in.',

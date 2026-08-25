@@ -21,6 +21,7 @@ class PayrollJournalGenerator
         $slips = $run->paySlips()
             ->with(['employee:id,first_name,last_name,matricule', 'lines'])
             ->where('status', 'validated')
+            ->orderBy('id')
             ->get();
 
         $header = ['matricule', 'nom', 'brut', 'cotisations_salariales', 'irg', 'autres_deductions', 'net_a_payer', 'cout_employeur'];

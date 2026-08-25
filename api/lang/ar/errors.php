@@ -259,5 +259,4 @@ return [
     'DOCUMENT_PDF_NOT_READY' => 'ملف PDF للمستند غير متوفر بعد.',
     'BANK_STATEMENT_DUPLICATE_IMPORT' => 'تم استيراد هذا الكشف البنكي بالفعل لهذه الفترة.',
     'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'هذا السطر أو الدفعة مطابق بالفعل.',
-    'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.',
-];
+    'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.',];

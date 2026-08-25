@@ -23,6 +23,9 @@ class PaySlipPdfGenerator
         'FR' => 'En application du Code du travail français. Cotisations CSG/CRDS incluses. Net imposable disponible.',
         'TR' => 'İş Kanunu uyarınca düzenlenmiştir. SGK primleri dahildir.',
         'SN' => 'Conformément au Code du travail sénégalais. IPRES/CSS incluses.',
+        'GB' => 'Issued in accordance with UK employment law. PAYE and National Insurance Class 1 included. Statutory minimum notice under the Employment Rights Act 1996.',
+        'US' => 'Issued in accordance with US federal payroll rules. FICA (Social Security and Medicare), FUTA and federal income tax withholding included. FLSA overtime rules apply.',
+        'CA' => 'Issued under the Canada Labour Code / Émis conformément au Code canadien du travail. CPP/RPC, CPP2 and EI/AE included.',
     ];
 
     public function generate(PaySlip $paySlip): string
