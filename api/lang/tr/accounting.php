@@ -57,12 +57,6 @@ return [
 
     // Doğrulama (issue #5227)
     'validation' => [
-        'amount_required' => 'Tutar gereklidir.',
-        'amount_min' => 'Tutar kesinlikle pozitif olmalıdır.',
-        'method_invalid' => 'Geçersiz ödeme yöntemi (cash, bank_transfer, check, card, other).',
-        'series_unknown' => 'Bilinmeyen seri: « :key » bir belge türü değil (:allowed).',
-    ],
-
         'bank_file_required' => 'CSV dosyası zorunludur.',
         'bank_file_mimes' => 'Dosya CSV formatında olmalıdır.',
         'bank_period_required' => 'Dönem zorunludur (YYYY-MM).',
@@ -70,7 +64,26 @@ return [
         'bank_reference_required' => 'İçe aktarma referansı zorunludur.',
         'bank_payment_required' => 'Eşleştirilecek ödeme zorunludur.',
         'bank_payment_exists' => 'Seçilen ödeme mevcut değil.',
+        'amount_required' => 'Tutar gereklidir.',
+        'amount_min' => 'Tutar kesinlikle pozitif olmalıdır.',
+        'method_invalid' => 'Geçersiz ödeme yöntemi (cash, bank_transfer, check, card, other).',
+        'series_unknown' => 'Bilinmeyen seri: « :key » bir belge türü değil (:allowed).',
+        'entry_ids_required' => 'En az bir kayıt gerekli.',
+        'entry_ids_integer' => 'Geçersiz kayıt kimlikleri.',
+        'entry_ids_min' => 'En az bir kayıt gerekli.',
+        'letter_required' => 'Harflendirme harfi zorunludur.',
+        'letter_max' => 'Harf çok uzun (maks 20 karakter).',
+        'period_required' => 'Dönem zorunludur.',
+        'period_invalid' => 'Geçersiz dönem (YYYY-AA biçimi).',
+        'year_required' => 'Yıl zorunludur.',
+        'year_integer' => 'Geçersiz yıl.',
+        'year_between' => 'Yıl izin verilen aralık dışında.',
+        'year_range' => 'Geçersiz yıl.',
+    ],
+
     'errors' => [
+        'statement_period_invalid' => 'Geçersiz hesap dönemi.',
+        'statement_year_invalid' => 'Geçersiz hesap yılı.',
         'gateway_checkout_failed' => 'Ödeme sağlayıcısı geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
         'payment_amount_positive' => 'Ödeme tutarı kesinlikle pozitif olmalıdır.',
         'wf_invalid_type' => 'Geçersiz belge türü.',
@@ -100,4 +113,11 @@ return [
     'tva_label_gst' => 'GST',
     'tva_label_reduced' => 'İndirimli KDV',
 
+    'chart_account_has_entries' => 'Bu hesapta kayıtlar var ve silinemez.',
+    'chart_system_account_not_deletable' => 'Sistem hesabı silinemez.',
+    'fec_no_entries' => 'Dönem için kayıt yok.',
+    'fiscal_year_already_closed' => 'Mali yıl zaten kapatılmış.',
+    'lettering_already_used' => 'Harflendirme zaten kullanılıyor.',
+    'lettering_invalid' => 'Geçersiz harflendirme.',
+    'lettering_unbalanced' => 'Dengesiz harflendirme.',
 ];

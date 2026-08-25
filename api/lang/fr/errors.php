@@ -2,7 +2,7 @@
 
 return [
     // Auth
-        'UNKNOWN_ACCOUNT' => "Aucun compte Leopardo RH n\'est associé à cet email Google. Demandez une invitation à votre administrateur.",
+    'UNKNOWN_ACCOUNT' => "Aucun compte Leopardo RH n\'est associé à cet email Google. Demandez une invitation à votre administrateur.",
     'INVALID_CREDENTIALS' => 'Email ou mot de passe incorrect.',
     'ACCOUNT_SUSPENDED' => 'Votre compte a été suspendu. Contactez votre responsable.',
     'ACCOUNT_ARCHIVED' => 'Ce compte est archivé.',
@@ -264,4 +264,9 @@ return [
     'BANK_STATEMENT_DUPLICATE_IMPORT' => 'Ce relevé bancaire a déjà été importé pour cette période.',
     'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'Cette ligne ou ce paiement est déjà rapproché.',
     'BANK_STATEMENT_IMPORT_FORMAT' => 'Le format du fichier de relevé est invalide.',
+    'ALREADY_SEEDED' => 'Les données de démonstration sont déjà présentes.',
+    'FISCAL_YEAR_ALREADY_CLOSED' => 'L\'exercice est déjà clôturé.',
+    'LETTERING_ALREADY_USED' => 'Ce lettrage est déjà utilisé.',
+    'LETTERING_INVALID' => 'Lettrage invalide.',
+    'LETTERING_UNBALANCED' => 'Lettrage non équilibré (débit ≠ crédit).',
 ];

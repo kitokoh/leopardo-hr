@@ -57,12 +57,6 @@ return [
 
     // Validation (issue #5227)
     'validation' => [
-        'amount_required' => 'The amount is required.',
-        'amount_min' => 'The amount must be strictly positive.',
-        'method_invalid' => 'Invalid payment method (cash, bank_transfer, check, card, other).',
-        'series_unknown' => 'Unknown series: « :key » is not a document type (:allowed).',
-    ],
-
         'bank_file_required' => 'The CSV file is required.',
         'bank_file_mimes' => 'The file must be CSV.',
         'bank_period_required' => 'The statement period is required (YYYY-MM).',
@@ -70,7 +64,26 @@ return [
         'bank_reference_required' => 'The import reference is required.',
         'bank_payment_required' => 'The payment to reconcile is required.',
         'bank_payment_exists' => 'The selected payment does not exist.',
+        'amount_required' => 'The amount is required.',
+        'amount_min' => 'The amount must be strictly positive.',
+        'method_invalid' => 'Invalid payment method (cash, bank_transfer, check, card, other).',
+        'series_unknown' => 'Unknown series: « :key » is not a document type (:allowed).',
+        'entry_ids_required' => 'At least one entry is required.',
+        'entry_ids_integer' => 'Invalid entry ids.',
+        'entry_ids_min' => 'At least one entry is required.',
+        'letter_required' => 'The lettering letter is required.',
+        'letter_max' => 'Letter too long (max 20 characters).',
+        'period_required' => 'The period is required.',
+        'period_invalid' => 'Invalid period (YYYY-MM format).',
+        'year_required' => 'The year is required.',
+        'year_integer' => 'Invalid year.',
+        'year_between' => 'Year out of allowed range.',
+        'year_range' => 'Invalid year.',
+    ],
+
     'errors' => [
+        'statement_period_invalid' => 'Invalid statement period.',
+        'statement_year_invalid' => 'Invalid statement year.',
         'gateway_checkout_failed' => 'The payment gateway is temporarily unavailable. Please try again later.',
         'payment_amount_positive' => 'The payment amount must be strictly positive.',
         'wf_invalid_type' => 'Invalid document type.',
@@ -100,4 +113,11 @@ return [
     'tva_label_gst' => 'GST',
     'tva_label_reduced' => 'Reduced VAT',
 
+    'chart_account_has_entries' => 'This account has entries and cannot be deleted.',
+    'chart_system_account_not_deletable' => 'System account cannot be deleted.',
+    'fec_no_entries' => 'No entries for the period.',
+    'fiscal_year_already_closed' => 'Fiscal year already closed.',
+    'lettering_already_used' => 'Lettering already used.',
+    'lettering_invalid' => 'Invalid lettering.',
+    'lettering_unbalanced' => 'Unbalanced lettering.',
 ];

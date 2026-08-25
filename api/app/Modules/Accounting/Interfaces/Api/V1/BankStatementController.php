@@ -80,8 +80,10 @@ final class BankStatementController extends Controller
     /**
      * GET /api/v1/accounting/bank-statements/{statement}
      */
-    public function show(BankStatement $statement): JsonResponse
+    public function show(Request $request, BankStatement $statement): JsonResponse
     {
+        $this->assertTenantScope($request, $statement);
+
         return response()->json([
             'data' => $this->serializeStatement($statement),
         ]);
@@ -90,8 +92,10 @@ final class BankStatementController extends Controller
     /**
      * POST /api/v1/accounting/bank-statements/{statement}/reconcile
      */
-    public function reconcile(BankStatement $statement): JsonResponse
+    public function reconcile(Request $request, BankStatement $statement): JsonResponse
     {
+        $this->assertTenantScope($request, $statement);
+
         $result = $this->reconciliationService->autoReconcile($statement);
 
         return response()->json([
@@ -102,9 +106,11 @@ final class BankStatementController extends Controller
     /**
      * POST /api/v1/accounting/bank-statement-lines/{line}/match
      */
-    public function match(BankStatementLine $line, MatchBankStatementLineRequest $request): JsonResponse
+    public function match(Request $request, BankStatementLine $line, MatchBankStatementLineRequest $matchRequest): JsonResponse
     {
-        $paymentId = $request->validated('payment_id');
+        $this->assertTenantLineScope($request, $line);
+
+        $paymentId = $matchRequest->validated('payment_id');
         /** @var AccountingPayment $payment */
         $payment = AccountingPayment::query()->findOrFail(is_numeric($paymentId) ? (int) $paymentId : 0);
 
@@ -125,8 +131,10 @@ final class BankStatementController extends Controller
     /**
      * GET /api/v1/accounting/bank-statements/{statement}/status
      */
-    public function status(BankStatement $statement): JsonResponse
+    public function status(Request $request, BankStatement $statement): JsonResponse
     {
+        $this->assertTenantScope($request, $statement);
+
         return response()->json([
             'data' => $this->reconciliationService->status($statement),
         ]);
@@ -160,5 +168,27 @@ final class BankStatementController extends Controller
                     'confidence' => $line->confidence,
                 ])->values(),
         ];
+    }
+
+    /**
+     * Garde d'isolation tenant (fail-closed #3727) : le scope global du trait
+     * BelongsToCompany ne s'applique PAS au route-model binding implicite.
+     */
+    private function assertTenantScope(Request $request, BankStatement $statement): void
+    {
+        $companyId = $request->user()?->getAttribute('company_id');
+
+        if ($companyId !== null && (string) $statement->company_id !== (string) $companyId) {
+            abort(404);
+        }
+    }
+
+    private function assertTenantLineScope(Request $request, BankStatementLine $line): void
+    {
+        $companyId = $request->user()?->getAttribute('company_id');
+
+        if ($companyId !== null && (string) $line->company_id !== (string) $companyId) {
+            abort(404);
+        }
     }
 }

@@ -57,12 +57,6 @@ return [
 
     // التحقق (issue #5227)
     'validation' => [
-        'amount_required' => 'المبلغ مطلوب.',
-        'amount_min' => 'يجب أن يكون المبلغ موجباً تماماً.',
-        'method_invalid' => 'طريقة دفع غير صالحة (cash, bank_transfer, check, card, other).',
-        'series_unknown' => 'سلسلة غير معروفة: « :key » ليست نوع مستند (:allowed).',
-    ],
-
         'bank_file_required' => 'ملف CSV مطلوب.',
         'bank_file_mimes' => 'يجب أن يكون الملف بصيغة CSV.',
         'bank_period_required' => 'فترة الكشف مطلوبة (YYYY-MM).',
@@ -70,7 +64,26 @@ return [
         'bank_reference_required' => 'مرجع الاستيراد مطلوب.',
         'bank_payment_required' => 'الدفعة المراد مطابقتها مطلوبة.',
         'bank_payment_exists' => 'الدفعة المحددة غير موجودة.',
+        'amount_required' => 'المبلغ مطلوب.',
+        'amount_min' => 'يجب أن يكون المبلغ موجباً تماماً.',
+        'method_invalid' => 'طريقة دفع غير صالحة (cash, bank_transfer, check, card, other).',
+        'series_unknown' => 'سلسلة غير معروفة: « :key » ليست نوع مستند (:allowed).',
+        'entry_ids_required' => 'مطلوب قيد واحد على الأقل.',
+        'entry_ids_integer' => 'معرفات قيود غير صالحة.',
+        'entry_ids_min' => 'مطلوب قيد واحد على الأقل.',
+        'letter_required' => 'حرف الترقيم مطلوب.',
+        'letter_max' => 'الحرف طويل جدًا (20 حرفًا كحد أقصى).',
+        'period_required' => 'الفترة مطلوبة.',
+        'period_invalid' => 'فترة غير صالحة (صيغة YYYY-MM).',
+        'year_required' => 'السنة مطلوبة.',
+        'year_integer' => 'سنة غير صالحة.',
+        'year_between' => 'السنة خارج النطاق المسموح.',
+        'year_range' => 'سنة غير صالحة.',
+    ],
+
     'errors' => [
+        'statement_period_invalid' => 'فترة كشف حساب غير صالحة.',
+        'statement_year_invalid' => 'سنة كشف حساب غير صالحة.',
         'gateway_checkout_failed' => 'بوابة الدفع غير متاحة مؤقتًا. يرجى المحاولة لاحقًا.',
         'payment_amount_positive' => 'يجب أن يكون مبلغ الدفع موجباً تماماً.',
         'wf_invalid_type' => 'نوع مستند غير صالح.',
@@ -100,4 +113,11 @@ return [
     'tva_label_gst' => 'ضريبة السلع والخدمات',
     'tva_label_reduced' => 'الضريبة المخفضة',
 
+    'chart_account_has_entries' => 'يحتوي هذا الحساب على قيود ولا يمكن حذفه.',
+    'chart_system_account_not_deletable' => 'لا يمكن حذف حساب النظام.',
+    'fec_no_entries' => 'لا توجد قيود للفترة.',
+    'fiscal_year_already_closed' => 'السنة المالية مغلقة بالفعل.',
+    'lettering_already_used' => 'الترقيم مستخدم بالفعل.',
+    'lettering_invalid' => 'ترقيم غير صالح.',
+    'lettering_unbalanced' => 'ترقيم غير متوازن.',
 ];

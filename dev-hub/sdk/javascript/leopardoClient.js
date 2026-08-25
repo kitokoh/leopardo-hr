@@ -140,9 +140,24 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/absences/{absence}/reject", options);
     },
 
+    /** Etat d'activation du module Comptabilite (check-list du wizard) */
+    getAccountingActivation(options = {}) {
+      return request("GET", "/accounting/activation", options);
+    },
+
+    /** Executer l'activation guidee du module Comptabilite (wizard) */
+    postAccountingActivation(options = {}) {
+      return request("POST", "/accounting/activation", options);
+    },
+
     /** Audit trail du module Comptabilité (qui/quoi/quand, #5273) */
     getAccountingAuditLogs(options = {}) {
       return request("GET", "/accounting/audit-logs", options);
+    },
+
+    /** Balance comptable — #5422 */
+    getAccountingBalance(options = {}) {
+      return request("GET", "/accounting/balance", options);
     },
 
     /** Rapprochement manuel d'une ligne */
@@ -205,6 +220,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/accounting/currency/convert", options);
     },
 
+    /** Tableau de bord comptable — factures emises, encaissements, impayes, depenses */
+    getAccountingDashboard(options = {}) {
+      return request("GET", "/accounting/dashboard", options);
+    },
+
+    /** Export CSV de la liste des impayes */
+    getAccountingDashboardExport(options = {}) {
+      return request("GET", "/accounting/dashboard/export", options);
+    },
+
     /** Lister les documents comptables du tenant (pagine, filtres, #5223) */
     getAccountingDocuments(options = {}) {
       return request("GET", "/accounting/documents", options);
@@ -265,9 +290,54 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/accounting/documents/shared/{token}/download", options);
     },
 
+    /** Lister les exercices comptables — #5422 */
+    getAccountingFiscalYears(options = {}) {
+      return request("GET", "/accounting/fiscal-years", options);
+    },
+
+    /** Creer un exercice comptable — #5422 */
+    postAccountingFiscalYears(options = {}) {
+      return request("POST", "/accounting/fiscal-years", options);
+    },
+
+    /** Cloturer un exercice — #5422 */
+    postAccountingFiscalYearsByYearClose(options = {}) {
+      return request("POST", "/accounting/fiscal-years/{year}/close", options);
+    },
+
+    /** Journal comptable par periode */
+    getAccountingJournal(options = {}) {
+      return request("GET", "/accounting/journal", options);
+    },
+
+    /** Export FEC (Fichier des Ecritures Comptables) CSV — #5422 */
+    getAccountingJournalExportFec(options = {}) {
+      return request("GET", "/accounting/journal/export-fec", options);
+    },
+
+    /** Export CSV du journal (expert-comptable) */
+    getAccountingJournalExportCsv(options = {}) {
+      return request("GET", "/accounting/journal/export.csv", options);
+    },
+
+    /** Lettrage d'ecritures (debit/credit) — #5422 */
+    postAccountingJournalLettering(options = {}) {
+      return request("POST", "/accounting/journal/lettering", options);
+    },
+
+    /** De-lettrage — #5422 */
+    deleteAccountingJournalLetteringByLetter(options = {}) {
+      return request("DELETE", "/accounting/journal/lettering/{letter}", options);
+    },
+
     /** Cloturer une periode comptable */
     postAccountingJournalPeriodsByPeriodClose(options = {}) {
       return request("POST", "/accounting/journal/periods/{period}/close", options);
+    },
+
+    /** Grand livre par periode et compte — #5422 */
+    getAccountingLedger(options = {}) {
+      return request("GET", "/accounting/ledger", options);
     },
 
     /** Lister les paiements */
@@ -303,6 +373,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Mettre a jour le parametrage comptable de l'entreprise */
     putAccountingSettings(options = {}) {
       return request("PUT", "/accounting/settings", options);
+    },
+
+    /** Bilan comptable (balance sheet) par exercice — #5422 */
+    getAccountingStatementsBalanceSheet(options = {}) {
+      return request("GET", "/accounting/statements/balance-sheet", options);
+    },
+
+    /** Compte de resultat par periode — #5422 */
+    getAccountingStatementsIncomeStatement(options = {}) {
+      return request("GET", "/accounting/statements/income-statement", options);
     },
 
     /** Envoyer un message a l'assistant IA (super-admin) */
@@ -820,43 +900,23 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/attendance/dashboard", options);
     },
 
-    /** Lister les fermetures de journée (manager/RH/principal) */
+    /** Lister les clotures de journee (manager RH/principal) — #5406 */
     getAttendanceDayClosures(options = {}) {
       return request("GET", "/attendance/day-closures", options);
     },
 
-    /** Lister les fermetures de journée (manager/RH/principal) */
-    getAttendanceDayClosures2(options = {}) {
-      return request("GET", "/attendance/day-closures", options);
-    },
-
-    /** Verrouiller la journée d'un employé (manager/RH/principal) */
+    /** Creer une cloture de journee — #5406 */
     postAttendanceDayClosures(options = {}) {
       return request("POST", "/attendance/day-closures", options);
     },
 
-    /** Verrouiller la journée d'un employé (manager/RH/principal) */
-    postAttendanceDayClosures2(options = {}) {
-      return request("POST", "/attendance/day-closures", options);
-    },
-
-    /** Lever une fermeture de journée (manager/RH/principal) */
+    /** Supprimer une cloture de journee — #5406 */
     deleteAttendanceDayClosuresById(options = {}) {
       return request("DELETE", "/attendance/day-closures/{id}", options);
     },
 
-    /** Lever une fermeture de journée (manager/RH/principal) */
-    deleteAttendanceDayClosuresById2(options = {}) {
-      return request("DELETE", "/attendance/day-closures/{id}", options);
-    },
-
-    /** Valider une journée verrouillée (manager/RH/principal) */
+    /** Valider une cloture de journee — #5406 */
     postAttendanceDayClosuresByIdValidate(options = {}) {
-      return request("POST", "/attendance/day-closures/{id}/validate", options);
-    },
-
-    /** Valider une journée verrouillée (manager/RH/principal) */
-    postAttendanceDayClosuresByIdValidate2(options = {}) {
       return request("POST", "/attendance/day-closures/{id}/validate", options);
     },
 
@@ -1900,22 +1960,12 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/expense-claims/{expenseClaim}", options);
     },
 
-    /** Ecritures comptables d'une note de frais approuvee (#5235) */
+    /** Ecritures comptables d'une note de frais — #5235 */
     getExpenseClaimsByExpenseClaimAccountingEntries(options = {}) {
       return request("GET", "/expense-claims/{expenseClaim}/accounting-entries", options);
     },
 
-    /** Journal comptable par periode */
-    getExpenseClaimsByExpenseClaimAccountingEntries2(options = {}) {
-      return request("GET", "/expense-claims/{expenseClaim}/accounting-entries", options);
-    },
-
-    /** Export CSV du journal (expert-comptable) */
-    getExpenseClaimsByExpenseClaimAccountingEntriesRegenerate(options = {}) {
-      return request("GET", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", options);
-    },
-
-    /** Regenerer les ecritures comptables d'une note (comptable, idempotent) */
+    /** Regenerer les ecritures comptables d'une note (comptable, idempotent) — #5235 */
     postExpenseClaimsByExpenseClaimAccountingEntriesRegenerate(options = {}) {
       return request("POST", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", options);
     },
@@ -3668,66 +3718,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier un site */
     putSitesBySite(options = {}) {
       return request("PUT", "/sites/{site}", options);
-    },
-
-    /** Lire la configuration de mode active pour l'employe connecte */
-    getSmartAttendanceConfig(options = {}) {
-      return request("GET", "/smart-attendance/config", options);
-    },
-
-    /** Statistiques du jour — Smart Attendance (manager/RH) */
-    getSmartAttendanceDashboard(options = {}) {
-      return request("GET", "/smart-attendance/dashboard", options);
-    },
-
-    /** Préférence mode géolocalisation d'un employé (manager/RH) */
-    getSmartAttendanceEmployeesByEmployeeIdPreference(options = {}) {
-      return request("GET", "/smart-attendance/employees/{employeeId}/preference", options);
-    },
-
-    /** Envoyer un événement géographique (entrée/sortie de zone) */
-    postSmartAttendanceGeoEvents(options = {}) {
-      return request("POST", "/smart-attendance/geo-events", options);
-    },
-
-    /** Parametres du mode de pointage de l'entreprise */
-    getSmartAttendanceModeSettings(options = {}) {
-      return request("GET", "/smart-attendance/mode-settings", options);
-    },
-
-    /** Configurer le mode de pointage (principal) */
-    putSmartAttendanceModeSettings(options = {}) {
-      return request("PUT", "/smart-attendance/mode-settings", options);
-    },
-
-    /** Sessions GPS de l'employé courant */
-    getSmartAttendanceMySessions(options = {}) {
-      return request("GET", "/smart-attendance/my-sessions", options);
-    },
-
-    /** Mettre à jour les préférences de pointage */
-    putSmartAttendancePreferences(options = {}) {
-      return request("PUT", "/smart-attendance/preferences", options);
-    },
-
-    /** Lister les sessions GPS */
-    getSmartAttendanceSessions(options = {}) {
-      return request("GET", "/smart-attendance/sessions", options);
-    },
-
-    /** Détail d'une session GPS */
-    getSmartAttendanceSessionsById(options = {}) {
-      return request("GET", "/smart-attendance/sessions/{id}", options);
-    },
-
-    /** Approuver une session GPS (manager/RH) */
-    postSmartAttendanceSessionsByIdApprove(options = {}) {
-      return request("POST", "/smart-attendance/sessions/{id}/approve", options);
-    },
-
-    /** Rejeter une session GPS (manager/RH) */
-    postSmartAttendanceSessionsByIdReject(options = {}) {
-      return request("POST", "/smart-attendance/sessions/{id}/reject", options);
     },
 
     /** Lister les regles de cotisations sociales (manager) */

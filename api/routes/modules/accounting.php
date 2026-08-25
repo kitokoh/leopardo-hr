@@ -13,15 +13,30 @@ declare(strict_types=1);
  * BelongsToCompany (scope global fail-closed #3727).
  */
 
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingActivationController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCheckoutController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingDashboardController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingFecController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingFiscalYearController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingLedgerController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingLetteringController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingStatementController;
 use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
 use Illuminate\Support\Facades\Route;
+
+// Public: consultation + téléchargement d'un document partagé (token + throttle).
+// Issue #5225 — le token de partage est la credential (pas d'auth Sanctum).
+Route::get('/accounting/documents/shared/{token}', [PublicDocumentShareController::class, 'info'])
+    ->middleware('throttle:60,1');
+Route::get('/accounting/documents/shared/{token}/download', [PublicDocumentShareController::class, 'download'])
+    ->middleware('throttle:60,1');
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
     ->prefix('accounting')
@@ -40,6 +55,22 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // PUT  : upsert avec validation (devise, TVA, séries, mentions).
             Route::get('/settings', [AccountingSettingsController::class, 'show']);
             Route::put('/settings', [AccountingSettingsController::class, 'update']);
+
+            // Déclaration TVA par période (issue #5271).
+            Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
+
+            // Conversion multi-devises (issue #5270) — calcul pur, aucun état
+            // persistant : HT/TVA/TTC entre devise de document et devise de
+            // référence. Taux manuel requis dès que les devises diffèrent.
+            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
+
+            // Activation guidée du module (issue #5288) — wizard comptable/principal.
+            Route::get('/activation', [AccountingActivationController::class, 'show']);
+            Route::post('/activation', [AccountingActivationController::class, 'complete']);
+
+            // Tableaux de bord comptables (issue #5230) — rapports manager/comptable.
+            Route::get('/dashboard', [AccountingDashboardController::class, 'show']);
+            Route::get('/dashboard/export', [AccountingDashboardController::class, 'export']);
 
         });
 
@@ -61,15 +92,31 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/audit-logs', [AccountingAuditController::class, 'index']);
         });
 
+        // ── Journal des écritures (issue #5234) — débit/crédit + clôture ────
+        Route::middleware('api.manager:principal,comptable')->group(function (): void {
+            Route::get('/journal', [AccountingJournalController::class, 'index']);
+            Route::get('/journal/export.csv', [AccountingJournalController::class, 'export']);
+            Route::post('/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
+            Route::post('/documents/{document}/journal', [AccountingJournalController::class, 'postDocument'])->whereNumber('document');
+        });
 
-            // ── Rapports (issue #5271) — déclaration TVA par période.
-            Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
+        // ── Profondeur production (#5422) — grand livre, exercices, lettrage,
+        // états financiers (FEC / bilan / compte de résultat) — RBAC
+        // principal/comptable.
+        Route::middleware('api.manager:principal,comptable')->group(function (): void {
+            Route::get('/ledger', [AccountingLedgerController::class, 'index']);
+            Route::get('/balance', [AccountingLedgerController::class, 'balance']);
+            Route::get('/fiscal-years', [AccountingFiscalYearController::class, 'index']);
+            Route::post('/fiscal-years', [AccountingFiscalYearController::class, 'store']);
+            Route::post('/fiscal-years/{year}/close', [AccountingFiscalYearController::class, 'close'])->whereNumber('year');
+            Route::post('/journal/lettering', [AccountingLetteringController::class, 'store']);
+            Route::delete('/journal/lettering/{letter}', [AccountingLetteringController::class, 'destroy']);
+            Route::get('/statements/balance-sheet', [AccountingStatementController::class, 'balanceSheet']);
+            Route::get('/statements/income-statement', [AccountingStatementController::class, 'incomeStatement']);
+            Route::get('/journal/export-fec', [AccountingFecController::class, 'export']);
+        });
 
-            // ── Conversion multi-devises (issue #5270) — calcul pur, aucun
-            // état persistant : HT/TVA/TTC entre devise de document et devise
-            // de référence. Taux manuel requis dès que les devises diffèrent.
-            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
-
+        // ── Rapports (issue #5271) — déclaration TVA par période.
     });
 /**
  * Routes API du module Comptabilité — trésorerie : paiements, rapprochement,
@@ -96,5 +143,3 @@ Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:princ
     Route::get('accounting/bank-statements/{statement}/status', [BankStatementController::class, 'status']);
     Route::post('accounting/bank-statement-lines/{line}/match', [BankStatementController::class, 'match']);
 });
-
-

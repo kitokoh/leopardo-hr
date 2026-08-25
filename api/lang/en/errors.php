@@ -2,7 +2,7 @@
 
 return [
     // Auth
-        'UNKNOWN_ACCOUNT' => 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
+    'UNKNOWN_ACCOUNT' => 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
     'INVALID_CREDENTIALS' => 'Invalid email or password.',
     'ACCOUNT_SUSPENDED' => 'Your account has been suspended. Contact your manager.',
     'ACCOUNT_ARCHIVED' => 'This account is archived.',
@@ -270,4 +270,9 @@ return [
     'BANK_STATEMENT_DUPLICATE_IMPORT' => 'This bank statement has already been imported for this period.',
     'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'This line or payment is already reconciled.',
     'BANK_STATEMENT_IMPORT_FORMAT' => 'The statement file format is invalid.',
+    'ALREADY_SEEDED' => 'Demo data has already been seeded.',
+    'FISCAL_YEAR_ALREADY_CLOSED' => 'The fiscal year is already closed.',
+    'LETTERING_ALREADY_USED' => 'This lettering is already used.',
+    'LETTERING_INVALID' => 'Invalid lettering.',
+    'LETTERING_UNBALANCED' => 'Unbalanced lettering (debit ≠ credit).',
 ];

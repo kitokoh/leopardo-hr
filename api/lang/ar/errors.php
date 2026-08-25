@@ -2,7 +2,7 @@
 
 return [
     // Auth
-        'UNKNOWN_ACCOUNT' => 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
+    'UNKNOWN_ACCOUNT' => 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
     'INVALID_CREDENTIALS' => 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
     'ACCOUNT_SUSPENDED' => 'تم تعليق حسابك. تواصل مع المسؤول.',
     'ACCOUNT_ARCHIVED' => 'هذا الحساب مؤرشف.',
@@ -260,4 +260,10 @@ return [
     'DOCUMENT_PDF_NOT_READY' => 'ملف PDF للمستند غير متوفر بعد.',
     'BANK_STATEMENT_DUPLICATE_IMPORT' => 'تم استيراد هذا الكشف البنكي بالفعل لهذه الفترة.',
     'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'هذا السطر أو الدفعة مطابق بالفعل.',
-    'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.',];
+    'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.',
+    'ALREADY_SEEDED' => 'تم بالفعل تحميل البيانات التجريبية.',
+    'FISCAL_YEAR_ALREADY_CLOSED' => 'السنة المالية مغلقة بالفعل.',
+    'LETTERING_ALREADY_USED' => 'هذا الترقيم مستخدم بالفعل.',
+    'LETTERING_INVALID' => 'ترقيم غير صالح.',
+    'LETTERING_UNBALANCED' => 'ترقيم غير متوازن (مدين ≠ دائن).',
+];

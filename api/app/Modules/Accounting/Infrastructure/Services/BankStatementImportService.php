@@ -287,6 +287,16 @@ final class BankStatementImportService
             return null;
         }
 
+        if (! $date instanceof Carbon) {
+            return null;
+        }
+
+        // Strict : `2026-13-99` déborde silencieusement chez Carbon — un
+        // round-trip garantit que la valeur saisie est une date réelle.
+        if ($date->format($this->dateFormat()) !== $value) {
+            return null;
+        }
+
         return $date;
     }
 
