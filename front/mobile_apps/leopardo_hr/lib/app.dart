@@ -27,7 +27,7 @@ import 'package:leopardo_core/features/absences/screens/absence_list_screen.dart
 import 'package:leopardo_core/features/salary_advances/screens/salary_advance_list_screen.dart';
 import 'package:leopardo_hr/features/payrolls/screens/payroll_list_screen.dart';
 import 'package:leopardo_core/features/cabinet/screens/cabinet_screen.dart';
-import 'package:leopardo_hr/features/settings/screens/settings_screen.dart';
+import 'package:leopardo_core/features/settings/screens/settings_screen.dart';
 import 'package:leopardo_core/features/team/screens/team_screen.dart';
 import 'package:leopardo_core/features/user_auth/screens/user_register_screen.dart';
 import 'package:leopardo_core/features/user_auth/screens/user_login_screen.dart';
