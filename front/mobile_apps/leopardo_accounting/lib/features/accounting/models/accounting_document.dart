@@ -75,8 +75,10 @@ class AccountingDocument {
     }
     return raw
         .whereType<Map>()
-        .map((item) =>
-            AccountingDocumentLine.fromJson(item.cast<String, dynamic>()))
+        .map(
+          (item) =>
+              AccountingDocumentLine.fromJson(item.cast<String, dynamic>()),
+        )
         .toList();
   }
 

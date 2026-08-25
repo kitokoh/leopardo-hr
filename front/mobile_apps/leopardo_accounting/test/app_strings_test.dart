@@ -51,7 +51,10 @@ void main() {
     });
 
     test('les 4 locales sont supportées par MaterialApp', () {
-      expect(AppStrings.supportedLocales, containsAll(['fr', 'ar', 'tr', 'en']));
+      expect(
+        AppStrings.supportedLocales,
+        containsAll(['fr', 'ar', 'tr', 'en']),
+      );
     });
   });
 }

@@ -32,20 +32,20 @@ class AccountingRepository {
     final items = extractDataList(response.data);
     return items
         .whereType<Map>()
-        .map((item) =>
-            AccountingDocument.fromJson(item.cast<String, dynamic>()))
+        .map(
+          (item) => AccountingDocument.fromJson(item.cast<String, dynamic>()),
+        )
         .toList();
   }
 
   /// Documents en attente de paiement (envoyés + en retard).
   Future<List<AccountingDocument>> listUnpaid() async {
     final documents = await listDocuments();
-    return documents.where((doc) => doc.isUnpaid).toList()
-      ..sort((a, b) {
-        final aDate = a.dueDate ?? '';
-        final bDate = b.dueDate ?? '';
-        return aDate.compareTo(bDate);
-      });
+    return documents.where((doc) => doc.isUnpaid).toList()..sort((a, b) {
+      final aDate = a.dueDate ?? '';
+      final bDate = b.dueDate ?? '';
+      return aDate.compareTo(bDate);
+    });
   }
 
   /// Crée un document de type facture (POST /accounting/documents).
@@ -64,8 +64,7 @@ class AccountingRepository {
         'type': 'invoice',
         if (contactId != null && contactId.isNotEmpty)
           'contact_id': int.tryParse(contactId),
-        if (issueDate != null)
-          'issue_date': _formatDate(issueDate),
+        if (issueDate != null) 'issue_date': _formatDate(issueDate),
         if (dueDate != null) 'due_date': _formatDate(dueDate),
         if (tvaRate != null) 'tva_rate': tvaRate,
         if (notes != null && notes.isNotEmpty) 'notes': notes,

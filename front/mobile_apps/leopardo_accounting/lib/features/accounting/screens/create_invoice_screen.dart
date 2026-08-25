@@ -109,37 +109,36 @@ class _CreateInvoiceScreenState extends ConsumerState<CreateInvoiceScreen> {
     lines.removeWhere((line) => line.description.isEmpty);
 
     if (lines.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_l10n().t('fillRequired'))),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(_l10n().t('fillRequired'))));
       return;
     }
 
     setState(() => _submitting = true);
     try {
-      await ref.read(createInvoiceProvider({
-        'contact_id': _contactController.text.trim().isEmpty
-            ? null
-            : _contactController.text.trim(),
-        'issue_date': _issueDate,
-        'due_date': _dueDate,
-        'tva_rate': double.tryParse(_tvaController.text),
-        'notes': _notesController.text.trim().isEmpty
-            ? null
-            : _notesController.text.trim(),
-        'lines': lines,
-      }).future);
+      await ref.read(
+        createInvoiceProvider({
+          'contact_id': _contactController.text.trim().isEmpty
+              ? null
+              : _contactController.text.trim(),
+          'issue_date': _issueDate,
+          'due_date': _dueDate,
+          'tva_rate': double.tryParse(_tvaController.text),
+          'notes': _notesController.text.trim().isEmpty
+              ? null
+              : _notesController.text.trim(),
+          'lines': lines,
+        }).future,
+      );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_l10n().t('createSuccess'))),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(_l10n().t('createSuccess'))));
         context.pop();
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_l10n().t('createError'))),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(_l10n().t('createError'))));
       }
     } finally {
       if (mounted) {
@@ -148,9 +147,8 @@ class _CreateInvoiceScreenState extends ConsumerState<CreateInvoiceScreen> {
     }
   }
 
-  AppStrings _l10n() => AppStrings.of(
-        ref.read(appPreferencesProvider).preferredLanguage,
-      );
+  AppStrings _l10n() =>
+      AppStrings.of(ref.read(appPreferencesProvider).preferredLanguage);
 
   @override
   Widget build(BuildContext context) {

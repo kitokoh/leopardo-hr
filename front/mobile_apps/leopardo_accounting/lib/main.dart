@@ -131,9 +131,7 @@ class LeopardoAccountingApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(_routerProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final locale = Locale(
-      AppStrings.of(preferences.preferredLanguage).locale,
-    );
+    final locale = Locale(AppStrings.of(preferences.preferredLanguage).locale);
 
     return MaterialApp.router(
       title: 'Leopardo Accounting',

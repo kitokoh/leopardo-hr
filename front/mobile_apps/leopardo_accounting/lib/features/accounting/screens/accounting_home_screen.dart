@@ -107,7 +107,10 @@ class _ActionCard extends StatelessWidget {
           child: Icon(icon, color: color),
         ),
         title: Text(title, style: AppTypography.body.copyWith(color: text)),
-        subtitle: Text(subtitle, style: AppTypography.caption.copyWith(color: muted)),
+        subtitle: Text(
+          subtitle,
+          style: AppTypography.caption.copyWith(color: muted),
+        ),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,
       ),

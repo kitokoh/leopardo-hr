@@ -108,7 +108,9 @@ class _UnpaidTile extends StatelessWidget {
           Text(
             '${l10n.t('remaining')} : ${_formatAmount(document.remaining, document.currency)}',
             style: AppTypography.bodySmall.copyWith(
-              color: isOverdue ? AppColors.danger : AppColors.textPrimaryFor(context),
+              color: isOverdue
+                  ? AppColors.danger
+                  : AppColors.textPrimaryFor(context),
             ),
           ),
           Text(

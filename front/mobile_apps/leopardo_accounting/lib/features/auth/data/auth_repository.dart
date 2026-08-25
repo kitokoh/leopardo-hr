@@ -95,7 +95,8 @@ class AuthRepository {
     } catch (e) {
       // Ne supprimer le token que sur un 401 explicite (une erreur réseau ne
       // doit pas détruire la session).
-      final isAuthError = e is ApiException &&
+      final isAuthError =
+          e is ApiException &&
           (e.statusCode == 401 || e.code == 'UNAUTHENTICATED');
       if (isAuthError) {
         await storage.deleteToken();
@@ -112,8 +113,9 @@ class AuthRepository {
     );
   }
 
-  static Map<String, dynamic> _envelope(dynamic payload) =>
-      payload is Map ? payload.cast<String, dynamic>() : const <String, dynamic>{};
+  static Map<String, dynamic> _envelope(dynamic payload) => payload is Map
+      ? payload.cast<String, dynamic>()
+      : const <String, dynamic>{};
 
   static Map<String, dynamic> extractEmployeeJson(
     Map<String, dynamic> payload,
