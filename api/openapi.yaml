@@ -11185,6 +11185,42 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /accounting/documents/shared/{token}:
+    get:
+      tags: ["Accounting"]
+      summary: "Portail client — informations du document partagé (token)"
+      description: "Endpoint public : le token de partage est la credential. Accès RGPD limité au document partagé (issue #5225)."
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Méta-données du document (numéro, type, statut, total TTC, expiration)"
+        "404":
+          description: "Token invalide ou expiré"
+        "429":
+          description: "Trop de requêtes (throttle)"
+
+  /accounting/documents/shared/{token}/download:
+    get:
+      tags: ["Accounting"]
+      summary: "Portail client — téléchargement du PDF partagé (token)"
+      description: "Endpoint public : télécharge le PDF du document partagé (issue #5225)."
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "PDF du document"
+        "404":
+          description: "Token invalide/expiré ou PDF non prêt"
+        "429":
+          description: "Trop de requêtes (throttle)"
+
   /supported-countries:
     get:
       tags: ["Payroll Engine"]
@@ -14473,68 +14509,6 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /recruitment/jobs/{jobPosting}:
-    get:
-      tags: ["Recruitment"]
-      summary: "Voir une offre"
-      parameters:
-        - name: jobPosting
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Detail offre"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/JobPosting"
-        "401":
-          $ref: "#/components/responses/Error401"
-    put:
-      tags: ["Recruitment"]
-      summary: "Modifier une offre"
-      parameters:
-        - name: jobPosting
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/StoreJobPostingRequest"
-      responses:
-        "200":
-          description: "Offre modifiee"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/JobPosting"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer une offre d'emploi (manager)"
-      parameters:
-        - name: jobPosting
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Offre supprimée"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /recruitment/jobs/{jobPosting}/publish:
     post:
       tags: ["Recruitment"]
@@ -14623,77 +14597,12 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /recruitment/applicants/{applicant}:
-    put:
-      tags: ["Recruitment"]
-      summary: "Modifier un candidat"
-      parameters:
-        - name: applicant
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                stage:
-                  type: string
-                rating:
-                  type: integer
-                  minimum: 1
-                  maximum: 5
-                notes:
-                  type: string
-                  nullable: true
-      responses:
-        "200":
-          description: "Candidat modifie"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/Applicant"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-    get:
-      tags: ["Recruitment"]
-      summary: "Détail d'une candidature (manager)"
-      parameters:
-        - name: applicant
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Candidature"
-        "401":
-          $ref: "#/components/responses/Error401"
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer une candidature (manager)"
-      parameters:
-        - name: applicant
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Candidature supprimée"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /recruitment/applicants/{applicant}/interviews:
+  /recruitment/applicants/{id}/interviews:
     post:
       tags: ["Recruitment"]
       summary: "Planifier un entretien"
       parameters:
-        - name: applicant
+        - name: id
           in: path
           required: true
           schema: { type: integer }
@@ -14728,53 +14637,6 @@ paths:
           $ref: "#/components/responses/Error401"
         "422":
           $ref: "#/components/responses/Validation422"
-
-  /recruitment/interviews/{interview}:
-    put:
-      tags: ["Recruitment"]
-      summary: "Modifier un entretien"
-      parameters:
-        - name: interview
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                status:
-                  type: string
-                  enum: [scheduled, completed, cancelled]
-                feedback:
-                  type: string
-                  nullable: true
-                rating:
-                  type: integer
-                  minimum: 1
-                  maximum: 5
-      responses:
-        "200":
-          description: "Entretien modifie"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  # --- Training ---
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer un entretien (manager)"
-      parameters:
-        - name: interview
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Entretien supprimé"
-        "401":
-          $ref: "#/components/responses/Error401"
 
   /training/courses:
     get:
@@ -16386,10 +16248,24 @@ paths:
     get:
       tags: ["Admin"]
       summary: "Journal d'audit"
+      description: |
+        Journal d'audit global (#5439) — manager `principal` ou `rh` du tenant.
+        Isolation tenant stricte (company_id de l'acteur). Filtres : module
+        (attendance, payroll, planning, hr, auth, audit...), action,
+        auditable_type/auditable_id, user_id, from, to.
       parameters:
+        - name: module
+          in: query
+          schema: { type: string }
         - name: action
           in: query
           schema: { type: string }
+        - name: auditable_type
+          in: query
+          schema: { type: string }
+        - name: auditable_id
+          in: query
+          schema: { type: integer }
         - name: user_id
           in: query
           schema: { type: integer }
@@ -16426,9 +16302,13 @@ paths:
       tags: ["Admin"]
       summary: "Exporter le journal d'audit en CSV"
       description: |
-        Reserve au manager `principal`. Applique les memes filtres que `GET /audit-logs`
-        (action, user_id, from, to) et retourne un flux CSV (`Content-Type: text/csv`).
+        Reserve aux managers `principal` et `rh`. Applique les memes filtres que
+        `GET /audit-logs` (module, action, user_id, from, to) et retourne un flux
+        CSV (`Content-Type: text/csv`).
       parameters:
+        - name: module
+          in: query
+          schema: { type: string }
         - name: action
           in: query
           schema: { type: string }
@@ -18450,38 +18330,6 @@ paths:
         "403":
           description: "Rôle requis (principal/rh)"
 
-  /recruitment/interviews/{interview}/feedback:
-    patch:
-      tags: ["Recruitment"]
-      summary: "Saisir le feedback d'un entretien (le clôture)"
-      parameters:
-        - name: interview
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [feedback]
-              properties:
-                feedback:
-                  type: string
-                  maxLength: 5000
-                rating:
-                  type: integer
-                  minimum: 1
-                  maximum: 5
-      responses:
-        "200":
-          description: "Entretien clôturé (status=completed)"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-
-
   /zkteco/devices:
     get:
       tags: ["ZKTeco"]
@@ -19696,6 +19544,53 @@ paths:
         "404":
           description: "Correction introuvable ou sans justificatif"
   /recruitment/jobs/{id}:
+    get:
+      tags: ["Recruitment"]
+      summary: "Voir une offre"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail offre"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/JobPosting"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Recruitment"]
+      summary: "Modifier une offre"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreJobPostingRequest"
+      responses:
+        "200":
+          description: "Offre modifiee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/JobPosting"
+        "401":
+          $ref: "#/components/responses/Error401"
+
     delete:
       tags: ["Recruitment"]
       summary: "Supprimer une offre d'emploi (manager)"
@@ -19710,6 +19605,43 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
   /recruitment/applicants/{id}:
+    put:
+      tags: ["Recruitment"]
+      summary: "Modifier un candidat"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stage:
+                  type: string
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: "Candidat modifie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Applicant"
+        "401":
+          $ref: "#/components/responses/Error401"
+
     get:
       tags: ["Recruitment"]
       summary: "Détail d'une candidature (manager)"
@@ -19766,6 +19698,38 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
   /recruitment/interviews/{id}:
+    put:
+      tags: ["Recruitment"]
+      summary: "Modifier un entretien"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [scheduled, completed, cancelled]
+                feedback:
+                  type: string
+                  nullable: true
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+      responses:
+        "200":
+          description: "Entretien modifie"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Training ---
     delete:
       tags: ["Recruitment"]
       summary: "Supprimer un entretien (manager)"
@@ -26056,6 +26020,12 @@ components:
           nullable: true
         action:
           type: string
+        module:
+          type: string
+          nullable: true
+        request_id:
+          type: string
+          nullable: true
         entity_type:
           type: string
         entity_id:

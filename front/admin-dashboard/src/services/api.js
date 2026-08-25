@@ -125,9 +125,79 @@ function normalizeApiPath(path, baseURL = apiBaseURL) {
   return path
 }
 
+
+// ── RTMX client (#5446) — GET conditionnels (ETag/304) + Idempotency-Key ──
+// Le socle serveur (#5277) expose ETag (sha1 du corps) + rejeu idempotent
+// 24 h des écritures. Ce client exploite les deux : GET avec If-None-Match
+// (304 = succès, corps caché servi depuis sessionStorage) et POST/PUT/PATCH
+// avec une clé d'idempotence stable par action logique (double-clic, retry
+// cold-start → le serveur rejoue la 1re réponse 2xx au lieu de dupliquer).
+const RTMX_ETAG_KEY = 'rtmx_etag_v1'
+const RTMX_IDEM_KEY = 'rtmx_idem_v1'
+
+function rtmxSessionGet(key) {
+  try {
+    return JSON.parse(sessionStorage.getItem(key) || 'null')
+  } catch {
+    return null
+  }
+}
+
+function rtmxSessionSet(key, value) {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(value))
+  } catch {
+    // sessionStorage indisponible (SSR/sandbox) — cache mémoire uniquement.
+  }
+}
+
+/** Clé de cache stable par URL : le cache-buster `_t` est ignoré. */
+function rtmxCacheKey(url) {
+  try {
+    const u = new URL(url, apiBaseURL)
+    u.searchParams.delete('_t')
+    return u.pathname + u.search
+  } catch {
+    return url
+  }
+}
+
+/** UUID v4 (crypto.randomUUID si dispo, sinon fallback déterministe). */
+function rtmxUuid() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
+
+/** Clé d'idempotence stable par action logique (méthode + URL + corps). */
+function rtmxIdempotencyKey(method, url, body) {
+  const store = rtmxSessionGet(RTMX_IDEM_KEY) || {}
+  const logical = `${method}:${url}:${typeof body === 'string' ? body : JSON.stringify(body || {})}`
+  // hash 32 bits (FNV-1a) — suffisant pour dédupliquer les actions identiques.
+  let h = 0x811c9dc5
+  for (let i = 0; i < logical.length; i++) {
+    h ^= logical.charCodeAt(i)
+    h = Math.imul(h, 0x01000193)
+  }
+  const storeKey = `v1:${h >>> 0}`
+  if (!store[storeKey]) {
+    store[storeKey] = rtmxUuid()
+  }
+  rtmxSessionSet(RTMX_IDEM_KEY, store)
+  return store[storeKey]
+}
+
 const api = axios.create({
   baseURL: apiBaseURL,
   timeout: 30000,
+  // RTMX (#5446) : 304 Not Modified est un succès (corps servi depuis le
+  // cache ETag — l'intercepteur de réponse le reconstruit).
+  validateStatus: (status) => (status >= 200 && status < 300) || status === 304,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -151,6 +221,24 @@ api.interceptors.request.use(
         ...config.params,
         _t: Date.now(),
       }
+      // RTMX (#5446) : GET conditionnel — renvoyer l'ETag connu (hors
+      // opt-out explicite _cacheBust pour forcer une réponse fraîche).
+      if (config._cacheBust !== true) {
+        const cached = (rtmxSessionGet(RTMX_ETAG_KEY) || {})[rtmxCacheKey(config.url)]
+        if (cached?.etag) {
+          config.headers['If-None-Match'] = cached.etag
+        }
+      }
+    } else if (['post', 'put', 'patch'].includes(config.method)) {
+      // RTMX (#5446) : clé d'idempotence par action logique (hors opt-out
+      // explicite _idempotent=false) — le serveur rejoue la 1re 2xx 24 h.
+      if (config._idempotent !== false) {
+        config.headers['Idempotency-Key'] = rtmxIdempotencyKey(
+          config.method,
+          config.url,
+          config.data,
+        )
+      }
     }
 
     return config
@@ -159,7 +247,25 @@ api.interceptors.request.use(
 )
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const method = (response.config.method || 'get').toLowerCase()
+    if (method === 'get') {
+      const cacheKey = rtmxCacheKey(response.config.url)
+      if (response.status === 304) {
+        const cached = (rtmxSessionGet(RTMX_ETAG_KEY) || {})[cacheKey]
+        if (cached) {
+          response.data = cached.body
+          response.status = 200
+          response.rtmxCached = true
+        }
+      } else if (response.headers.etag && response.config._cacheBust !== true) {
+        const store = rtmxSessionGet(RTMX_ETAG_KEY) || {}
+        store[cacheKey] = { etag: response.headers.etag, body: response.data, ts: Date.now() }
+        rtmxSessionSet(RTMX_ETAG_KEY, store)
+      }
+    }
+    return response
+  },
   async (error) => {
     const toast = useToast()
     const originalRequest = error.config
@@ -180,7 +286,11 @@ api.interceptors.response.use(
         // quand le serveur a traité la requête mais que la réponse s'est
         // perdue (fenêtre cold-start Render).
         const method = (originalRequest.method || 'get').toUpperCase()
-        if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+        // RTMX (#5446) : une mutation porte désormais une Idempotency-Key —
+        // le serveur rejoue la 1re 2xx au lieu d'exécuter deux fois → le
+        // retry cold-start devient sûr pour POST/PUT/PATCH aussi.
+        const hasIdempotencyKey = !!originalRequest?.headers?.['Idempotency-Key']
+        if (!['GET', 'HEAD', 'OPTIONS'].includes(method) && !hasIdempotencyKey) {
           console.warn(`api: cold-start ${status} sur ${method} ${requestUrl} — non rejoué (non idempotent)`)
           return Promise.reject(error)
         }

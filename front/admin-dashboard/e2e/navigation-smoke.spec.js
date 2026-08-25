@@ -9,7 +9,7 @@ test.describe('Navigation smoke tests', () => {
   test('login page has correct form structure', async ({ page }) => {
     await page.goto('/login')
 
-    const emailInput = page.getByLabel(/Adresse email/i)
+    const emailInput = page.locator('#email')
     const passwordInput = page.locator('#password')
     const submitButton = page.getByRole('button', { name: /Se connecter/i })
 
@@ -26,7 +26,7 @@ test.describe('Navigation smoke tests', () => {
     await submitButton.click()
 
     // HTML5 validation should prevent submission with empty required fields
-    const emailInput = page.getByLabel(/Adresse email/i)
+    const emailInput = page.locator('#email')
     const isValid = await emailInput.evaluate(
       (el) => el.validity.valid,
     )
@@ -36,7 +36,7 @@ test.describe('Navigation smoke tests', () => {
   test('login form shows error for invalid credentials', async ({ page }) => {
     await page.goto('/login')
 
-    await page.getByLabel(/Adresse email/i).fill('invalid@example.com')
+    await page.locator('#email').fill('invalid@example.com')
     await page.locator('#password').fill('wrongpassword')
     await page.getByRole('button', { name: /Se connecter/i }).click()
 

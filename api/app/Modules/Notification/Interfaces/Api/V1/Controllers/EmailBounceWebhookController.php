@@ -7,7 +7,6 @@ namespace App\Modules\Notification\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Infrastructure\Services\EmployeeEmailLookupService;
-use App\Modules\Platform\Infrastructure\Services\WebhookEventRegistry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -23,18 +22,10 @@ use Illuminate\Support\Facades\Log;
  * stamped so `MailMessageProvider` stops retrying that address on every
  * future communication, and a `communication_events` audit row is
  * recorded either way for observability.
- *
- * #5444 : idempotence persistée — le payload n'a pas d'identifiant
- * d'événement côté fournisseur, la clé est donc le hash du payload brut :
- * une redelivrance identique est dédupliquée (une seule ligne
- * `communication_events`, un seul stamping).
  */
 class EmailBounceWebhookController extends Controller
 {
-    public function __construct(
-        private readonly EmployeeEmailLookupService $lookup,
-        private readonly WebhookEventRegistry $registry,
-    ) {}
+    public function __construct(private readonly EmployeeEmailLookupService $lookup) {}
 
     public function __invoke(Request $request): JsonResponse
     {
@@ -57,9 +48,11 @@ class EmailBounceWebhookController extends Controller
             return new JsonResponse(['error' => 'Invalid signature'], 400);
         }
 
-        $payload = $request->getContent();
-        $eventId = $this->registry->eventId($payload);
-        $replay = $this->registry->begin('email-bounce', $eventId, hash('sha256', $payload));
+        // #5444 — idempotence persistée : le registre clé (payload brut) sert de
+        // verrou anti-rejeu AVANT tout traitement (begin → complete/release).
+        $rawPayload = $request->getContent();
+        $eventId = $this->registry->eventId($rawPayload);
+        $replay = $this->registry->begin('email-bounce', $eventId, hash('sha256', $rawPayload));
 
         if ($replay !== null) {
             $this->registry->logReplay('email-bounce', $eventId, $replay['code']);
@@ -70,18 +63,23 @@ class EmailBounceWebhookController extends Controller
             );
         }
 
+        /** @var array{email: string, event: string, reason?: string|null} $payload */
+        $payload = $request->validate([
+            'email' => ['required', 'string', 'email:rfc', 'max:320'],
+            'event' => [
+                'required',
+                'string',
+                'max:64',
+                'in:bounce,hard_bounce,complaint,spam_complaint,delivered,opened,clicked,deferred',
+            ],
+            'reason' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $email = $payload['email'];
+        $event = $payload['event'];
+        $reason = $payload['reason'] ?? null;
+
         try {
-            $email = (string) $request->input('email', '');
-            $event = (string) $request->input('event', 'bounce');
-            $reason = $request->input('reason');
-            $reason = is_string($reason) ? substr($reason, 0, 255) : null;
-
-            if ($email === '') {
-                $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]));
-
-                return new JsonResponse(['received' => true]);
-            }
-
             $employee = $this->lookup->resolve($email);
 
             if ($employee === null) {
@@ -95,35 +93,36 @@ class EmailBounceWebhookController extends Controller
             $isBounceOrComplaint = in_array($event, ['bounce', 'hard_bounce', 'complaint', 'spam_complaint'], true);
 
             if ($isBounceOrComplaint) {
-                $employee->forceFill([
-                    'email_bounced_at' => now(),
-                    'email_bounce_reason' => $reason ?? $event,
-                ])->save();
+            $employee->forceFill([
+            'email_bounced_at' => now(),
+            'email_bounce_reason' => $reason ?? $event,
+            ])->save();
             }
 
             CommunicationEvent::query()->create([
-                'company_id' => (string) $employee->company_id,
-                'employee_id' => $employee->id,
-                'event_name' => 'email_provider_webhook',
-                'channel' => 'email',
-                'status' => $isBounceOrComplaint ? 'bounced' : 'recorded',
-                'provider' => (string) config('communication.providers.email', 'mail'),
-                'metadata' => ['event' => $event],
-                'error_message' => $reason,
-                'occurred_at' => now(),
+            'company_id' => (string) $employee->company_id,
+            'employee_id' => $employee->id,
+            'event_name' => 'email_provider_webhook',
+            'channel' => 'email',
+            'status' => $isBounceOrComplaint ? 'bounced' : 'recorded',
+            'provider' => (string) config('communication.providers.email', 'mail'),
+            'metadata' => ['event' => $event],
+            'error_message' => $reason,
+            'occurred_at' => now(),
             ]);
 
             $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]));
 
             return new JsonResponse(['received' => true]);
-        } catch (\Throwable $e) {
+            } catch (\Throwable $e) {
             $this->registry->release('email-bounce', $eventId);
             Log::error('Email bounce webhook: error handling event', [
-                'event' => $event ?? null,
-                'error' => $e->getMessage(),
+            'event' => $event ?? null,
+            'error' => $e->getMessage(),
             ]);
 
             return new JsonResponse(['received' => false, 'error' => 'processing_error'], 500);
-        }
-    }
-}
+            }
+            }
+            }
+
