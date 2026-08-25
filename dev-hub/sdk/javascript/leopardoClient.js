@@ -305,11 +305,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/accounting/documents/next-number", options);
     },
 
-    /** Audit des accès au portail client pour un document partagé (#5522) */
-    getAccountingDocumentsSharedByDocumentAccesses(options = {}) {
-      return request("GET", "/accounting/documents/shared/{document}/accesses", options);
-    },
-
     /** Portail client — informations du document partagé (token) */
     getAccountingDocumentsSharedByToken(options = {}) {
       return request("GET", "/accounting/documents/shared/{token}", options);
@@ -863,6 +858,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier directement un pointage */
     putAttendanceByAttendanceLog(options = {}) {
       return request("PUT", "/attendance/{attendanceLog}", options);
+    },
+
+    /** DEPRECIE — alias de /attendance/attendance-logs/{attendanceLog}/punch-photo (issue #5538) */
+    getAttendanceByAttendanceLogPunchPhoto(options = {}) {
+      return request("GET", "/attendance/{attendanceLog}/punch-photo", options);
     },
 
     /** Anomalies de pointage */

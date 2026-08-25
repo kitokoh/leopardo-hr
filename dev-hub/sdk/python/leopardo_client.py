@@ -264,10 +264,6 @@ class LeopardoClient:
         """Apercu du prochain numero de la serie configuree (#5223)"""
         return self.request("GET", "/accounting/documents/next-number", **kwargs)
 
-    def get_accounting_documents_shared_by_document_accesses(self, **kwargs):
-        """Audit des accès au portail client pour un document partagé (#5522)"""
-        return self.request("GET", "/accounting/documents/shared/{document}/accesses", **kwargs)
-
     def get_accounting_documents_shared_by_token(self, **kwargs):
         """Portail client — informations du document partagé (token)"""
         return self.request("GET", "/accounting/documents/shared/{token}", **kwargs)
@@ -711,6 +707,10 @@ class LeopardoClient:
     def put_attendance_by_attendancelog(self, **kwargs):
         """Modifier directement un pointage"""
         return self.request("PUT", "/attendance/{attendanceLog}", **kwargs)
+
+    def get_attendance_by_attendancelog_punch_photo(self, **kwargs):
+        """DEPRECIE — alias de /attendance/attendance-logs/{attendanceLog}/punch-photo (issue #5538)"""
+        return self.request("GET", "/attendance/{attendanceLog}/punch-photo", **kwargs)
 
     def get_attendance_anomalies(self, **kwargs):
         """Anomalies de pointage"""
