@@ -180,6 +180,7 @@ final class OnlinePaymentService
                 method: $payment->method,
                 reference: $payment->gatewayPaymentId,
                 receivedAt: Carbon::now(),
+                gatewayPaymentId: $payment->gatewayPaymentId,
             );
             $this->payments->reconcile($recorded);
 

@@ -256,7 +256,7 @@ class AccountingOnlinePaymentTest extends TestCase
         $timestamp = time();
         $signature = hash_hmac('sha256', $timestamp.'.'.$payload, 'stripe_test_secret');
 
-        return $timestamp.',v1='.$signature;
+        return 't='.$timestamp.',v1='.$signature;
     }
 
     /**

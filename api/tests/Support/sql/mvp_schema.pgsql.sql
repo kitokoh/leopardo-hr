@@ -395,6 +395,19 @@ CREATE INDEX attendance_correction_requests_status_index
 CREATE INDEX attendance_correction_requests_date_index
     ON shared_tenants.attendance_correction_requests (date);
 
+CREATE TABLE shared_tenants.attendance_period_closures (
+    id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
+    period_start date NOT NULL,
+    period_end date NOT NULL,
+    closed_by integer NULL,
+    closed_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT attendance_period_closures_unique UNIQUE (company_id, period_start, period_end)
+);
+
+CREATE INDEX attendance_period_closures_company_id_index
+    ON shared_tenants.attendance_period_closures (company_id);
+
 CREATE TABLE shared_tenants.biometric_enrollment_requests (
     id serial PRIMARY KEY,
     company_id uuid NOT NULL,
