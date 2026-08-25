@@ -14,7 +14,11 @@ declare(strict_types=1);
  */
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
+<<<<<<< HEAD
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
+=======
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
+>>>>>>> 3a35460 (feat(accounting): multi-devises + taux de change (Closes #5270))
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +41,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/settings', [AccountingSettingsController::class, 'show']);
             Route::put('/settings', [AccountingSettingsController::class, 'update']);
 
+<<<<<<< HEAD
             // ── Rapports (issue #5271) — déclaration TVA par période.
             Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
         });
@@ -51,6 +56,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/documents/{document}/payments', [AccountingDocumentController::class, 'payments'])->whereNumber('document');
             Route::post('/documents/{document}/cancel', [AccountingDocumentController::class, 'cancel'])->whereNumber('document');
             Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
+=======
+            // ── Conversion multi-devises (issue #5270) — calcul pur, aucun
+            // état persistant : HT/TVA/TTC entre devise de document et devise
+            // de référence. Taux manuel requis dès que les devises diffèrent.
+            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
+>>>>>>> 3a35460 (feat(accounting): multi-devises + taux de change (Closes #5270))
         });
     });
 /**
