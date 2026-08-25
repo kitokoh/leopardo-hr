@@ -6209,6 +6209,29 @@ paths:
                 format: binary
         '404':
           description: Log introuvable ou aucune photo enregistree
+  /attendance/{attendanceLog}/punch-photo:
+    get:
+      deprecated: true
+      tags:
+      - Attendance
+      summary: 'DEPRECIE — alias de /attendance/attendance-logs/{attendanceLog}/punch-photo (issue #5538)'
+      description: 'Alias conserve pour compatibilite avec les anciens clients (ancien chemin). A utiliser : /attendance/attendance-logs/{attendanceLog}/punch-photo.'
+      parameters:
+      - name: attendanceLog
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fichier image de la photo de pointage
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Log introuvable ou aucune photo enregistree
   /attendance/corrections:
     get:
       tags:
