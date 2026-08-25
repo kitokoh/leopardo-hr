@@ -181,6 +181,8 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - `GET /attendance/anomalies` retourne un resume d'impact business (`late_minutes`, sorties manquantes, corrections, actions critiques)
 - Chaque anomalie attendance expose une action manager recommandee et un flag `requires_manager_action`
 - **Mode de pointage mobile configurable (issue #761, `PunchPhotoTest`)** : `AttendanceModeSettings.punch_photo_mode` (`null`/`kiosk`/`photo_required`), lu/ecrit via `GET/PUT /smart-attendance/mode-settings` et resolu pour l'employe connecte via `GET /smart-attendance/config` (`requires_punch_photo`). `POST /attendance/check-in`/`check-out` acceptent un champ multipart optionnel `punch_photo` (image, 5 Mo max) ; en mode `photo_required` sans photo fournie (hors flux kiosque physique `AttendanceKiosk` et hors import externe/offline), rejet `422 PUNCH_PHOTO_REQUIRED` (fr/en/ar/tr). Nouvel endpoint `GET /attendance/{attendanceLog}/punch-photo` (memes regles d'autorisation que la consultation du log) pour recuperer la photo stockee (`attendance/punch-photos/{company_id}/{employee_id}/...`, `AttendanceLog.punch_photo_path`, expose via `AttendanceLogResource.punch_photo_url`).
+- **Fermeture de journée (issue #5265)** : `GET|POST /api/v1/attendance/day-closures`, `POST /api/v1/attendance/day-closures/{id}/validate`, `DELETE /api/v1/attendance/day-closures/{id}` — verrou + validation par (company, employee, date), RBAC manager/RH/principal, employe 403, isolation tenant 404, garde 409 `ATTENDANCE_DAY_CLOSED` sur check-in/check-out/import/approbation geo.
+- **Calculateur de pointage unifie (issue #5265)** : `AttendanceHoursCalculator` — retard (tolérance), heures travaillees (pauses deduites), heures supplementaires (seuil + `overtime`/`resume`) ; memes resultats pour les 4 modes (kiosque, geo, ZKTeco, mobile) et les resumes/estimations.
 
 ### 6.b Taches terrain apres pointage
 
@@ -1427,10 +1429,7 @@ Note 2026-08-23 (issue #5225) : envoi email des documents + portail client sécu
 - Commande artisan `accounting:send-document {document} [--email=]`.
 - Scénarios : envoi avec pièce jointe + lien, méta publiques, téléchargement PDF, token expiré/inconnu → 404, accès limité au document partagé (un token ne révèle que son document), RBAC sans effet sur les routes publiques.
 - Couverture : `DocumentShareEmailTest` (6 tests).
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
+HEAD
 ## Corrections de pointage — workflow complet (issue #5267, 2026-08-23)
 
 - `POST /attendance/corrections` — demande avec justificatif optionnel (`proof`, multipart ≤ 5 Mo, jpg/jpeg/png/pdf/heic) ; refusée (422 `ATTENDANCE_PERIOD_CLOSED`) si la date est dans une période clôturée (`attendance_period_closures`).
@@ -1468,6 +1467,7 @@ Note 2026-08-24 (issue #5227) : i18n ×4 du module Comptabilité — messages AP
 - PDF : labels des documents comptables (`accounting-document.blade.php`) localisés ×4 via les mêmes catalogues ; RTL arabe vérifié ; libellés de données (ex. TVA `label_key`) laissés aux données seed.
 - Scénarios à vérifier : chaque erreur métier renvoie un message dans la langue de l'utilisateur (fr/en/tr/ar) sans retomber sur la clé brute ; parité des clés ×4 des deux catalogues ; zéro littéral non localisé dans le module (scan CI) ; libellés PDF ×4 (type + statut) ; RTL arabe.
 - Couverture : `tests/Feature/Accounting/AccountingI18nTest.php`, `AccountingI18nMessagesTest.php`, `DocumentPdfRendererTest.php` + suite module Accounting (coverage 86,45 % ≥ 70 % DoD #5228) — garde `check-accounting-i18n.py` verte.
+HEAD
 Note 2026-08-25 (issue #5436) : 2FA/TOTP comptes entreprise. Scénarios à vérifier : (1) login sans 2FA → token direct (rétrocompat) ; (2) enroll → confirm (code invalide 422 / valide 201 + recovery codes) ; (3) login avec 2FA → `mfa_challenge` + token révoqué (jamais délivré) ; (4) verify code valide → token utilisable sur `/auth/me` ; (5) challenge à usage unique (2ᵉ use → 401) ; (6) recovery code à usage unique (2ᵉ use → 422) ; (7) politique `mfa_required_roles` → 403 `TWO_FACTOR_REQUIRED` ; (8) disable avec code ; (9) remember device → login suivant sans challenge ; (10) parité i18n ×4.
 
 Note 2026-08-25 (issue #5437) : garde anti-collision de préfixes de migrations inter-PRs — `dev-hub/tools/check-migration-prefixes.mjs` branché dans Hygiene Guards. Scénarios à vérifier : (1) PR introduisant un préfixe déjà sur main → échec ; (2) PR introduisant un préfixe déjà pris par une AUTRE PR ouverte → échec (cas réel détecté : `2026_08_24_000003` partagé entre #5406 attendance et #5394/#5424 paie→compta) ; (3) préfixe libre → vert ; (4) branche sans migrations → vert ; (5) main reste vert (0 faux positif — préfixes déjà sur main exclus du contrôle).
@@ -1477,15 +1477,7 @@ Note 2026-08-24 (issues #5353/#5354/#5355) : ADR-0016 — consolidation des rout
 - Phase 4 : fusion des modèles/services/commandes SmartAttendance → Attendance (shims `@deprecated` dans SmartAttendance pour BC) ; commande console `AutoCloseGeoSessionsCommand` → `AutoCloseAttendanceCommand` (alias conservé, `api/routes/console.php`).
 - Scénarios à vérifier : routes `/attendance/*` uniquement (sessions/geo-events/mode), 404 sur `/smart-attendance/*` (alias supprimés Phase 5 #5356), migration console (schedule `attendance:auto-close` unique), isolation tenant géofence, PHPStan Strict vert sur les fichiers fusionnés.
 - Couverture : `tests/Feature/Attendance/Geo*` (6 tests migrés) + `GeoRoutesMigrationTest`.
-<<<<<<< HEAD
-=======
-Note 2026-08-25 (issue #5439) : journal d'audit global — écriture unifiée `AuditLog::record()` câblée sur les flux sensibles, lecture RBAC manager principal/rh, rétention RGPD par entreprise.
-- Écriture : approbation/rejet/annulation d'absence (`planning.absence.*`), validation/suppression de bulletin (`payroll.*`), import/recalcul de pointage (`attendance.*`), départ HR (`hr.departure.register`), révocation de jeton (`auth.token.revoked`) → entrée `audit_logs` avec module/request_id/company_id/avant-après.
-- Lecture : `GET /api/v1/audit-logs` (filtres module, action, auditable_type/id, user_id, from, to ; pagination ; isolation tenant stricte) + `GET /audit-logs/{id}` (404 cross-tenant) + `GET /audit-logs/export-csv` — RBAC `principal`/`rh` (403 employé).
-- Rétention : `audit:purge` tenant-par-tenant (pattern `biometric:purge-expired`), rétention par entreprise via `CompanySetting.audit_retention_months` (défaut 36), purge journalisée (`audit.purge`), schedule hebdomadaire.
-- Scénarios à vérifier : chaque action sensible crée une entrée tracée ; 403 employé ; filtre module ; 404 cross-tenant ; purge respecte la rétention de l'entreprise et journalise ; non-régression suites HR/Attendance/Planning/Payroll.
-- Couverture : `tests/Feature/Audit/AuditLogGlobalTest.php` (9 tests) + suite existante `AuditLogExportTest`.
->>>>>>> origin/main
+HEAD
 
 
 ## Rapprochement bancaire (Phase D, #5435) — scénarios Feature

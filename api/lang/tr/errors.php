@@ -15,6 +15,7 @@ return [
 
     // Pointage
     'ALREADY_CHECKED_IN' => 'Bugün zaten giriş kaydınızı yaptınız.',
+    'ATTENDANCE_DAY_CLOSED' => 'Mesai günü kapatılmış.',
     'MISSING_CHECK_IN' => 'Çıkış yapmadan önce giriş kaydı yapmalısınız.',
     'ALREADY_CHECKED_OUT' => 'Bugün zaten çıkış kaydınızı yaptınız.',
     'PUNCH_PHOTO_REQUIRED' => 'Şirketinizde giriş/çıkış için fotoğraf zorunludur.',

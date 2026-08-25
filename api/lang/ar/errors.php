@@ -15,6 +15,7 @@ return [
 
     // Pointage
     'ALREADY_CHECKED_IN' => 'لقد سجلت حضورك بالفعل اليوم.',
+    'ATTENDANCE_DAY_CLOSED' => 'يوم الحضور مغلق.',
     'MISSING_CHECK_IN' => 'يجب تسجيل الحضور أولاً قبل تسجيل الانصراف.',
     'ALREADY_CHECKED_OUT' => 'لقد سجلت انصرافك بالفعل اليوم.',
     'PUNCH_PHOTO_REQUIRED' => 'الصورة مطلوبة لتسجيل الحضور أو الانصراف في شركتك.',
