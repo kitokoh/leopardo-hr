@@ -79,7 +79,7 @@ final class StripePaymentGateway implements PaymentGatewayInterface
                 'body' => (string) $response->body(),
             ]);
 
-            throw new RuntimeException('Failed to create Stripe checkout session.');
+            throw new RuntimeException(__('accounting.errors.gateway_checkout_failed'));
         }
 
         $id = $response->json('id');
@@ -89,7 +89,7 @@ final class StripePaymentGateway implements PaymentGatewayInterface
         if (! is_string($id) || ! is_string($url) || $id === '' || $url === '') {
             Log::error('Stripe: malformed checkout session response', ['body' => (string) $response->body()]);
 
-            throw new RuntimeException('Failed to create Stripe checkout session.');
+            throw new RuntimeException(__('accounting.errors.gateway_checkout_failed'));
         }
 
         return new PaymentCheckout(

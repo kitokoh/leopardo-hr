@@ -84,7 +84,7 @@ final class ChargilyPaymentGateway implements PaymentGatewayInterface
                 'body' => (string) $response->body(),
             ]);
 
-            throw new RuntimeException('Failed to create Chargily checkout session.');
+            throw new RuntimeException(__('accounting.errors.gateway_checkout_failed'));
         }
 
         $id = $response->json('id');
@@ -93,7 +93,7 @@ final class ChargilyPaymentGateway implements PaymentGatewayInterface
         if (! is_string($id) || ! is_string($url) || $id === '' || $url === '') {
             Log::error('Chargily: malformed checkout response', ['body' => (string) $response->body()]);
 
-            throw new RuntimeException('Failed to create Chargily checkout session.');
+            throw new RuntimeException(__('accounting.errors.gateway_checkout_failed'));
         }
 
         return new PaymentCheckout(

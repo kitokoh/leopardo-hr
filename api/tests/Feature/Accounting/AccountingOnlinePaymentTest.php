@@ -22,8 +22,8 @@ use Tests\TestCase;
  *       non payables refusés (422), pays sans passerelle fail-closed (422),
  *       RBAC comptable/principal.
  * US2 — webhook : signature HMAC fail-closed (401), rapprochement automatique
- *       idempotent (rejeu sans doublon), anti-fraude montant ≠ (422), paiement
- *       partiel → partially_paid.
+ *       idempotent (rejeu sans doublon), anti-fraude montant > solde (422),
+ *       paiement partiel → partially_paid.
  * US3 — annulation/expiration : document inchangé, aucun paiement fantôme.
  */
 class AccountingOnlinePaymentTest extends TestCase
@@ -137,7 +137,8 @@ class AccountingOnlinePaymentTest extends TestCase
 
             return $request->url() === 'https://pay.chargily.net/test/api/v2/checkouts'
                 && $payload['amount'] === 119000
-                && $payload['currency'] === 'dzd';
+                && $payload['currency'] === 'dzd'
+                && $payload['metadata']['company_id'] !== null;
         });
     }
 
@@ -169,7 +170,7 @@ class AccountingOnlinePaymentTest extends TestCase
         Http::assertSent(function ($request): bool {
             return $request->url() === 'https://api.stripe.com/v1/checkout/sessions'
                 && $request['mode'] === 'payment'
-                && $request['line_items[0][price_data][unit_amount]'] === '119000'
+                && $request['line_items[0][price_data][unit_amount]'] === 119000
                 && $request['line_items[0][price_data][currency]'] === 'eur';
         });
     }
@@ -257,6 +258,30 @@ class AccountingOnlinePaymentTest extends TestCase
         return $timestamp.',v1='.$signature;
     }
 
+    /**
+     * Envoie un webhook avec le payload JSON brut comme corps de requête —
+     * la signature HMAC est calculée sur EXACTEMENT ces octets (le TestCase
+     * Laravel encode $data avec json_encode + JSON_THROW_ON_ERROR, identique).
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function postChargilyWebhook(string $url, array $data): \Illuminate\Testing\TestResponse
+    {
+        $payload = json_encode($data, JSON_THROW_ON_ERROR);
+
+        return $this->postJson($url, $data, ['X-Chargily-Signature' => $this->chargilySignature($payload)]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function postStripeWebhook(string $url, array $data): \Illuminate\Testing\TestResponse
+    {
+        $payload = json_encode($data, JSON_THROW_ON_ERROR);
+
+        return $this->postJson($url, $data, ['Stripe-Signature' => $this->stripeSignature($payload)]);
+    }
+
     public function test_webhook_chargily_paid_reconciles_payment_automatically(): void
     {
         Config::set('services.chargily.webhook_secret', 'chargily_test_secret');
@@ -266,7 +291,7 @@ class AccountingOnlinePaymentTest extends TestCase
         $invoice = $this->document($company, 'sent', 1190.0, 'DZD');
         $this->forgetCompany();
 
-        $payload = json_encode([
+        $response = $this->postChargilyWebhook('/api/v1/accounting/payments/webhook/chargily', [
             'type' => 'checkout.paid',
             'data' => [
                 'id' => 'ch_chargily_001',
@@ -279,13 +304,7 @@ class AccountingOnlinePaymentTest extends TestCase
                 ],
                 'payment_method' => 'cib',
             ],
-        ], JSON_THROW_ON_ERROR);
-
-        $response = $this->postJson(
-            '/api/v1/accounting/payments/webhook/chargily',
-            [],
-            ['X-Chargily-Signature' => $this->chargilySignature($payload)]
-        );
+        ]);
 
         $response->assertOk();
         $response->assertJsonPath('received', true);
@@ -313,7 +332,8 @@ class AccountingOnlinePaymentTest extends TestCase
         $invoice = $this->document($company, 'sent', 1190.0, 'DZD');
         $this->forgetCompany();
 
-        $payload = json_encode([
+        $url = '/api/v1/accounting/payments/webhook/chargily';
+        $data = [
             'type' => 'checkout.paid',
             'data' => [
                 'id' => 'ch_chargily_001',
@@ -321,13 +341,10 @@ class AccountingOnlinePaymentTest extends TestCase
                 'currency' => 'dzd',
                 'metadata' => ['document_id' => $invoice->id, 'company_id' => $company->id],
             ],
-        ], JSON_THROW_ON_ERROR);
+        ];
 
-        $headers = ['X-Chargily-Signature' => $this->chargilySignature($payload)];
-        $url = '/api/v1/accounting/payments/webhook/chargily';
-
-        $this->postJson($url, [], $headers)->assertOk();
-        $this->postJson($url, [], $headers)->assertOk();
+        $this->postChargilyWebhook($url, $data)->assertOk();
+        $this->postChargilyWebhook($url, $data)->assertOk();
 
         $this->assertSame(1, AccountingPayment::query()->count());
         $this->assertSame(1190.0, $invoice->refresh()->paid_amount);
@@ -343,7 +360,7 @@ class AccountingOnlinePaymentTest extends TestCase
         $invoice = $this->document($company, 'sent', 1190.0, 'DZD');
         $this->forgetCompany();
 
-        $payload = json_encode([
+        $data = [
             'type' => 'checkout.paid',
             'data' => [
                 'id' => 'ch_chargily_001',
@@ -351,11 +368,11 @@ class AccountingOnlinePaymentTest extends TestCase
                 'currency' => 'dzd',
                 'metadata' => ['document_id' => $invoice->id, 'company_id' => $company->id],
             ],
-        ], JSON_THROW_ON_ERROR);
+        ];
 
         $response = $this->postJson(
             '/api/v1/accounting/payments/webhook/chargily',
-            [],
+            $data,
             ['X-Chargily-Signature' => 'sha256=invalide']
         );
 
@@ -375,7 +392,7 @@ class AccountingOnlinePaymentTest extends TestCase
 
         // Montant notifié : 1 200 DZD pour un solde de 1 190 → dépasse le solde
         // (anti-fraude US2.4).
-        $payload = json_encode([
+        $response = $this->postChargilyWebhook('/api/v1/accounting/payments/webhook/chargily', [
             'type' => 'checkout.paid',
             'data' => [
                 'id' => 'ch_chargily_001',
@@ -383,13 +400,7 @@ class AccountingOnlinePaymentTest extends TestCase
                 'currency' => 'dzd',
                 'metadata' => ['document_id' => $invoice->id, 'company_id' => $company->id],
             ],
-        ], JSON_THROW_ON_ERROR);
-
-        $response = $this->postJson(
-            '/api/v1/accounting/payments/webhook/chargily',
-            [],
-            ['X-Chargily-Signature' => $this->chargilySignature($payload)]
-        );
+        ]);
 
         $response->assertStatus(422);
         $response->assertJsonPath('error', 'PAYMENT_AMOUNT_MISMATCH');
@@ -406,29 +417,26 @@ class AccountingOnlinePaymentTest extends TestCase
         $invoice = $this->document($company, 'sent', 1190.0, 'DZD');
         $this->forgetCompany();
 
-        $send = fn (string $id, int $amount): \Illuminate\Testing\TestResponse => $this->postJson(
-            '/api/v1/accounting/payments/webhook/chargily',
-            [],
-            ['X-Chargily-Signature' => $this->chargilySignature(json_encode([
-                'type' => 'checkout.paid',
-                'data' => [
-                    'id' => $id,
-                    'amount' => $amount,
-                    'currency' => 'dzd',
-                    'metadata' => ['document_id' => $invoice->id, 'company_id' => $company->id],
-                ],
-            ], JSON_THROW_ON_ERROR))]
-        );
+        $url = '/api/v1/accounting/payments/webhook/chargily';
+        $partial = fn (string $id, int $amount): array => [
+            'type' => 'checkout.paid',
+            'data' => [
+                'id' => $id,
+                'amount' => $amount,
+                'currency' => 'dzd',
+                'metadata' => ['document_id' => $invoice->id, 'company_id' => $company->id],
+            ],
+        ];
 
-        // Premier règlement partiel : 500 DZD.
-        $send('ch_partial_1', 50000)->assertOk();
+        // Premier règlement partiel : 500 DZD (≤ solde → légitime, US2.5).
+        $this->postChargilyWebhook($url, $partial('ch_partial_1', 50000))->assertOk();
 
         $invoice->refresh();
         $this->assertSame(500.0, $invoice->paid_amount);
         $this->assertSame('partially_paid', $invoice->status);
 
         // Solde restant : 690 DZD.
-        $send('ch_partial_2', 69000)->assertOk();
+        $this->postChargilyWebhook($url, $partial('ch_partial_2', 69000))->assertOk();
 
         $invoice->refresh();
         $this->assertSame(1190.0, $invoice->paid_amount);
@@ -438,11 +446,9 @@ class AccountingOnlinePaymentTest extends TestCase
 
     public function test_webhook_unknown_gateway_is_rejected(): void
     {
-        $payload = '{}';
-
         $response = $this->postJson(
             '/api/v1/accounting/payments/webhook/paypal',
-            [],
+            ['type' => 'checkout.paid'],
             ['X-Chargily-Signature' => 'sha256=abc']
         );
 
@@ -461,7 +467,7 @@ class AccountingOnlinePaymentTest extends TestCase
         $invoice = $this->document($company, 'sent', 1190.0, 'EUR');
         $this->forgetCompany();
 
-        $payload = json_encode([
+        $response = $this->postStripeWebhook('/api/v1/accounting/payments/webhook/stripe', [
             'type' => 'checkout.session.completed',
             'data' => [
                 'object' => [
@@ -472,13 +478,7 @@ class AccountingOnlinePaymentTest extends TestCase
                     'metadata' => ['document_id' => $invoice->id, 'company_id' => $company->id],
                 ],
             ],
-        ], JSON_THROW_ON_ERROR);
-
-        $response = $this->postJson(
-            '/api/v1/accounting/payments/webhook/stripe',
-            [],
-            ['Stripe-Signature' => $this->stripeSignature($payload)]
-        );
+        ]);
 
         $response->assertOk();
 
@@ -501,7 +501,7 @@ class AccountingOnlinePaymentTest extends TestCase
         $invoice = $this->document($company, 'sent', 1190.0, 'DZD');
         $this->forgetCompany();
 
-        $payload = json_encode([
+        $response = $this->postChargilyWebhook('/api/v1/accounting/payments/webhook/chargily', [
             'type' => 'checkout.canceled',
             'data' => [
                 'id' => 'ch_chargily_001',
@@ -509,13 +509,7 @@ class AccountingOnlinePaymentTest extends TestCase
                 'currency' => 'dzd',
                 'metadata' => ['document_id' => $invoice->id, 'company_id' => $company->id],
             ],
-        ], JSON_THROW_ON_ERROR);
-
-        $response = $this->postJson(
-            '/api/v1/accounting/payments/webhook/chargily',
-            [],
-            ['X-Chargily-Signature' => $this->chargilySignature($payload)]
-        );
+        ]);
 
         $response->assertOk();
         $this->assertSame(0, AccountingPayment::query()->count());
@@ -541,7 +535,7 @@ class AccountingOnlinePaymentTest extends TestCase
 
         // Webhook signé avec les metadata du tenant A mais l'id de document du
         // tenant B : le scope BelongsToCompany doit empêcher le rapprochement.
-        $payload = json_encode([
+        $response = $this->postChargilyWebhook('/api/v1/accounting/payments/webhook/chargily', [
             'type' => 'checkout.paid',
             'data' => [
                 'id' => 'ch_cross_tenant',
@@ -549,13 +543,7 @@ class AccountingOnlinePaymentTest extends TestCase
                 'currency' => 'dzd',
                 'metadata' => ['document_id' => $invoiceB->id, 'company_id' => $companyA->id],
             ],
-        ], JSON_THROW_ON_ERROR);
-
-        $response = $this->postJson(
-            '/api/v1/accounting/payments/webhook/chargily',
-            [],
-            ['X-Chargily-Signature' => $this->chargilySignature($payload)]
-        );
+        ]);
 
         // Document étranger introuvable dans le tenant A → ignoré, aucun
         // paiement fantôme (l'identifiant unique gateway n'est pas consommé).
