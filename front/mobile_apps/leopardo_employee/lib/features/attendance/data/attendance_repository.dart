@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
+import 'package:leopardo_core/core/api/idempotency_keys.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
@@ -42,6 +43,10 @@ class AttendanceRepository {
       if (punchNote != null && punchNote.trim().isNotEmpty)
         'punch_note': punchNote.trim(),
     };
+    // RTMX (#5407) : une clé par pointage logique — envoyée en header et
+    // stockée dans la file hors-ligne pour que le rejeu réutilise la MÊME clé
+    // (le serveur rejoue la 1ʳᵉ réponse 2xx au lieu de créer un doublon).
+    final idempotencyKey = IdempotencyKeys.newKey();
 
     try {
       final response = await apiClient.requestWithRetry(
@@ -50,6 +55,7 @@ class AttendanceRepository {
         data: payload,
         maxRetriesOverride: 0,
         timeoutOverride: _actionTimeout,
+        options: Options(headers: {'Idempotency-Key': idempotencyKey}),
       );
       return AttendanceLog.fromJson(extractDataMap(response.data));
     } catch (e) {
@@ -62,6 +68,7 @@ class AttendanceRepository {
           await box.add({
             'type': 'check-in',
             'payload': payload,
+            'idempotencyKey': idempotencyKey,
             'timestamp': DateTime.now().toIso8601String()
           });
         }
@@ -96,6 +103,7 @@ class AttendanceRepository {
       if (punchNote != null && punchNote.trim().isNotEmpty)
         'punch_note': punchNote.trim(),
     };
+    final idempotencyKey = IdempotencyKeys.newKey();
 
     try {
       final response = await apiClient.requestWithRetry(
@@ -104,6 +112,7 @@ class AttendanceRepository {
         data: payload,
         maxRetriesOverride: 0,
         timeoutOverride: _actionTimeout,
+        options: Options(headers: {'Idempotency-Key': idempotencyKey}),
       );
       return AttendanceLog.fromJson(extractDataMap(response.data));
     } catch (e) {
@@ -114,6 +123,7 @@ class AttendanceRepository {
           await box.add({
             'type': 'check-out',
             'payload': payload,
+            'idempotencyKey': idempotencyKey,
             'timestamp': DateTime.now().toIso8601String()
           });
         }

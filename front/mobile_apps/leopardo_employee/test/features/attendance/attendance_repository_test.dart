@@ -48,6 +48,7 @@ class _AttendanceInterceptor extends Interceptor {
     );
   }
 }
+
 Map<String, dynamic> _payloadOf(RequestOptions options) =>
     (options.data as Map).cast<String, dynamic>();
 
@@ -75,7 +76,8 @@ void main() {
     client = ApiClient(storage, preferences);
   });
 
-  test('checkIn envoie work_type + device_timezone et parse la réponse', () async {
+  test('checkIn envoie work_type + device_timezone et parse la réponse',
+      () async {
     final interceptor = _AttendanceInterceptor();
     client.dio.interceptors.add(interceptor);
 
@@ -88,6 +90,14 @@ void main() {
     final payload = _payloadOf(request);
     expect(payload['work_type'], 'normal');
     expect(payload.containsKey('device_timezone'), isTrue);
+
+    // RTMX (#5407) : une clé d'idempotence par pointage logique.
+    expect(request.headers['Idempotency-Key'], isA<String>());
+    expect(
+      request.headers['Idempotency-Key'].toString().length,
+      greaterThanOrEqualTo(8),
+      reason: 'motif serveur [A-Za-z0-9._:-]{8,255} (#5277)',
+    );
 
     expect(log.id, 42);
     expect(log.employeeId, 7);
@@ -138,7 +148,8 @@ void main() {
     expect(log.status, 'present');
   });
 
-  test('checkIn hors-ligne → file Hive offline_punches + statut offline', () async {
+  test('checkIn hors-ligne → file Hive offline_punches + statut offline',
+      () async {
     final interceptor = _AttendanceInterceptor(failWithNetworkError: true);
     client.dio.interceptors.add(interceptor);
 
@@ -153,10 +164,18 @@ void main() {
     final entry = box.getAt(0)!;
     expect(entry['type'], 'check-in');
     expect((entry['payload'] as Map)['work_type'], 'normal');
+    // RTMX (#5407) : la clé du pointage initial est stockée dans l'entrée —
+    // le rejeu (OfflineSyncService) réutilisera la MÊME clé.
+    expect(
+      entry['idempotencyKey'],
+      interceptor.requests.single.headers['Idempotency-Key'],
+      reason: 'la clé stockée doit être celle envoyée au serveur',
+    );
     await box.clear();
   });
 
-  test('checkOut hors-ligne → file Hive offline_punches (type check-out)', () async {
+  test('checkOut hors-ligne → file Hive offline_punches (type check-out)',
+      () async {
     final interceptor = _AttendanceInterceptor(failWithNetworkError: true);
     client.dio.interceptors.add(interceptor);
 
@@ -168,6 +187,11 @@ void main() {
     final box = await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
     expect(box.length, 1);
     expect(box.getAt(0)!['type'], 'check-out');
+    expect(
+      box.getAt(0)!['idempotencyKey'],
+      interceptor.requests.single.headers['Idempotency-Key'],
+      reason: 'check-out hors-ligne : clé d\'idempotence stockée = clé envoyée',
+    );
     await box.clear();
   });
 
