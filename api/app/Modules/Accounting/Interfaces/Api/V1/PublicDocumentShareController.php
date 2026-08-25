@@ -72,15 +72,40 @@ final class PublicDocumentShareController
     }
 
     /**
-     * Résout le token dans le contexte tenant de chaque entreprise active
-     * (le scope global BelongsToCompany exige current_company).
+     * Résolution O(1) du token de partage (issue #5428).
+     *
+     * Le token (64 caractères aléatoires, indexé unique) EST la credential :
+     * les routes publiques n'ont ni auth ni TenantMiddleware, donc le scope
+     * global BelongsToCompany est inactif et le search_path par défaut
+     * (`shared_tenants,public`) couvre tous les tenants à schéma partagé —
+     * une seule requête suffit, sans itération des compagnies (perf O(N) +
+     * risque d'oracle de timing supprimé).
+     *
+     * Fallback : les tenants legacy à schéma dédié (`schema_name` propre,
+     * création verrouillée #COMPANY_SCHEMA_MODE_LOCKED) ne sont pas visibles
+     * depuis le search_path par défaut — on ne les itère QUE sur échec du
+     * lookup direct (rare : token invalide ou partage d'un tenant à schéma).
      */
     private function resolveShare(string $token): ?AccountingDocumentShare
     {
-        $tenantManager = app(TenantManager::class);
-        $companies = Company::query()->where('status', 'active')->orderBy('id')->get();
+        $share = AccountingDocumentShare::query()
+            ->with('document')
+            ->where('share_token', $token)
+            ->first();
 
-        foreach ($companies as $company) {
+        if ($share !== null) {
+            return $share->isExpired() ? null : $share;
+        }
+
+        $tenantManager = app(TenantManager::class);
+        $schemaTenants = Company::query()
+            ->where('status', 'active')
+            ->whereNotNull('schema_name')
+            ->where('schema_name', '!=', 'shared_tenants')
+            ->orderBy('id')
+            ->get();
+
+        foreach ($schemaTenants as $company) {
             $share = $tenantManager->withinTenant($company, fn (): ?AccountingDocumentShare => $this->shareService->resolve($token));
 
             if ($share !== null) {
