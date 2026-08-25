@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod/legacy.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
-import 'package:leopardo_marketing/core/providers/core_providers.dart';
-import 'package:leopardo_marketing/features/marketing/models/social_post.dart';
+import 'package:leopardo_accounting/core/providers/core_providers.dart';
+import 'package:leopardo_accounting/features/marketing/models/social_post.dart';
 
 import '../data/social_post_repository.dart';
 

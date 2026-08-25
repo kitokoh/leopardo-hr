@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/models/employee.dart';
-import 'package:leopardo_marketing/features/auth/data/auth_repository.dart';
+import 'package:leopardo_accounting/features/auth/data/auth_repository.dart';
 
 /// Issue #3006 (T166) : état d'authentification de l'app Marketing — pattern
 /// leopardo_manager/leopardo_hr, sans push notifications (hors périmètre).
