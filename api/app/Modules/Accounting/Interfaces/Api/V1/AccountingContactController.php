@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Accounting\Application\Actions\AccountingCurrencyResolver;
 use App\Modules\Accounting\Domain\Enums\ContactType;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
+use App\Modules\Accounting\Domain\Models\AccountingSettings;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\StoreContactRequest;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\UpdateContactRequest;
 use Illuminate\Http\JsonResponse;
@@ -74,9 +76,18 @@ class AccountingContactController extends Controller
         ]);
     }
 
-    public function store(StoreContactRequest $request): JsonResponse
+    public function store(StoreContactRequest $request, AccountingCurrencyResolver $resolver): JsonResponse
     {
-        $contact = AccountingContact::query()->create($this->contactPayload($request->validated()));
+        $payload = $this->contactPayload($request->validated());
+
+        // Issue #5270 — devise par contact (défaut : entreprise) : à la
+        // création sans devise fournie, on applique la devise du paramétrage
+        // comptable (ou la devise du pays de l'entreprise).
+        if (empty($payload['currency'])) {
+            $payload['currency'] = $this->defaultCurrency($request, $resolver);
+        }
+
+        $contact = AccountingContact::query()->create($payload);
 
         return response()->json([
             'data' => $this->serialize($contact),
@@ -110,6 +121,30 @@ class AccountingContactController extends Controller
         $contact->delete();
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * Devise par défaut de l'entreprise : `AccountingSettings.currency`
+     * (si persistée) puis devise du pays (CountryDefaults) — #5270.
+     */
+    private function defaultCurrency(Request $request, AccountingCurrencyResolver $resolver): string
+    {
+        $companyId = $request->user()?->getAttribute('company_id');
+
+        $settings = is_string($companyId) && $companyId !== ''
+            ? AccountingSettings::query()->where('company_id', $companyId)->first()
+            : null;
+
+        return $resolver->forCompany($this->companyCountry(), $settings);
+    }
+
+    private function companyCountry(): ?string
+    {
+        if (! app()->bound('current_company')) {
+            return null;
+        }
+
+        return currentCompany()->country ?? null;
     }
 
     /**
