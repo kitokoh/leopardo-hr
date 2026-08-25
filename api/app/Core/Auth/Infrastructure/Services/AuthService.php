@@ -200,6 +200,9 @@ readonly class AuthService
                 'token' => $tokenResult->plainTextToken,
                 'token_type' => 'Bearer',
                 'token_expires_at' => $expiresAt?->toIso8601String(),
+                // #5436 : schéma tenant résolu (2FA challenge) — nullable pour
+                // les comptes sans tenant (ex. ordinary) et en sqlite de test.
+                'tenant_schema' => $employeeSchema,
             ];
         } catch (QueryException $e) {
             // Issue #2902 : un compte dont le tenant/schéma est absent ou
@@ -358,6 +361,9 @@ readonly class AuthService
                 'token' => $tokenResult->plainTextToken,
                 'token_type' => 'Bearer',
                 'token_expires_at' => $expiresAt?->toIso8601String(),
+                // #5436 : schéma tenant résolu (2FA challenge) — nullable pour
+                // les comptes sans tenant (ex. ordinary) et en sqlite de test.
+                'tenant_schema' => $employeeSchema,
             ];
         } catch (QueryException $e) {
             // Issue #2902 : un compte dont le tenant/schéma est absent ou

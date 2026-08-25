@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Auth\Interfaces\Api\V1\AuthController;
+use App\Core\Auth\Interfaces\Api\V1\TwoFactorAuthController;
 use App\Core\Auth\Interfaces\Api\V1\PasswordResetController;
 use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
 use App\Core\Feature\Interfaces\Api\V1\FeatureManifestController;
@@ -79,6 +80,8 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware(['throttle:auth-sensitive'])->group(function (): void {
         Route::post('/auth/login', [AuthController::class, 'login']);
         Route::post('/auth/register', [AuthController::class, 'register']);
+        // #5436 : vérification du challenge 2FA (public, bucket auth-sensitive).
+        Route::post('/auth/2fa/verify', [TwoFactorAuthController::class, 'verify']);
         // Issue #2626 : réinitialisation de mot de passe (usage unique, 60 min).
         Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot']);
         Route::post('/auth/reset-password', [PasswordResetController::class, 'reset']);
@@ -160,6 +163,12 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/auth/profile', [AuthController::class, 'updateProfile']);
         Route::patch('/auth/language', [AuthController::class, 'updateLanguage']);
         Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
+        // #5436 : gestion 2FA du compte connecté.
+        Route::get('/auth/2fa/status', [TwoFactorAuthController::class, 'status']);
+        Route::post('/auth/2fa/enroll', [TwoFactorAuthController::class, 'enroll']);
+        Route::post('/auth/2fa/confirm', [TwoFactorAuthController::class, 'confirm']);
+        Route::post('/auth/2fa/disable', [TwoFactorAuthController::class, 'disable']);
+        Route::post('/auth/2fa/recovery-codes', [TwoFactorAuthController::class, 'recoveryCodes']);
         Route::post('/auth/refresh-token', [AuthController::class, 'refreshToken']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::post('/client-events', [ClientEventController::class, 'store'])->middleware('throttle:client-analytics');

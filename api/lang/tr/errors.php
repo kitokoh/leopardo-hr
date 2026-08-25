@@ -244,4 +244,8 @@ return [
     'DOCUMENT_NOT_FULLY_PAID' => 'Toplam tutar ödenmeden belge ödendi olarak işaretlenemez.',
     'INVALID_DOCUMENT_TRANSITION' => 'Bu belge için durum geçişine izin verilmiyor.',
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.',
+    'TWO_FACTOR_INVALID' => 'Geçersiz veya süresi dolmuş iki faktörlü doğrulama kodu.',
+    'TWO_FACTOR_REQUIRED' => 'Bu hesap için iki faktörlü doğrulama zorunludur. Giriş yapmadan önce etkinleştirin.',
+    'TWO_FACTOR_ALREADY_ENABLED' => 'Bu hesapta iki faktörlü doğrulama zaten etkin.',
+    'TWO_FACTOR_CHALLENGE_EXPIRED' => 'İki faktörlü doğrulama oturumunun süresi doldu. Lütfen tekrar giriş yapın.',
 ];
