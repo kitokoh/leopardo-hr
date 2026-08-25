@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCheckoutController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
@@ -46,6 +47,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // PUT  : upsert avec validation (devise, TVA, séries, mentions).
             Route::get('/settings', [AccountingSettingsController::class, 'show']);
             Route::put('/settings', [AccountingSettingsController::class, 'update']);
+
+            // ── Conversion multi-devises (issue #5270) — utilitaire de
+            // conversion HT/TVA/TTC (calcul pur, aucun enregistrement).
+            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
 
             // ── Rapports (issue #5271) — déclaration TVA par période.
             Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
