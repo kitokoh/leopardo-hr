@@ -21,7 +21,18 @@ use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
 use Illuminate\Support\Facades\Route;
+
+// Public: consultation + téléchargement d'un document partagé (token + throttle).
+// Issue #5225/#5357 — le token de partage est la credential (pas d'auth Sanctum),
+// accès RGPD limité au document partagé (pattern CabinetShare #1817).
+// Restauré par #5512 : ces routes avaient disparu de main lors du rebuild #5498
+// (documentées dans openapi.yaml + construites par DocumentShareService → 404 sinon).
+Route::get('/accounting/documents/shared/{token}', [PublicDocumentShareController::class, 'info'])
+    ->middleware('throttle:60,1');
+Route::get('/accounting/documents/shared/{token}/download', [PublicDocumentShareController::class, 'download'])
+    ->middleware('throttle:60,1');
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
     ->prefix('accounting')
@@ -97,4 +108,14 @@ Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:princ
     Route::post('accounting/bank-statement-lines/{line}/match', [BankStatementController::class, 'match']);
 });
 
-
+// Journal des écritures débit/crédit + clôture de période (issue #5234).
+// Restauré par #5512 : le rebuild #5498 avait fait disparaître ces routes de
+// main (contrôleur AccountingJournalController orphelin, opérations toujours
+// documentées dans openapi.yaml → tout client suivant la spec recevait 404).
+// RBAC : principal/comptable (matrice comptabilité #5226).
+Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
+    Route::get('accounting/journal', [AccountingJournalController::class, 'index']);
+    Route::get('accounting/journal/export.csv', [AccountingJournalController::class, 'export']);
+    Route::post('accounting/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
+    Route::post('accounting/documents/{document}/journal', [AccountingJournalController::class, 'postDocument']);
+});

@@ -15326,6 +15326,67 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /hr/candidates/{applicant}/hire:
+    post:
+      tags: ["Recruitment"]
+      summary: "Embaucher un candidat (principal/RH) — fiche employé tracée (issue #5261)"
+      description: "Convertit un applicant (Recruitment, lecture seule) en fiche employé via CandidateHiringService avec traçabilité candidate_id, garde onboarding obligatoire (409) et anti-doublon (422). RBAC : api.manager:principal,rh."
+      parameters:
+        - name: applicant
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name: { type: string, maxLength: 255 }
+                last_name: { type: string, maxLength: 255 }
+                email: { type: string, format: email, maxLength: 255 }
+                phone: { type: string, maxLength: 50 }
+                contract_type: { type: string, maxLength: 50 }
+                contract_start: { type: string, format: date }
+                send_invitation: { type: boolean }
+      responses:
+        "201":
+          description: "Employé créé (traçabilité candidate_id)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id: { type: integer }
+                      candidate_id: { type: integer, nullable: true }
+                      first_name: { type: string, nullable: true }
+                      last_name: { type: string, nullable: true }
+                      email: { type: string, nullable: true }
+                      contract_start: { type: string, format: date, nullable: true }
+                      payroll_eligible: { type: boolean }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "409":
+          description: "Onboarding incomplet (OnboardingIncompleteException)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+        "422":
+          description: "Candidat déjà embauché ou validation échouée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+
   /recruitment/applicants/{id}/interviews:
     post:
       tags: ["Recruitment"]
@@ -20472,286 +20533,8 @@ paths:
           description: "Entretien supprimé"
         "401":
           $ref: "#/components/responses/Error401"
-  /smart-attendance/mode-settings:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Parametres du mode de pointage de l'entreprise"
-      deprecated: true
-      responses:
-        "200":
-          description: "Configuration (forced_mode, punch_photo_mode, gps_enabled, latitude, longitude, radius_meters, allow_employee_override)"
-        "401":
-          $ref: "#/components/responses/Error401"
-    put:
-      tags: ["SmartAttendance"]
-      summary: "Configurer le mode de pointage (principal)"
-      deprecated: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                forced_mode:
-                  type: string
-                  enum: [gps_auto, qr, manual, mixed]
-                punch_photo_mode:
-                  type: string
-                  enum: [kiosk, photo_required]
-                gps_enabled:
-                  type: boolean
-                latitude:
-                  type: number
-                  minimum: -90
-                  maximum: 90
-                longitude:
-                  type: number
-                  minimum: -180
-                  maximum: 180
-                radius_meters:
-                  type: integer
-                  minimum: 10
-                  maximum: 5000
-                allow_employee_override:
-                  type: boolean
-      responses:
-        "200":
-          description: "Configuration mise a jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-  /smart-attendance/config:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Lire la configuration de mode active pour l'employe connecte"
-      deprecated: true
-      description: "Resout le mode de pointage effectif (GPS/QR/manuel) et indique si une photo de pointage est obligatoire (punch_photo_mode=photo_required)."
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Configuration de mode active"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      mode: { type: string, enum: [manual, gps_auto, qr, mixed] }
-                      can_override: { type: boolean }
-                      gps_enabled: { type: boolean }
-                      geofence:
-                        type: object
-                        nullable: true
-                        properties:
-                          latitude: { type: number, nullable: true }
-                          longitude: { type: number, nullable: true }
-                          radius_meters: { type: integer, nullable: true }
-                      requires_consent: { type: boolean }
-                      requires_punch_photo:
-                        type: boolean
-                        description: "true si l'entreprise impose une photo a chaque pointage mobile (arrivee/depart)."
-        "401":
-          $ref: "#/components/responses/Error401"
-  /smart-attendance/preferences:
-    put:
-      tags: ["SmartAttendance"]
-      summary: "Mettre à jour les préférences de pointage"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [preferred_mode]
-              properties:
-                preferred_mode:
-                  type: string
-                  enum: [gps_auto, qr, manual]
-                gps_consent_given:
-                  type: boolean
-                revoke_consent:
-                  type: boolean
-      responses:
-        "200":
-          description: "Préférences mises à jour"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  data:
-                    $ref: "#/components/schemas/EmployeeAttendancePreference"
-        "403":
-          $ref: "#/components/responses/Error403"
-        "422":
-          $ref: "#/components/responses/Validation422"
-  /smart-attendance/geo-events:
-    post:
-      tags: ["SmartAttendance"]
-      summary: "Envoyer un événement géographique (entrée/sortie de zone)"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/GeoEventRequest"
-      responses:
-        "200":
-          description: "Événement enregistré"
-        "422":
-          $ref: "#/components/responses/Validation422"
-  /smart-attendance/sessions:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Lister les sessions GPS"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [detected, pending_validation, approved, rejected, cancelled]
-        - name: per_page
-          in: query
-          schema:
-            type: integer
-            default: 20
-      responses:
-        "200":
-          description: "Liste paginée des sessions GPS"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/GeoAttendanceSession"
-  /smart-attendance/sessions/{id}:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Détail d'une session GPS"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Session GPS"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/GeoAttendanceSession"
-        "404":
-          $ref: "#/components/responses/Error404"
-  /smart-attendance/sessions/{id}/approve:
-    post:
-      tags: ["SmartAttendance"]
-      summary: "Approuver une session GPS (manager/RH)"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Session mise à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "404":
-          $ref: "#/components/responses/Error404"
-  /smart-attendance/sessions/{id}/reject:
-    post:
-      tags: ["SmartAttendance"]
-      summary: "Rejeter une session GPS (manager/RH)"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Session mise à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "404":
-          $ref: "#/components/responses/Error404"
-  /smart-attendance/dashboard:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Statistiques du jour — Smart Attendance (manager/RH)"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Statistiques du jour"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SmartAttendanceDashboard"
 
   # --- ZKTeco (pointeuses biometriques) ---
-  /smart-attendance/my-sessions:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Sessions GPS de l'employé courant"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Sessions de l'employé"
-        "401":
-          $ref: "#/components/responses/Error401"
-  /smart-attendance/employees/{employeeId}/preference:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Préférence mode géolocalisation d'un employé (manager/RH)"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: employeeId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Préférence de l'employé"
-        "401":
-          $ref: "#/components/responses/Error401"
   /expense-claims/{expenseClaim}/accounting-entries:
     get:
       tags: ["Expenses"]
@@ -20765,7 +20548,7 @@ paths:
       responses:
         "200":
           description: "Liste des ecritures de la note"
-/accounting/journal:
+  /accounting/journal:
     get:
       tags: ["Accounting"]
       summary: "Journal comptable par periode"
@@ -20830,7 +20613,7 @@ period: { type: string }
       responses:
         "200":
           description: "Regeneration effectuee"
-/accounting/journal/export.csv:
+  /accounting/journal/export.csv:
     get:
       tags: ["Accounting"]
       summary: "Export CSV du journal (expert-comptable)"
