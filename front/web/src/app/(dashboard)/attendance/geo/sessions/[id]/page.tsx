@@ -161,7 +161,7 @@ export default function SmartAttendanceSessionDetailPage() {
         {/* Back */}
         <div className="flex items-center gap-4">
           <Link
-            href="/smart-attendance/sessions"
+            href="/attendance/geo/sessions"
             className="text-sm font-bold text-slate-500 transition hover:text-slate-900"
           >
             {labels.backToSessions}

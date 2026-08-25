@@ -159,7 +159,7 @@ export default function SmartAttendanceSessionsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `smart-attendance-sessions-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `attendance-sessions-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -173,7 +173,7 @@ export default function SmartAttendanceSessionsPage() {
       {/* Back link */}
       <div>
         <Link
-          href="/smart-attendance"
+          href="/attendance/geo"
           className="text-sm font-bold text-slate-500 transition hover:text-slate-900"
         >
           {labels.backToDashboard}
@@ -323,7 +323,7 @@ export default function SmartAttendanceSessionsPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Link
-                        href={`/smart-attendance/sessions/${session.id}`}
+                        href={`/attendance/geo/sessions/${session.id}`}
                         className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:border-security hover:text-security-dark"
                       >
                         {labels.viewDetail}

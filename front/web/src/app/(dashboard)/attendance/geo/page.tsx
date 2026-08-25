@@ -178,13 +178,13 @@ export default function SmartAttendanceDashboardPage() {
         {/* Actions rapides */}
         <div className="flex items-center gap-3">
           <Link
-            href="/smart-attendance/sessions"
+            href="/attendance/geo/sessions"
             className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-transparent shadow-sm"
           >
             {labels.allSessions}
           </Link>
           <Link
-            href="/smart-attendance/settings"
+            href="/attendance/geo/settings"
             className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-transparent shadow-sm"
           >
             <Settings className="h-4 w-4" aria-hidden="true" /> {labels.settings}
@@ -225,7 +225,7 @@ export default function SmartAttendanceDashboardPage() {
                   {pendingSessions.map((session) => (
                     <tr key={session.id} className="group transition-colors hover:bg-transparent/60">
                       <td className="px-6 py-4">
-                        <Link href={`/smart-attendance/sessions/${session.id}`} className="hover:underline">
+                        <Link href={`/attendance/geo/sessions/${session.id}`} className="hover:underline">
                           <p className="font-bold text-slate-900">{session.employee_name ?? `${labels.employeeFallback} #${session.employee_id}`}</p>
                           {session.employee_matricule ? (
                             <p className="text-xs text-slate-500">{session.employee_matricule}</p>

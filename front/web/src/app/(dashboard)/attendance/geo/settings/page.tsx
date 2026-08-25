@@ -122,7 +122,7 @@ export default function SmartAttendanceSettingsPage() {
       {/* Back */}
       <div>
         <Link
-          href="/smart-attendance"
+          href="/attendance/geo"
           className="text-sm font-bold text-slate-500 transition hover:text-slate-900"
         >
           {labels.backToDashboard}
