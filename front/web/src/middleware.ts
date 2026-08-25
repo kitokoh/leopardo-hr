@@ -90,6 +90,7 @@ export const config = {
     '/',
     '/employes',
     '/documents',
+    '/documents/:path*',
     '/comptabilite',
     '/marketing',
     '/integrations',

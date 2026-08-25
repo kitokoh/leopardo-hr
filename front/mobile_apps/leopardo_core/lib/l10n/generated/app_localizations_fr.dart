@@ -12,6 +12,90 @@ class AppLocalizationsFr extends AppLocalizations {
   String get appTitle => 'Leopardo RH';
 
   @override
+  String get accountingportalTitle => 'Espace document sécurisé';
+
+  @override
+  String get accountingportalSubtitle =>
+      'Accès limité au document partagé par l\'émetteur';
+
+  @override
+  String get accountingportalNumber => 'N° de document';
+
+  @override
+  String get accountingportalType => 'Type de document';
+
+  @override
+  String get accountingportalStatus => 'Statut';
+
+  @override
+  String get accountingportalIssuedate => 'Date d\'émission';
+
+  @override
+  String get accountingportalTotal => 'Montant total TTC';
+
+  @override
+  String get accountingportalCurrency => 'Devise';
+
+  @override
+  String get accountingportalExpiresat => 'Lien valide jusqu\'au :date';
+
+  @override
+  String get accountingportalDownload => 'Télécharger le PDF';
+
+  @override
+  String get accountingportalDownloadhint => 'Télécharger le document en PDF';
+
+  @override
+  String get accountingportalNotfoundtitle => 'Lien invalide ou expiré';
+
+  @override
+  String get accountingportalNotfoundbody =>
+      'Ce lien n\'est plus valide ou a expiré. Contactez l\'émetteur pour recevoir un nouveau lien.';
+
+  @override
+  String get accountingportalErrortitle => 'Impossible de charger le document';
+
+  @override
+  String get accountingportalErrorbody =>
+      'Une erreur est survenue. Merci de réessayer dans quelques instants.';
+
+  @override
+  String get accountingportalRetry => 'Réessayer';
+
+  @override
+  String get accountingportalBacktosite => 'Retour au site';
+
+  @override
+  String get accountingportalSecuritynote =>
+      'Partage sécurisé — ne transmettez pas ce lien';
+
+  @override
+  String get accountingportalStatusdraft => 'Brouillon';
+
+  @override
+  String get accountingportalStatussent => 'Envoyé';
+
+  @override
+  String get accountingportalStatuspartiallypaid => 'Partiellement payé';
+
+  @override
+  String get accountingportalStatuspaid => 'Payé';
+
+  @override
+  String get accountingportalStatuscancelled => 'Annulé';
+
+  @override
+  String get accountingportalStatusoverdue => 'En retard';
+
+  @override
+  String get accountingportalLoading => 'Chargement…';
+
+  @override
+  String get accountingportalDownloaderror =>
+      'Le téléchargement a échoué. Merci de réessayer.';
+
+
+  @override
   String get welcomeBrandSubtitle =>
       'Conversationnelle, mobile-first, modulaire.';
 

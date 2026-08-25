@@ -12,6 +12,90 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Leopardo HR';
 
   @override
+  String get accountingportalTitle => 'Secure document space';
+
+  @override
+  String get accountingportalSubtitle =>
+      'Access limited to the document shared by the issuer';
+
+  @override
+  String get accountingportalNumber => 'Document no.';
+
+  @override
+  String get accountingportalType => 'Document type';
+
+  @override
+  String get accountingportalStatus => 'Status';
+
+  @override
+  String get accountingportalIssuedate => 'Issue date';
+
+  @override
+  String get accountingportalTotal => 'Total amount';
+
+  @override
+  String get accountingportalCurrency => 'Currency';
+
+  @override
+  String get accountingportalExpiresat => 'Link valid until :date';
+
+  @override
+  String get accountingportalDownload => 'Download PDF';
+
+  @override
+  String get accountingportalDownloadhint => 'Download the document as PDF';
+
+  @override
+  String get accountingportalNotfoundtitle => 'Invalid or expired link';
+
+  @override
+  String get accountingportalNotfoundbody =>
+      'This link is no longer valid or has expired. Contact the issuer to receive a new link.';
+
+  @override
+  String get accountingportalErrortitle => 'Unable to load the document';
+
+  @override
+  String get accountingportalErrorbody =>
+      'Something went wrong. Please try again in a few moments.';
+
+  @override
+  String get accountingportalRetry => 'Try again';
+
+  @override
+  String get accountingportalBacktosite => 'Back to website';
+
+  @override
+  String get accountingportalSecuritynote =>
+      'Secure share — do not forward this link';
+
+  @override
+  String get accountingportalStatusdraft => 'Draft';
+
+  @override
+  String get accountingportalStatussent => 'Sent';
+
+  @override
+  String get accountingportalStatuspartiallypaid => 'Partially paid';
+
+  @override
+  String get accountingportalStatuspaid => 'Paid';
+
+  @override
+  String get accountingportalStatuscancelled => 'Cancelled';
+
+  @override
+  String get accountingportalStatusoverdue => 'Overdue';
+
+  @override
+  String get accountingportalLoading => 'Loading…';
+
+  @override
+  String get accountingportalDownloaderror =>
+      'Download failed. Please try again.';
+
+
+  @override
   String get welcomeBrandSubtitle => 'Conversational, mobile-first, modular.';
 
   @override

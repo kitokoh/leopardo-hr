@@ -10,6 +10,9 @@ const DISALLOWED = [
   '/admin',
   '/api',
   '/auth',
+  // Portail client documents partagés (issue #5233) : URL tokenisées — jamais
+  // indexables (RGPD, accès limité au destinataire du lien).
+  '/documents/shared',
   '/.env',
   '/.git',
   '/node_modules',

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod/legacy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
@@ -9,14 +8,20 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import '../../core/platform_providers.dart';
 import '../platform/platform_models.dart';
 
-final _statusFilterProvider = StateProvider<String?>((ref) => null);
+class _StatusFilter extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void set(String? value) => state = value;
+}
+
+final _statusFilterProvider =
+    NotifierProvider<_StatusFilter, String?>(_StatusFilter.new);
 
 final platformSupportTicketsProvider =
     FutureProvider.family<List<PlatformSupportTicket>, String?>(
         (ref, status) async {
-  return ref
-      .watch(platformRepositoryProvider)
-      .supportTickets(status: status);
+  return ref.watch(platformRepositoryProvider).supportTickets(status: status);
 });
 
 class SupportTicketsScreen extends ConsumerWidget {
@@ -60,11 +65,10 @@ class SupportTicketsScreen extends ConsumerWidget {
                   selectedColor: AppColors.rh.withValues(alpha: 0.25),
                   labelStyle: TextStyle(
                     color: selected ? AppColors.rh : MobileSurface.secondary,
-                    fontWeight:
-                        selected ? FontWeight.w700 : FontWeight.normal,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.normal,
                   ),
                   onSelected: (_) =>
-                      ref.read(_statusFilterProvider.notifier).state = s,
+                      ref.read(_statusFilterProvider.notifier).set(s),
                 ),
               );
             }).toList(),
@@ -82,15 +86,14 @@ class SupportTicketsScreen extends ConsumerWidget {
               );
             }
             return Column(
-              children: items
-                  .map((t) => _TicketCard(ticket: t))
-                  .toList(),
+              children: items.map((t) => _TicketCard(ticket: t)).toList(),
             );
           },
           loading: () => const MobileEmptyLoading(label: 'Chargement tickets'),
           error: (e, _) => MobileErrorPanel(
             message: e.toString(),
-            onRetry: () => ref.invalidate(platformSupportTicketsProvider(status)),
+            onRetry: () =>
+                ref.invalidate(platformSupportTicketsProvider(status)),
           ),
         ),
       ],
@@ -474,7 +477,8 @@ class _MessageBubble extends StatelessWidget {
                   Text(
                     message.authorName,
                     style: TextStyle(
-                      color: isSuperAdmin ? AppColors.rh : MobileSurface.secondary,
+                      color:
+                          isSuperAdmin ? AppColors.rh : MobileSurface.secondary,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),

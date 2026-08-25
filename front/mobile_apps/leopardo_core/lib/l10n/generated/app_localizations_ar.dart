@@ -12,6 +12,89 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appTitle => 'ليوباردو للموارد البشرية';
 
   @override
+  String get accountingportalTitle => 'مساحة المستندات الآمنة';
+
+  @override
+  String get accountingportalSubtitle =>
+      'الوصول مقتصر على المستند الذي شاركه المرسِل';
+
+  @override
+  String get accountingportalNumber => 'رقم المستند';
+
+  @override
+  String get accountingportalType => 'نوع المستند';
+
+  @override
+  String get accountingportalStatus => 'الحالة';
+
+  @override
+  String get accountingportalIssuedate => 'تاريخ الإصدار';
+
+  @override
+  String get accountingportalTotal => 'المبلغ الإجمالي';
+
+  @override
+  String get accountingportalCurrency => 'العملة';
+
+  @override
+  String get accountingportalExpiresat => 'الرابط صالح حتى :date';
+
+  @override
+  String get accountingportalDownload => 'تحميل PDF';
+
+  @override
+  String get accountingportalDownloadhint => 'تحميل المستند بصيغة PDF';
+
+  @override
+  String get accountingportalNotfoundtitle => 'رابط غير صالح أو منتهي الصلاحية';
+
+  @override
+  String get accountingportalNotfoundbody =>
+      'لم يعد هذا الرابط صالحًا أو انتهت صلاحيته. تواصل مع المرسِل للحصول على رابط جديد.';
+
+  @override
+  String get accountingportalErrortitle => 'تعذّر تحميل المستند';
+
+  @override
+  String get accountingportalErrorbody =>
+      'حدث خطأ ما. يرجى المحاولة مرة أخرى بعد قليل.';
+
+  @override
+  String get accountingportalRetry => 'إعادة المحاولة';
+
+  @override
+  String get accountingportalBacktosite => 'العودة إلى الموقع';
+
+  @override
+  String get accountingportalSecuritynote => 'مشاركة آمنة — لا تنقل هذا الرابط';
+
+  @override
+  String get accountingportalStatusdraft => 'مسودة';
+
+  @override
+  String get accountingportalStatussent => 'تم الإرسال';
+
+  @override
+  String get accountingportalStatuspartiallypaid => 'مدفوع جزئيًا';
+
+  @override
+  String get accountingportalStatuspaid => 'مدفوع';
+
+  @override
+  String get accountingportalStatuscancelled => 'ملغى';
+
+  @override
+  String get accountingportalStatusoverdue => 'متأخر';
+
+  @override
+  String get accountingportalLoading => 'جارٍ التحميل…';
+
+  @override
+  String get accountingportalDownloaderror =>
+      'فشل التحميل. يرجى المحاولة مرة أخرى.';
+
+
+  @override
   String get welcomeBrandSubtitle =>
       'تجربة محادثية، موجهة للهاتف، وقابلة للتوسع.';
 

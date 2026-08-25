@@ -1,9 +1,37 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-20T00:00:00Z",
+  "_updated_at": "2026-08-24T00:00:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
+  },
+  "accountingPortal": {
+    "title": "Espace document sécurisé",
+    "subtitle": "Accès limité au document partagé par l'émetteur",
+    "number": "N° de document",
+    "type": "Type de document",
+    "status": "Statut",
+    "issueDate": "Date d'émission",
+    "total": "Montant total TTC",
+    "currency": "Devise",
+    "expiresAt": "Lien valide jusqu'au :date",
+    "download": "Télécharger le PDF",
+    "downloadHint": "Télécharger le document en PDF",
+    "notFoundTitle": "Lien invalide ou expiré",
+    "notFoundBody": "Ce lien n'est plus valide ou a expiré. Contactez l'émetteur pour recevoir un nouveau lien.",
+    "errorTitle": "Impossible de charger le document",
+    "errorBody": "Une erreur est survenue. Merci de réessayer dans quelques instants.",
+    "retry": "Réessayer",
+    "backToSite": "Retour au site",
+    "securityNote": "Partage sécurisé — ne transmettez pas ce lien",
+    "statusDraft": "Brouillon",
+    "statusSent": "Envoyé",
+    "statusPartiallyPaid": "Partiellement payé",
+    "statusPaid": "Payé",
+    "statusCancelled": "Annulé",
+    "statusOverdue": "En retard",
+    "loading": "Chargement…",
+    "downloadError": "Le téléchargement a échoué. Merci de réessayer."
   },
   "welcome": {
     "brand": {

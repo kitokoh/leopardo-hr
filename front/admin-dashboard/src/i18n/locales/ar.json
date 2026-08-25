@@ -1,101 +1,367 @@
 {
-  "modules": {
-    "notifications": "الاشعارات",
-    "cabinet": "خزانة المستندات",
-    "attendance": "الحضور",
-    "evaluations": "التقييمات",
-    "payroll": "الرواتب"
+  "_version": "1.0.0",
+  "_updated_at": "2026-08-24T00:00:00Z",
+  "_locale": "ar",
+  "app": {
+    "title": "ليوباردو للموارد البشرية"
   },
-  "marketing": {
-    "oauth": {
-      "subtitle": "اربط حسابات وسائل التواصل الاجتماعي عبر Ayrshare",
-      "ayrshare_info": "تُستخدم هذه الإعدادات بواسطة Ayrshare للنشر على شبكاتك الاجتماعية.",
-      "providers": {
-        "twitter": {
-          "label": "إكس (تويتر)",
-          "description": "الاتصال بـ Twitter API v2"
-        },
-        "linkedin": {
-          "label": "لينكدإن",
-          "description": "الاتصال بـ LinkedIn Marketing API"
-        },
-        "facebook": {
-          "label": "فيسبوك / ميتا",
-          "description": "الاتصال بـ Facebook Graph API"
-        }
-      },
-      "nav_title": "تسويق OAuth",
-      "title": "إعدادات OAuth التسويق",
-      "save": "حفظ",
-      "fields": {
-        "client_id": "معرف العميل",
-        "placeholder_id": "معرف العميل الخاص بك",
-        "client_secret": "سر العميل",
-        "placeholder_secret": "سر جديد (اختياري)",
-        "placeholder_uri": "https://example.com/oauth/callback",
-        "secret_hint": "(اتركه فارغاً للإبقاء على الحالي)",
-        "redirect_uri": "رابط إعادة التوجيه"
-      },
-      "saved_ok": "تم حفظ إعدادات {provider}"
+  "accountingPortal": {
+    "title": "مساحة المستندات الآمنة",
+    "subtitle": "الوصول مقتصر على المستند الذي شاركه المرسِل",
+    "number": "رقم المستند",
+    "type": "نوع المستند",
+    "status": "الحالة",
+    "issueDate": "تاريخ الإصدار",
+    "total": "المبلغ الإجمالي",
+    "currency": "العملة",
+    "expiresAt": "الرابط صالح حتى :date",
+    "download": "تحميل PDF",
+    "downloadHint": "تحميل المستند بصيغة PDF",
+    "notFoundTitle": "رابط غير صالح أو منتهي الصلاحية",
+    "notFoundBody": "لم يعد هذا الرابط صالحًا أو انتهت صلاحيته. تواصل مع المرسِل للحصول على رابط جديد.",
+    "errorTitle": "تعذّر تحميل المستند",
+    "errorBody": "حدث خطأ ما. يرجى المحاولة مرة أخرى بعد قليل.",
+    "retry": "إعادة المحاولة",
+    "backToSite": "العودة إلى الموقع",
+    "securityNote": "مشاركة آمنة — لا تنقل هذا الرابط",
+    "statusDraft": "مسودة",
+    "statusSent": "تم الإرسال",
+    "statusPartiallyPaid": "مدفوع جزئيًا",
+    "statusPaid": "مدفوع",
+    "statusCancelled": "ملغى",
+    "statusOverdue": "متأخر",
+    "loading": "جارٍ التحميل…",
+    "downloadError": "فشل التحميل. يرجى المحاولة مرة أخرى."
+  },
+  "welcome": {
+    "brand": {
+      "subtitle": "تجربة محادثية، موجهة للهاتف، وقابلة للتوسع."
     },
-    "socialExamplePlaceholder": "مثال: Leopardo RH — وسائل التواصل الاجتماعي",
-    "postContentPlaceholder": "محتوى المنشور..."
+    "hero": {
+      "title": "يبدأ يومك من هنا، وليس من مكتب خلفي.",
+      "description": "الحضور، المتابعة الشخصية، ووحدات الموارد البشرية النشطة تظهر اولا على الهاتف بتجربة بسيطة وواضحة."
+    },
+    "story": {
+      "clarity": {
+        "title": "واجهة رئيسية ترشدك قبل ان تربكك",
+        "body": "يبدأ ليوباردو بخطوات واضحة: تسجيل الحضور، متابعة الشهر، والوصول الى المعلومات المهمة."
+      },
+      "field": {
+        "title": "تجربة هاتف اولا لفرق الميدان",
+        "body": "الهاتف هو الواجهة الاساسية للموظف. الحضور، الغيابات، والمستندات كلها هنا."
+      },
+      "modules": {
+        "title": "وحدات نشطة وخارطة طريق واضحة",
+        "body": "يفتح المنتج اولا ما يفيد اليوم، ثم يحافظ على مسار واضح للمالية، الامان، وليو."
+      }
+    },
+    "leaves": "الإجازات",
+    "my": {
+      "team": "فريقي"
+    },
+    "presences": "الحضور",
+    "tasks": "المهام"
+  },
+  "auth": {
+    "login": {
+      "title": "تسجيل الدخول"
+    },
+    "employee": {
+      "invitation": {
+        "access": "دخول الموظف (بدعوة)"
+      }
+    },
+    "personal_account": {
+      "create": "انشاء حساب شخصي",
+      "explanation": "الحساب الشخصي: نظم مستنداتك، ثم انشئ شركة او انضم اليها من مساحتك."
+    },
+    "back_tooltip": "رجوع",
+    "employee_login_subtitle": "تسجيل دخول الموظف",
+    "manager_login_subtitle": "تسجيل دخول المدير / الموارد البشرية",
+    "email_professional_label": "البريد الالكتروني المهني",
+    "email_label": "البريد الالكتروني",
+    "email_required": "البريد الالكتروني مطلوب",
+    "email_invalid": "بريد الكتروني غير صالح",
+    "password_label": "كلمة المرور",
+    "password_required": "كلمة المرور مطلوبة",
+    "password_too_short": "كلمة المرور قصيرة جدا",
+    "continue_with_google": "الاستمرار مع Google",
+    "activate_invitation": "تفعيل دعوتي",
+    "personal_account_link": "حساب شخصي",
+    "activate_manager_access": "تفعيل صلاحية المدير",
+    "try_demo_account": "تجربة حساب تجريبي",
+    "two_factor_required": "رمز التحقق الثنائي مطلوب.",
+    "demo": {
+      "access": "وصول تجريبي"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "إظهار أو إخفاء كلمة المرور"
+      }
+    }
+  },
+  "common": {
+    "language": {
+      "label": "اللغة",
+      "variants": {
+        "fr-FR": "الفرنسية (فرنسا)",
+        "fr-BE": "الفرنسية (بلجيكا)",
+        "fr-CA": "الفرنسية (كندا)",
+        "ar-SA": "العربية (السعودية)",
+        "ar-MA": "العربية (المغرب)",
+        "tr-TR": "التركية (تركيا)",
+        "en-US": "الانجليزية (الولايات المتحدة)",
+        "en-GB": "الانجليزية (المملكة المتحدة)"
+      }
+    },
+    "or": "او",
+    "countries": {
+      "BF": "بوركينا فاسو",
+      "BJ": "بنين",
+      "CA": "كندا",
+      "CF": "جمهورية أفريقيا الوسطى",
+      "CG": "الكونغو",
+      "CI": "ساحل العاج",
+      "CM": "الكاميرون",
+      "DZ": "الجزائر",
+      "FR": "فرنسا",
+      "GA": "الغابون",
+      "GB": "المملكة المتحدة",
+      "GQ": "غينيا الاستوائية",
+      "MA": "المغرب",
+      "ML": "مالي",
+      "NE": "النيجر",
+      "SN": "السنغال",
+      "TD": "تشاد",
+      "TG": "توغو",
+      "TN": "تونس",
+      "TR": "تركيا",
+      "US": "الولايات المتحدة"
+    },
+    "required": "مطلوب"
+  },
+  "modules": {
+    "attendance": "الحضور",
+    "payroll": "الرواتب",
+    "cabinet": "خزانة المستندات",
+    "notifications": "الاشعارات",
+    "evaluations": "التقييمات"
   },
   "emails": {
-    "payroll_ready": {
-      "body": "كشف الراتب لفترة :period جاهز. يمكنك مراجعته داخل ليوباردو للموارد البشرية.",
-      "action": "عرض كشف الراتب",
-      "greeting": "مرحبا :name،",
-      "subject": "كشف الراتب الخاص بك جاهز",
-      "footer": "يرجى التحقق من معلوماتك قبل التصدير المحاسبي."
-    },
     "invitation": {
+      "subject": "تمت دعوتك للانضمام الى :company على ليوباردو للموارد البشرية",
+      "greeting": "مرحبا :name،",
       "body": "لقد تمت دعوتك للانضمام الى :company. اضغط على الرابط ادناه لتفعيل حسابك.",
       "action": "تفعيل حسابي",
-      "greeting": "مرحبا :name،",
-      "subject": "تمت دعوتك للانضمام الى :company على ليوباردو للموارد البشرية",
       "footer": "اذا لم تطلب هذا الاجراء، تجاهل هذا البريد."
     },
+    "reset_password": {
+      "subject": "اعادة تعيين كلمة المرور",
+      "greeting": "مرحبا :name،",
+      "body": "اضغط على الرابط ادناه لاعادة تعيين كلمة المرور.",
+      "action": "اعادة تعيين كلمة المرور",
+      "footer": "اذا لم تطلب هذا الاجراء، تجاهل هذا البريد."
+    },
+    "payroll_ready": {
+      "subject": "كشف الراتب الخاص بك جاهز",
+      "greeting": "مرحبا :name،",
+      "body": "كشف الراتب لفترة :period جاهز. يمكنك مراجعته داخل ليوباردو للموارد البشرية.",
+      "action": "عرض كشف الراتب",
+      "footer": "يرجى التحقق من معلوماتك قبل التصدير المحاسبي."
+    },
     "absence_approved": {
+      "subject": "تمت الموافقة على طلب الغياب",
+      "greeting": "مرحبا :name،",
       "body": "تمت الموافقة على طلب الغياب للفترة :period.",
       "action": "عرض الطلب",
-      "greeting": "مرحبا :name،",
-      "subject": "تمت الموافقة على طلب الغياب",
       "footer": "تم تحديث جدول الفريق."
     },
     "absence_rejected": {
+      "subject": "تم رفض طلب الغياب",
+      "greeting": "مرحبا :name،",
       "body": "تم رفض طلب الغياب للفترة :period.",
       "action": "عرض الطلب",
-      "greeting": "مرحبا :name،",
-      "subject": "تم رفض طلب الغياب",
       "footer": "تواصل مع مديرك اذا كنت تحتاج تفاصيل اضافية."
+    }
+  },
+  "profile": {
+    "title": "ملفي الشخصي",
+    "subtitle": "المعلومات الشخصية واللغة",
+    "loading": "تحميل الملف...",
+    "back_tooltip": "رجوع",
+    "job_title_unset": "المنصب الوظيفي فيغر محدد",
+    "details_title": "المعلومات",
+    "email_label": "البريد الالكتروني",
+    "department_label": "القسم",
+    "job_title_label": "المنصب الوظيفي",
+    "matricule_label": "رقم الموظف",
+    "value_unset": "فير محدد",
+    "open_settings": "فتح اعدادات الحساب",
+    "language_updated": "تم تحديث اللغة.",
+    "language_saving": "جارٍ التحديث...",
+    "language_save": "تحديث اللغة"
+  },
+  "ai_chat": {
+    "title": "مساعد الذكاء الاصطناعي",
+    "back_tooltip": "رجوع",
+    "send_tooltip": "إرسال",
+    "input_hint": "اكتب رسالتك...",
+    "empty_state_title": "اطرح أسئلتك المتعلقة بالموارد البشرية",
+    "error_message": "خطأ: تعذر الاتصال بالمساعد."
+  },
+  "platform_login": {
+    "title": "ليوباردو بلاتفورم",
+    "subtitle": "لوحة تحكم محمولة مخصصة لادارة المنصة.",
+    "2fa_notice": "هذا الحساب يحمي المنصة: ادخل رمز التحقق بخطوتين من تطبيق المصادقة.",
+    "email_label": "بريد المسؤول الاعلى",
+    "email_required": "البريد الالكتروني مطلوب",
+    "password_required": "كلمة المرور مطلوبة",
+    "2fa_label": "رمز التحقق بخطوتين اذا كان مفعلا",
+    "submitting": "جاري تسجيل الدخول...",
+    "use_demo_account": "استخدام الحساب التجريبي"
+  },
+  "users": {
+    "page": {
+      "title": "إدارة المستخدمين",
+      "summary": ":count مستخدم - :active نشط - :newToday جديد اليوم"
     },
-    "reset_password": {
-      "body": "اضغط على الرابط ادناه لاعادة تعيين كلمة المرور.",
-      "action": "اعادة تعيين كلمة المرور",
-      "greeting": "مرحبا :name،",
-      "subject": "اعادة تعيين كلمة المرور",
-      "footer": "اذا لم تطلب هذا الاجراء، تجاهل هذا البريد."
+    "actions": {
+      "bulk": "إجراءات (:count)",
+      "export": "تصدير",
+      "new": "جديد"
+    },
+    "filters": {
+      "search": {
+        "label": "بحث",
+        "placeholder": "الاسم، البريد الإلكتروني، الشركة..."
+      },
+      "status": {
+        "label": "الحالة",
+        "all": "جميع الحالات",
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "suspended": "معلق",
+        "pending": "قيد الانتظار"
+      },
+      "role": {
+        "label": "الدور",
+        "all": "جميع الأدوار",
+        "admin": "مسؤول",
+        "manager": "مدير",
+        "employee": "موظف",
+        "hr": "الموارد البشرية"
+      },
+      "company": {
+        "label": "الشركة",
+        "all": "جميع الشركات"
+      },
+      "registrationDate": {
+        "label": "تاريخ التسجيل",
+        "all": "جميع التواريخ",
+        "today": "اليوم",
+        "week": "هذا الأسبوع",
+        "month": "هذا الشهر",
+        "quarter": "هذا الفصل"
+      },
+      "lastLogin": {
+        "label": "آخر تسجيل دخول",
+        "all": "الكل",
+        "today": "اليوم",
+        "week": "هذا الأسبوع",
+        "month": "هذا الشهر",
+        "never": "لم يسجل الدخول ابدا"
+      },
+      "segment": {
+        "label": "الشريحة",
+        "all": "جميع الشرائح",
+        "champions": "الأبطال",
+        "loyal": "الموالون",
+        "potential": "المحتملون",
+        "new": "جديد",
+        "atRisk": "معرض للخطر"
+      },
+      "advanced": {
+        "show": "إظهار الفلاتر المتقدمة",
+        "hide": "إخفاء الفلاتر المتقدمة"
+      }
+    },
+    "bulkPanel": {
+      "selectedCount": ":count محدد",
+      "activate": "تفعيل",
+      "deactivate": "تعطيل",
+      "suspend": "تعليق",
+      "export": "تصدير",
+      "cancel": "إلغاء"
+    },
+    "toast": {
+      "loadError": "خطأ في تحميل المستخدمين",
+      "bulkActivated": "تم تفعيل :count مستخدم",
+      "bulkDeactivated": "تم تعطيل :count مستخدم",
+      "bulkSuspended": "تم تعليق :count مستخدم",
+      "bulkError": "فشل الإجراء الجماعي",
+      "deleted": "تم حذف المستخدم",
+      "deleteError": "خطأ في حذف المستخدم",
+      "impersonating": "تسجيل الدخول باسم :name",
+      "created": "تم إنشاء المستخدم بنجاح",
+      "updated": "تم تحديث المستخدم",
+      "exportInProgress": "التصدير قيد التنفيذ...",
+      "exportDone": "تم التصدير",
+      "exportError": "فشل التصدير",
+      "selectionExportDone": "تم تصدير التحديد",
+      "bulkDone": "تم التحديث"
+    },
+    "confirm": {
+      "delete": "هل انت متأكد من رغبتك في حذف :name؟"
+    },
+    "errors": {
+      "name_required": "الاسم الكامل مطلوب.",
+      "password_required": "كلمة المرور مطلوبة.",
+      "fix_fields": "يرجى تصحيح الحقول المميزة",
+      "password_min": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+      "search_no_match": "لا توجد صفحة تطابق بحثك",
+      "update_failed": "فشل تحديث المستخدم"
+    },
+    "impersonation": {
+      "title": "انتحال صفة موظف",
+      "subtitle": "فتح جلسة باسم :name",
+      "reason": "السبب (إلزامي، 5 أحرف على الأقل)",
+      "reasonMin": "السبب إلزامي (5 أحرف على الأقل).",
+      "noLink": "لا يوجد موظف مرتبط بهذا الحساب — تعذر انتحال الصفة.",
+      "start": "إنشاء الجلسة",
+      "cancel": "إلغاء",
+      "tokenTitle": "رمز انتحال الصفة (استخدام واحد)",
+      "expires": "تنتهي في :date",
+      "copy": "نسخ الرمز",
+      "copied": "تم نسخ الرمز",
+      "created": "تم إنشاء جلسة انتحال الصفة",
+      "error": "خطأ في إنشاء جلسة انتحال الصفة",
+      "done": "تم",
+      "employee": "الموظف المرتبط #:id"
+    },
+    "edit": {
+      "title": "تعديل المستخدم",
+      "status": "الحالة",
+      "save": "تحديث"
     }
   },
   "dashboard": {
-    "recent_activity_hint": "آخر إجراءات فريقك",
-    "active_employees": "نشطون",
-    "presence_today_summary": "{present} حضور من أصل {active} موظف نشط اليوم",
-    "leo_presence_insight": "اليوم، {today} حضور من أصل {active} موظف نشط. هل ترغب في إرسال رسالة تهنئة إلى الفريق؟",
-    "launch_readiness": "جاهزية الإطلاق",
-    "presence_today_empty": "لا توجد بيانات حضور متاحة.",
-    "leo_announcements_count": "تم نشر {count} إعلان في شركتك.",
-    "upgrade": "ترقية",
     "title": "لوحة التحكم",
-    "recent_activity": "النشاط الأخير",
-    "leo_presence_empty": "لا توجد بيانات حضور متاحة حاليًا. هل ما زلت ترغب في إرسال رسالة تهنئة إلى الفريق؟",
+    "company": "الشركة",
+    "active_employees": "نشطون",
+    "upgrade": "ترقية",
     "priority_actions": "إجراءات ذات أولوية",
+    "launch_readiness": "جاهزية الإطلاق",
+    "recent_activity": "النشاط الأخير",
+    "recent_activity_hint": "آخر إجراءات فريقك",
+    "leo_ia_announcement_title": "تهانينا للفريق",
     "leo_ia_announcement_body": "تهانينا للفريق بأكمله على التزامكم هذا الأسبوع. واصلوا هذه الديناميكية!",
     "leo_ia_announcement_error": "تعذر إرسال الرسالة. حاول مرة أخرى بعد قليل.",
-    "company": "الشركة",
+    "leo_presence_insight": "اليوم، {today} حضور من أصل {active} موظف نشط. هل ترغب في إرسال رسالة تهنئة إلى الفريق؟",
+    "leo_presence_empty": "لا توجد بيانات حضور متاحة حاليًا. هل ما زلت ترغب في إرسال رسالة تهنئة إلى الفريق؟",
+    "leo_announcements_count": "تم نشر {count} إعلان في شركتك.",
     "presence_today_title": "حضور اليوم",
-    "leo_ia_announcement_title": "تهانينا للفريق",
+    "presence_today_summary": "{present} حضور من أصل {active} موظف نشط اليوم",
+    "presence_today_empty": "لا توجد بيانات حضور متاحة.",
     "portfolioPriorities": "أولويات المحفظة",
     "client": "العميل",
     "health": "الصحة",
@@ -188,593 +454,43 @@
     "platform_dashboard_hint": "متاح في لوحة تحكم المنصة.",
     "searchPlaceholder": "بحث...",
     "modulesActiveSentence": "{active} وحدة نشطة، و{locked} لتفعيلها حسب خطتك.",
-    "yourCompany": "شركتك",
-    "activeCompanies": "الشركات النشطة",
-    "platformMrr": "MRR المنصة",
-    "pendingRequestsTitle": "الطلبات المعلقة",
-    "criticalAlerts": "تنبيهات حرجة",
-    "details": "التفاصيل",
-    "processRequests": "معالجة الطلبات",
-    "badgeTenants": ":count مستأجر",
-    "badgeToProcess": ":count للمعالجة",
-    "badgeRisks": ":count مخاطرة",
-    "cards": {
-      "createClientDesc": "قم بتأهيل شركة وافتح مستأجرها وتحقق من حالة إطلاقها.",
-      "processRequestsDesc": "تابع طلبات التجربة، ورتب أولويات العملاء المحتملين وتجنب تعليقهم.",
-      "monitorAtRiskDesc": "حدد الحسابات الضعيفة في الاعتماد أو تسجيل الحضور أو الصحة التشغيلية.",
-      "manageSubscriptionsDesc": "تحكم في MRR والمتأخرات والخطط النشطة والمسار التجاري للمنصة.",
-      "checkSystemDesc": "تحقق من صحة API والإعدادات والسجلات والنسخ الاحتياطية وإشارات الحوادث.",
-      "prepareIntegrationsDesc": "تابع webhooks والتصديرات والتقارير وأسطح API اللازمة للمتكاملين."
-    }
+    "yourCompany": "شركتك"
   },
-  "common": {
-    "language": {
-      "label": "اللغة",
-      "variants": {
-        "en-GB": "الانجليزية (المملكة المتحدة)",
-        "fr-FR": "الفرنسية (فرنسا)",
-        "ar-SA": "العربية (السعودية)",
-        "tr-TR": "التركية (تركيا)",
-        "fr-CA": "الفرنسية (كندا)",
-        "ar-MA": "العربية (المغرب)",
-        "en-US": "الانجليزية (الولايات المتحدة)",
-        "fr-BE": "الفرنسية (بلجيكا)"
+  "marketing": {
+    "oauth": {
+      "nav_title": "تسويق OAuth",
+      "title": "إعدادات OAuth التسويق",
+      "subtitle": "اربط حسابات وسائل التواصل الاجتماعي عبر Ayrshare",
+      "ayrshare_info": "تُستخدم هذه الإعدادات بواسطة Ayrshare للنشر على شبكاتك الاجتماعية.",
+      "save": "حفظ",
+      "saved_ok": "تم حفظ إعدادات {provider}",
+      "providers": {
+        "linkedin": {
+          "label": "لينكدإن",
+          "description": "الاتصال بـ LinkedIn Marketing API"
+        },
+        "facebook": {
+          "label": "فيسبوك / ميتا",
+          "description": "الاتصال بـ Facebook Graph API"
+        },
+        "twitter": {
+          "label": "إكس (تويتر)",
+          "description": "الاتصال بـ Twitter API v2"
+        }
+      },
+      "fields": {
+        "client_id": "معرف العميل",
+        "client_secret": "سر العميل",
+        "redirect_uri": "رابط إعادة التوجيه",
+        "secret_hint": "(اتركه فارغاً للإبقاء على الحالي)",
+        "placeholder_id": "معرف العميل الخاص بك",
+        "placeholder_secret": "سر جديد (اختياري)",
+        "placeholder_uri": "https://example.com/oauth/callback"
       }
     },
-    "or": "او",
-    "countries": {
-      "ML": "مالي",
-      "TN": "تونس",
-      "CI": "ساحل العاج",
-      "MA": "المغرب",
-      "TR": "تركيا",
-      "FR": "فرنسا",
-      "BF": "بوركينا فاسو",
-      "CG": "الكونغو",
-      "GA": "الغابون",
-      "CM": "الكاميرون",
-      "SN": "السنغال",
-      "DZ": "الجزائر",
-      "BJ": "بنين",
-      "CA": "كندا",
-      "CF": "جمهورية أفريقيا الوسطى",
-      "GB": "المملكة المتحدة",
-      "GQ": "غينيا الاستوائية",
-      "NE": "النيجر",
-      "TD": "تشاد",
-      "TG": "توغو",
-      "US": "الولايات المتحدة"
-    },
-    "required": "مطلوب",
-    "noResults": "لا توجد نتائج.",
-    "confirm": "تأكيد",
-    "cancel": "إلغاء",
-    "busy": "جارٍ التنفيذ…"
+    "socialExamplePlaceholder": "مثال: Leopardo RH — وسائل التواصل الاجتماعي",
+    "postContentPlaceholder": "محتوى المنشور..."
   },
-  "signup": {
-    "otpInvalidCode": "رمز غير صالح أو منتهي الصلاحية.",
-    "codeValidity": "الرمز صالح لمدة 30 دقيقة. تحقق من البريد العشوائي إذا لم تجده.",
-    "labelTeamSize": "حجم الفريق",
-    "trialNoteSuffix": "لا حاجة لبطاقة ائتمانية",
-    "codeHint": "سيتم إرسال رمز من 6 أرقام إلى بريدك لتأكيد هويتك.",
-    "roleOperations": "عمليات ميدانية",
-    "labelRole": "دورك",
-    "readySubtitle": "تم تجهيز بيئة العرض. يمكنك الوصول مباشرة:",
-    "labelEmail": "البريد المهني",
-    "placeholderCompany": "اسم شركتك",
-    "subtitle": "أنشئ مساحة تجربتك في دقيقتين. لا حاجة لبطاقة ائتمانية.",
-    "termsLink": "شروط الاستخدام",
-    "validation": {
-      "emailTooShort": "البريد الإلكتروني قصير جدًا",
-      "emailTooLong": "البريد الإلكتروني طويل جدًا",
-      "employeesRequired": "اختر حجم الفريق",
-      "emailInvalid": "البريد الإلكتروني غير صالح",
-      "companyTooLong": "اسم الشركة طويل جدًا",
-      "phoneInvalid": "رقم الهاتف غير صالح",
-      "companyTooShort": "يجب أن يتكون اسم الشركة من حرفين على الأقل",
-      "roleRequired": "اختر دورك",
-      "agreeTerms": "يجب عليك قبول شروط الاستخدام",
-      "countryRequired": "البلد مطلوب."
-    },
-    "timeoutTitle": "لا يزال الإنشاء جاريًا",
-    "otpTitle": "تحقق من بريدك الإلكتروني",
-    "preparingBody": "نقوم بتجهيز بيئة العرض. يستغرق هذا عادة أقل من 30 ثانية.",
-    "pendingFallback": "تم استلام طلب التجربة. سيتواصل معك فريقنا خلال 24 ساعة عمل.",
-    "back": "رجوع",
-    "trackStatus": "تتبع حالة مساحتي",
-    "preparingTitle": "تجهيز مساحتك",
-    "roleHr": "موارد بشرية",
-    "copied": "تم النسخ!",
-    "changePasswordNote": "غيّر كلمة مرورك عند أول تسجيل دخول.",
-    "rolePlaceholder": "اختر",
-    "fieldEmail": "البريد الإلكتروني",
-    "downloadApp": "تحميل التطبيق",
-    "submittingLabel": "جارٍ إرسال الرمز...",
-    "otpVerifyError": "حدث خطأ أثناء التحقق. يرجى المحاولة مرة أخرى.",
-    "submitLabel": "استلام رمز التحقق",
-    "privacyLink": "سياسة الخصوصية",
-    "readyTitle": "مساحتك جاهزة!",
-    "otpInvalidLength": "يرجى إدخال الأرقام الستة للرمز.",
-    "placeholderEmail": "بريدك@company.com",
-    "pendingTitle": "تم استلام طلب التجربة",
-    "roleManager": "مدير",
-    "pendingNote": "خدمة الإنشاء الفوري غير متاحة مؤقتًا (إعادة تشغيل الخادم). تم تسجيل طلبك: سيتواصل معك أحد أعضاء فريق Leopardo عبر البريد خلال 24 ساعة عمل مع وصول مناسب لسياقك.",
-    "failedBody": "حدث خطأ أثناء إنشاء مساحتك. سيتواصل معك فريقنا عبر البريد خلال 24 ساعة عمل بوصول مناسب.",
-    "operationsNote": "سنُعد مسارًا ميدانيًا: الحضور، المهام، الكشك ومتابعة الفريق.",
-    "statusFor": "إلى:",
-    "linkCopied": "تم نسخ الرابط!",
-    "title": "جرّب Leopardo مع شركتك",
-    "emailVerified": "تم التحقق من بريدك الإلكتروني بنجاح.",
-    "trialDaysUnit": "أيام",
-    "successTitle": "مساحتك جاهزة!",
-    "linkEmailed": "تم أيضًا إرسال رابط الوصول عبر البريد الإلكتروني.",
-    "roleOther": "أخرى",
-    "labelPhone": "الهاتف (اختياري)",
-    "timeoutBody": "مساحتك قيد التجهيز. سنرسل لك رابط الوصول عبر البريد فور جاهزيته.",
-    "teamPlaceholder": "اختر",
-    "loginCta": "تسجيل الدخول",
-    "refreshStatus": "تحديث الحالة",
-    "labelCompany": "الشركة",
-    "statusEvery5s": "يتم التحقق من الحالة كل 5 ثوانٍ.",
-    "verifyLabel": "تحقق وأنشئ مساحتي",
-    "credsLabel": "بيانات تسجيل الدخول",
-    "trialNote": "تجربة مجانية لمدة",
-    "credsEmailed": "تم إرسال بيانات تسجيل الدخول إليك عبر البريد.",
-    "verifyingLabel": "جارٍ التحقق...",
-    "accessCta": "الوصول إلى مساحتي",
-    "placeholderPhone": "+213 555 000 000",
-    "fieldPassword": "كلمة المرور",
-    "credsSentByEmail": "تم إرسال هذه البيانات أيضًا عبر البريد إلى",
-    "agreeSuffix": "و",
-    "copyPasswordTitle": "نسخ كلمة المرور",
-    "haveAccount": "لديك حساب بالفعل؟",
-    "agreePrefix": "أوافق على",
-    "defaultError": "حدث خطأ ما",
-    "failedTitle": "تم إيقاف الإنشاء",
-    "otpSentTo": "أرسلنا رمز تحقق من 6 أرقام إلى:",
-    "badge": "تجربة مجانية لمدة 14 يومًا",
-    "roleFounder": "مؤسس / مدير عام",
-    "copyLink": "نسخ الرابط",
-    "labelCountry": "البلد",
-    "countryPlaceholder": "اختر بلدك"
-  },
-  "platform_login": {
-    "email_label": "بريد المسؤول الاعلى",
-    "2fa_notice": "هذا الحساب يحمي المنصة: ادخل رمز التحقق بخطوتين من تطبيق المصادقة.",
-    "subtitle": "لوحة تحكم محمولة مخصصة لادارة المنصة.",
-    "email_required": "البريد الالكتروني مطلوب",
-    "2fa_label": "رمز التحقق بخطوتين اذا كان مفعلا",
-    "use_demo_account": "استخدام الحساب التجريبي",
-    "submitting": "جاري تسجيل الدخول...",
-    "title": "ليوباردو بلاتفورم",
-    "password_required": "كلمة المرور مطلوبة"
-  },
-  "users": {
-    "bulkPanel": {
-      "suspend": "تعليق",
-      "deactivate": "تعطيل",
-      "export": "تصدير",
-      "cancel": "إلغاء",
-      "selectedCount": ":count محدد",
-      "activate": "تفعيل"
-    },
-    "impersonation": {
-      "title": "انتحال صفة موظف",
-      "subtitle": "فتح جلسة باسم :name",
-      "reason": "السبب (إلزامي، 5 أحرف على الأقل)",
-      "reasonMin": "السبب إلزامي (5 أحرف على الأقل).",
-      "noLink": "لا يوجد موظف مرتبط بهذا الحساب — تعذر انتحال الصفة.",
-      "start": "إنشاء الجلسة",
-      "cancel": "إلغاء",
-      "tokenTitle": "رمز انتحال الصفة (استخدام واحد)",
-      "expires": "تنتهي في :date",
-      "copy": "نسخ الرمز",
-      "copied": "تم نسخ الرمز",
-      "created": "تم إنشاء جلسة انتحال الصفة",
-      "error": "خطأ في إنشاء جلسة انتحال الصفة",
-      "done": "تم",
-      "employee": "الموظف المرتبط #:id",
-      "copyFailed": "تعذّر نسخ الرمز تلقائياً. انسخه يدوياً من الحقل أعلاه."
-    },
-    "actions": {
-      "bulk": "إجراءات (:count)",
-      "export": "تصدير",
-      "new": "جديد"
-    },
-    "errors": {
-      "name_required": "الاسم الكامل مطلوب.",
-      "fix_fields": "يرجى تصحيح الحقول المميزة",
-      "password_required": "كلمة المرور مطلوبة.",
-      "password_min": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
-      "search_no_match": "لا توجد صفحة تطابق بحثك",
-      "update_failed": "فشل تحديث المستخدم"
-    },
-    "filters": {
-      "status": {
-        "active": "نشط",
-        "label": "الحالة",
-        "pending": "قيد الانتظار",
-        "inactive": "غير نشط",
-        "suspended": "معلق",
-        "all": "جميع الحالات"
-      },
-      "advanced": {
-        "hide": "إخفاء الفلاتر المتقدمة",
-        "show": "إظهار الفلاتر المتقدمة"
-      },
-      "registrationDate": {
-        "week": "هذا الأسبوع",
-        "label": "تاريخ التسجيل",
-        "month": "هذا الشهر",
-        "today": "اليوم",
-        "all": "جميع التواريخ",
-        "quarter": "هذا الفصل"
-      },
-      "segment": {
-        "champions": "الأبطال",
-        "label": "الشريحة",
-        "potential": "المحتملون",
-        "atRisk": "معرض للخطر",
-        "all": "جميع الشرائح",
-        "loyal": "الموالون",
-        "new": "جديد"
-      },
-      "lastLogin": {
-        "never": "لم يسجل الدخول ابدا",
-        "week": "هذا الأسبوع",
-        "label": "آخر تسجيل دخول",
-        "month": "هذا الشهر",
-        "today": "اليوم",
-        "all": "الكل"
-      },
-      "company": {
-        "label": "الشركة",
-        "all": "جميع الشركات"
-      },
-      "role": {
-        "employee": "موظف",
-        "label": "الدور",
-        "hr": "الموارد البشرية",
-        "admin": "مسؤول",
-        "manager": "مدير",
-        "all": "جميع الأدوار"
-      },
-      "search": {
-        "label": "بحث",
-        "placeholder": "الاسم، البريد الإلكتروني، الشركة..."
-      }
-    },
-    "confirm": {
-      "delete": "هل انت متأكد من رغبتك في حذف :name؟",
-      "title": "حذف هذا المستخدم؟"
-    },
-    "page": {
-      "summary": ":count مستخدم - :active نشط - :newToday جديد اليوم",
-      "title": "إدارة المستخدمين"
-    },
-    "toast": {
-      "updated": "تم تحديث المستخدم",
-      "bulkActivated": "تم تفعيل :count مستخدم",
-      "loadError": "خطأ في تحميل المستخدمين",
-      "deleted": "تم حذف المستخدم",
-      "selectionExportDone": "تم تصدير التحديد",
-      "bulkDeactivated": "تم تعطيل :count مستخدم",
-      "impersonating": "تسجيل الدخول باسم :name",
-      "created": "تم إنشاء المستخدم بنجاح",
-      "bulkSuspended": "تم تعليق :count مستخدم",
-      "bulkError": "فشل الإجراء الجماعي",
-      "exportInProgress": "التصدير قيد التنفيذ...",
-      "exportError": "فشل التصدير",
-      "exportDone": "تم التصدير",
-      "deleteError": "خطأ في حذف المستخدم",
-      "bulkDone": "تم التحديث"
-    },
-    "edit": {
-      "title": "تعديل المستخدم",
-      "status": "الحالة",
-      "save": "تحديث"
-    },
-    "csv": {
-      "name": "الاسم",
-      "email": "البريد الإلكتروني",
-      "status": "الحالة",
-      "company": "الشركة",
-      "signup": "التسجيل",
-      "lastLogin": "آخر تسجيل دخول"
-    }
-  },
-  "_version": "1.0.0",
-  "tax_slabs": {
-    "load_error": "تعذّر تحميل الشريحة الضريبية.",
-    "sim_error": "تعذّرت المحاكاة.",
-    "reset_error": "تعذّرت إعادة التعيين.",
-    "sim_tax": "الضريبة",
-    "save_error": "تعذّر حفظ الشريحة.",
-    "default_name": "الشريحة القانونية {country}",
-    "th_deduction": "خصم ثابت",
-    "reset": "إعادة إلى القيم القانونية",
-    "reset_confirm": "إعادة التعيين إلى القيم القانونية الافتراضية؟ سيتم استبدال الشرائح الحالية.",
-    "simulator_subtitle": "أدخل الراتب الإجمالي: الحساب (الاشتراكات، الأساس، الضريبة لكل شريحة، الصافي، تكلفة صاحب العمل) ينفذه محرك الرواتب الفعلي — دون حفظ.",
-    "legal_ref": "مرجع قانوني",
-    "th_max": "الحد الأقصى",
-    "edit_title": "تعديل الشريحة",
-    "simulator_title": "محاكي الأثر",
-    "title": "شرائح الضرائب حسب البلد",
-    "national_note": "نطاق وطني — تبقى استثناءات الشركة في جانب المستأجر",
-    "sim_base": "الأساس",
-    "created": "تم إنشاء الشريحة.",
-    "saved": "تم تحديث الشريحة.",
-    "saving": "جارٍ الحفظ…",
-    "deleted": "تم حذف الشريحة.",
-    "cancel": "إلغاء",
-    "sim_social": "الاشتراكات (الموظف)",
-    "th_rate": "المعدل",
-    "sim_running": "جارٍ الحساب…",
-    "th_country": "البلد",
-    "save": "حفظ",
-    "delete_error": "تعذّر الحذف.",
-    "empty": "لا توجد شرائح مسجلة لهذا البلد.",
-    "sim_compare": "راتب للمقارنة",
-    "add_title": "إضافة شريحة",
-    "subtitle": "شرائح IRG/IRPP/ITSAS المستخدمة في محرك الرواتب. إدارة وطنية (مسؤول المنصة) ومحاكاة أثر فورية — دون حفظ أي شيء.",
-    "scope_national": "وطني",
-    "delete_confirm": "حذف الشريحة «{name}»؟",
-    "scope": "النطاق",
-    "edit": "تعديل",
-    "th_actions": "إجراءات",
-    "sim_net": "الصافي",
-    "scope_company": "خاص بالشركة",
-    "delete": "حذف",
-    "th_effective": "ساري من",
-    "reset_done": "تمت إعادة تعيين الشريحة.",
-    "sim_run": "محاكاة",
-    "th_min": "الحد الأدنى",
-    "sim_slab_tax": "ضريبة الشريحة",
-    "add": "إضافة شريحة",
-    "sim_gross": "الراتب الإجمالي",
-    "delete_confirm_title": "حذف هذا الشريحة الضريبية؟",
-    "reset_confirm_title": "إعادة تعيين الشرائح الضريبية؟"
-  },
-  "companies": {
-    "toast": {
-      "features_failed": "تعذّر حفظ إعدادات الوحدات.",
-      "subscription_failed": "تعذّر تحديث الاشتراك.",
-      "load_failed": "تعذّر تحميل تفاصيل الشركة.",
-      "tickets_failed": "تعذّر تحميل تذاكر الدعم."
-    },
-    "portfolio": "محفظة العملاء",
-    "directory": "دليل الشركات",
-    "directorySub": "مرتبة حسب درجة الصحة والأولوية التجارية.",
-    "syncing": "جاري مزامنة المحفظة...",
-    "retry": "إعادة المحاولة",
-    "company": "الشركة",
-    "planMrr": "الخطة والإيراد الشهري",
-    "healthOp": "الصحة التشغيلية",
-    "checkins30d": "تسجيل الحضور (30 يوم)",
-    "recommendedAction": "الإجراء الموصى به",
-    "management": "الإدارة",
-    "system": "النظام",
-    "companyName": "اسم الشركة *",
-    "contactEmail": "بريد الاتصال *",
-    "country": "البلد *",
-    "city": "مدينة النشر *",
-    "currency": "العملة",
-    "timezone": "المنطقة الزمنية",
-    "defaultLang": "اللغة الافتراضية",
-    "managerFirst": "الاسم الأول للمدير *",
-    "managerLast": "اسم عائلة المدير *",
-    "managerEmail": "بريد المدير الأساسي *",
-    "activateNow": "تفعيل فوراً",
-    "activateClientNow": "تفعيل العميل فوراً",
-    "activateClientHint": "وإلا يبقى العميل في الوضع التجريبي.",
-    "portfolioSub": "الاعتماد والمخاطر والإيرادات المتكررة والإجراء التالي لكل شركة.",
-    "newClient": "عميل جديد",
-    "refresh": "تحديث",
-    "statsFollowed": "العملاء المُتابعون",
-    "statsActive": "العملاء النشطون",
-    "statsGlobalMrr": "MRR الإجمالي",
-    "statsRiskAlert": "تنبيه المخاطر",
-    "noPlan": "لا توجد خطة",
-    "logsUnit": "سجل",
-    "activeUnit": "نشط",
-    "ras": "لا شيء",
-    "open": "فتح",
-    "provisioningTitle": "إعداد العميل",
-    "provisioning": "جارٍ الإعداد...",
-    "createClient": "إنشاء عميل",
-    "loadError": "تعذر تحميل لوحة العملاء.",
-    "createError": "تعذر إنشاء هذا العميل.",
-    "created": "تم إنشاء العميل وإرسال دعوة المدير."
-  },
-  "subscriptions": {
-    "title": "الاشتراكات",
-    "subtitle": "الباقات والعائد الشهري المتكرر وعقود العملاء المتاحة للوحة تحكم المشرف.",
-    "refresh": "تحديث",
-    "retry": "إعادة المحاولة",
-    "unlimited": "غير محدود",
-    "employees": "موظف",
-    "trialDays": "تجربة",
-    "public": "عام",
-    "archived": "مؤرشف",
-    "perMonth": "/ شهريًا",
-    "billedAnnually": "تُدفع سنويًا",
-    "loadError": "خطأ أثناء تحميل الاشتراكات.",
-    "noPlan": "بدون خطة",
-    "manage": "إدارة",
-    "noRisk": "لا توجد مخاطر فورية",
-    "catalogTitle": "كتالوج العروض",
-    "catalogSub": "مصدر الحقيقة لواجهة API للحدود والميزات.",
-    "healthTitle": "الصحة التجارية",
-    "retentionTitle": "أولويات الاحتفاظ",
-    "kpi": {
-      "portfolioMrr": "MRR المحفظة",
-      "activeSubscriptions": "الاشتراكات النشطة",
-      "pastDue": "مدفوعات متأخرة",
-      "totalOverdue": "إجمالي المتأخرات",
-      "arr": "العائد السنوي المتكرر المقدّر",
-      "collected30d": "المحصّل خلال 30 يومًا",
-      "totalSubscribers": "إجمالي المشتركين",
-      "trials": "الفترات التجريبية"
-    },
-    "risk": {
-      "high": "مخاطر عالية",
-      "medium": "مخاطر متوسطة",
-      "low": "مخاطر منخفضة"
-    },
-    "features": {
-      "rh": "الموارد البشرية",
-      "finance": "المالية",
-      "ai": "Leo AI",
-      "cameras": "الفيديو",
-      "tracking": "التتبع",
-      "planning": "التخطيط",
-      "training": "التدريبات",
-      "cabinet": "المستندات",
-      "biometric": "القياسات الحيوية",
-      "tasks": "المهام",
-      "advanced_reports": "تقارير متقدمة",
-      "excel_export": "تصدير Excel",
-      "bank_export": "تصدير بنكي",
-      "billing_auto": "فوترة تلقائية",
-      "multi_managers": "عدة مديرين",
-      "photo_attendance": "تسجيل حضور بالصورة",
-      "api_public": "API عامة",
-      "evaluations": "التقييمات",
-      "schema_isolation": "عزل المخطط"
-    },
-    "trialUnit": "يوم"
-  },
-  "profile": {
-    "department_label": "القسم",
-    "subtitle": "المعلومات الشخصية واللغة",
-    "job_title_unset": "المنصب الوظيفي فيغر محدد",
-    "back_tooltip": "رجوع",
-    "title": "ملفي الشخصي",
-    "language_saving": "جارٍ التحديث...",
-    "language_save": "تحديث اللغة",
-    "email_label": "البريد الالكتروني",
-    "open_settings": "فتح اعدادات الحساب",
-    "loading": "تحميل الملف...",
-    "details_title": "المعلومات",
-    "value_unset": "فير محدد",
-    "language_updated": "تم تحديث اللغة.",
-    "job_title_label": "المنصب الوظيفي",
-    "matricule_label": "رقم الموظف"
-  },
-  "ai_chat": {
-    "back_tooltip": "رجوع",
-    "send_tooltip": "إرسال",
-    "title": "مساعد الذكاء الاصطناعي",
-    "error_message": "خطأ: تعذر الاتصال بالمساعد.",
-    "empty_state_title": "اطرح أسئلتك المتعلقة بالموارد البشرية",
-    "input_hint": "اكتب رسالتك..."
-  },
-  "welcome": {
-    "hero": {
-      "description": "الحضور، المتابعة الشخصية، ووحدات الموارد البشرية النشطة تظهر اولا على الهاتف بتجربة بسيطة وواضحة.",
-      "title": "يبدأ يومك من هنا، وليس من مكتب خلفي."
-    },
-    "brand": {
-      "subtitle": "تجربة محادثية، موجهة للهاتف، وقابلة للتوسع."
-    },
-    "story": {
-      "modules": {
-        "body": "يفتح المنتج اولا ما يفيد اليوم، ثم يحافظ على مسار واضح للمالية، الامان، وليو.",
-        "title": "وحدات نشطة وخارطة طريق واضحة"
-      },
-      "clarity": {
-        "body": "يبدأ ليوباردو بخطوات واضحة: تسجيل الحضور، متابعة الشهر، والوصول الى المعلومات المهمة.",
-        "title": "واجهة رئيسية ترشدك قبل ان تربكك"
-      },
-      "field": {
-        "body": "الهاتف هو الواجهة الاساسية للموظف. الحضور، الغيابات، والمستندات كلها هنا.",
-        "title": "تجربة هاتف اولا لفرق الميدان"
-      }
-    },
-    "leaves": "الإجازات",
-    "my": {
-      "team": "فريقي"
-    },
-    "presences": "الحضور",
-    "tasks": "المهام"
-  },
-  "tax_rates": {
-    "history_submitted": "تم الإرسال",
-    "type_contribution": "اشتراك",
-    "history_approved": "تمت الموافقة",
-    "legal_ref": "مرجع قانوني",
-    "history": "السجل",
-    "legal_ref_required": "المرجع القانوني إلزامي (يُسجل في السجل).",
-    "save_error": "تعذر حفظ الاقتراح.",
-    "modal_title": "اقتراح تعديل معدل",
-    "history_superseded": "تم الاستبدال",
-    "approve_error": "تعذرت الموافقة على التعديل.",
-    "submit": "إرسال",
-    "th_actions": "إجراءات",
-    "rates_title": "المعدلات السارية",
-    "subtitle": "شرائح الضرائب والاشتراكات الاجتماعية المستخدمة في محرك الرواتب. أي تعديل يمر عبر سير عمل تحقق مزدوج (محاسب ← مسؤول المنصة) مع سجل تدقيق غير قابل للتغيير.",
-    "status_superseded": "🔴 مستبدل",
-    "th_date": "التاريخ",
-    "rejected": "تم رفض التعديل (عودة إلى المسودة).",
-    "status_active": "🟢 نشط",
-    "save": "حفظ",
-    "load_error": "تعذر تحميل المعدلات.",
-    "th_effective": "ساري من",
-    "saving": "جارٍ الحفظ…",
-    "status_pending": "🟡 في الانتظار",
-    "history_created": "تم الإنشاء",
-    "th_actor": "المستخدم",
-    "th_rate": "المعدل",
-    "th_country": "البلد",
-    "type_slab": "شريحة",
-    "approved": "تمت الموافقة على التعديل وأصبح نشطاً.",
-    "reject_error": "تعذر رفض التعديل.",
-    "th_reason": "السبب",
-    "rates_empty": "لا توجد معدلات مسجلة.",
-    "pending_empty": "لا توجد تعديلات في انتظار التحقق.",
-    "status_draft": "⚪ مسودة",
-    "title": "المعدلات القانونية — التحقق",
-    "reject": "رفض",
-    "reject_modal_title": "رفض التعديل",
-    "th_action": "الإجراء",
-    "close": "إغلاق",
-    "history_title": "سجل التعديلات",
-    "cancel": "إلغاء",
-    "submit_error": "تعذر إرسال التعديل.",
-    "th_status": "الحالة",
-    "pending_title": "في انتظار التحقق",
-    "history_error": "تعذر تحميل السجل.",
-    "th_name": "العنوان",
-    "rates_subtitle": "فقط الصفوف النشطة تُستخدم في كشوف الرواتب.",
-    "reject_reason": "سبب الرفض (إلزامي)",
-    "submitted": "تم إرسال التعديل للتحقق.",
-    "approve": "موافقة",
-    "propose": "اقتراح تعديل",
-    "history_rejected": "تم الرفض",
-    "history_empty": "لا توجد إدخالات في السجل.",
-    "saved": "تم حفظ الاقتراح.",
-    "th_type": "النوع",
-    "status_only": "قراءة فقط (إجراء المستأجر)"
-  },
-  "adminChat": {
-    "title": "مساعد ليوباردو للذكاء الاصطناعي",
-    "subtitle": "اطرح أسئلتك عن الموارد البشرية والرواتب والتوظيف...",
-    "unavailableTitle": "مساعد الذكاء الاصطناعي غير متاح على مستوى المنصة",
-    "unavailableBody": "دردشة الذكاء الاصطناعي غير مفعّلة لوحدة تحكم المسؤول الأعلى. استخدم مساحة شركة مدعومة للوصول إلى المساعد.",
-    "unavailableBadge": "غير متاح",
-    "historyEmpty": "لا توجد محادثات.",
-    "start": "ابدأ محادثة مع مساعد الذكاء الاصطناعي.",
-    "new": "محادثة جديدة",
-    "send": "إرسال",
-    "placeholder": "اكتب رسالتك...",
-    "thinking": "جارٍ التفكير...",
-    "error": "عذرًا، حدث خطأ. يرجى المحاولة مرة أخرى.",
-    "conversation": "محادثة",
-    "historyError": "تعذر تحميل المحادثات.",
-    "messagesError": "تعذر تحميل الرسائل.",
-    "retry": "إعادة المحاولة"
-  },
-  "_updated_at": "2026-08-20T00:00:00Z",
   "attendance": {
     "sending_to_server": "جار إرسال {label} إلى الخادم...",
     "retry_after_failure": "{label}. حاول مرة أخرى.",
@@ -971,278 +687,798 @@
     "sessions": "الجلسات",
     "break_minutes": "{minutes} دق"
   },
-  "social_contrib": {
-    "th_country": "البلد",
-    "type_employer": "صاحب العمل",
-    "sim_employer": "اشتراكات صاحب العمل",
-    "total_cost": "التكلفة الإجمالية لصاحب العمل",
-    "add": "إضافة اشتراك",
-    "th_org": "الصندوق",
-    "edit_title": "تعديل الاشتراك",
-    "title": "الاشتراكات الاجتماعية حسب البلد",
-    "sim_subtitle": "أدخل راتباً إجمالياً: تفصيل موظف/صاحب عمل، الضريبة والتكلفة الإجمالية لصاحب العمل لبلدين جنباً إلى جنب (مع أو بدون السقف القانوني).",
-    "type_all": "الكل",
-    "sim_employee": "اشتراكات الموظف",
-    "delete_confirm": "حذف «{name}»؟",
-    "deleted": "تم حذف الاشتراك.",
-    "sim_tax": "الضريبة",
-    "save_error": "تعذّر حفظ الاشتراك.",
-    "sim_title": "محاكي ومقارن",
-    "th_cap": "السقف",
-    "empty": "لا توجد اشتراكات مسجلة لهذا البلد.",
-    "cancel": "إلغاء",
-    "compare_country": "البلد المقارن",
-    "th_actions": "إجراءات",
-    "type_employee": "الموظف",
-    "subtitle": "CNPS، CNSS، IPRES، CNAS… — المعدلات والسقوف والأنواع (موظف/صاحب عمل) حسب البلد. إدارة وطنية + محاكاة مع/بدون سقف ومقارنة بين بلدين.",
-    "delete": "حذف",
-    "save": "حفظ",
-    "load_error": "تعذّر تحميل الاشتراكات.",
-    "th_effective": "ساري من",
-    "saving": "جارٍ الحفظ…",
-    "th_code": "الرمز",
-    "ignore_caps": "بدون سقف قانوني",
-    "th_rate": "المعدل",
-    "th_type": "النوع",
-    "edit": "تعديل",
-    "saved": "تم تحديث الاشتراك.",
-    "created": "تم إنشاء الاشتراك.",
-    "delete_error": "تعذّر الحذف.",
-    "sim_gross": "الراتب الإجمالي",
-    "add_title": "إضافة اشتراك",
-    "delete_confirm_title": "حذف هذا الاشتراك؟"
-  },
-  "auth": {
-    "manager_login_subtitle": "تسجيل دخول المدير / الموارد البشرية",
-    "back_tooltip": "رجوع",
-    "password_required": "كلمة المرور مطلوبة",
-    "two_factor_required": "رمز التحقق الثنائي مطلوب.",
-    "employee_login_subtitle": "تسجيل دخول الموظف",
-    "try_demo_account": "تجربة حساب تجريبي",
-    "personal_account": {
-      "explanation": "الحساب الشخصي: نظم مستنداتك، ثم انشئ شركة او انضم اليها من مساحتك.",
-      "create": "انشاء حساب شخصي"
-    },
-    "email_professional_label": "البريد الالكتروني المهني",
-    "login": {
-      "title": "تسجيل الدخول"
-    },
-    "email_required": "البريد الالكتروني مطلوب",
-    "password_label": "كلمة المرور",
-    "personal_account_link": "حساب شخصي",
-    "employee": {
-      "invitation": {
-        "access": "دخول الموظف (بدعوة)"
-      }
-    },
-    "activate_invitation": "تفعيل دعوتي",
-    "activate_manager_access": "تفعيل صلاحية المدير",
-    "email_label": "البريد الالكتروني",
-    "continue_with_google": "الاستمرار مع Google",
-    "email_invalid": "بريد الكتروني غير صالح",
-    "password_too_short": "كلمة المرور قصيرة جدا",
-    "access_key_label": "مفتاح الوصول",
-    "two_fa_label": "رمز 2FA",
-    "login_placeholder_email": "admin@leopardo-rh.com",
-    "login_submit": "تسجيل الدخول",
-    "remember_me": "تذكرني",
-    "login_subtitle": "سجل الدخول إلى مساحتك",
-    "connection_error": "خطأ في الاتصال.",
-    "disable_two_fa_failed": "تعطيل المصادقة الثنائية فشل.",
-    "hide_password": "إخفاء كلمة المرور",
-    "incomplete_response": "استجابة تسجيل الدخول غير مكتملة.",
-    "loading": "جارٍ المصادقة…",
-    "password_change_failed": "فشل تغيير كلمة المرور.",
-    "profile_update_failed": "فشل تحديث الملف الشخصي.",
-    "show_password": "إظهار كلمة المرور",
-    "two_fa_invalid": "رمز 2FA المقدم غير صالح.",
-    "two_fa_required_msg": "رمز التحقق مطلوب.",
-    "two_fa_setup_failed": "فشل إنشاء سر 2FA.",
-    "unexpected_error": "حدث خطأ غير متوقع.",
-    "demo": {
-      "access": "وصول تجريبي"
-    },
-    "toggle": {
-      "password": {
-        "visibility": "إظهار أو إخفاء كلمة المرور"
-      }
-    },
-    "access_key_required": "مفتاح الوصول مطلوب."
-  },
-  "app": {
-    "title": "ليوباردو للموارد البشرية"
-  },
-  "payroll": {
-    "confidence": {
-      "label": "درجة الثقة في قواعد الرواتب",
-      "production": {
-        "message": "قواعد مُتحقق منها وتُستخدم في الإنتاج لـ {country}. أكّد دائمًا الأسعار السارية مع مستشار محلي قبل الاعتماد على هذه المبالغ في التصريحات الإلزامية."
-      },
-      "level_unknown": "غير معروف",
-      "level_pilot": "تجريبي",
-      "unknown": {
-        "message": "لا تتوفر قواعد رواتب لـ {country}: حساب الرواتب غير متاح لهذا البلد."
-      },
-      "level_production": "إنتاج",
-      "placeholder": {
-        "message": "قواعد مبدئية بلا قيم لـ {country}: مبالغ الضريبة والاشتراكات غير موثقة بعد ولا يجوز استخدامها في دورات رواتب حقيقية حتى تُستبدل."
-      },
-      "level_placeholder": "مبدئي",
-      "pilot": {
-        "message": "قواعد تجريبية لـ {country}: مبالغ مستندة إلى مراجع عامة (مدونة العمل) لكنها غير مُتحقق منها قانونيًا محليًا. أكّد مع مستشار قانوني أو ضريبي محلي قبل الاعتماد على هذه الأرقام (شرائح الضريبة، اشتراكات الضمان الاجتماعي، سقوف الساعات الإضافية) في التزاماتك القانونية."
-      }
-    }
-  },
-  "_locale": "ar",
   "holidays": {
+    "page": {
+      "title": "العطل الرسمية حسب البلد",
+      "subtitle": "تقويم العطل الرسمية الذي يستخدمه محرك الأجور لحساب أيام العمل الفعلية (issue #1811). العطل الوطنية مشتركة، أما عطل المؤسسة فتبقى خاصة بشركتك."
+    },
+    "country": "البلد",
+    "year": "السنة",
+    "add": "إضافة عيد رسمي",
     "th": {
       "date": "التاريخ",
       "name": "الاسم",
+      "type": "النوع",
       "scope": "النطاق",
-      "actions": "إجراءات",
-      "type": "النوع"
+      "actions": "إجراءات"
     },
-    "add": "إضافة عيد رسمي",
-    "year": "السنة",
-    "page_subtitle": "تقويم الأعياد الذي يستخدمه محرك الرواتب لحساب أيام العمل الفعلية. الأعياد الثابتة (1811) والأعياد الإسلامية المتحركة (1812) تُغذي كشوف رواتب جميع البلدان المعنية تلقائياً.",
-    "type_islamic": "إسلامي",
-    "deleted": "تم حذف العيد الرسمي.",
-    "save_error": "تعذر حفظ العيد الرسمي.",
-    "page_title": "الأعياد الرسمية حسب البلد",
-    "success": {
-      "deleted": "تم حذف العطلة الرسمية.",
-      "saved": "تم حفظ العطلة الرسمية."
+    "scope": {
+      "national": "وطنية",
+      "company": "خاصة بالمؤسسة"
     },
-    "th_actions": "إجراءات",
-    "date": {
-      "label": "التاريخ"
+    "edit": "تعديل",
+    "delete": "حذف",
+    "empty": "لا يوجد عيد رسمي لـ {country} / {year}.",
+    "modal": {
+      "editTitle": "تعديل العطلة الرسمية",
+      "newTitle": "عطلة رسمية جديدة"
     },
     "name": {
       "label": "الاسم"
     },
-    "th_date": "التاريخ",
-    "save": "حفظ",
-    "load_error": "تعذر تحميل الأعياد الرسمية.",
-    "saving": "جارٍ الحفظ…",
-    "scope": {
-      "company": "خاصة بالمؤسسة",
-      "national": "وطنية"
+    "date": {
+      "label": "التاريخ"
     },
-    "country": "البلد",
-    "edit": "تعديل",
-    "type_custom": "مخصص",
-    "add_title": "عيد رسمي جديد",
-    "type_christian": "مسيحي",
-    "modal": {
-      "newTitle": "عطلة رسمية جديدة",
-      "editTitle": "تعديل العطلة الرسمية"
+    "type": {
+      "label": "النوع",
+      "fixed": "ثابتة",
+      "islamic": "إسلامية",
+      "christian": "مسيحية",
+      "custom": "مخصصة"
+    },
+    "recurring": "يتكرر كل عام",
+    "cancel": "إلغاء",
+    "saving": "جارٍ الحفظ…",
+    "save": "حفظ",
+    "errors": {
+      "load": "تعذّر تحميل العطل الرسمية.",
+      "save": "تعذّر حفظ العطلة الرسمية.",
+      "delete": "تعذّر الحذف."
+    },
+    "success": {
+      "saved": "تم حفظ العطلة الرسمية.",
+      "deleted": "تم حذف العطلة الرسمية."
+    },
+    "confirm": {
+      "delete": "حذف « :name »؟"
     },
     "nav": {
       "title": "العطل الرسمية"
     },
+    "page_title": "الأعياد الرسمية حسب البلد",
+    "page_subtitle": "تقويم الأعياد الذي يستخدمه محرك الرواتب لحساب أيام العمل الفعلية. الأعياد الثابتة (1811) والأعياد الإسلامية المتحركة (1812) تُغذي كشوف رواتب جميع البلدان المعنية تلقائياً.",
+    "th_date": "التاريخ",
+    "th_name": "الاسم",
+    "th_type": "النوع",
+    "th_scope": "النطاق",
+    "th_actions": "إجراءات",
+    "scope_national": "وطني",
+    "scope_company": "شركة",
     "edit_title": "تعديل العيد الرسمي",
+    "add_title": "عيد رسمي جديد",
+    "type_fixed": "ثابت",
+    "type_islamic": "إسلامي",
+    "type_christian": "مسيحي",
+    "type_custom": "مخصص",
+    "load_error": "تعذر تحميل الأعياد الرسمية.",
+    "saved": "تم حفظ العيد الرسمي.",
+    "save_error": "تعذر حفظ العيد الرسمي.",
+    "deleted": "تم حذف العيد الرسمي.",
+    "delete_error": "تعذر الحذف.",
     "countries": {
-      "MA": "المغرب",
       "DZ": "الجزائر",
-      "SN": "السنغال",
-      "TN": "تونس",
       "CM": "الكاميرون",
-      "CI": "ساحل العاج"
+      "CI": "ساحل العاج",
+      "SN": "السنغال",
+      "MA": "المغرب",
+      "TN": "تونس"
     },
     "islamic": {
-      "status_approximate": "تقريبي",
-      "label_date": "التاريخ الميلادي",
-      "banner_unconfirmed": "{count} عيد إسلامي غير مؤكد لسنة {year} — تحقق من التواريخ قبل إقفال الرواتب.",
       "title": "الأعياد الإسلامية",
-      "save_error": "حدث خطأ أثناء الحفظ.",
-      "modal_title": "تعديل {name}",
-      "label_duration": "المدة (أيام)",
-      "delete_confirm_dialog": "حذف «{name}»؟",
-      "empty": "لا توجد أعياد إسلامية مسجلة لسنة {year}.",
-      "th_actions": "إجراءات",
-      "th_status": "الحالة",
-      "confirm_dialog": "تأكيد جميع التواريخ الإسلامية لسنة {year}؟",
       "subtitle": "التواريخ المتحركة للتقويم الهجري (العيد، المولد، تامخاريت…) تُدخل سنويًا وتُطبق تلقائيًا على دول سيماك/سيدياو + الجزائر والمغرب وتونس.",
-      "duration_days": "{count} يوم",
-      "label_confirmed": "تاريخ مؤكد (رسمي)",
-      "confirm_year_success": "تم تأكيد {count} تاريخ.",
+      "confirm": "تأكيد {year}",
+      "banner_unconfirmed": "{count} عيد إسلامي غير مؤكد لسنة {year} — تحقق من التواريخ قبل إقفال الرواتب.",
       "th_name": "العيد",
       "th_date": "التاريخ الميلادي",
-      "confirm_error": "حدث خطأ أثناء تأكيد التواريخ.",
-      "load_error": "خطأ في تحميل التقويم الإسلامي.",
-      "status_confirmed": "مؤكد",
-      "th_countries": "الدول",
-      "confirm": "تأكيد {year}",
-      "edit": "تعديل",
-      "saved": "تم حفظ العيد الإسلامي.",
       "th_duration": "المدة",
-      "confirm_title": "تأكيد السنة؟",
-      "delete_confirm_title": "حذف هذه العطلة؟"
-    },
-    "page": {
-      "subtitle": "تقويم العطل الرسمية الذي يستخدمه محرك الأجور لحساب أيام العمل الفعلية (issue #1811). العطل الوطنية مشتركة، أما عطل المؤسسة فتبقى خاصة بشركتك.",
-      "title": "العطل الرسمية حسب البلد"
-    },
-    "scope_company": "شركة",
-    "type": {
-      "label": "النوع",
-      "custom": "مخصصة",
-      "islamic": "إسلامية",
-      "fixed": "ثابتة",
-      "christian": "مسيحية"
-    },
-    "empty": "لا يوجد عيد رسمي لـ {country} / {year}.",
-    "th_scope": "النطاق",
-    "type_fixed": "ثابت",
-    "cancel": "إلغاء",
-    "errors": {
-      "save": "تعذّر حفظ العطلة الرسمية.",
-      "delete": "تعذّر الحذف.",
-      "load": "تعذّر تحميل العطل الرسمية."
-    },
-    "delete": "حذف",
-    "th_name": "الاسم",
-    "recurring": "يتكرر كل عام",
-    "scope_national": "وطني",
-    "confirm": {
-      "delete": "حذف « :name »؟"
-    },
+      "th_countries": "الدول",
+      "th_status": "الحالة",
+      "th_actions": "إجراءات",
+      "duration_days": "{count} يوم",
+      "status_confirmed": "مؤكد",
+      "status_approximate": "تقريبي",
+      "edit": "تعديل",
+      "empty": "لا توجد أعياد إسلامية مسجلة لسنة {year}.",
+      "modal_title": "تعديل {name}",
+      "label_date": "التاريخ الميلادي",
+      "label_duration": "المدة (أيام)",
+      "label_confirmed": "تاريخ مؤكد (رسمي)",
+      "load_error": "خطأ في تحميل التقويم الإسلامي.",
+      "confirm_dialog": "تأكيد جميع التواريخ الإسلامية لسنة {year}؟",
+      "saved": "تم حفظ العيد الإسلامي.",
+      "save_error": "حدث خطأ أثناء الحفظ.",
+      "confirm_error": "حدث خطأ أثناء تأكيد التواريخ.",
+      "confirm_year_success": "تم تأكيد {count} تاريخ.",
+      "delete_confirm_dialog": "حذف «{name}»؟"
+    }
+  },
+  "tax_rates": {
+    "title": "المعدلات القانونية — التحقق",
+    "subtitle": "شرائح الضرائب والاشتراكات الاجتماعية المستخدمة في محرك الرواتب. أي تعديل يمر عبر سير عمل تحقق مزدوج (محاسب ← مسؤول المنصة) مع سجل تدقيق غير قابل للتغيير.",
+    "pending_title": "في انتظار التحقق",
+    "pending_empty": "لا توجد تعديلات في انتظار التحقق.",
+    "rates_title": "المعدلات السارية",
+    "rates_subtitle": "فقط الصفوف النشطة تُستخدم في كشوف الرواتب.",
+    "rates_empty": "لا توجد معدلات مسجلة.",
+    "propose": "اقتراح تعديل",
     "th_type": "النوع",
-    "saved": "تم حفظ العيد الرسمي.",
-    "delete_error": "تعذر الحذف."
+    "th_name": "العنوان",
+    "th_country": "البلد",
+    "th_rate": "المعدل",
+    "th_effective": "ساري من",
+    "th_status": "الحالة",
+    "th_actions": "إجراءات",
+    "th_action": "الإجراء",
+    "th_actor": "المستخدم",
+    "th_reason": "السبب",
+    "th_date": "التاريخ",
+    "type_slab": "شريحة",
+    "type_contribution": "اشتراك",
+    "status_active": "🟢 نشط",
+    "status_pending": "🟡 في الانتظار",
+    "status_draft": "⚪ مسودة",
+    "status_superseded": "🔴 مستبدل",
+    "submit": "إرسال",
+    "history": "السجل",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "modal_title": "اقتراح تعديل معدل",
+    "legal_ref": "مرجع قانوني",
+    "legal_ref_required": "المرجع القانوني إلزامي (يُسجل في السجل).",
+    "cancel": "إلغاء",
+    "saving": "جارٍ الحفظ…",
+    "save": "حفظ",
+    "reject_modal_title": "رفض التعديل",
+    "reject_reason": "سبب الرفض (إلزامي)",
+    "history_title": "سجل التعديلات",
+    "history_empty": "لا توجد إدخالات في السجل.",
+    "history_created": "تم الإنشاء",
+    "history_submitted": "تم الإرسال",
+    "history_approved": "تمت الموافقة",
+    "history_rejected": "تم الرفض",
+    "history_superseded": "تم الاستبدال",
+    "close": "إغلاق",
+    "load_error": "تعذر تحميل المعدلات.",
+    "saved": "تم حفظ الاقتراح.",
+    "save_error": "تعذر حفظ الاقتراح.",
+    "submitted": "تم إرسال التعديل للتحقق.",
+    "submit_error": "تعذر إرسال التعديل.",
+    "approved": "تمت الموافقة على التعديل وأصبح نشطاً.",
+    "approve_error": "تعذرت الموافقة على التعديل.",
+    "rejected": "تم رفض التعديل (عودة إلى المسودة).",
+    "reject_error": "تعذر رفض التعديل.",
+    "history_error": "تعذر تحميل السجل.",
+    "status_only": "قراءة فقط (إجراء المستأجر)"
+  },
+  "tax_slabs": {
+    "title": "شرائح الضرائب حسب البلد",
+    "subtitle": "شرائح IRG/IRPP/ITSAS المستخدمة في محرك الرواتب. إدارة وطنية (مسؤول المنصة) ومحاكاة أثر فورية — دون حفظ أي شيء.",
+    "th_country": "البلد",
+    "scope": "النطاق",
+    "scope_national": "وطني",
+    "scope_company": "خاص بالشركة",
+    "national_note": "نطاق وطني — تبقى استثناءات الشركة في جانب المستأجر",
+    "th_min": "الحد الأدنى",
+    "th_max": "الحد الأقصى",
+    "th_rate": "المعدل",
+    "th_deduction": "خصم ثابت",
+    "th_effective": "ساري من",
+    "th_actions": "إجراءات",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "add": "إضافة شريحة",
+    "reset": "إعادة إلى القيم القانونية",
+    "empty": "لا توجد شرائح مسجلة لهذا البلد.",
+    "edit_title": "تعديل الشريحة",
+    "add_title": "إضافة شريحة",
+    "legal_ref": "مرجع قانوني",
+    "cancel": "إلغاء",
+    "saving": "جارٍ الحفظ…",
+    "save": "حفظ",
+    "simulator_title": "محاكي الأثر",
+    "simulator_subtitle": "أدخل الراتب الإجمالي: الحساب (الاشتراكات، الأساس، الضريبة لكل شريحة، الصافي، تكلفة صاحب العمل) ينفذه محرك الرواتب الفعلي — دون حفظ.",
+    "sim_gross": "الراتب الإجمالي",
+    "sim_run": "محاكاة",
+    "sim_running": "جارٍ الحساب…",
+    "sim_social": "الاشتراكات (الموظف)",
+    "sim_tax": "الضريبة",
+    "sim_net": "الصافي",
+    "sim_base": "الأساس",
+    "sim_slab_tax": "ضريبة الشريحة",
+    "load_error": "تعذّر تحميل الشريحة الضريبية.",
+    "save_error": "تعذّر حفظ الشريحة.",
+    "saved": "تم تحديث الشريحة.",
+    "created": "تم إنشاء الشريحة.",
+    "deleted": "تم حذف الشريحة.",
+    "delete_error": "تعذّر الحذف.",
+    "delete_confirm": "حذف الشريحة «{name}»؟",
+    "reset_confirm": "إعادة التعيين إلى القيم القانونية الافتراضية؟ سيتم استبدال الشرائح الحالية.",
+    "reset_done": "تمت إعادة تعيين الشريحة.",
+    "reset_error": "تعذّرت إعادة التعيين.",
+    "default_name": "الشريحة القانونية {country}",
+    "sim_error": "تعذّرت المحاكاة."
+  },
+  "social_contrib": {
+    "title": "الاشتراكات الاجتماعية حسب البلد",
+    "subtitle": "CNPS، CNSS، IPRES، CNAS… — المعدلات والسقوف والأنواع (موظف/صاحب عمل) حسب البلد. إدارة وطنية + محاكاة مع/بدون سقف ومقارنة بين بلدين.",
+    "th_country": "البلد",
+    "th_org": "الصندوق",
+    "th_code": "الرمز",
+    "th_type": "النوع",
+    "th_rate": "المعدل",
+    "th_cap": "السقف",
+    "th_effective": "ساري من",
+    "th_actions": "إجراءات",
+    "type_all": "الكل",
+    "type_employee": "الموظف",
+    "type_employer": "صاحب العمل",
+    "add": "إضافة اشتراك",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "empty": "لا توجد اشتراكات مسجلة لهذا البلد.",
+    "add_title": "إضافة اشتراك",
+    "edit_title": "تعديل الاشتراك",
+    "cancel": "إلغاء",
+    "saving": "جارٍ الحفظ…",
+    "save": "حفظ",
+    "sim_title": "محاكي ومقارن",
+    "sim_subtitle": "أدخل راتباً إجمالياً: تفصيل موظف/صاحب عمل، الضريبة والتكلفة الإجمالية لصاحب العمل لبلدين جنباً إلى جنب (مع أو بدون السقف القانوني).",
+    "sim_gross": "الراتب الإجمالي",
+    "compare_country": "البلد المقارن",
+    "ignore_caps": "بدون سقف قانوني",
+    "sim_employee": "اشتراكات الموظف",
+    "sim_employer": "اشتراكات صاحب العمل",
+    "sim_tax": "الضريبة",
+    "total_cost": "التكلفة الإجمالية لصاحب العمل",
+    "load_error": "تعذّر تحميل الاشتراكات.",
+    "save_error": "تعذّر حفظ الاشتراك.",
+    "saved": "تم تحديث الاشتراك.",
+    "created": "تم إنشاء الاشتراك.",
+    "deleted": "تم حذف الاشتراك.",
+    "delete_error": "تعذّر الحذف.",
+    "delete_confirm": "حذف «{name}»؟"
+  },
+  "payroll": {
+    "confidence": {
+      "label": "درجة الثقة في قواعد الرواتب",
+      "level_production": "إنتاج",
+      "level_pilot": "تجريبي",
+      "level_placeholder": "مبدئي",
+      "level_unknown": "غير معروف",
+      "production": {
+        "message": "قواعد مُتحقق منها وتُستخدم في الإنتاج لـ {country}. أكّد دائمًا الأسعار السارية مع مستشار محلي قبل الاعتماد على هذه المبالغ في التصريحات الإلزامية."
+      },
+      "pilot": {
+        "message": "قواعد تجريبية لـ {country}: مبالغ مستندة إلى مراجع عامة (مدونة العمل) لكنها غير مُتحقق منها قانونيًا محليًا. أكّد مع مستشار قانوني أو ضريبي محلي قبل الاعتماد على هذه الأرقام (شرائح الضريبة، اشتراكات الضمان الاجتماعي، سقوف الساعات الإضافية) في التزاماتك القانونية."
+      },
+      "placeholder": {
+        "message": "قواعد مبدئية بلا قيم لـ {country}: مبالغ الضريبة والاشتراكات غير موثقة بعد ولا يجوز استخدامها في دورات رواتب حقيقية حتى تُستبدل."
+      },
+      "unknown": {
+        "message": "لا تتوفر قواعد رواتب لـ {country}: حساب الرواتب غير متاح لهذا البلد."
+      }
+    }
+  },
+  "pricing": {
+    "page": {
+      "hero": {
+        "badge": "تسعير شفاف",
+        "headline": "أسعار مصممة لفرق الموارد البشرية الميدانية",
+        "subheadline": "ابدأ مجانًا — بدون بطاقة ائتمان — وانتقل إلى خطة مدفوعة متى كنت مستعدًا.",
+        "primary": "ابدأ مجانًا",
+        "secondary": "تحدث مع خبير"
+      },
+      "plans": {
+        "badge": "خططنا",
+        "title": "خطة لكل مرحلة من مراحل نموك",
+        "subtitle": "ابدأ صغيرًا، توسع دون تغيير المنصة.",
+        "monthly": "شهري",
+        "annual": "سنوي",
+        "customPrice": "حسب الطلب",
+        "periodMonthly": "/شهر",
+        "periodAnnual": "/شهر مع فوترة سنوية",
+        "trialNote": "تجربة مجانية · لا بطاقة ائتمان مطلوبة"
+      },
+      "currency": {
+        "label": "عرض الأسعار بعملة",
+        "approx": "تحويل تقريبي من السعر المرجعي باليورو؛ يبقى السعر التعاقدي محددًا باليورو."
+      },
+      "trust": {
+        "items": {
+          "0": "خطة مجانية بلا بطاقة ائتمان",
+          "1": "دعم مشمول من اليوم الأول",
+          "2": "بيانات مستضافة في أوروبا",
+          "3": "إلغاء في أي وقت"
+        }
+      },
+      "comparison": {
+        "badge": "مقارنة كاملة",
+        "title": "كل ما هو مشمول",
+        "subtitle": "حسب الخطة",
+        "featureColumn": "الميزة",
+        "categories": {
+          "0": {
+            "name": "إدارة الموارد البشرية",
+            "features": {
+              "0": {
+                "name": "تتبع الحضور ويب وموبايل",
+                "free": "ويب فقط"
+              },
+              "1": {
+                "name": "الغياب والإجازات"
+              },
+              "2": {
+                "name": "تقويم مشترك"
+              },
+              "3": {
+                "name": "إعداد موجّه"
+              },
+              "4": {
+                "name": "التقييمات والأداء"
+              },
+              "5": {
+                "name": "هيكل تنظيمي ديناميكي"
+              }
+            }
+          },
+          "1": {
+            "name": "الرواتب والمالية",
+            "features": {
+              "0": {
+                "name": "حساب رواتب آلي"
+              },
+              "1": {
+                "name": "قسائم رواتب PDF"
+              },
+              "2": {
+                "name": "تصدير محاسبي"
+              },
+              "3": {
+                "name": "سلف الرواتب"
+              },
+              "4": {
+                "name": "متعدد الدول والعملات"
+              },
+              "5": {
+                "name": "امتثال قانوني متقدم"
+              }
+            }
+          },
+          "2": {
+            "name": "الميدان والموبايل",
+            "features": {
+              "0": {
+                "name": "تطبيق موبايل للموظفين"
+              },
+              "1": {
+                "name": "تطبيق موبايل للمديرين"
+              },
+              "2": {
+                "name": "وضع عدم الاتصال"
+              },
+              "3": {
+                "name": "تكامل بصمة ZKTeco"
+              },
+              "4": {
+                "name": "كشك HR مخصص"
+              },
+              "5": {
+                "name": "GPS وتحديد المناطق"
+              }
+            }
+          },
+          "3": {
+            "name": "الأمان والتكاملات",
+            "features": {
+              "0": {
+                "name": "خزنة المستندات"
+              },
+              "1": {
+                "name": "REST API وWebhooks"
+              },
+              "2": {
+                "name": "SSO عبر SAML / OIDC"
+              },
+              "3": {
+                "name": "سجل تدقيق غير قابل للتغيير"
+              },
+              "4": {
+                "name": "مخطط PostgreSQL معزول"
+              },
+              "5": {
+                "name": "SLA مخصص ودعم أولوي"
+              }
+            }
+          }
+        }
+      },
+      "faq": {
+        "badge": "أسئلة التسعير",
+        "title": "أسئلة شائعة",
+        "subtitle": "ما يجب التحقق منه قبل البدء",
+        "all": "الكل",
+        "categories": {
+          "0": "الفوترة",
+          "1": "التجربة",
+          "2": "الدعم",
+          "3": "الأمان",
+          "4": "التقني"
+        },
+        "items": {
+          "0": {
+            "question": "ماذا تشمل خطة Pilot؟",
+            "answer": "خطة Pilot بسعر 29 يورو/شهر تشمل حتى 30 موظفًا، تسجيل الحضور عبر الويب والجوال، الإجازات، ملفات الموظفين وكشوف الرواتب PDF. تجربة مجانية 14 يومًا بدون بطاقة ائتمان.",
+            "category": "التجربة"
+          },
+          "1": {
+            "question": "هل يمكنني تغيير الخطة لاحقًا؟",
+            "answer": "نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.",
+            "category": "الفوترة"
+          },
+          "2": {
+            "question": "كيف تعمل الفوترة؟",
+            "answer": "تتضمن كل خطة سعرًا شهريًا ثابتًا مع حد أقصى مضمّن للموظفين (30 لـ Pilot، 200 لـ Operations، غير محدود لـ Enterprise). لا رسوم إضافية لكل موظف نشط.",
+            "category": "الفوترة"
+          },
+          "3": {
+            "question": "هل التجربة مجانية حقًا؟",
+            "answer": "نعم. تجربة مجانية كاملة — 30 يومًا على الخطة المجانية، 14 يومًا على الخطط المدفوعة. لا بطاقة ائتمان للتسجيل.",
+            "category": "التجربة"
+          },
+          "4": {
+            "question": "ماذا يحدث عند انتهاء التجربة؟",
+            "answer": "تختار خطة أو تبقى بياناتك مؤرشفة 14 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.",
+            "category": "التجربة"
+          },
+          "5": {
+            "question": "ما نوع الدعم المتاح؟",
+            "answer": "Pilot: دعم عبر البريد الإلكتروني خلال 48 ساعة. Operations: دعم ذو أولوية خلال 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.",
+            "category": "الدعم"
+          },
+          "6": {
+            "question": "أين تُستضاف بياناتي؟",
+            "answer": "في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.",
+            "category": "الأمان"
+          },
+          "7": {
+            "question": "هل أنتم متوافقون مع GDPR؟",
+            "answer": "نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.",
+            "category": "الأمان"
+          },
+          "8": {
+            "question": "هل API متاح؟",
+            "answer": "REST API والـ Webhooks متاحة من خطة Operations. في Pilot يمكنك تصدير بياناتك بصيغة CSV/Excel.",
+            "category": "التقني"
+          }
+        },
+        "moreTitle": "سؤال آخر؟",
+        "contactSupport": "تواصل مع الدعم"
+      },
+      "cta": {
+        "badge": "جاهز للبدء",
+        "headline": "أطلق إدارة الموارد البشرية الميدانية اليوم",
+        "subheadline": "انضم إلى الفرق التي خفّضت وقت إعداد الرواتب من ساعتين إلى 8 دقائق.",
+        "primary": "ابدأ مجانًا",
+        "secondary": "تواصل مع المبيعات"
+      },
+      "badges": {
+        "popular": "الأكثر شيوعاً",
+        "free": "مجاني 100%",
+        "freePrice": "مجاني",
+        "freeNote": "بدون بطاقة بنكية · للأبد",
+        "freeTag": "مجاني"
+      }
+    },
+    "plans": {
+      "customPrice": "حسب الطلب",
+      "free": {
+        "description": "ابدأ بدون التزام — مثالي للفرق حتى 5 أشخاص",
+        "priceNote": "14 يومًا مجانًا. حتى 5 موظفين.",
+        "employeeLimit": "حتى 5 موظفين",
+        "cta": "ابدأ مجانًا",
+        "features": {
+          "0": "الحضور الأساسي عبر الويب والجوال",
+          "1": "عرض الإجازات والغيابات",
+          "2": "سجلات الموظفين الأساسية",
+          "3": "قسائم رواتب PDF",
+          "4": "تطبيق Employee مشمول",
+          "5": "دعم المجتمع"
+        },
+        "period": "/شهر",
+        "annualPeriod": "/شهر"
+      },
+      "pilot": {
+        "description": "لاختبار Leopardo على موقع واحد أو فريق أو فرع",
+        "priceNote": "14 يومًا مجانًا. يشمل حتى 30 موظفًا.",
+        "employeeLimit": "حتى 30 موظفًا",
+        "cta": "ابدأ تجربة مجانية",
+        "features": {
+          "0": "الحضور عبر الويب والجوال",
+          "1": "الإجازات والغيابات والأرصدة",
+          "2": "ملفات الموظفين والوثائق الإدارية",
+          "3": "قسائم رواتب PDF وتصديرات أساسية",
+          "4": "بوابة العميل ومساحة المدير",
+          "5": "تطبيقا Employee وManager مشمولان",
+          "6": "دعم عبر البريد خلال 48 ساعة"
+        },
+        "period": "/شهر",
+        "annualPeriod": "/شهر · يُفوتر 290 € سنوياً"
+      },
+      "operations": {
+        "description": "للشركات الصغيرة والمتوسطة التي تحتاج الحضور والرواتب والمديرين والتحليلات",
+        "priceNote": "14 يومًا مجانًا. يشمل حتى 200 موظف.",
+        "employeeLimit": "حتى 200 موظف",
+        "cta": "جرّب Operations",
+        "features": {
+          "0": "كل ما في Pilot، بالإضافة إلى:",
+          "1": "رواتب متعددة البلدان وموافقات الموارد البشرية",
+          "2": "مديرون وفرق ومسارات اعتماد",
+          "3": "حضور ZKTeco والكشك والجوال",
+          "4": "تحليلات الموارد البشرية وجاهزية وتصديرات متقدمة",
+          "5": "API وwebhooks وتكاملات",
+          "6": "دعم أولوية خلال 24 ساعة"
+        },
+        "period": "/شهر",
+        "annualPeriod": "/شهر · يُفوتر 790 € سنوياً"
+      },
+      "enterprise": {
+        "description": "للمجموعات متعددة البلدان وشبكات المواقع والحوكمة المتقدمة",
+        "priceNote": "14 يومًا مجانًا. موظفون بلا حدود.",
+        "employeeLimit": "موظفون بلا حدود",
+        "cta": "تواصل مع المبيعات",
+        "features": {
+          "0": "كل ما في Operations، بالإضافة إلى:",
+          "1": "SSO عبر SAML/OIDC وسياسات متقدمة",
+          "2": "اتفاقية خدمة ومرافقة انتقال وتدريب",
+          "3": "بيئات مخصصة أو منطقة سحابية مختارة",
+          "4": "سجل تدقيق وتصديرات امتثال ودعم أولوية",
+          "5": "خيارات ذكاء اصطناعي وتكاملات وحوكمة مخصصة"
+        }
+      }
+    },
+    "faq": {
+      "items": {
+        "0": {
+          "question": "ماذا تشمل خطة Pilot؟",
+          "answer": "خطة Pilot بسعر 29 يورو/شهر تشمل حتى 30 موظفًا، تسجيل الحضور عبر الويب والجوال، الإجازات، ملفات الموظفين وكشوف الرواتب PDF. تجربة مجانية 14 يومًا بدون بطاقة ائتمان.",
+          "category": "التجربة"
+        },
+        "1": {
+          "question": "هل يمكنني تغيير الخطة لاحقًا؟",
+          "answer": "نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.",
+          "category": "الفوترة"
+        },
+        "2": {
+          "question": "كيف تعمل الفوترة؟",
+          "answer": "تتضمن كل خطة سعرًا شهريًا ثابتًا مع حد أقصى مضمّن للموظفين (5 لـ Free، 30 لـ Pilot، 200 لـ Operations، غير محدود لـ Enterprise). لا رسوم إضافية لكل موظف نشط.",
+          "category": "الفوترة"
+        },
+        "3": {
+          "question": "هل التجربة مجانية حقًا؟",
+          "answer": "نعم. 14 يومًا كاملة بجميع المزايا المدفوعة. لا بطاقة ائتمان للتسجيل.",
+          "category": "التجربة"
+        },
+        "4": {
+          "question": "هل خطة Free مجانية حقًا؟",
+          "answer": "نعم. خطة Free (0 €/شهر) تشمل حتى 5 موظفين: الحضور عبر الويب، الإجازات والغيابات، ملفات الموظفين وتطبيق Employee للجوال. لا بطاقة ائتمان.",
+          "category": "التجربة"
+        },
+        "5": {
+          "question": "ماذا يحدث عند انتهاء التجربة؟",
+          "answer": "تختار خطة أو تبقى بياناتك مؤرشفة 14 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.",
+          "category": "التجربة"
+        },
+        "6": {
+          "question": "ما نوع الدعم المتاح؟",
+          "answer": "Pilot: دعم عبر البريد الإلكتروني خلال 48 ساعة. Operations: دعم ذو أولوية خلال 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.",
+          "category": "الدعم"
+        },
+        "7": {
+          "question": "أين تُستضاف بياناتي؟",
+          "answer": "في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.",
+          "category": "الأمان"
+        },
+        "8": {
+          "question": "هل أنتم متوافقون مع GDPR؟",
+          "answer": "نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.",
+          "category": "الأمان"
+        },
+        "9": {
+          "question": "هل API متاح؟",
+          "answer": "REST API والـ Webhooks متاحة من خطة Operations. في Pilot يمكنك تصدير بياناتك بصيغة CSV/Excel.",
+          "category": "التقني"
+        }
+      }
+    },
+    "section": {
+      "freeLabel": "مجاني",
+      "toggleMonthly": "شهري",
+      "toggleAnnual": "سنوي",
+      "toggleAria": "تغيير فترة الفوترة",
+      "fullComparison": "عرض المقارنة الكاملة"
+    },
+    "card": {
+      "periodDefault": "/شهر",
+      "customPriceDefault": "حسب الطلب"
+    }
+  },
+  "signup": {
+    "badge": "تجربة مجانية لمدة 14 يومًا",
+    "title": "جرّب Leopardo مع شركتك",
+    "subtitle": "أنشئ مساحة تجربتك في دقيقتين. لا حاجة لبطاقة ائتمانية.",
+    "labelEmail": "البريد المهني",
+    "placeholderEmail": "بريدك@company.com",
+    "labelCompany": "الشركة",
+    "placeholderCompany": "اسم شركتك",
+    "labelRole": "دورك",
+    "rolePlaceholder": "اختر",
+    "roleFounder": "مؤسس / مدير عام",
+    "roleManager": "مدير",
+    "roleHr": "موارد بشرية",
+    "roleOperations": "عمليات ميدانية",
+    "roleOther": "أخرى",
+    "labelTeamSize": "حجم الفريق",
+    "teamPlaceholder": "اختر",
+    "labelPhone": "الهاتف (اختياري)",
+    "placeholderPhone": "+213 555 000 000",
+    "operationsNote": "سنُعد مسارًا ميدانيًا: الحضور، المهام، الكشك ومتابعة الفريق.",
+    "agreePrefix": "أوافق على",
+    "termsLink": "شروط الاستخدام",
+    "privacyLink": "سياسة الخصوصية",
+    "agreeSuffix": "و",
+    "submitLabel": "استلام رمز التحقق",
+    "submittingLabel": "جارٍ إرسال الرمز...",
+    "codeHint": "سيتم إرسال رمز من 6 أرقام إلى بريدك لتأكيد هويتك.",
+    "haveAccount": "لديك حساب بالفعل؟",
+    "loginCta": "تسجيل الدخول",
+    "back": "رجوع",
+    "otpTitle": "تحقق من بريدك الإلكتروني",
+    "otpSentTo": "أرسلنا رمز تحقق من 6 أرقام إلى:",
+    "otpInvalidLength": "يرجى إدخال الأرقام الستة للرمز.",
+    "otpInvalidCode": "رمز غير صالح أو منتهي الصلاحية.",
+    "otpVerifyError": "حدث خطأ أثناء التحقق. يرجى المحاولة مرة أخرى.",
+    "verifyLabel": "تحقق وأنشئ مساحتي",
+    "verifyingLabel": "جارٍ التحقق...",
+    "codeValidity": "الرمز صالح لمدة 30 دقيقة. تحقق من البريد العشوائي إذا لم تجده.",
+    "trackStatus": "تتبع حالة مساحتي",
+    "pendingTitle": "تم استلام طلب التجربة",
+    "pendingFallback": "تم استلام طلب التجربة. سيتواصل معك فريقنا خلال 24 ساعة عمل.",
+    "pendingNote": "خدمة الإنشاء الفوري غير متاحة مؤقتًا (إعادة تشغيل الخادم). تم تسجيل طلبك: سيتواصل معك أحد أعضاء فريق Leopardo عبر البريد خلال 24 ساعة عمل مع وصول مناسب لسياقك.",
+    "readyTitle": "مساحتك جاهزة!",
+    "readySubtitle": "تم تجهيز بيئة العرض. يمكنك الوصول مباشرة:",
+    "accessCta": "الوصول إلى مساحتي",
+    "copyLink": "نسخ الرابط",
+    "linkCopied": "تم نسخ الرابط!",
+    "linkEmailed": "تم أيضًا إرسال رابط الوصول عبر البريد الإلكتروني.",
+    "failedTitle": "تم إيقاف الإنشاء",
+    "failedBody": "حدث خطأ أثناء إنشاء مساحتك. سيتواصل معك فريقنا عبر البريد خلال 24 ساعة عمل بوصول مناسب.",
+    "timeoutTitle": "لا يزال الإنشاء جاريًا",
+    "timeoutBody": "مساحتك قيد التجهيز. سنرسل لك رابط الوصول عبر البريد فور جاهزيته.",
+    "refreshStatus": "تحديث الحالة",
+    "preparingTitle": "تجهيز مساحتك",
+    "preparingBody": "نقوم بتجهيز بيئة العرض. يستغرق هذا عادة أقل من 30 ثانية.",
+    "statusFor": "إلى:",
+    "statusEvery5s": "يتم التحقق من الحالة كل 5 ثوانٍ.",
+    "successTitle": "مساحتك جاهزة!",
+    "emailVerified": "تم التحقق من بريدك الإلكتروني بنجاح.",
+    "credsLabel": "بيانات تسجيل الدخول",
+    "fieldEmail": "البريد الإلكتروني",
+    "fieldPassword": "كلمة المرور",
+    "copyPasswordTitle": "نسخ كلمة المرور",
+    "copied": "تم النسخ!",
+    "credsSentByEmail": "تم إرسال هذه البيانات أيضًا عبر البريد إلى",
+    "credsEmailed": "تم إرسال بيانات تسجيل الدخول إليك عبر البريد.",
+    "trialNote": "تجربة مجانية لمدة",
+    "trialDaysUnit": "أيام",
+    "trialNoteSuffix": "لا حاجة لبطاقة ائتمانية",
+    "downloadApp": "تحميل التطبيق",
+    "changePasswordNote": "غيّر كلمة مرورك عند أول تسجيل دخول.",
+    "defaultError": "حدث خطأ ما",
+    "validation": {
+      "emailInvalid": "البريد الإلكتروني غير صالح",
+      "emailTooShort": "البريد الإلكتروني قصير جدًا",
+      "emailTooLong": "البريد الإلكتروني طويل جدًا",
+      "companyTooShort": "يجب أن يتكون اسم الشركة من حرفين على الأقل",
+      "companyTooLong": "اسم الشركة طويل جدًا",
+      "roleRequired": "اختر دورك",
+      "employeesRequired": "اختر حجم الفريق",
+      "phoneInvalid": "رقم الهاتف غير صالح",
+      "agreeTerms": "يجب عليك قبول شروط الاستخدام",
+      "countryRequired": "البلد مطلوب."
+    },
+    "labelCountry": "البلد",
+    "countryPlaceholder": "اختر بلدك"
+  },
+  "companies": {
+    "toast": {
+      "load_failed": "تعذّر تحميل تفاصيل الشركة.",
+      "tickets_failed": "تعذّر تحميل تذاكر الدعم.",
+      "subscription_failed": "تعذّر تحديث الاشتراك.",
+      "features_failed": "تعذّر حفظ إعدادات الوحدات."
+    },
+    "portfolio": "محفظة العملاء",
+    "directory": "دليل الشركات",
+    "directorySub": "مرتبة حسب درجة الصحة والأولوية التجارية.",
+    "syncing": "جاري مزامنة المحفظة...",
+    "retry": "إعادة المحاولة",
+    "company": "الشركة",
+    "planMrr": "الخطة والإيراد الشهري",
+    "healthOp": "الصحة التشغيلية",
+    "checkins30d": "تسجيل الحضور (30 يوم)",
+    "recommendedAction": "الإجراء الموصى به",
+    "management": "الإدارة",
+    "system": "النظام",
+    "companyName": "اسم الشركة *",
+    "contactEmail": "بريد الاتصال *",
+    "country": "البلد *",
+    "city": "مدينة النشر *",
+    "currency": "العملة",
+    "timezone": "المنطقة الزمنية",
+    "defaultLang": "اللغة الافتراضية",
+    "managerFirst": "الاسم الأول للمدير *",
+    "managerLast": "اسم عائلة المدير *",
+    "managerEmail": "بريد المدير الأساسي *",
+    "activateNow": "تفعيل فوراً",
+    "activateClientNow": "تفعيل العميل فوراً",
+    "activateClientHint": "وإلا يبقى العميل في الوضع التجريبي."
   },
   "seo": {
     "pricing": {
       "description": "تسعير شفاف: خطة مجانية، بايلوت 29 يورو شهريًا، عمليات 99 يورو شهريًا، المؤسسات حسب العرض. تجربة مجانية 14 يومًا."
     }
   },
+  "adminChat": {
+    "conversation": "محادثة",
+    "error": "عذرًا، حدث خطأ. يرجى المحاولة مرة أخرى.",
+    "historyEmpty": "لا توجد محادثات.",
+    "new": "محادثة جديدة",
+    "placeholder": "اكتب رسالتك...",
+    "send": "إرسال",
+    "start": "ابدأ محادثة مع مساعد الذكاء الاصطناعي.",
+    "subtitle": "اطرح أسئلتك عن الموارد البشرية والرواتب والتوظيف...",
+    "thinking": "جارٍ التفكير...",
+    "title": "مساعد ليوباردو للذكاء الاصطناعي",
+    "unavailableBadge": "غير متاح",
+    "unavailableBody": "دردشة الذكاء الاصطناعي غير مفعّلة لوحدة تحكم المسؤول الأعلى. استخدم مساحة شركة مدعومة للوصول إلى المساعد.",
+    "unavailableTitle": "مساعد الذكاء الاصطناعي غير متاح على مستوى المنصة"
+  },
   "navigation": {
-    "dashboard": "لوحة التحكم",
     "analytics": "التحليلات",
-    "globe": "العالم في الوقت الفعلي",
-    "users": "المستخدمون",
-    "companies": "الشركات",
-    "subscriptions": "الاشتراكات",
-    "payroll": "الرواتب",
-    "leaves": "الإجازات والغياب",
-    "contracts": "العقود",
-    "recruitment": "التوظيف",
-    "training": "التدريب",
-    "fleet": "أسطول المركبات",
-    "chat": "محادثة الذكاء الاصطناعي",
-    "reports": "تقارير الموارد البشرية",
     "audit": "سجل التدقيق",
-    "webhooks": "خطافات الويب",
-    "marketing": "التسويق",
+    "chat": "محادثة الذكاء الاصطناعي",
+    "companies": "الشركات",
+    "contracts": "العقود",
+    "crm": "مسار CRM",
+    "dashboard": "لوحة التحكم",
+    "edge": "عُقد Edge",
     "exports": "التصدير والتقارير",
+    "fleet": "أسطول المركبات",
+    "globe": "العالم في الوقت الفعلي",
+    "growth": "إدارة Growth",
+    "leaves": "الإجازات والغياب",
+    "mainMenu": "القائمة الرئيسية",
+    "marketing": "التسويق",
+    "payroll": "الرواتب",
+    "predictions": "لوحة التنبؤ بالذكاء الاصطناعي",
+    "recruitment": "التوظيف",
+    "reports": "تقارير الموارد البشرية",
+    "subscriptions": "الاشتراكات",
     "support": "الدعم",
     "supportTickets": "مركز دعم العملاء",
-    "crm": "مسار CRM",
-    "predictions": "لوحة التنبؤ بالذكاء الاصطناعي",
-    "growth": "إدارة Growth",
-    "edge": "عُقد Edge",
     "system": "النظام",
-    "mainMenu": "القائمة الرئيسية",
+    "training": "التدريب",
+    "users": "المستخدمون",
+    "webhooks": "خطافات الويب",
     "login": "تسجيل الدخول",
     "logout": "تسجيل الخروج",
     "companyDetail": "تفاصيل الشركة",
@@ -1250,127 +1486,10 @@
     "taxBrackets": "شرائح الضرائب",
     "legalRates": "المعدلات القانونية",
     "account": "حسابي",
-    "notFound": "الصفحة غير موجودة",
-    "accountingSettings": "المحاسبة — الإعدادات",
-    "accountingDashboard": "المحاسبة — لوحة",
-    "accountingActivation": "المحاسبة — البدء"
+    "notFound": "الصفحة غير موجودة"
   },
   "webhooks": {
-    "confirm_delete": "حذف خطاف الويب هذا؟",
-    "subtitle": "قم بتكوين ومراقبة نقاط نهاية خطاف الويب الخاصة بك.",
-    "titleNew": "خطاف ويب جديد",
-    "titleEdit": "تعديل خطاف الويب",
-    "searchPlaceholder": "ابحث عن خطاف ويب...",
-    "active": "نشط",
-    "inactive": "غير نشط",
-    "never": "أبدًا",
-    "test": "اختبار",
-    "edit": "تعديل",
-    "delete": "حذف",
-    "cancel": "إلغاء",
-    "save": "حفظ",
-    "saving": "جارٍ الحفظ...",
-    "company": "الشركة",
-    "url": "URL",
-    "events": "الأحداث",
-    "status": "الحالة",
-    "lastTriggered": "آخر تشغيل",
-    "companiesLoadError": "تعذّر تحميل قائمة الشركات.",
-    "retry": "إعادة المحاولة",
-    "selectCompany": "اختر شركة...",
-    "confirmDeleteHint": "هذا الإجراء لا رجعة فيه. ستتوقف عمليات التسليم المستقبلية.",
-    "loadError": "تعذّر تحميل خطافات الويب.",
-    "saved": "تم حفظ خطاف الويب",
-    "saveError": "خطأ أثناء حفظ خطاف الويب",
-    "tested": "تم اختبار خطاف الويب",
-    "testError": "خطأ أثناء اختبار خطاف الويب",
-    "deleted": "تم حذف خطاف الويب",
-    "deleteError": "خطأ أثناء حذف خطاف الويب"
-  },
-  "training": {
-    "activeCourses": "التدريبات النشطة",
-    "upcomingSessions": "الجلسات المجدولة",
-    "enrollments": "التسجيلات",
-    "completionRate": "معدل الإنجاز",
-    "loading": "جارٍ التحميل...",
-    "noCourses": "لا توجد تدريبات.",
-    "uncategorized": "بدون تصنيف",
-    "noDescription": "لا يوجد وصف.",
-    "sessionsUnit": "جلسة",
-    "perParticipant": "لكل مشارك",
-    "searchSessionPlaceholder": "ابحث عن جلسة...",
-    "searchEnrollmentPlaceholder": "ابحث عن تسجيل...",
-    "category": "الفئة",
-    "type": "النوع",
-    "status": "الحالة",
-    "duration": "المدة",
-    "hoursUnit": "ساعات",
-    "provider": "المزوّد",
-    "maxPlaces": "الحد الأقصى للمقاعد",
-    "costPerParticipant": "التكلفة / مشارك",
-    "description": "الوصف",
-    "sessions": "الجلسات",
-    "instructor": "المدرّب",
-    "tabCatalog": "الفهرس",
-    "tabEnrollments": "التسجيلات",
-    "course": "التدريب",
-    "startDate": "البداية",
-    "endDate": "النهاية",
-    "location": "الموقع",
-    "session": "الجلسة",
-    "employee": "الموظف",
-    "progress": "التقدم",
-    "statusPlanned": "مجدولة",
-    "statusInProgress": "قيد التنفيذ",
-    "statusCompleted": "مكتملة",
-    "statusCancelled": "ملغاة",
-    "statusEnrolled": "مسجّل",
-    "statusDropped": "منسحب",
-    "loadError": "تعذّر تحميل بيانات التدريب.",
-    "titlePlaceholder": "العنوان *",
-    "durationPlaceholder": "المدة (ساعة)",
-    "maxParticipantsPlaceholder": "الحد الأقصى للمشاركين",
-    "online": "عبر الإنترنت"
-  },
-  "analytics": {
-    "title": "تحليلات المنصة",
-    "subtitle": "مؤشرات حقيقية من لوحة تحكم المشرف (issue #2185)",
-    "refresh": "تحديث",
-    "export": "تصدير",
-    "retry": "إعادة المحاولة",
-    "metricUsers": "المستخدمون",
-    "metricCompanies": "الشركات",
-    "metricActiveSubscriptions": "الاشتراكات النشطة",
-    "metricOpenSupportTickets": "تذاكر الدعم المفتوحة",
-    "today": "اليوم",
-    "recentActivity": "النشاط الأخير",
-    "recentActivityHint": "آخر 25 حدثًا على المنصة",
-    "loading": "جارٍ التحميل...",
-    "noRecentActivity": "لا يوجد نشاط حديث",
-    "platformAlerts": "تنبيهات المنصة",
-    "platformAlertsHint": "مشاكل البنية التحتية ومخاطر الاشتراكات",
-    "noActiveAlerts": "لا توجد تنبيهات نشطة",
-    "dismiss": "تجاهل",
-    "advancedTitle": "تحليلات متقدمة (مجموعات، مسارات، تنبؤات، تقسيم، معايير)",
-    "advancedHint": "المجموعات والمسارات والتنبؤات بترك العملاء والمعايير لا يوفرها بعد أي endpoint خلفي. البيانات المعروضة هنا مقتصرة على الإجماليات الحقيقية للوحة التحكم (إحصاءات، أنشطة، تنبيهات). موجة ضمان الجودة 2026-08-14 — إزالة البيانات المولّدة.",
-    "healthPrefix": "الصحة: ",
-    "loadError": "خطأ أثناء تحميل التحليلات. حاول مرة أخرى.",
-    "alertDismissed": "تم تجاهل التنبيه",
-    "alertDismissError": "خطأ أثناء تجاهل التنبيه",
-    "exportDone": "اكتمل التصدير",
-    "exportError": "خطأ أثناء التصدير",
-    "csvHeader": "النوع,الرسالة,التاريخ"
-  },
-  "systemAlerts": {
-    "criticalShort": "تنبيه نظام حرج",
-    "criticalFallback": "تم اكتشاف تنبيه نظام حرج",
-    "viewDetails": "عرض التفاصيل",
-    "closeLabel": "إغلاق تنبيهات النظام",
-    "fallbackMode": "وضع الطوارئ",
-    "connectionLost": "انقطع الاتصال",
-    "pollingMessage": "الاتصال في الوقت الفعلي غير متاح. ستستمر الإشعارات عبر التحديث الدوري.",
-    "reconnectMessage": "فُقد الاتصال في الوقت الفعلي. جارٍ إعادة الاتصال...",
-    "reconnect": "إعادة الاتصال"
+    "confirm_delete": "حذف خطاف الويب هذا؟"
   },
   "a11y": {
     "skip_to_content": "الانتقال إلى المحتوى الرئيسي",
@@ -1390,7 +1509,6 @@
     "level": "المستوى:",
     "fallbackPollingTitle": "الإشعارات عبر الاستطلاع الاحتياطي (الدفع غير متاح)",
     "tenantOnly": "ميزة المؤسسات — مخصصة لمساحات العملاء",
-    "noCriticalAlerts": "لا تنبيهات حرجة",
     "settings": "الإعدادات",
     "team": "الفريق"
   },
@@ -1423,19 +1541,7 @@
     "statusInProgress": "قيد التنفيذ",
     "statusFailed": "فشل",
     "download": "تنزيل",
-    "downloading": "جاري التنزيل...",
-    "historyClientOnly": "سجل التصدير متاح في مساحة العميل",
-    "clientSpaceNote": "متاح في مساحة العميل",
-    "historyError": "تعذّر تحميل سجل التصدير.",
-    "colType": "النوع",
-    "colFormat": "الصيغة",
-    "colRequestedBy": "طلب بواسطة",
-    "colDate": "التاريخ",
-    "colStatus": "الحالة",
-    "historySearchPlaceholder": "البحث في السجل...",
-    "historyEmpty": "لا يوجد تصدير حديث.",
-    "downloadError": "حدث خطأ أثناء تنزيل التقرير",
-    "hrReportUnavailable": "تعذر إنشاء تقرير الموارد البشرية (الطرف غير متاح)."
+    "downloading": "جاري التنزيل..."
   },
   "companyDetail": {
     "analyzing": "جاري تحليل بيانات العميل...",
@@ -1461,91 +1567,7 @@
     "slug": "المعرف",
     "countryCurrency": "البلد / العملة",
     "registeredOn": "مسجل في",
-    "lastActivity": "آخر نشاط",
-    "backToPortfolio": "العودة إلى المحفظة",
-    "loading": "جارٍ التحميل...",
-    "subtitle": "الصحة التشغيلية والاشتراك وتكوين الوحدات.",
-    "refresh": "تحديث",
-    "scoreHealth": "درجة الصحة",
-    "teamActive": "الفريق النشط",
-    "revenueMrr": "الإيراد (MRR)",
-    "riskLevel": "مستوى المخاطر:",
-    "priorityActions": "إجراءات ذات أولوية",
-    "moduleActive": "الوحدة مفعّلة",
-    "moduleDisabled": "الوحدة معطّلة",
-    "modulesConfigHint": "فعّل أو عطّل الميزات الخاصة لهذا العميل.",
-    "updating": "جارٍ التحديث...",
-    "saveConfig": "حفظ الإعدادات",
-    "subscription": "الاشتراك",
-    "endDate": "النهاية",
-    "notesPlaceholder": "تفاصيل حول التفاوض والخصومات وما إلى ذلك.",
-    "saving": "جارٍ الحفظ...",
-    "updateSubscription": "تحديث الاشتراك",
-    "activateClient": "تفعيل العميل",
-    "support": "الدعم",
-    "openSingular": "مفتوح",
-    "openPlural": "مفتوحة",
-    "viewAllTickets": "عرض كل التذاكر",
-    "messageSingular": "رسالة",
-    "messagePlural": "رسائل",
-    "loadFailed": "تعذر تحميل تفاصيل الشركة. تحقق من صحة UUID.",
-    "subscriptionUpdated": "تم تحديث الاشتراك بنجاح.",
-    "featuresSaved": "تم حفظ تكوين الوحدات.",
-    "planMissing": "خطة العميل مفقودة.",
-    "noPunch": "لا يوجد تسجيل حضور",
-    "features": {
-      "rh": "الموارد البشرية",
-      "finance": "المالية والإدارة",
-      "ai": "الذكاء الاصطناعي",
-      "cameras": "المراقبة بالفيديو",
-      "tracking": "تتبع الأسطول",
-      "planning": "التخطيط والفريق",
-      "training": "مركز التدريب",
-      "cabinet": "الخزانة الرقمية"
-    }
-  },
-  "support": {
-    "title": "طلبات العملاء",
-    "subtitle": "استقبال تجاري، تأهيل والتحقق من الشركات الجديدة.",
-    "refresh": "تحديث",
-    "kpiTotal": "إجمالي الطلبات",
-    "kpiPending": "قيد الانتظار",
-    "kpiApproved": "تمت الموافقة",
-    "kpiRejected": "مرفوض",
-    "queueTitle": "قائمة التأهيل",
-    "queueSub": "أولوية العملاء المحتملين لتسريع النشر.",
-    "syncing": "جارٍ مزامنة الطلبات...",
-    "retry": "إعادة المحاولة",
-    "empty": "لا توجد طلبات",
-    "statusPending": "قيد الانتظار",
-    "statusApproved": "تمت الموافقة",
-    "statusRejected": "مرفوض",
-    "filterAll": "الكل",
-    "filterPending": "للمراجعة",
-    "filterApproved": "المقبولة",
-    "filterRejected": "المرفوضة",
-    "sectorUnknown": "القطاع غير محدد",
-    "cityUnknown": "مدينة غير معروفة",
-    "countryUnknown": "بلد غير معروف",
-    "noDescription": "لا يوجد وصف.",
-    "emailLabel": "بريد التواصل",
-    "phoneLabel": "الهاتف",
-    "notProvided": "غير محدد",
-    "reviewedBy": "تمت المراجعة بواسطة",
-    "systemAdmin": "مدير النظام",
-    "internalNotes": "ملاحظات داخلية",
-    "notesPlaceholder": "قيّم شرعية العميل المحتمل وحجم الشركة...",
-    "reject": "رفض",
-    "approve": "موافقة",
-    "finalDecision": "القرار النهائي: ",
-    "showingPrefix": "عرض",
-    "showingSuffix": "طلبات",
-    "loadError": "تعذرت مزامنة طلبات العملاء.",
-    "toastApproved": "تمت الموافقة على الطلب. بدأ التجهيز.",
-    "toastRejected": "تم رفض الطلب.",
-    "noTicket": "لا توجد تذاكر",
-    "selectTicket": "حدد تذكرة لعرض المحادثة",
-    "loadConversationError": "تعذّر تحميل المحادثة."
+    "lastActivity": "آخر نشاط"
   },
   "reports": {
     "attendance_title": "ملخص الحضور",
@@ -1610,6 +1632,35 @@
     "list_loading": "جارٍ تحميل قائمة الفريق...",
     "empty_list": "لا يوجد موظفون مرئيون لهذا الحساب."
   },
+  "user_auth": {
+    "company_request": {
+      "title": "تم إرسال الطلب!",
+      "body": "سيراجع مسؤول طلبك. ستتلقى إشعارًا بمجرد معالجته.",
+      "info": "أدخل معلومات شركتك. سيتحقق مسؤول من طلبك."
+    },
+    "back_to_home": "العودة إلى الرئيسية",
+    "create_company": "إنشاء شركة",
+    "company_name": "اسم الشركة",
+    "company_email": "بريد الشركة الإلكتروني",
+    "sector": "قطاع الأعمال",
+    "country": "البلد",
+    "city": "المدينة",
+    "phone": "الهاتف",
+    "description": "الوصف",
+    "submit_request": "إرسال الطلب",
+    "submit_error": "خطأ في إرسال الطلب",
+    "already_account": "لديك حساب بالفعل؟ تسجيل الدخول",
+    "first_name": "الاسم الأول",
+    "google_error": "خطأ Google: {error}",
+    "last_name": "اسم العائلة",
+    "login_subtitle": "اعثر على مساحتك ومستنداتك وطلباتك.",
+    "no_account": "لا حساب بعد؟ إنشاء حساب",
+    "personal_login": "تسجيل الدخول الشخصي",
+    "phone_optional": "الهاتف (اختياري)",
+    "register_button": "إنشاء حسابي",
+    "register_subtitle_alt": "اعثر على مساحتك الشخصية ونظم مستنداتك.",
+    "register_title": "إنشاء حسابي"
+  },
   "partnerPage": {
     "loading": "جارٍ تحميل مساحتك...",
     "applyErrorPrefix": "خطأ أثناء التقديم: ",
@@ -1661,35 +1712,6 @@
       "copied": "تم النسخ!",
       "copyError": "تعذر نسخ الرابط. انسخه يدوياً."
     }
-  },
-  "user_auth": {
-    "company_request": {
-      "title": "تم إرسال الطلب!",
-      "body": "سيراجع مسؤول طلبك. ستتلقى إشعارًا بمجرد معالجته.",
-      "info": "أدخل معلومات شركتك. سيتحقق مسؤول من طلبك."
-    },
-    "back_to_home": "العودة إلى الرئيسية",
-    "create_company": "إنشاء شركة",
-    "company_name": "اسم الشركة",
-    "company_email": "بريد الشركة الإلكتروني",
-    "sector": "قطاع الأعمال",
-    "country": "البلد",
-    "city": "المدينة",
-    "phone": "الهاتف",
-    "description": "الوصف",
-    "submit_request": "إرسال الطلب",
-    "submit_error": "خطأ في إرسال الطلب",
-    "already_account": "لديك حساب بالفعل؟ تسجيل الدخول",
-    "first_name": "الاسم الأول",
-    "google_error": "خطأ Google: {error}",
-    "last_name": "اسم العائلة",
-    "login_subtitle": "اعثر على مساحتك ومستنداتك وطلباتك.",
-    "no_account": "لا حساب بعد؟ إنشاء حساب",
-    "personal_login": "تسجيل الدخول الشخصي",
-    "phone_optional": "الهاتف (اختياري)",
-    "register_button": "إنشاء حسابي",
-    "register_subtitle_alt": "اعثر على مساحتك الشخصية ونظم مستنداتك.",
-    "register_title": "إنشاء حسابي"
   },
   "api": {
     "sessionExpired": "انتهت الجلسة. إعادة الاتصال...",
@@ -1791,153 +1813,11 @@
     "searchPlaceholder": "ابحث عن موظف أو نوع عقد...",
     "allStatuses": "كل الحالات"
   },
-  "time": {
-    "justNow": "الآن",
-    "minutesAgo": "منذ {count} د",
-    "hoursAgo": "منذ {count} س",
-    "minutesShort": "{count} د",
-    "hoursShort": "{count} س",
-    "never": "أبدًا",
-    "loadingData": "جارٍ تحميل البيانات...",
-    "confirm": "تأكيد",
-    "cancel": "إلغاء",
-    "inProgress": "جارٍ التنفيذ…",
-    "valid": "صالح",
-    "invalid": "غير صالح",
-    "statusActive": "نشط",
-    "statusInactive": "غير نشط",
-    "statusSuspended": "موقوف",
-    "statusPending": "قيد الانتظار",
-    "exportCsv": "تصدير CSV"
-  },
-  "crm": {
-    "subtitle": "تتبع العملاء المحتملين من الدخول حتى التحويل المدفوع",
-    "leadsTotal": "إجمالي العملاء المحتملين",
-    "leadToTrialRate": "معدل التحويل للتجربة",
-    "leadToClientRate": "معدل التحويل لعميل مدفوع",
-    "loading": "جارٍ تحميل خط المسار...",
-    "leadsIncoming": "العملاء المحتملون الواردون",
-    "noLead": "لا يوجد عملاء محتملون",
-    "noTrial": "لا توجد تجارب جارية",
-    "noClient": "لا يوجد عميل نشط محوّل",
-    "noHistory": "لا يوجد سجل",
-    "title": "خط المبيعات",
-    "refresh": "تحديث",
-    "columnTrials": "قيد التجربة",
-    "columnActive": "العملاء النشطون",
-    "columnRejected": "مرفوض / منتهي",
-    "activeBadge": "نشط",
-    "daysLeft": "يوم متبقٍ",
-    "sourceSignup": "التسجيل",
-    "sourceDemo": "طلب تجريبي",
-    "sourceContact": "اتصال",
-    "sourceNewsletter": "النشرة الإخبارية",
-    "sourceSelfService": "تجربة ذاتية",
-    "sourceManager": "طلب مدير",
-    "sourceDirect": "مباشر",
-    "loadError": "تعذر تحميل خط CRM."
-  },
-  "edge": {
-    "title": "عُقد Edge",
-    "nodesTotal": "إجمالي العقد",
-    "licensesExpired": "تراخيص منتهية",
-    "loading": "جارٍ تحميل العقد…",
-    "empty": "لا توجد عُقد Edge مسجلة",
-    "colNode": "العقدة",
-    "colStatus": "الحالة",
-    "colLicense": "الترخيص",
-    "colLastSync": "آخر مزامنة",
-    "colActions": "الإجراءات",
-    "syncing": "جارٍ المزامنة…",
-    "sync": "مزامنة",
-    "subtitle": "إدارة عُقد Edge لـ Leopardo — مزامنة تعمل دون اتصال أولاً",
-    "refresh": "تحديث",
-    "online": "متصل",
-    "offline": "غير متصل",
-    "emptyHint": "تظهر العُقد هنا بمجرد تسجيلها عبر Edge API.",
-    "lastSeenPrefix": "شوهد",
-    "expiresPrefix": "تنتهي:",
-    "details": "التفاصيل",
-    "loadError": "حدث خطأ أثناء تحميل عُقد Edge.",
-    "syncError": "حدث خطأ أثناء تشغيل المزامنة.",
-    "syncStarted": "بدأت المزامنة لـ :name",
-    "licenseValid": "صالح",
-    "licenseInvalid": "غير صالح",
-    "justNow": "الآن",
-    "minutesAgo": "منذ :count دقيقة",
-    "hoursAgo": "منذ :count ساعة"
-  },
-  "notFound": {
-    "backToDashboard": "العودة إلى لوحة التحكم",
-    "usefulLinks": "روابط مفيدة",
-    "system": "النظام",
-    "systemConfig": "إعدادات النظام"
-  },
-  "growth": {
-    "title": "إدارة النمو",
-    "subtitle": "إدارة برنامج الشركاء وعمولات Leopardo RH.",
-    "tabPartners": "الشركاء",
-    "tabPayouts": "المدفوعات",
-    "tabAudit": "سجل التدقيق",
-    "syncing": "جارٍ مزامنة البيانات...",
-    "retry": "إعادة المحاولة",
-    "colPartner": "الشريك",
-    "colRate": "النسبة (بدون رسوم) (%)",
-    "colReferred": "المُحالون",
-    "colStatus": "الحالة",
-    "colActions": "الإجراءات",
-    "colAmount": "المبلغ",
-    "colDate": "التاريخ",
-    "approve": "موافقة",
-    "noPartners": "لم يتم العثور على شريك.",
-    "noPayouts": "لا يوجد طلب دفع.",
-    "markPaid": "تحديد كمدفوع",
-    "noAuditLogs": "لا يوجد سجل تدقيق للنمو حتى الآن.",
-    "statusPending": "قيد الانتظار",
-    "statusApproved": "موافق عليه",
-    "statusRejected": "مرفوض",
-    "payoutNoteTitle": "ملاحظة الدفع (التدقيق)",
-    "payoutNotePlaceholder": "السبب / مرجع التدقيق...",
-    "validate": "تحقق",
-    "approveDialogTitle": "الموافقة على الطلب",
-    "approveDialogBody": "هل تريد الموافقة على طلب",
-    "loadError": "حدث خطأ أثناء تحميل بيانات النمو.",
-    "payoutUpdated": "تم تحديث الدفع",
-    "errorPrefix": "خطأ: "
-  },
-  "supportTickets": {
-    "title": "مركز دعم العملاء",
-    "subtitle": "المحادثات المفتوحة من قبل الشركات العملاء، مرتبة حسب الأولوية.",
-    "refresh": "تحديث",
-    "filterPrefix": "التصفية:",
-    "companySelected": "الشركة المحددة",
-    "statsOpen": "مفتوحة",
-    "statsPendingClient": "بانتظار العميل",
-    "statsResolved": "محلولة",
-    "statsClosed": "مغلقة",
-    "filterAll": "الكل",
-    "filterOpen": "مفتوحة",
-    "filterPending": "قيد الانتظار",
-    "filterResolved": "محلولة",
-    "filterClosed": "مغلقة",
-    "filterAllPriorities": "كل الأولويات",
-    "priorityUrgent": "عاجل",
-    "priorityHigh": "عالية",
-    "priorityNormal": "عادية",
-    "priorityLow": "منخفضة",
-    "companyUnknown": "شركة غير معروفة",
-    "contactUnknown": "جهة اتصال غير معروفة",
-    "teamLeopardo": "فريق Leopardo",
-    "client": "العميل",
-    "replyPlaceholder": "الرد على العميل...",
-    "loadError": "تعذر تحميل تذاكر الدعم.",
-    "replyError": "تعذر إرسال الرد.",
-    "ticketUpdated": "تم تحديث التذكرة.",
-    "triageError": "تعذر تحديث التذكرة.",
-    "statusOpen": "مفتوح",
-    "statusPending": "قيد الانتظار",
-    "statusResolved": "محلول",
-    "statusClosed": "مغلق"
+  "training": {
+    "titlePlaceholder": "العنوان *",
+    "durationPlaceholder": "المدة (ساعة)",
+    "maxParticipantsPlaceholder": "الحد الأقصى للمشاركين",
+    "online": "عبر الإنترنت"
   },
   "access": {
     "denied": {
@@ -2397,6 +2277,182 @@
       "documents_count": "{count, plural, =1{مستند واحد} other{{count} مستندات}}"
     }
   },
+  "absence": {
+    "cancel": {
+      "body": "سيُحذف الطلب المعلق وسيرى الموارد البشرية الحالة ملغاة.",
+      "request": "إلغاء الطلب",
+      "title": "إلغاء هذا الطلب؟"
+    },
+    "cancelled": "تم إلغاء طلب الغياب.",
+    "label": "غياب",
+    "new": {
+      "hint": "اختر نوع الرصيد والفترة المراد إرسالها إلى الموارد البشرية.",
+      "title": "غياب جديد"
+    },
+    "no": {
+      "type": "لا يوجد نوع غياب متاح لهذا الحساب. تواصل مع الموارد البشرية لضبط الأرصدة."
+    },
+    "request": "طلب",
+    "view": {
+      "proof": "عرض الإثبات"
+    }
+  },
+  "action": {
+    "approve": "اعتماد",
+    "cancel": "إلغاء",
+    "reject": "رفض"
+  },
+  "cancel": {
+    "request": "إلغاء الطلب"
+  },
+  "confirm": {
+    "receipt": "تأكيد الاستلام"
+  },
+  "empty": {
+    "absences": "لا توجد غيابات",
+    "advances": "لا توجد سلف",
+    "history": "لا يوجد سجل",
+    "payslips": "لا توجد كشوف رواتب",
+    "sessions": "لا توجد جلسات"
+  },
+  "load": {
+    "error": "خطأ في التحميل"
+  },
+  "no": {
+    "data": "لا توجد بيانات",
+    "reason": "لا يوجد سبب",
+    "tasks": {
+      "today": "لا توجد مهام اليوم"
+    }
+  },
+  "salary": {
+    "advance": {
+      "attach": {
+        "hint": "إرفاق ملف (اختياري)"
+      },
+      "attachment": {
+        "label": "المرفق"
+      },
+      "cancel": {
+        "action": "إلغاء",
+        "body": "ستُحذف الطلبات المعلقة قبل قرار الموارد البشرية.",
+        "request": "إلغاء الطلب",
+        "title": "إلغاء هذه السلفة؟"
+      },
+      "cancelled": "تم إلغاء طلب السلفة.",
+      "confirm": {
+        "action": "تأكيد",
+        "received": "تأكيد الاستلام",
+        "received_body": "أكّد فقط إذا وصل المبلغ فعليًا. سيتم تسجيل هذا الإجراء.",
+        "received_title": "تأكيد الاستلام؟"
+      },
+      "keep": "إبقاء",
+      "list": {
+        "subtitle": "الطلبات والحالات والسداد",
+        "title": "السلف"
+      },
+      "no": {
+        "reason": "لا يوجد سبب"
+      },
+      "payment": {
+        "declared": "أعلن المدير عن الدفع. أكّد فقط بعد استلامك الفعلي."
+      },
+      "request": "طلب",
+      "request_title": "طلب سلفة",
+      "submitted": "تم إرسال طلب السلفة إلى الموارد البشرية.",
+      "view": {
+        "proof": "عرض المرفق"
+      }
+    },
+    "advances": {
+      "empty": "لا توجد سلف",
+      "empty_hint": "اطلب سلفة في ثوانٍ، ثم تابع قرار الموارد البشرية هنا.",
+      "loading": "جارٍ تحميل السلف"
+    },
+    "status": {
+      "active": "نشطة",
+      "approved": "معتمدة",
+      "cancelled": "ملغاة",
+      "pending": "قيد الانتظار",
+      "received": "تم الاستلام",
+      "rejected": "مرفوضة",
+      "to": {
+        "confirm": "بانتظار التأكيد"
+      },
+      "validated": "تم التحقق"
+    }
+  },
+  "save": {
+    "profile": "حفظ الملف الشخصي"
+  },
+  "saving": {
+    "profile": "جارٍ الحفظ…"
+  },
+  "tax": {
+    "slabs": {
+      "sim": {
+        "compare": "راتب للمقارنة"
+      }
+    }
+  },
+  "team": {
+    "add": "إضافة",
+    "add_collaborator": "إضافة متعاون",
+    "add_from_qr": "من رمز QR للموظف",
+    "add_from_qr_hint": "ألصق الرمز المقدم",
+    "add_manual_form": "نموذج كلاسيكي",
+    "add_manual_hint": "إدخال يدوي كامل",
+    "archive": "أرشفة",
+    "archive_confirm_action": "أرشفة",
+    "archive_confirm_title": "أرشفة هذا الموظف؟",
+    "archive_success": "تمت أرشفة الموظف.",
+    "confirm": {
+      "cancel": "إلغاء"
+    },
+    "edit": {
+      "profile": "تعديل الملف",
+      "profile_hint": "تحديث الحقول الأساسية للموارد البشرية"
+    },
+    "employee": {
+      "label": "موظف"
+    },
+    "employees": {
+      "tab": "الموظفون"
+    },
+    "empty": "لا يوجد متعاون",
+    "empty_hint": "ابدأ بإضافة فريقك باستخدام الزر أدناه.",
+    "invitations": {
+      "tab": "الدعوات"
+    },
+    "make": {
+      "hr": "تعيين موارد بشرية",
+      "hr_confirm_action": "تعيين موارد بشرية",
+      "hr_confirm_title": "تعيين موارد بشرية؟",
+      "hr_hint": "منح صلاحيات الموارد البشرية لهذا المتعاون",
+      "hr_success": "تم تعيين موارد بشرية."
+    },
+    "manager": {
+      "label": "مدير",
+      "required": "يلزم وصول المدير/الموارد البشرية"
+    },
+    "revoke": {
+      "hr": "إلغاء موارد بشرية",
+      "hr_confirm_action": "إلغاء",
+      "hr_confirm_title": "إلغاء موارد بشرية؟",
+      "hr_hint": "إزالة صلاحيات الموارد البشرية من هذا الحساب",
+      "hr_success": "تمت إزالة صلاحيات الموارد البشرية."
+    },
+    "subtitle": "الموظفون والدعوات",
+    "title": "الفريق",
+    "view": {
+      "attendance": "إحصائيات الحضور",
+      "attendance_hint": "الحضور والشذوذات والسجل",
+      "profile": "عرض الملف",
+      "profile_hint": "معلومات الاتصال والمنصب والراتب والجدول",
+      "tasks": "المهام",
+      "tasks_hint": "عرض أو تعيين مهام ميدانية"
+    }
+  },
   "attendanceBreakFailure": "لم يتم تأكيد الاستراحة",
   "attendanceBreakHint": "يغلق الجلسة ويبدأ الاستراحة",
   "attendanceBreakLoading": "جارٍ إرسال الاستراحة",
@@ -2586,182 +2642,6 @@
   "teamViewProfileHint": "معلومات الاتصال والمنصب والراتب والجدول",
   "teamViewTasks": "المهام",
   "teamViewTasksHint": "عرض أو تعيين مهام ميدانية",
-  "absence": {
-    "cancel": {
-      "body": "سيُحذف الطلب المعلق وسيرى الموارد البشرية الحالة ملغاة.",
-      "request": "إلغاء الطلب",
-      "title": "إلغاء هذا الطلب؟"
-    },
-    "cancelled": "تم إلغاء طلب الغياب.",
-    "label": "غياب",
-    "new": {
-      "hint": "اختر نوع الرصيد والفترة المراد إرسالها إلى الموارد البشرية.",
-      "title": "غياب جديد"
-    },
-    "no": {
-      "type": "لا يوجد نوع غياب متاح لهذا الحساب. تواصل مع الموارد البشرية لضبط الأرصدة."
-    },
-    "request": "طلب",
-    "view": {
-      "proof": "عرض الإثبات"
-    }
-  },
-  "action": {
-    "approve": "اعتماد",
-    "cancel": "إلغاء",
-    "reject": "رفض"
-  },
-  "cancel": {
-    "request": "إلغاء الطلب"
-  },
-  "confirm": {
-    "receipt": "تأكيد الاستلام"
-  },
-  "empty": {
-    "absences": "لا توجد غيابات",
-    "advances": "لا توجد سلف",
-    "history": "لا يوجد سجل",
-    "payslips": "لا توجد كشوف رواتب",
-    "sessions": "لا توجد جلسات"
-  },
-  "load": {
-    "error": "خطأ في التحميل"
-  },
-  "no": {
-    "data": "لا توجد بيانات",
-    "reason": "لا يوجد سبب",
-    "tasks": {
-      "today": "لا توجد مهام اليوم"
-    }
-  },
-  "salary": {
-    "advance": {
-      "attach": {
-        "hint": "إرفاق ملف (اختياري)"
-      },
-      "attachment": {
-        "label": "المرفق"
-      },
-      "cancel": {
-        "action": "إلغاء",
-        "body": "ستُحذف الطلبات المعلقة قبل قرار الموارد البشرية.",
-        "request": "إلغاء الطلب",
-        "title": "إلغاء هذه السلفة؟"
-      },
-      "cancelled": "تم إلغاء طلب السلفة.",
-      "confirm": {
-        "action": "تأكيد",
-        "received": "تأكيد الاستلام",
-        "received_body": "أكّد فقط إذا وصل المبلغ فعليًا. سيتم تسجيل هذا الإجراء.",
-        "received_title": "تأكيد الاستلام؟"
-      },
-      "keep": "إبقاء",
-      "list": {
-        "subtitle": "الطلبات والحالات والسداد",
-        "title": "السلف"
-      },
-      "no": {
-        "reason": "لا يوجد سبب"
-      },
-      "payment": {
-        "declared": "أعلن المدير عن الدفع. أكّد فقط بعد استلامك الفعلي."
-      },
-      "request": "طلب",
-      "request_title": "طلب سلفة",
-      "submitted": "تم إرسال طلب السلفة إلى الموارد البشرية.",
-      "view": {
-        "proof": "عرض المرفق"
-      }
-    },
-    "advances": {
-      "empty": "لا توجد سلف",
-      "empty_hint": "اطلب سلفة في ثوانٍ، ثم تابع قرار الموارد البشرية هنا.",
-      "loading": "جارٍ تحميل السلف"
-    },
-    "status": {
-      "active": "نشطة",
-      "approved": "معتمدة",
-      "cancelled": "ملغاة",
-      "pending": "قيد الانتظار",
-      "received": "تم الاستلام",
-      "rejected": "مرفوضة",
-      "to": {
-        "confirm": "بانتظار التأكيد"
-      },
-      "validated": "تم التحقق"
-    }
-  },
-  "save": {
-    "profile": "حفظ الملف الشخصي"
-  },
-  "saving": {
-    "profile": "جارٍ الحفظ…"
-  },
-  "tax": {
-    "slabs": {
-      "sim": {
-        "compare": "راتب للمقارنة"
-      }
-    }
-  },
-  "team": {
-    "add": "إضافة",
-    "add_collaborator": "إضافة متعاون",
-    "add_from_qr": "من رمز QR للموظف",
-    "add_from_qr_hint": "ألصق الرمز المقدم",
-    "add_manual_form": "نموذج كلاسيكي",
-    "add_manual_hint": "إدخال يدوي كامل",
-    "archive": "أرشفة",
-    "archive_confirm_action": "أرشفة",
-    "archive_confirm_title": "أرشفة هذا الموظف؟",
-    "archive_success": "تمت أرشفة الموظف.",
-    "confirm": {
-      "cancel": "إلغاء"
-    },
-    "edit": {
-      "profile": "تعديل الملف",
-      "profile_hint": "تحديث الحقول الأساسية للموارد البشرية"
-    },
-    "employee": {
-      "label": "موظف"
-    },
-    "employees": {
-      "tab": "الموظفون"
-    },
-    "empty": "لا يوجد متعاون",
-    "empty_hint": "ابدأ بإضافة فريقك باستخدام الزر أدناه.",
-    "invitations": {
-      "tab": "الدعوات"
-    },
-    "make": {
-      "hr": "تعيين موارد بشرية",
-      "hr_confirm_action": "تعيين موارد بشرية",
-      "hr_confirm_title": "تعيين موارد بشرية؟",
-      "hr_hint": "منح صلاحيات الموارد البشرية لهذا المتعاون",
-      "hr_success": "تم تعيين موارد بشرية."
-    },
-    "manager": {
-      "label": "مدير",
-      "required": "يلزم وصول المدير/الموارد البشرية"
-    },
-    "revoke": {
-      "hr": "إلغاء موارد بشرية",
-      "hr_confirm_action": "إلغاء",
-      "hr_confirm_title": "إلغاء موارد بشرية؟",
-      "hr_hint": "إزالة صلاحيات الموارد البشرية من هذا الحساب",
-      "hr_success": "تمت إزالة صلاحيات الموارد البشرية."
-    },
-    "subtitle": "الموظفون والدعوات",
-    "title": "الفريق",
-    "view": {
-      "attendance": "إحصائيات الحضور",
-      "attendance_hint": "الحضور والشذوذات والسجل",
-      "profile": "عرض الملف",
-      "profile_hint": "معلومات الاتصال والمنصب والراتب والجدول",
-      "tasks": "المهام",
-      "tasks_hint": "عرض أو تعيين مهام ميدانية"
-    }
-  },
   "actionApprove": "اعتماد",
   "actionCancel": "إلغاء",
   "actionReject": "رفض",
@@ -2792,349 +2672,6 @@
   "settingsRecoveryEmail": "بريد الاسترداد (اختياري)",
   "settingsShareProfile": "شارك ملفك أو امسح رمز QR الشركة.",
   "teamActionError": "فشل: {error}",
-  "pricing": {
-    "page": {
-      "hero": {
-        "badge": "تسعير شفاف",
-        "headline": "أسعار مصممة لفرق الموارد البشرية الميدانية",
-        "subheadline": "ابدأ مجانًا — بدون بطاقة ائتمان — وانتقل إلى خطة مدفوعة متى كنت مستعدًا.",
-        "primary": "ابدأ مجانًا",
-        "secondary": "تحدث مع خبير"
-      },
-      "plans": {
-        "badge": "خططنا",
-        "title": "خطة لكل مرحلة من مراحل نموك",
-        "subtitle": "ابدأ صغيرًا، توسع دون تغيير المنصة.",
-        "monthly": "شهري",
-        "annual": "سنوي",
-        "customPrice": "حسب الطلب",
-        "periodMonthly": "/شهر",
-        "periodAnnual": "/شهر مع فوترة سنوية",
-        "trialNote": "تجربة مجانية · لا بطاقة ائتمان مطلوبة"
-      },
-      "currency": {
-        "label": "عرض الأسعار بعملة",
-        "approx": "تحويل تقريبي من السعر المرجعي باليورو؛ يبقى السعر التعاقدي محددًا باليورو."
-      },
-      "trust": {
-        "items": {
-          "0": "خطة مجانية بلا بطاقة ائتمان",
-          "1": "دعم مشمول من اليوم الأول",
-          "2": "بيانات مستضافة في أوروبا",
-          "3": "إلغاء في أي وقت"
-        }
-      },
-      "comparison": {
-        "badge": "مقارنة كاملة",
-        "title": "كل ما هو مشمول",
-        "subtitle": "حسب الخطة",
-        "featureColumn": "الميزة",
-        "categories": {
-          "0": {
-            "name": "إدارة الموارد البشرية",
-            "features": {
-              "0": {
-                "name": "تتبع الحضور ويب وموبايل",
-                "free": "ويب فقط"
-              },
-              "1": {
-                "name": "الغياب والإجازات"
-              },
-              "2": {
-                "name": "تقويم مشترك"
-              },
-              "3": {
-                "name": "إعداد موجّه"
-              },
-              "4": {
-                "name": "التقييمات والأداء"
-              },
-              "5": {
-                "name": "هيكل تنظيمي ديناميكي"
-              }
-            }
-          },
-          "1": {
-            "name": "الرواتب والمالية",
-            "features": {
-              "0": {
-                "name": "حساب رواتب آلي"
-              },
-              "1": {
-                "name": "قسائم رواتب PDF"
-              },
-              "2": {
-                "name": "تصدير محاسبي"
-              },
-              "3": {
-                "name": "سلف الرواتب"
-              },
-              "4": {
-                "name": "متعدد الدول والعملات"
-              },
-              "5": {
-                "name": "امتثال قانوني متقدم"
-              }
-            }
-          },
-          "2": {
-            "name": "الميدان والموبايل",
-            "features": {
-              "0": {
-                "name": "تطبيق موبايل للموظفين"
-              },
-              "1": {
-                "name": "تطبيق موبايل للمديرين"
-              },
-              "2": {
-                "name": "وضع عدم الاتصال"
-              },
-              "3": {
-                "name": "تكامل بصمة ZKTeco"
-              },
-              "4": {
-                "name": "كشك HR مخصص"
-              },
-              "5": {
-                "name": "GPS وتحديد المناطق"
-              }
-            }
-          },
-          "3": {
-            "name": "الأمان والتكاملات",
-            "features": {
-              "0": {
-                "name": "خزنة المستندات"
-              },
-              "1": {
-                "name": "REST API وWebhooks"
-              },
-              "2": {
-                "name": "SSO عبر SAML / OIDC"
-              },
-              "3": {
-                "name": "سجل تدقيق غير قابل للتغيير"
-              },
-              "4": {
-                "name": "مخطط PostgreSQL معزول"
-              },
-              "5": {
-                "name": "SLA مخصص ودعم أولوي"
-              }
-            }
-          }
-        }
-      },
-      "faq": {
-        "badge": "أسئلة التسعير",
-        "title": "أسئلة شائعة",
-        "subtitle": "ما يجب التحقق منه قبل البدء",
-        "all": "الكل",
-        "categories": {
-          "0": "الفوترة",
-          "1": "التجربة",
-          "2": "الدعم",
-          "3": "الأمان",
-          "4": "التقني"
-        },
-        "items": {
-          "0": {
-            "question": "ماذا تشمل خطة Pilot؟",
-            "answer": "خطة Pilot بسعر 29 يورو/شهر تشمل حتى 30 موظفًا، تسجيل الحضور عبر الويب والجوال، الإجازات، ملفات الموظفين وكشوف الرواتب PDF. تجربة مجانية 14 يومًا بدون بطاقة ائتمان.",
-            "category": "التجربة"
-          },
-          "1": {
-            "question": "هل يمكنني تغيير الخطة لاحقًا؟",
-            "answer": "نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.",
-            "category": "الفوترة"
-          },
-          "2": {
-            "question": "كيف تعمل الفوترة؟",
-            "answer": "تتضمن كل خطة سعرًا شهريًا ثابتًا مع حد أقصى مضمّن للموظفين (30 لـ Pilot، 200 لـ Operations، غير محدود لـ Enterprise). لا رسوم إضافية لكل موظف نشط.",
-            "category": "الفوترة"
-          },
-          "3": {
-            "question": "هل التجربة مجانية حقًا؟",
-            "answer": "نعم. تجربة مجانية كاملة — 30 يومًا على الخطة المجانية، 14 يومًا على الخطط المدفوعة. لا بطاقة ائتمان للتسجيل.",
-            "category": "التجربة"
-          },
-          "4": {
-            "question": "ماذا يحدث عند انتهاء التجربة؟",
-            "answer": "تختار خطة أو تبقى بياناتك مؤرشفة 14 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.",
-            "category": "التجربة"
-          },
-          "5": {
-            "question": "ما نوع الدعم المتاح؟",
-            "answer": "Pilot: دعم عبر البريد الإلكتروني خلال 48 ساعة. Operations: دعم ذو أولوية خلال 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.",
-            "category": "الدعم"
-          },
-          "6": {
-            "question": "أين تُستضاف بياناتي؟",
-            "answer": "في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.",
-            "category": "الأمان"
-          },
-          "7": {
-            "question": "هل أنتم متوافقون مع GDPR؟",
-            "answer": "نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.",
-            "category": "الأمان"
-          },
-          "8": {
-            "question": "هل API متاح؟",
-            "answer": "REST API والـ Webhooks متاحة من خطة Operations. في Pilot يمكنك تصدير بياناتك بصيغة CSV/Excel.",
-            "category": "التقني"
-          }
-        },
-        "moreTitle": "سؤال آخر؟",
-        "contactSupport": "تواصل مع الدعم"
-      },
-      "cta": {
-        "badge": "جاهز للبدء",
-        "headline": "أطلق إدارة الموارد البشرية الميدانية اليوم",
-        "subheadline": "انضم إلى الفرق التي خفّضت وقت إعداد الرواتب من ساعتين إلى 8 دقائق.",
-        "primary": "ابدأ مجانًا",
-        "secondary": "تواصل مع المبيعات"
-      },
-      "badges": {
-        "popular": "الأكثر شيوعاً",
-        "free": "مجاني 100%",
-        "freePrice": "مجاني",
-        "freeNote": "بدون بطاقة بنكية · للأبد",
-        "freeTag": "مجاني"
-      }
-    },
-    "plans": {
-      "customPrice": "حسب الطلب",
-      "free": {
-        "description": "ابدأ بدون التزام — مثالي للفرق حتى 5 أشخاص",
-        "priceNote": "14 يومًا مجانًا. حتى 5 موظفين.",
-        "employeeLimit": "حتى 5 موظفين",
-        "cta": "ابدأ مجانًا",
-        "features": {
-          "0": "الحضور الأساسي عبر الويب والجوال",
-          "1": "عرض الإجازات والغيابات",
-          "2": "سجلات الموظفين الأساسية",
-          "3": "قسائم رواتب PDF",
-          "4": "تطبيق Employee مشمول",
-          "5": "دعم المجتمع"
-        },
-        "period": "/شهر",
-        "annualPeriod": "/شهر"
-      },
-      "pilot": {
-        "description": "لاختبار Leopardo على موقع واحد أو فريق أو فرع",
-        "priceNote": "14 يومًا مجانًا. يشمل حتى 30 موظفًا.",
-        "employeeLimit": "حتى 30 موظفًا",
-        "cta": "ابدأ تجربة مجانية",
-        "features": {
-          "0": "الحضور عبر الويب والجوال",
-          "1": "الإجازات والغيابات والأرصدة",
-          "2": "ملفات الموظفين والوثائق الإدارية",
-          "3": "قسائم رواتب PDF وتصديرات أساسية",
-          "4": "بوابة العميل ومساحة المدير",
-          "5": "تطبيقا Employee وManager مشمولان",
-          "6": "دعم عبر البريد خلال 48 ساعة"
-        },
-        "period": "/شهر",
-        "annualPeriod": "/شهر · يُفوتر 290 € سنوياً"
-      },
-      "operations": {
-        "description": "للشركات الصغيرة والمتوسطة التي تحتاج الحضور والرواتب والمديرين والتحليلات",
-        "priceNote": "14 يومًا مجانًا. يشمل حتى 200 موظف.",
-        "employeeLimit": "حتى 200 موظف",
-        "cta": "جرّب Operations",
-        "features": {
-          "0": "كل ما في Pilot، بالإضافة إلى:",
-          "1": "رواتب متعددة البلدان وموافقات الموارد البشرية",
-          "2": "مديرون وفرق ومسارات اعتماد",
-          "3": "حضور ZKTeco والكشك والجوال",
-          "4": "تحليلات الموارد البشرية وجاهزية وتصديرات متقدمة",
-          "5": "API وwebhooks وتكاملات",
-          "6": "دعم أولوية خلال 24 ساعة"
-        },
-        "period": "/شهر",
-        "annualPeriod": "/شهر · يُفوتر 790 € سنوياً"
-      },
-      "enterprise": {
-        "description": "للمجموعات متعددة البلدان وشبكات المواقع والحوكمة المتقدمة",
-        "priceNote": "14 يومًا مجانًا. موظفون بلا حدود.",
-        "employeeLimit": "موظفون بلا حدود",
-        "cta": "تواصل مع المبيعات",
-        "features": {
-          "0": "كل ما في Operations، بالإضافة إلى:",
-          "1": "SSO عبر SAML/OIDC وسياسات متقدمة",
-          "2": "اتفاقية خدمة ومرافقة انتقال وتدريب",
-          "3": "بيئات مخصصة أو منطقة سحابية مختارة",
-          "4": "سجل تدقيق وتصديرات امتثال ودعم أولوية",
-          "5": "خيارات ذكاء اصطناعي وتكاملات وحوكمة مخصصة"
-        }
-      }
-    },
-    "faq": {
-      "items": {
-        "0": {
-          "question": "ماذا تشمل خطة Pilot؟",
-          "answer": "خطة Pilot بسعر 29 يورو/شهر تشمل حتى 30 موظفًا، تسجيل الحضور عبر الويب والجوال، الإجازات، ملفات الموظفين وكشوف الرواتب PDF. تجربة مجانية 14 يومًا بدون بطاقة ائتمان.",
-          "category": "التجربة"
-        },
-        "1": {
-          "question": "هل يمكنني تغيير الخطة لاحقًا؟",
-          "answer": "نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.",
-          "category": "الفوترة"
-        },
-        "2": {
-          "question": "كيف تعمل الفوترة؟",
-          "answer": "تتضمن كل خطة سعرًا شهريًا ثابتًا مع حد أقصى مضمّن للموظفين (5 لـ Free، 30 لـ Pilot، 200 لـ Operations، غير محدود لـ Enterprise). لا رسوم إضافية لكل موظف نشط.",
-          "category": "الفوترة"
-        },
-        "3": {
-          "question": "هل التجربة مجانية حقًا؟",
-          "answer": "نعم. 14 يومًا كاملة بجميع المزايا المدفوعة. لا بطاقة ائتمان للتسجيل.",
-          "category": "التجربة"
-        },
-        "4": {
-          "question": "هل خطة Free مجانية حقًا؟",
-          "answer": "نعم. خطة Free (0 €/شهر) تشمل حتى 5 موظفين: الحضور عبر الويب، الإجازات والغيابات، ملفات الموظفين وتطبيق Employee للجوال. لا بطاقة ائتمان.",
-          "category": "التجربة"
-        },
-        "5": {
-          "question": "ماذا يحدث عند انتهاء التجربة؟",
-          "answer": "تختار خطة أو تبقى بياناتك مؤرشفة 14 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.",
-          "category": "التجربة"
-        },
-        "6": {
-          "question": "ما نوع الدعم المتاح؟",
-          "answer": "Pilot: دعم عبر البريد الإلكتروني خلال 48 ساعة. Operations: دعم ذو أولوية خلال 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.",
-          "category": "الدعم"
-        },
-        "7": {
-          "question": "أين تُستضاف بياناتي؟",
-          "answer": "في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.",
-          "category": "الأمان"
-        },
-        "8": {
-          "question": "هل أنتم متوافقون مع GDPR؟",
-          "answer": "نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.",
-          "category": "الأمان"
-        },
-        "9": {
-          "question": "هل API متاح؟",
-          "answer": "REST API والـ Webhooks متاحة من خطة Operations. في Pilot يمكنك تصدير بياناتك بصيغة CSV/Excel.",
-          "category": "التقني"
-        }
-      }
-    },
-    "section": {
-      "freeLabel": "مجاني",
-      "toggleMonthly": "شهري",
-      "toggleAnnual": "سنوي",
-      "toggleAria": "تغيير فترة الفوترة",
-      "fullComparison": "عرض المقارنة الكاملة"
-    },
-    "card": {
-      "periodDefault": "/شهر",
-      "customPriceDefault": "حسب الطلب"
-    }
-  },
   "attendanceAccountSuspended": "الحساب موقوف أو تم رفض الوصول.",
   "attendanceBeforeDeductions": "قبل الخصومات القانونية",
   "attendanceBreakRegistered": "تم تسجيل الاستراحة.",
@@ -3289,123 +2826,6 @@
   "smartAttendanceTitle": "الحضور الذكي",
   "smartAttendanceTodayTitle": "اليوم — {date}",
   "smartAttendanceZoneSurveillance": "مراقبة المنطقة",
-  "accounting": {
-    "settings": {
-      "title": "إعدادات المحاسبة",
-      "subtitle": "عملة الشركة، الضريبة على القيمة المضافة، سلاسل الترقيم، البيانات القانونية ولغة المستندات.",
-      "company_title": "الشركة",
-      "company_subtitle": "الهوية والتفضيلات الافتراضية للفوترة.",
-      "currency": "العملة",
-      "document_language": "لغة المستندات",
-      "template_style": "قالب المستند",
-      "template_modern": "حديث",
-      "template_classic": "كلاسيكي",
-      "payment_terms": "شروط الدفع الافتراضية",
-      "tva_title": "معدلات الضريبة على القيمة المضافة",
-      "tva_subtitle": "المعدلات الافتراضية المطبقة على المستندات (قابلة للتعديل عند الإنشاء).",
-      "add_rate": "إضافة معدل",
-      "remove_rate": "إزالة هذا المعدل",
-      "rate_label": "التسمية",
-      "rate_value": "المعدل (%)",
-      "rate_default_label": "ض.ق.م قياسية",
-      "series_title": "سلاسل الترقيم",
-      "series_subtitle": "بادئة أرقام المستندات حسب النوع (مثال: FAC-2026-0001).",
-      "series_invoice": "فاتورة",
-      "series_proforma": "فاتورة أولية",
-      "series_quote": "عرض سعر",
-      "series_credit_note": "إشعار دائن",
-      "series_delivery_note": "إذن تسليم",
-      "series_receipt": "إيصال",
-      "mentions_title": "البيانات القانونية",
-      "mentions_subtitle": "البيانات الظاهرة في تذييل المستند (السجل التجاري، الرقم الجبائي، رأس المال…).",
-      "mentions_placeholder": "السجل التجاري 16/00-0000000B — الرقم الجبائي 000016000000000 — رأس المال 1,000,000 دج",
-      "save": "حفظ",
-      "reload": "إعادة تعيين",
-      "saved": "تم حفظ الإعدادات.",
-      "load_error": "تعذر تحميل إعدادات المحاسبة.",
-      "save_error": "تعذر حفظ الإعدادات.",
-      "lang_fr": "الفرنسية",
-      "lang_ar": "العربية",
-      "lang_tr": "التركية",
-      "lang_en": "الإنجليزية"
-    },
-    "activation": {
-      "title": "ابدأ المحاسبة",
-      "subtitle": "فعّل الفوترة لشركتك في دقائق: إعداد موجّه، جهة اتصال تجريبية وأول مستند نموذجي.",
-      "step1_title": "الشركة والمستندات",
-      "step1_subtitle": "العملة، لغة المستندات، القالب وشروط الدفع.",
-      "step2_title": "ضريبة القيمة المضافة والترقيم",
-      "step2_subtitle": "معدلات ضريبة القيمة المضافة الافتراضية وبادئات أرقام المستندات.",
-      "step3_title": "البيانات القانونية",
-      "step3_subtitle": "البيانات الظاهرة في تذييل المستند (السجل التجاري، الرقم الجبائي، رأس المال…).",
-      "step4_title": "جهة الاتصال والمستند الأول",
-      "step4_subtitle": "سيتم إنشاء جهة اتصال تجريبية وفاتورة نموذجية (معلّمة EXEMPLE) تلقائيًا.",
-      "prev": "الخطوة السابقة",
-      "next": "الخطوة التالية",
-      "finish": "تفعيل المحاسبة",
-      "finishing": "جارٍ التفعيل…",
-      "done_title": "تم تفعيل المحاسبة",
-      "done_subtitle": "يمكن لشركتك الآن إصدار الفواتير. تم إنشاء جهة اتصال تجريبية وفاتورة نموذجية (معلّمة EXEMPLE): يمكنك الاطلاع عليها أو حذفها.",
-      "done_note": "جهة الاتصال والفاتورة النموذجية قابلة للحذف: احذفها عندما تكون جاهزًا للفوترة الفعلية.",
-      "check_settings": "إعدادات المحاسبة",
-      "check_contact": "جهة اتصال تجريبية",
-      "check_invoice": "أول فاتورة نموذجية",
-      "created_contact": "تم إنشاء جهة الاتصال",
-      "invoice_number": "الفاتورة رقم",
-      "go_settings": "فتح الإعدادات",
-      "load_error": "تعذّر تحميل حالة التفعيل.",
-      "complete_error": "تعذّر إكمال التفعيل. تحقق من الحقول ثم أعد المحاولة.",
-      "completed": "الوحدة مفعّلة",
-      "progress": "الخطوة {current} من 4",
-      "banner_title": "تفعيل المحاسبة جارٍ",
-      "banner_text": "أكمل الخطوات الموجّهة لإصدار مستنداتك الأولى.",
-      "banner_cta": "متابعة التفعيل",
-      "banner_hide": "إخفاء",
-      "stepAria": "الخطوة"
-    },
-    "dashboard": {
-      "title": "لوحة المحاسبة",
-      "subtitle": "الفواتير الصادرة والتحصيلات والمستحقات ومصاريف الموردين للفترة.",
-      "from": "من",
-      "to": "إلى",
-      "apply": "تطبيق",
-      "invoices_title": "الفواتير الصادرة",
-      "invoices_count": "مستند",
-      "collections_title": "التحصيلات",
-      "collections_count": "دفعة",
-      "expenses_title": "مصاريف الموردين",
-      "expenses_count": "مشتريات",
-      "outstanding_title": "المستحقات",
-      "outstanding_due": "إجمالي المستحق",
-      "outstanding_count": "مستند قيد الانتظار",
-      "aging_title": "المستحقات حسب التقادم",
-      "aging_0_30": "0-30 يوم",
-      "aging_31_60": "31-60 يوم",
-      "aging_61_90": "61-90 يوم",
-      "aging_90_plus": "90 يوم فأكثر",
-      "list_title": "تفاصيل المستحقات",
-      "col_number": "رقم",
-      "col_contact": "جهة الاتصال",
-      "col_issue_date": "تاريخ الإصدار",
-      "col_due_date": "الاستحقاق",
-      "col_days_late": "التأخير",
-      "col_total": "الإجمالي شامل الضريبة",
-      "col_paid": "المدفوع",
-      "col_due": "المتبقي",
-      "col_status": "الحالة",
-      "status_sent": "مرسلة",
-      "status_partially_paid": "مدفوعة جزئيًا",
-      "status_paid": "مدفوعة",
-      "status_overdue": "متأخرة",
-      "status_draft": "مسودة",
-      "status_cancelled": "ملغاة",
-      "export": "تصدير CSV",
-      "load_error": "تعذّر تحميل لوحة المحاسبة.",
-      "days": "يوم",
-      "empty": "لا توجد مستحقات حاليًا.",
-      "currency_hint": "المبالغ بعملة الشركة."
-    }
-  },
   "attendanceToProcess": "للمعالجة",
   "settingsBiometryEnableFirst": "فعّل تسجيل البيانات الحيوية أولاً.",
   "settingsBiometryEnableAction": "تفعيل تسجيل البيانات الحيوية",

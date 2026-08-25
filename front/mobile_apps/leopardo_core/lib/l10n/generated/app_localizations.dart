@@ -108,6 +108,163 @@ abstract class AppLocalizations {
   /// **'Leopardo RH'**
   String get appTitle;
 
+  /// No description provided for @accountingportalTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espace document sécurisé'**
+  String get accountingportalTitle;
+
+  /// No description provided for @accountingportalSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accès limité au document partagé par l\'émetteur'**
+  String get accountingportalSubtitle;
+
+  /// No description provided for @accountingportalNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'N° de document'**
+  String get accountingportalNumber;
+
+  /// No description provided for @accountingportalType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type de document'**
+  String get accountingportalType;
+
+  /// No description provided for @accountingportalStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get accountingportalStatus;
+
+  /// No description provided for @accountingportalIssuedate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date d\'émission'**
+  String get accountingportalIssuedate;
+
+  /// No description provided for @accountingportalTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant total TTC'**
+  String get accountingportalTotal;
+
+  /// No description provided for @accountingportalCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise'**
+  String get accountingportalCurrency;
+
+  /// No description provided for @accountingportalExpiresat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien valide jusqu\'au :date'**
+  String get accountingportalExpiresat;
+
+  /// No description provided for @accountingportalDownload.
+  ///
+  /// In fr, this message translates to:
+  /// **'Télécharger le PDF'**
+  String get accountingportalDownload;
+
+  /// No description provided for @accountingportalDownloadhint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Télécharger le document en PDF'**
+  String get accountingportalDownloadhint;
+
+  /// No description provided for @accountingportalNotfoundtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien invalide ou expiré'**
+  String get accountingportalNotfoundtitle;
+
+  /// No description provided for @accountingportalNotfoundbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce lien n\'est plus valide ou a expiré. Contactez l\'émetteur pour recevoir un nouveau lien.'**
+  String get accountingportalNotfoundbody;
+
+  /// No description provided for @accountingportalErrortitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger le document'**
+  String get accountingportalErrortitle;
+
+  /// No description provided for @accountingportalErrorbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue. Merci de réessayer dans quelques instants.'**
+  String get accountingportalErrorbody;
+
+  /// No description provided for @accountingportalRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get accountingportalRetry;
+
+  /// No description provided for @accountingportalBacktosite.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour au site'**
+  String get accountingportalBacktosite;
+
+  /// No description provided for @accountingportalSecuritynote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partage sécurisé — ne transmettez pas ce lien'**
+  String get accountingportalSecuritynote;
+
+  /// No description provided for @accountingportalStatusdraft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brouillon'**
+  String get accountingportalStatusdraft;
+
+  /// No description provided for @accountingportalStatussent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyé'**
+  String get accountingportalStatussent;
+
+  /// No description provided for @accountingportalStatuspartiallypaid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partiellement payé'**
+  String get accountingportalStatuspartiallypaid;
+
+  /// No description provided for @accountingportalStatuspaid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payé'**
+  String get accountingportalStatuspaid;
+
+  /// No description provided for @accountingportalStatuscancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulé'**
+  String get accountingportalStatuscancelled;
+
+  /// No description provided for @accountingportalStatusoverdue.
+  ///
+  /// In fr, this message translates to:
+  /// **'En retard'**
+  String get accountingportalStatusoverdue;
+
+  /// No description provided for @accountingportalLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement…'**
+  String get accountingportalLoading;
+
+  /// No description provided for @accountingportalDownloaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le téléchargement a échoué. Merci de réessayer.'**
+  String get accountingportalDownloaderror;
+
+
   /// No description provided for @welcomeBrandSubtitle.
   ///
   /// In fr, this message translates to:
