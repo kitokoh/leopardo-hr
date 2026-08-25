@@ -210,6 +210,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/accounting/documents/{document}/cancel", options);
     },
 
+    /** Initier le paiement en ligne d'un document (portail client) */
+    postAccountingDocumentsByDocumentCheckout(options = {}) {
+      return request("POST", "/accounting/documents/{document}/checkout", options);
+    },
+
     /** Creer un avoir lie a une facture source (#5223) */
     postAccountingDocumentsByDocumentCreditNote(options = {}) {
       return request("POST", "/accounting/documents/{document}/credit-note", options);
@@ -238,6 +243,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Rapprocher un paiement */
     postAccountingPaymentsByPaymentReconcile(options = {}) {
       return request("POST", "/accounting/payments/{payment}/reconcile", options);
+    },
+
+    /** Webhook passerelle de paiement (Chargily / Stripe) */
+    postAccountingPaymentsWebhookByGateway(options = {}) {
+      return request("POST", "/accounting/payments/webhook/{gateway}", options);
     },
 
     /** Declencher les relances de paiement */
