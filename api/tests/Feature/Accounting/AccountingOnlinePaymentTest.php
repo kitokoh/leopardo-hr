@@ -11,6 +11,7 @@ use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Testing\TestResponse;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -265,7 +266,7 @@ class AccountingOnlinePaymentTest extends TestCase
      *
      * @param  array<string, mixed>  $data
      */
-    private function postChargilyWebhook(string $url, array $data)
+    private function postChargilyWebhook(string $url, array $data): TestResponse
     {
         $payload = json_encode($data, JSON_THROW_ON_ERROR);
 
@@ -275,7 +276,7 @@ class AccountingOnlinePaymentTest extends TestCase
     /**
      * @param  array<string, mixed>  $data
      */
-    private function postStripeWebhook(string $url, array $data)
+    private function postStripeWebhook(string $url, array $data): TestResponse
     {
         $payload = json_encode($data, JSON_THROW_ON_ERROR);
 
