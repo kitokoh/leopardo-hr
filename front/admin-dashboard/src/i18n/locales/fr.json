@@ -3476,5 +3476,56 @@
   "settingsEdgeOptionalHint": "Optionnel: pointer vers un serveur Edge installe sur site pour pointer sans Internet.",
   "settingsPrefsUnavailable": "Preferences indisponibles pour le moment. Tire pour recharger plus tard.",
   "teamQrPrefilledHint": "Profil pre-rempli depuis QR. Renseignez l email professionnel unique de cette entreprise.",
-  "settingsBiometryPendingHint": "Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH."
+  "settingsBiometryPendingHint": "Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.",
+  "contact": {
+    "page": {
+      "hero": {
+        "headline": "Contactez-nous",
+        "subheadline": "Notre équipe est là pour répondre à toutes vos questions",
+        "cta1": "Envoyer un message",
+        "cta2": "Demander une démo",
+        "badge": "Contact"
+      },
+      "info": {
+        "title": "Informations",
+        "email": "Email",
+        "phone": "Téléphone",
+        "address": "Adresse",
+        "addressValue": "Alger, Algérie",
+        "hours": "Horaires",
+        "hoursValue": "Lun-Ven 9h-18h (GMT+1)",
+        "responseTime": "Temps de réponse moyen : moins de 24 h",
+        "emailValue": "contact@leopardo-rh.com"
+      },
+      "form": {
+        "name": "Nom complet",
+        "email": "Email",
+        "company": "Entreprise",
+        "subject": "Sujet",
+        "subjectPlaceholder": "Choisir un sujet",
+        "message": "Message",
+        "send": "Envoyer le message",
+        "sending": "Envoi en cours...",
+        "successTitle": "Message envoyé !",
+        "successBody": "Notre équipe vous répondra sous 24h.",
+        "errorSend": "Erreur lors de l'envoi",
+        "errorGeneric": "Une erreur est survenue. Veuillez réessayer."
+      }
+    },
+    "subject": {
+      "general": "Information générale",
+      "demo": "Demande de démo",
+      "support": "Support technique",
+      "partnership": "Partenariat",
+      "press": "Presse & Médias",
+      "password": "Mot de passe oublié",
+      "upgrade": "Mise à niveau (upgrade)",
+      "download-kiosk": "Téléchargement - Kiosque",
+      "download-windows": "Téléchargement - Windows",
+      "download-macos": "Téléchargement - macOS",
+      "enterprise": "Enterprise",
+      "community": "Communauté",
+      "other": "Autre"
+    }
+  }
 }

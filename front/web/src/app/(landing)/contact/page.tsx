@@ -6,6 +6,8 @@ import { useSearchParams } from 'next/navigation';
 import { Navbar, HeroSection, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { CONTACT_EMAIL } from '@/lib/site';
+import { t } from '@/lib/i18n/locale-catalog';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle } from 'lucide-react';
 
 // #4327 : libellés des sujets localisés ×4 locales (valeurs stables côté
@@ -28,69 +30,6 @@ const SUBJECT_IDS = [
 
 type SubjectId = (typeof SUBJECT_IDS)[number];
 
-const SUBJECT_LABELS: Record<string, Record<SubjectId, string>> = {
-  fr: {
-    general: 'Information générale',
-    demo: 'Demande de démo',
-    support: 'Support technique',
-    partnership: 'Partenariat',
-    press: 'Presse & Médias',
-    password: 'Mot de passe oublié',
-    upgrade: 'Mise à niveau (upgrade)',
-    'download-kiosk': 'Téléchargement - Kiosque',
-    'download-windows': 'Téléchargement - Windows',
-    'download-macos': 'Téléchargement - macOS',
-    enterprise: 'Enterprise',
-    community: 'Communauté',
-    other: 'Autre',
-  },
-  en: {
-    general: 'General information',
-    demo: 'Request a demo',
-    support: 'Technical support',
-    partnership: 'Partnership',
-    press: 'Press & Media',
-    password: 'Forgotten password',
-    upgrade: 'Upgrade plan',
-    'download-kiosk': 'Download - Kiosk',
-    'download-windows': 'Download - Windows',
-    'download-macos': 'Download - macOS',
-    enterprise: 'Enterprise',
-    community: 'Community',
-    other: 'Other',
-  },
-  tr: {
-    general: 'Genel bilgi',
-    demo: 'Demo isteği',
-    support: 'Teknik destek',
-    partnership: 'Ortaklık',
-    press: 'Basın ve Medya',
-    password: 'Unutulan şifre',
-    upgrade: 'Plan yükseltme',
-    'download-kiosk': 'İndirme - Kiosk',
-    'download-windows': 'İndirme - Windows',
-    'download-macos': 'İndirme - macOS',
-    enterprise: 'Kurumsal',
-    community: 'Topluluk',
-    other: 'Diğer',
-  },
-  ar: {
-    general: 'معلومات عامة',
-    demo: 'طلب عرض توضيحي',
-    support: 'الدعم الفني',
-    partnership: 'شراكة',
-    press: 'الصحافة والإعلام',
-    password: 'كلمة المرور المفقودة',
-    upgrade: 'ترقية الباقة',
-    'download-kiosk': 'تحميل - كشك',
-    'download-windows': 'تحميل - ويندوز',
-    'download-macos': 'تحميل - ماك',
-    enterprise: 'المؤسسات',
-    community: 'المجتمع',
-    other: 'أخرى',
-  },
-};
-
 // Maps the `?topic=` query param (used by links across login, dashboard,
 // navbar/footer and the download page) to a subject ID.
 // See issue #1304: without this mapping the "Sujet" select always fell
@@ -108,33 +47,12 @@ const TOPIC_TO_SUBJECT_ID: Record<string, SubjectId> = {
   enterprise: 'enterprise',
 };
 
-const contactCopy: Record<string, {
-  hero: { headline: string; subheadline: string; cta1: string; cta2: string; badge: string };
-  info: { title: string; email: string; phone: string; address: string; addressValue: string; hours: string; hoursValue: string; responseTime: string };
-  form: { name: string; email: string; company: string; subject: string; subjectPlaceholder: string; message: string; send: string; sending: string; successTitle: string; successBody: string; errorSend: string; errorGeneric: string };
-}> = {
-  fr: {
-    hero: { headline: 'Contactez-nous', subheadline: 'Notre équipe est là pour répondre à toutes vos questions', cta1: 'Envoyer un message', cta2: 'Demander une démo', badge: 'Contact' },
-    info: { title: 'Informations', email: 'Email', phone: 'Téléphone', address: 'Adresse', addressValue: 'Alger, Algérie', hours: 'Horaires', hoursValue: 'Lun-Ven 9h-18h (GMT+1)', responseTime: 'Temps de réponse moyen : moins de 24 h' },
-
-    form: { name: 'Nom complet', email: 'Email', company: 'Entreprise', subject: 'Sujet', subjectPlaceholder: 'Choisir un sujet', message: 'Message', send: 'Envoyer le message', sending: 'Envoi en cours...', successTitle: 'Message envoyé !', successBody: 'Notre équipe vous répondra sous 24h.', errorSend: 'Erreur lors de l\'envoi', errorGeneric: 'Une erreur est survenue. Veuillez réessayer.' },
-  },
-  en: {
-    hero: { headline: 'Contact us', subheadline: 'Our team is here to answer all your questions', cta1: 'Send a message', cta2: 'Request a demo', badge: 'Contact' },
-    info: { title: 'Information', email: 'Email', phone: 'Phone', address: 'Address', addressValue: 'Algiers, Algeria', hours: 'Hours', hoursValue: 'Mon-Fri 9am-6pm (GMT+1)', responseTime: 'Average response time: under 24h' },
-    form: { name: 'Full name', email: 'Email', company: 'Company', subject: 'Subject', subjectPlaceholder: 'Choose a subject', message: 'Message', send: 'Send message', sending: 'Sending...', successTitle: 'Message sent!', successBody: 'Our team will reply within 24 hours.', errorSend: 'Error while sending', errorGeneric: 'Something went wrong. Please try again.' },
-  },
-  tr: {
-    hero: { headline: 'Bize ulaşın', subheadline: 'Ekibimiz tüm sorularınızı yanıtlamak için burada', cta1: 'Mesaj gönder', cta2: 'Demo iste', badge: 'İletişim' },
-    info: { title: 'Bilgiler', email: 'E-posta', phone: 'Telefon', address: 'Adres', addressValue: 'Cezayir, Cezayir', hours: 'Çalışma saatleri', hoursValue: 'Pzt-Cum 9:00-18:00 (GMT+1)', responseTime: 'Ortalama yanıt süresi: 24 saatten az' },
-    form: { name: 'Ad soyad', email: 'E-posta', company: 'Şirket', subject: 'Konu', subjectPlaceholder: 'Konu seçin', message: 'Mesaj', send: 'Mesajı gönder', sending: 'Gönderiliyor...', successTitle: 'Mesaj gönderildi!', successBody: 'Ekibimiz 24 saat içinde yanıt verecektir.', errorSend: 'Gönderilirken hata oluştu', errorGeneric: 'Bir şeyler ters gitti. Lütfen tekrar deneyin.' },
-  },
-  ar: {
-    hero: { headline: 'اتصل بنا', subheadline: 'فريقنا هنا للإجابة على جميع أسئلتك', cta1: 'أرسل رسالة', cta2: 'اطلب عرضاً تجريبياً', badge: 'اتصال' },
-    info: { title: 'معلومات', email: 'البريد الإلكتروني', phone: 'الهاتف', address: 'العنوان', addressValue: 'الجزائر العاصمة، الجزائر', hours: 'ساعات العمل', hoursValue: 'الإثنين-الجمعة 9:00-18:00 (GMT+1)', responseTime: 'متوسط وقت الاستجابة: أقل من 24 ساعة' },
-    form: { name: 'الاسم الكامل', email: 'البريد الإلكتروني', company: 'الشركة', subject: 'الموضوع', subjectPlaceholder: 'اختر موضوعاً', message: 'الرسالة', send: 'إرسال الرسالة', sending: 'جارٍ الإرسال...', successTitle: 'تم إرسال الرسالة!', successBody: 'سيرد فريقنا خلال 24 ساعة.', errorSend: 'خطأ أثناء الإرسال', errorGeneric: 'حدث خطأ ما. يرجى المحاولة مرة أخرى.' },
-  },
-};
+// #2755 : libellés extraits vers le catalogue i18n (shared/i18n/locales/*.json,
+// section `contact`), résolus via t() — valeurs stables côté formulaire = libellé
+// localisé, l'API les traite en texte libre (#4327).
+function subjectLabel(locale: string, id: SubjectId): string {
+  return t(locale as Parameters<typeof t>[0], `contact.subject.${id}`);
+}
 
 function ContactPageInner() {
   const searchParams = useSearchParams();
@@ -143,7 +61,39 @@ function ContactPageInner() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { locale } = useVitrineLocale();
-  const copy = contactCopy[locale] ?? contactCopy.fr;
+  const copy = {
+    hero: {
+      headline: t(locale, 'contact.page.hero.headline'),
+      subheadline: t(locale, 'contact.page.hero.subheadline'),
+      cta1: t(locale, 'contact.page.hero.cta1'),
+      cta2: t(locale, 'contact.page.hero.cta2'),
+      badge: t(locale, 'contact.page.hero.badge'),
+    },
+    info: {
+      title: t(locale, 'contact.page.info.title'),
+      email: t(locale, 'contact.page.info.email'),
+      phone: t(locale, 'contact.page.info.phone'),
+      address: t(locale, 'contact.page.info.address'),
+      addressValue: t(locale, 'contact.page.info.addressValue'),
+      hours: t(locale, 'contact.page.info.hours'),
+      hoursValue: t(locale, 'contact.page.info.hoursValue'),
+      responseTime: t(locale, 'contact.page.info.responseTime'),
+    },
+    form: {
+      name: t(locale, 'contact.page.form.name'),
+      email: t(locale, 'contact.page.form.email'),
+      company: t(locale, 'contact.page.form.company'),
+      subject: t(locale, 'contact.page.form.subject'),
+      subjectPlaceholder: t(locale, 'contact.page.form.subjectPlaceholder'),
+      message: t(locale, 'contact.page.form.message'),
+      send: t(locale, 'contact.page.form.send'),
+      sending: t(locale, 'contact.page.form.sending'),
+      successTitle: t(locale, 'contact.page.form.successTitle'),
+      successBody: t(locale, 'contact.page.form.successBody'),
+      errorSend: t(locale, 'contact.page.form.errorSend'),
+      errorGeneric: t(locale, 'contact.page.form.errorGeneric'),
+    },
+  };
   useScrollReveal();
 
   const [form, setForm] = useState({
@@ -163,7 +113,7 @@ function ContactPageInner() {
     if (!topic) return;
     const mappedId = TOPIC_TO_SUBJECT_ID[topic];
     if (!mappedId) return;
-    setForm(prev => ({ ...prev, subject: SUBJECT_LABELS[locale][mappedId] }));
+    setForm(prev => ({ ...prev, subject: subjectLabel(locale, mappedId) }));
   }, [searchParams, locale]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -211,7 +161,7 @@ function ContactPageInner() {
                 <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6">{copy.info.title}</h2>
                 <div className="space-y-6">
                   {[
-                    { icon: Mail, label: copy.info.email, value: 'contact@leopardo-rh.com' },
+                    { icon: Mail, label: copy.info.email, value: CONTACT_EMAIL },
                     { icon: Phone, label: copy.info.phone, value: '+213 (0) 555 123 456' },
                     { icon: MapPin, label: copy.info.address, value: copy.info.addressValue },
                     { icon: Clock, label: copy.info.hours, value: copy.info.hoursValue },
@@ -291,7 +241,7 @@ function ContactPageInner() {
                         >
                           <option value="">{copy.form.subjectPlaceholder}</option>
                           {SUBJECT_IDS.map(id => (
-                            <option key={id} value={SUBJECT_LABELS[locale][id]}>{SUBJECT_LABELS[locale][id]}</option>
+                            <option key={id} value={subjectLabel(locale, id)}>{subjectLabel(locale, id)}</option>
                           ))}
                         </select>
                       </div>

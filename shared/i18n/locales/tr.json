@@ -2946,5 +2946,55 @@
   "settingsEdgeOptionalHint": "Opsiyonel: İnternet olmadan yoklama için sitedeki Edge sunucusunu gösterin.",
   "settingsPrefsUnavailable": "Tercihler şu anda kullanılamıyor. Daha sonra yenilemek için çekin.",
   "teamQrPrefilledHint": "Profil QR'dan ön dolduruldu. Bu şirket için benzersiz iş e-postasını girin.",
-  "settingsBiometryPendingHint": "Gönderildikten sonra biyometrik verileriniz beklemede kalır. Her ilk aktivasyon veya değişiklik yönetici/İK onayı gerektirir."
+  "settingsBiometryPendingHint": "Gönderildikten sonra biyometrik verileriniz beklemede kalır. Her ilk aktivasyon veya değişiklik yönetici/İK onayı gerektirir.",
+  "contact": {
+    "page": {
+      "hero": {
+        "headline": "Bize ulaşın",
+        "subheadline": "Ekibimiz tüm sorularınızı yanıtlamak için burada",
+        "cta1": "Mesaj gönder",
+        "cta2": "Demo iste",
+        "badge": "İletişim"
+      },
+      "info": {
+        "title": "Bilgiler",
+        "email": "E-posta",
+        "phone": "Telefon",
+        "address": "Adres",
+        "addressValue": "Cezayir, Cezayir",
+        "hours": "Çalışma saatleri",
+        "hoursValue": "Pzt-Cum 09.00-18.00 (GMT+1)",
+        "responseTime": "Ortalama yanıt süresi: 24 saatten az"
+      },
+      "form": {
+        "name": "Ad soyad",
+        "email": "E-posta",
+        "company": "Şirket",
+        "subject": "Konu",
+        "subjectPlaceholder": "Konu seçin",
+        "message": "Mesaj",
+        "send": "Mesajı gönder",
+        "sending": "Gönderiliyor...",
+        "successTitle": "Mesaj gönderildi!",
+        "successBody": "Ekibimiz 24 saat içinde yanıt verecektir.",
+        "errorSend": "Gönderilirken hata oluştu",
+        "errorGeneric": "Bir şeyler ters gitti. Lütfen tekrar deneyin."
+      }
+    },
+    "subject": {
+      "general": "Genel bilgi",
+      "demo": "Demo isteği",
+      "support": "Teknik destek",
+      "partnership": "Ortaklık",
+      "press": "Basın ve Medya",
+      "password": "Unutulan şifre",
+      "upgrade": "Plan yükseltme",
+      "download-kiosk": "İndirme - Kiosk",
+      "download-windows": "İndirme - Windows",
+      "download-macos": "İndirme - macOS",
+      "enterprise": "Kurumsal",
+      "community": "Topluluk",
+      "other": "Diğer"
+    }
+  }
 }

@@ -2946,5 +2946,55 @@
   "settingsEdgeOptionalHint": "Optional: point to an on-site Edge server to clock in without Internet.",
   "settingsPrefsUnavailable": "Preferences unavailable right now. Pull to refresh later.",
   "teamQrPrefilledHint": "Profile pre-filled from QR. Fill in the unique work email for this company.",
-  "settingsBiometryPendingHint": "Once submitted, your biometric data stays pending. Any first activation or change requires manager/HR approval."
+  "settingsBiometryPendingHint": "Once submitted, your biometric data stays pending. Any first activation or change requires manager/HR approval.",
+  "contact": {
+    "page": {
+      "hero": {
+        "headline": "Contact us",
+        "subheadline": "Our team is here to answer all your questions",
+        "cta1": "Send a message",
+        "cta2": "Request a demo",
+        "badge": "Contact"
+      },
+      "info": {
+        "title": "Information",
+        "email": "Email",
+        "phone": "Phone",
+        "address": "Address",
+        "addressValue": "Algiers, Algeria",
+        "hours": "Hours",
+        "hoursValue": "Mon-Fri 9am-6pm (GMT+1)",
+        "responseTime": "Average response time: under 24h"
+      },
+      "form": {
+        "name": "Full name",
+        "email": "Email",
+        "company": "Company",
+        "subject": "Subject",
+        "subjectPlaceholder": "Choose a subject",
+        "message": "Message",
+        "send": "Send message",
+        "sending": "Sending...",
+        "successTitle": "Message sent!",
+        "successBody": "Our team will reply within 24 hours.",
+        "errorSend": "Error while sending",
+        "errorGeneric": "Something went wrong. Please try again."
+      }
+    },
+    "subject": {
+      "general": "General information",
+      "demo": "Request a demo",
+      "support": "Technical support",
+      "partnership": "Partnership",
+      "press": "Press & Media",
+      "password": "Forgotten password",
+      "upgrade": "Upgrade plan",
+      "download-kiosk": "Download - Kiosk",
+      "download-windows": "Download - Windows",
+      "download-macos": "Download - macOS",
+      "enterprise": "Enterprise",
+      "community": "Community",
+      "other": "Other"
+    }
+  }
 }

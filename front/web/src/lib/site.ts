@@ -11,3 +11,6 @@ export const DEFAULT_SITE_URL = 'https://leopardo-rh.com';
 export function getSiteUrl(): string {
   return (process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL).replace(/\/+$/, '');
 }
+// Email de contact affiché sur la page contact (donnée d'affichage, non
+// traduite — #2755 : les emails/URLs sont de la donnée, pas du texte UI).
+export const CONTACT_EMAIL = 'contact@leopardo-rh.com';

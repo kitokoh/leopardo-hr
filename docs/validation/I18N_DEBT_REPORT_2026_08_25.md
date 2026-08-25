@@ -10,9 +10,9 @@ the counts below only reflect strings a real user could actually see on screen.
 
 ## Summary
 
-- Total user-visible signals: 11491
-- P1 (priority screens: login/attendance/account/...): 1475
-- P2 (other screens): 10016
+- Total user-visible signals: 11392
+- P1 (priority screens: login/attendance/account/...): 1359
+- P2 (other screens): 10033
 - Developer/log-only signals (informational, not counted above): 80
 
 ## By surface
@@ -31,7 +31,7 @@ the counts below only reflect strings a real user could actually see on screen.
 - [P1] `front/mobile_apps/leopardo_employee/lib/features/settings/screens/settings_screen.dart:1668` Echec de soumission: $e
 - [P1] `front/mobile_apps/leopardo_employee/lib/features/smart_attendance/data/models/smart_attendance_config.dart:57` SmartAttendanceConfig(forcedMode: $forcedMode, gpsEnabled: $gpsEnabled,
 - [P1] `front/mobile_apps/leopardo_employee/lib/features/smart_attendance/data/models/smart_attendance_config.dart:58` lat: $latitude, lng: $longitude, radius: $radius)
-- [P1] `front/mobile_apps/leopardo_employee/lib/features/smart_attendance/data/smart_attendance_repository.dart:42` eventType doit être "zone_enter" ou "zone_exit"
+- [P1] `front/mobile_apps/leopardo_employee/lib/features/smart_attendance/data/smart_attendance_repository.dart:44` eventType doit être "zone_enter" ou "zone_exit"
 - [P1] `front/mobile_apps/leopardo_employee/lib/features/smart_attendance/services/background_location_service.dart:230` [BackgroundLocationService] sendGeoEvent($eventType) failed —
 - [P1] `front/mobile_apps/leopardo_employee/lib/features/smart_attendance/services/background_location_service.dart:231` événement mis en file pour réenvoi : $error
 - [P2] `front/mobile_apps/leopardo_employee/lib/app.dart:309` Leopardo RH
@@ -155,37 +155,37 @@ the counts below only reflect strings a real user could actually see on screen.
 
 ### web_client
 
-- Signals: 9753
-- P1: 354
-- P2: 9399
+- Signals: 9654
+- P1: 238
+- P2: 9416
 - Dev/log-only (informational): 2
 
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:33` Information générale
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:34` Demande de démo
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:35` Support technique
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:37` Presse & Médias
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:38` Mot de passe oublié
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:39` Mise à niveau (upgrade)
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:40` Téléchargement - Kiosque
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:41` Téléchargement - Windows
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:42` Téléchargement - macOS
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:44` Communauté
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:48` General information
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:49` Request a demo
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:50` Technical support
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:52` Press & Media
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:53` Forgotten password
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:54` Upgrade plan
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:55` Download - Kiosk
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:56` Download - Windows
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:57` Download - macOS
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:63` Genel bilgi
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:64` Demo isteği
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:65` Teknik destek
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:66` Ortaklık
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:67` Basın ve Medya
-- [P1] `front/web/src/app/(landing)/contact/page.tsx:68` Unutulan şifre
-- ... 9728 more signals
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:11` @/modules/vitrine
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:67` Demandez une demo Leopardo RH
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:68` Voyez comment la plateforme connecte RH, paie, pointage, mobile et admin dans un seul s...
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:69` Remplir le formulaire
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:70` Demo gratuite
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:72` Ce que vous decouvrirez
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:74` Gestion complete des employés
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:74` Pointage, absences, contrats et documents dans une experience unifiee.
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:75` Paie multi-pays automatisee
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:75` 9 moteurs de regles (Algerie, Canada, CEDEAO, CEMAC, France, Maroc, Senegal, Tunisie, T...
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:76` Dashboard temps reel
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:76` KPIs, alertes et donnees operationnelles pour les RH et managers.
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:77` Sécurité enterprise
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:77` Isolation tenant, roles, audit trail, chiffrement et workflows controles.
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:79` Planifiez votre demo
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:80` Demande envoyee
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:81` Notre équipe vous contactera sous 24h pour organiser une demo adaptee a votre contexte.
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:82` Erreur lors de la soumission
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:84` Nom complet *
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:85` Email professionnel *
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:86` Entreprise *
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:88` Nombre d employés
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:90` employés
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:91` Date preferee
+- [P1] `front/web/src/app/(landing)/demo/page.tsx:92` Message (optionnel)
+- ... 9629 more signals
 
 ### admin_dashboard
 
