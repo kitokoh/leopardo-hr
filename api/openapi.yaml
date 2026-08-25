@@ -20859,6 +20859,27 @@ paths:
       responses:
         "200":
           description: "Nombre d'ecritures creees/mises a jour"
+  /attendance/day-closures:
+    get:
+      tags: ["Attendance"]
+      summary: "Lister les fermetures de journée (manager/RH/principal)"
+      description: "Fermetures de journée du pointage (issue #5265) : verrous quotidiens par employé, filtrables par date et/ou employé. RBAC api.manager:rh,principal."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: date
+          in: query
+          required: false
+          description: "Filtre par date (YYYY-MM-DD)."
+          schema: { type: string, format: date }
+        - name: employee_id
+          in: query
+          required: false
+          description: "Filtre par employé."
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des fermetures de journée"
           content:
             application/json:
               schema:
@@ -20866,6 +20887,10 @@ paths:
                 properties:
                   document_id: { type: integer }
                   entries: { type: integer }
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AttendanceDayClosure"
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -20942,6 +20967,100 @@ components:
         type: string
         nullable: true
 
+    post:
+      tags: ["Attendance"]
+      summary: "Verrouiller la journée d'un employé (manager/RH/principal)"
+      description: "Crée une fermeture de journée (idempotent) : plus aucun pointage (check-in/check-out, import, approbation géo) n'est accepté pour cet employé ce jour-là → 409 ATTENDANCE_DAY_CLOSED. Issue #5265."
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [employee_id, date]
+              properties:
+                employee_id: { type: integer, description: "Employé de l'entreprise courante (404 si hors tenant)." }
+                date: { type: string, format: date, description: "Date locale entreprise (YYYY-MM-DD)." }
+                note: { type: string, nullable: true }
+      responses:
+        "201":
+          description: "Fermeture créée (ou déjà existante — idempotent)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AttendanceDayClosure"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          description: "Validation (employé hors entreprise, date invalide)."
+  /attendance/day-closures/{id}/validate:
+    post:
+      tags: ["Attendance"]
+      summary: "Valider une journée verrouillée (manager/RH/principal)"
+      description: "Marque une fermeture comme validée (review manager). Idempotent. Issue #5265."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note: { type: string, nullable: true }
+      responses:
+        "200":
+          description: "Fermeture validée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AttendanceDayClosure"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+  /attendance/day-closures/{id}:
+    delete:
+      tags: ["Attendance"]
+      summary: "Lever une fermeture de journée (manager/RH/principal)"
+      description: "Supprime le verrou : la journée redevient ouverte aux pointages. Issue #5265."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "Verrou levé"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
   securitySchemes:
     BearerAuth:
       type: http

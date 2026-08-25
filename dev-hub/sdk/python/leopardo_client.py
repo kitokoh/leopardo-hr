@@ -688,7 +688,15 @@ class LeopardoClient:
         """Lister les fermetures de journée (manager/RH/principal)"""
         return self.request("GET", "/attendance/day-closures", **kwargs)
 
+    def get_attendance_day_closures_2(self, **kwargs):
+        """Lister les fermetures de journée (manager/RH/principal)"""
+        return self.request("GET", "/attendance/day-closures", **kwargs)
+
     def post_attendance_day_closures(self, **kwargs):
+        """Verrouiller la journée d'un employé (manager/RH/principal)"""
+        return self.request("POST", "/attendance/day-closures", **kwargs)
+
+    def post_attendance_day_closures_2(self, **kwargs):
         """Verrouiller la journée d'un employé (manager/RH/principal)"""
         return self.request("POST", "/attendance/day-closures", **kwargs)
 
@@ -696,7 +704,15 @@ class LeopardoClient:
         """Lever une fermeture de journée (manager/RH/principal)"""
         return self.request("DELETE", "/attendance/day-closures/{id}", **kwargs)
 
+    def delete_attendance_day_closures_by_id_2(self, **kwargs):
+        """Lever une fermeture de journée (manager/RH/principal)"""
+        return self.request("DELETE", "/attendance/day-closures/{id}", **kwargs)
+
     def post_attendance_day_closures_by_id_validate(self, **kwargs):
+        """Valider une journée verrouillée (manager/RH/principal)"""
+        return self.request("POST", "/attendance/day-closures/{id}/validate", **kwargs)
+
+    def post_attendance_day_closures_by_id_validate_2(self, **kwargs):
         """Valider une journée verrouillée (manager/RH/principal)"""
         return self.request("POST", "/attendance/day-closures/{id}/validate", **kwargs)
 

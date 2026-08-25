@@ -835,8 +835,18 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/attendance/day-closures", options);
     },
 
+    /** Lister les fermetures de journée (manager/RH/principal) */
+    getAttendanceDayClosures2(options = {}) {
+      return request("GET", "/attendance/day-closures", options);
+    },
+
     /** Verrouiller la journée d'un employé (manager/RH/principal) */
     postAttendanceDayClosures(options = {}) {
+      return request("POST", "/attendance/day-closures", options);
+    },
+
+    /** Verrouiller la journée d'un employé (manager/RH/principal) */
+    postAttendanceDayClosures2(options = {}) {
       return request("POST", "/attendance/day-closures", options);
     },
 
@@ -845,8 +855,18 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/attendance/day-closures/{id}", options);
     },
 
+    /** Lever une fermeture de journée (manager/RH/principal) */
+    deleteAttendanceDayClosuresById2(options = {}) {
+      return request("DELETE", "/attendance/day-closures/{id}", options);
+    },
+
     /** Valider une journée verrouillée (manager/RH/principal) */
     postAttendanceDayClosuresByIdValidate(options = {}) {
+      return request("POST", "/attendance/day-closures/{id}/validate", options);
+    },
+
+    /** Valider une journée verrouillée (manager/RH/principal) */
+    postAttendanceDayClosuresByIdValidate2(options = {}) {
       return request("POST", "/attendance/day-closures/{id}/validate", options);
     },
 
