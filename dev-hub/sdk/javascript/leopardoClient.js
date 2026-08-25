@@ -860,6 +860,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/attendance/{attendanceLog}", options);
     },
 
+    /** DEPRECIE — alias de /attendance/attendance-logs/{attendanceLog}/punch-photo (issue #5538) */
+    getAttendanceByAttendanceLogPunchPhoto(options = {}) {
+      return request("GET", "/attendance/{attendanceLog}/punch-photo", options);
+    },
+
     /** Anomalies de pointage */
     getAttendanceAnomalies(options = {}) {
       return request("GET", "/attendance/anomalies", options);
