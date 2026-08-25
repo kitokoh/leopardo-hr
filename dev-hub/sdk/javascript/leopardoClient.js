@@ -2535,6 +2535,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/payment-confirmations/{paymentItem}/confirm", options);
     },
 
+    /** Lister les ordres de virement du tenant (pagine) */
+    getPaymentOrders(options = {}) {
+      return request("GET", "/payment-orders", options);
+    },
+
+    /** Detail d'un ordre de virement */
+    getPaymentOrdersByPaymentOrder(options = {}) {
+      return request("GET", "/payment-orders/{paymentOrder}", options);
+    },
+
+    /** Executer un ordre de virement prepare (comptable) */
+    postPaymentOrdersByPaymentOrderExecute(options = {}) {
+      return request("POST", "/payment-orders/{paymentOrder}/execute", options);
+    },
+
+    /** Rapprocher un ordre de virement execute (comptable) */
+    postPaymentOrdersByPaymentOrderReconcile(options = {}) {
+      return request("POST", "/payment-orders/{paymentOrder}/reconcile", options);
+    },
+
     /** Documents de paiement d.un cycle paie */
     getPaymentsByPayrollRunDocuments(options = {}) {
       return request("GET", "/payments/{payrollRun}/documents", options);
@@ -2553,6 +2573,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Voir une session de paie */
     getPayrollRunsByPayrollRun(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}", options);
+    },
+
+    /** Ecrires comptables d'un run de paie valide (#5239) */
+    getPayrollRunsByPayrollRunAccountingEntries(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/accounting-entries", options);
+    },
+
+    /** Regenerer les ecritures comptables d'un run (comptable, idempotent) */
+    postPayrollRunsByPayrollRunAccountingEntriesRegenerate(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/accounting-entries/regenerate", options);
     },
 
     /** Rapport d'anomalies pre-cloture (F-20) */
@@ -2643,6 +2673,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Lister les bulletins de paie d'une session */
     listPayrollRunPaySlips(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/pay-slips", options);
+    },
+
+    /** Preparer un ordre de virement pour un run valide (comptable) */
+    postPayrollRunsByPayrollRunPaymentOrder(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/payment-order", options);
     },
 
     /** Lister les régularisations d'un run (DZ-DEPTH #1818) */
