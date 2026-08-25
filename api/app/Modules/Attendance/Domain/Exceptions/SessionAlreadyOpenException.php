@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Domain\Exceptions;
+namespace App\Modules\Attendance\Domain\Exceptions;
 
 use RuntimeException;
 

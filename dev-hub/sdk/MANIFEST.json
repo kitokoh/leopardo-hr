@@ -1,6 +1,6 @@
 {
   "source": "api/openapi.yaml",
-  "spec_sha256": "d47e208700bbccdf9ae21a9f9c6c4047fec464b3036a02c0aa681b294bb5e7b6",
+  "spec_sha256": "e570e0a1b66b3bb8b0ad812a5c1871c8491f24727b300f54642e897489fa299f",
   "openapi": "3.0.3",
   "api_version": "4.24.0",
   "operation_count": 800,

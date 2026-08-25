@@ -220,7 +220,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/PaymentDocument"
+                      $ref: "#/components/schemas/GeoAttendanceSession"
   /attendance/geo-sessions/{id}:
     get:
       tags: ["Attendance"]
@@ -344,57 +344,6 @@ paths:
           description: "Configuration mise a jour"
         "401":
           $ref: "#/components/responses/Error401"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-  /accounting/documents/{document}/payments:
-    post:
-      tags: ["Accounting"]
-      summary: "Enregistrer un paiement"
-      description: "Enregistre un paiement sur un document emis. Regle jamais paye > total (422 PAYMENT_EXCEEDS_TOTAL). Met a jour paid_amount + statut du document (partially_paid/paid). Issue #5229."
-      parameters:
-        - name: document
-          in: path
-          required: true
-          description: "ID du document comptable."
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [amount, method]
-              properties:
-                amount: { type: number, format: double, minimum: 0.01 }
-                method: { type: string, enum: [cash, bank_transfer, check, card, other] }
-                reference: { type: string, nullable: true }
-                received_at: { type: string, format: date, nullable: true }
-      responses:
-        "201":
-          description: "Paiement enregistre (statut recorded)"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      id: { type: integer }
-                      document_id: { type: integer }
-                      amount: { type: number, format: double }
-                      method: { type: string }
-                      status: { type: string }
-                      document_paid_amount: { type: number, format: double }
-                      document_status: { type: string }
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-        "422":
-          description: "Montant > total (PAYMENT_EXCEEDS_TOTAL) ou document non emis (PAYMENT_ON_UNSENT_DOCUMENT)."
   /attendance/employees/{employeeId}/preference:
     get:
       tags: ["Attendance"]
@@ -13880,6 +13829,40 @@ paths:
       responses:
         "200":
           description: "Document envoye"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /accounting/documents/{document}/payments:
+    post:
+      tags: ["Accounting"]
+      summary: "Enregistrer un encaissement (→ partiellement paye / paye, #5223)"
+      description: "Cumul des paiements borne au total TTC. Un document paye ou annule refuse tout paiement. Statut paye jamais atteint sans paiement."
+      parameters:
+        - name: document
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount, method]
+              properties:
+                amount: { type: number, minimum: 0, exclusiveMinimum: true }
+                method: { type: string, enum: [cash, bank_transfer, check, card, other] }
+                received_at: { type: string, format: date }
+                reference: { type: string, maxLength: 120 }
+      responses:
+        "201":
+          description: "Paiement enregistre"
         "401":
           $ref: "#/components/responses/Error401"
         "403":

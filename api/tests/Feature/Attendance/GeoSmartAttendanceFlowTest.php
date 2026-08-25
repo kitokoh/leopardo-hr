@@ -6,7 +6,7 @@ namespace Tests\Feature\SmartAttendance;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
+use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -24,7 +24,7 @@ use Tests\TestCase;
  *  - AttendanceModeController — config (mode par défaut / mode forcé),
  *    updatePreference (mode forcé entreprise → 403).
  */
-class SmartAttendanceFlowTest extends TestCase
+class GeoSmartAttendanceFlowTest extends TestCase
 {
     use RefreshTenantDatabase;
 

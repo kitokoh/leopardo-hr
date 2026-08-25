@@ -74,7 +74,10 @@ class UpdateAccountingSettingsRequest extends FormRequest
                 if (! in_array((string) $key, $allowed, true)) {
                     $validator->errors()->add(
                         'number_series.'.$key,
-                        'Série inconnue : « '.$key.' » n\'est pas un type de document ('.implode(', ', $allowed).').',
+                        __('accounting.validation.series_unknown', [
+                            'key' => $key,
+                            'allowed' => implode(', ', $allowed),
+                        ]),
                     );
                 }
             }
