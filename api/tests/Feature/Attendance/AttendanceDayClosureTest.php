@@ -100,6 +100,7 @@ class AttendanceDayClosureTest extends TestCase
         return $employee;
     }
 
+    /** @return array<string, mixed> */
     private function lockPayload(int $employeeId, string $date): array
     {
         return ['employee_id' => $employeeId, 'date' => $date];
@@ -287,7 +288,7 @@ class AttendanceDayClosureTest extends TestCase
             ->assertJsonPath('error', 'ATTENDANCE_DAY_CLOSED');
 
         $this->assertSame(0, AttendanceLog::query()->count());
-        $this->assertSame(GeoAttendanceSession::STATUS_PENDING_VALIDATION, $session->fresh()->status);
+        $this->assertSame(GeoAttendanceSession::STATUS_PENDING_VALIDATION, $session->refresh()->status);
     }
 
     // ── Tests — convergence géo (calcul unifié) ──────────────────────────────

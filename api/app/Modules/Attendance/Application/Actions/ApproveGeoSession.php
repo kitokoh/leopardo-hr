@@ -76,7 +76,7 @@ class ApproveGeoSession
                 $session->ended_at ?? $session->started_at,
                 'normal',
                 $this->calculator->effectiveBreakMinutes(1, 'normal', $schedule?->break_minutes),
-                (float) ($schedule?->overtime_threshold_daily ?? 8.0),
+                (float) ($schedule->overtime_threshold_daily ?? 8.0),
             );
 
             // Déterminer le session_number (éviter les collisions)
@@ -116,7 +116,7 @@ class ApproveGeoSession
                 'validation_note'   => $note,
             ]);
 
-            return $session->fresh();
+            return $session->refresh();
         });
     }
 

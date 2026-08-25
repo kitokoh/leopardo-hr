@@ -13,6 +13,9 @@ namespace App\Modules\Attendance\Application\DTOs;
  */
 final readonly class LateAssessmentDTO
 {
+    /**
+     * @param 'late'|'ontime' $status Statut déduit du retard (source unique #5265).
+     */
     public function __construct(
         public int $late_minutes,
         public string $status,

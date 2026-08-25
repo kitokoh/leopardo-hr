@@ -25,12 +25,15 @@ class StoreDayClosureRequest extends FormRequest
      */
     public function rules(): array
     {
+        /** @var \App\Core\Auth\Domain\Models\Employee|null $user */
+        $user = $this->user();
+
         return [
             'employee_id' => [
                 'required',
                 'integer',
                 'min:1',
-                Rule::exists('employees', 'id')->where('company_id', $this->user()?->company_id),
+                Rule::exists('employees', 'id')->where('company_id', $user?->company_id),
             ],
             'date' => ['required', 'date_format:Y-m-d'],
             'note' => ['nullable', 'string', 'max:1000'],
