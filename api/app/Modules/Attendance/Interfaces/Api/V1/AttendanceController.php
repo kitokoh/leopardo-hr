@@ -615,7 +615,7 @@ class AttendanceController extends Controller
     }
 
     /**
-     * GET /api/v1/attendance/{attendanceLog}/punch-photo
+     * GET /api/v1/attendance/attendance-logs/{attendanceLog}/punch-photo (alias déprécié : /attendance/{attendanceLog}/punch-photo #5538)
      * Retourne la photo de pointage associee a un log (mode photo_required).
      * Accessible a l'employe concerne et aux managers autorises a voir ce log.
      */

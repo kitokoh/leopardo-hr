@@ -106,7 +106,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/attendance/corrections/{correction}/reject', [AttendanceController::class, 'rejectCorrection'])->whereNumber('correction')->middleware('api.manager'); // déprécié #4930
     Route::get('/attendance/corrections/{correction}/proof', [AttendanceController::class, 'downloadProofCorrection'])->whereNumber('correction')->name('attendance.corrections.proof');
     Route::put('/attendance/{attendanceLog}', [AttendanceController::class, 'update'])->whereNumber('attendanceLog')->middleware('api.manager');
+    // #5538 — URL canonique (désambiguïsée redocly, #5525).
     Route::get('/attendance/attendance-logs/{attendanceLog}/punch-photo', [AttendanceController::class, 'punchPhoto'])->whereNumber('attendanceLog')->name('attendance.punch-photo');
+
+    // #5538 — alias DÉPRÉCIÉ de l'ancien chemin /attendance/{attendanceLog}/punch-photo
+    // (clients en circulation). À supprimer après la fenêtre de compat.
+    Route::get('/attendance/{attendanceLog}/punch-photo', [AttendanceController::class, 'punchPhoto'])->whereNumber('attendanceLog');
 
     // ── Invitations ───────────────────────────────────────────────────────────
     Route::get('/invitations', [InvitationController::class, 'index']);
