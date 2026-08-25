@@ -1,72 +1,70 @@
 #!/usr/bin/env bash
+# check-issue-claim-unique.sh — Garde anti-doublon « une issue = une PR » (issue #5442)
 #
-# Garde anti-doublon « une issue = une PR » (issue #5442).
+# Pourquoi : des agents parallèles ouvrent régulièrement PLUSIEURS PR pour la
+# même issue sans le savoir (constats #5239 ×2-3, #5270 ×2, #5235 ×2, #5356 ×2,
+# #5418/#5420). Le garde PA2 (check-plan-action2-claim.sh) ne couvre que les
+# tickets PA2-*, pas les issues GitHub. Coût : conflits de merge en cascade,
+# CI rouge, gaspillage de capacité, confusion du wave-PM.
 #
-# Détecte les issues GitHub référencées par PLUSIEURS PR ouvertes via les
-# mots-clés de fermeture `Closes/Fixes/Resolves #N` (titre + body). Le guard
-# PA2 existant (check-plan-action2-claim.sh) ne couvre que les tickets
-# PA2-*, pas les issues GitHub — d'où des doublons récurrents (#5239 ×3,
-# #5270 ×2, #5235 ×2, #5356 ×2).
+# Règle : pour chaque PR OUVERTE du repo, extraire les références de clôture
+# `Closes/Fixes/Resolves #N` (grammaire GitHub) du titre + body ; si 2+ PR
+# ouvertes référencent la MÊME issue → ::error + exit 1 (la PR en doublon doit
+# être fermée, protocole #2400 : 1 PR = 1 issue, renvoi vers la PR canonique).
 #
-# Comportement par défaut : `::warning` non bloquant (rollout progressif —
-# des doublons connus existent encore). Passer en bloquant (`--blocking`)
-# une fois les doublons résolus (cf. issue #5442).
-#
-# Prérequis : GH_TOKEN (GITHUB_TOKEN en CI) + jq.
-# Usage : dev-hub/tools/check-issue-claim-unique.sh [--blocking]
-set -euo pipefail
+# Usage : dev-hub/tools/check-issue-claim-unique.sh <owner/repo>
+# Requiert `gh` authentifié (GITHUB_TOKEN/GH_TOKEN suffit : lecture PRs).
+set -uo pipefail
 
-REPO="${GITHUB_REPOSITORY:-kitokoh/leopardo-hr}"
-TOKEN="${GH_TOKEN:-}"
-BLOCKING=0
-if [[ "${1:-}" == "--blocking" ]]; then
-  BLOCKING=1
-fi
+REPO="${1:?usage: check-issue-claim-unique.sh <owner/repo>}"
 
-if [[ -z "$TOKEN" ]]; then
-  echo "::error::GH_TOKEN requis pour la garde anti-doublon (issue #5442)."
+PRS_JSON=$(gh api "repos/${REPO}/pulls" -f state=open -f per_page=100 \
+  --jq '[.[] | {number, title, user: .user.login, body: (.body // "")}]')
+
+OUTPUT=$(PRS_JSON="$PRS_JSON" python3 - "$REPO" 2>&1 <<'PYEOF' || true
+import json, os, re, sys
+
+repo = sys.argv[1]
+prs = json.loads(os.environ["PRS_JSON"])
+ref_re = re.compile(
+    r"(?<![\w-])(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)"
+    r"[:\s]*#(\d+)",
+    re.IGNORECASE,
+)
+
+claims = {}   # issue -> {pr -> author}
+for pr in prs:
+    text = f"{pr.get('title') or ''}\n{pr.get('body') or ''}"
+    for m in ref_re.findall(text):
+        claims.setdefault(int(m), {})[pr["number"]] = pr.get("user") or "?"
+
+dups = {i: p for i, p in claims.items() if len(p) > 1}
+for issue in sorted(claims):
+    owners = claims[issue]
+    if len(owners) == 1:
+        n, author = next(iter(owners.items()))
+        print(f"OK    issue #{issue} -> PR #{n} ({author})")
+    else:
+        desc = " + ".join(f"PR #{n} ({a})" for n, a in sorted(owners.items()))
+        print(f"DUP   issue #{issue} -> {desc}")
+
+if dups:
+    print(f"::error::Garde anti-doublon « une issue = une PR » (issue #5442) : {len(dups)} issue(s) référencée(s) par plusieurs PR ouvertes :")
+    for issue in sorted(dups):
+        owners = " + ".join(f"PR #{n}" for n in sorted(dups[issue]))
+        print(f"::error::  issue #{issue} -> {owners}")
+    print("::error::→ Protocole #2400 : fermer la PR redondante avec un commentaire de renvoi vers la PR canonique (1 PR = 1 issue).")
+    print("RESULT=FAIL")
+    sys.exit(1)
+
+print("✓ Aucune collision de claim d'issue : chaque issue ouverte est référencée par au plus une PR.")
+print("RESULT=OK")
+sys.exit(0)
+PYEOF
+)
+printf '%s\n' "${OUTPUT}"
+
+if printf '%s\n' "${OUTPUT}" | grep -q '^RESULT=FAIL'; then
   exit 1
 fi
-
-PRS_JSON="$(curl -sf --max-time 30 -H "Authorization: Bearer $TOKEN" \
-  "https://api.github.com/repos/$REPO/pulls?state=open&per_page=100")" || {
-  echo "::error::Impossible de lister les PR ouvertes (API GitHub)."
-  exit 1
-}
-
-# issue -> liste de PR (titre+body analysés pour Closes/Fixes/Resolves #N)
-declare -A CLAIMS
-while IFS=$'\t' read -r number title body; do
-  refs="$(printf '%s %s' "$title" "$body" \
-    | grep -oE '(Closes|Fixes|Resolves) #[0-9]+' \
-    | grep -oE '#[0-9]+' | sort -u || true)"
-  for ref in $refs; do
-    issue="${ref#\#}"
-    CLAIMS["$issue"]="${CLAIMS[$issue]:-}${CLAIMS[$issue]:+,}$number"
-  done
-done < <(jq -r '.[] | [.number, (.title // ""), (.body // "")] | @tsv' <<<"$PRS_JSON")
-
-duplicates=0
-for issue in "${!CLAIMS[@]}"; do
-  prs="${CLAIMS[$issue]}"
-  count="$(tr ',' '\n' <<<"$prs" | sort -u | wc -l | tr -d ' ')"
-  if (( count > 1 )); then
-    duplicates=$((duplicates + 1))
-    if (( BLOCKING )); then
-      echo "::error::Doublon détecté : issue #$issue fermée par $count PR ouvertes ($prs). Protocole #2400 : fermer les PR redondantes."
-    else
-      echo "::warning::Doublon détecté : issue #$issue fermée par $count PR ouvertes ($prs). Protocole #2400 : fermer les PR redondantes."
-    fi
-  fi
-done
-
-if (( duplicates > 0 )); then
-  if (( BLOCKING )); then
-    echo "::error::$duplicates issue(s) avec PR multiples — une issue = une PR (issue #5442)."
-    exit 1
-  fi
-  echo "::warning::$duplicates issue(s) avec PR multiples (mode non bloquant — voir issue #5442)."
-  exit 0
-fi
-
-echo "::notice::Anti-doublon OK : aucune issue fermée par plus d'une PR ouverte."
+exit 0
