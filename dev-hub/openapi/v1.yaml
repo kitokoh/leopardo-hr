@@ -401,6 +401,86 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+  /accounting/documents/{document}/checkout:
+    post:
+      tags: ["Accounting"]
+      summary: "Initier le paiement en ligne d'un document (portail client)"
+      description: |
+        Cree une session de paiement hebergee par la passerelle routee selon le
+        pays de l'entreprise (ADR-0017, option A) : Chargily (DZ, pilote) ou
+        Stripe Checkout (FR/UK/US/CI). Le montant encaisse est le solde
+        restant du document (total_ttc - paid_amount). Documents eligibles :
+        sent / partially_paid / overdue. Echec fail-closed :
+        PAYMENT_GATEWAY_NOT_CONFIGURED (pays sans passerelle) ou
+        DOCUMENT_NOT_SENDABLE (brouillon, annule, deja solde). Issue #5272.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: document
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountingCheckoutPayload"
+      responses:
+        "200":
+          description: "Session de paiement creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AccountingCheckout"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+  /accounting/payments/webhook/{gateway}:
+    post:
+      tags: ["Accounting"]
+      summary: "Webhook passerelle de paiement (Chargily / Stripe)"
+      description: |
+        Webhook public (aucune auth Sanctum) : la confiance est portee par la
+        signature HMAC (fail-closed — 401 si secret absent ou signature
+        invalide). Rapprochement automatique et idempotent : cree un
+        AccountingPayment (method online_chargily / online_stripe, reference =
+        id passerelle) et met a jour le document (paid / partially_paid, regles
+        #5223). Anti-fraude : montant notifie SUPERIEUR au solde restant -> 422
+        PAYMENT_AMOUNT_MISMATCH, aucun rapprochement (un montant inferieur est
+        un paiement partiel legitime). Rejeu (gateway_payment_id deja connu) ->
+        200 sans doublon. Issue #5272.
+      parameters:
+        - name: gateway
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [chargily, stripe]
+      responses:
+        "200":
+          description: "Webhook accepte (traite, rejoue ou ignore)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+                    example: true
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
   /accounting/reminders/run:
     post:
       tags: ["Accounting"]
@@ -23531,6 +23611,39 @@ components:
           type: object
           additionalProperties:
             type: string
+
+    AccountingCheckout:
+      type: object
+      description: "Session de paiement en ligne creee (issue #5272)."
+      required:
+        - checkout_url
+        - expires_at
+        - gateway
+      properties:
+        checkout_url:
+          type: string
+          format: uri
+          description: "URL de paiement hebergee par la passerelle (Chargily / Stripe)."
+        expires_at:
+          type: string
+          format: date-time
+          description: "Expiration de la session de paiement."
+        gateway:
+          type: string
+          enum: [chargily, stripe]
+
+    AccountingCheckoutPayload:
+      type: object
+      description: "Payload optionnel d'initiation de checkout — URLs de retour personnalisees (defaut : portail client)."
+      properties:
+        success_url:
+          type: string
+          format: uri
+          nullable: true
+        cancel_url:
+          type: string
+          format: uri
+          nullable: true
 
     VatDeclaration:
       type: object
