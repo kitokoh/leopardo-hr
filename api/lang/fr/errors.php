@@ -2,6 +2,7 @@
 
 return [
     // Auth
+        'UNKNOWN_ACCOUNT' => "Aucun compte Leopardo RH n\'est associé à cet email Google. Demandez une invitation à votre administrateur.",
     'INVALID_CREDENTIALS' => 'Email ou mot de passe incorrect.',
     'ACCOUNT_SUSPENDED' => 'Votre compte a été suspendu. Contactez votre responsable.',
     'ACCOUNT_ARCHIVED' => 'Ce compte est archivé.',
@@ -238,6 +239,7 @@ return [
     'CONTRACT_NOT_FOUND_EMPLOYEE' => 'Aucun contrat trouvé pour cet employé.',
     'ALREADY_ENROLLED_SESSION' => 'Déjà inscrit à cette session.',
     'DELETION_REQUEST_RECEIVED' => 'Demande de suppression reçue pour revue RH/juridique.',
+    'PERIOD_CLOSED' => 'La période comptable est déjà clôturée — aucun posting possible.',
     // Comptabilité (issue #5227)
     'PAYMENT_EXCEEDS_TOTAL' => 'Le montant du paiement dépasse le solde restant du document.',
     'PAYMENT_ON_UNSENT_DOCUMENT' => 'Impossible d\'enregistrer un paiement sur un document non émis.',
@@ -250,4 +252,8 @@ return [
     'DOCUMENT_NOT_FULLY_PAID' => 'Le document ne peut pas être marqué payé tant que le montant total n\'est pas réglé.',
     'INVALID_DOCUMENT_TRANSITION' => 'Transition de statut non autorisée pour ce document.',
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Période invalide. Utilisez le format AAAA-MM.',
+    'TWO_FACTOR_INVALID' => 'Code de double authentification invalide ou expiré.',
+    'TWO_FACTOR_REQUIRED' => 'La double authentification est obligatoire pour ce compte. Activez-la avant de vous connecter.',
+    'TWO_FACTOR_ALREADY_ENABLED' => 'La double authentification est déjà activée sur ce compte.',
+    'TWO_FACTOR_CHALLENGE_EXPIRED' => 'Session de double authentification expirée. Reconnectez-vous.',
 ];

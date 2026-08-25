@@ -10,7 +10,9 @@ use App\Core\Auth\Application\Actions\LogoutAction;
 use App\Core\Auth\Application\Actions\RefreshTokenAction;
 use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\UpdateProfileAction;
+use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
 use App\Core\Auth\Interfaces\Requests\ChangePasswordRequest;
 use App\Core\Auth\Interfaces\Requests\LoginRequest;
 use App\Core\Auth\Interfaces\Requests\StoreRegistrationRequest;
@@ -38,6 +40,7 @@ class AuthController extends Controller
         private readonly RefreshTokenAction $refreshTokenAction,
         private readonly UpdateProfileAction $updateProfileAction,
         private readonly ChangePasswordAction $changePasswordAction,
+        private readonly TwoFactorAuthService $twoFactorService,
     ) {}
 
     public function login(LoginRequest $request): JsonResponse
@@ -49,6 +52,48 @@ class AuthController extends Controller
         );
 
         $employee = $result['employee'];
+
+        // #5436 : 2FA — le token vient d'être créé par AuthService ; s'il ne
+        // doit pas être délivré (challenge ou politique), on le révoque.
+        if ($employee->two_fa_enabled_at !== null) {
+            // Appareil de confiance (cookie signé) : pas de challenge.
+            $expected = $this->twoFactorService->rememberCookieValue($employee);
+            $provided = $request->cookie('mfa_remember_'.$employee->id);
+            if (is_string($provided) && hash_equals($expected, $provided)) {
+                return (new EmployeeResource($employee))
+                    ->additional([
+                        'token' => $result['token'],
+                        'token_type' => $result['token_type'],
+                        'token_expires_at' => $result['token_expires_at'],
+                    ])
+                    ->response();
+            }
+
+            $employee->tokens()->latest('id')->first()?->delete();
+
+            $deviceName = $request->validated('device_name');
+
+            $challenge = $this->twoFactorService->issueChallenge([
+                'employee_id' => $employee->id,
+                'company_id' => (string) $employee->company_id,
+                'tenant_schema' => $result['tenant_schema'],
+                'email' => (string) $employee->email,
+                'device_name' => is_string($deviceName) ? $deviceName : null,
+            ]);
+
+            return new JsonResponse([
+                'mfa_challenge' => true,
+                'mfa_challenge_token' => $challenge['token'],
+                'mfa_challenge_expires_in' => $challenge['expires_in'],
+            ]);
+        }
+
+        // Politique tenant : rôle sensible + 2FA non activée → blocage.
+        if ($this->twoFactorService->requiresMfa($employee)) {
+            $employee->tokens()->latest('id')->first()?->delete();
+
+            throw TwoFactorException::required();
+        }
 
         return (new EmployeeResource($employee))
             ->additional([
@@ -244,9 +289,12 @@ class AuthController extends Controller
             // de démo explicitement configurés (DEMO_MODE_ENABLED=true), en
             // parité avec le 401 de handleGoogleToken.
             if (! config('app.demo_mode_enabled')) {
+                // Issue #5171 : message localisé ×4 (parité i18n) — le parcours
+                // invitation-first (#2617) crée toujours la ligne employé en
+                // amont ; le 401 guide le nouvel utilisateur vers son admin.
                 return new JsonResponse([
                     'error' => 'UNKNOWN_ACCOUNT',
-                    'message' => 'No account exists for this Google email. Ask your administrator for an invitation.',
+                    'message' => __('errors.UNKNOWN_ACCOUNT'),
                 ], 401);
             }
 

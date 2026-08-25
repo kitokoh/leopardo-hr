@@ -48,33 +48,58 @@ class EmailBounceWebhookController extends Controller
             return new JsonResponse(['error' => 'Invalid signature'], 400);
         }
 
-        $email = (string) $request->input('email', '');
-        $event = (string) $request->input('event', 'bounce');
-        $reason = $request->input('reason');
-        $reason = is_string($reason) ? substr($reason, 0, 255) : null;
+        // #5444 — idempotence persistée : le registre clé (payload brut) sert de
+        // verrou anti-rejeu AVANT tout traitement (begin → complete/release).
+        $rawPayload = $request->getContent();
+        $eventId = $this->registry->eventId($rawPayload);
+        $replay = $this->registry->begin('email-bounce', $eventId, hash('sha256', $rawPayload));
 
-        if ($email === '') {
-            return new JsonResponse(['received' => true]);
+        if ($replay !== null) {
+            $this->registry->logReplay('email-bounce', $eventId, $replay['code']);
+
+            return new JsonResponse(
+                $this->registry->replayBody($replay['body'], ['received' => true, 'replayed' => true]),
+                $replay['code'],
+            );
         }
 
-        $employee = $this->lookup->resolve($email);
+        /** @var array{email: string, event: string, reason?: string|null} $payload */
+        $payload = $request->validate([
+            'email' => ['required', 'string', 'email:rfc', 'max:320'],
+            'event' => [
+                'required',
+                'string',
+                'max:64',
+                'in:bounce,hard_bounce,complaint,spam_complaint,delivered,opened,clicked,deferred',
+            ],
+            'reason' => ['nullable', 'string', 'max:255'],
+        ]);
 
-        if ($employee === null) {
-            Log::info('Email bounce webhook: no matching employee for address', ['event' => $event]);
+        $email = $payload['email'];
+        $event = $payload['event'];
+        $reason = $payload['reason'] ?? null;
 
-            return new JsonResponse(['received' => true]);
-        }
+        try {
+            $employee = $this->lookup->resolve($email);
 
-        $isBounceOrComplaint = in_array($event, ['bounce', 'hard_bounce', 'complaint', 'spam_complaint'], true);
+            if ($employee === null) {
+                Log::info('Email bounce webhook: no matching employee for address', ['event' => $event]);
 
-        if ($isBounceOrComplaint) {
+                $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]));
+
+                return new JsonResponse(['received' => true]);
+            }
+
+            $isBounceOrComplaint = in_array($event, ['bounce', 'hard_bounce', 'complaint', 'spam_complaint'], true);
+
+            if ($isBounceOrComplaint) {
             $employee->forceFill([
-                'email_bounced_at' => now(),
-                'email_bounce_reason' => $reason ?? $event,
+            'email_bounced_at' => now(),
+            'email_bounce_reason' => $reason ?? $event,
             ])->save();
-        }
+            }
 
-        CommunicationEvent::query()->create([
+            CommunicationEvent::query()->create([
             'company_id' => (string) $employee->company_id,
             'employee_id' => $employee->id,
             'event_name' => 'email_provider_webhook',
@@ -84,8 +109,20 @@ class EmailBounceWebhookController extends Controller
             'metadata' => ['event' => $event],
             'error_message' => $reason,
             'occurred_at' => now(),
-        ]);
+            ]);
 
-        return new JsonResponse(['received' => true]);
-    }
-}
+            $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]));
+
+            return new JsonResponse(['received' => true]);
+            } catch (\Throwable $e) {
+            $this->registry->release('email-bounce', $eventId);
+            Log::error('Email bounce webhook: error handling event', [
+            'event' => $event ?? null,
+            'error' => $e->getMessage(),
+            ]);
+
+            return new JsonResponse(['received' => false, 'error' => 'processing_error'], 500);
+            }
+            }
+            }
+

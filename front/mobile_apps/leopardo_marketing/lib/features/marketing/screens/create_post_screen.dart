@@ -202,7 +202,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
                   const Spacer(),
                   Switch.adaptive(
                     value: _scheduleEnabled,
-                    activeColor: AppColors.rh,
+                    activeThumbColor: AppColors.rh,
                     onChanged: (value) =>
                         setState(() => _scheduleEnabled = value),
                   ),

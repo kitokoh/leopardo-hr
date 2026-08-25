@@ -9,7 +9,7 @@ import 'package:leopardo_core/models/daily_summary.dart';
 import 'package:leopardo_core/models/employee_day_detail.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
 import 'package:leopardo_hr/core/providers/core_providers.dart';
-import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/location/attendance_location_context.dart';
 import 'package:leopardo_core/l10n/l10n.dart';

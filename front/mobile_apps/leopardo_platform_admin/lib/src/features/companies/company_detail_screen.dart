@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/leopardo_qr_card.dart';
@@ -43,10 +44,10 @@ class CompanyDetailScreen extends ConsumerWidget {
 
     return MobilePage(
       appBar: MobileTopBar(
-        title: 'Fiche client',
+        title: context.l10n.companydetailClientFile,
         subtitle: companyId,
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: context.l10n.commonBack,
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
@@ -192,18 +193,18 @@ class _CompanyDetailContent extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 18),
-        const MobileSectionLabel('Adoption produit'),
+        MobileSectionLabel(context.l10n.companydetailProductAdoption),
         Row(
           children: [
             MobileMetricTile(
               value: '${health.activeEmployees}/${health.totalEmployees}',
-              label: 'Employes actifs',
+              label: context.l10n.companydetailActiveEmployees,
               color: AppColors.info,
             ),
             const SizedBox(width: 10),
             MobileMetricTile(
               value: '${health.attendanceLogs30d}',
-              label: 'Pointages 30j',
+              label: context.l10n.dashboardCheckins30d,
               color: AppColors.rh,
             ),
           ],
@@ -213,13 +214,13 @@ class _CompanyDetailContent extends ConsumerWidget {
           children: [
             MobileMetricTile(
               value: '${health.onboardingProgress}%',
-              label: 'Onboarding',
+              label: context.l10n.companydetailOnboarding,
               color: AppColors.success,
             ),
             const SizedBox(width: 10),
             MobileMetricTile(
               value: '${health.criticalAnomalies30d}',
-              label: 'Anomalies critiques',
+              label: context.l10n.companydetailAnomaliesCritical,
               color: health.criticalAnomalies30d > 0
                   ? AppColors.danger
                   : AppColors.rh,
@@ -227,38 +228,41 @@ class _CompanyDetailContent extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 18),
-        const MobileSectionLabel('Reference client'),
+        MobileSectionLabel(context.l10n.companydetailClientReference),
         LeopardoQrCard(
           data: companyId,
           title: health.companyName,
-          subtitle:
-              'Identifiant tenant a presenter au support ou scanner sur site pour retrouver ce client instantanement.',
-          copyLabel: 'Copier l\'identifiant',
+          subtitle: context.l10n.companydetailTenantIdHint,
+          copyLabel: context.l10n.companydetailCopyId,
         ),
         const SizedBox(height: 18),
-        const MobileSectionLabel('Abonnement'),
+        MobileSectionLabel(context.l10n.companydetailSubscription),
         MobilePanel(
           child: Column(
             children: [
-              _InfoRow('Plan', data.subscription.planName),
-              _InfoRow('Statut', data.subscription.status),
               _InfoRow(
-                'Prix mensuel',
+                  context.l10n.companydetailPlan, data.subscription.planName),
+              _InfoRow(
+                  context.l10n.companydetailStatus, data.subscription.status),
+              _InfoRow(
+                context.l10n.companydetailMonthlyPrice,
                 '${data.subscription.monthlyPrice} ${data.subscription.currency}',
               ),
               _InfoRow(
-                'Limite employes',
-                data.subscription.maxEmployees?.toString() ?? 'Illimite',
+                context.l10n.companydetailEmployeeLimit,
+                data.subscription.maxEmployees?.toString() ??
+                    context.l10n.companydetailUnlimited,
               ),
               _InfoRow(
-                'Fin abonnement',
-                data.subscription.subscriptionEnd ?? 'Non definie',
+                context.l10n.companydetailSubscriptionEnd,
+                data.subscription.subscriptionEnd ??
+                    context.l10n.companydetailUndefined,
               ),
               const SizedBox(height: 12),
               if (data.subscription.status == 'trial') ...[
                 MobilePrimaryAction(
                   icon: Icons.verified_rounded,
-                  label: 'Activer client',
+                  label: context.l10n.companydetailActivateClient,
                   onPressed: () => _activateCompany(
                     context: context,
                     ref: ref,
@@ -270,7 +274,7 @@ class _CompanyDetailContent extends ConsumerWidget {
               ],
               MobilePrimaryAction(
                 icon: Icons.edit_note_rounded,
-                label: 'Modifier abonnement',
+                label: context.l10n.companydetailEditSubscription,
                 onPressed: () => showModalBottomSheet<void>(
                   context: context,
                   isScrollControlled: true,
@@ -290,7 +294,7 @@ class _CompanyDetailContent extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 18),
-        const MobileSectionLabel('Modules actifs'),
+        MobileSectionLabel(context.l10n.companydetailActiveModules),
         MobilePanel(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,7 +316,7 @@ class _CompanyDetailContent extends ConsumerWidget {
               const SizedBox(height: 12),
               MobilePrimaryAction(
                 icon: Icons.tune_rounded,
-                label: 'Modifier modules',
+                label: context.l10n.companydetailEditModules,
                 onPressed: () => showModalBottomSheet<void>(
                   context: context,
                   isScrollControlled: true,
@@ -332,11 +336,11 @@ class _CompanyDetailContent extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 18),
-        const MobileSectionLabel('Prochaines actions'),
+        MobileSectionLabel(context.l10n.companydetailNextActions),
         if (health.nextActions.isEmpty)
-          const MobilePanel(
+          MobilePanel(
             child: Text(
-              'Aucune action urgente detectee pour ce client.',
+              context.l10n.companydetailNoUrgentActions,
               style: TextStyle(color: MobileSurface.secondary),
             ),
           )
@@ -346,7 +350,7 @@ class _CompanyDetailContent extends ConsumerWidget {
               icon: Icons.flag_rounded,
               iconColor: AppColors.warning,
               title: action,
-              subtitle: 'Action recommandee par le cockpit plateforme.',
+              subtitle: context.l10n.companydetailRecommendedActionHint,
             ),
           ),
       ],
@@ -362,7 +366,8 @@ class _CompanyDetailContent extends ConsumerWidget {
     if (subscription.planId <= 0) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Plan actuel introuvable')));
+      ).showSnackBar(
+          SnackBar(content: Text(context.l10n.companydetailPlanNotFound)));
       return;
     }
 
@@ -379,7 +384,8 @@ class _CompanyDetailContent extends ConsumerWidget {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Client active')));
+      ).showSnackBar(
+          SnackBar(content: Text(context.l10n.companydetailClientActivated)));
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
@@ -428,7 +434,8 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
     if (_planId == null || _planId == 0) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Choisir un plan')));
+      ).showSnackBar(
+          SnackBar(content: Text(context.l10n.companydetailChoosePlan)));
       return;
     }
 
@@ -445,7 +452,8 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
       Navigator.pop(context);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Abonnement mis a jour')));
+      ).showSnackBar(SnackBar(
+          content: Text(context.l10n.companydetailSubscriptionUpdated)));
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -458,6 +466,7 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final plans = ref.watch(platformPlansProvider);
 
     return Padding(
@@ -495,8 +504,8 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const _SheetHandle(),
-              const Text(
-                'Modifier abonnement',
+              Text(
+                context.l10n.companydetailEditSubscription,
                 style: TextStyle(
                   color: MobileSurface.text,
                   fontSize: 18,
@@ -507,13 +516,17 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
               DropdownButtonFormField<int>(
                 initialValue: _planId == 0 ? null : _planId,
                 dropdownColor: MobileSurface.surface,
-                decoration: const InputDecoration(labelText: 'Plan'),
+                decoration:
+                    InputDecoration(labelText: context.l10n.companydetailPlan),
                 items: activePlans
                     .map(
                       (plan) => DropdownMenuItem<int>(
                         value: plan.id,
                         child: Text(
-                          '${plan.name} - ${plan.monthlyPrice}/mois',
+                          l10n.companydetailPlanWithPrice(
+                            plan.name,
+                            plan.monthlyPrice.toString(),
+                          ),
                         ),
                       ),
                     )
@@ -526,7 +539,8 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
               DropdownButtonFormField<String>(
                 initialValue: _status,
                 dropdownColor: MobileSurface.surface,
-                decoration: const InputDecoration(labelText: 'Statut'),
+                decoration: InputDecoration(
+                    labelText: context.l10n.companydetailStatus),
                 items: _statuses
                     .map(
                       (status) => DropdownMenuItem<String>(
@@ -544,20 +558,23 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
                 controller: _notes,
                 maxLines: 2,
                 style: const TextStyle(color: MobileSurface.text),
-                decoration: const InputDecoration(
-                  labelText: 'Note interne optionnelle',
+                decoration: InputDecoration(
+                  labelText: context.l10n.companydetailOptionalInternalNote,
                 ),
               ),
               const SizedBox(height: 16),
               MobilePrimaryAction(
                 icon: Icons.save_rounded,
-                label: _submitting ? 'Enregistrement...' : 'Enregistrer',
+                label: _submitting
+                    ? context.l10n.companydetailSaving
+                    : context.l10n.commonSave,
                 onPressed: _submitting ? null : _submit,
               ),
             ],
           );
         },
-        loading: () => const MobileEmptyLoading(label: 'Chargement plans'),
+        loading: () =>
+            MobileEmptyLoading(label: context.l10n.companydetailLoadingPlans),
         error: (error, _) => MobileErrorPanel(
           message: error.toString(),
           onRetry: () => ref.invalidate(platformPlansProvider),
@@ -596,7 +613,8 @@ class _FeaturesSheetState extends ConsumerState<_FeaturesSheet> {
       Navigator.pop(context);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Modules mis a jour')));
+      ).showSnackBar(
+          SnackBar(content: Text(context.l10n.companydetailModulesUpdated)));
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -621,8 +639,8 @@ class _FeaturesSheetState extends ConsumerState<_FeaturesSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const _SheetHandle(),
-          const Text(
-            'Modifier modules',
+          Text(
+            context.l10n.companydetailEditModules,
             style: TextStyle(
               color: MobileSurface.text,
               fontSize: 18,
@@ -644,8 +662,8 @@ class _FeaturesSheetState extends ConsumerState<_FeaturesSheet> {
                 style: const TextStyle(color: MobileSurface.text),
               ),
               subtitle: locked
-                  ? const Text(
-                      'Module socle toujours actif',
+                  ? Text(
+                      context.l10n.companydetailCoreModuleAlwaysActive,
                       style: TextStyle(color: MobileSurface.secondary),
                     )
                   : null,
@@ -654,7 +672,9 @@ class _FeaturesSheetState extends ConsumerState<_FeaturesSheet> {
           const SizedBox(height: 12),
           MobilePrimaryAction(
             icon: Icons.save_rounded,
-            label: _submitting ? 'Enregistrement...' : 'Enregistrer modules',
+            label: _submitting
+                ? context.l10n.companydetailSaving
+                : context.l10n.companydetailSaveModules,
             onPressed: _submitting ? null : _submit,
           ),
         ],

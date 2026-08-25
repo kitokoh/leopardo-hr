@@ -181,6 +181,13 @@ jobs:
         working-directory: ${{ matrix.project.path }}
         run: flutter pub get --offline || flutter pub get
 
+      - name: Regenerate shared localizations
+        # #4762 : les apps consomment AppLocalizations depuis le package core.
+        # Régénérer avec la version Flutter de CI évite une interface générée
+        # obsolète après pub get ou restauration de cache.
+        working-directory: front/mobile_apps/leopardo_core
+        run: flutter gen-l10n
+
       - name: Fetch diff base for incremental Dart gate
         shell: bash
         env:

@@ -121,7 +121,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Leopardo RH',
+                          context.l10n.appTitle,
                           style: AppTypography.title.copyWith(color: text),
                         ),
                         Text(
@@ -170,7 +170,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           label: l10n.authPasswordLabel,
                           icon: Icons.lock_outline_rounded,
                           suffix: IconButton(
-                            tooltip: 'Afficher ou masquer le mot de passe',
+                            tooltip: context.l10n.authTogglePasswordVisibility,
                             icon: Icon(
                               _obscurePassword
                                   ? Icons.visibility_off_rounded
