@@ -14,9 +14,10 @@ declare(strict_types=1);
  */
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
@@ -39,6 +40,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
             // ── Rapports (issue #5271) — déclaration TVA par période.
             Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
+
+            // ── Conversion multi-devises (issue #5270) — calcul pur, aucun
+            // état persistant : HT/TVA/TTC entre devise de document et devise
+            // de référence. Taux manuel requis dès que les devises diffèrent.
+            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
         });
 
         // ── Documents (Phase A, #5223) — RBAC principal/comptable ───────────
