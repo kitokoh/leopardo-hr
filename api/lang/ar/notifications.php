@@ -9,6 +9,8 @@ return [
     'attendance_geofence_alert_phase_check_out' => 'سجل الخروج',
 
     'generic_title' => 'إشعار Leopardo RH',
+    'accounting_payment_reminder_title' => 'تذكير بالدفع',
+    'accounting_payment_reminder_body' => 'الفاتورة {document_number} ({document_total}) غير مدفوعة منذ {due_date} — تذكير اليوم {days_overdue}.',
     'generic_body' => 'تتوفر معلومات جديدة في مساحتك.',
 
     'absence_approved_title' => 'تمت الموافقة على طلب الغياب',
