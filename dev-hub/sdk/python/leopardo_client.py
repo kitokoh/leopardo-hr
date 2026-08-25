@@ -192,6 +192,14 @@ class LeopardoClient:
         """Apercu du prochain numero de la serie configuree (#5223)"""
         return self.request("GET", "/accounting/documents/next-number", **kwargs)
 
+    def get_accounting_documents_shared_by_token(self, **kwargs):
+        """Portail client — informations du document partagé (token)"""
+        return self.request("GET", "/accounting/documents/shared/{token}", **kwargs)
+
+    def get_accounting_documents_shared_by_token_download(self, **kwargs):
+        """Portail client — téléchargement du PDF partagé (token)"""
+        return self.request("GET", "/accounting/documents/shared/{token}/download", **kwargs)
+
     def get_accounting_payments(self, **kwargs):
         """Lister les paiements"""
         return self.request("GET", "/accounting/payments", **kwargs)
