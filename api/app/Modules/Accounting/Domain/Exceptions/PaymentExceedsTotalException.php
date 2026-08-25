@@ -17,7 +17,7 @@ class PaymentExceedsTotalException extends DomainException
     {
         parent::__construct(
             sprintf(
-                'Paiement refusé : montant %.2f + déjà payé %.2f dépasse le total TTC %.2f du document.',
+                'PAYMENT_EXCEEDS_TOTAL: amount %.2f + already paid %.2f exceeds total %.2f',
                 $attempted,
                 $alreadyPaid,
                 $total

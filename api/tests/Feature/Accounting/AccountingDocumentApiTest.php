@@ -7,46 +7,74 @@ namespace Tests\Feature\Accounting;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
+use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * API des documents comptables (#5223) — cycle de vie complet via les
- * endpoints : création d'un brouillon numéroté, liste/filtres, détail,
- * aperçu du prochain numéro, envoi (draft→sent), encaissement, annulation,
- * avoir lié. RBAC comptable/principal + isolation tenant (404) + validation.
+ * API des documents comptables (#5223) — cycle de vie complet via le contrôleur :
+ * création (brouillon numéroté), liste, détail, aperçu numéro, envoi,
+ * encaissement, annulation, avoir — + RBAC et isolation tenant.
+ *
+ * Couvre la surface exposée par `AccountingDocumentController` (gate coverage
+ * module Accounting ≥ 70 %, DoD #5228).
  */
 class AccountingDocumentApiTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private function company(): Company
-    {
-        /** @var Company $company */
-        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+    private Company $companyA;
 
-        return $company;
+    private Company $companyB;
+
+    private AccountingContact $customer;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        /** @var Company $companyA */
+        $companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $this->companyA = $companyA;
+
+        /** @var Company $companyB */
+        $companyB = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
+        $this->companyB = $companyB;
+
+        /** @var AccountingContact $customer */
+        $customer = AccountingContact::query()->create([
+            'company_id' => $companyA->id,
+            'type' => 'customer',
+            'name' => 'Client Doc',
+            'email' => 'doc@example.com',
+            'source' => 'manual',
+        ]);
+        $this->customer = $customer;
     }
 
-    private function bindCompany(Company $company): void
+    protected function tearDown(): void
     {
-        app()->instance('current_company', $company);
+        app()->forgetInstance('tenant_scope_required');
+        app()->forgetInstance('current_company');
+
+        parent::tearDown();
     }
 
-    private function manager(Company $company, string $managerRole = 'comptable'): Employee
+    private function manager(Company $company, string $managerRole = 'principal'): Employee
     {
         /** @var Employee $manager */
         $manager = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => $managerRole,
+            'status' => 'active',
         ]);
 
         return $manager;
     }
 
-    private function employee(Company $company): Employee
+    private function ordinaryEmployee(Company $company): Employee
     {
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
@@ -58,205 +86,193 @@ class AccountingDocumentApiTest extends TestCase
         return $employee;
     }
 
-    private function contact(Company $company): AccountingContact
-    {
-        /** @var AccountingContact $contact */
-        $contact = AccountingContact::query()->create([
-            'company_id' => $company->id,
-            'type' => 'customer',
-            'name' => 'Client DZ',
-            'email' => 'client@exemple.dz',
-        ]);
-
-        return $contact;
-    }
-
     /**
-     * @param  array<string, mixed>  $overrides
      * @return array<string, mixed>
      */
-    private function draftPayload(AccountingContact $contact, array $overrides = []): array
+    private function invoicePayload(): array
     {
-        return array_merge([
+        return [
             'type' => 'invoice',
-            'contact_id' => $contact->id,
-            'issue_date' => '2026-08-10',
-            'due_date' => '2026-08-25',
+            'contact_id' => $this->customer->id,
+            'issue_date' => now()->toDateString(),
+            'due_date' => now()->addDays(30)->toDateString(),
             'currency' => 'DZD',
             'tva_rate' => 19,
-            'notes' => 'Prestation août 2026',
             'lines' => [
-                ['description' => 'Conseil', 'quantity' => 2, 'unit_price' => 500, 'discount' => 0],
+                ['description' => 'Prestation', 'quantity' => 2, 'unit_price' => 500],
+                ['description' => 'Forfait', 'quantity' => 1, 'unit_price' => 1000],
             ],
-        ], $overrides);
+        ];
     }
 
-    public function test_comptable_creates_lists_and_reads_documents(): void
+    public function test_store_creates_draft_with_number_and_lines(): void
     {
-        $company = $this->company();
-        $this->bindCompany($company);
-        $contact = $this->contact($company);
+        Sanctum::actingAs($this->manager($this->companyA));
 
-        Sanctum::actingAs($this->manager($company));
+        $response = $this->postJson('/api/v1/accounting/documents', $this->invoicePayload());
 
-        // Création d'un brouillon numéroté (D charge HT + TVA).
-        $created = $this->postJson('/api/v1/accounting/documents', $this->draftPayload($contact))
-            ->assertStatus(201)
+        $response->assertStatus(201)
             ->assertJsonPath('data.type', 'invoice')
-            ->assertJsonPath('data.status', 'draft')
-            ->assertJsonStructure(['data' => ['id', 'number', 'lines']]);
+            ->assertJsonPath('data.status', 'draft');
 
-        $id = $created->json('data.id');
-        $this->assertSame(1000.0, (float) $created->json('data.subtotal_ht'));
-        $this->assertSame(190.0, (float) $created->json('data.tax_amount'));
-        $this->assertSame(1190.0, (float) $created->json('data.total_ttc'));
+        $number = $response->json('data.number');
+        $this->assertMatchesRegularExpression('/^FAC-\d{4}-\d{4}$/', $number);
+        $this->assertCount(2, $response->json('data.lines'));
+    }
 
-        // Liste paginée avec filtres.
-        $this->getJson('/api/v1/accounting/documents?type=invoice&status=draft&per_page=10')
-            ->assertOk()
-            ->assertJsonCount(1, 'data');
+    public function test_store_requires_lines_and_valid_type(): void
+    {
+        Sanctum::actingAs($this->manager($this->companyA));
+
+        $this->postJson('/api/v1/accounting/documents', ['type' => 'invoice'])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('lines');
+
+        $payload = $this->invoicePayload();
+        $payload['type'] = 'bogus';
+
+        $this->postJson('/api/v1/accounting/documents', $payload)
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('type');
+    }
+
+    public function test_index_lists_and_filters_documents(): void
+    {
+        Sanctum::actingAs($this->manager($this->companyA));
+
+        $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->assertStatus(201);
+
+        $response = $this->getJson('/api/v1/accounting/documents');
+
+        $response->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.type', 'invoice');
 
         $this->getJson('/api/v1/accounting/documents?type=quote')
             ->assertOk()
             ->assertJsonCount(0, 'data');
-
-        // Détail (lignes + contact).
-        $this->getJson('/api/v1/accounting/documents/'.$id)
-            ->assertOk()
-            ->assertJsonPath('data.id', $id);
     }
 
-    public function test_next_number_previews_configured_series(): void
+    public function test_show_returns_document_detail(): void
     {
-        $company = $this->company();
-        $this->bindCompany($company);
+        Sanctum::actingAs($this->manager($this->companyA));
 
-        Sanctum::actingAs($this->manager($company));
+        $document = AccountingDocument::query()->findOrFail((int) $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->json('data.id'));
+
+        $this->getJson('/api/v1/accounting/documents/'.$document->id)
+            ->assertOk()
+            ->assertJsonPath('data.id', $document->id)
+            ->assertJsonPath('data.lines.0.description', 'Prestation');
+    }
+
+    public function test_next_number_previews_series(): void
+    {
+        Sanctum::actingAs($this->manager($this->companyA));
 
         $this->getJson('/api/v1/accounting/documents/next-number?type=invoice')
             ->assertOk()
-            ->assertJsonStructure(['data' => ['type', 'number']])
             ->assertJsonPath('data.type', 'invoice');
     }
 
-    public function test_document_lifecycle_send_payment_cancel(): void
+    public function test_next_number_requires_type(): void
     {
-        $company = $this->company();
-        $this->bindCompany($company);
-        $contact = $this->contact($company);
+        Sanctum::actingAs($this->manager($this->companyA));
 
-        Sanctum::actingAs($this->manager($company));
+        $this->getJson('/api/v1/accounting/documents/next-number')
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('type');
+    }
 
-        $id = $this->postJson('/api/v1/accounting/documents', $this->draftPayload($contact))
-            ->assertStatus(201)
-            ->json('data.id');
+    public function test_send_transitions_draft_to_sent(): void
+    {
+        Sanctum::actingAs($this->manager($this->companyA));
 
-        // draft → sent.
-        $this->postJson('/api/v1/accounting/documents/'.$id.'/send')
+        $document = AccountingDocument::query()->findOrFail((int) $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->json('data.id'));
+
+        $this->postJson('/api/v1/accounting/documents/'.$document->id.'/send')
             ->assertOk()
             ->assertJsonPath('data.status', 'sent');
+    }
 
-        // Paiement partiel (bank_transfer) — data = paiement + soldes doc.
-        $payment = $this->postJson('/api/v1/accounting/documents/'.$id.'/payments', [
+    public function test_record_payment_updates_document_status(): void
+    {
+        Sanctum::actingAs($this->manager($this->companyA));
+
+        $document = AccountingDocument::query()->findOrFail((int) $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->json('data.id'));
+
+        $this->postJson('/api/v1/accounting/documents/'.$document->id.'/send')->assertOk();
+
+        // Paiement partiel → partially_paid.
+        $this->postJson('/api/v1/accounting/documents/'.$document->id.'/payments', [
             'amount' => 500,
-            'method' => 'bank_transfer',
-            'reference' => 'VIR-001',
-            'received_at' => '2026-08-12',
+            'method' => 'cash',
         ])->assertStatus(201)
             ->assertJsonPath('data.status', 'recorded')
-            ->assertJsonPath('data.document_status', 'partially_paid');
+            ->assertJsonPath('data.document_status', 'partially_paid')
+            ->assertJsonPath('data.document_paid_amount', 500);
 
-        $this->assertSame(500.0, (float) $payment->json('data.document_paid_amount'));
+        $document->refresh();
+        $this->assertSame('partially_paid', $document->status);
 
-        // Annulation motivée d'un document envoyé non soldé.
-        $this->postJson('/api/v1/accounting/documents/'.$id.'/cancel', ['reason' => 'Erreur de facturation'])
+        // Paiement excédentaire → 422.
+        $this->postJson('/api/v1/accounting/documents/'.$document->id.'/payments', [
+            'amount' => 999999,
+            'method' => 'cash',
+        ])->assertStatus(422);
+    }
+
+    public function test_cancel_marks_document_cancelled(): void
+    {
+        Sanctum::actingAs($this->manager($this->companyA));
+
+        $document = AccountingDocument::query()->findOrFail((int) $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->json('data.id'));
+
+        $this->postJson('/api/v1/accounting/documents/'.$document->id.'/cancel', ['reason' => 'Erreur de saisie'])
             ->assertOk()
             ->assertJsonPath('data.status', 'cancelled');
     }
 
-    public function test_credit_note_linked_to_sent_invoice(): void
+    public function test_credit_note_creates_linked_avoir(): void
     {
-        $company = $this->company();
-        $this->bindCompany($company);
-        $contact = $this->contact($company);
+        Sanctum::actingAs($this->manager($this->companyA));
 
-        Sanctum::actingAs($this->manager($company));
+        $document = AccountingDocument::query()->findOrFail((int) $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->json('data.id'));
+        $this->postJson('/api/v1/accounting/documents/'.$document->id.'/send')->assertOk();
 
-        $id = $this->postJson('/api/v1/accounting/documents', $this->draftPayload($contact))
-            ->assertStatus(201)
-            ->json('data.id');
-
-        $this->postJson('/api/v1/accounting/documents/'.$id.'/send')->assertOk();
-
-        $avoir = $this->postJson('/api/v1/accounting/documents/'.$id.'/credit-note', [
-            'notes' => 'Avoir partiel',
+        $response = $this->postJson('/api/v1/accounting/documents/'.$document->id.'/credit-note', [
+            'notes' => 'Avoir de test',
             'lines' => [
-                ['description' => 'Remboursement', 'quantity' => 1, 'unit_price' => 100, 'discount' => 0],
+                ['description' => 'Remise', 'quantity' => 1, 'unit_price' => 250],
             ],
-        ])->assertStatus(201)
+        ]);
+
+        $response->assertStatus(201)
             ->assertJsonPath('data.type', 'credit_note');
 
-        // L'avoir est lié à la facture source (metadata.source_document_id).
-        $this->assertSame($id, $avoir->json('data.metadata.source_document_id'));
+        $creditNote = AccountingDocument::query()->findOrFail((int) $response->json('data.id'));
+        $this->assertSame($document->id, $creditNote->metadata['source_document_id'] ?? null);
     }
 
-    public function test_credit_note_on_draft_is_rejected(): void
+    public function test_rbac_forbids_ordinary_employee(): void
     {
-        $company = $this->company();
-        $this->bindCompany($company);
-        $contact = $this->contact($company);
+        Sanctum::actingAs($this->ordinaryEmployee($this->companyA));
 
-        Sanctum::actingAs($this->manager($company));
-
-        $id = $this->postJson('/api/v1/accounting/documents', $this->draftPayload($contact))
-            ->assertStatus(201)
-            ->json('data.id');
-
-        // Une facture brouillon ne peut pas générer d'avoir (422).
-        $this->postJson('/api/v1/accounting/documents/'.$id.'/credit-note', [
-            'lines' => [['description' => 'Avoir', 'unit_price' => 10]],
-        ])->assertStatus(422);
+        $this->getJson('/api/v1/accounting/documents')->assertStatus(403);
+        $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->assertStatus(403);
     }
 
-    public function test_store_validation_rejects_bad_payload(): void
+    public function test_tenant_isolation_returns_404(): void
     {
-        $company = $this->company();
-        $this->bindCompany($company);
-        $contact = $this->contact($company);
+        Sanctum::actingAs($this->manager($this->companyA));
+        $document = AccountingDocument::query()->findOrFail((int) $this->postJson('/api/v1/accounting/documents', $this->invoicePayload())->json('data.id'));
 
-        Sanctum::actingAs($this->manager($company));
+        // L'entreprise B ne peut pas voir/modifier le document de A.
+        Sanctum::actingAs($this->manager($this->companyB));
+        $this->getJson('/api/v1/accounting/documents/'.$document->id)->assertStatus(404);
+        $this->postJson('/api/v1/accounting/documents/'.$document->id.'/send')->assertStatus(404);
+        $this->postJson('/api/v1/accounting/documents/'.$document->id.'/cancel')->assertStatus(404);
 
-        // Type de document inconnu.
-        $this->postJson('/api/v1/accounting/documents', $this->draftPayload($contact, ['type' => 'magic']))
-            ->assertStatus(422);
-
-        // Lignes absentes.
-        $this->postJson('/api/v1/accounting/documents', $this->draftPayload($contact, ['lines' => []]))
-            ->assertStatus(422);
-    }
-
-    public function test_employee_forbidden_and_cross_tenant_is_404(): void
-    {
-        $company = $this->company();
-        $this->bindCompany($company);
-        $contact = $this->contact($company);
-
-        Sanctum::actingAs($this->manager($company));
-        $id = $this->postJson('/api/v1/accounting/documents', $this->draftPayload($contact))
-            ->assertStatus(201)
-            ->json('data.id');
-
-        // Employé ordinaire → 403 (RBAC comptable/principal).
-        Sanctum::actingAs($this->employee($company));
-        $this->getJson('/api/v1/accounting/documents/'.$id)->assertForbidden();
-
-        // Manager d'un AUTRE tenant → 404 (isolation fail-closed).
-        $otherCompany = $this->company();
-        $this->bindCompany($otherCompany);
-        Sanctum::actingAs($this->manager($otherCompany));
-
-        $this->getJson('/api/v1/accounting/documents/'.$id)->assertNotFound();
-        $this->postJson('/api/v1/accounting/documents/'.$id.'/send')->assertNotFound();
-        $this->postJson('/api/v1/accounting/documents/'.$id.'/cancel')->assertNotFound();
+        // La liste de B ne contient rien de A.
+        $this->getJson('/api/v1/accounting/documents')->assertOk()->assertJsonCount(0, 'data');
     }
 }

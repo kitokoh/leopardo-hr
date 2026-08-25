@@ -173,7 +173,7 @@ class LeopardoClient:
         return self.request("POST", "/accounting/documents/{document}/credit-note", **kwargs)
 
     def post_accounting_documents_by_document_payments(self, **kwargs):
-        """Enregistrer un paiement"""
+        """Enregistrer un encaissement (→ partiellement paye / paye, #5223)"""
         return self.request("POST", "/accounting/documents/{document}/payments", **kwargs)
 
     def post_accounting_documents_by_document_send(self, **kwargs):
@@ -1445,7 +1445,7 @@ class LeopardoClient:
         return self.request("POST", "/expense-claims/{expenseClaim}/reject", **kwargs)
 
     def put_expense_claims_by_expenseclaim_reject(self, **kwargs):
-        """Rejeter une note de frais (deprecie)"""
+        """Refuser une note de frais (déprécié — utiliser POST)"""
         return self.request("PUT", "/expense-claims/{expenseClaim}/reject", **kwargs)
 
     def put_expense_claims_by_expenseclaim_submit(self, **kwargs):

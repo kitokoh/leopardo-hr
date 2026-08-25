@@ -254,7 +254,7 @@ class DepartureNoticeTest extends TestCase
             'employee_id' => $employee->id,
             'departure_type' => 'resignation',
             'reason' => 'Test',
-            'last_work_day' => Carbon::now(),
+            'last_work_day' => Carbon::now()->toDateString(),
             'notice_served' => $noticeServed,
             'notice_days_served' => $daysServed,
             'departed_at' => Carbon::now(),

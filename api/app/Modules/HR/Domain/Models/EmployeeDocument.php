@@ -111,7 +111,8 @@ class EmployeeDocument extends Model
         return $this->belongsTo(Employee::class, 'uploaded_by');
     }
 
-    /** @param Builder<static> $query
+    /**
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeForEmployee(Builder $query, int $employeeId): Builder

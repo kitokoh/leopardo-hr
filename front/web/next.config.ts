@@ -169,6 +169,17 @@ const nextConfig: NextConfig = {
 
   // Redirects for old image paths and SEO
   redirects: async () => [
+    // ADR-0016 Phase 5 (#5356) + rename UI (#5440) : /smart-attendance → /attendance/geo
+    {
+      source: "/smart-attendance/:path*",
+      destination: "/attendance/geo/:path*",
+      permanent: true,
+    },
+    {
+      source: "/smart-attendance",
+      destination: "/attendance/geo",
+      permanent: true,
+    },
     {
       source: "/images/old/:path*",
       destination: "/images/:path*",

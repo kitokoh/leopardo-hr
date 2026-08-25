@@ -355,53 +355,6 @@ paths:
           description: "Configuration mise a jour"
         "401":
           $ref: "#/components/responses/Error401"
-  /accounting/documents/{document}/payments:
-    post:
-      tags: ["Accounting"]
-      summary: "Enregistrer un paiement"
-      description: "Enregistre un paiement sur un document emis. Regle jamais paye > total (422 PAYMENT_EXCEEDS_TOTAL). Met a jour paid_amount + statut du document (partially_paid/paid). Issue #5229."
-      parameters:
-        - name: document
-          in: path
-          required: true
-          description: "ID du document comptable."
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [amount, method]
-              properties:
-                amount: { type: number, format: double, minimum: 0.01 }
-                method: { type: string, enum: [cash, bank_transfer, check, card, other] }
-                reference: { type: string, nullable: true, maxLength: 255 }
-                received_at: { type: string, format: date, nullable: true }
-      responses:
-        "201":
-          description: "Paiement enregistre (statut recorded)"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      id: { type: integer }
-                      document_id: { type: integer }
-                      amount: { type: number, format: double }
-                      method: { type: string }
-                      status: { type: string }
-                      document_paid_amount: { type: number, format: double }
-                      document_status: { type: string }
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-        "422":
-          description: "Montant > total (PAYMENT_EXCEEDS_TOTAL) ou document non emis (PAYMENT_ON_UNSENT_DOCUMENT)."
   /attendance/employees/{employeeId}/preference:
     get:
       tags: ["Attendance"]
@@ -13896,6 +13849,40 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /accounting/documents/{document}/payments:
+    post:
+      tags: ["Accounting"]
+      summary: "Enregistrer un encaissement (→ partiellement paye / paye, #5223)"
+      description: "Cumul des paiements borne au total TTC. Un document paye ou annule refuse tout paiement. Statut paye jamais atteint sans paiement."
+      parameters:
+        - name: document
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount, method]
+              properties:
+                amount: { type: number, minimum: 0, exclusiveMinimum: true }
+                method: { type: string, enum: [cash, bank_transfer, check, card, other] }
+                received_at: { type: string, format: date }
+                reference: { type: string, maxLength: 120 }
+      responses:
+        "201":
+          description: "Paiement enregistre"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /accounting/documents/{document}/cancel:
     post:
       tags: ["Accounting"]
@@ -15389,96 +15376,31 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
-    put:
-      tags: ["Expenses"]
-      summary: "Rejeter une note de frais (deprecie)"
-      description: "Alias deprecie de POST /expense-claims/{expenseClaim}/reject (issue #4930). Conservé pour compatibilité clients existants."
-      deprecated: true
-      parameters:
-        - name: expenseClaim
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                rejection_reason:
-                  type: string
-      responses:
-        "200":
-          description: "Note rejetee"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-
-  /expense-claims/{expenseClaim}/accounting-entries:
-    get:
-      tags: ["Expenses"]
-      summary: "Ecritures comptables d'une note de frais approuvee (#5235)"
-      description: "Lignes d'ecriture (debit charge / credit personnel 425) generees automatiquement a l'approbation de la note (observer Eloquent) depuis le module Expense. Reserve aux managers principal/comptable, isolation tenant (404)."
-      parameters:
-        - name: expenseClaim
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Liste des ecritures de la note"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/ExpenseAccountingEntry"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-        "404":
-          description: "Note introuvable (isolation tenant)"
-
-  /expense-claims/{expenseClaim}/accounting-entries/regenerate:
-    post:
-      tags: ["Expenses"]
-      summary: "Regenerer les ecritures comptables d'une note (comptable, idempotent)"
-      description: "Remplace les lignes existantes de la note (contrainte unique note/compte). Reserve au role comptable (403 sinon). Refuse un journal desequilibre (422)."
-      parameters:
-        - name: expenseClaim
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Regeneration effectuee"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  expense_claim_id: { type: integer }
-                  generated_lines: { type: integer }
-                  balance: { type: number, format: float }
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          description: "Role comptable requis"
-        "404":
-          description: "Note introuvable (isolation tenant)"
-        "422":
-          $ref: "#/components/responses/Validation422"
 
   # =============================================
   # ITERATION 33.4 — ADMIN, INTEGRATIONS
   # =============================================
 
   # --- Approvals ---
+    put:
+      tags: ["Deprecated"]
+      summary: "Refuser une note de frais (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
+
   /approval-workflows:
     get:
       tags: ["Approvals"]
@@ -19939,6 +19861,69 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /expense-claims/{expenseClaim}/accounting-entries:
+    get:
+      tags: ["Expenses"]
+      summary: "Ecritures comptables d'une note de frais approuvee (#5235)"
+      description: "Lignes d'ecriture (debit charge / credit personnel 425) generees automatiquement a l'approbation de la note (observer Eloquent) depuis le module Expense. Reserve aux managers principal/comptable, isolation tenant (404)."
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des ecritures de la note"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ExpenseAccountingEntry"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          description: "Note introuvable (isolation tenant)"
+  /expense-claims/{expenseClaim}/accounting-entries/regenerate:
+    post:
+      tags: ["Expenses"]
+      summary: "Regenerer les ecritures comptables d'une note (comptable, idempotent)"
+      description: "Remplace les lignes existantes de la note (contrainte unique note/compte). Reserve au role comptable (403 sinon). Refuse un journal desequilibre (422)."
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Regeneration effectuee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  expense_claim_id: { type: integer }
+                  generated_lines: { type: integer }
+                  balance: { type: number, format: float }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Role comptable requis"
+        "404":
+          description: "Note introuvable (isolation tenant)"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  # =============================================
+  # ITERATION 33.4 — ADMIN, INTEGRATIONS
+  # =============================================
+
+  # --- Approvals ---
 components:
   securitySchemes:
     BearerAuth:
@@ -25784,21 +25769,6 @@ components:
           type: string
           format: date-time
 
-    ExpenseAccountingEntry:
-      type: object
-      properties:
-        id: { type: integer }
-        expense_claim_id: { type: integer }
-        employee_id: { type: integer, nullable: true }
-        date: { type: string, format: date }
-        account_code: { type: string }
-        account_label: { type: string }
-        debit: { type: number, format: float }
-        credit: { type: number, format: float }
-        reference: { type: string }
-        created_by: { type: integer, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
-
     StoreExpenseClaimRequest:
       type: object
       required: [title, items]
@@ -26236,3 +26206,18 @@ components:
         duration_days: { type: integer, minimum: 1, maximum: 5 }
         confirmed: { type: boolean, default: true }
         source: { type: string, enum: [manual, api, computed], default: manual }
+
+    ExpenseAccountingEntry:
+      type: object
+      properties:
+        id: { type: integer }
+        expense_claim_id: { type: integer }
+        employee_id: { type: integer, nullable: true }
+        date: { type: string, format: date }
+        account_code: { type: string }
+        account_label: { type: string }
+        debit: { type: number, format: float }
+        credit: { type: number, format: float }
+        reference: { type: string }
+        created_by: { type: integer, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }

@@ -98,7 +98,9 @@ class EmployeeDocumentTest extends TestCase
         // Sans filtre : tous les documents du tenant A uniquement.
         $all = $this->getJson('/api/v1/employee-documents');
         $all->assertOk()->assertJsonCount(2, 'data');
-        $ids = collect($all->json('data'))->pluck('id')->all();
+        /** @var list<array{id: int}> $documents */
+        $documents = $all->json('data');
+        $ids = collect($documents)->pluck('id')->all();
         $this->assertNotContains($otherDoc->id, $ids);
     }
 
@@ -163,8 +165,7 @@ class EmployeeDocumentTest extends TestCase
     {
         [$company, $manager, $employee] = $this->createActors();
 
-        // Une ligne « missing » ne satisfait pas le type requis : le type reste
-        // compté manquant, comme ceux sans ligne du tout (docblock du service).
+        // Une ligne « missing » ne satisfait pas le type requis.
         $this->makeDocument($company, $employee, 'contract_signed', 'missing');
 
         Sanctum::actingAs($manager);
@@ -172,6 +173,9 @@ class EmployeeDocumentTest extends TestCase
         $this->getJson('/api/v1/employees/'.$employee->id)
             ->assertOk()
             ->assertJsonPath('data.documents_status.complete', false)
+            // Statut actif → requis = [contract_signed, employee_file] : la
+            // ligne « missing » ne satisfait NI l'un NI l'autre (seul
+            // contract_signed a une ligne, et elle est « missing »).
             ->assertJsonPath('data.documents_status.missing', ['contract_signed', 'employee_file']);
     }
 

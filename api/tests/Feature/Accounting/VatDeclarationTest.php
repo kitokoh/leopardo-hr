@@ -250,10 +250,7 @@ class VatDeclarationTest extends TestCase
         $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
         $response->assertHeader('Content-Disposition', 'attachment; filename="vat-declaration-2026-08.csv"');
 
-        $csv = $response->getContent();
-        if ($csv === false) {
-            $this->fail('La réponse CSV de la déclaration TVA est vide.');
-        }
+        $csv = (string) $response->getContent();
 
         $this->assertStringContainsString('periode,2026-08,devise,DZD', $csv);
         $this->assertStringContainsString('type,taux,assiette_ht,taxe,total_ttc', $csv);

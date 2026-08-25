@@ -29,15 +29,32 @@ class ApiClient {
   final AppPreferences _preferences;
   final VoidCallback? onUnauthorized;
 
+  /// Cache ETag/304 en mémoire pour les GET (RTMX #5407).
+  ///
+  /// Clé = URI complète de la requête (path + query triée). Une entrée n'est
+  /// créée que si le serveur répond 2xx avec un header `ETag` ; les relectures
+  /// envoient `If-None-Match` et un 304 est résolu avec le corps caché. Le
+  /// cache est vidé à la déconnexion (401) et via [clearHttpCache] (logout
+  /// explicite). Sûreté : un 304 n'est servi que si l'ETag correspond — pour
+  /// un autre utilisateur le serveur renvoie 200 + un corps différent (ETag
+  /// différent) qui remplace l'entrée : aucune fuite inter-session possible.
+  final Map<String, _HttpCacheEntry> _httpCache = {};
+
   ApiClient(this._storage, this._preferences, {this.onUnauthorized})
-    : _dio = Dio(
-        BaseOptions(
-          baseUrl: resolveBaseUrl(),
-          connectTimeout: _defaultTimeout,
-          receiveTimeout: _defaultTimeout,
-          headers: {'Accept': 'application/json'},
-        ),
-      ) {
+      : _dio = Dio(
+          BaseOptions(
+            baseUrl: resolveBaseUrl(),
+            connectTimeout: _defaultTimeout,
+            receiveTimeout: _defaultTimeout,
+            headers: {'Accept': 'application/json'},
+            // RTMX (#5407) : un 304 Not Modified (GET conditionnel, ETag) est un
+            // succès dont le corps est servi depuis le cache local — sans cette
+            // extension, Dio le transformerait en DioException.badResponse.
+            validateStatus: (status) =>
+                status != null &&
+                ((status >= 200 && status < 300) || status == 304),
+          ),
+        ) {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -72,6 +89,10 @@ class ApiClient {
                 onUnauthorized!();
               }
             }
+            // RTMX (#5407) : le cache ETag est scopé à la session courante —
+            // on le vide à la révocation d'authentification (les deux
+            // sessions partagent l'instance ApiClient).
+            _httpCache.clear();
           }
           // #4960 : on ne convertit PAS ici (l'ancien `_handleError` jetait
           // une ApiException, ce qui neutralisait la classification et donc
@@ -99,6 +120,10 @@ class ApiClient {
   }
 
   Dio get dio => _dio;
+
+  /// Vide le cache ETag/304 (RTMX #5407). À appeler à la déconnexion
+  /// explicite (logout) — le cache est déjà vidé automatiquement sur 401.
+  void clearHttpCache() => _httpCache.clear();
 
   static String resolveBaseUrl() {
     const configured = String.fromEnvironment('API_BASE_URL', defaultValue: '');
@@ -164,8 +189,7 @@ class ApiClient {
       'PUT',
       'DELETE',
     }.contains(normalizedMethod);
-    final maxRetries =
-        maxRetriesOverride ??
+    final maxRetries = maxRetriesOverride ??
         (isIdempotentMethod
             ? (isLoginRequest ? _loginMaxRetries : _defaultMaxRetries)
             : 0);
@@ -188,6 +212,21 @@ class ApiClient {
             'X-User-Session': 'true',
           };
         }
+        // RTMX (#5407) : GET conditionnels — on envoie If-None-Match si un
+        // ETag est déjà en cache pour cette URL ; un 304 sera résolu avec le
+        // corps caché juste après (validateStatus étendu).
+        final isGet = normalizedMethod == 'GET';
+        final httpCacheKey =
+            isGet ? _httpCacheKey(path, queryParameters) : null;
+        if (httpCacheKey != null) {
+          final cached = _httpCache[httpCacheKey];
+          if (cached != null) {
+            requestOptions.headers = {
+              ...?requestOptions.headers,
+              'If-None-Match': cached.etag,
+            };
+          }
+        }
         final response = await _dio.request<T>(
           path,
           data: data,
@@ -196,6 +235,33 @@ class ApiClient {
         );
 
         final statusCode = response.statusCode ?? 0;
+
+        if (isGet && statusCode == 304 && httpCacheKey != null) {
+          final cached = _httpCache[httpCacheKey];
+          if (cached != null) {
+            // 304 Not Modified : le corps serveur est vide, on sert le corps
+            // caché (l'ETag a été validé par le serveur, le contenu est
+            // identique à celui de la 2xx initiale).
+            return Response<T>(
+              requestOptions: response.requestOptions,
+              statusCode: 304,
+              headers: response.headers,
+              data: cached.data as T,
+              extra: response.extra,
+            );
+          }
+        }
+
+        if (isGet &&
+            httpCacheKey != null &&
+            statusCode >= 200 &&
+            statusCode < 300) {
+          final etag = response.headers.value('etag');
+          if (etag != null && etag.isNotEmpty) {
+            _httpCache[httpCacheKey] = _HttpCacheEntry(etag, response.data);
+          }
+        }
+
         if (_isColdStartStatus(statusCode) && attempt < maxRetries) {
           onRetry?.call(
             attempt + 1,
@@ -214,8 +280,7 @@ class ApiClient {
         lastError = e;
 
         final isColdStart = _isColdStartStatus(e.response?.statusCode ?? 0);
-        final isTimeout =
-            e.type == DioExceptionType.connectionTimeout ||
+        final isTimeout = e.type == DioExceptionType.connectionTimeout ||
             e.type == DioExceptionType.receiveTimeout ||
             e.type == DioExceptionType.sendTimeout;
         final isNetwork = e.type == DioExceptionType.connectionError;
@@ -300,8 +365,7 @@ class ApiClient {
       } on DioException catch (e) {
         lastError = e;
 
-        final isRetryable =
-            _isColdStartStatus(e.response?.statusCode ?? 0) ||
+        final isRetryable = _isColdStartStatus(e.response?.statusCode ?? 0) ||
             e.type == DioExceptionType.connectionTimeout ||
             e.type == DioExceptionType.receiveTimeout ||
             e.type == DioExceptionType.sendTimeout ||
@@ -341,9 +405,26 @@ class ApiClient {
   bool _isColdStartStatus(int statusCode) =>
       statusCode == 502 || statusCode == 503 || statusCode == 504;
 
+  /// Clé de cache ETag déterministe : path + query triée (l'ordre des
+  /// paramètres ne doit pas créer de doublons de cache). Une query portée par
+  /// le path (ex. `geo-sessions?status=...`) reste dans la clé.
+  static String _httpCacheKey(
+    String path,
+    Map<String, dynamic>? queryParameters,
+  ) {
+    if (queryParameters == null || queryParameters.isEmpty) {
+      return path;
+    }
+    final sorted = (queryParameters.entries.toList()
+          ..sort((a, b) => a.key.compareTo(b.key)))
+        .map((e) => '${e.key}=${e.value}')
+        .join('&');
+    return '$path?$sorted';
+  }
+
   Future<void> _backoff(int attempt) => Future.delayed(
-    Duration(milliseconds: (3000 * (attempt + 1)).clamp(0, 10000)),
-  );
+        Duration(milliseconds: (3000 * (attempt + 1)).clamp(0, 10000)),
+      );
 
   DioException _handleError(DioException e) {
     // #4408 : messages de repli localisés par la locale appareil (catalogue
@@ -358,8 +439,7 @@ class ApiClient {
       // Issue #2743 — un 403 n'est pas toujours une suspension : on distingue
       // la suspension explicite (payload) du simple défaut de permission.
       final data = e.response?.data;
-      final isSuspended =
-          data is Map &&
+      final isSuspended = data is Map &&
           (data['suspended'] == true || data['error'] == 'ACCOUNT_SUSPENDED');
       message = localizedErrorCode(
         isSuspended ? 'ACCOUNT_SUSPENDED' : 'FORBIDDEN',
@@ -386,4 +466,13 @@ class ApiClient {
 
     throw ApiException(message, statusCode: e.response?.statusCode, code: code);
   }
+}
+
+/// Entrée du cache ETag/304 (RTMX #5407) : l'ETag renvoyé par le serveur et
+/// le corps décodé de la réponse 2xx associée.
+class _HttpCacheEntry {
+  _HttpCacheEntry(this.etag, this.data);
+
+  final String etag;
+  final dynamic data;
 }
