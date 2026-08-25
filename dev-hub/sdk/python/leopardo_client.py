@@ -608,6 +608,10 @@ class LeopardoClient:
         """Approuver une correction de pointage (déprécié — utiliser POST)"""
         return self.request("PUT", "/attendance/corrections/{correction}/approve", **kwargs)
 
+    def get_attendance_corrections_by_correction_proof(self, **kwargs):
+        """Télécharger le justificatif d'une demande de correction"""
+        return self.request("GET", "/attendance/corrections/{correction}/proof", **kwargs)
+
     def post_attendance_corrections_by_correction_reject(self, **kwargs):
         """Refuser une demande de correction de pointage"""
         return self.request("POST", "/attendance/corrections/{correction}/reject", **kwargs)
@@ -2556,9 +2560,25 @@ class LeopardoClient:
         """Planifier un entretien"""
         return self.request("POST", "/recruitment/applicants/{applicant}/interviews", **kwargs)
 
+    def delete_recruitment_applicants_by_id(self, **kwargs):
+        """Supprimer une candidature (manager)"""
+        return self.request("DELETE", "/recruitment/applicants/{id}", **kwargs)
+
+    def get_recruitment_applicants_by_id(self, **kwargs):
+        """Détail d'une candidature (manager)"""
+        return self.request("GET", "/recruitment/applicants/{id}", **kwargs)
+
     def patch_recruitment_applicants_by_id_status(self, **kwargs):
         """Changer le statut d'une candidature (principal/rh)"""
         return self.request("PATCH", "/recruitment/applicants/{id}/status", **kwargs)
+
+    def delete_recruitment_interviews_by_id(self, **kwargs):
+        """Supprimer un entretien (manager)"""
+        return self.request("DELETE", "/recruitment/interviews/{id}", **kwargs)
+
+    def patch_recruitment_interviews_by_id_feedback(self, **kwargs):
+        """Saisir le feedback d'un entretien (le clôture)"""
+        return self.request("PATCH", "/recruitment/interviews/{id}/feedback", **kwargs)
 
     def delete_recruitment_interviews_by_interview(self, **kwargs):
         """Supprimer un entretien (manager)"""
@@ -2579,6 +2599,10 @@ class LeopardoClient:
     def post_recruitment_jobs(self, **kwargs):
         """Creer une offre d'emploi"""
         return self.request("POST", "/recruitment/jobs", **kwargs)
+
+    def delete_recruitment_jobs_by_id(self, **kwargs):
+        """Supprimer une offre d'emploi (manager)"""
+        return self.request("DELETE", "/recruitment/jobs/{id}", **kwargs)
 
     def delete_recruitment_jobs_by_jobposting(self, **kwargs):
         """Supprimer une offre d'emploi (manager)"""

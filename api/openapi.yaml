@@ -19593,6 +19593,112 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /attendance/corrections/{correction}/proof:
+    get:
+      tags: ["Attendance"]
+      summary: "Télécharger le justificatif d'une demande de correction"
+      parameters:
+        - name: correction
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Fichier justificatif (jpg/jpeg/png/pdf/heic)"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "403":
+          description: "Non autorisé (ni le propriétaire ni un manager du tenant)"
+        "404":
+          description: "Correction introuvable ou sans justificatif"
+  /recruitment/jobs/{id}:
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer une offre d'emploi (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Offre supprimée"
+        "401":
+          $ref: "#/components/responses/Error401"
+  /recruitment/applicants/{id}:
+    get:
+      tags: ["Recruitment"]
+      summary: "Détail d'une candidature (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Candidature"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer une candidature (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Candidature supprimée"
+        "401":
+          $ref: "#/components/responses/Error401"
+  /recruitment/interviews/{id}/feedback:
+    patch:
+      tags: ["Recruitment"]
+      summary: "Saisir le feedback d'un entretien (le clôture)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [feedback]
+              properties:
+                feedback:
+                  type: string
+                  maxLength: 5000
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+      responses:
+        "200":
+          description: "Entretien clôturé (status=completed)"
+        "401":
+          $ref: "#/components/responses/Error401"
+  /recruitment/interviews/{id}:
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer un entretien (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Entretien supprimé"
+        "401":
+          $ref: "#/components/responses/Error401"
 components:
   securitySchemes:
     BearerAuth:
