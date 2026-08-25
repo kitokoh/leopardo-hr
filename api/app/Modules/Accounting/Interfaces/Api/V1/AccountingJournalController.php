@@ -78,7 +78,7 @@ final class AccountingJournalController extends Controller
         Validator::make(['period' => $period], [
             'period' => ['required', 'string', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/'],
         ], [
-            'period.regex' => 'La période doit être au format YYYY-MM (ex. 2026-08).',
+            'period.regex' => __('accounting.validation.period_invalid'),
         ])->validate();
 
         $closed = $this->journal->closePeriod($period, $request->user() !== null ? (string) $request->user()->id : null);
