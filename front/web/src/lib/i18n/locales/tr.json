@@ -3107,5 +3107,29 @@
     "retry": "Yeniden dene",
     "errorGeneric": "Bir hata oluştu.",
     "fecError": "FEC dışa aktarılamadı."
+  },
+  "shareAccesses": {
+    "title": "Erişim geçmişi",
+    "subtitle": "RGPD denetimi: paylaşılan bir belgeyi istemci portalında kim, ne zaman ve hangi IP adresinden görüntüledi veya indirdi.",
+    "documentLabel": "Belge",
+    "selectDocument": "Bir belge seçin…",
+    "noDocumentSelected": "Erişim geçmişini görüntülemek için bir belge seçin.",
+    "actionHeader": "İşlem",
+    "dateHeader": "Tarih",
+    "ipHeader": "IP adresi",
+    "userAgentHeader": "Tarayıcı",
+    "requestIdHeader": "İlişkilendirme kimliği",
+    "actionInfo": "Görüntüleme",
+    "actionDownload": "İndirme",
+    "emptyTitle": "Kayıtlı erişim yok",
+    "emptyBody": "Bu belge istemci portalında hiç görüntülenmedi veya indirilmedi.",
+    "loadError": "Erişimler yüklenemedi. Birazdan tekrar deneyin.",
+    "loadDocumentsError": "Belgeler yüklenemedi. Birazdan tekrar deneyin.",
+    "loading": "Yükleniyor…",
+    "previousPage": "Önceki sayfa",
+    "nextPage": "Sonraki sayfa",
+    "pageOf": "Sayfa {current} / {total}",
+    "total": "{count} erişim",
+    "retry": "Yeniden dene"
   }
 }

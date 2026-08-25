@@ -1409,6 +1409,11 @@ Note 2026-08-24 (issue #5288) : activation guidée de la Comptabilité — `GET/
 - Scénarios à vérifier : GET avant activation (check-list vide), POST complet puis relecture GET (check-list remplie), idempotence du POST (2e appel), RBAC employé → 403, isolation tenant.
 - Couverture : `tests/Feature/Accounting/AccountingActivationTest.php` — OpenAPI documenté, SDK régénérés.
 
+Note 2026-08-25 (issue #5522) : audit des accès au portail client — `GET /api/v1/accounting/documents/shared/{document}/accesses`.
+- `GET /api/v1/accounting/documents/shared/{document}/accesses` : liste paginée (date décroissante) des événements `accounting.share.info` / `accounting.share.download` pour TOUS les partages du document (qui a consulté/téléchargé, quand, depuis quelle IP — réponse à incident RGPD loi 18-07) — RBAC `api.manager:comptable,principal`, employé → 403, non authentifié → 401, document inconnu ou cross-tenant → 404 (fail-closed), `per_page` 1-100, le `share_token` n'est jamais exposé.
+- Scénarios à vérifier : principal 200 (2 accès réels info+download, ordre décroissant, champs action/module/request_id/ip_address/user_agent/created_at), comptable 200, employé 403, 401, 404 document inconnu, 404 cross-tenant, pagination (5 accès → 3 pages, `meta.total`).
+- Couverture : `tests/Feature/Accounting/ShareAccessAuditTest.php` (7 tests) — OpenAPI documenté, miroir + SDK régénérés.
+
 Note 2026-08-24 (issue #5271) : déclaration TVA simplifiée par période — `GET /api/v1/accounting/reports/vat-declaration`.
 - `GET /api/v1/accounting/reports/vat-declaration?period=YYYY-MM[&format=json|csv]` : déclaration mensuelle du tenant courant (RBAC `api.manager:comptable,principal`, employé → 403) — TVA collectée (factures + reçus), déductible (avoirs), net, détail par taux (assiette HT, taxe, TTC) ; brouillons et annulés exclus ; période invalide → 422 ; `format=csv` → export `vat-declaration-<period>.csv`.
 - Multi-taux TVA par pays dans les défauts settings (DZ 19/9, MA 20, TN 19, SN 18, CI 18, TR 20, FR 20…) + mentions légales par défaut par pays.
