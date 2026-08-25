@@ -6,7 +6,6 @@ namespace App\Modules\Accounting\Infrastructure\Services;
 
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentShare;
-use App\Modules\Accounting\Domain\Models\DocumentShareLookup;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -35,13 +34,6 @@ final class DocumentShareService
             'share_token' => $this->uniqueToken(),
             'shared_with_email' => $email,
             'expires_at' => $expiresAt,
-        ]);
-
-        // Issue #5428 — lookup public token → company : résolution O(1) des
-        // endpoints publics sans itérer toutes les entreprises actives.
-        DocumentShareLookup::query()->create([
-            'share_token' => $share->share_token,
-            'company_id' => $share->company_id,
         ]);
 
         return $share;
