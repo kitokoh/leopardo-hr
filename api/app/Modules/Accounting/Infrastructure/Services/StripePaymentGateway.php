@@ -147,6 +147,9 @@ final class StripePaymentGateway implements PaymentGatewayInterface
         return is_array($data) ? $data : null;
     }
 
+    /**
+     * @param  array<string, mixed>  $payload
+     */
     public function extractPayment(array $payload): ?PaymentWebhookData
     {
         $type = (string) ($payload['type'] ?? '');

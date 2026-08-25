@@ -50,6 +50,8 @@ interface PaymentGatewayInterface
     /**
      * Extrait les informations de paiement d'un payload vérifié.
      * Retourne null pour un payload sans objet de paiement exploitable.
+     *
+     * @param  array<string, mixed>  $payload
      */
     public function extractPayment(array $payload): ?PaymentWebhookData;
 }

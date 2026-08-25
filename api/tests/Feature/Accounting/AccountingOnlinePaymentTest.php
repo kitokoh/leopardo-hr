@@ -265,7 +265,7 @@ class AccountingOnlinePaymentTest extends TestCase
      *
      * @param  array<string, mixed>  $data
      */
-    private function postChargilyWebhook(string $url, array $data): \Illuminate\Testing\TestResponse
+    private function postChargilyWebhook(string $url, array $data)
     {
         $payload = json_encode($data, JSON_THROW_ON_ERROR);
 
@@ -275,7 +275,7 @@ class AccountingOnlinePaymentTest extends TestCase
     /**
      * @param  array<string, mixed>  $data
      */
-    private function postStripeWebhook(string $url, array $data): \Illuminate\Testing\TestResponse
+    private function postStripeWebhook(string $url, array $data)
     {
         $payload = json_encode($data, JSON_THROW_ON_ERROR);
 
