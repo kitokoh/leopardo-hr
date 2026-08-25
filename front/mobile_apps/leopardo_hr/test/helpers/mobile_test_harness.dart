@@ -8,8 +8,8 @@ import 'package:leopardo_core/core/services/push_notification_service.dart';
 import 'package:leopardo_hr/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
-import 'package:leopardo_hr/features/auth/data/auth_repository.dart';
-import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/auth/data/auth_repository.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_core/models/employee.dart';
 

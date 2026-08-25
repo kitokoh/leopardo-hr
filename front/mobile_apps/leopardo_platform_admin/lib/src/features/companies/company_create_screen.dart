@@ -5,6 +5,8 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 
+import 'package:leopardo_core/l10n/l10n.dart';
+
 import '../../core/platform_providers.dart';
 import '../platform/platform_models.dart';
 import 'company_screen.dart';
@@ -16,147 +18,147 @@ import 'company_screen.dart';
 const _fallbackCountryDefaults = [
   PlatformCountryDefault(
     country: 'DZ',
-    label: 'Algerie',
+    label: '',
     currency: 'DZD',
     timezone: 'Africa/Algiers',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'MA',
-    label: 'Maroc',
+    label: '',
     currency: 'MAD',
     timezone: 'Africa/Casablanca',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'TN',
-    label: 'Tunisie',
+    label: '',
     currency: 'TND',
     timezone: 'Africa/Tunis',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'SN',
-    label: 'Senegal',
+    label: '',
     currency: 'XOF',
     timezone: 'Africa/Dakar',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'CI',
-    label: 'Cote d Ivoire',
+    label: '',
     currency: 'XOF',
     timezone: 'Africa/Abidjan',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'ML',
-    label: 'Mali',
+    label: '',
     currency: 'XOF',
     timezone: 'Africa/Bamako',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'BF',
-    label: 'Burkina Faso',
+    label: '',
     currency: 'XOF',
     timezone: 'Africa/Ouagadougou',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'BJ',
-    label: 'Benin',
+    label: '',
     currency: 'XOF',
     timezone: 'Africa/Porto-Novo',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'TG',
-    label: 'Togo',
+    label: '',
     currency: 'XOF',
     timezone: 'Africa/Lome',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'NE',
-    label: 'Niger',
+    label: '',
     currency: 'XOF',
     timezone: 'Africa/Niamey',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'CM',
-    label: 'Cameroun',
+    label: '',
     currency: 'XAF',
     timezone: 'Africa/Douala',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'GA',
-    label: 'Gabon',
+    label: '',
     currency: 'XAF',
     timezone: 'Africa/Libreville',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'CG',
-    label: 'Congo',
+    label: '',
     currency: 'XAF',
     timezone: 'Africa/Brazzaville',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'TD',
-    label: 'Tchad',
+    label: '',
     currency: 'XAF',
     timezone: 'Africa/Ndjamena',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'CF',
-    label: 'Republique Centrafricaine',
+    label: '',
     currency: 'XAF',
     timezone: 'Africa/Bangui',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'GQ',
-    label: 'Guinee Equatoriale',
+    label: '',
     currency: 'XAF',
     timezone: 'Africa/Malabo',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'FR',
-    label: 'France',
+    label: '',
     currency: 'EUR',
     timezone: 'Europe/Paris',
     language: 'fr',
   ),
   PlatformCountryDefault(
     country: 'TR',
-    label: 'Turquie',
+    label: '',
     currency: 'TRY',
     timezone: 'Europe/Istanbul',
     language: 'tr',
   ),
   PlatformCountryDefault(
     country: 'GB',
-    label: 'Royaume-Uni',
+    label: '',
     currency: 'GBP',
     timezone: 'Europe/London',
     language: 'en',
   ),
   PlatformCountryDefault(
     country: 'US',
-    label: 'Etats-Unis',
+    label: '',
     currency: 'USD',
     timezone: 'America/New_York',
     language: 'en',
   ),
   PlatformCountryDefault(
     country: 'CA',
-    label: 'Canada',
+    label: '',
     currency: 'CAD',
     timezone: 'America/Toronto',
     language: 'en',
@@ -183,14 +185,16 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
   bool _activateImmediately = false;
   bool _submitting = false;
 
-  String? _required(String? value) =>
-      value == null || value.trim().isEmpty ? 'Champ requis' : null;
+  String? _required(AppLocalizations l10n, String? value) =>
+      value == null || value.trim().isEmpty
+          ? l10n.companiesRequiredField
+          : null;
 
-  String? _emailValidator(String? value) {
+  String? _emailValidator(AppLocalizations l10n, String? value) {
     final trimmed = value?.trim() ?? '';
-    if (trimmed.isEmpty) return 'Champ requis';
+    if (trimmed.isEmpty) return l10n.companiesRequiredField;
     if (!trimmed.contains('@') || !trimmed.contains('.')) {
-      return 'Email invalide';
+      return l10n.authEmailInvalid;
     }
     return null;
   }
@@ -227,9 +231,9 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
           );
       ref.invalidate(platformCompaniesProvider);
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Entreprise creee')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.companiesCompanyCreated)),
+      );
       if (company.id.isNotEmpty) {
         final route = '/platform/companies/${Uri.encodeComponent(company.id)}';
         context.go(route);
@@ -248,13 +252,14 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final countries = _countries();
     return MobilePage(
       appBar: MobileTopBar(
-        title: 'Nouveau client',
-        subtitle: 'Provisionnement plateforme',
+        title: l10n.companiesNewClient,
+        subtitle: l10n.companiesProvisioning,
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: l10n.commonBack,
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
@@ -267,25 +272,25 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
               children: [
                 _field(
                   _name,
-                  'Nom entreprise',
+                  l10n.companiesCompanyname,
                   Icons.business_rounded,
-                  validator: _required,
+                  validator: (v) => _required(l10n, v),
                 ),
                 _field(
                   _email,
-                  'Email entreprise',
+                  l10n.companiesCompanyEmail,
                   Icons.mail_rounded,
                   keyboardType: TextInputType.emailAddress,
-                  validator: _emailValidator,
+                  validator: (v) => _emailValidator(l10n, v),
                 ),
                 Row(
                   children: [
                     Expanded(
                       child: _field(
                         _city,
-                        'Ville',
+                        l10n.companiesCity,
                         Icons.location_city,
-                        validator: _required,
+                        validator: (v) => _required(l10n, v),
                       ),
                     ),
                   ],
@@ -295,27 +300,29 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
                 _activationSwitch(),
                 _field(
                   _managerFirstName,
-                  'Prenom manager principal',
+                  l10n.companiesManagerfirst,
                   Icons.person_rounded,
-                  validator: _required,
+                  validator: (v) => _required(l10n, v),
                 ),
                 _field(
                   _managerLastName,
-                  'Nom manager principal',
+                  l10n.companiesManagerlast,
                   Icons.person_rounded,
-                  validator: _required,
+                  validator: (v) => _required(l10n, v),
                 ),
                 _field(
                   _managerEmail,
-                  'Email manager principal',
+                  l10n.companiesManageremail,
                   Icons.alternate_email_rounded,
                   keyboardType: TextInputType.emailAddress,
-                  validator: _emailValidator,
+                  validator: (v) => _emailValidator(l10n, v),
                 ),
                 const SizedBox(height: 14),
                 MobilePrimaryAction(
                   icon: Icons.add_business_rounded,
-                  label: _submitting ? 'Creation...' : 'Creer le client',
+                  label: _submitting
+                      ? l10n.companiesCreating
+                      : l10n.companiesCreateClient,
                   onPressed: _submitting ? null : _submit,
                 ),
               ],
@@ -367,6 +374,36 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
     );
   }
 
+  /// Libellé localisé du pays (clés core `commonCountries*`), fallback sur la
+  /// valeur serveur (`PlatformCountryDefault.label`) pour les codes inconnus.
+  String _localizedCountryLabel(
+      AppLocalizations l10n, PlatformCountryDefault country) {
+    return switch (country.country) {
+      'DZ' => l10n.commonCountriesDz,
+      'MA' => l10n.commonCountriesMa,
+      'TN' => l10n.commonCountriesTn,
+      'SN' => l10n.commonCountriesSn,
+      'CI' => l10n.commonCountriesCi,
+      'ML' => l10n.commonCountriesMl,
+      'BF' => l10n.commonCountriesBf,
+      'BJ' => l10n.commonCountriesBj,
+      'TG' => l10n.commonCountriesTg,
+      'NE' => l10n.commonCountriesNe,
+      'CM' => l10n.commonCountriesCm,
+      'GA' => l10n.commonCountriesGa,
+      'CG' => l10n.commonCountriesCg,
+      'TD' => l10n.commonCountriesTd,
+      'CF' => l10n.commonCountriesCf,
+      'GQ' => l10n.commonCountriesGq,
+      'FR' => l10n.commonCountriesFr,
+      'TR' => l10n.commonCountriesTr,
+      'GB' => l10n.commonCountriesGb,
+      'US' => l10n.commonCountriesUs,
+      'CA' => l10n.commonCountriesCa,
+      _ => country.label,
+    };
+  }
+
   Widget _countryPicker(List<PlatformCountryDefault> countries) {
     final selected = _selectedCountry(countries);
 
@@ -378,7 +415,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
         iconEnabledColor: MobileSurface.secondary,
         style: const TextStyle(color: MobileSurface.text),
         decoration: InputDecoration(
-          labelText: 'Pays du client',
+          labelText: context.l10n.companiesCountry,
           prefixIcon: const Icon(Icons.public_rounded),
           filled: true,
           fillColor: MobileSurface.chip,
@@ -388,7 +425,8 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
             .map(
               (country) => DropdownMenuItem(
                 value: country,
-                child: Text('${country.label} (${country.country})'),
+                child: Text(
+                    '${_localizedCountryLabel(context.l10n, country)} (${country.country})'),
               ),
             )
             .toList(),
@@ -402,9 +440,12 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
 
   Widget _countryPreview(PlatformCountryDefault selectedCountry) {
     final items = [
-      ('Devise', selectedCountry.currency),
-      ('Fuseau', selectedCountry.timezone),
-      ('Langue', selectedCountry.language.toUpperCase()),
+      (context.l10n.companiesCurrency, selectedCountry.currency),
+      (context.l10n.companiesTimezone, selectedCountry.timezone),
+      (
+        context.l10n.commonLanguageLabel,
+        selectedCountry.language.toUpperCase()
+      ),
     ];
 
     return Container(
@@ -442,8 +483,8 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
         onChanged: (value) => setState(() => _activateImmediately = value),
         activeThumbColor: Colors.white,
         activeTrackColor: AppColors.rh,
-        title: const Text(
-          'Activer immediatement',
+        title: Text(
+          context.l10n.companiesActivatenow,
           style: TextStyle(
             color: MobileSurface.text,
             fontWeight: FontWeight.w600,
@@ -451,8 +492,8 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
         ),
         subtitle: Text(
           _activateImmediately
-              ? 'Le client sera cree en statut actif.'
-              : 'Le client demarre en essai, puis peut etre active depuis sa fiche.',
+              ? context.l10n.companiesActiveImmediatelyHint
+              : context.l10n.companiesTrialHint,
           style: const TextStyle(color: MobileSurface.muted, fontSize: 12),
         ),
       ),
