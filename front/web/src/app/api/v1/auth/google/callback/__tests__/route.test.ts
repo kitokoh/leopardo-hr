@@ -80,10 +80,34 @@ describe('GET /api/v1/auth/google/callback', () => {
     expect(backendUrl).toContain('https://backend.example.com/api/v1/auth/google/callback');
   });
 
-  it('redirige vers ?error=google_auth_failed quand le backend répond ≥ 400', async () => {
+  it('redirige vers ?error=google_no_account quand le backend répond 401 UNKNOWN_ACCOUNT', async () => {
+    // Issue #5171 : email Google inconnu → message dédié « demandez une
+    // invitation » (labels.login.errors.googleNoAccount), pas l'erreur générique.
     mockFetch.mockResolvedValueOnce(
       new Response(JSON.stringify({ error: 'UNKNOWN_ACCOUNT' }), { status: 401 })
     );
+
+    const response = await GET(callbackRequest('revoked-code'));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toContain('/auth/login?error=google_no_account');
+    expect(mockCookieStore.set).not.toHaveBeenCalled();
+  });
+
+  it('redirige vers ?error=google_auth_failed quand le backend répond ≥ 400 (erreur générique)', async () => {
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ error: 'SERVER_ERROR' }), { status: 500 })
+    );
+
+    const response = await GET(callbackRequest('revoked-code'));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toContain('/auth/login?error=google_auth_failed');
+    expect(mockCookieStore.set).not.toHaveBeenCalled();
+  });
+
+  it('redirige vers ?error=google_auth_failed quand le backend 401 a un corps non JSON', async () => {
+    mockFetch.mockResolvedValueOnce(new Response('Bad Gateway', { status: 502 }));
 
     const response = await GET(callbackRequest('revoked-code'));
 
