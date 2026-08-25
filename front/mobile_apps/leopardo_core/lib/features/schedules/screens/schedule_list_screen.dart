@@ -6,10 +6,11 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/models/employee.dart';
-import 'package:leopardo_hr/core/providers/core_providers.dart';
+import 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:leopardo_core/features/schedules/data/schedule_repository.dart';
 import 'package:leopardo_core/features/schedules/providers/schedule_provider.dart';
 import 'package:leopardo_core/features/team/providers/team_provider.dart';
+import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 
 class ScheduleListScreen extends ConsumerWidget {
   const ScheduleListScreen({super.key});
@@ -63,7 +64,7 @@ class ScheduleListScreen extends ConsumerWidget {
               itemCount: schedules.length,
               itemBuilder: (context, index) {
                 final schedule = schedules[index];
-                return MobileListCard(
+                return MobileListGlassCard(
                   icon: Icons.schedule_rounded,
                   iconColor: schedule.isDefault ? AppColors.rh : AppColors.info,
                   title: schedule.name,
@@ -319,9 +320,8 @@ class _ScheduleAssignSheetState extends ConsumerState<_ScheduleAssignSheet> {
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -743,14 +743,12 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
       ref.invalidate(schedulesProvider);
       if (!mounted) return;
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Horaire enregistre.')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Horaire enregistre.')));
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -760,20 +758,47 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
     final schedule = widget.schedule;
     if (schedule == null || schedule.isDefault) return;
 
+    // #4960 : suppression sans confirmation — un appui sur la corbeille
+    // effaçait directement le planning de toute l'équipe affectée.
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: MobileSurface.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Supprimer cet horaire ?'),
+        content: const Text(
+          'Les employés affectés perdront cet horaire. Cette action est irréversible.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Annuler'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.danger,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Supprimer'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
     setState(() => _submitting = true);
     try {
       await ref.read(scheduleRepositoryProvider).delete(schedule.id);
       ref.invalidate(schedulesProvider);
       if (!mounted) return;
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Horaire supprime.')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Horaire supprime.')));
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
