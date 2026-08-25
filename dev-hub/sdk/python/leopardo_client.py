@@ -684,6 +684,22 @@ class LeopardoClient:
         """Statistiques du jour — Attendance (manager/RH)"""
         return self.request("GET", "/attendance/dashboard", **kwargs)
 
+    def get_attendance_day_closures(self, **kwargs):
+        """Lister les fermetures de journée (manager/RH/principal)"""
+        return self.request("GET", "/attendance/day-closures", **kwargs)
+
+    def post_attendance_day_closures(self, **kwargs):
+        """Verrouiller la journée d'un employé (manager/RH/principal)"""
+        return self.request("POST", "/attendance/day-closures", **kwargs)
+
+    def delete_attendance_day_closures_by_id(self, **kwargs):
+        """Lever une fermeture de journée (manager/RH/principal)"""
+        return self.request("DELETE", "/attendance/day-closures/{id}", **kwargs)
+
+    def post_attendance_day_closures_by_id_validate(self, **kwargs):
+        """Valider une journée verrouillée (manager/RH/principal)"""
+        return self.request("POST", "/attendance/day-closures/{id}/validate", **kwargs)
+
     def get_attendance_employees_by_employeeid_preference(self, **kwargs):
         """Préférence mode géolocalisation d'un employé (manager/RH)"""
         return self.request("GET", "/attendance/employees/{employeeId}/preference", **kwargs)

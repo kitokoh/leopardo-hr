@@ -14,9 +14,9 @@ use App\Exceptions\MissingCheckInException;
 use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Exceptions\PunchPhotoRequiredException;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Planning\Domain\Models\Schedule;
+use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -32,15 +32,11 @@ class AttendanceService
         return (string) ($company->timezone ?: config('app.timezone', 'UTC'));
     }
 
-    /** @var array<int, string> */
-    // Issue #2686 (QA 2026-08-15) — les types non travaillés ne doivent pas
-    // compter dans hours_worked/overtime : `resume` marque la fin d'une pause
-    // (pas une session de travail), au même titre que `break`.
-    private const NON_WORK_TYPES = ['break', 'resume'];
-
     public function __construct(
         private readonly GeofenceZoneService $zoneService,
         private readonly CommunicationService $communicationService,
+        private readonly AttendanceHoursCalculator $calculator,
+        private readonly AttendanceDayClosureService $dayClosureService,
     ) {}
 
     public function checkIn(Employee $employee, CheckInDTO|float|null $dto = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
@@ -50,6 +46,9 @@ class AttendanceService
 
         $nowUtc = now('UTC');
         $today = $nowUtc->copy()->setTimezone($this->timezoneFor($company))->toDateString();
+
+        // Fermeture de journée (#5265) : aucun nouveau pointage sur un jour clos.
+        $this->dayClosureService->assertDayOpen($employee->id, $today);
 
         // Issue #2669 — le check-then-act était sans verrou : deux check-in
         // parallèles pouvaient créer deux sessions ouvertes. La recherche de
@@ -82,10 +81,13 @@ class AttendanceService
             if ($schedule) {
                 $checkInLocal = $nowUtc->copy()->setTimezone($this->timezoneFor($company));
                 $startLocal = Carbon::parse($today.' '.$schedule->start_time, $this->timezoneFor($company));
-                $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
-                $tolerance = (int) $schedule->late_tolerance_minutes;
-                $lateMinutes = max(0, (int) floor($diffMinutes - $tolerance));
-                $status = $lateMinutes > 0 ? 'late' : 'ontime';
+                $assessment = $this->calculator->lateAssessment(
+                    $checkInLocal,
+                    $startLocal,
+                    (int) $schedule->late_tolerance_minutes,
+                );
+                $lateMinutes = $assessment->late_minutes;
+                $status = $assessment->status;
             }
 
             $log = AttendanceLog::query()->create([
@@ -121,6 +123,9 @@ class AttendanceService
         $nowUtc = now('UTC');
         $today = $nowUtc->copy()->setTimezone($this->timezoneFor($company))->toDateString();
 
+        // Fermeture de journée (#5265) : aucun nouveau pointage sur un jour clos.
+        $this->dayClosureService->assertDayOpen($employee->id, $today);
+
         // Issue #2669 — verrouillage de la session ouverte (deux check-out
         // parallèles fermaient la même session en last-write-wins).
         $log = DB::transaction(function () use ($employee, $today): ?AttendanceLog {
@@ -145,20 +150,20 @@ class AttendanceService
             : $this->resolveSchedule($employee);
         $punchMeta = $this->buildPunchMeta($company, $employee, $dto, 'check_out');
 
-        $seconds = $log->check_in?->diffInSeconds($nowUtc) ?? 0;
-        $breakMinutes = $this->breakMinutesForLog($log, $dto, $schedule);
-        $grossHours = $seconds / 3600;
-        $hours = round(max(0.0, $grossHours - ($breakMinutes / 60)), 2);
-
-        $threshold = (float) ($schedule?->overtime_threshold_daily ?? 8.0);
-        $overtime = $log->work_type === 'overtime'
-            ? $hours
-            : max(0.0, round($hours - $threshold, 2));
-
-        if (in_array($log->work_type, self::NON_WORK_TYPES, true)) {
-            $hours = 0.0;
-            $overtime = 0.0;
-        }
+        $worked = $this->calculator->workedHours(
+            $log->check_in ?? $nowUtc,
+            $nowUtc,
+            $log->work_type,
+            $this->calculator->effectiveBreakMinutes(
+                $log->session_number,
+                $log->work_type,
+                $schedule?->break_minutes,
+                $dto->work_type,
+            ),
+            (float) ($schedule?->overtime_threshold_daily ?? 8.0),
+        );
+        $hours = $worked->hours_worked;
+        $overtime = $worked->overtime_hours;
 
         $log->check_out = $nowUtc;
         $log->hours_worked = $hours;
@@ -180,10 +185,13 @@ class AttendanceService
         if ($log->status === 'incomplete' && $schedule) {
             $checkInLocal = $log->check_in->copy()->setTimezone($this->timezoneFor($company));
             $startLocal = Carbon::parse($today.' '.$schedule->start_time, $this->timezoneFor($company));
-            $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
-            $tolerance = (int) $schedule->late_tolerance_minutes;
-            $log->late_minutes = max(0, (int) floor($diffMinutes - $tolerance));
-            $log->status = $log->late_minutes > 0 ? 'late' : 'ontime';
+            $assessment = $this->calculator->lateAssessment(
+                $checkInLocal,
+                $startLocal,
+                (int) $schedule->late_tolerance_minutes,
+            );
+            $log->late_minutes = $assessment->late_minutes;
+            $log->status = $assessment->status;
         }
 
         $log->save();
@@ -203,6 +211,9 @@ class AttendanceService
         $today = $occurredAt->copy()->setTimezone($this->timezoneFor($company))->toDateString();
         $action = $dto->action ?? 'check_in';
         $externalEventId = $dto->external_event_id;
+
+        // Fermeture de journée (#5265) : aucun nouveau pointage sur un jour clos.
+        $this->dayClosureService->assertDayOpen($employee->id, $today);
 
         if ($externalEventId) {
             $existing = AttendanceLog::query()->where('external_event_id', $externalEventId)->first();
@@ -227,19 +238,20 @@ class AttendanceService
                 ? $log->schedule
                 : $this->resolveSchedule($employee);
 
-            $seconds = $log->check_in?->diffInSeconds($occurredAt) ?? 0;
-            $breakMinutes = $this->breakMinutesForLog($log, $dto, $schedule);
-            $grossHours = $seconds / 3600;
-            $hours = round(max(0.0, $grossHours - ($breakMinutes / 60)), 2);
-            $threshold = (float) ($schedule?->overtime_threshold_daily ?? 8.0);
-            $overtime = $log->work_type === 'overtime'
-                ? $hours
-                : max(0.0, round($hours - $threshold, 2));
-
-            if (in_array($log->work_type, self::NON_WORK_TYPES, true)) {
-                $hours = 0.0;
-                $overtime = 0.0;
-            }
+            $worked = $this->calculator->workedHours(
+                $log->check_in ?? $occurredAt,
+                $occurredAt,
+                $log->work_type,
+                $this->calculator->effectiveBreakMinutes(
+                    $log->session_number,
+                    $log->work_type,
+                    $schedule?->break_minutes,
+                    $dto->work_type,
+                ),
+                (float) ($schedule?->overtime_threshold_daily ?? 8.0),
+            );
+            $hours = $worked->hours_worked;
+            $overtime = $worked->overtime_hours;
 
             $log->forceFill([
                 'check_out' => $occurredAt,
@@ -284,10 +296,13 @@ class AttendanceService
         if ($schedule) {
             $checkInLocal = $occurredAt->copy()->setTimezone($this->timezoneFor($company));
             $startLocal = Carbon::parse($today.' '.$schedule->start_time, $this->timezoneFor($company));
-            $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
-            $tolerance = (int) $schedule->late_tolerance_minutes;
-            $lateMinutes = max(0, (int) floor($diffMinutes - $tolerance));
-            $status = $lateMinutes > 0 ? 'late' : 'ontime';
+            $assessment = $this->calculator->lateAssessment(
+                $checkInLocal,
+                $startLocal,
+                (int) $schedule->late_tolerance_minutes,
+            );
+            $lateMinutes = $assessment->late_minutes;
+            $status = $assessment->status;
         }
 
         $log = AttendanceLog::query()->create([
@@ -339,27 +354,29 @@ class AttendanceService
         if ($log->check_in && $schedule && $today) {
             $checkInLocal = $log->check_in->copy()->setTimezone($this->timezoneFor($company));
             $startLocal = Carbon::parse($today.' '.$schedule->start_time, $this->timezoneFor($company));
-            $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
-            $tolerance = (int) $schedule->late_tolerance_minutes;
-            $log->late_minutes = max(0, (int) floor($diffMinutes - $tolerance));
-            $log->status = $log->late_minutes > 0 ? 'late' : 'ontime';
+            $assessment = $this->calculator->lateAssessment(
+                $checkInLocal,
+                $startLocal,
+                (int) $schedule->late_tolerance_minutes,
+            );
+            $log->late_minutes = $assessment->late_minutes;
+            $log->status = $assessment->status;
         }
 
         if ($log->check_in && $log->check_out) {
-            $seconds = $log->check_in->diffInSeconds($log->check_out);
-            $breakMinutes = $this->breakMinutesForLog($log, null, $schedule);
-            $grossHours = $seconds / 3600;
-            $log->hours_worked = round(max(0.0, $grossHours - ($breakMinutes / 60)), 2);
-
-            $threshold = (float) ($schedule?->overtime_threshold_daily ?? 8.0);
-            $log->overtime_hours = $log->work_type === 'overtime'
-                ? (float) $log->hours_worked
-                : max(0.0, round(((float) $log->hours_worked) - $threshold, 2));
-
-            if (in_array($log->work_type, self::NON_WORK_TYPES, true)) {
-                $log->hours_worked = 0;
-                $log->overtime_hours = 0;
-            }
+            $worked = $this->calculator->workedHours(
+                $log->check_in,
+                $log->check_out,
+                $log->work_type,
+                $this->calculator->effectiveBreakMinutes(
+                    $log->session_number,
+                    $log->work_type,
+                    $schedule?->break_minutes,
+                ),
+                (float) ($schedule?->overtime_threshold_daily ?? 8.0),
+            );
+            $log->hours_worked = $worked->hours_worked;
+            $log->overtime_hours = $worked->overtime_hours;
         }
 
         $log->save();
@@ -396,19 +413,6 @@ class AttendanceService
             ->max('session_number');
 
         return ((int) $lastSession) + 1;
-    }
-
-    private function breakMinutesForLog(AttendanceLog $log, ?CheckInDTO $dto, ?Schedule $schedule): int
-    {
-        if ($log->session_number > 1 || $log->work_type !== 'normal') {
-            return 0;
-        }
-
-        if ($dto?->work_type === 'break') {
-            return 0;
-        }
-
-        return (int) ($schedule?->break_minutes ?? 0);
     }
 
     private function normalizeDto(CheckInDTO|float|null $dto, ?float $gpsLng, string $method): CheckInDTO

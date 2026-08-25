@@ -53,3 +53,26 @@ sans rupture de contrat API ni migration de données destructive.
 - Mode entreprise : `attendance_mode_settings` = source de vérité.
 - Approbations : trait `Approvable` partagé (absences, frais, sessions, corrections).
 - Garde CI : aucun import `App\Modules\SmartAttendance\*` après Phase 3 ; purge des alias prouvée par contrat mobile.
+
+## Règles de calcul unifiées (#5265)
+
+Depuis #5265, **tous les modes de pointage** (mobile, kiosque, ZKTeco, géo, import externe) passent par
+`AttendanceHoursCalculator` (`api/app/Modules/Attendance/Infrastructure/Services/`) — une seule source de
+vérité pour le retard (tolérance), les heures travaillées (pauses du planning déduites) et les heures
+supplémentaires (seuil quotidien, cas `overtime`, types non travaillés `break`/`resume` #2686). Le mode
+géo (`ApproveGeoSession`) a convergé : une session GPS approuvée déduit désormais les pauses comme le
+mobile. Jeu doré de contrôle manuel : check-in 08:05 / check-out 17:35 (planning 08:00–17:00, pause 60,
+tolérance 0, seuil 8 h) → retard 5 min, **8,5 h travaillées, 0,5 h HS** (`AttendanceHoursCalculatorTest`).
+
+## Fermeture de journée (#5265)
+
+Table tenant `attendance_day_closures` : verrou quotidien par `(company_id, employee_id, date)` — un jour
+clos refuse **tout nouveau pointage** (check-in/check-out/import externe/approbation de session géo) en
+**409 `ATTENDANCE_DAY_CLOSED`**. Cycle : `POST /api/v1/attendance/day-closures` (verrouillage, idempotent)
+→ `POST /api/v1/attendance/day-closures/{id}/validate` (validation manager/RH, tracée `validated_by/at`) →
+`DELETE /api/v1/attendance/day-closures/{id}` (levée du verrou). RBAC `api.manager:rh,principal`.
+
+Complémentarité avec #5267 : le verrouillage de **période mensuelle** (`attendance_period_closures`, PR
+#5314) cible les **corrections** (422 `ATTENDANCE_PERIOD_CLOSED`) ; la fermeture de **journée** cible les
+**pointages** (409). Les sessions restées ouvertes à la clôture d'un jour sont traitées par
+`attendance:auto-close` (fermeture système autorisée sur un jour clos).

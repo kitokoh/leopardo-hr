@@ -13,6 +13,7 @@ declare(strict_types=1);
 use App\Modules\Attendance\Interfaces\Api\V1\AttendanceModeController;
 use App\Modules\Attendance\Interfaces\Api\V1\GeoAttendanceController;
 use App\Modules\Attendance\Interfaces\Api\V1\GeoSessionController;
+use App\Modules\Attendance\Interfaces\Api\V1\AttendanceDayClosureController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('api/v1/attendance')
@@ -44,6 +45,12 @@ Route::prefix('api/v1/attendance')
 
             // Préférence d'un employé (lecture manager)
             Route::get('/employees/{employeeId}/preference', [AttendanceModeController::class, 'employeePreference'])->whereNumber('employeeId');
+
+            // ── Fermeture de journée (#5265) — verrouillage + validation ────────
+            Route::get('/day-closures', [AttendanceDayClosureController::class, 'index']);
+            Route::post('/day-closures', [AttendanceDayClosureController::class, 'store']);
+            Route::post('/day-closures/{id}/validate', [AttendanceDayClosureController::class, 'markValidated'])->whereNumber('id');
+            Route::delete('/day-closures/{id}', [AttendanceDayClosureController::class, 'destroy'])->whereNumber('id');
         });
 
         // ── Config mode entreprise (modification — principal uniquement) ──────

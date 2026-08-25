@@ -15,6 +15,7 @@ return [
 
     // Pointage
     'ALREADY_CHECKED_IN' => 'Vous avez déjà pointé votre arrivée aujourd\'hui.',
+    'ATTENDANCE_DAY_CLOSED' => 'La journée de pointage est clôturée.',
     'MISSING_CHECK_IN' => 'Pointez d\'abord votre arrivée avant de sortir.',
     'ALREADY_CHECKED_OUT' => 'Vous avez déjà pointé votre départ aujourd\'hui.',
     'PUNCH_PHOTO_REQUIRED' => 'Une photo est obligatoire pour pointer dans votre entreprise.',

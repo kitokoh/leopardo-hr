@@ -15,6 +15,7 @@ return [
 
     // Attendance
     'ALREADY_CHECKED_IN' => 'You have already checked in today.',
+    'ATTENDANCE_DAY_CLOSED' => 'The attendance day is closed.',
     'MISSING_CHECK_IN' => 'Please check in first before checking out.',
     'ALREADY_CHECKED_OUT' => 'You have already checked out today.',
     'PUNCH_PHOTO_REQUIRED' => 'A photo is required to punch in or out at your company.',

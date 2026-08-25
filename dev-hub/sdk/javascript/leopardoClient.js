@@ -830,6 +830,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/attendance/dashboard", options);
     },
 
+    /** Lister les fermetures de journée (manager/RH/principal) */
+    getAttendanceDayClosures(options = {}) {
+      return request("GET", "/attendance/day-closures", options);
+    },
+
+    /** Verrouiller la journée d'un employé (manager/RH/principal) */
+    postAttendanceDayClosures(options = {}) {
+      return request("POST", "/attendance/day-closures", options);
+    },
+
+    /** Lever une fermeture de journée (manager/RH/principal) */
+    deleteAttendanceDayClosuresById(options = {}) {
+      return request("DELETE", "/attendance/day-closures/{id}", options);
+    },
+
+    /** Valider une journée verrouillée (manager/RH/principal) */
+    postAttendanceDayClosuresByIdValidate(options = {}) {
+      return request("POST", "/attendance/day-closures/{id}/validate", options);
+    },
+
     /** Préférence mode géolocalisation d'un employé (manager/RH) */
     getAttendanceEmployeesByEmployeeIdPreference(options = {}) {
       return request("GET", "/attendance/employees/{employeeId}/preference", options);
