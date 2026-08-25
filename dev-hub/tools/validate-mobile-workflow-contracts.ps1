@@ -149,6 +149,18 @@ if (-not (Test-Path -LiteralPath $contractPath)) {
             foreach ($relativeFile in @($workflow.screenFiles)) {
                 $filePath = Join-Path $root $relativeFile
                 if (-not (Test-Path -LiteralPath $filePath)) {
+                    # Dédup mobile (#2601/#5279) : les écrans partagés extraits
+                    # vers leopardo_core (ex. notification_list_screen pour
+                    # leopardo_manager) ne vivent plus dans l'app — on les
+                    # résout depuis le core (même chemin relatif) avant de
+                    # déclarer une erreur, même esprit que #4102 pour les
+                    # endpoints partagés.
+                    $coreScreen = Join-Path $coreRoot $relativeFile
+                    if (Test-Path -LiteralPath $coreScreen) {
+                        $filePath = $coreScreen
+                    }
+                }
+                if (-not (Test-Path -LiteralPath $filePath)) {
                     Add-Failure "$($app.name)/$($workflow.name) missing screen file: $relativeFile"
                     continue
                 }
