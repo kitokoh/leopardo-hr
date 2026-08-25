@@ -48,11 +48,14 @@ class AccountingJournalEntry extends Model
         'credit',
         'piece',
         'description',
+        'letter',
+        'lettered_at',
     ];
 
     protected $casts = [
         'entry_date' => 'date',
         'debit' => 'float',
         'credit' => 'float',
+        'lettered_at' => 'datetime',
     ];
 }

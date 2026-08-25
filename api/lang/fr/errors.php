@@ -244,7 +244,15 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'Un bordereau de livraison doit porter sa date de livraison.',
     'DOCUMENT_NOT_FULLY_PAID' => 'Le document ne peut pas être marqué payé tant que le montant total n\'est pas réglé.',
     'INVALID_DOCUMENT_TRANSITION' => 'Transition de statut non autorisée pour ce document.',
-    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Période invalide. Utilisez le format AAAA-MM.'
+    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Période invalide. Utilisez le format AAAA-MM.',
     // Journal (issue #5234)
-    'PERIOD_CLOSED' => 'La période comptable est déjà clôturée — aucun posting possible.'
+    'PERIOD_CLOSED' => 'La période comptable est déjà clôturée — aucun posting possible.',
+    // Module Comptabilité — profondeur production (issue #5422)
+    'ALREADY_SEEDED' => 'Les données de démonstration ont déjà été créées pour cette entreprise.',
+    'DOCUMENT_PDF_NOT_READY' => 'Le PDF du document n\'est pas encore disponible.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'Lien de partage introuvable ou expiré.',
+    'FISCAL_YEAR_ALREADY_CLOSED' => 'Cet exercice est déjà clôturé ou n\'existe pas.',
+    'LETTERING_INVALID' => 'Lettrage invalide : les écritures doivent porter sur le même compte.',
+    'LETTERING_ALREADY_USED' => 'Une ou plusieurs écritures sont déjà lettrées avec une autre lettre.',
+    'LETTERING_UNBALANCED' => 'Le lettrage doit être équilibré : la somme des débits doit égaler la somme des crédits.',
 ];

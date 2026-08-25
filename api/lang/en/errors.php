@@ -250,7 +250,15 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'A delivery note must include its delivery date.',
     'DOCUMENT_NOT_FULLY_PAID' => 'The document cannot be marked paid until the full amount is settled.',
     'INVALID_DOCUMENT_TRANSITION' => 'Status transition not allowed for this document.',
-    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Invalid period. Use the YYYY-MM format.'
+    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Invalid period. Use the YYYY-MM format.',
     // Journal (issue #5234)
-    'PERIOD_CLOSED' => 'The accounting period is already closed — no posting allowed.'
+    'PERIOD_CLOSED' => 'The accounting period is already closed — no posting allowed.',
+    // Module Comptabilité — profondeur production (issue #5422)
+    'ALREADY_SEEDED' => 'Demo data has already been seeded for this company.',
+    'DOCUMENT_PDF_NOT_READY' => 'The document PDF is not ready yet.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'Share link not found or expired.',
+    'FISCAL_YEAR_ALREADY_CLOSED' => 'This fiscal year is already closed or does not exist.',
+    'LETTERING_INVALID' => 'Invalid lettering: entries must target the same account.',
+    'LETTERING_ALREADY_USED' => 'One or more entries are already lettered with another code.',
+    'LETTERING_UNBALANCED' => 'Lettering must be balanced: total debits must equal total credits.',
 ];

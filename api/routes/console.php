@@ -131,6 +131,14 @@ Schedule::command('attendance:auto-close --threshold=12 --hours=14')
     ->hourly()
     ->withoutOverlapping()
     ->onOneServer();
+
+// Module Comptabilité (issue #5229) — relances de paiement J+7/J+15/J+30
+// paramétrables. Idempotent (une relance par document+stage) — cron quotidien.
+Schedule::command('accounting:send-payment-reminders')
+    ->daily()
+    ->at('06:00')
+    ->onOneServer();
+
 // Supervision queue (issue #5282) : le driver actif peut être `redis` ou
 // `database` (prod 0 €). La détection < 15 min est garantie côté CI par
 // `.github/workflows/queue-supervision.yml` (cron 5 min) ; ce schedule couvre

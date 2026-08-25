@@ -61,6 +61,19 @@ return [
         'amount_min' => 'Le montant doit être strictement positif.',
         'method_invalid' => 'Méthode de paiement invalide (cash, bank_transfer, check, card, other).',
         'series_unknown' => 'Série inconnue : « :key » n\'est pas un type de document (:allowed).',
+        'year_required' => 'L\'année est obligatoire.',
+        'year_integer' => 'L\'année doit être un nombre entier.',
+        'year_range' => 'L\'année doit être comprise entre 2000 et 2100.',
+        'period_required' => 'La période est obligatoire (format AAAA-MM).',
+        'period_invalid' => 'Période invalide. Utilisez le format AAAA-MM.',
+        'letter_required' => 'La lettre de lettrage est obligatoire.',
+        'letter_max' => 'La lettre de lettrage ne peut pas dépasser 32 caractères.',
+        'entry_ids_required' => 'Sélectionnez au moins deux écritures à lettrer.',
+        'entry_ids_integer' => 'Identifiants d\'écritures invalides.',
+        'entry_ids_min' => 'Le lettrage nécessite au moins deux écritures.',
+
+        'year_between' => 'L\'année doit être comprise entre 2000 et 2100.',
+
     ],
 
     // Erreurs métier (issue #5227)
@@ -79,6 +92,9 @@ return [
         'wf_source_invoice_paid' => 'La facture source est déjà entièrement payée : aucun avoir possible.',
         'wf_credit_exceeds_remaining' => 'Le montant de l\'avoir dépasse le reste à payer de la facture source.',
         'wf_company_context' => 'Contexte entreprise requis.',
+        'statement_year_invalid' => 'Année d\'exercice invalide.',
+        'statement_period_invalid' => 'Période comptable invalide (format AAAA-MM).',
+
     ],
 
     // Labels TVA par défaut (issue #5227)
@@ -87,4 +103,13 @@ return [
     'tva_label_gst' => 'TPS',
     'tva_label_reduced' => 'TVA réduite',
 
+
+    // Profondeur comptable (issue #5422)
+    'chart_system_account_not_deletable' => 'Les comptes système (provisionnés) ne peuvent pas être supprimés — désactivez-les si nécessaire.',
+    'chart_account_has_entries' => 'Ce compte porte des écritures au journal et ne peut pas être supprimé.',
+    'fec_no_entries' => 'Aucune écriture sur cette période — export FEC impossible.',
+    'fiscal_year_already_closed' => 'Cet exercice est déjà clôturé ou n\'existe pas.',
+    'lettering_unbalanced' => 'Le lettrage doit être équilibré : la somme des débits doit égaler la somme des crédits.',
+    'lettering_invalid' => 'Lettrage invalide : les écritures doivent porter sur le même compte.',
+    'lettering_already_used' => 'Une ou plusieurs écritures sont déjà lettrées avec une autre lettre.',
 ];

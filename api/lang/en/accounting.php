@@ -61,6 +61,19 @@ return [
         'amount_min' => 'The amount must be strictly positive.',
         'method_invalid' => 'Invalid payment method (cash, bank_transfer, check, card, other).',
         'series_unknown' => 'Unknown series: « :key » is not a document type (:allowed).',
+        'year_required' => 'The year is required.',
+        'year_integer' => 'The year must be an integer.',
+        'year_range' => 'The year must be between 2000 and 2100.',
+        'period_required' => 'The period is required (YYYY-MM).',
+        'period_invalid' => 'Invalid period. Use the YYYY-MM format.',
+        'letter_required' => 'The lettering code is required.',
+        'letter_max' => 'The lettering code cannot exceed 32 characters.',
+        'entry_ids_required' => 'Select at least two entries to letter.',
+        'entry_ids_integer' => 'Invalid entry identifiers.',
+        'entry_ids_min' => 'Lettering requires at least two entries.',
+
+        'year_between' => 'The year must be between 2000 and 2100.',
+
     ],
 
     // Business errors (issue #5227)
@@ -79,6 +92,9 @@ return [
         'wf_source_invoice_paid' => 'The source invoice is already fully paid: no credit note is possible.',
         'wf_credit_exceeds_remaining' => 'The credit note amount exceeds the remaining balance of the source invoice.',
         'wf_company_context' => 'Company context required.',
+        'statement_year_invalid' => 'Invalid fiscal year.',
+        'statement_period_invalid' => 'Invalid accounting period (YYYY-MM).',
+
     ],
 
     // Default VAT labels (issue #5227)
@@ -87,4 +103,13 @@ return [
     'tva_label_gst' => 'GST',
     'tva_label_reduced' => 'Reduced VAT',
 
+
+    // Profondeur comptable (issue #5422)
+    'chart_system_account_not_deletable' => 'System accounts (provisioned) cannot be deleted — deactivate them if needed.',
+    'chart_account_has_entries' => 'This account carries journal entries and cannot be deleted.',
+    'fec_no_entries' => 'No entries for this period — FEC export impossible.',
+    'fiscal_year_already_closed' => 'This fiscal year is already closed or does not exist.',
+    'lettering_unbalanced' => 'Lettering must be balanced: total debits must equal total credits.',
+    'lettering_invalid' => 'Invalid lettering: entries must target the same account.',
+    'lettering_already_used' => 'One or more entries are already lettered with another code.',
 ];

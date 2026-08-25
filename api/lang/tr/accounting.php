@@ -61,6 +61,19 @@ return [
         'amount_min' => 'Tutar kesinlikle pozitif olmalıdır.',
         'method_invalid' => 'Geçersiz ödeme yöntemi (cash, bank_transfer, check, card, other).',
         'series_unknown' => 'Bilinmeyen seri: « :key » bir belge türü değil (:allowed).',
+        'year_required' => 'Yıl zorunludur.',
+        'year_integer' => 'Yıl bir tam sayı olmalıdır.',
+        'year_range' => 'Yıl 2000 ile 2100 arasında olmalıdır.',
+        'period_required' => 'Dönem zorunludur (YYYY-AA).',
+        'period_invalid' => 'Geçersiz dönem. YYYY-AA biçimini kullanın.',
+        'letter_required' => 'Mutabakat kodu zorunludur.',
+        'letter_max' => 'Mutabakat kodu 32 karakteri aşamaz.',
+        'entry_ids_required' => 'Mutabakat için en az iki kayıt seçin.',
+        'entry_ids_integer' => 'Geçersiz kayıt kimlikleri.',
+        'entry_ids_min' => 'Mutabakat en az iki kayıt gerektirir.',
+
+        'year_between' => 'Yıl 2000 ile 2100 arasında olmalıdır.',
+
     ],
 
     // İş hataları (issue #5227)
@@ -79,6 +92,9 @@ return [
         'wf_source_invoice_paid' => 'Kaynak fatura zaten tamamen ödendi: iade faturası mümkün değil.',
         'wf_credit_exceeds_remaining' => 'İade faturası tutarı, kaynak faturanın kalan bakiyesini aşıyor.',
         'wf_company_context' => 'Şirket bağlamı gereklidir.',
+        'statement_year_invalid' => 'Geçersiz mali yıl.',
+        'statement_period_invalid' => 'Geçersiz muhasebe dönemi (YYYY-AA).',
+
     ],
 
     // Varsayılan KDV etiketleri (issue #5227)
@@ -87,4 +103,13 @@ return [
     'tva_label_gst' => 'GST',
     'tva_label_reduced' => 'İndirimli KDV',
 
+
+    // Profondeur comptable (issue #5422)
+    'chart_system_account_not_deletable' => 'Sistem hesapları (sağlanan) silinemez — gerekirse devre dışı bırakın.',
+    'chart_account_has_entries' => 'Bu hesap yevmiye kayıtları taşıyor ve silinemez.',
+    'fec_no_entries' => 'Bu dönem için kayıt yok — FEC dışa aktarılamaz.',
+    'fiscal_year_already_closed' => 'Bu mali yıl zaten kapatıldı veya mevcut değil.',
+    'lettering_unbalanced' => 'Mutabakat dengeli olmalıdır: toplam borçlar toplam alacaklara eşit olmalıdır.',
+    'lettering_invalid' => 'Geçersiz mutabakat: kayıtlar aynı hesabı hedeflemelidir.',
+    'lettering_already_used' => 'Bir veya daha fazla kayıt başka bir kodla mutabık kılınmış.',
 ];

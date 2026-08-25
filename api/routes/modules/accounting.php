@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingActivationController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingChartController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDashboardController;
@@ -29,6 +30,11 @@ use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingFecController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingFiscalYearController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingLedgerController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingLetteringController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingStatementController;
 use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
 use Illuminate\Support\Facades\Route;
 
@@ -64,6 +70,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // Wizard d'activation Comptabilité (issue #5288) — check-list + complétion idempotente.
             Route::get('/activation', [AccountingActivationController::class, 'show']);
             Route::post('/activation', [AccountingActivationController::class, 'complete']);
+
+            // Plan comptable (issue #5422) — CRUD comptes, provisionné par
+            // défaut à la création d'entreprise (ChartOfAccountsService).
+            Route::get('/chart', [AccountingChartController::class, 'index']);
+            Route::post('/chart', [AccountingChartController::class, 'store']);
+            Route::get('/chart/{code}', [AccountingChartController::class, 'show'])->where('code', '[0-9]+');
+            Route::put('/chart/{code}', [AccountingChartController::class, 'update'])->where('code', '[0-9]+');
+            Route::delete('/chart/{code}', [AccountingChartController::class, 'destroy'])->where('code', '[0-9]+');
         });
 
         // ── Documents (Phase A, #5223) — RBAC principal/comptable ───────────
@@ -95,5 +109,25 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
             // ── Multi-devises (issue #5270) — conversion de devises.
             Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
+
+            // ── Grand livre + balance de vérification (issue #5422) ─────────
+            Route::get('/ledger', [AccountingLedgerController::class, 'index']);
+            Route::get('/balance', [AccountingLedgerController::class, 'balance']);
+
+            // ── États financiers (issue #5422) — bilan + compte de résultat.
+            Route::get('/statements/balance-sheet', [AccountingStatementController::class, 'balanceSheet']);
+            Route::get('/statements/income-statement', [AccountingStatementController::class, 'incomeStatement']);
+
+            // ── Export FEC (issue #5422) — fichier des écritures comptables.
+            Route::get('/journal/export-fec', [AccountingFecController::class, 'export']);
+
+            // ── Exercices comptables (issue #5422) — ouverture + clôture.
+            Route::get('/fiscal-years', [AccountingFiscalYearController::class, 'index']);
+            Route::post('/fiscal-years', [AccountingFiscalYearController::class, 'store']);
+            Route::post('/fiscal-years/{year}/close', [AccountingFiscalYearController::class, 'close'])->whereNumber('year');
+
+            // ── Lettrage des comptes de tiers (issue #5422).
+            Route::post('/journal/lettering', [AccountingLetteringController::class, 'store']);
+            Route::delete('/journal/lettering/{letter}', [AccountingLetteringController::class, 'destroy']);
         });
     });

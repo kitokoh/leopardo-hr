@@ -54,5 +54,9 @@ Contact ──► Facture (draft) ──► sent ──► [PDF ×4 langues] ─
 | Email documents + portail client sécurisé | #5225 | ✅ |
 | Journal des écritures + clôture de période | #5234 | ✅ |
 | Paiements + rapprochement + relances | #5229 | ✅ |
-| Consolidation API REST + matrice RBAC | #5226 | à venir |
-| TVA multi-pays, multi-devises, paiement en ligne | #5270/#5271/#5272 | Phase C |
+| Consolidation API REST + matrice RBAC | #5226 | ✅ (consolidation #5422) |
+| TVA multi-pays, multi-devises | #5270/#5271 | ✅ |
+| Plan comptable paramétrable + grand livre + balance | #5422 | ✅ |
+| Bilan + compte de résultat + export FEC | #5422 | ✅ |
+| Exercices comptables + clôture + lettrage | #5422 | ✅ |
+| Paiement en ligne portail client | #5272 | ADR-0017, décision requise |

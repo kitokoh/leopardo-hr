@@ -243,7 +243,15 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'İrsaliye, teslim tarihini içermelidir.',
     'DOCUMENT_NOT_FULLY_PAID' => 'Toplam tutar ödenmeden belge ödendi olarak işaretlenemez.',
     'INVALID_DOCUMENT_TRANSITION' => 'Bu belge için durum geçişine izin verilmiyor.',
-    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.'
+    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.',
     // Journal (issue #5234)
-    'PERIOD_CLOSED' => 'Muhasebe dönemi zaten kapatıldı — kayıt yapılamaz.'
+    'PERIOD_CLOSED' => 'Muhasebe dönemi zaten kapatıldı — kayıt yapılamaz.',
+    // Module Comptabilité — profondeur production (issue #5422)
+    'ALREADY_SEEDED' => 'Bu şirket için demo veriler zaten oluşturuldu.',
+    'DOCUMENT_PDF_NOT_READY' => 'Belgenin PDF\'i henüz hazır değil.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'Paylaşım bağlantısı bulunamadı veya süresi doldu.',
+    'FISCAL_YEAR_ALREADY_CLOSED' => 'Bu mali yıl zaten kapatıldı veya mevcut değil.',
+    'LETTERING_INVALID' => 'Geçersiz mutabakat: kayıtlar aynı hesabı hedeflemelidir.',
+    'LETTERING_ALREADY_USED' => 'Bir veya daha fazla kayıt başka bir kodla mutabık kılınmış.',
+    'LETTERING_UNBALANCED' => 'Mutabakat dengeli olmalıdır: toplam borçlar toplam alacaklara eşit olmalıdır.',
 ];
