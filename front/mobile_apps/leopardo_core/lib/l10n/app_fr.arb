@@ -1779,6 +1779,7 @@
   "smartAttendanceTitle": "Smart Attendance",
   "smartAttendanceTodayTitle": "Aujourd'hui — {date}",
   "smartAttendanceZoneSurveillance": "Surveillance de zone",
+<<<<<<< HEAD
   "attendanceToProcess": "A traiter",
   "settingsBiometryEnableFirst": "Active d abord la preparation biometrie.",
   "settingsBiometryEnableAction": "Activer la preparation biometrie",
@@ -1931,6 +1932,15 @@
   "settingsEdgeRemoved": "Appairage Edge supprimé.",
   "settingsViewProfile": "Voir mon profil",
   "settingsRecoveryEmailHint": "Optionnel pour récupérer l'accès",
+=======
+  "settingsEdgeRemoved": "Appairage Edge supprimé.",
+  "settingsViewProfile": "Voir mon profil",
+  "settingsPersonalEmailLabel": "Email personnel",
+  "settingsPersonalEmailHint": "Optionnel, conserve votre compte hors entreprise",
+  "settingsRecoveryEmailLabel": "Email de récupération",
+  "settingsRecoveryEmailHint": "Optionnel pour récupérer l'accès",
+  "settingsPersonalPhoneLabel": "Téléphone personnel",
+>>>>>>> 7d2a54ade (feat(mobile/i18n): lot 1 dette i18n — compte/profil/identité employee localisés ×4 (progrès #2755))
   "settingsPersonalPhoneHint": "Optionnel, visible selon vos choix futurs",
   "settingsPortableIdentityTitle": "Identité portable",
   "settingsPortableIdentitySubtitle": "Historique entreprise, poste, statut et disponibilité.",

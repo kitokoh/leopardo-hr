@@ -1779,6 +1779,7 @@
   "smartAttendanceTitle": "Akıllı Yoklama",
   "smartAttendanceTodayTitle": "Bugün — {date}",
   "smartAttendanceZoneSurveillance": "Bölge izleme",
+<<<<<<< HEAD
   "attendanceToProcess": "İşlenecek",
   "settingsBiometryEnableFirst": "Önce biyometrik kaydı etkinleştirin.",
   "settingsBiometryEnableAction": "Biyometrik kaydı etkinleştir",
@@ -1931,6 +1932,15 @@
   "settingsEdgeRemoved": "Edge eşleştirme kaldırıldı.",
   "settingsViewProfile": "Profilimi görüntüle",
   "settingsRecoveryEmailHint": "İsteğe bağlı, erişimi kurtarmak için",
+=======
+  "settingsEdgeRemoved": "Edge eşleştirme kaldırıldı.",
+  "settingsViewProfile": "Profilimi görüntüle",
+  "settingsPersonalEmailLabel": "Kişisel e-posta",
+  "settingsPersonalEmailHint": "İsteğe bağlı, hesabınızı şirket dışında tutar",
+  "settingsRecoveryEmailLabel": "Kurtarma e-postası",
+  "settingsRecoveryEmailHint": "İsteğe bağlı, erişimi kurtarmak için",
+  "settingsPersonalPhoneLabel": "Kişisel telefon",
+>>>>>>> 7d2a54ade (feat(mobile/i18n): lot 1 dette i18n — compte/profil/identité employee localisés ×4 (progrès #2755))
   "settingsPersonalPhoneHint": "İsteğe bağlı, gelecekteki seçimlerinize göre görünür",
   "settingsPortableIdentityTitle": "Taşınabilir kimlik",
   "settingsPortableIdentitySubtitle": "Şirket geçmişi, pozisyon, durum ve müsaitlik.",

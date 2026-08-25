@@ -1779,6 +1779,7 @@
   "smartAttendanceTitle": "الحضور الذكي",
   "smartAttendanceTodayTitle": "اليوم — {date}",
   "smartAttendanceZoneSurveillance": "مراقبة المنطقة",
+<<<<<<< HEAD
   "attendanceToProcess": "للمعالجة",
   "settingsBiometryEnableFirst": "فعّل تسجيل البيانات الحيوية أولاً.",
   "settingsBiometryEnableAction": "تفعيل تسجيل البيانات الحيوية",
@@ -1931,6 +1932,15 @@
   "settingsEdgeRemoved": "تمت إزالة اقتران Edge.",
   "settingsViewProfile": "عرض ملفي الشخصي",
   "settingsRecoveryEmailHint": "اختياري لاستعادة الوصول",
+=======
+  "settingsEdgeRemoved": "تمت إزالة اقتران Edge.",
+  "settingsViewProfile": "عرض ملفي الشخصي",
+  "settingsPersonalEmailLabel": "البريد الإلكتروني الشخصي",
+  "settingsPersonalEmailHint": "اختياري، يحافظ على حسابك خارج الشركة",
+  "settingsRecoveryEmailLabel": "البريد الإلكتروني للاسترداد",
+  "settingsRecoveryEmailHint": "اختياري لاستعادة الوصول",
+  "settingsPersonalPhoneLabel": "الهاتف الشخصي",
+>>>>>>> 7d2a54ade (feat(mobile/i18n): lot 1 dette i18n — compte/profil/identité employee localisés ×4 (progrès #2755))
   "settingsPersonalPhoneHint": "اختياري، مرئي حسب اختياراتك المستقبلية",
   "settingsPortableIdentityTitle": "هوية محمولة",
   "settingsPortableIdentitySubtitle": "سجل الشركة والمنصب والحالة والتوفر.",

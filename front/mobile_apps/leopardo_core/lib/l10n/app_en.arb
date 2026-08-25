@@ -1779,6 +1779,7 @@
   "smartAttendanceTitle": "Smart Attendance",
   "smartAttendanceTodayTitle": "Today — {date}",
   "smartAttendanceZoneSurveillance": "Zone surveillance",
+<<<<<<< HEAD
   "attendanceToProcess": "To process",
   "settingsBiometryEnableFirst": "Enable biometric enrollment first.",
   "settingsBiometryEnableAction": "Enable biometric enrollment",
@@ -1931,6 +1932,15 @@
   "settingsEdgeRemoved": "Edge pairing removed.",
   "settingsViewProfile": "View my profile",
   "settingsRecoveryEmailHint": "Optional, to recover access",
+=======
+  "settingsEdgeRemoved": "Edge pairing removed.",
+  "settingsViewProfile": "View my profile",
+  "settingsPersonalEmailLabel": "Personal email",
+  "settingsPersonalEmailHint": "Optional, keeps your account outside the company",
+  "settingsRecoveryEmailLabel": "Recovery email",
+  "settingsRecoveryEmailHint": "Optional, to recover access",
+  "settingsPersonalPhoneLabel": "Personal phone",
+>>>>>>> 7d2a54ade (feat(mobile/i18n): lot 1 dette i18n — compte/profil/identité employee localisés ×4 (progrès #2755))
   "settingsPersonalPhoneHint": "Optional, visible according to your future choices",
   "settingsPortableIdentityTitle": "Portable identity",
   "settingsPortableIdentitySubtitle": "Company history, position, status and availability.",
