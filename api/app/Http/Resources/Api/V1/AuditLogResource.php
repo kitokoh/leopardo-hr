@@ -16,6 +16,8 @@ class AuditLogResource extends JsonResource
             'id' => $this->id,
             'user_id' => $this->user_id,
             'action' => $this->action,
+            'module' => $this->module,
+            'request_id' => $this->request_id,
             'auditable_type' => $this->auditable_type,
             'auditable_id' => $this->auditable_id,
             'old_values' => $this->old_values,
@@ -31,4 +33,3 @@ class AuditLogResource extends JsonResource
         ];
     }
 }
-

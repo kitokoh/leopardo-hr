@@ -29,7 +29,10 @@ class EmailBounceWebhookFailClosedTest extends TestCase
     {
         config()->set('services.mail_bounce_webhook.secret', 'test-secret');
 
-        $this->postJson('/api/v1/webhooks/email-bounce', ['email' => 'test@example.com'], [
+        $this->postJson('/api/v1/webhooks/email-bounce', [
+            'email' => 'test@example.com',
+            'event' => 'bounce',
+        ], [
             'X-Bounce-Webhook-Secret' => 'test-secret',
         ])->assertOk();
     }

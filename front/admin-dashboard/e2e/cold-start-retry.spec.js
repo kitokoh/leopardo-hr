@@ -60,7 +60,7 @@ test('login transparently retries a transient 503 (Render cold-start) and succee
   })
 
   await page.goto('/login')
-  await page.getByLabel(/Adresse email/i).fill('admin@leopardo-rh.com')
+  await page.locator('#email').fill('admin@leopardo-rh.com')
   await page.locator('#password').fill('e2e-fixture-password')
   await page.getByRole('button', { name: /Se connecter/i }).click()
 
@@ -81,7 +81,7 @@ test('a non-transient error (e.g. 401) is never retried', async ({ page }) => {
   })
 
   await page.goto('/login')
-  await page.getByLabel(/Adresse email/i).fill('admin@leopardo-rh.com')
+  await page.locator('#email').fill('admin@leopardo-rh.com')
   await page.locator('#password').fill('wrong-password')
   await page.getByRole('button', { name: /Se connecter/i }).click()
 

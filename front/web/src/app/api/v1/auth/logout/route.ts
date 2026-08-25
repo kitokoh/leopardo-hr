@@ -6,11 +6,11 @@
  * cannot be replayed after logout.
  */
 
-import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 
-import { resolveBackendBaseUrl } from '@/lib/backend-url';
-const COOKIE_NAME = 'leopardo_token';
+import { resolveBackendBaseUrl } from "@/lib/backend-url";
+const COOKIE_NAME = "leopardo_token";
 
 // resolveBackendBaseUrl importé depuis @/lib/backend-url (audit #1701)
 
@@ -18,33 +18,48 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
 
-  // Best-effort: forward the logout to the backend to invalidate the token
+  // Révoquer le token côté backend avant de confirmer la déconnexion.
+  // Le cookie est tout de même supprimé localement dans tous les cas, mais une
+  // erreur réseau ou une réponse non-2xx doit rester visible pour permettre un
+  // nouvel essai : sinon l’ancien Bearer token resterait rejouable.
+  let revocationFailed = false;
   if (token) {
     try {
-      await fetch(`${resolveBackendBaseUrl()}/auth/logout`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`,
+      const backendResponse = await fetch(
+        `${resolveBackendBaseUrl()}/auth/logout`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-store",
         },
-        cache: 'no-store',
-      });
+      );
+      revocationFailed = !backendResponse.ok;
     } catch {
-      // Ignore network errors — we still clear the cookie locally
+      revocationFailed = true;
     }
   }
 
   // Always clear the httpOnly cookie regardless of backend response
-  cookieStore.set(COOKIE_NAME, '', {
+  cookieStore.set(COOKIE_NAME, "", {
     httpOnly: true,
-    secure: request.nextUrl.protocol === 'https:' || process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure:
+      request.nextUrl.protocol === "https:" ||
+      process.env.NODE_ENV === "production",
+    sameSite: "strict",
     maxAge: 0, // Expire immediately
-    path: '/',
+    path: "/",
   });
 
-  return NextResponse.json({ success: true }, {
-    status: 200,
-    headers: { 'Cache-Control': 'no-store' },
-  });
+  return NextResponse.json(
+    revocationFailed
+      ? { success: false, revoked: false, error: "LOGOUT_REVOCATION_FAILED" }
+      : { success: true, revoked: true },
+    {
+      status: revocationFailed ? 502 : 200,
+      headers: { "Cache-Control": "no-store" },
+    },
+  );
 }
