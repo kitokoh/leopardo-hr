@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet sont documentées ici.
 Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
+
+### Portail client — E2E + routes restaurées (#5433/#5429)
+- Routes publiques `documents/shared/{token}` + `/download` restaurées (disparues dans les merges #5495/#5377) — throttle 60/min.
+- `PortalJourneyE2ETest` : parcours complet de bout en bout + couverture AuditLog (info/download) + RGPD (métadonnées limitées, cross-tenant 404).
+- Fix boot routes : double `use` `AttendanceDayClosureController` (geo.php, merge #5406).
 - **Webhook inbound idempotence (#5444)**: public `webhook_events` table (unique `source+event_id`, payload_hash, stored response) + `WebhookEventRegistry` (Platform) — atomic reservation on first delivery, replay of stored response on redelivery (zero double effect), 202 for concurrent in-flight, release+500 on processing failure (provider retries). Wired ×4: Stripe (`event.id`), Chargily (`data.id`/checkout — fixes double Payment on `checkout.paid` replay), EmailBounce (payload hash), MarketingLead (payload hash). Invalid signature → 400 before any effect. `Schema::hasTable` guard for partial test schemas. Tests: `WebhookIdempotenceTest` (replay ×4, hash key, fail-closed). Docs: `docs/security/WEBHOOKS.md`.
 - **Enterprise 2FA/TOTP (#5436)**: shared `TotpService` (secret/QR/verify, pure-PHP TOTP fallback), enrollment `POST /auth/2fa/enroll|confirm|disable|recovery-codes`, login challenge (`mfa_challenge` response, token revoked, single-use 5-min challenge), `POST /auth/2fa/verify` (TOTP or hashed single-use recovery code → Sanctum token with tenant abilities), remember-device signed cookie (30 d), tenant policy `mfa_required_roles` (403 `TWO_FACTOR_REQUIRED`), i18n ×4 (`TWO_FACTOR_*`, 219 keys/locale), OpenAPI 6 paths (806 ops, SDK regenerated). Non-breaking: accounts without 2FA keep direct login. Tests: `TwoFactorAuthTest` (7 scenarios). Docs: `docs/security/2FA_ENTREPRISE.md`.
 

@@ -97,4 +97,13 @@ Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:princ
     Route::post('accounting/bank-statement-lines/{line}/match', [BankStatementController::class, 'match']);
 });
 
-
+/**
+ * Portail client — routes PUBLIQUES (issue #5225/#5433) : consultation et
+ * téléchargement d'un document partagé via token. Le token (64 caractères)
+ * EST la credential — pas d'auth Sanctum, throttle dédié (60/min).
+ * Restaurées après disparition dans les merges #5495/#5377.
+ */
+Route::get('/accounting/documents/shared/{token}', [PublicDocumentShareController::class, 'info'])
+    ->middleware('throttle:60,1');
+Route::get('/accounting/documents/shared/{token}/download', [PublicDocumentShareController::class, 'download'])
+    ->middleware('throttle:60,1');
