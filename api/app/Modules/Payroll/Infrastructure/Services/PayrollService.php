@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Events\PayrollValidated;
 use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
@@ -116,6 +117,16 @@ class PayrollService
 
         PayrollValidated::dispatch($payroll);
 
+        // #5439 — journal d'audit global : validation d'un bulletin (paie).
+        AuditLog::record(
+            'payroll',
+            'payroll.validate',
+            $payroll,
+            $validator,
+            ['status' => 'draft'],
+            ['status' => 'validated', 'validated_by' => $validator->id, 'validated_at' => $payroll->validated_at?->toISOString()],
+        );
+
         return $payroll;
     }
 
@@ -124,6 +135,17 @@ class PayrollService
         if ($payroll->status === 'validated') {
             throw new PayrollAlreadyValidatedException;
         }
+
+        // #5439 — journal d'audit global : suppression d'un bulletin (paie).
+        AuditLog::record(
+            'payroll',
+            'payroll.delete',
+            $payroll,
+            null,
+            ['gross_salary' => $payroll->gross_salary, 'status' => $payroll->status],
+            [],
+        );
+
         $payroll->delete();
     }
 

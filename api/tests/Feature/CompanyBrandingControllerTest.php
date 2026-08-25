@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\Support\CreatesMvpSchema;
@@ -91,5 +91,26 @@ class CompanyBrandingControllerTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['primary_color', 'accent_color']);
     }
-}
 
+    public function test_branding_rejects_insecure_logo_urls_and_non_image_uploads(): void
+    {
+        Storage::fake('public');
+
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+
+        $this->actingAs($manager, 'sanctum')
+            ->patch('/api/v1/company/branding', [
+                'logo_url' => 'http://cdn.example.test/logo.png',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['logo_url']);
+
+        $this->actingAs($manager, 'sanctum')
+            ->patch('/api/v1/company/branding', [
+                'logo' => UploadedFile::fake()->create('logo.svg', 10, 'image/svg+xml'),
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['logo']);
+    }
+}
