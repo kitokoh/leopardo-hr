@@ -27,7 +27,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $rejected_reason
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class Absence extends Model
 {
@@ -73,11 +74,19 @@ class Absence extends Model
         return $this->belongsTo(Employee::class, 'approved_by');
     }
 
+    /**
+     * @param  Builder<Absence>  $q
+     * @return Builder<Absence>
+     */
     public function scopePending(Builder $q): Builder
     {
         return $q->where('status', 'pending');
     }
 
+    /**
+     * @param  Builder<Absence>  $q
+     * @return Builder<Absence>
+     */
     public function scopeForEmployee(Builder $q, int $employeeId): Builder
     {
         return $q->where('employee_id', $employeeId);

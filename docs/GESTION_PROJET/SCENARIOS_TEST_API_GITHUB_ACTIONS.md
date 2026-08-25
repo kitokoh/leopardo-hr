@@ -6,6 +6,8 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 
 Note 2026-06-28 : Migration des modeles d'authentification (User/Employee) vers l'architecture DDD dans Core/Auth terminee.
 
+Note 2026-08-22 (stabilisation CI, PR #5295) : les endpoints publics OIDC `GET /sso/oidc/{companyId}/authorize` et `GET /sso/oidc/{companyId}/callback` portent explicitement `throttle:10,1`; `SsoCallbackThrottleTest` vérifie ce contrat anti-abus. Le contrat `api/openapi.yaml` reste parsable par Redocly après fusion des chemins dupliqués, correction des nullable OpenAPI 3.0 et alignement des paramètres recruitment; le miroir et les SDK JavaScript/Python sont régénérés.
+
 ## Perimetre
 
 - API publique
@@ -178,7 +180,7 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - `PUT /attendance/{attendanceLog}` reste reserve aux managers `principal` et `rh` pour modifier directement un log du tenant courant, avec refus des employes et des managers non autorises.
 - `GET /attendance/anomalies` retourne un resume d'impact business (`late_minutes`, sorties manquantes, corrections, actions critiques)
 - Chaque anomalie attendance expose une action manager recommandee et un flag `requires_manager_action`
-- **Mode de pointage mobile configurable (issue #761, `PunchPhotoTest`)** : `AttendanceModeSettings.punch_photo_mode` (`null`/`kiosk`/`photo_required`), lu/ecrit via `GET/PUT /attendance/mode-settings` et resolu pour l'employe connecte via `GET /attendance/config` (`requires_punch_photo`). `POST /attendance/check-in`/`check-out` acceptent un champ multipart optionnel `punch_photo` (image, 5 Mo max) ; en mode `photo_required` sans photo fournie (hors flux kiosque physique `AttendanceKiosk` et hors import externe/offline), rejet `422 PUNCH_PHOTO_REQUIRED` (fr/en/ar/tr). Nouvel endpoint `GET /attendance/{attendanceLog}/punch-photo` (memes regles d'autorisation que la consultation du log) pour recuperer la photo stockee (`attendance/punch-photos/{company_id}/{employee_id}/...`, `AttendanceLog.punch_photo_path`, expose via `AttendanceLogResource.punch_photo_url`).
+- **Mode de pointage mobile configurable (issue #761, `PunchPhotoTest`)** : `AttendanceModeSettings.punch_photo_mode` (`null`/`kiosk`/`photo_required`), lu/ecrit via `GET/PUT /smart-attendance/mode-settings` et resolu pour l'employe connecte via `GET /smart-attendance/config` (`requires_punch_photo`). `POST /attendance/check-in`/`check-out` acceptent un champ multipart optionnel `punch_photo` (image, 5 Mo max) ; en mode `photo_required` sans photo fournie (hors flux kiosque physique `AttendanceKiosk` et hors import externe/offline), rejet `422 PUNCH_PHOTO_REQUIRED` (fr/en/ar/tr). Nouvel endpoint `GET /attendance/{attendanceLog}/punch-photo` (memes regles d'autorisation que la consultation du log) pour recuperer la photo stockee (`attendance/punch-photos/{company_id}/{employee_id}/...`, `AttendanceLog.punch_photo_path`, expose via `AttendanceLogResource.punch_photo_url`).
 
 ### 6.b Taches terrain apres pointage
 
@@ -400,18 +402,6 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - Isolation : `POST /api/v1/contracts` refuse un `employee_id` hors tenant
 - Self-service : un employe ne peut pas consulter, generer le PDF ou lire les avenants du contrat d'un collegue
 - Scheduler : `contracts:alert-expiring` alerte a 30/15/7 jours
-
-### Module L — Checklist documents du dossier employe (issue #5326, gap G3)
-- `POST /api/v1/employee-documents` enregistre un document (type, statut, date, reference, url) — RBAC : principal/rh uniquement (403 employe)
-- `GET /api/v1/employee-documents` liste les documents du tenant (filtres `employee_id`, `type`, pagination `per_page`)
-- `GET /api/v1/employee-documents/{id}` detail d'un document du tenant
-- `PUT|PATCH /api/v1/employee-documents/{id}` met a jour type/statut/reference/url/notes
-- `DELETE /api/v1/employee-documents/{id}` supprime un document du dossier
-- `GET /api/v1/me/documents` self-service : l'employe lit UNIQUEMENT les documents de son propre dossier
-- Badge dossier : `GET /api/v1/employees/{id}` expose `documents_status` (complete/present/missing, types requis par statut employe)
-- Isolation : un document d'un autre tenant repond 404 (scope `BelongsToCompany` fail-closed #3727)
-- Validation : type hors liste ou `employee_id` d'un autre tenant repond 422
-- Tests : `tests/Feature/HR/EmployeeDocumentTest.php` (8 scenarios)
 
 ### Module C â Avances salaire mobile
 - `GET /api/v1/salary-advances` retourne les avances de l'employe connecte, et la liste tenant pour manager/RH autorise.
@@ -1387,6 +1377,8 @@ Note 2026-08-15 (campagne QA complète, issues #2652/#2653/#2654/#2662) : durcis
 - Garde CI : `dev-hub/tools/check-openapi-route-coverage.py` étendu (routes DDD `api/routes/**` incluses, allowlist `openapi-coverage-allowlist.txt` ajustée — 524/706, 0 drift) — un endpoint non documenté OpenAPI fait échouer la CI.
 - SDK régénérés (`dev-hub/sdk/javascript/leopardoClient.js`, `dev-hub/sdk/python/leopardo_client.py`, `dev-hub/openapi/v1.yaml`, `MANIFEST.json`) alignés sur `api/openapi.yaml` (534 opérations).
 
+Note 2026-08-22 (PA2-SEC-INPUTS) : toute nouvelle surface d'entree doit etre testee en rejet fail-closed avant l'action metier. Le lot de stabilisation couvre les signatures webhook et headers malformes, les parametres camera (`camera_id`, token, IP), les filtres Fleet/Cabinet allowlistes et bornes, les en-tetes CSV employes (colonnes inconnues ou dupliquees, contenu invalide, volume maximal), les uploads audio IA (MIME, taille, langue, conversation_id et voice) ainsi que les URLs de redirection checkout limitees a l'origine autorisee. Ajouter un cas 422 ou 401 pour toute valeur hors contrat et verifier qu'aucune donnee sensible n'apparaisse dans les URLs ou logs.
+
 Note 2026-08-22 (issue #5268) : rapports de pointage par période — `GET /attendance/monthly-report` généralisé en moteur de rapports.
 - `period=day|week|month` (défaut `month`, rétro-compatible) ; ancres `date` (Y-m-d), `week` (Y-m-d — semaine ISO lundi→dimanche), `month` (Y-m), interprétées dans le fuseau entreprise.
 - Filtres `department_id` (équipe) et `employee_id` (fiche individuelle) ; `format=json|csv|pdf`.
@@ -1409,17 +1401,17 @@ Note 2026-08-24 (issue #5232) : paramétrage comptable par entreprise — `GET/P
 - Scénarios à vérifier : défauts pays DZ (DZD, fr, TVA 19 %, série `FAC`), upsert puis relecture, validation 422 ×4, RBAC, isolation tenant, provisioning + idempotence.
 - Couverture : `tests/Feature/Accounting/AccountingSettingsTest.php` (12 tests) — OpenAPI documenté (756/756 routes couvertes), SDK régénérés.
 
+Note 2026-08-24 (issue #5288) : activation guidée de la Comptabilité — `GET/POST /api/v1/accounting/activation`.
+- `GET /api/v1/accounting/activation` : check-list d'activation de l'entreprise courante (`settings`, `contact`, `example_invoice`) — RBAC `api.manager:comptable,principal`, employé → 403.
+- `POST /api/v1/accounting/activation` : exécution idempotente de l'activation complète (paramétrage + contact démo + facture EXEMPLE) — rejouable sans effet de bord (re-poster = même état).
+- Scénarios à vérifier : GET avant activation (check-list vide), POST complet puis relecture GET (check-list remplie), idempotence du POST (2e appel), RBAC employé → 403, isolation tenant.
+- Couverture : `tests/Feature/Accounting/AccountingActivationTest.php` — OpenAPI documenté, SDK régénérés.
+
 Note 2026-08-24 (issue #5271) : déclaration TVA simplifiée par période — `GET /api/v1/accounting/reports/vat-declaration`.
 - `GET /api/v1/accounting/reports/vat-declaration?period=YYYY-MM[&format=json|csv]` : déclaration mensuelle du tenant courant (RBAC `api.manager:comptable,principal`, employé → 403) — TVA collectée (factures + reçus), déductible (avoirs), net, détail par taux (assiette HT, taxe, TTC) ; brouillons et annulés exclus ; période invalide → 422 ; `format=csv` → export `vat-declaration-<period>.csv`.
 - Multi-taux TVA par pays dans les défauts settings (DZ 19/9, MA 20, TN 19, SN 18, CI 18, TR 20, FR 20…) + mentions légales par défaut par pays.
 - Scénarios à vérifier : golden août 2026 (collectée 6 200/678/6 878 · déductible 300/57/357 · net 5 900/621/6 521), période vide → zéros, exclusion brouillon/annulé/hors période/proforma, isolation tenant, CSV, RBAC.
 - Couverture : `tests/Feature/Accounting/VatDeclarationTest.php` (8 tests) — OpenAPI documenté (757/757 routes couvertes), SDK régénérés.
-Note 2026-08-24 (issue #5270) : multi-devises + taux de change — `POST /api/v1/accounting/currency/convert` + devise par contact.
-- `POST /api/v1/accounting/currency/convert` : conversion pure `{amount, from_currency, to_currency, rate?}` (RBAC `api.manager:comptable,principal`, employé → 403) — arrondi HALF-UP 2 décimales documenté, TVA calculée dans la devise du document puis convertie, devises identiques → identité (taux 1, source `identity`), taux manuel requis dès que les devises diffèrent (422 sinon), devise hors registre `AccountingCurrencies` → 422, taux ≤ 0 → 422.
-- Devise par contact : validation ISO 4217 (registre `AccountingCurrencies`, union `CountryDefaults`) ; défaut à la création = devise settings → devise pays entreprise ; PUT sans devise → conservée (jamais de surcharge).
-- Convertisseur : `DocumentCurrencyConverter` (totaux devise du document + devise de référence), provider externe pluggable `CurrencyRateProviderInterface` (v1 : manuel, aucun appel réseau).
-- Scénarios à vérifier : golden arrondis (100 EUR @ 1,05 → 105,00 DZD ; 19,99 @ 1,007 → 20,13), identité, taux requis / 0 → 422, devise inconnue → 422, RBAC employé → 403, défauts devise contact (settings/pays), PUT sans surcharge, isolation tenant.
-- Couverture : `tests/Feature/Accounting/AccountingMultiCurrencyTest.php` (19 tests) — OpenAPI documenté (771/771 routes couvertes), SDK régénérés (801 opérations).
 Note 2026-08-22 (issue #5282) : supervision queue prod — la commande `php artisan queue:health-check` couvre désormais le driver `database` (table `jobs`, driver prod 0 €) en plus de Redis : profondeur par queue (jobs prêts, non réservés), jobs réservés > 10 min (worker mort → `stale_reserved_jobs`), `failed_jobs` ; sortie JSON ; exit FAILURE si seuils dépassés (`--max-pending=50`, `--max-failed=10`, `--max-stale-minutes=10`) + alerte Slack opt-in (`SLACK_MONITORING_WEBHOOK_URL`, silencieux si absent). Workflow `.github/workflows/queue-supervision.yml` (cron 5 min, offset +2 min du drain `queue-worker-fallback.yml`) → run rouge < 15 min après une panne (DoD #5282). `GET /api/v1/health` expose `failed_jobs` (scrapers d'uptime externe).
 - Scénarios à vérifier : queue vide → SUCCESS ; backlog > seuil → FAILURE (exit 1) ; job réservé > 10 min → FAILURE avec `stale_reserved_jobs` ; job réservé récent → SUCCESS (pas de faux positif) ; `failed_jobs` > seuil → FAILURE ; driver `sync` → SUCCESS (pas de check Redis en test).
 - Couverture : `QueueSupervisionDatabaseTest` (5 tests) + `QueueFailedJobsTableTest` (existant).
@@ -1427,6 +1419,18 @@ Note 2026-08-22 (issue #5259) : plans de carrière — événements de carrière
 - `GET|POST /api/v1/career-events`, `GET|PUT|PATCH|DELETE /api/v1/career-events/{id}` (édit/suppression `pending` uniquement), `PUT /api/v1/career-events/{id}/approve|reject|apply`. Workflow `pending → approved → applied` (ou `rejected`) ; `apply` met à jour l'employé (position_id, department_id, salary_base) en transaction → impact paie au run suivant.
 - Scénarios à vérifier : création manager avec snapshot `from_*` (poste/département/salaire courants de l'employé), employé → 403 sur create et lecture limitée à son propre parcours, manager `dept` scopé (PA2-SEC-002) / `superviseur` (PA2-SEC-003), isolation tenant (ressource d'une autre société → 404, cible poste/département cross-tenant → 422), transitions invalides (apply sur `pending` → 403, apply sans cible → 422 CAREER_EVENT_NOTHING_TO_APPLY, edit/delete hors `pending` → 403), `GET /me/career` expose `data.career_events` (parcours complet contrats + événements).
 - Couverture : `tests/Feature/HR/CareerEventTest.php` (12 tests) — contrat OpenAPI documenté (9 opérations, 753/753 routes couvertes).
+Note 2026-08-23 (issue #5225) : envoi email des documents + portail client sécurisé.
+- Partage tokenisé (`accounting_document_shares` : token 64 caractères, expiration 14 j, email destinataire) — RGPD : accès strictement limité au document partagé (pattern CabinetShare #1817) ; le token est la credential, pas d'auth Sanctum.
+- `GET /accounting/documents/shared/{token}` : méta du document partagé (numéro, type, statut, TTC, expiration) — token inconnu/expiré → 404.
+- `GET /accounting/documents/shared/{token}/download` : PDF depuis le disque privé — token inconnu/expiré → 404 ; throttle dédié ; Content-Disposition `attachment`.
+- `DocumentShareMail` : PDF en pièce jointe + lien sécurisé ; `SendDocumentEmail` garantit le PDF (job #5224), crée le partage, envoie, `sent_at` + statut `sent` (transition minimale — workflow complet via #5223).
+- Commande artisan `accounting:send-document {document} [--email=]`.
+- Scénarios : envoi avec pièce jointe + lien, méta publiques, téléchargement PDF, token expiré/inconnu → 404, accès limité au document partagé (un token ne révèle que son document), RBAC sans effet sur les routes publiques.
+- Couverture : `DocumentShareEmailTest` (6 tests).
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/main
 ## Corrections de pointage — workflow complet (issue #5267, 2026-08-23)
 
 - `POST /attendance/corrections` — demande avec justificatif optionnel (`proof`, multipart ≤ 5 Mo, jpg/jpeg/png/pdf/heic) ; refusée (422 `ATTENDANCE_PERIOD_CLOSED`) si la date est dans une période clôturée (`attendance_period_closures`).
@@ -1457,6 +1461,8 @@ Note 2026-08-24 (issue #5227) : i18n ×4 du module Comptabilité — messages AP
 - PDF : labels des documents comptables (`accounting-document.blade.php`) localisés ×4 via les mêmes catalogues ; RTL arabe vérifié ; libellés de données (ex. TVA `label_key`) laissés aux données seed.
 - Scénarios à vérifier : chaque erreur métier renvoie un message dans la langue de l'utilisateur (fr/en/tr/ar) sans retomber sur la clé brute ; parité des clés ×4 des deux catalogues ; zéro littéral non localisé dans le module (scan CI) ; libellés PDF ×4 (type + statut) ; RTL arabe.
 - Couverture : `tests/Feature/Accounting/AccountingI18nTest.php`, `AccountingI18nMessagesTest.php`, `DocumentPdfRendererTest.php` + suite module Accounting (coverage 86,45 % ≥ 70 % DoD #5228) — garde `check-accounting-i18n.py` verte.
+Note 2026-08-25 (issue #5436) : 2FA/TOTP comptes entreprise. Scénarios à vérifier : (1) login sans 2FA → token direct (rétrocompat) ; (2) enroll → confirm (code invalide 422 / valide 201 + recovery codes) ; (3) login avec 2FA → `mfa_challenge` + token révoqué (jamais délivré) ; (4) verify code valide → token utilisable sur `/auth/me` ; (5) challenge à usage unique (2ᵉ use → 401) ; (6) recovery code à usage unique (2ᵉ use → 422) ; (7) politique `mfa_required_roles` → 403 `TWO_FACTOR_REQUIRED` ; (8) disable avec code ; (9) remember device → login suivant sans challenge ; (10) parité i18n ×4.
+
 Note 2026-08-25 (issue #5437) : garde anti-collision de préfixes de migrations inter-PRs — `dev-hub/tools/check-migration-prefixes.mjs` branché dans Hygiene Guards. Scénarios à vérifier : (1) PR introduisant un préfixe déjà sur main → échec ; (2) PR introduisant un préfixe déjà pris par une AUTRE PR ouverte → échec (cas réel détecté : `2026_08_24_000003` partagé entre #5406 attendance et #5394/#5424 paie→compta) ; (3) préfixe libre → vert ; (4) branche sans migrations → vert ; (5) main reste vert (0 faux positif — préfixes déjà sur main exclus du contrôle).
 
 Note 2026-08-24 (issues #5353/#5354/#5355) : ADR-0016 — consolidation des routes pointage sous `/api/v1/attendance/*` + fusion SmartAttendance.
@@ -1464,3 +1470,12 @@ Note 2026-08-24 (issues #5353/#5354/#5355) : ADR-0016 — consolidation des rout
 - Phase 4 : fusion des modèles/services/commandes SmartAttendance → Attendance (shims `@deprecated` dans SmartAttendance pour BC) ; commande console `AutoCloseGeoSessionsCommand` → `AutoCloseAttendanceCommand` (alias conservé, `api/routes/console.php`).
 - Scénarios à vérifier : routes `/attendance/*` uniquement (sessions/geo-events/mode), 404 sur `/smart-attendance/*` (alias supprimés Phase 5 #5356), migration console (schedule `attendance:auto-close` unique), isolation tenant géofence, PHPStan Strict vert sur les fichiers fusionnés.
 - Couverture : `tests/Feature/Attendance/Geo*` (6 tests migrés) + `GeoRoutesMigrationTest`.
+<<<<<<< HEAD
+=======
+Note 2026-08-25 (issue #5439) : journal d'audit global — écriture unifiée `AuditLog::record()` câblée sur les flux sensibles, lecture RBAC manager principal/rh, rétention RGPD par entreprise.
+- Écriture : approbation/rejet/annulation d'absence (`planning.absence.*`), validation/suppression de bulletin (`payroll.*`), import/recalcul de pointage (`attendance.*`), départ HR (`hr.departure.register`), révocation de jeton (`auth.token.revoked`) → entrée `audit_logs` avec module/request_id/company_id/avant-après.
+- Lecture : `GET /api/v1/audit-logs` (filtres module, action, auditable_type/id, user_id, from, to ; pagination ; isolation tenant stricte) + `GET /audit-logs/{id}` (404 cross-tenant) + `GET /audit-logs/export-csv` — RBAC `principal`/`rh` (403 employé).
+- Rétention : `audit:purge` tenant-par-tenant (pattern `biometric:purge-expired`), rétention par entreprise via `CompanySetting.audit_retention_months` (défaut 36), purge journalisée (`audit.purge`), schedule hebdomadaire.
+- Scénarios à vérifier : chaque action sensible crée une entrée tracée ; 403 employé ; filtre module ; 404 cross-tenant ; purge respecte la rétention de l'entreprise et journalise ; non-régression suites HR/Attendance/Planning/Payroll.
+- Couverture : `tests/Feature/Audit/AuditLogGlobalTest.php` (9 tests) + suite existante `AuditLogExportTest`.
+>>>>>>> origin/main

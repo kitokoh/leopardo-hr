@@ -1937,6 +1937,133 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+
+  /auth/2fa/status:
+    get:
+      tags: ["Auth"]
+      summary: "Etat 2FA du compte connecte"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Etat 2FA (activee ? politique requise ?)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorStatusResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /auth/2fa/enroll:
+    post:
+      tags: ["Auth"]
+      summary: "Demarrer l'enrolement 2FA (secret + QR)"
+      security:
+        - BearerAuth: []
+      responses:
+        "201":
+          description: "Secret TOTP et URL du QR code"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorEnrollResponse"
+        "409":
+          description: "TWO_FACTOR_ALREADY_ENABLED"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /auth/2fa/confirm:
+    post:
+      tags: ["Auth"]
+      summary: "Confirmer l'enrolement 2FA (premier code) et activer"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                  description: "Code TOTP a verifier"
+      responses:
+        "201":
+          description: "2FA activee + codes de recuperation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorConfirmResponse"
+        "422":
+          description: "TWO_FACTOR_INVALID (code invalide)"
+        "409":
+          description: "TWO_FACTOR_ALREADY_ENABLED"
+
+  /auth/2fa/disable:
+    post:
+      tags: ["Auth"]
+      summary: "Desactiver la 2FA (re-verification par code)"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+      responses:
+        "200":
+          description: "2FA desactivee"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorStatusResponse"
+        "422":
+          description: "TWO_FACTOR_INVALID"
+
+  /auth/2fa/recovery-codes:
+    post:
+      tags: ["Auth"]
+      summary: "Regenerer les codes de recuperation 2FA"
+      security:
+        - BearerAuth: []
+      responses:
+        "201":
+          description: "Nouveaux codes de recuperation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorConfirmResponse"
+
+  /auth/2fa/verify:
+    post:
+      tags: ["Auth"]
+      summary: "Verifier le challenge 2FA et obtenir le token"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TwoFactorVerifyRequest"
+      responses:
+        "200":
+          description: "Token Sanctum delivre"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorVerifyResponse"
+        "401":
+          description: "TWO_FACTOR_CHALLENGE_EXPIRED"
+        "422":
+          description: "TWO_FACTOR_INVALID ou validation"
+
   /auth/me:
     get:
       tags: ["Auth"]
@@ -11185,6 +11312,42 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /accounting/documents/shared/{token}:
+    get:
+      tags: ["Accounting"]
+      summary: "Portail client — informations du document partagé (token)"
+      description: "Endpoint public : le token de partage est la credential. Accès RGPD limité au document partagé (issue #5225)."
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Méta-données du document (numéro, type, statut, total TTC, expiration)"
+        "404":
+          description: "Token invalide ou expiré"
+        "429":
+          description: "Trop de requêtes (throttle)"
+
+  /accounting/documents/shared/{token}/download:
+    get:
+      tags: ["Accounting"]
+      summary: "Portail client — téléchargement du PDF partagé (token)"
+      description: "Endpoint public : télécharge le PDF du document partagé (issue #5225)."
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "PDF du document"
+        "404":
+          description: "Token invalide/expiré ou PDF non prêt"
+        "429":
+          description: "Trop de requêtes (throttle)"
+
   /supported-countries:
     get:
       tags: ["Payroll Engine"]
@@ -13971,6 +14134,7 @@ paths:
               required: [amount, method]
               properties:
                 amount: { type: number, minimum: 0, exclusiveMinimum: true }
+                amount: { type: number, exclusiveMinimum: 0 }
                 method: { type: string, enum: [cash, bank_transfer, check, card, other] }
                 received_at: { type: string, format: date }
                 reference: { type: string, maxLength: 120 }
@@ -14058,6 +14222,40 @@ paths:
           $ref: "#/components/responses/Error404"
         "422":
           $ref: "#/components/responses/Validation422"
+
+  /accounting/audit-logs:
+    get:
+      tags: ["Accounting"]
+      summary: "Audit trail du module Comptabilité (qui/quoi/quand, #5273)"
+      description: "Evenements accounting.* (creation, envoi, paiement, annulation, avoir) journalises via DataAccessAuditLogger. Scope tenant, reserve aux managers principal/comptable (le endpoint global /audit-logs reste principal-only). Lecture seule, append-only."
+      parameters:
+        - name: per_page
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 25 }
+        - name: resource
+          in: query
+          required: false
+          schema: { type: string, maxLength: 120 }
+        - name: user_id
+          in: query
+          required: false
+          schema: { type: integer }
+        - name: from
+          in: query
+          required: false
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          required: false
+          schema: { type: string, format: date }
+      responses:
+        "200":
+          description: "Evenements d'audit comptables pagines"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
 
   /bank-exports:
     get:
@@ -14473,68 +14671,6 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /recruitment/jobs/{jobPosting}:
-    get:
-      tags: ["Recruitment"]
-      summary: "Voir une offre"
-      parameters:
-        - name: jobPosting
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Detail offre"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/JobPosting"
-        "401":
-          $ref: "#/components/responses/Error401"
-    put:
-      tags: ["Recruitment"]
-      summary: "Modifier une offre"
-      parameters:
-        - name: jobPosting
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/StoreJobPostingRequest"
-      responses:
-        "200":
-          description: "Offre modifiee"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/JobPosting"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer une offre d'emploi (manager)"
-      parameters:
-        - name: jobPosting
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Offre supprimée"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /recruitment/jobs/{jobPosting}/publish:
     post:
       tags: ["Recruitment"]
@@ -14623,77 +14759,12 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /recruitment/applicants/{applicant}:
-    put:
-      tags: ["Recruitment"]
-      summary: "Modifier un candidat"
-      parameters:
-        - name: applicant
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                stage:
-                  type: string
-                rating:
-                  type: integer
-                  minimum: 1
-                  maximum: 5
-                notes:
-                  type: string
-                  nullable: true
-      responses:
-        "200":
-          description: "Candidat modifie"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/Applicant"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-    get:
-      tags: ["Recruitment"]
-      summary: "Détail d'une candidature (manager)"
-      parameters:
-        - name: applicant
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Candidature"
-        "401":
-          $ref: "#/components/responses/Error401"
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer une candidature (manager)"
-      parameters:
-        - name: applicant
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Candidature supprimée"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /recruitment/applicants/{applicant}/interviews:
+  /recruitment/applicants/{id}/interviews:
     post:
       tags: ["Recruitment"]
       summary: "Planifier un entretien"
       parameters:
-        - name: applicant
+        - name: id
           in: path
           required: true
           schema: { type: integer }
@@ -14728,53 +14799,6 @@ paths:
           $ref: "#/components/responses/Error401"
         "422":
           $ref: "#/components/responses/Validation422"
-
-  /recruitment/interviews/{interview}:
-    put:
-      tags: ["Recruitment"]
-      summary: "Modifier un entretien"
-      parameters:
-        - name: interview
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                status:
-                  type: string
-                  enum: [scheduled, completed, cancelled]
-                feedback:
-                  type: string
-                  nullable: true
-                rating:
-                  type: integer
-                  minimum: 1
-                  maximum: 5
-      responses:
-        "200":
-          description: "Entretien modifie"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  # --- Training ---
-    delete:
-      tags: ["Recruitment"]
-      summary: "Supprimer un entretien (manager)"
-      parameters:
-        - name: interview
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Entretien supprimé"
-        "401":
-          $ref: "#/components/responses/Error401"
 
   /training/courses:
     get:
@@ -16386,10 +16410,24 @@ paths:
     get:
       tags: ["Admin"]
       summary: "Journal d'audit"
+      description: |
+        Journal d'audit global (#5439) — manager `principal` ou `rh` du tenant.
+        Isolation tenant stricte (company_id de l'acteur). Filtres : module
+        (attendance, payroll, planning, hr, auth, audit...), action,
+        auditable_type/auditable_id, user_id, from, to.
       parameters:
+        - name: module
+          in: query
+          schema: { type: string }
         - name: action
           in: query
           schema: { type: string }
+        - name: auditable_type
+          in: query
+          schema: { type: string }
+        - name: auditable_id
+          in: query
+          schema: { type: integer }
         - name: user_id
           in: query
           schema: { type: integer }
@@ -16426,9 +16464,13 @@ paths:
       tags: ["Admin"]
       summary: "Exporter le journal d'audit en CSV"
       description: |
-        Reserve au manager `principal`. Applique les memes filtres que `GET /audit-logs`
-        (action, user_id, from, to) et retourne un flux CSV (`Content-Type: text/csv`).
+        Reserve aux managers `principal` et `rh`. Applique les memes filtres que
+        `GET /audit-logs` (module, action, user_id, from, to) et retourne un flux
+        CSV (`Content-Type: text/csv`).
       parameters:
+        - name: module
+          in: query
+          schema: { type: string }
         - name: action
           in: query
           schema: { type: string }
@@ -18450,38 +18492,6 @@ paths:
         "403":
           description: "Rôle requis (principal/rh)"
 
-  /recruitment/interviews/{interview}/feedback:
-    patch:
-      tags: ["Recruitment"]
-      summary: "Saisir le feedback d'un entretien (le clôture)"
-      parameters:
-        - name: interview
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [feedback]
-              properties:
-                feedback:
-                  type: string
-                  maxLength: 5000
-                rating:
-                  type: integer
-                  minimum: 1
-                  maximum: 5
-      responses:
-        "200":
-          description: "Entretien clôturé (status=completed)"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-
-
   /zkteco/devices:
     get:
       tags: ["ZKTeco"]
@@ -19696,6 +19706,53 @@ paths:
         "404":
           description: "Correction introuvable ou sans justificatif"
   /recruitment/jobs/{id}:
+    get:
+      tags: ["Recruitment"]
+      summary: "Voir une offre"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail offre"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/JobPosting"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Recruitment"]
+      summary: "Modifier une offre"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreJobPostingRequest"
+      responses:
+        "200":
+          description: "Offre modifiee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/JobPosting"
+        "401":
+          $ref: "#/components/responses/Error401"
+
     delete:
       tags: ["Recruitment"]
       summary: "Supprimer une offre d'emploi (manager)"
@@ -19710,6 +19767,43 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
   /recruitment/applicants/{id}:
+    put:
+      tags: ["Recruitment"]
+      summary: "Modifier un candidat"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stage:
+                  type: string
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: "Candidat modifie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Applicant"
+        "401":
+          $ref: "#/components/responses/Error401"
+
     get:
       tags: ["Recruitment"]
       summary: "Détail d'une candidature (manager)"
@@ -19766,6 +19860,38 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
   /recruitment/interviews/{id}:
+    put:
+      tags: ["Recruitment"]
+      summary: "Modifier un entretien"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [scheduled, completed, cancelled]
+                feedback:
+                  type: string
+                  nullable: true
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+      responses:
+        "200":
+          description: "Entretien modifie"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Training ---
     delete:
       tags: ["Recruitment"]
       summary: "Supprimer un entretien (manager)"
@@ -19778,75 +19904,6 @@ paths:
         "200":
           description: "Entretien supprimé"
         "401":
-          $ref: "#/components/responses/Error401"
-  /accounting/dashboard:
-    get:
-      tags: ["Accounting"]
-      summary: "Tableau de bord comptable — factures emises, encaissements, impayes, depenses"
-      description: |
-        Synthese de pilotage du tenant courant (issue #5230) : factures emises
-        (ventes, hors brouillons/annules), encaissements (paiements recus),
-        impayes (aging par retard d'echeance 0-30/31-60/61-90/90+ jours) et
-        depenses fournisseurs (documents lies a un contact fournisseur).
-        Periode par defaut : mois courant. Lecture seule.
-      parameters:
-        - name: from
-          in: query
-          description: "Debut de periode (YYYY-MM-DD)."
-          schema:
-            type: string
-            format: date
-        - name: to
-          in: query
-          description: "Fin de periode (YYYY-MM-DD)."
-          schema:
-            type: string
-            format: date
-      responses:
-        "200":
-          description: "Synthese du tableau de bord"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/AccountingDashboard"
-        "422":
-          $ref: "#/components/responses/Validation422"
-        "403":
-          $ref: "#/components/responses/Error401"
-  /accounting/dashboard/export:
-    get:
-      tags: ["Accounting"]
-      summary: "Export CSV de la liste des impayes"
-      description: |
-        Export CSV (UTF-8) de la liste des impayes du tenant courant (issue
-        #5230) : numero, contact, dates, retard, total TTC, paye, reste du,
-        statut. Fichier : accounting-dashboard-outstanding-<from>_<to>.csv.
-      parameters:
-        - name: from
-          in: query
-          description: "Debut de periode (YYYY-MM-DD)."
-          schema:
-            type: string
-            format: date
-        - name: to
-          in: query
-          description: "Fin de periode (YYYY-MM-DD)."
-          schema:
-            type: string
-            format: date
-      responses:
-        "200":
-          description: "Fichier CSV (text/csv)"
-          content:
-            text/csv:
-              schema:
-                type: string
-        "422":
-          $ref: "#/components/responses/Validation422"
-        "403":
           $ref: "#/components/responses/Error401"
   /smart-attendance/mode-settings:
     get:
@@ -20128,7 +20185,195 @@ paths:
           description: "Préférence de l'employé"
         "401":
           $ref: "#/components/responses/Error401"
+  /accounting/journal:
+    get:
+      tags: ["Accounting"]
+      summary: "Journal comptable par periode"
+      description: "Ecritures debit/credit d'une periode comptable (YYYY-MM) avec totaux et invariant d'equilibre debit=credit (issue #5234). Accessible comptable/principal."
+      parameters:
+        - name: period
+          in: query
+          required: true
+          description: "Periode comptable (YYYY-MM)."
+          schema: { type: string, pattern: "^\\d{4}-(0[1-9]|1[0-2])$" }
+      responses:
+        "200":
+          description: "Journal de la periode (entries, totals, balanced, closed)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  period: { type: string }
+                  balanced: { type: boolean }
+                  closed: { type: boolean }
+                  totals:
+                    type: object
+                    properties:
+                      debit: { type: number, format: double }
+                      credit: { type: number, format: double }
+                  entries:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        date: { type: string, format: date }
+                        piece: { type: string, nullable: true }
+                        description: { type: string, nullable: true }
+                        account_code: { type: string }
+                        account_label: { type: string }
+                        debit: { type: number, format: double }
+                        credit: { type: number, format: double }
+                        source_type: { type: string }
+                        source_id: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+  /accounting/journal/export.csv:
+    get:
+      tags: ["Accounting"]
+      summary: "Export CSV du journal (expert-comptable)"
+      description: "CSV UTF-8 (BOM), separateur ';', colonnes date;piece;libelle;compte;intitule;debit;credit + ligne de totaux. Cellules texte neutralisees anti-injection CSV (issue #4169)."
+      parameters:
+        - name: period
+          in: query
+          required: true
+          description: "Periode comptable (YYYY-MM)."
+          schema: { type: string, pattern: "^\\d{4}-(0[1-9]|1[0-2])$" }
+      responses:
+        "200":
+          description: "Fichier CSV du journal"
+          content:
+            text/csv:
+              schema: { type: string, format: binary }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+  /accounting/journal/periods/{period}/close:
+    post:
+      tags: ["Accounting"]
+      summary: "Cloturer une periode comptable"
+      description: "Fige le journal de la periode : plus aucun posting (document/paiement date dans la periode) n'est accepte (422 PERIOD_CLOSED). Idempotent."
+      parameters:
+        - name: period
+          in: path
+          required: true
+          description: "Periode comptable (YYYY-MM)."
+          schema: { type: string, pattern: "^\\d{4}-(0[1-9]|1[0-2])$" }
+      responses:
+        "201":
+          description: "Periode cloturee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  period: { type: string }
+                  closed_at: { type: string, format: date-time, nullable: true }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+  /accounting/documents/{document}/journal:
+    post:
+      tags: ["Accounting"]
+      summary: "Poster (ou re-poster) un document au journal"
+      description: "Passe les ecritures du document (invoice/credit_note) + de ses paiements. Idempotent (updateOrCreate). 422 si la periode du document est cloturee."
+      parameters:
+        - name: document
+          in: path
+          required: true
+          description: "ID du document comptable."
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Nombre d'ecritures creees/mises a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  document_id: { type: integer }
+                  entries: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          description: "Periode cloturee (PERIOD_CLOSED) — aucun posting possible."
 components:
+
+  TwoFactorStatusResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          mfa_required:
+            type: boolean
+
+  TwoFactorEnrollResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          secret:
+            type: string
+          qr_url:
+            type: string
+
+  TwoFactorConfirmResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          recovery_codes:
+            type: array
+            items:
+              type: string
+
+  TwoFactorVerifyRequest:
+    type: object
+    required: [challenge_token]
+    properties:
+      challenge_token:
+        type: string
+      code:
+        type: string
+        description: "Code TOTP (ou recovery_code)"
+      recovery_code:
+        type: string
+      device_name:
+        type: string
+        nullable: true
+      remember_device:
+        type: boolean
+
+  TwoFactorVerifyResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          id:
+            type: integer
+          email:
+            type: string
+      token:
+        type: string
+      token_type:
+        type: string
+      token_expires_at:
+        type: string
+        nullable: true
+
   securitySchemes:
     BearerAuth:
       type: http
@@ -26405,6 +26650,12 @@ components:
           nullable: true
         action:
           type: string
+        module:
+          type: string
+          nullable: true
+        request_id:
+          type: string
+          nullable: true
         entity_type:
           type: string
         entity_id:
@@ -26510,93 +26761,3 @@ components:
             total_sessions: { type: integer }
             auto_approved_rate: { type: number, format: float }
     # ── End SmartAttendance schemas ──
-    AccountingDashboard:
-      type: object
-      description: "Synthese du tableau de bord comptable (issue #5230)."
-      properties:
-        period:
-          type: object
-          properties:
-            from:
-              type: string
-              format: date
-            to:
-              type: string
-              format: date
-        invoices:
-          type: object
-          description: "Factures emises (ventes, hors brouillons/annules) sur la periode."
-          properties:
-            count:
-              type: integer
-            total_ttc:
-              type: number
-              nullable: true
-        collections:
-          type: object
-          description: "Encaissements (paiements recus) sur la periode."
-          properties:
-            count:
-              type: integer
-            total:
-              type: number
-              nullable: true
-        expenses:
-          type: object
-          description: "Depenses fournisseurs (documents lies a un contact fournisseur) sur la periode."
-          properties:
-            count:
-              type: integer
-            total_ttc:
-              type: number
-              nullable: true
-        outstanding:
-          type: object
-          description: "Impayes : documents emis non soldes + aging par retard d'echeance."
-          properties:
-            count:
-              type: integer
-            total_due:
-              type: number
-            aging:
-              type: array
-              description: "Buckets 0_30 / 31_60 / 61_90 / 90_plus (documents en retard)."
-              items:
-                type: object
-                properties:
-                  bucket:
-                    type: string
-                  count:
-                    type: integer
-                  total_due:
-                    type: number
-            list:
-              type: array
-              description: "100 impayes les plus anciens (tri echeance ASC)."
-              items:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  number:
-                    type: string
-                  contact:
-                    type: string
-                  issue_date:
-                    type: string
-                    format: date
-                    nullable: true
-                  due_date:
-                    type: string
-                    format: date
-                    nullable: true
-                  days_late:
-                    type: integer
-                  total_ttc:
-                    type: number
-                  paid_amount:
-                    type: number
-                  due_amount:
-                    type: number
-                  status:
-                    type: string

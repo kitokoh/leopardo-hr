@@ -217,6 +217,26 @@ class CameraStreamTokenVerifyTest extends TestCase
             ->assertJsonPath('reason', 'camera_not_found');
     }
 
+    public function test_verify_rejects_invalid_input_without_calling_token_service(): void
+    {
+        $response = $this->getJson('/api/v1/internal/camera-token/verify?token=valid&camera_id=not-a-number&client_ip=999.1.1.1');
+
+        $response->assertOk()
+            ->assertJsonPath('allowed', false)
+            ->assertJsonPath('reason', 'invalid_request');
+    }
+
+    public function test_verify_rejects_oversized_token(): void
+    {
+        $token = str_repeat('x', 2049);
+
+        $response = $this->getJson('/api/v1/internal/camera-token/verify?token='.urlencode($token).'&camera_id=1');
+
+        $response->assertOk()
+            ->assertJsonPath('allowed', false)
+            ->assertJsonPath('reason', 'invalid_request');
+    }
+
     public function test_verify_requires_bearer_secret_when_configured(): void
     {
         config()->set('cameras.mediamtx_secret', 'topsecret');

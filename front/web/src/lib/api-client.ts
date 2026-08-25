@@ -13,6 +13,16 @@ import {
 
 import { DEFAULT_BACKEND_API_URL } from '@/lib/backend-url';
 
+
+declare global {
+  interface RequestInit {
+    /** RTMX (#5446) : forcer une réponse fraîche (ignore l'ETag caché). */
+    _cacheBust?: boolean;
+    /** RTMX (#5446) : désactiver la clé d'idempotence pour cette mutation. */
+    _idempotent?: boolean;
+  }
+}
+
 const LOCAL_API_BASE_URL = 'http://localhost:8000/api/v1';
 const DEPLOYED_API_BASE_URL = DEFAULT_BACKEND_API_URL;
 
@@ -43,6 +53,74 @@ function resolveApiBaseUrl(): string {
 }
 
 const API_BASE_URL = resolveApiBaseUrl();
+
+
+// ── RTMX client (#5446) — GET conditionnels (ETag/304) + Idempotency-Key ──
+// Le socle serveur (#5277) expose ETag (sha1 du corps) + rejeu idempotent
+// 24 h des écritures. Ici : GET avec If-None-Match (304 = succès, corps
+// caché servi depuis sessionStorage) et mutations avec une clé d'idempotence
+// stable par action logique (le serveur rejoue la 1re 2xx au lieu de
+// dupliquer — sécurise aussi les retries 502/503/504 existants).
+
+const RTMX_ETAG_KEY = 'rtmx_etag_v1';
+const RTMX_IDEM_KEY = 'rtmx_idem_v1';
+
+type RtmxCacheEntry = { etag: string; body: unknown; ts: number };
+
+function rtmxSessionGet<T>(key: string): T | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return JSON.parse(window.sessionStorage.getItem(key) || 'null') as T | null;
+  } catch {
+    return null;
+  }
+}
+
+function rtmxSessionSet(key: string, value: unknown): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.sessionStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // sessionStorage indisponible — cache mémoire uniquement.
+  }
+}
+
+function rtmxCacheKey(url: string): string {
+  try {
+    const u = new URL(url, 'http://local');
+    return u.pathname + u.search;
+  } catch {
+    return url;
+  }
+}
+
+function rtmxUuid(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+function rtmxIdempotencyKey(method: string, url: string, body?: unknown): string {
+  const store = rtmxSessionGet<Record<string, string>>(RTMX_IDEM_KEY) || {};
+  const logical = `${method}:${url}:${typeof body === 'string' ? body : JSON.stringify(body ?? {})}`;
+  // FNV-1a 32 bits — déduplication des actions identiques (double-clic/retry).
+  let h = 0x811c9dc5;
+  for (let i = 0; i < logical.length; i++) {
+    h ^= logical.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  const storeKey = `v1:${h >>> 0}`;
+  if (!store[storeKey]) {
+    store[storeKey] = rtmxUuid();
+  }
+  rtmxSessionSet(RTMX_IDEM_KEY, store);
+  return store[storeKey];
+}
 
 export class ApiError extends Error {
   status: number;
@@ -136,12 +214,26 @@ export async function apiFetch(
   const isLoginRequest = endpoint === '/auth/login' || endpoint === '/platform/auth/login';
   const timeoutMs = isLoginRequest ? 60000 : 20000;
 
-  const headers = {
+  const method = (options.method || 'GET').toUpperCase();
+
+  const headers = new Headers({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'Accept-Language': typeof window !== 'undefined' ? getPreferredLocale() : 'fr',
-    ...options.headers,
-  };
+  });
+  for (const [k, v] of Object.entries(options.headers ?? {})) {
+    headers.set(k, String(v));
+  }
+
+  // RTMX (#5446) : GET conditionnel + clé d'idempotence par action logique.
+  if (method === 'GET' && options._cacheBust !== true) {
+    const cached = rtmxSessionGet<Record<string, RtmxCacheEntry>>(RTMX_ETAG_KEY)?.[rtmxCacheKey(endpoint)];
+    if (cached?.etag) {
+      headers.set('If-None-Match', cached.etag);
+    }
+  } else if (['POST', 'PUT', 'PATCH'].includes(method) && options._idempotent !== false) {
+    headers.set('Idempotency-Key', rtmxIdempotencyKey(method, endpoint, options.body));
+  }
 
   const response = await fetchWithRetry(
     `${API_BASE_URL}${endpoint}`,
@@ -152,6 +244,32 @@ export async function apiFetch(
       onRetry: retryOptions?.onRetry,
     },
   );
+
+  // RTMX (#5446) : 304 Not Modified = succès — servir le corps caché.
+  if (response.status === 304) {
+    const cached = rtmxSessionGet<Record<string, RtmxCacheEntry>>(RTMX_ETAG_KEY)?.[rtmxCacheKey(endpoint)];
+    if (cached) {
+      return new Response(JSON.stringify(cached.body), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    // Cache absent (sessionStorage purgé) : rejouer sans If-None-Match.
+    return apiFetch(endpoint, { ...options, _cacheBust: true }, retryOptions);
+  }
+
+  // RTMX (#5446) : mémoriser l'ETag des GET 2xx JSON pour les prochaines
+  // lectures (les téléchargements — PDF/CSV — ne sont pas mis en cache).
+  if (method === 'GET' && response.ok) {
+    const etag = response.headers.get('etag');
+    const contentType = response.headers.get('content-type') || '';
+    if (etag && contentType.includes('application/json') && options._cacheBust !== true) {
+      const store = rtmxSessionGet<Record<string, RtmxCacheEntry>>(RTMX_ETAG_KEY) || {};
+      const body = await response.clone().json();
+      store[rtmxCacheKey(endpoint)] = { etag, body, ts: Date.now() };
+      rtmxSessionSet(RTMX_ETAG_KEY, store);
+    }
+  }
 
   if (response.status === 401 && typeof window !== 'undefined' && !isLoginRequest) {
     clearAuthSession();

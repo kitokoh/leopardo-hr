@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Cabinet;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Cabinet\Domain\Models\CabinetFolder;
 use Illuminate\Http\UploadedFile;
@@ -30,8 +30,11 @@ class CabinetDocumentControllerTest extends TestCase
     use RefreshTenantDatabase;
 
     protected Company $company;
+
     protected Company $otherCompany;
+
     protected Employee $manager;
+
     protected Employee $otherManager;
 
     protected function setUp(): void
@@ -39,9 +42,9 @@ class CabinetDocumentControllerTest extends TestCase
         parent::setUp();
         Storage::fake('local');
 
-        $this->company      = Company::factory()->create();
+        $this->company = Company::factory()->create();
         $this->otherCompany = Company::factory()->create();
-        $this->manager      = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        $this->manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
         $this->otherManager = Employee::factory()->manager()->create(['company_id' => $this->otherCompany->id]);
     }
 
@@ -62,6 +65,15 @@ class CabinetDocumentControllerTest extends TestCase
         $response->assertJsonStructure(['data']);
     }
 
+    public function test_invalid_list_parameters_return_validation_error(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        $this->getJson('/api/v1/cabinet/documents?folder_id=not-a-number&root_only=unknown&search='.str_repeat('x', 121).'&per_page=not-a-number')
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['folder_id', 'root_only', 'search', 'per_page']);
+    }
+
     public function test_unauthenticated_user_cannot_list_documents(): void
     {
         $response = $this->getJson('/api/v1/cabinet/documents');
@@ -78,8 +90,8 @@ class CabinetDocumentControllerTest extends TestCase
         $file = UploadedFile::fake()->create('contrat.pdf', 512, 'application/pdf');
 
         $response = $this->postJson('/api/v1/cabinet/documents', [
-            'file'  => $file,
-            'name'  => 'Contrat 2024',
+            'file' => $file,
+            'name' => 'Contrat 2024',
             'notes' => 'Contrat de travail signé',
         ]);
 
@@ -146,7 +158,7 @@ class CabinetDocumentControllerTest extends TestCase
             'mime_type' => 'application/pdf',
             'size' => 1024,
             'disk' => 'local',
-            'path' => 'documents/' . ($readOnly ? 'readonly' : 'normal') . '-' . uniqid('', true) . '.pdf',
+            'path' => 'documents/'.($readOnly ? 'readonly' : 'normal').'-'.uniqid('', true).'.pdf',
             'read_only' => $readOnly,
             'document_type' => $readOnly ? 'payslip' : 'document',
         ]);
@@ -158,7 +170,7 @@ class CabinetDocumentControllerTest extends TestCase
 
         $document = $this->makeDocument(readOnly: true);
 
-        $response = $this->putJson('/api/v1/cabinet/documents/' . $document->id, [
+        $response = $this->putJson('/api/v1/cabinet/documents/'.$document->id, [
             'name' => 'Renommé.pdf',
         ]);
 
@@ -180,7 +192,7 @@ class CabinetDocumentControllerTest extends TestCase
         ]);
         $document = $this->makeDocument(readOnly: true);
 
-        $response = $this->patchJson('/api/v1/cabinet/documents/' . $document->id . '/move', [
+        $response = $this->patchJson('/api/v1/cabinet/documents/'.$document->id.'/move', [
             'folder_id' => $folder->id,
         ]);
 
@@ -197,7 +209,7 @@ class CabinetDocumentControllerTest extends TestCase
 
         $document = $this->makeDocument(readOnly: true);
 
-        $response = $this->putJson('/api/v1/cabinet/documents/' . $document->id, [
+        $response = $this->putJson('/api/v1/cabinet/documents/'.$document->id, [
             'notes' => 'tentative de modification',
         ]);
 
@@ -214,7 +226,7 @@ class CabinetDocumentControllerTest extends TestCase
 
         $document = $this->makeDocument(readOnly: false);
 
-        $response = $this->putJson('/api/v1/cabinet/documents/' . $document->id, [
+        $response = $this->putJson('/api/v1/cabinet/documents/'.$document->id, [
             'name' => 'Nouveau nom.pdf',
         ]);
 

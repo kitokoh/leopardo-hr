@@ -271,6 +271,12 @@ const navigation = computed(() => [
   ...(canAccessAccounting.value
     ? [
         {
+          name: 'accounting-activation',
+          title: t('navigation.accountingActivation', 'Comptabilité — Démarrer'),
+          path: '/accounting/activation',
+          icon: SparklesIcon
+        },
+        {
           name: 'accounting-dashboard',
           title: t('navigation.accountingDashboard', 'Comptabilité — Tableau de bord'),
           path: '/accounting/dashboard',
