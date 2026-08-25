@@ -78,6 +78,7 @@ return [
 
     // İş hataları (issue #5227)
     'errors' => [
+        'gateway_checkout_failed' => 'Ödeme sağlayıcısı geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
         'payment_amount_positive' => 'Ödeme tutarı kesinlikle pozitif olmalıdır.',
         'wf_invalid_type' => 'Geçersiz belge türü.',
         'wf_requires_lines' => 'Bir belgenin en az bir satırı olmalıdır.',
