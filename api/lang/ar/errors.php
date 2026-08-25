@@ -227,6 +227,7 @@ return [
     // النظام الأساسي — RTMX (#5277): إعادة تشغيل آمنة للكتابات من الجوال
     'INVALID_IDEMPOTENCY_KEY' => 'مفتاح التكرار غير صالح.',
     'IDEMPOTENCY_IN_PROGRESS' => 'طلب مماثل قيد المعالجة بالفعل. أعد المحاولة بعد قليل.',
+    'ATTENDANCE_PERIOD_CLOSED' => 'فترة الحضور مغلقة: التصحيحات مقفلة.',
     'DEPARTMENT_DELETED' => 'تم حذف القسم.',
     'POSITION_DELETED' => 'تم حذف المنصب.',
     'SITE_DELETED' => 'تم حذف الموقع.',
