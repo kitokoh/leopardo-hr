@@ -153,6 +153,8 @@ jobs:
       fail-fast: false
       matrix:
         project:
+          - name: leopardo_accounting
+            path: front/mobile_apps/leopardo_accounting
           - name: leopardo_core
             path: front/mobile_apps/leopardo_core
           - name: leopardo_employee
@@ -178,6 +180,13 @@ jobs:
       - name: Install dependencies
         working-directory: ${{ matrix.project.path }}
         run: flutter pub get --offline || flutter pub get
+
+      - name: Regenerate shared localizations
+        # #4762 : les apps consomment AppLocalizations depuis le package core.
+        # Régénérer avec la version Flutter de CI évite une interface générée
+        # obsolète après pub get ou restauration de cache.
+        working-directory: front/mobile_apps/leopardo_core
+        run: flutter gen-l10n
 
       - name: Fetch diff base for incremental Dart gate
         shell: bash
@@ -266,6 +275,9 @@ jobs:
           - name: leopardo_marketing
             path: front/mobile_apps/leopardo_marketing
             artifact: leopardo-marketing-debug-apk
+          - name: leopardo_accounting
+            path: front/mobile_apps/leopardo_accounting
+            artifact: leopardo-accounting-debug-apk
 
     steps:
       - name: Checkout code

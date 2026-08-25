@@ -31,7 +31,7 @@ class ScheduleController extends Controller
         }
 
         $schedules = $this->tenantCache->rememberSchedules(
-            $user->company_id,
+            (string) $user->company_id,
             fn () => Schedule::query()
                 ->select([
                     'id',
@@ -77,8 +77,8 @@ class ScheduleController extends Controller
             ...$request->validated(),
         ]);
 
-        $this->tenantCache->invalidateSchedules($actor->company_id);
-        $this->tenantCache->invalidateEmployees($actor->company_id);
+        $this->tenantCache->invalidateSchedules((string) $actor->company_id);
+        $this->tenantCache->invalidateEmployees((string) $actor->company_id);
 
         return (new ScheduleResource($schedule))
             ->response()
@@ -110,8 +110,8 @@ class ScheduleController extends Controller
 
         $schedule->update($request->validated());
 
-        $this->tenantCache->invalidateSchedules($actor->company_id);
-        $this->tenantCache->invalidateEmployees($actor->company_id);
+        $this->tenantCache->invalidateSchedules((string) $actor->company_id);
+        $this->tenantCache->invalidateEmployees((string) $actor->company_id);
 
         return new ScheduleResource($schedule->fresh());
     }
@@ -159,7 +159,7 @@ class ScheduleController extends Controller
             ->whereIn('id', $employeeIds)
             ->update(['schedule_id' => $schedule->id]);
 
-        $this->tenantCache->invalidateEmployees($actor->company_id);
+        $this->tenantCache->invalidateEmployees((string) $actor->company_id);
 
         return response()->json([
             'data' => [
@@ -183,8 +183,8 @@ class ScheduleController extends Controller
 
         $schedule->delete();
 
-        $this->tenantCache->invalidateSchedules($user->company_id);
-        $this->tenantCache->invalidateEmployees($user->company_id);
+        $this->tenantCache->invalidateSchedules((string) $user->company_id);
+        $this->tenantCache->invalidateEmployees((string) $user->company_id);
 
         // #4812 : littéral EN déplacé au catalogue errors.*
         return response()->json(['message' => __('errors.SCHEDULE_DELETED')]);

@@ -25,15 +25,39 @@ class FrancePayrollRules extends AbstractCountryRules
 
     public function socialContributions(): array
     {
+        // #5438 — structure URSSAF détaillée (pilot, gap E3 FR_COMPLIANCE.md).
+        // PMSS 2026 = 4 005 €/mois (PASS 48 060 €, +2 %, arrêté 2026).
+        $pmss = $this->pmss();
+
         return [
-            ['name' => 'Securite sociale salariale', 'code' => 'SS_FR_EMP', 'type' => 'employee', 'rate' => 7.5, 'cap' => null],
-            ['name' => 'Securite sociale patronale', 'code' => 'SS_FR_PAT', 'type' => 'employer', 'rate' => 30.0, 'cap' => null],
+            ['name' => 'Maladie', 'code' => 'MAL_FR', 'type' => 'employer', 'rate' => 13.0, 'cap' => null],
+            ['name' => 'Vieillesse plafonnee', 'code' => 'VIE_PLF_FR', 'type' => 'employee', 'rate' => 6.9, 'cap' => $pmss],
+            ['name' => 'Vieillesse plafonnee', 'code' => 'VIE_PLF_PAT_FR', 'type' => 'employer', 'rate' => 8.55, 'cap' => $pmss],
+            ['name' => 'Vieillesse deplaafonnee', 'code' => 'VIE_DPL_FR', 'type' => 'employee', 'rate' => 0.4, 'cap' => null],
+            ['name' => 'Vieillesse deplaafonnee', 'code' => 'VIE_DPL_PAT_FR', 'type' => 'employer', 'rate' => 1.9, 'cap' => null],
+            ['name' => 'Retraite complementaire T1', 'code' => 'RET_T1_FR', 'type' => 'employee', 'rate' => 3.15, 'cap' => $pmss],
+            ['name' => 'Retraite complementaire T1', 'code' => 'RET_T1_PAT_FR', 'type' => 'employer', 'rate' => 4.72, 'cap' => $pmss],
+            ['name' => 'Prevoyeance (pilot)', 'code' => 'PREV_FR', 'type' => 'employee', 'rate' => 1.5, 'cap' => null],
+            ['name' => 'Prevoyeance (pilot)', 'code' => 'PREV_PAT_FR', 'type' => 'employer', 'rate' => 1.5, 'cap' => null],
+            ['name' => 'Chomage', 'code' => 'CHO_FR', 'type' => 'employer', 'rate' => 4.05, 'cap' => null],
+            ['name' => 'FNGS', 'code' => 'FNGS_FR', 'type' => 'employer', 'rate' => 0.5, 'cap' => null],
             // Issue #2220 : CSG/CRDS assises sur 98,25 % du brut (constante
             // légale, cf. calculateSocialCharges) — assiette_rate portée par
             // la métadonnée pour que la simulation par item = moteur.
             ['name' => 'CSG', 'code' => 'CSG_FR', 'type' => 'employee', 'rate' => 9.2, 'cap' => null, 'assiette_rate' => 98.25],
             ['name' => 'CRDS', 'code' => 'CRDS_FR', 'type' => 'employee', 'rate' => 0.5, 'cap' => null, 'assiette_rate' => 98.25],
         ];
+    }
+
+    /**
+     * Plafond mensuel de la Sécurité sociale (PMSS) 2026.
+     *
+     * 4 005 €/mois (PASS 48 060 €/an, +2 % par rapport à 2025) — arrêté de
+     * fin 2025, vérifié 2026-08-25 (source : service-public.fr / LégiSocial).
+     */
+    public function pmss(): float
+    {
+        return 4005.0;
     }
 
     protected function defaultTaxSlabs(): array
@@ -60,20 +84,83 @@ class FrancePayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
-        // 98.25% CSG/CRDS abatement base is a statutory constant, not a
-        // per-code rate/cap tracked in social_contributions, so it stays
-        // hardcoded here.
+        // #5438 — structure URSSAF détaillée (pilot, FR_COMPLIANCE.md §2).
+        // Chaque ligne est arrondie à 2 décimales (computeContribution) puis
+        // sommée : salarié = vieillesse plaf./déplaf. + retraite T1 + prévoyance
+        // + CSG/CRDS (98,25 % du brut) ; employeur = maladie + vieillesse +
+        // retraite T1 + prévoyance + chômage + FNGS. Plafonds PMSS honorés.
         $csgBase = $grossSalary * 0.9825;
 
-        $ssEmployeeRate = $this->resolveContributionRate('SS_FR_EMP', 7.5);
-        $ssEmployerRate = $this->resolveContributionRate('SS_FR_PAT', 30.0);
-        $csgRate = $this->resolveContributionRate('CSG_FR', 9.2);
-        $crdsRate = $this->resolveContributionRate('CRDS_FR', 0.5);
+        $employee = round(
+            $this->computeContribution($grossSalary, 'VIE_PLF_FR', 6.9, $this->pmss())
+            + $this->computeContribution($grossSalary, 'VIE_DPL_FR', 0.4, null)
+            + $this->computeContribution($grossSalary, 'RET_T1_FR', 3.15, $this->pmss())
+            + $this->computeContribution($grossSalary, 'PREV_PAT_FR', 1.5, null)
+            + $csgBase * $this->resolveContributionRate('CSG_FR', 9.2) / 100
+            + $csgBase * $this->resolveContributionRate('CRDS_FR', 0.5) / 100,
+            2,
+        );
+
+        $employer = round(
+            $this->computeContribution($grossSalary, 'MAL_FR', 13.0, null)
+            + $this->computeContribution($grossSalary, 'VIE_PLF_PAT_FR', 8.55, $this->pmss())
+            + $this->computeContribution($grossSalary, 'VIE_DPL_PAT_FR', 1.9, null)
+            + $this->computeContribution($grossSalary, 'RET_T1_PAT_FR', 4.72, $this->pmss())
+            + $this->computeContribution($grossSalary, 'PREV_FR', 1.5, null)
+            + $this->computeContribution($grossSalary, 'CHO_FR', 4.05, null)
+            + $this->computeContribution($grossSalary, 'FNGS_FR', 0.5, null),
+            2,
+        );
 
         return [
-            'employee' => round($grossSalary * $ssEmployeeRate / 100 + $csgBase * $csgRate / 100 + $csgBase * $crdsRate / 100, 2),
-            'employer' => round($grossSalary * $ssEmployerRate / 100, 2),
+            'employee' => $employee,
+            'employer' => $employer,
         ];
+    }
+
+    /**
+     * Réduction générale des cotisations patronales (ex-Fillon) — pilot.
+     *
+     * Code du travail art. L241-13 (CSS) : coefficient =
+     * (T / 0,6) × (1,6 × SMIC_annuel / rémunération_annuelle − 1),
+     * borné entre 0 et T. T = 0,3206 (entreprises ≥ 20 salariés — pilot,
+     * valeur 2026 à confirmer par expert-comptable). La réduction s'annule
+     * au-delà de 1,6 × SMIC mensuel (2 987,23 € en 2026).
+     *
+     * @return float Montant mensuel de la réduction (0 si non éligible).
+     */
+    public function fillonReduction(float $monthlyGross): float
+    {
+        $t = 0.3206;
+        $smicMonthly = $this->minimumWage();
+        $annualGross = $monthlyGross * 12;
+        $annualSmic = $smicMonthly * 12;
+
+        $coefficient = ($t / 0.6) * ((1.6 * $annualSmic / max($annualGross, 0.01)) - 1);
+        $coefficient = max(0.0, min($coefficient, $t));
+
+        return round($coefficient * $monthlyGross, 2);
+    }
+
+    /**
+     * Prélèvement à la source (PAS) — taux personnalisé (pilot, gap E2).
+     *
+     * Retenue mensuelle = assiette nette imposable × taux / 100. Le taux
+     * neutre (par défaut) reste `calculateIncomeTax()` ; un taux personnalisé
+     * transmis par l'administration s'applique ici.
+     */
+    public function withholdingTax(float $taxableBase, float $rate): float
+    {
+        return round($taxableBase * $rate / 100, 2);
+    }
+
+    /**
+     * Net social (bulletin de paie, obligatoire depuis 2023) — définition
+     * pilot : brut − cotisations salariales (CSG/CRDS comprises).
+     */
+    public function netSocial(float $grossSalary, float $employeeCharges): float
+    {
+        return round($grossSalary - $employeeCharges, 2);
     }
 
     public function timezone(): string

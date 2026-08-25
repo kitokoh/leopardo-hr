@@ -10,25 +10,25 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/branding/tenant_theme.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_theme.dart';
-import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
-import 'package:leopardo_manager/features/auth/screens/access_denied_screen.dart';
-import 'package:leopardo_manager/features/auth/screens/login_screen.dart';
-import 'package:leopardo_manager/features/auth/screens/register_screen.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/auth/screens/access_denied_screen.dart';
+import 'package:leopardo_core/features/auth/screens/login_screen.dart';
+import 'package:leopardo_core/features/auth/screens/register_screen.dart';
 import 'package:leopardo_core/features/auth/screens/welcome_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/monthly_summary_screen.dart';
-import 'package:leopardo_manager/features/home/screens/home_screen.dart';
-import 'package:leopardo_manager/features/home/screens/modules_hub_screen.dart';
-import 'package:leopardo_manager/features/absences/screens/absence_list_screen.dart';
-import 'package:leopardo_manager/features/salary_advances/screens/salary_advance_list_screen.dart';
+import 'package:leopardo_core/features/home/screens/home_screen.dart';
+import 'package:leopardo_core/features/home/screens/modules_hub_screen.dart';
+import 'package:leopardo_core/features/absences/screens/absence_list_screen.dart';
+import 'package:leopardo_core/features/salary_advances/screens/salary_advance_list_screen.dart';
 import 'package:leopardo_manager/features/payrolls/screens/payroll_list_screen.dart';
 import 'package:leopardo_core/features/notifications/screens/notification_list_screen.dart';
-import 'package:leopardo_manager/features/evaluations/screens/evaluation_list_screen.dart';
+import 'package:leopardo_core/features/evaluations/screens/evaluation_list_screen.dart';
 import 'package:leopardo_core/features/cabinet/screens/cabinet_screen.dart';
 import 'package:leopardo_manager/features/settings/screens/settings_screen.dart';
-import 'package:leopardo_manager/features/team/screens/team_screen.dart';
-import 'package:leopardo_manager/features/tasks/screens/task_list_screen.dart';
+import 'package:leopardo_core/features/team/screens/team_screen.dart';
+import 'package:leopardo_core/features/tasks/screens/task_list_screen.dart';
 import 'package:leopardo_core/features/user_auth/screens/user_register_screen.dart';
 import 'package:leopardo_core/features/user_auth/screens/user_login_screen.dart';
 import 'package:leopardo_manager/features/user_auth/screens/user_home_screen.dart';
@@ -37,11 +37,12 @@ import 'package:leopardo_manager/features/ai_chat/screens/ai_chat_screen.dart';
 import 'package:leopardo_manager/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart';
 import 'package:leopardo_manager/features/manager/screens/manager_attendance_monitoring_screen.dart';
-import 'package:leopardo_manager/features/schedules/screens/schedule_list_screen.dart';
-import 'package:leopardo_manager/features/company_branding/screens/company_branding_screen.dart';
-import 'package:leopardo_manager/features/company_branding/providers/tenant_branding_provider.dart';
-import 'package:leopardo_manager/features/smart_attendance/screens/smart_attendance_dashboard_screen.dart';
-import 'package:leopardo_manager/features/smart_attendance/screens/pending_sessions_screen.dart';
+import 'package:leopardo_core/features/company_branding/screens/company_branding_screen.dart';
+import 'package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart';
+import 'package:leopardo_core/features/schedules/screens/schedule_list_screen.dart';
+import 'package:leopardo_core/features/attendance_geo/screens/attendance_geo_dashboard_screen.dart';
+import 'package:leopardo_core/features/attendance_geo/screens/pending_sessions_screen.dart';
+
 import 'package:leopardo_core/l10n/l10n.dart';
 
 import 'package:leopardo_manager/features/home/screens/manager_main_shell.dart';
@@ -75,8 +76,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               const SizedBox(height: 12),
               Text(
                 context.l10n.errorUnexpected,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               Text(context.l10n.pageNotFound, textAlign: TextAlign.center),
@@ -271,11 +274,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           // ── Smart Attendance ──────────────────────────────────────────
           GoRoute(
-            path: '/smart-attendance',
-            builder: (context, state) => const SmartAttendanceDashboardScreen(),
+            path: '/attendance/geo',
+            builder: (context, state) => const AttendanceGeoDashboardScreen(),
           ),
           GoRoute(
-            path: '/smart-attendance/pending',
+            path: '/attendance/geo/pending',
             builder: (context, state) => const PendingGeoSessionsScreen(),
           ),
         ],
@@ -289,8 +292,10 @@ class LeopardoApp extends ConsumerWidget {
 
   Locale _resolveLocale(String rawLocale) {
     final normalized = rawLocale.trim().replaceAll('_', '-');
-    final parts =
-        normalized.split('-').where((part) => part.isNotEmpty).toList();
+    final parts = normalized
+        .split('-')
+        .where((part) => part.isNotEmpty)
+        .toList();
 
     if (parts.isEmpty) {
       return const Locale('fr');
@@ -331,9 +336,11 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final deviceLanguage =
-        PlatformDispatcher.instance.locale.toLanguageTag().toLowerCase();
-    final languageCode = authState.employee?.language ??
+    final deviceLanguage = PlatformDispatcher.instance.locale
+        .toLanguageTag()
+        .toLowerCase();
+    final languageCode =
+        authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);

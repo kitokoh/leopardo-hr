@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Events\SubscriptionPaid;
 use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Models\Invoice;
-use App\Modules\Payroll\Domain\Models\Payment;
 use App\Modules\Billing\Domain\Models\Subscription;
+use App\Modules\Payroll\Domain\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use RuntimeException;
+use Throwable;
 
 /**
  * Stripe integration service for subscription management.
@@ -50,7 +52,7 @@ class StripeService
     public function createCheckoutSession(Company $company, string $plan, string $successUrl, string $cancelUrl): array
     {
         $priceId = $this->priceIds[$plan] ?? null;
-        if (!$priceId) {
+        if (! $priceId) {
             throw new InvalidArgumentException("Unknown plan: {$plan}");
         }
 
@@ -73,7 +75,7 @@ class StripeService
                 'subscription_data[trial_period_days]' => 0,
             ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             Log::error('Stripe: Failed to create checkout session', [
                 'status' => $response->status(),
                 'body' => $response->json(),
@@ -102,12 +104,12 @@ class StripeService
                 'return_url' => $returnUrl,
             ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             Log::error('Stripe: Failed to create portal session', [
                 'status' => $response->status(),
                 'customer' => $stripeCustomerId,
             ]);
-            throw new RuntimeException('Failed to create Stripe portal session.');
+            throw new RuntimeException('Failed to create portal session.');
         }
 
         return $response->json('url');
@@ -131,14 +133,22 @@ class StripeService
 
         $elements = [];
         foreach (explode(',', $sigHeader) as $part) {
-            [$key, $value] = explode('=', trim($part), 2);
-            $elements[$key] = $value;
+            $parts = explode('=', trim($part), 2);
+            if (count($parts) !== 2 || $parts[0] === '' || $parts[1] === '') {
+                // En-tête malformé : rejet fail-closed, sans laisser remonter
+                // une exception de parsing vers le endpoint public.
+                Log::warning('Stripe: Malformed webhook signature header');
+
+                return null;
+            }
+
+            $elements[$parts[0]] = $parts[1];
         }
 
         $timestamp = $elements['t'] ?? null;
         $signature = $elements['v1'] ?? null;
 
-        if (!$timestamp || !$signature) {
+        if (! $timestamp || ! $signature) {
             return null;
         }
 
@@ -187,7 +197,7 @@ class StripeService
         $subscriptionId = $session['subscription'] ?? null;
         $customerId = $session['customer'] ?? null;
 
-        if (!$companyId) {
+        if (! $companyId) {
             Log::warning('Stripe: checkout.session.completed without company_id', $session);
 
             return;
@@ -198,7 +208,7 @@ class StripeService
         }
 
         $company = Company::query()->find($companyId);
-        if (!$company) {
+        if (! $company) {
             Log::warning('Stripe: Company not found', ['company_id' => $companyId]);
 
             return;
@@ -270,7 +280,7 @@ class StripeService
             );
 
             // GROWTH MODULE: Dispatch SubscriptionPaid event
-            event(new \App\Events\SubscriptionPaid($payment));
+            event(new SubscriptionPaid($payment));
 
             if ($invoiceModel->subscription) {
                 $invoiceModel->subscription->update(['status' => 'active']);
@@ -278,7 +288,7 @@ class StripeService
         }
 
         $subscriptionId = $invoice['subscription'] ?? null;
-        if (!$subscriptionId) {
+        if (! $subscriptionId) {
             return;
         }
 
@@ -322,7 +332,7 @@ class StripeService
             ->where('stripe_subscription_id', $subscription['id'] ?? '')
             ->first();
 
-        if (!$sub) {
+        if (! $sub) {
             return;
         }
 
@@ -376,9 +386,9 @@ class StripeService
 
             // GROWTH MODULE: Cancel pending commissions
             try {
-                $partnerService = app(\App\Modules\Billing\Infrastructure\Services\PartnerService::class);
+                $partnerService = app(PartnerService::class);
                 $partnerService->handlePaymentRefunded($payment);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Log::warning('PartnerService: Failed to handle refund', [
                     'payment_id' => $payment->id,
                     'error' => $e->getMessage(),
@@ -387,4 +397,3 @@ class StripeService
         }
     }
 }
-

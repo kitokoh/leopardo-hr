@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:riverpod/legacy.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
-import 'package:leopardo_marketing/core/providers/core_providers.dart';
-import 'package:leopardo_marketing/features/marketing/models/social_post.dart';
+import 'package:leopardo_accounting/core/providers/core_providers.dart';
+import 'package:leopardo_accounting/features/marketing/models/social_post.dart';
 
 import '../data/social_post_repository.dart';
 
@@ -22,8 +23,10 @@ final socialPostRepositoryProvider = Provider<SocialPostRepository>((ref) {
   return SocialPostRepository(ref.watch(apiClientProvider));
 });
 
-final socialPostsProvider =
-    FutureProvider.family<List<SocialPost>, String?>((ref, status) {
+final socialPostsProvider = FutureProvider.family<List<SocialPost>, String?>((
+  ref,
+  status,
+) {
   return ref.watch(socialPostRepositoryProvider).listPosts(status: status);
 });
 
@@ -127,8 +130,11 @@ class SocialPostsScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.error_outline,
-                          color: Colors.red, size: 48),
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                        size: 48,
+                      ),
                       const SizedBox(height: 12),
                       Text(
                         e.toString(),
@@ -183,8 +189,10 @@ class _PostCard extends ConsumerWidget {
               Row(
                 children: [
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: _statusColor.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(6),
@@ -215,6 +223,10 @@ class _PostCard extends ConsumerWidget {
                       icon: const Icon(Icons.send_rounded, size: 14),
                       label:
                           const Text('Publier', style: TextStyle(fontSize: 12)),
+label: const Text(
+                        'Publier',
+                        style: TextStyle(fontSize: 12),
+                      ),
                       onPressed: () => _publishNow(context, ref),
                       style: TextButton.styleFrom(
                         foregroundColor: AppColors.rh,
@@ -231,13 +243,20 @@ class _PostCard extends ConsumerWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                     color: Colors.white, fontSize: 13, height: 1.4),
+color: Colors.white,
+                  fontSize: 13,
+                  height: 1.4,
+                ),
               ),
               const SizedBox(height: 8),
               // Footer
               Row(
                 children: [
-                  const Icon(Icons.schedule_rounded,
-                      size: 12, color: Colors.white38),
+                  const Icon(
+                    Icons.schedule_rounded,
+                    size: 12,
+                    color: Colors.white38,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     _formatDate(post.scheduledAt ?? post.createdAt),
@@ -245,13 +264,20 @@ class _PostCard extends ConsumerWidget {
                   ),
                   if (post.providerPostRef != null) ...[
                     const Spacer(),
-                    const Icon(Icons.check_circle_outline_rounded,
-                        size: 12, color: Colors.green),
+                    const Icon(
+                      Icons.check_circle_outline_rounded,
+                      size: 12,
+                      color: Colors.green,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       post.providerPostRef!,
                       style:
                           const TextStyle(color: Colors.white38, fontSize: 10),
+style: const TextStyle(
+                        color: Colors.white38,
+                        fontSize: 10,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -270,9 +296,8 @@ class _PostCard extends ConsumerWidget {
       await ref.read(socialPostRepositoryProvider).publishPost(post.id);
       ref.invalidate(socialPostsProvider(null));
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Post publié !')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Post publié !')));
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context)

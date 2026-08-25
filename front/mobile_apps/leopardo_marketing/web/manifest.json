@@ -1,6 +1,6 @@
 {
-    "name": "leopardo_marketing",
-    "short_name": "leopardo_marketing",
+    "name": "leopardo_accounting",
+    "short_name": "leopardo_accounting",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

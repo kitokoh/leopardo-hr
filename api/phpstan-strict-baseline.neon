@@ -3738,49 +3738,7 @@ parameters:
 			path: app/Modules/Payroll/Interfaces/Api/V1/SocialDeclarationController.php
 
 		-
-			message: '#^Parameter \#2 \$approver of method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService\:\:approve\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Planning/Application/Actions/ApproveLeave.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Application\\Actions\\CreateSchedule\:\:handle\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Planning/Application/Actions/CreateSchedule.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Application\\DTOs\\CreateShiftDTO\:\:fromArray\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Planning/Application/DTOs/CreateShiftDTO.php
-
-		-
 			message: '#^Class App\\Modules\\Planning\\Domain\\Models\\Absence uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Planning/Domain/Models/Absence.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Domain\\Models\\Absence\:\:scopeForEmployee\(\) has parameter \$q with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Planning/Domain/Models/Absence.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Domain\\Models\\Absence\:\:scopeForEmployee\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Planning/Domain/Models/Absence.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Domain\\Models\\Absence\:\:scopePending\(\) has parameter \$q with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Planning/Domain/Models/Absence.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Domain\\Models\\Absence\:\:scopePending\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Planning/Domain/Models/Absence.php
@@ -3798,202 +3756,10 @@ parameters:
 			path: app/Modules/Planning/Domain/Models/LeaveBalanceLog.php
 
 		-
-			message: '#^Class App\\Modules\\Planning\\Domain\\Models\\Project uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Planning/Domain/Models/Project.php
-
-		-
 			message: '#^Class App\\Modules\\Planning\\Domain\\Models\\Schedule uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Planning/Domain/Models/Schedule.php
-
-		-
-			message: '#^Class App\\Modules\\Planning\\Domain\\Models\\Task uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Planning/Domain/Models/Task.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Planning\\Domain\\Models\\AbsenceType\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Planning\\Domain\\Models\\AbsenceType\>\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Planning\\Domain\\Models\\AbsenceType\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Planning\\Domain\\Models\\AbsenceType\>\:\:\$deducts_leave\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
-
-		-
-			message: '#^Cannot access property \$deducts_leave on App\\Modules\\Planning\\Domain\\Models\\AbsenceType\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService\:\:approve\(\) should return App\\Modules\\Planning\\Domain\\Models\\Absence but returns App\\Modules\\Planning\\Domain\\Models\\Absence\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService\:\:cancel\(\) should return App\\Modules\\Planning\\Domain\\Models\\Absence but returns App\\Modules\\Planning\\Domain\\Models\\Absence\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService\:\:create\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService\:\:reject\(\) should return App\\Modules\\Planning\\Domain\\Models\\Absence but returns App\\Modules\\Planning\\Domain\\Models\\Absence\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
-
-		-
-			message: '#^Parameter \#1 \$absence of event class App\\Events\\AbsenceApproved constructor expects App\\Modules\\Planning\\Domain\\Models\\Absence in App\\Events\\AbsenceApproved\:\:dispatch\(\), App\\Modules\\Planning\\Domain\\Models\\Absence\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
-
-		-
-			message: '#^Parameter \#1 \$absence of event class App\\Events\\AbsenceRejected constructor expects App\\Modules\\Planning\\Domain\\Models\\Absence in App\\Events\\AbsenceRejected\:\:dispatch\(\), App\\Modules\\Planning\\Domain\\Models\\Absence\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
-
-		-
-			message: '#^Parameter \#1 \$employeeId of method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService\:\:logBalanceChange\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
-
-		-
-			message: '#^Cannot call method copy\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/EstimationService.php
-
-		-
-			message: '#^Cannot call method format\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/EstimationService.php
-
-		-
-			message: '#^Cannot call method startOfDay\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: app/Modules/Planning/Infrastructure/Services/EstimationService.php
-
-		-
-			message: '#^Comparison operation "\>" between 22 and 0 is always true\.$#'
-			identifier: greater.alwaysTrue
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/EstimationService.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Infrastructure\\Services\\EstimationService\:\:dailySummary\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/EstimationService.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Infrastructure\\Services\\EstimationService\:\:dailySummaryFromLog\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/EstimationService.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Infrastructure\\Services\\EstimationService\:\:quickEstimate\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/EstimationService.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Infrastructure\\Services\\EstimationService\:\:resolveRates\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/EstimationService.php
-
-		-
-			message: '#^Cannot access property \$company_id on App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Modules/Planning/Interfaces/Api/V1/PlanningController.php
-
-		-
-			message: '#^Parameter \#1 \$companyId of method App\\AI\\Planning\\PlanningOptimizer\:\:optimizeWeeklyPlanning\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Planning/Interfaces/Api/V1/PlanningController.php
-
-		-
-			message: '#^Parameter \#1 \$companyId of method App\\AI\\Planning\\PlanningOptimizer\:\:suggestShiftRebalancing\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Planning/Interfaces/Api/V1/PlanningController.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Interfaces\\Api\\V1\\Requests\\DailySummaryRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Planning/Interfaces/Api/V1/Requests/DailySummaryRequest.php
-
-		-
-			message: '#^Cannot call method startOfDay\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Modules/Planning/Interfaces/Api/V1/Requests/QuickEstimateRequest.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Interfaces\\Api\\V1\\Requests\\QuickEstimateRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Planning/Interfaces/Api/V1/Requests/QuickEstimateRequest.php
-
-		-
-			message: '#^Method App\\Modules\\Planning\\Interfaces\\Api\\V1\\Requests\\ReceiptRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Planning/Interfaces/Api/V1/Requests/ReceiptRequest.php
-
-		-
-			message: '#^Parameter \#1 \$companyId of method App\\Core\\Tenant\\Infrastructure\\Services\\TenantCacheService\:\:invalidateEmployees\(\) expects int\|string, string\|null given\.$#'
-			identifier: argument.type
-			count: 4
-			path: app/Modules/Planning/Interfaces/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Parameter \#1 \$companyId of method App\\Core\\Tenant\\Infrastructure\\Services\\TenantCacheService\:\:invalidateSchedules\(\) expects int\|string, string\|null given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Modules/Planning/Interfaces/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Parameter \#1 \$companyId of method App\\Core\\Tenant\\Infrastructure\\Services\\TenantCacheService\:\:rememberSchedules\(\) expects int\|string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Planning/Interfaces/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between string\|null and int will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 2
-			path: app/Modules/Planning/Interfaces/Api/V1/TaskController.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string\|null and int will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 2
-			path: app/Modules/Planning/Interfaces/Api/V1/TaskController.php
 
 		-
 			message: '#^Call to an undefined method App\\Modules\\Platform\\Infrastructure\\Services\\CompanyProvisioningService\:\:provision\(\)\.$#'
@@ -4728,13 +4494,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 6
 			path: tests/Feature/CompanyBrandingControllerTest.php
 
 		-
 			message: '#^Parameter \#1 \$user of method Illuminate\\Foundation\\Testing\\TestCase\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 4
+			count: 6
 			path: tests/Feature/CompanyBrandingControllerTest.php
 
 		-

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
-import 'package:leopardo_marketing/features/marketing/models/social_post.dart';
-import 'package:leopardo_marketing/features/marketing/screens/social_posts_screen.dart';
+import 'package:leopardo_accounting/features/marketing/models/social_post.dart';
+import 'package:leopardo_accounting/features/marketing/screens/social_posts_screen.dart';
 
 /// Screen for creating a new social post.
 ///
@@ -202,7 +202,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
                   const Spacer(),
                   Switch.adaptive(
                     value: _scheduleEnabled,
-                    activeColor: AppColors.rh,
+                    activeThumbColor: AppColors.rh,
                     onChanged: (value) =>
                         setState(() => _scheduleEnabled = value),
                   ),

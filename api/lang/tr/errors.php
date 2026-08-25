@@ -2,6 +2,7 @@
 
 return [
     // Auth
+        'UNKNOWN_ACCOUNT' => 'Bu Google e-postasıyla ilişkili bir Leopardo RH hesabı yok. Yöneticinizden davet isteyin.',
     'INVALID_CREDENTIALS' => 'E-posta veya şifre hatalı.',
     'ACCOUNT_SUSPENDED' => 'Hesabınız askıya alındı. Yöneticinizle iletişime geçin.',
     'ACCOUNT_ARCHIVED' => 'Bu hesap arşivlenmiş.',
@@ -237,6 +238,7 @@ return [
     'CONTRACT_NOT_FOUND_EMPLOYEE' => 'Bu çalışan için sözleşme bulunamadı.',
     'ALREADY_ENROLLED_SESSION' => 'Bu oturuma zaten kayıtlısınız.',
     'DELETION_REQUEST_RECEIVED' => 'Silme talebi İK/hukuk incelemesi için alındı.',
+    'PERIOD_CLOSED' => 'Muhasebe dönemi zaten kapatıldı — kayıt yapılamaz.',
     // Muhasebe (issue #5227)
     'PAYMENT_EXCEEDS_TOTAL' => 'Ödeme tutarı, belgenin kalan bakiyesini aşıyor.',
     'PAYMENT_ON_UNSENT_DOCUMENT' => 'Düzenlenmemiş bir belge üzerinde ödeme kaydedilemez.',
@@ -249,4 +251,13 @@ return [
     'DOCUMENT_NOT_FULLY_PAID' => 'Toplam tutar ödenmeden belge ödendi olarak işaretlenemez.',
     'INVALID_DOCUMENT_TRANSITION' => 'Bu belge için durum geçişine izin verilmiyor.',
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.',
+    'TWO_FACTOR_INVALID' => 'Geçersiz veya süresi dolmuş iki faktörlü doğrulama kodu.',
+    'TWO_FACTOR_REQUIRED' => 'Bu hesap için iki faktörlü doğrulama zorunludur. Giriş yapmadan önce etkinleştirin.',
+    'TWO_FACTOR_ALREADY_ENABLED' => 'Bu hesapta iki faktörlü doğrulama zaten etkin.',
+    'TWO_FACTOR_CHALLENGE_EXPIRED' => 'İki faktörlü doğrulama oturumunun süresi doldu. Lütfen tekrar giriş yapın.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'Paylaşım bağlantısı bulunamadı veya süresi doldu.',
+    'DOCUMENT_PDF_NOT_READY' => 'Belgenin PDF\'i henüz mevcut değil.',
+    'BANK_STATEMENT_DUPLICATE_IMPORT' => 'Bu banka hesap özeti bu dönem için zaten içe aktarılmış.',
+    'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'Bu satır veya ödeme zaten eşleştirilmiş.',
+    'BANK_STATEMENT_IMPORT_FORMAT' => 'Hesap özeti dosya biçimi geçersiz.',
 ];

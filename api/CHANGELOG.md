@@ -4,6 +4,20 @@ Toutes les modifications notables de ce projet sont documentées ici.
 Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
+- **Webhook inbound idempotence (#5444)**: public `webhook_events` table (unique `source+event_id`, payload_hash, stored response) + `WebhookEventRegistry` (Platform) — atomic reservation on first delivery, replay of stored response on redelivery (zero double effect), 202 for concurrent in-flight, release+500 on processing failure (provider retries). Wired ×4: Stripe (`event.id`), Chargily (`data.id`/checkout — fixes double Payment on `checkout.paid` replay), EmailBounce (payload hash), MarketingLead (payload hash). Invalid signature → 400 before any effect. `Schema::hasTable` guard for partial test schemas. Tests: `WebhookIdempotenceTest` (replay ×4, hash key, fail-closed). Docs: `docs/security/WEBHOOKS.md`.
+- **Enterprise 2FA/TOTP (#5436)**: shared `TotpService` (secret/QR/verify, pure-PHP TOTP fallback), enrollment `POST /auth/2fa/enroll|confirm|disable|recovery-codes`, login challenge (`mfa_challenge` response, token revoked, single-use 5-min challenge), `POST /auth/2fa/verify` (TOTP or hashed single-use recovery code → Sanctum token with tenant abilities), remember-device signed cookie (30 d), tenant policy `mfa_required_roles` (403 `TWO_FACTOR_REQUIRED`), i18n ×4 (`TWO_FACTOR_*`, 219 keys/locale), OpenAPI 6 paths (806 ops, SDK regenerated). Non-breaking: accounts without 2FA keep direct login. Tests: `TwoFactorAuthTest` (7 scenarios). Docs: `docs/security/2FA_ENTREPRISE.md`.
+
+### Performance
+- **PayrollCalculator mixed-value handling is explicit.** Normalized the historical gross aggregation through a typed `PaySlip` callback and validated the nullable aggregate result from `leave_balances` before casting, removing the two residual PHPStan level-8 errors without changing payroll formulas.
+
+- **Payroll absence overlap predicates use direct date comparisons.** Replaced the four payroll `whereDate()` predicates on `absences.start_date` and `absences.end_date` with direct `where()` comparisons, preserving the overlap semantics while keeping the date columns directly usable by PostgreSQL indexes. No additional `absences` index was added before a staging plan comparison.
+
+- **Add composite index for payroll leave-balance lookup.** Added PostgreSQL index `idx_leave_balances_company_employee_year_type` on `(company_id, employee_id, year, absence_type_id)` to match `PayrollCalculator::accruedLeaveDays()` filters; created concurrently and guarded for non-PostgreSQL or missing-table environments. No other payroll index candidate was changed.
+### Accounting — Rapprochement bancaire (Phase D, #5435)
+- `bank_statements` + `bank_statement_lines` (tables tenant, unique d'import, FK cascade).
+- `BankStatementImportService` : CSV mapping paramétrable, validation stricte, idempotence 409, erreurs par ligne.
+- `BankReconciliationService` : matching auto (score 100) / propositions (file manuelle), matching manuel, lettrage paiement, état.
+- `BankStatementController` + 6 routes RBAC comptable/principal ; i18n ×4 ; OpenAPI + SDK ; tests Feature (import, matching, manuel, statut).
 
 - **Attendance ADR-0016 Phase 5 (issue #5356) — module SmartAttendance supprimé, contrat unique `/api/v1/attendance/*`**:
   - Controllers + FormRequests géo déplacés de `SmartAttendance/Interfaces/Api/V1/` vers `Attendance/Interfaces/Api/V1/` (namespaces alignés) ; dossier `api/app/Modules/SmartAttendance/`, `SmartAttendanceServiceProvider` et routes alias `smart_attendance.php` supprimés ; binding `GeofenceValidatorInterface` transféré dans `AttendanceServiceProvider`.
@@ -25,6 +39,14 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - `accounting:benchmark` command (F-12 protocol): seeds 10k realistic documents (dedicated company, chunked inserts) + measures paginated eager list (N+1 barrier ≤ 5 queries), reminder query (J+7), monthly aggregation
   - Measured: 10k-document list 0.01 s (< 200 ms target), 1,763 reminder-eligible, 13 months
   - `AccountingPerformanceTest` (3 tests) + `docs/accounting/BENCHMARK.md` (protocol, targets, index map, reference results)
+- **Accounting document email + secure client portal (issue #5225)**:
+  - Tokenized per-document shares (`accounting_document_shares`: 64-char token, expiry, recipient email) — RGPD-limited access (CabinetShare #1817 pattern)
+  - `DocumentShareService` (create/resolve + URLs); public endpoints `GET /api/v1/accounting/documents/shared/{token}` (metadata) and `/download` (PDF from private disk, throttled)
+  - `DocumentShareMail` (PDF attachment + portal link, `emails.document-share` view); `SendDocumentEmail` action (ensures PDF via #5224 job, share, send, `sent_at` + `sent` status); artisan `accounting:send-document` command; i18n ×4 (email keys)
+  - OpenAPI: 2 public routes documented + mirror regenerated
+  - Tests: `DocumentShareEmailTest` (6) — send with attachment + link, public metadata, PDF download, expired/unknown token rejected, access limited to the shared document
+
+### Added
 - **Accounting document PDF rendering ×4 locales (issue #5224)** — implements `PdfRendererInterface`:
   - `DocumentPdfRenderer` (dompdf) renders all 6 `DocumentType` values (invoice, proforma, quote, credit_note, delivery_note, receipt) in fr/en/tr/ar (RTL via `I18nCatalog::isRtl`)
   - Company header, parties, line table (description/qty/unit price/discount/amount), totals (HT/TVA/TTC/paid/remaining), legal mentions (`AccountingSettings.legal_mentions` → `footer_mentions` fallback)
@@ -32,6 +54,14 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - `GenerateDocumentPdf` queued job archives to the private disk (`accounting/documents/{company}/{id}.pdf`) and sets `pdf_path`; idempotent; `TenantScopedJob` + `EnsureTenantContext`
   - Binding registered in `AccountingServiceProvider`
   - Tests: `DocumentPdfRendererTest` — 24 renders (6×4) without error, golden amounts (2×1000 − 100 discount → HT 1900 / tax 361 / TTC 2261), Arabic RTL flag, mentions priority, idempotent archiving
+- **Accounting journal — debit/credit entries + period closure (issue #5234)**:
+  - `accounting_journal_entries` (tenant): one row per account, exclusive debit XOR credit (CHECK), unique (company, source_type, source_id, account_code) for idempotent reposting; `accounting_closed_periods` for period closure
+  - `JournalPostingService`: post document (invoice/credit_note only, status != draft/cancelled) + payment (non-pending), PCF/SYSCOHADA simplified chart (411/70/709/4457/512/53), balance invariant enforced (UnbalancedJournalEntryException), closed period -> 422 `PERIOD_CLOSED`
+  - `JournalCsvExporter`: streamed CSV (UTF-8 BOM, `;`, formula-injection guard #4169, TOTAL row)
+  - API (RBAC principal/comptable): `GET /accounting/journal`, `GET /accounting/journal/export.csv`, `POST /accounting/journal/periods/{period}/close`, `POST /accounting/documents/{document}/journal`
+  - i18n: `errors.*` ×4 gains `PERIOD_CLOSED`
+  - OpenAPI: 4 paths documented + mirror/SDK regenerated (750 ops, route coverage 751/751)
+  - Tests: `AccountingJournalTest` (15) — suite `tests/Feature/Accounting` 24/24
 - **Accounting treasury Phase B — payments + reconciliation + reminders (issue #5229)**:
   - `PaymentRegistrationService`: register (never paid > total — 422 `PAYMENT_EXCEEDS_TOTAL`; issued documents only — 422 `PAYMENT_ON_UNSENT_DOCUMENT`), update `paid_amount` + document status (partially_paid/paid), idempotent reconcile (`matched` + `reconciled_at`)
   - `PaymentReminderService` + `accounting:send-payment-reminders` command: J+7/J+15/J+30 configurable (`accounting_settings.payment_reminder_days`), `accounting_payment_reminders` unique (document, stage) — zero duplicates, Notification to principal/comptable managers (template `accounting_payment_reminder`, i18n ×4)
@@ -53,6 +83,23 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 - **Corrections de pointage — workflow complet (issue #5267).** Justificatif optionnel (`proof` multipart ≤ 5 Mo, stockage privé scopé entreprise, téléchargement `GET /attendance/corrections/{correction}/proof` réservé propriétaire/manager) ; verrouillage de période (`attendance_period_closures` + commande `attendance:close-period` idempotente, tracée) → 422 `ATTENDANCE_PERIOD_CLOSED` (catalogue erreurs ×4) ; audit trail `AuditLog` sur request/approve/reject ; anti-fraude `anomaly` (conflit session géo validée vs horaires demandés, seuil 15 min) ; openapi.yaml 745/745 + dédoublonnage des chemins dupliqués pré-existants (parse redocly réparé).
 
 ### Fixed
+- **FamilyPartsRicfTest uses a deterministic contract period.** The three employee fixtures now start before the July 2026 payroll period, preventing factory randomness from prorating the expected 300,000 XOF gross and making the RICF assertions stable.
+- **Coverage gate tolerates empty JUnit reports.** Auxiliary causal-error extraction now ignores empty or malformed JUnit XML after preserving the PHPUnit exit status, preventing a post-test parsing artifact from masking a successful test run.
+
+- **PayrollAuditTest uses a deterministic manager contract period.** The manager fixture now starts before the July 2026 audit period, preventing random contract proration and preserving the expected aggregate gross of two complete 60,000 bulletins.
+
+- **NotPrivateUrl is safe in unbootstrapped unit tests.** The testing-environment check now confirms that `environment()` is callable before invoking it, preserving fail-closed SSRF behavior outside a Laravel application.
+
+- **Planning authorization scenarios match RBAC #2217.** The successful weekly optimization and shift rebalancing cases authenticate as a manager, while employee denial remains covered by explicit 403 assertions; the required employee fixture is typed so PHPStan strict remains clean.
+
+- **RefreshTenantDatabase detects missing `shared_tenants.employees`.** The canonical-schema probe now forces tenant migrations after MVP fixtures remove the employees table, preventing cascading `42P01` failures in `TrackingSyncTripsDateRangeTest`.
+
+- **Pint formatting is clean on the targeted PHP files.** `PilotReportCommand`, `ProbeAvailabilityCommandTest`, and `OnboardingStepControllerTest` now satisfy the strict-type and class-attribute formatting rules without a global reformat.
+
+- **SAML and OIDC public endpoints use the explicit `throttle:10,1` limiter.** The SAML callback, OIDC authorize, and OIDC callback routes now match the anti-abuse contract asserted by `SsoCallbackThrottleTest` instead of inheriting the generic `throttle:api` limiter.
+
+- **OpenAPI contract is Redocly-parseable.** Duplicate path definitions for positions, sites, schedules, task comments, and recruitment were merged; nullable schemas and recruitment path parameters now follow the OpenAPI 3.0 contract. Redocly reports validation success with historical completeness warnings only.
+
 - **Parallel PostgreSQL test database creation tolerates duplicate-database SQLSTATE.** `TestCase` now accepts SQLSTATE `42P04` directly when multiple workers race to create the same `{db}_test_{token}` database, preventing false backend-suite failures while still rethrowing unrelated database errors.
 - **Payroll validation is atomic.** Run status, related pay-slip statuses, and the validation audit are now committed inside the same transaction; the controller no longer performs a second partial transition.
 - **Trial signup slug-collision retries preserve PostgreSQL transactions.** Each bounded retry now uses an explicit savepoint when invoked inside an existing transaction, so an expected `23505` collision cannot poison subsequent queries or unrelated tests.

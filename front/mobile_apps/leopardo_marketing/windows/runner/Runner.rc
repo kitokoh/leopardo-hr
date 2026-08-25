@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.leopardo" "\0"
-            VALUE "FileDescription", "leopardo_marketing" "\0"
+            VALUE "FileDescription", "leopardo_accounting" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "leopardo_marketing" "\0"
+            VALUE "InternalName", "leopardo_accounting" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.leopardo. All rights reserved." "\0"
-            VALUE "OriginalFilename", "leopardo_marketing.exe" "\0"
-            VALUE "ProductName", "leopardo_marketing" "\0"
+            VALUE "OriginalFilename", "leopardo_accounting.exe" "\0"
+            VALUE "ProductName", "leopardo_accounting" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
