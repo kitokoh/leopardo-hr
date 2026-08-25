@@ -2,24 +2,25 @@
 
 namespace Tests\Feature\Security;
 
-use App\Modules\Planning\Domain\Models\Absence;
-use App\Modules\Planning\Domain\Models\AbsenceType;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Exceptions\TenantContextMissingException;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\Site;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HR\Domain\Models\Department;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\HR\Domain\Models\Evaluation;
+use App\Modules\HR\Domain\Models\Position;
+use App\Modules\HR\Domain\Models\UserInvitation;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Payroll\Domain\Models\Payroll;
-use App\Modules\HR\Domain\Models\Position;
-use App\Modules\Planning\Domain\Models\Project;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\AbsenceType;
+use App\Modules\Planning\Domain\Models\Project;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Core\Tenant\Domain\Models\Site;
 use App\Modules\Planning\Domain\Models\Task;
-use App\Modules\HR\Domain\Models\UserInvitation;
 use Illuminate\Support\Str;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -443,6 +444,34 @@ class TenantModelIsolationTest extends TestCase
         $this->assertCount(1, Schedule::all(), 'Schedule should be isolated by company_id');
     }
 
+    public function test_tenant_query_fails_closed_without_current_company(): void
+    {
+        app()->instance('tenant_scope_required', true);
+
+        try {
+            $this->expectException(TenantContextMissingException::class);
+            Employee::query()->count();
+        } finally {
+            app()->forgetInstance('tenant_scope_required');
+        }
+    }
+
+    public function test_tenant_create_fails_closed_without_current_company(): void
+    {
+        app()->instance('tenant_scope_required', true);
+
+        try {
+            $this->expectException(TenantContextMissingException::class);
+            Employee::query()->create([
+                'email' => 'orphan@test.com',
+                'password_hash' => 'secret',
+                'role' => 'employee',
+            ]);
+        } finally {
+            app()->forgetInstance('tenant_scope_required');
+        }
+    }
+
     private function createCompany(string $name): Company
     {
         return Company::query()->create([
@@ -459,4 +488,3 @@ class TenantModelIsolationTest extends TestCase
         ]);
     }
 }
-

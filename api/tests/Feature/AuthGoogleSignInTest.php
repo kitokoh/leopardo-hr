@@ -52,7 +52,10 @@ class AuthGoogleSignInTest extends TestCase
             ->getJson('/api/v1/auth/google/callback?state=valid-state');
 
         $response->assertStatus(401)
-            ->assertJson(['error' => 'UNKNOWN_ACCOUNT']);
+            ->assertJson(['error' => 'UNKNOWN_ACCOUNT'])
+            // Issue #5171 : le message est localisé ×4 (parité i18n), pas un
+            // littéral anglais codé en dur.
+            ->assertJsonPath('message', __('errors.UNKNOWN_ACCOUNT'));
 
         $this->assertDatabaseMissing('employees', ['email' => 'unknown@example.com']);
     }

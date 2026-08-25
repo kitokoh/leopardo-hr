@@ -44,6 +44,14 @@ return [
 
     'no_lines' => 'No lines',
 
+    // Email (issue #5225)
+    'email_subject' => 'Document :number',
+    'email_heading' => 'Your document',
+    'email_body' => 'Hello, your document :number is available.',
+    'email_button' => 'View my document',
+    'email_expires' => 'This link expires on :date.',
+    'email_footer' => 'This is an automated email — please do not reply.',
+
     // Footer
     'legal_mentions' => 'Legal mentions',
 
@@ -55,7 +63,13 @@ return [
         'series_unknown' => 'Unknown series: « :key » is not a document type (:allowed).',
     ],
 
-    // Business errors (issue #5227)
+        'bank_file_required' => 'The CSV file is required.',
+        'bank_file_mimes' => 'The file must be CSV.',
+        'bank_period_required' => 'The statement period is required (YYYY-MM).',
+        'bank_period_format' => 'The period must use the YYYY-MM format.',
+        'bank_reference_required' => 'The import reference is required.',
+        'bank_payment_required' => 'The payment to reconcile is required.',
+        'bank_payment_exists' => 'The selected payment does not exist.',
     'errors' => [
         'gateway_checkout_failed' => 'The payment gateway is temporarily unavailable. Please try again later.',
         'payment_amount_positive' => 'The payment amount must be strictly positive.',
@@ -71,6 +85,12 @@ return [
         'wf_source_invoice_not_issuable' => 'A cancelled or draft invoice cannot generate a credit note.',
         'wf_source_invoice_paid' => 'The source invoice is already fully paid: no credit note is possible.',
         'wf_credit_exceeds_remaining' => 'The credit note amount exceeds the remaining balance of the source invoice.',
+        'bank_line_empty' => 'Empty line skipped.',
+        'bank_line_invalid_date' => 'Invalid date: ":value".',
+        'bank_line_missing_label' => 'Missing label.',
+        'bank_line_invalid_amount' => 'Invalid amount: ":value".',
+        'bank_empty_file' => 'The CSV file is empty.',
+        'bank_missing_columns' => 'Invalid header: required columns missing (:columns).',
         'wf_company_context' => 'Company context required.',
     ],
 

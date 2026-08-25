@@ -51,12 +51,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final TextEditingController _edgeNodeIdController = TextEditingController();
   final TextEditingController _edgeTokenController = TextEditingController();
   final TextEditingController _edgeBaseUrlController = TextEditingController();
-  static const Map<String, String> _languageLabels = {
-    'fr': 'Francais',
-    'ar': 'العربية',
-    'tr': 'Turkce',
-    'en': 'English',
-  };
+  static Map<String, String> get _languageLabels => {
+        'fr': 'Francais',
+        'ar': deviceL10n.commonLanguageArabic,
+        'tr': 'Turkce',
+        'en': 'English',
+      };
 
   bool _profileSaving = false;
   bool _passwordSaving = false;
@@ -136,7 +136,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Appairage Edge supprime.')));
+    ).showSnackBar(SnackBar(content: Text(context.l10n.settingsEdgeRemoved)));
   }
 
   Future<void> _loadLocalSettings() async {
@@ -206,7 +206,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         children: [
           _buildIdentityGlassCard(context),
           const SizedBox(height: 20),
-          _buildAccountOverviewSection(),
+          _buildAccountOverviewSection(context),
           const SizedBox(height: 20),
           _buildProfileSection(context, authState),
           const SizedBox(height: 20),
@@ -241,7 +241,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Acces mobile',
+            context.l10n.settingsMobileAccess,
             style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
           ),
           const SizedBox(height: 8),
@@ -255,7 +255,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           OutlinedButton.icon(
             onPressed: () => context.push('/profile'),
             icon: const Icon(Icons.person_outline_rounded),
-            label: const Text('Voir mon profil'),
+            label: Text(context.l10n.settingsViewProfile),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(44),
             ),
@@ -281,28 +281,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _firstNameController,
-              decoration: const InputDecoration(labelText: 'Prenom'),
+              decoration:
+                  InputDecoration(labelText: context.l10n.settingsFirstName),
               validator: (value) => (value == null || value.trim().isEmpty)
-                  ? 'Prenom requis'
+                  ? context.l10n.settingsFirstNameRequired
                   : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _lastNameController,
-              decoration: const InputDecoration(labelText: 'Nom'),
-              validator: (value) =>
-                  (value == null || value.trim().isEmpty) ? 'Nom requis' : null,
+              decoration: InputDecoration(
+                  labelText: context.l10n.settingsLastNameLabel),
+              validator: (value) => (value == null || value.trim().isEmpty)
+                  ? context.l10n.settingsLastNameRequired
+                  : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration:
+                  InputDecoration(labelText: context.l10n.settingsEmailLabel),
               validator: (value) {
                 final trimmed = value?.trim() ?? '';
-                if (trimmed.isEmpty) return 'Email requis';
+                if (trimmed.isEmpty) return context.l10n.settingsEmailRequired;
                 if (!trimmed.contains('@') || !trimmed.contains('.')) {
-                  return 'Email invalide';
+                  return context.l10n.settingsEmailInvalid;
                 }
                 return null;
               },
@@ -311,9 +315,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _personalEmailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'Email personnel',
-                helperText: 'Optionnel, conserve votre compte hors entreprise',
+              decoration: InputDecoration(
+                labelText: context.l10n.settingsPersonalEmailLabel,
+                helperText: context.l10n.settingsPersonalEmailHint,
               ),
               validator: _optionalEmailValidator,
             ),
@@ -321,9 +325,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _recoveryEmailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'Email de recuperation',
-                helperText: 'Optionnel pour recuperer l acces',
+              decoration: InputDecoration(
+                labelText: context.l10n.settingsRecoveryEmailLabel,
+                helperText: context.l10n.settingsRecoveryEmailHint,
               ),
               validator: _optionalEmailValidator,
             ),
@@ -331,9 +335,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _personalPhoneController,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Telephone personnel',
-                helperText: 'Optionnel, visible selon vos choix futurs',
+              decoration: InputDecoration(
+                labelText: context.l10n.settingsPersonalPhoneLabel,
+                helperText: context.l10n.settingsPersonalPhoneHint,
               ),
             ),
             const SizedBox(height: 16),
@@ -359,45 +363,43 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _buildAccountOverviewSection() {
+  Widget _buildAccountOverviewSection(BuildContext context) {
     final items = [
       (
         icon: Icons.badge_outlined,
         color: AppColors.rh,
-        title: 'Identite portable',
-        subtitle:
-            'Email personnel, recuperation et telephone restent attaches au compte.',
+        title: context.l10n.settingsPortableIdentityTitle,
+        subtitle: context.l10n.settingsPortableIdentityHint,
       ),
       (
         icon: Icons.work_history_outlined,
         color: AppColors.info,
-        title: 'Parcours',
-        subtitle: 'Historique entreprise, poste, statut et disponibilite.',
+        title: context.l10n.settingsJourneyTitle,
+        subtitle: context.l10n.settingsPortableIdentitySubtitle,
       ),
       (
         icon: Icons.folder_copy_outlined,
         color: AppColors.warning,
-        title: 'Placard numerique',
-        subtitle:
-            'CV, contrats, diplomes et documents avec visibilite controlee.',
+        title: context.l10n.settingsDigitalLockerTitle,
+        subtitle: context.l10n.settingsDigitalLockerSubtitle,
       ),
       (
         icon: Icons.qr_code_2_rounded,
         color: AppColors.rhDark,
-        title: 'QR onboarding',
-        subtitle: 'Partager votre profil ou scanner une entreprise.',
+        title: context.l10n.settingsQrOnboarding,
+        subtitle: context.l10n.settingsShareProfileOrScan,
       ),
       (
         icon: Icons.fingerprint_rounded,
         color: AppColors.info,
         title: context.l10n.settingsKioskBiometricTitle,
-        subtitle: 'Preparer doigt et visage pour les bornes terrain.',
+        subtitle: context.l10n.settingsBiometryEnrollHint,
       ),
       (
         icon: Icons.notifications_active_outlined,
         color: AppColors.danger,
         title: context.l10n.settingsNotificationsTitle,
-        subtitle: 'Canaux, heures calmes et alertes operationnelles.',
+        subtitle: context.l10n.settingsNotifChannelsSummary,
       ),
     ];
 
@@ -407,7 +409,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Vue d ensemble',
+            context.l10n.settingsOverview,
             style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
           ),
           const SizedBox(height: 6),
@@ -437,7 +439,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return _buildSectionError(
-            title: 'Parcours professionnel',
+            title: context.l10n.settingsJourneyTitle,
             message: context.l10n.settingsJourneyLoadError,
           );
         }
@@ -462,14 +464,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Parcours professionnel',
+                          context.l10n.settingsJourneyTitle,
                           style: AppTypography.subtitle.copyWith(
                             color: MobileSurface.text,
                           ),
                         ),
                         Text(
                           career?.availableForNewCompany == true
-                              ? 'Disponible pour une nouvelle entreprise'
+                              ? context.l10n.settingsAvailableForNewCompany
                               : 'Rattache a ${career?.currentCompanyName ?? 'votre entreprise'}',
                           style: AppTypography.caption.copyWith(
                             color: MobileSurface.secondary,
@@ -518,13 +520,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'QR professionnel',
+                      context.l10n.settingsQrProfessional,
                       style: AppTypography.subtitle.copyWith(
                         color: MobileSurface.text,
                       ),
                     ),
                     Text(
-                      'Partagez votre profil ou scannez le QR d une entreprise.',
+                      context.l10n.settingsShareProfileOrScanQr,
                       style: AppTypography.caption.copyWith(
                         color: MobileSurface.secondary,
                       ),
@@ -544,7 +546,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               }
               if (snapshot.hasError || snapshot.data == null) {
                 return Text(
-                  'QR indisponible pour le moment.',
+                  context.l10n.settingsQrUnavailable,
                   style: AppTypography.bodySmall.copyWith(
                     color: MobileSurface.secondary,
                   ),
@@ -557,11 +559,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 children: [
                   LeopardoQrCard(
                     data: qr.token,
-                    title: 'Mon QR employe',
-                    subtitle:
-                        'Le manager le scanne pour pre-remplir une invitation.',
+                    title: context.l10n.settingsMyEmployeeQr,
+                    subtitle: context.l10n.settingsQrManagerScanHint,
                     expiresAt: qr.expiresAt,
-                    copyLabel: 'Copier aussi le jeton',
+                    copyLabel: context.l10n.settingsQrCopyToken,
                   ),
                 ],
               );
@@ -586,7 +587,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               _companyQrController.text = text;
             },
             icon: const Icon(Icons.content_paste_rounded),
-            label: const Text('Coller le QR entreprise'),
+            label: Text(context.l10n.settingsPasteCompanyQr),
           ),
           const SizedBox(height: 10),
           TextField(
@@ -594,9 +595,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             minLines: 2,
             maxLines: 4,
             style: const TextStyle(color: MobileSurface.text),
-            decoration: const InputDecoration(
-              labelText: 'QR entreprise',
-              hintText: 'Coller le QR fourni par le manager',
+            decoration: InputDecoration(
+              labelText: context.l10n.commonCompanyQr,
+              hintText: context.l10n.settingsPasteManagerQr,
               alignLabelWithHint: true,
             ),
           ),
@@ -604,7 +605,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           FilledButton.icon(
             onPressed: () => _submitCompanyQr(context),
             icon: const Icon(Icons.domain_add_rounded),
-            label: const Text('Demander l integration'),
+            label: Text(context.l10n.settingsRequestJoin),
           ),
         ],
       ),
@@ -639,7 +640,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  entry.jobTitle ?? 'Poste non renseigne',
+                  entry.jobTitle ?? context.l10n.profileJobTitleUnset,
                   style: AppTypography.body.copyWith(
                     color: MobileSurface.text,
                     fontWeight: FontWeight.w700,
@@ -647,7 +648,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${entry.companyName ?? 'Entreprise'} - $period',
+                  context.l10n.settingsHistoryCompanyPeriod(
+                    entry.companyName ??
+                        context.l10n.settingsJourneyUnknownCompany,
+                    period,
+                  ),
                   style: AppTypography.caption.copyWith(
                     color: MobileSurface.secondary,
                   ),
@@ -666,7 +671,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return _buildSectionError(
-            title: 'Placard numerique',
+            title: context.l10n.settingsDigitalLocker,
             message: context.l10n.settingsStatsLoadError,
           );
         }
@@ -690,13 +695,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Placard numerique',
+                          context.l10n.settingsDigitalLocker,
                           style: AppTypography.subtitle.copyWith(
                             color: MobileSurface.text,
                           ),
                         ),
                         Text(
-                          'CV, contrats, diplomes et documents administratifs.',
+                          context.l10n.settingsLockerDocsAdmin,
                           style: AppTypography.caption.copyWith(
                             color: MobileSurface.secondary,
                           ),
@@ -738,7 +743,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               OutlinedButton.icon(
                 onPressed: () => context.push('/cabinet'),
                 icon: const Icon(Icons.folder_open_rounded),
-                label: const Text('Ouvrir mon placard'),
+                label: Text(context.l10n.settingsOpenMyLocker),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(44),
                 ),
@@ -780,7 +785,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final trimmed = value?.trim() ?? '';
     if (trimmed.isEmpty) return null;
     if (!trimmed.contains('@') || !trimmed.contains('.')) {
-      return 'Email invalide';
+      return context.l10n.settingsEmailInvalid;
     }
     return null;
   }
@@ -798,7 +803,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Cette preference est synchronisee avec votre compte et pilote aussi le mode RTL.',
+            context.l10n.settingsPrefSyncAccount,
             style: AppTypography.bodySmall.copyWith(
               color: MobileSurface.secondary,
             ),
@@ -835,7 +840,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           FilledButton(
             onPressed: _languageSaving ? null : _saveLanguage,
             child: Text(
-              _languageSaving ? 'Mise a jour...' : 'Mettre a jour la langue',
+              _languageSaving
+                  ? context.l10n.profileLanguageSaving
+                  : context.l10n.profileLanguageSave,
             ),
           ),
         ],
@@ -858,7 +865,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Changez votre mot de passe avant les prochaines etapes de modernisation.',
+              context.l10n.settingsPasswordModernizeHint,
               style: AppTypography.bodySmall.copyWith(
                 color: MobileSurface.secondary,
               ),
@@ -870,19 +877,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               decoration: InputDecoration(
                 labelText: context.l10n.settingsCurrentPassword,
               ),
-              validator: (value) =>
-                  (value == null || value.isEmpty) ? 'Champ requis' : null,
+              validator: (value) => (value == null || value.isEmpty)
+                  ? context.l10n.settingsFieldRequired
+                  : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _newPasswordController,
               obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Nouveau mot de passe',
+              decoration: InputDecoration(
+                labelText: context.l10n.settingsNewPassword,
               ),
               validator: (value) {
-                if (value == null || value.isEmpty) return 'Champ requis';
-                if (value.length < 8) return 'Minimum 8 caracteres';
+                if (value == null || value.isEmpty) {
+                  return context.l10n.settingsFieldRequired;
+                }
+                if (value.length < 8) {
+                  return context.l10n.settingsPasswordMinCharacters;
+                }
                 return null;
               },
             ),
@@ -893,7 +905,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               decoration: const InputDecoration(labelText: 'Confirmation'),
               validator: (value) {
                 if (value != _newPasswordController.text) {
-                  return 'La confirmation ne correspond pas';
+                  return context.l10n.settingsPasswordConfirmationMismatch;
                 }
                 return null;
               },
@@ -911,8 +923,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               onPressed: _passwordSaving ? null : _savePassword,
               child: Text(
                 _passwordSaving
-                    ? 'Mise a jour...'
-                    : 'Mettre a jour le mot de passe',
+                    ? context.l10n.profileLanguageSaving
+                    : context.l10n.settingsPasswordUpdateTitle,
               ),
             ),
           ],
@@ -930,12 +942,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Preparation biometrie',
+            context.l10n.settingsBiometryEnrollment,
             style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
           ),
           const SizedBox(height: 8),
           Text(
-            'Le visage peut etre capture depuis le mobile puis soumis a validation manager / RH. Pour l empreinte, Android/iOS permettent de verifier localement que vous utilisez bien un doigt enregistre, mais ne donnent pas acces au gabarit brut; l activation effective cote pointage restera donc approuvee puis exploitee par la borne entreprise.',
+            context.l10n.settingsBiometryFaceHint,
             style: AppTypography.bodySmall.copyWith(
               color: MobileSurface.secondary,
             ),
@@ -974,13 +986,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 16),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Activer la preparation biometrie'),
+            title: Text(context.l10n.settingsBiometryEnableAction),
             value: _biometricEnabled,
             onChanged: (value) => setState(() => _biometricEnabled = value),
           ),
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Empreinte digitale souhaitee'),
+            title: Text(context.l10n.settingsBiometryFingerprintDesired),
             value: _fingerprintEnabled,
             onChanged: _biometricEnabled
                 ? (value) =>
@@ -989,7 +1001,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Reconnaissance faciale souhaitee'),
+            title: Text(context.l10n.settingsBiometryFaceRecognitionDesired),
             value: _faceEnabled,
             onChanged: _biometricEnabled
                 ? (value) => setState(() => _faceEnabled = value ?? false)
@@ -997,7 +1009,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Consentement au futur pointage biometrie'),
+            title: Text(context.l10n.settingsBiometryConsentTitle),
             value: _attendanceConsent,
             onChanged: _biometricEnabled
                 ? (value) => setState(() => _attendanceConsent = value ?? false)
@@ -1006,17 +1018,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 12),
           TextField(
             controller: _fingerprintDeviceController,
-            decoration: const InputDecoration(
-              labelText: 'Identifiant capteur empreinte / borne',
-              hintText: 'Exemple: FP-ENTREE-01 ou matricule biometrie',
+            decoration: InputDecoration(
+              labelText: context.l10n.settingsBiometrySensorId,
+              hintText: context.l10n.settingsBiometryFpExample,
             ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _biometricNoteController,
             maxLines: 3,
-            decoration: const InputDecoration(
-              labelText: 'Notes et consentement',
+            decoration: InputDecoration(
+              labelText: context.l10n.settingsBiometryNotesConsent,
               hintText:
                   'Exemple: selfie autorise, prefere borne entree principale, accord photo visage...',
             ),
@@ -1027,8 +1039,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             icon: const Icon(Icons.camera_alt_outlined),
             label: Text(
               _selectedFaceImage == null
-                  ? 'Capturer / choisir mon visage'
-                  : 'Image visage selectionnee',
+                  ? context.l10n.settingsBiometryCaptureFace
+                  : context.l10n.settingsBiometryFaceSelected,
             ),
           ),
           if (_selectedFaceImage != null)
@@ -1049,7 +1061,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Text(
               _preferencesSaving
                   ? 'Enregistrement...'
-                  : 'Enregistrer la preparation',
+                  : context.l10n.settingsBiometrySaveEnrollment,
             ),
           ),
           const SizedBox(height: 12),
@@ -1058,12 +1070,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Text(
               _biometricSubmitting
                   ? 'Soumission...'
-                  : 'Soumettre au manager / RH',
+                  : context.l10n.settingsBiometrySubmit,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.',
+            context.l10n.settingsBiometryPendingHint,
             style: AppTypography.caption.copyWith(
               color: MobileSurface.secondary,
             ),
@@ -1094,13 +1106,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Noeud Edge (reseau local)',
+                      context.l10n.settingsEdgeNodeLocal,
                       style: AppTypography.subtitle.copyWith(
                         color: MobileSurface.text,
                       ),
                     ),
                     Text(
-                      'Optionnel: pointer vers un serveur Edge installe sur site pour pointer sans Internet.',
+                      context.l10n.settingsEdgeOptionalHint,
                       style: AppTypography.caption.copyWith(
                         color: MobileSurface.secondary,
                       ),
@@ -1117,12 +1129,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             builder: (context, snapshot) {
               final mode = snapshot.data ?? SyncMode.offline;
               final label = switch (mode) {
-                SyncMode.cloud => 'Connecte au Cloud',
-                SyncMode.edge => 'Connecte au noeud Edge local',
-                SyncMode.offline => 'Hors ligne',
+                SyncMode.cloud => context.l10n.settingsEdgeConnectedCloud,
+                SyncMode.edge => context.l10n.settingsEdgeConnectedLocal,
+                SyncMode.offline => context.l10n.commonOffline,
               };
               return Text(
-                'Statut actuel: $label',
+                context.l10n.settingsStatusCurrent(label),
                 style: AppTypography.bodySmall.copyWith(
                   color: MobileSurface.secondary,
                 ),
@@ -1132,26 +1144,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 14),
           TextField(
             controller: _edgeBaseUrlController,
-            decoration: const InputDecoration(
-              labelText: 'Adresse du noeud Edge',
+            decoration: InputDecoration(
+              labelText: context.l10n.settingsEdgeNodeAddress,
               hintText: 'http://leopardo.local:7878',
             ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _edgeNodeIdController,
-            decoration: const InputDecoration(
-              labelText: 'Identifiant du noeud (UUID)',
-              hintText: 'Fourni par votre administrateur',
+            decoration: InputDecoration(
+              labelText: context.l10n.settingsEdgeNodeId,
+              hintText: context.l10n.settingsEdgeTokenFromAdmin,
             ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _edgeTokenController,
             obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Jeton Edge',
-              hintText: 'Fourni une seule fois a l enregistrement',
+            decoration: InputDecoration(
+              labelText: context.l10n.settingsEdgeToken,
+              hintText: context.l10n.settingsEdgeTokenOneTime,
             ),
           ),
           const SizedBox(height: 14),
@@ -1193,7 +1205,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Quitter proprement cet espace sur ce telephone.',
+            context.l10n.settingsEdgeLogoutHint,
             style: AppTypography.bodySmall.copyWith(
               color: MobileSurface.secondary,
             ),
@@ -1249,7 +1261,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Preferences indisponibles pour le moment. Tire pour recharger plus tard.',
+                  context.l10n.settingsPrefsUnavailable,
                   style: AppTypography.bodySmall.copyWith(
                     color: MobileSurface.secondary,
                   ),
@@ -1276,15 +1288,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   saving = false;
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Preferences notifications mises a jour.'),
+                  SnackBar(
+                    content: Text(context.l10n.settingsNotifPrefsUpdated),
                   ),
                 );
               } catch (e) {
                 if (!context.mounted) return;
                 setLocalState(() => saving = false);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Mise a jour impossible : $e')),
+                  SnackBar(
+                      content: Text(
+                          context.l10n.settingsUpdateFailed(e.toString()))),
                 );
               }
             }
@@ -1350,53 +1364,51 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Choisissez les canaux utiles sans perdre les alertes RH importantes.',
+                    context.l10n.settingsNotifChannelsHint,
                     style: AppTypography.bodySmall.copyWith(
                       color: MobileSurface.secondary,
                     ),
                   ),
                   const SizedBox(height: 12),
                   tile(
-                    title: 'Alertes dans l application',
-                    subtitle: 'Taches, decisions RH, pointage et rappels.',
+                    title: context.l10n.settingsPushInApp,
+                    subtitle: context.l10n.settingsNotifTasksHint,
                     value: preferences.appEnabled,
                     onChanged: (next) =>
                         preferences = preferences.copyWith(appEnabled: next),
                   ),
                   tile(
-                    title: 'Push mobile',
-                    subtitle: 'Notifications immediates sur ce telephone.',
+                    title: context.l10n.settingsPushMobile,
+                    subtitle: context.l10n.settingsPushImmediateHint,
                     value: preferences.pushEnabled,
                     onChanged: (next) =>
                         preferences = preferences.copyWith(pushEnabled: next),
                   ),
                   tile(
                     title: 'Email',
-                    subtitle: 'Resume et confirmations importantes.',
+                    subtitle: context.l10n.settingsNotifSummaryHint,
                     value: preferences.emailEnabled,
                     onChanged: (next) =>
                         preferences = preferences.copyWith(emailEnabled: next),
                   ),
                   tile(
                     title: 'SMS',
-                    subtitle:
-                        'Canal court reserve aux urgences, actif apres opt-in.',
+                    subtitle: context.l10n.settingsNotifChannelSms,
                     value: preferences.smsEnabled,
                     onChanged: (next) =>
                         preferences = preferences.copyWith(smsEnabled: next),
                   ),
                   tile(
                     title: 'WhatsApp',
-                    subtitle:
-                        'Canal conversationnel, necessite votre opt-in explicite.',
+                    subtitle: context.l10n.settingsNotifChannelChat,
                     value: preferences.whatsappEnabled,
                     onChanged: (next) => preferences = preferences.copyWith(
                       whatsappEnabled: next,
                     ),
                   ),
                   tile(
-                    title: 'Heures calmes',
-                    subtitle: 'Limiter les canaux externes hors horaires.',
+                    title: context.l10n.settingsQuietHours,
+                    subtitle: context.l10n.settingsQuietHoursHint,
                     value: preferences.quietHoursEnabled,
                     onChanged: (next) => preferences = preferences.copyWith(
                       quietHoursEnabled: next,
@@ -1435,8 +1447,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _languageLabels.containsKey(preferences.locale)
                             ? preferences.locale
                             : null,
-                    decoration: const InputDecoration(
-                      labelText: 'Langue des notifications',
+                    decoration: InputDecoration(
+                      labelText: context.l10n.settingsNotifLanguage,
                     ),
                     items: _languageLabels.entries
                         .map(
@@ -1475,7 +1487,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (token.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Collez le QR entreprise.')));
+      ).showSnackBar(
+          SnackBar(content: Text(context.l10n.settingsPasteCompanyQrHint)));
       return;
     }
 
@@ -1488,8 +1501,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           .showSnackBar(SnackBar(content: Text(message)));
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('QR refuse : $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(context.l10n.settingsQrRejected(e.toString()))));
     }
   }
 
@@ -1510,8 +1523,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     setState(() => _profileSaving = false);
 
     if (success) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Profil mis a jour.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.settingsProfileUpdated)));
     }
   }
 
@@ -1534,7 +1547,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _confirmPasswordController.clear();
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Mot de passe mis a jour.')));
+      ).showSnackBar(
+          SnackBar(content: Text(context.l10n.settingsPasswordUpdated)));
     }
   }
 
@@ -1548,8 +1562,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     setState(() => _languageSaving = false);
 
     if (success) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Langue mise a jour.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.profileLanguageUpdated)));
     }
   }
 
@@ -1569,8 +1583,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!mounted) return;
     setState(() => _preferencesSaving = false);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Preparation biometrie enregistree localement.'),
+      SnackBar(
+        content: Text(context.l10n.settingsBiometrySavedLocally),
       ),
     );
   }
@@ -1591,8 +1605,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _submitBiometricEnrollment() async {
     if (!_biometricEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Active d abord la preparation biometrie.'),
+        SnackBar(
+          content: Text(context.l10n.settingsBiometryEnableFirst),
         ),
       );
       return;
@@ -1600,8 +1614,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (!_attendanceConsent) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Le consentement est requis avant toute soumission.'),
+        SnackBar(
+          content: Text(context.l10n.settingsBiometryConsentRequired),
         ),
       );
       return;
@@ -1609,8 +1623,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (_faceEnabled && _selectedFaceImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ajoute une capture visage avant soumission.'),
+        SnackBar(
+          content: Text(context.l10n.settingsBiometryAddFaceCapture),
         ),
       );
       return;
@@ -1619,8 +1633,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (_fingerprintEnabled) {
       final localAuth = LocalAuthentication();
       final authenticated = await localAuth.authenticate(
-        localizedReason:
-            'Confirmer votre identite pour soumettre votre demande biometrie',
+        localizedReason: context.l10n.settingsBiometryConfirmIdentity,
         biometricOnly: true,
         persistAcrossBackgrounding: true,
       );
@@ -1628,8 +1641,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (!authenticated) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Verification biometrie locale annulee.'),
+          SnackBar(
+            content: Text(context.l10n.settingsBiometryLocalCheckCancelled),
           ),
         );
         return;
@@ -1652,14 +1665,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         _latestEnrollment = enrollment;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Demande envoyee au manager / RH pour validation.'),
+        SnackBar(
+          content: Text(context.l10n.settingsBiometryRequestSentHint),
         ),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Echec de soumission: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(context.l10n.settingsSubmitFailed(e.toString()))));
     } finally {
       if (mounted) {
         setState(() => _biometricSubmitting = false);

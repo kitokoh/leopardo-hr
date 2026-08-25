@@ -132,6 +132,34 @@ class LeopardoClient:
         """Refuser une absence (déprécié — utiliser POST)"""
         return self.request("PUT", "/absences/{absence}/reject", **kwargs)
 
+    def get_accounting_audit_logs(self, **kwargs):
+        """Audit trail du module Comptabilité (qui/quoi/quand, #5273)"""
+        return self.request("GET", "/accounting/audit-logs", **kwargs)
+
+    def post_accounting_bank_statement_lines_by_line_match(self, **kwargs):
+        """Rapprochement manuel d'une ligne"""
+        return self.request("POST", "/accounting/bank-statement-lines/{line}/match", **kwargs)
+
+    def get_accounting_bank_statements(self, **kwargs):
+        """Lister les relevés bancaires"""
+        return self.request("GET", "/accounting/bank-statements", **kwargs)
+
+    def get_accounting_bank_statements_by_statement(self, **kwargs):
+        """Détail d'un relevé (avec lignes)"""
+        return self.request("GET", "/accounting/bank-statements/{statement}", **kwargs)
+
+    def post_accounting_bank_statements_by_statement_reconcile(self, **kwargs):
+        """Lancer le rapprochement automatique"""
+        return self.request("POST", "/accounting/bank-statements/{statement}/reconcile", **kwargs)
+
+    def get_accounting_bank_statements_by_statement_status(self, **kwargs):
+        """État de rapprochement"""
+        return self.request("GET", "/accounting/bank-statements/{statement}/status", **kwargs)
+
+    def post_accounting_bank_statements_import(self, **kwargs):
+        """Importer un relevé bancaire CSV"""
+        return self.request("POST", "/accounting/bank-statements/import", **kwargs)
+
     def get_accounting_contacts(self, **kwargs):
         """Lister les contacts client/fournisseur"""
         return self.request("GET", "/accounting/contacts", **kwargs)
@@ -180,6 +208,10 @@ class LeopardoClient:
         """Creer un avoir lie a une facture source (#5223)"""
         return self.request("POST", "/accounting/documents/{document}/credit-note", **kwargs)
 
+    def post_accounting_documents_by_document_journal(self, **kwargs):
+        """Poster (ou re-poster) un document au journal"""
+        return self.request("POST", "/accounting/documents/{document}/journal", **kwargs)
+
     def post_accounting_documents_by_document_payments(self, **kwargs):
         """Enregistrer un encaissement (→ partiellement paye / paye, #5223)"""
         return self.request("POST", "/accounting/documents/{document}/payments", **kwargs)
@@ -191,6 +223,26 @@ class LeopardoClient:
     def get_accounting_documents_next_number(self, **kwargs):
         """Apercu du prochain numero de la serie configuree (#5223)"""
         return self.request("GET", "/accounting/documents/next-number", **kwargs)
+
+    def get_accounting_documents_shared_by_token(self, **kwargs):
+        """Portail client — informations du document partagé (token)"""
+        return self.request("GET", "/accounting/documents/shared/{token}", **kwargs)
+
+    def get_accounting_documents_shared_by_token_download(self, **kwargs):
+        """Portail client — téléchargement du PDF partagé (token)"""
+        return self.request("GET", "/accounting/documents/shared/{token}/download", **kwargs)
+
+    def get_accounting_journal(self, **kwargs):
+        """Journal comptable par periode"""
+        return self.request("GET", "/accounting/journal", **kwargs)
+
+    def get_accounting_journal_export_csv(self, **kwargs):
+        """Export CSV du journal (expert-comptable)"""
+        return self.request("GET", "/accounting/journal/export.csv", **kwargs)
+
+    def post_accounting_journal_periods_by_period_close(self, **kwargs):
+        """Cloturer une periode comptable"""
+        return self.request("POST", "/accounting/journal/periods/{period}/close", **kwargs)
 
     def get_accounting_payments(self, **kwargs):
         """Lister les paiements"""
@@ -695,6 +747,30 @@ class LeopardoClient:
     def get_audit_logs_export_csv(self, **kwargs):
         """Exporter le journal d'audit en CSV"""
         return self.request("GET", "/audit-logs/export-csv", **kwargs)
+
+    def post_auth_2fa_confirm(self, **kwargs):
+        """Confirmer l'enrolement 2FA (premier code) et activer"""
+        return self.request("POST", "/auth/2fa/confirm", **kwargs)
+
+    def post_auth_2fa_disable(self, **kwargs):
+        """Desactiver la 2FA (re-verification par code)"""
+        return self.request("POST", "/auth/2fa/disable", **kwargs)
+
+    def post_auth_2fa_enroll(self, **kwargs):
+        """Demarrer l'enrolement 2FA (secret + QR)"""
+        return self.request("POST", "/auth/2fa/enroll", **kwargs)
+
+    def post_auth_2fa_recovery_codes(self, **kwargs):
+        """Regenerer les codes de recuperation 2FA"""
+        return self.request("POST", "/auth/2fa/recovery-codes", **kwargs)
+
+    def get_auth_2fa_status(self, **kwargs):
+        """Etat 2FA du compte connecte"""
+        return self.request("GET", "/auth/2fa/status", **kwargs)
+
+    def post_auth_2fa_verify(self, **kwargs):
+        """Verifier le challenge 2FA et obtenir le token"""
+        return self.request("POST", "/auth/2fa/verify", **kwargs)
 
     def get_auth_biometric_enrollment(self, **kwargs):
         """Derniere demande biometrie de l'utilisateur courant"""
@@ -2048,6 +2124,22 @@ class LeopardoClient:
         """Confirmer la reception d'un paiement"""
         return self.request("POST", "/payment-confirmations/{paymentItem}/confirm", **kwargs)
 
+    def get_payment_orders(self, **kwargs):
+        """Lister les ordres de virement du tenant (pagine)"""
+        return self.request("GET", "/payment-orders", **kwargs)
+
+    def get_payment_orders_by_paymentorder(self, **kwargs):
+        """Detail d'un ordre de virement"""
+        return self.request("GET", "/payment-orders/{paymentOrder}", **kwargs)
+
+    def post_payment_orders_by_paymentorder_execute(self, **kwargs):
+        """Executer un ordre de virement prepare (comptable)"""
+        return self.request("POST", "/payment-orders/{paymentOrder}/execute", **kwargs)
+
+    def post_payment_orders_by_paymentorder_reconcile(self, **kwargs):
+        """Rapprocher un ordre de virement execute (comptable)"""
+        return self.request("POST", "/payment-orders/{paymentOrder}/reconcile", **kwargs)
+
     def get_payments_by_payrollrun_documents(self, **kwargs):
         """Documents de paiement d.un cycle paie"""
         return self.request("GET", "/payments/{payrollRun}/documents", **kwargs)
@@ -2063,6 +2155,14 @@ class LeopardoClient:
     def get_payroll_runs_by_payrollrun(self, **kwargs):
         """Voir une session de paie"""
         return self.request("GET", "/payroll-runs/{payrollRun}", **kwargs)
+
+    def get_payroll_runs_by_payrollrun_accounting_entries(self, **kwargs):
+        """Ecrires comptables d'un run de paie valide (#5239)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/accounting-entries", **kwargs)
+
+    def post_payroll_runs_by_payrollrun_accounting_entries_regenerate(self, **kwargs):
+        """Regenerer les ecritures comptables d'un run (comptable, idempotent)"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/accounting-entries/regenerate", **kwargs)
 
     def get_payroll_runs_by_payrollrun_anomalies(self, **kwargs):
         """Rapport d'anomalies pre-cloture (F-20)"""
@@ -2135,6 +2235,10 @@ class LeopardoClient:
     def listpayrollrunpayslips(self, **kwargs):
         """Lister les bulletins de paie d'une session"""
         return self.request("GET", "/payroll-runs/{payrollRun}/pay-slips", **kwargs)
+
+    def post_payroll_runs_by_payrollrun_payment_order(self, **kwargs):
+        """Preparer un ordre de virement pour un run valide (comptable)"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/payment-order", **kwargs)
 
     def listpayrollrunregularizations(self, **kwargs):
         """Lister les régularisations d'un run (DZ-DEPTH #1818)"""
@@ -2560,22 +2664,6 @@ class LeopardoClient:
         """Envoyer une notification push de test a un employe"""
         return self.request("POST", "/push-notifications/send", **kwargs)
 
-    def delete_recruitment_applicants_by_applicant(self, **kwargs):
-        """Supprimer une candidature (manager)"""
-        return self.request("DELETE", "/recruitment/applicants/{applicant}", **kwargs)
-
-    def get_recruitment_applicants_by_applicant(self, **kwargs):
-        """Détail d'une candidature (manager)"""
-        return self.request("GET", "/recruitment/applicants/{applicant}", **kwargs)
-
-    def put_recruitment_applicants_by_applicant(self, **kwargs):
-        """Modifier un candidat"""
-        return self.request("PUT", "/recruitment/applicants/{applicant}", **kwargs)
-
-    def post_recruitment_applicants_by_applicant_interviews(self, **kwargs):
-        """Planifier un entretien"""
-        return self.request("POST", "/recruitment/applicants/{applicant}/interviews", **kwargs)
-
     def delete_recruitment_applicants_by_id(self, **kwargs):
         """Supprimer une candidature (manager)"""
         return self.request("DELETE", "/recruitment/applicants/{id}", **kwargs)
@@ -2583,6 +2671,14 @@ class LeopardoClient:
     def get_recruitment_applicants_by_id(self, **kwargs):
         """Détail d'une candidature (manager)"""
         return self.request("GET", "/recruitment/applicants/{id}", **kwargs)
+
+    def put_recruitment_applicants_by_id(self, **kwargs):
+        """Modifier un candidat"""
+        return self.request("PUT", "/recruitment/applicants/{id}", **kwargs)
+
+    def post_recruitment_applicants_by_id_interviews(self, **kwargs):
+        """Planifier un entretien"""
+        return self.request("POST", "/recruitment/applicants/{id}/interviews", **kwargs)
 
     def patch_recruitment_applicants_by_id_status(self, **kwargs):
         """Changer le statut d'une candidature (principal/rh)"""
@@ -2592,21 +2688,13 @@ class LeopardoClient:
         """Supprimer un entretien (manager)"""
         return self.request("DELETE", "/recruitment/interviews/{id}", **kwargs)
 
+    def put_recruitment_interviews_by_id(self, **kwargs):
+        """Modifier un entretien"""
+        return self.request("PUT", "/recruitment/interviews/{id}", **kwargs)
+
     def patch_recruitment_interviews_by_id_feedback(self, **kwargs):
         """Saisir le feedback d'un entretien (le clôture)"""
         return self.request("PATCH", "/recruitment/interviews/{id}/feedback", **kwargs)
-
-    def delete_recruitment_interviews_by_interview(self, **kwargs):
-        """Supprimer un entretien (manager)"""
-        return self.request("DELETE", "/recruitment/interviews/{interview}", **kwargs)
-
-    def put_recruitment_interviews_by_interview(self, **kwargs):
-        """Modifier un entretien"""
-        return self.request("PUT", "/recruitment/interviews/{interview}", **kwargs)
-
-    def patch_recruitment_interviews_by_interview_feedback(self, **kwargs):
-        """Saisir le feedback d'un entretien (le clôture)"""
-        return self.request("PATCH", "/recruitment/interviews/{interview}/feedback", **kwargs)
 
     def get_recruitment_jobs(self, **kwargs):
         """Lister les offres d'emploi"""
@@ -2620,17 +2708,13 @@ class LeopardoClient:
         """Supprimer une offre d'emploi (manager)"""
         return self.request("DELETE", "/recruitment/jobs/{id}", **kwargs)
 
-    def delete_recruitment_jobs_by_jobposting(self, **kwargs):
-        """Supprimer une offre d'emploi (manager)"""
-        return self.request("DELETE", "/recruitment/jobs/{jobPosting}", **kwargs)
-
-    def get_recruitment_jobs_by_jobposting(self, **kwargs):
+    def get_recruitment_jobs_by_id(self, **kwargs):
         """Voir une offre"""
-        return self.request("GET", "/recruitment/jobs/{jobPosting}", **kwargs)
+        return self.request("GET", "/recruitment/jobs/{id}", **kwargs)
 
-    def put_recruitment_jobs_by_jobposting(self, **kwargs):
+    def put_recruitment_jobs_by_id(self, **kwargs):
         """Modifier une offre"""
-        return self.request("PUT", "/recruitment/jobs/{jobPosting}", **kwargs)
+        return self.request("PUT", "/recruitment/jobs/{id}", **kwargs)
 
     def get_recruitment_jobs_by_jobposting_applicants(self, **kwargs):
         """Lister les candidats"""

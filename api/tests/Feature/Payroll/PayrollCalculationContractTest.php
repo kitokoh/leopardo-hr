@@ -78,23 +78,25 @@ class PayrollCalculationContractTest extends TestCase
 
     public function test_golden_fr_contract(): void
     {
-        // Calcul manuel (FrancePayrollRules, barème IR 2026 — #5254) — brut 3 000 EUR :
-        //   SS salariale 7,5 % = 225 · CSG 9,2 % sur 98,25 % du brut = 271,17
-        //   CRDS 0,5 % sur 98,25 % = 14,74 → salarial total 510,91
-        //   Patronal 30 % = 900 · Assiette = 2 489,09 · annuel 29 869,08
-        //   Tranches 2026 : 0-11 600 × 0 % · 11 601-29 579 × 11 % = 1 977,69
-        //     29 580-29 869,08 × 30 % = 87,024 → impôt mensuel 172,06
-        //   Net = 3 000 − 510,91 − 172,06 = 2 317,03 · Coût = 3 900
+        // Calcul manuel (FrancePayrollRules, modèle #5438 — structure URSSAF
+        // détaillée, PMSS 2026 = 4 005 €) — brut 3 000 EUR :
+        //   Salarié 644,41 (VIE_PLF 207,00 + VIE_DPL 12,00 + RET_T1 94,50 +
+        //   PREV 45,00 + CSG 271,17 + CRDS 14,74)
+        //   Patronal 1 026,60 (MAL 390,00 + VIE_PLF 256,50 + VIE_DPL 57,00 +
+        //   RET_T1 141,60 + PREV 45,00 + CHO 121,50 + FNGS 15,00)
+        //   Assiette = 2 355,59 · annuel 28 267,08 : tranche 11 % seule
+        //   (sous 29 580) → 1 833,3788 → impôt mensuel 152,78
+        //   Net = 3 000 − 644,41 − 152,78 = 2 202,81 · Coût = 4 026,60
         $contract = $this->presenter()->present('FR', 3000.0);
 
         $this->assertSame('FR', $contract['country_code']);
         $this->assertSame('EUR', $contract['currency']);
-        $this->assertEquals(510.91, $contract['social_employee']);
-        $this->assertEquals(2489.09, $contract['tax_base']);
-        $this->assertEquals(172.06, $contract['income_tax']);
-        $this->assertEquals(2317.03, $contract['net_salary']);
-        $this->assertEquals(900.0, $contract['social_employer']);
-        $this->assertEquals(3900.0, $contract['total_cost']);
+        $this->assertEquals(644.41, $contract['social_employee']);
+        $this->assertEquals(2355.59, $contract['tax_base']);
+        $this->assertEquals(152.78, $contract['income_tax']);
+        $this->assertEquals(2202.81, $contract['net_salary']);
+        $this->assertEquals(1026.60, $contract['social_employer']);
+        $this->assertEquals(4026.60, $contract['total_cost']);
     }
 
     public function test_zero_salary_contract_is_all_zeros(): void

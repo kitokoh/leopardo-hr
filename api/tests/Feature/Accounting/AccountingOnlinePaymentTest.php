@@ -9,8 +9,10 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Testing\TestResponse;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -255,7 +257,7 @@ class AccountingOnlinePaymentTest extends TestCase
         $timestamp = time();
         $signature = hash_hmac('sha256', $timestamp.'.'.$payload, 'stripe_test_secret');
 
-        return $timestamp.',v1='.$signature;
+        return 't='.$timestamp.',v1='.$signature;
     }
 
     /**
@@ -264,8 +266,9 @@ class AccountingOnlinePaymentTest extends TestCase
      * Laravel encode $data avec json_encode + JSON_THROW_ON_ERROR, identique).
      *
      * @param  array<string, mixed>  $data
+     * @return TestResponse<Response>
      */
-    private function postChargilyWebhook(string $url, array $data)
+    private function postChargilyWebhook(string $url, array $data): TestResponse
     {
         $payload = json_encode($data, JSON_THROW_ON_ERROR);
 
@@ -274,8 +277,9 @@ class AccountingOnlinePaymentTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $data
+     * @return TestResponse<Response>
      */
-    private function postStripeWebhook(string $url, array $data)
+    private function postStripeWebhook(string $url, array $data): TestResponse
     {
         $payload = json_encode($data, JSON_THROW_ON_ERROR);
 

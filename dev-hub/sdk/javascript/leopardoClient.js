@@ -140,6 +140,41 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/absences/{absence}/reject", options);
     },
 
+    /** Audit trail du module Comptabilité (qui/quoi/quand, #5273) */
+    getAccountingAuditLogs(options = {}) {
+      return request("GET", "/accounting/audit-logs", options);
+    },
+
+    /** Rapprochement manuel d'une ligne */
+    postAccountingBankStatementLinesByLineMatch(options = {}) {
+      return request("POST", "/accounting/bank-statement-lines/{line}/match", options);
+    },
+
+    /** Lister les relevés bancaires */
+    getAccountingBankStatements(options = {}) {
+      return request("GET", "/accounting/bank-statements", options);
+    },
+
+    /** Détail d'un relevé (avec lignes) */
+    getAccountingBankStatementsByStatement(options = {}) {
+      return request("GET", "/accounting/bank-statements/{statement}", options);
+    },
+
+    /** Lancer le rapprochement automatique */
+    postAccountingBankStatementsByStatementReconcile(options = {}) {
+      return request("POST", "/accounting/bank-statements/{statement}/reconcile", options);
+    },
+
+    /** État de rapprochement */
+    getAccountingBankStatementsByStatementStatus(options = {}) {
+      return request("GET", "/accounting/bank-statements/{statement}/status", options);
+    },
+
+    /** Importer un relevé bancaire CSV */
+    postAccountingBankStatementsImport(options = {}) {
+      return request("POST", "/accounting/bank-statements/import", options);
+    },
+
     /** Lister les contacts client/fournisseur */
     getAccountingContacts(options = {}) {
       return request("GET", "/accounting/contacts", options);
@@ -200,6 +235,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/accounting/documents/{document}/credit-note", options);
     },
 
+    /** Poster (ou re-poster) un document au journal */
+    postAccountingDocumentsByDocumentJournal(options = {}) {
+      return request("POST", "/accounting/documents/{document}/journal", options);
+    },
+
     /** Enregistrer un encaissement (→ partiellement paye / paye, #5223) */
     postAccountingDocumentsByDocumentPayments(options = {}) {
       return request("POST", "/accounting/documents/{document}/payments", options);
@@ -213,6 +253,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Apercu du prochain numero de la serie configuree (#5223) */
     getAccountingDocumentsNextNumber(options = {}) {
       return request("GET", "/accounting/documents/next-number", options);
+    },
+
+    /** Portail client — informations du document partagé (token) */
+    getAccountingDocumentsSharedByToken(options = {}) {
+      return request("GET", "/accounting/documents/shared/{token}", options);
+    },
+
+    /** Portail client — téléchargement du PDF partagé (token) */
+    getAccountingDocumentsSharedByTokenDownload(options = {}) {
+      return request("GET", "/accounting/documents/shared/{token}/download", options);
+    },
+
+    /** Journal comptable par periode */
+    getAccountingJournal(options = {}) {
+      return request("GET", "/accounting/journal", options);
+    },
+
+    /** Export CSV du journal (expert-comptable) */
+    getAccountingJournalExportCsv(options = {}) {
+      return request("GET", "/accounting/journal/export.csv", options);
+    },
+
+    /** Cloturer une periode comptable */
+    postAccountingJournalPeriodsByPeriodClose(options = {}) {
+      return request("POST", "/accounting/journal/periods/{period}/close", options);
     },
 
     /** Lister les paiements */
@@ -843,6 +908,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Exporter le journal d'audit en CSV */
     getAuditLogsExportCsv(options = {}) {
       return request("GET", "/audit-logs/export-csv", options);
+    },
+
+    /** Confirmer l'enrolement 2FA (premier code) et activer */
+    postAuth2faConfirm(options = {}) {
+      return request("POST", "/auth/2fa/confirm", options);
+    },
+
+    /** Desactiver la 2FA (re-verification par code) */
+    postAuth2faDisable(options = {}) {
+      return request("POST", "/auth/2fa/disable", options);
+    },
+
+    /** Demarrer l'enrolement 2FA (secret + QR) */
+    postAuth2faEnroll(options = {}) {
+      return request("POST", "/auth/2fa/enroll", options);
+    },
+
+    /** Regenerer les codes de recuperation 2FA */
+    postAuth2faRecoveryCodes(options = {}) {
+      return request("POST", "/auth/2fa/recovery-codes", options);
+    },
+
+    /** Etat 2FA du compte connecte */
+    getAuth2faStatus(options = {}) {
+      return request("GET", "/auth/2fa/status", options);
+    },
+
+    /** Verifier le challenge 2FA et obtenir le token */
+    postAuth2faVerify(options = {}) {
+      return request("POST", "/auth/2fa/verify", options);
     },
 
     /** Derniere demande biometrie de l'utilisateur courant */
@@ -2535,6 +2630,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/payment-confirmations/{paymentItem}/confirm", options);
     },
 
+    /** Lister les ordres de virement du tenant (pagine) */
+    getPaymentOrders(options = {}) {
+      return request("GET", "/payment-orders", options);
+    },
+
+    /** Detail d'un ordre de virement */
+    getPaymentOrdersByPaymentOrder(options = {}) {
+      return request("GET", "/payment-orders/{paymentOrder}", options);
+    },
+
+    /** Executer un ordre de virement prepare (comptable) */
+    postPaymentOrdersByPaymentOrderExecute(options = {}) {
+      return request("POST", "/payment-orders/{paymentOrder}/execute", options);
+    },
+
+    /** Rapprocher un ordre de virement execute (comptable) */
+    postPaymentOrdersByPaymentOrderReconcile(options = {}) {
+      return request("POST", "/payment-orders/{paymentOrder}/reconcile", options);
+    },
+
     /** Documents de paiement d.un cycle paie */
     getPaymentsByPayrollRunDocuments(options = {}) {
       return request("GET", "/payments/{payrollRun}/documents", options);
@@ -2553,6 +2668,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Voir une session de paie */
     getPayrollRunsByPayrollRun(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}", options);
+    },
+
+    /** Ecrires comptables d'un run de paie valide (#5239) */
+    getPayrollRunsByPayrollRunAccountingEntries(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/accounting-entries", options);
+    },
+
+    /** Regenerer les ecritures comptables d'un run (comptable, idempotent) */
+    postPayrollRunsByPayrollRunAccountingEntriesRegenerate(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/accounting-entries/regenerate", options);
     },
 
     /** Rapport d'anomalies pre-cloture (F-20) */
@@ -2643,6 +2768,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Lister les bulletins de paie d'une session */
     listPayrollRunPaySlips(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/pay-slips", options);
+    },
+
+    /** Preparer un ordre de virement pour un run valide (comptable) */
+    postPayrollRunsByPayrollRunPaymentOrder(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/payment-order", options);
     },
 
     /** Lister les régularisations d'un run (DZ-DEPTH #1818) */
@@ -3176,26 +3306,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Supprimer une candidature (manager) */
-    deleteRecruitmentApplicantsByApplicant(options = {}) {
-      return request("DELETE", "/recruitment/applicants/{applicant}", options);
-    },
-
-    /** Détail d'une candidature (manager) */
-    getRecruitmentApplicantsByApplicant(options = {}) {
-      return request("GET", "/recruitment/applicants/{applicant}", options);
-    },
-
-    /** Modifier un candidat */
-    putRecruitmentApplicantsByApplicant(options = {}) {
-      return request("PUT", "/recruitment/applicants/{applicant}", options);
-    },
-
-    /** Planifier un entretien */
-    postRecruitmentApplicantsByApplicantInterviews(options = {}) {
-      return request("POST", "/recruitment/applicants/{applicant}/interviews", options);
-    },
-
-    /** Supprimer une candidature (manager) */
     deleteRecruitmentApplicantsById(options = {}) {
       return request("DELETE", "/recruitment/applicants/{id}", options);
     },
@@ -3203,6 +3313,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Détail d'une candidature (manager) */
     getRecruitmentApplicantsById(options = {}) {
       return request("GET", "/recruitment/applicants/{id}", options);
+    },
+
+    /** Modifier un candidat */
+    putRecruitmentApplicantsById(options = {}) {
+      return request("PUT", "/recruitment/applicants/{id}", options);
+    },
+
+    /** Planifier un entretien */
+    postRecruitmentApplicantsByIdInterviews(options = {}) {
+      return request("POST", "/recruitment/applicants/{id}/interviews", options);
     },
 
     /** Changer le statut d'une candidature (principal/rh) */
@@ -3215,24 +3335,14 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/recruitment/interviews/{id}", options);
     },
 
+    /** Modifier un entretien */
+    putRecruitmentInterviewsById(options = {}) {
+      return request("PUT", "/recruitment/interviews/{id}", options);
+    },
+
     /** Saisir le feedback d'un entretien (le clôture) */
     patchRecruitmentInterviewsByIdFeedback(options = {}) {
       return request("PATCH", "/recruitment/interviews/{id}/feedback", options);
-    },
-
-    /** Supprimer un entretien (manager) */
-    deleteRecruitmentInterviewsByInterview(options = {}) {
-      return request("DELETE", "/recruitment/interviews/{interview}", options);
-    },
-
-    /** Modifier un entretien */
-    putRecruitmentInterviewsByInterview(options = {}) {
-      return request("PUT", "/recruitment/interviews/{interview}", options);
-    },
-
-    /** Saisir le feedback d'un entretien (le clôture) */
-    patchRecruitmentInterviewsByInterviewFeedback(options = {}) {
-      return request("PATCH", "/recruitment/interviews/{interview}/feedback", options);
     },
 
     /** Lister les offres d'emploi */
@@ -3250,19 +3360,14 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/recruitment/jobs/{id}", options);
     },
 
-    /** Supprimer une offre d'emploi (manager) */
-    deleteRecruitmentJobsByJobPosting(options = {}) {
-      return request("DELETE", "/recruitment/jobs/{jobPosting}", options);
-    },
-
     /** Voir une offre */
-    getRecruitmentJobsByJobPosting(options = {}) {
-      return request("GET", "/recruitment/jobs/{jobPosting}", options);
+    getRecruitmentJobsById(options = {}) {
+      return request("GET", "/recruitment/jobs/{id}", options);
     },
 
     /** Modifier une offre */
-    putRecruitmentJobsByJobPosting(options = {}) {
-      return request("PUT", "/recruitment/jobs/{jobPosting}", options);
+    putRecruitmentJobsById(options = {}) {
+      return request("PUT", "/recruitment/jobs/{id}", options);
     },
 
     /** Lister les candidats */

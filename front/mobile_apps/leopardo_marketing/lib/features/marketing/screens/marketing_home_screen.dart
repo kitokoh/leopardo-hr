@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
-import 'package:leopardo_marketing/core/providers/core_providers.dart';
+import 'package:leopardo_accounting/core/providers/core_providers.dart';
 
 /// Écran d'accueil de l'app Marketing — hub de navigation.
 ///

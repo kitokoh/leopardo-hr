@@ -16,9 +16,10 @@ declare(strict_types=1);
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCheckoutController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
+use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
@@ -39,13 +40,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/settings', [AccountingSettingsController::class, 'show']);
             Route::put('/settings', [AccountingSettingsController::class, 'update']);
 
-            // ── Rapports (issue #5271) — déclaration TVA par période.
-            Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
-
-            // ── Conversion multi-devises (issue #5270) — calcul pur, aucun
-            // état persistant : HT/TVA/TTC entre devise de document et devise
-            // de référence. Taux manuel requis dès que les devises diffèrent.
-            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
         });
 
         // ── Documents (Phase A, #5223) — RBAC principal/comptable ───────────
@@ -62,6 +56,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // (Chargily DZ / Stripe), routée par pays de l'entreprise (ADR-0017).
             Route::post('/documents/{document}/checkout', [AccountingCheckoutController::class, 'store'])->whereNumber('document');
         });
+
+
+            // ── Rapports (issue #5271) — déclaration TVA par période.
+            Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
+
+            // ── Conversion multi-devises (issue #5270) — calcul pur, aucun
+            // état persistant : HT/TVA/TTC entre devise de document et devise
+            // de référence. Taux manuel requis dès que les devises diffèrent.
+            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
+
     });
 /**
  * Routes API du module Comptabilité — trésorerie : paiements, rapprochement,
@@ -72,10 +76,21 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
  */
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
+use App\Modules\Accounting\Interfaces\Api\V1\BankStatementController;
 
 Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
     Route::get('accounting/payments', [AccountingPaymentController::class, 'index']);
     Route::post('accounting/documents/{document}/payments', [AccountingPaymentController::class, 'store']);
     Route::post('accounting/payments/{payment}/reconcile', [AccountingPaymentController::class, 'reconcile']);
     Route::post('accounting/reminders/run', [AccountingPaymentController::class, 'runReminders']);
+    // #5435 — rapprochement bancaire Phase D : import de relevé, matching
+    // auto/manuel, état. Même RBAC que la trésorerie (comptable/principal).
+    Route::get('accounting/bank-statements', [BankStatementController::class, 'index']);
+    Route::post('accounting/bank-statements/import', [BankStatementController::class, 'import']);
+    Route::get('accounting/bank-statements/{statement}', [BankStatementController::class, 'show']);
+    Route::post('accounting/bank-statements/{statement}/reconcile', [BankStatementController::class, 'reconcile']);
+    Route::get('accounting/bank-statements/{statement}/status', [BankStatementController::class, 'status']);
+    Route::post('accounting/bank-statement-lines/{line}/match', [BankStatementController::class, 'match']);
 });
+
+

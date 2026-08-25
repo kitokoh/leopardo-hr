@@ -136,6 +136,8 @@ jobs:
 
       - name: Serve admin build (vite preview, port 4173)
         working-directory: front/admin-dashboard
+        env:
+          VITE_API_URL: http://127.0.0.1:8000/api/v1
         run: |
           nohup npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/preview.log 2>&1 &
           for i in $(seq 1 30); do

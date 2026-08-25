@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
-import 'package:leopardo_marketing/core/providers/core_providers.dart';
+import 'package:leopardo_accounting/core/providers/core_providers.dart';
 
 /// Issue #3006 (T166) : écran de connexion de l'app Marketing.
 ///

@@ -2,6 +2,7 @@
 
 return [
     // Auth
+        'UNKNOWN_ACCOUNT' => 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
     'INVALID_CREDENTIALS' => 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
     'ACCOUNT_SUSPENDED' => 'تم تعليق حسابك. تواصل مع المسؤول.',
     'ACCOUNT_ARCHIVED' => 'هذا الحساب مؤرشف.',
@@ -237,6 +238,7 @@ return [
     'CONTRACT_NOT_FOUND_EMPLOYEE' => 'لا يوجد عقد لهذا الموظف.',
     'ALREADY_ENROLLED_SESSION' => 'مسجل بالفعل في هذه الجلسة.',
     'DELETION_REQUEST_RECEIVED' => 'تم استلام طلب الحذف للمراجعة من قبل الموارد البشرية/القانونية.',
+    'PERIOD_CLOSED' => 'الفترة المحاسبية مغلقة بالفعل — لا يمكن تمرير أي قيد.',
     // المحاسبة (issue #5227)
     'PAYMENT_EXCEEDS_TOTAL' => 'يتجاوز مبلغ الدفع الرصيد المتبقي للمستند.',
     'PAYMENT_ON_UNSENT_DOCUMENT' => 'لا يمكن تسجيل دفعة على مستند لم يُصدر بعد.',
@@ -248,5 +250,14 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'يجب أن يتضمن سند التسليم تاريخ التسليم.',
     'DOCUMENT_NOT_FULLY_PAID' => 'لا يمكن وضع علامة مدفوعة على المستند قبل تسديد المبلغ كاملاً.',
     'INVALID_DOCUMENT_TRANSITION' => 'تغيير الحالة غير مسموح به لهذا المستند.',
-    'ACCOUNTING_VAT_PERIOD_INVALID' => 'فترة غير صالحة. استخدم صيغة YYYY-MM.',
+    'ACCOUNTING_VAT_PERIOD_INVALID' => 'الفترة غير صالحة. استخدم الصيغة YYYY-MM.',
+    'TWO_FACTOR_INVALID' => 'رمز التحقق المزدوج غير صالح أو منتهي الصلاحية.',
+    'TWO_FACTOR_REQUIRED' => 'التحقق المزدوج إلزامي لهذا الحساب. فعّله قبل تسجيل الدخول.',
+    'TWO_FACTOR_ALREADY_ENABLED' => 'التحقق المزدوج مفعّل بالفعل على هذا الحساب.',
+    'TWO_FACTOR_CHALLENGE_EXPIRED' => 'انتهت جلسة التحقق المزدوج. سجّل الدخول مجددًا.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'رابط المشاركة غير موجود أو منتهي الصلاحية.',
+    'DOCUMENT_PDF_NOT_READY' => 'ملف PDF للمستند غير متوفر بعد.',
+    'BANK_STATEMENT_DUPLICATE_IMPORT' => 'تم استيراد هذا الكشف البنكي بالفعل لهذه الفترة.',
+    'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'هذا السطر أو الدفعة مطابق بالفعل.',
+    'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.',
 ];
