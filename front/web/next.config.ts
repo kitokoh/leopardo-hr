@@ -48,7 +48,8 @@ import type { NextConfig } from "next";
 const apiOrigin = (() => {
   try {
     return new URL(
-      process.env.NEXT_PUBLIC_API_URL || "https://gestionemployerbackend.onrender.com"
+      process.env.NEXT_PUBLIC_API_URL ||
+        "https://gestionemployerbackend.onrender.com",
     ).origin;
   } catch {
     return "https://gestionemployerbackend.onrender.com";
@@ -70,6 +71,11 @@ const cspDirectives = [
   "upgrade-insecure-requests",
 ].join("; ");
 
+// Le passage en enforcement doit être explicite après validation des rapports.
+// Par défaut, on conserve Report-Only pour les environnements qui n'ont pas
+// encore migré leurs scripts inline vers des nonces/hashes.
+const enforceCsp = process.env.CSP_ENFORCE === "true";
+
 const nextConfig: NextConfig = {
   // Image optimization
   images: {
@@ -77,7 +83,9 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year
-    dangerouslyAllowSVG: true,
+    // SVG distant : désactivé par défaut pour éviter les documents SVG actifs.
+    // Réactivation uniquement après revue des sources et de la CSP.
+    dangerouslyAllowSVG: process.env.NEXT_IMAGE_ALLOW_SVG === "true",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
@@ -132,22 +140,11 @@ const nextConfig: NextConfig = {
           value: "geolocation=(), microphone=(), camera=()",
         },
         {
-          // Report-only for now — see comment above cspDirectives. Flip to
-          // "Content-Security-Policy" once the report is verified clean.
-          key: "Content-Security-Policy-Report-Only",
+          // Activation explicite uniquement après revue des rapports CSP.
+          key: enforceCsp
+            ? "Content-Security-Policy"
+            : "Content-Security-Policy-Report-Only",
           value: cspDirectives,
-        },
-      ],
-    },
-    {
-      // Issue #5429 — URL tokenisées du portail client : le token ne doit
-      // JAMAIS fuiter dans l'en-tête Referer (règle APRÈS la règle générique
-      // pour priorité sur le Referrer-Policy global).
-      source: "/documents/shared/:path*",
-      headers: [
-        {
-          key: "Referrer-Policy",
-          value: "no-referrer",
         },
       ],
     },

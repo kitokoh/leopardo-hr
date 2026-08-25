@@ -11,7 +11,6 @@ use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
 use App\Modules\Accounting\Infrastructure\Services\DocumentPdfRenderer;
 use App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface;
 use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
-use App\Modules\Accounting\Console\Commands\PurgeExpiredSharesCommand;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -25,9 +24,6 @@ class AccountingServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        // Issue #5430 — purge des partages de documents expirés (RGPD).
-        $this->commands([PurgeExpiredSharesCommand::class]);
-
         $this->app->bind(PdfRendererInterface::class, DocumentPdfRenderer::class);
         // #5223 — numérotation paramétrable des documents comptables.
         $this->app->bind(

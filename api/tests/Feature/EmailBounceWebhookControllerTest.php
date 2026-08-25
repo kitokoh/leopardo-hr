@@ -105,6 +105,39 @@ class EmailBounceWebhookControllerTest extends TestCase
         $this->assertSame(0, CommunicationEvent::query()->count());
     }
 
+    public function test_missing_email_is_rejected_by_input_validation(): void
+    {
+        $response = $this->postJson('/api/v1/webhooks/email-bounce', [
+            'event' => 'bounce',
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['email']);
+        $this->assertSame(0, CommunicationEvent::query()->count());
+    }
+
+    public function test_unknown_event_is_rejected_by_input_validation(): void
+    {
+        $response = $this->postJson('/api/v1/webhooks/email-bounce', [
+            'email' => 'target@example.test',
+            'event' => 'arbitrary_event',
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['event']);
+        $this->assertSame(0, CommunicationEvent::query()->count());
+    }
+
+    public function test_reason_length_is_bounded_by_input_validation(): void
+    {
+        $response = $this->postJson('/api/v1/webhooks/email-bounce', [
+            'email' => 'target@example.test',
+            'event' => 'bounce',
+            'reason' => str_repeat('x', 256),
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['reason']);
+        $this->assertSame(0, CommunicationEvent::query()->count());
+    }
+
     public function test_invalid_shared_secret_is_rejected(): void
     {
         config()->set('services.mail_bounce_webhook.secret', 'super-secret');
