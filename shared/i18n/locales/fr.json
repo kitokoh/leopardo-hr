@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-24T00:00:00Z",
+  "_updated_at": "2026-08-25T00:00:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -2974,5 +2974,29 @@
   "settingsEdgeOptionalHint": "Optionnel: pointer vers un serveur Edge installe sur site pour pointer sans Internet.",
   "settingsPrefsUnavailable": "Preferences indisponibles pour le moment. Tire pour recharger plus tard.",
   "teamQrPrefilledHint": "Profil pre-rempli depuis QR. Renseignez l email professionnel unique de cette entreprise.",
-  "settingsBiometryPendingHint": "Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH."
+  "settingsBiometryPendingHint": "Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.",
+  "shareAccesses": {
+    "title": "Historique des accès",
+    "subtitle": "Consultation RGPD : qui a consulté ou téléchargé un document partagé sur le portail client, quand et depuis quelle adresse IP.",
+    "documentLabel": "Document",
+    "selectDocument": "Sélectionner un document…",
+    "noDocumentSelected": "Sélectionnez un document pour afficher son historique d'accès.",
+    "actionHeader": "Action",
+    "dateHeader": "Date",
+    "ipHeader": "Adresse IP",
+    "userAgentHeader": "Navigateur",
+    "requestIdHeader": "ID de corrélation",
+    "actionInfo": "Consultation",
+    "actionDownload": "Téléchargement",
+    "emptyTitle": "Aucun accès enregistré",
+    "emptyBody": "Ce document n'a encore jamais été consulté ni téléchargé via le portail client.",
+    "loadError": "Impossible de charger les accès. Réessayez dans un instant.",
+    "loadDocumentsError": "Impossible de charger les documents. Réessayez dans un instant.",
+    "loading": "Chargement…",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "pageOf": "Page {current} sur {total}",
+    "total": "{count} accès",
+    "retry": "Réessayer"
+  }
 }

@@ -28,6 +28,7 @@ use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
+use App\Modules\Accounting\Interfaces\Api\V1\ShareAccessController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +66,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // #5272 — paiement en ligne : initiation d'une session de checkout
             // (Chargily DZ / Stripe), routée par pays de l'entreprise (ADR-0017).
             Route::post('/documents/{document}/checkout', [AccountingCheckoutController::class, 'store'])->whereNumber('document');
+
+            // #5522 — RGPD : audit des accès au portail client (qui a consulté
+            // / téléchargé un document partagé, quand, depuis quelle IP).
+            Route::get('/documents/shared/{document}/accesses', [ShareAccessController::class, 'index'])->whereNumber('document');
 
             // #5273 — audit trail du module (qui/quoi/quand) — RBAC principal/comptable.
             Route::get('/audit-logs', [AccountingAuditController::class, 'index']);
