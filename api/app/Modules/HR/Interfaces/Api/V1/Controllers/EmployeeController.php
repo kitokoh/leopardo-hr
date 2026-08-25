@@ -351,6 +351,8 @@ class EmployeeController extends Controller
         $employee = Employee::query()
             ->with([
                 'schedule:id,name,start_time,end_time,break_minutes,late_tolerance_minutes',
+                // #5326 (G3) — badge « dossier complet » calculé par la resource.
+                'employeeDocuments',
             ])
             ->findOrFail($employeeId);
 

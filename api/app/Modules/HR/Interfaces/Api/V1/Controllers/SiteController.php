@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Modules\HR\Interfaces\Api\V1\Requests\StoreSiteRequest;
-use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateSiteRequest;
-use App\Http\Resources\Api\V1\SiteResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Site;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\SiteResource;
+use App\Modules\HR\Interfaces\Api\V1\Requests\StoreSiteRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateSiteRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -77,7 +77,6 @@ class SiteController extends Controller
 
         $site->delete();
 
-        return new JsonResponse(['message' => 'Site deleted successfully']);
+        return new JsonResponse(['message' => __('errors.SITE_DELETED')]);
     }
 }
-

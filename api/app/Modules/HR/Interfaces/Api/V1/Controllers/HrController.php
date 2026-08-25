@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Modules\HR\Infrastructure\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
@@ -56,7 +56,7 @@ class HrController extends Controller
                 ->count(),
 
             'total_employees' => Employee::where('company_id', $company_id)
-                ->whereNotIn('status', ['archived'])
+                ->whereNotIn('status', ['archived', 'departed'])
                 ->count(),
 
             'pending_invitations' => Employee::where('company_id', $company_id)
@@ -70,7 +70,7 @@ class HrController extends Controller
                 ->count(),
 
             'by_contract_type' => Employee::where('company_id', $company_id)
-                ->whereNotIn('status', ['archived'])
+                ->whereNotIn('status', ['archived', 'departed'])
                 ->selectRaw('contract_type, COUNT(*) as count')
                 ->groupBy('contract_type')
                 ->pluck('count', 'contract_type'),
@@ -79,7 +79,7 @@ class HrController extends Controller
         return response()->json([
             'data' => $stats,
             'meta' => [
-                'app'  => 'rh',
+                'app' => 'rh',
                 'role' => $employee->manager_role,
             ],
         ]);
@@ -96,7 +96,7 @@ class HrController extends Controller
         $employee = $request->user();
 
         $query = Employee::where('company_id', $employee->company_id)
-            ->whereNotIn('status', ['archived'])
+            ->whereNotIn('status', ['archived', 'departed'])
             ->with(['department', 'position', 'schedule', 'site'])
             ->orderBy('last_name');
 
@@ -104,9 +104,9 @@ class HrController extends Controller
         if ($search = $request->query('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('first_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('matricule', 'like', "%{$search}%");
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('matricule', 'like', "%{$search}%");
             });
         }
 
@@ -132,22 +132,22 @@ class HrController extends Controller
         $actor = $request->user();
 
         $validated = $request->validate([
-            'first_name'      => 'required|string|max:100',
-            'last_name'       => 'required|string|max:100',
-            'email'           => 'required|email|max:255|unique:employees,email',
-            'personal_phone'  => 'nullable|string|max:20',
-            'gender'          => ['required', Rule::in(['M', 'F'])],
-            'date_of_birth'   => 'required|date|before:today',
-            'contract_type'   => ['required', Rule::in(['cdi', 'cdd', 'freelance', 'intern', 'part_time'])],
-            'contract_start'  => 'required|date',
-            'contract_end'    => 'nullable|date|after:contract_start',
-            'salary_type'     => ['required', Rule::in(['monthly', 'daily', 'hourly'])],
-            'salary_base'     => 'nullable|numeric|min:0',
-            'hourly_rate'     => 'nullable|numeric|min:0',
-            'department_id'   => 'nullable|integer|exists:departments,id',
-            'position_id'     => 'nullable|integer|exists:positions,id',
-            'site_id'         => 'nullable|integer|exists:sites,id',
-            'schedule_id'     => 'nullable|integer|exists:schedules,id',
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'email' => 'required|email|max:255|unique:employees,email',
+            'personal_phone' => 'nullable|string|max:20',
+            'gender' => ['required', Rule::in(['M', 'F'])],
+            'date_of_birth' => 'required|date|before:today',
+            'contract_type' => ['required', Rule::in(['cdi', 'cdd', 'freelance', 'intern', 'part_time'])],
+            'contract_start' => 'required|date',
+            'contract_end' => 'nullable|date|after:contract_start',
+            'salary_type' => ['required', Rule::in(['monthly', 'daily', 'hourly'])],
+            'salary_base' => 'nullable|numeric|min:0',
+            'hourly_rate' => 'nullable|numeric|min:0',
+            'department_id' => 'nullable|integer|exists:departments,id',
+            'position_id' => 'nullable|integer|exists:positions,id',
+            'site_id' => 'nullable|integer|exists:sites,id',
+            'schedule_id' => 'nullable|integer|exists:schedules,id',
         ]);
 
         /** @var array{first_name: string, last_name: string, email: string, personal_phone?: string|null, gender?: string|null, date_of_birth?: string|null, contract_type?: string|null, contract_start?: string|null, salary_type?: string|null, salary_base?: int|float|string|null, hourly_rate?: int|float|string|null, schedule_id?: int|null} $validated */
@@ -179,9 +179,10 @@ class HrController extends Controller
             ),
             $actor,
         );
+
         return response()->json([
             'message' => 'Employee created successfully.',
-            'data'    => new EmployeeResource($employee),
+            'data' => new EmployeeResource($employee),
         ], 201);
     }
 
@@ -195,7 +196,7 @@ class HrController extends Controller
         $actor = $request->user();
 
         if ($actor->company_id !== $employee->company_id) {
-            return response()->json(['message' => 'Employee not found.'], 404);
+            return response()->json(['message' => __('errors.EMPLOYEE_NOT_FOUND')], 404);
         }
 
         $employee->load(['department', 'position', 'schedule', 'site', 'company']);
@@ -215,23 +216,23 @@ class HrController extends Controller
         $actor = $request->user();
 
         if ($actor->company_id !== $employee->company_id) {
-            return response()->json(['message' => 'Employee not found.'], 404);
+            return response()->json(['message' => __('errors.EMPLOYEE_NOT_FOUND')], 404);
         }
 
         $validated = $request->validate([
-            'first_name'     => 'sometimes|string|max:100',
-            'last_name'      => 'sometimes|string|max:100',
+            'first_name' => 'sometimes|string|max:100',
+            'last_name' => 'sometimes|string|max:100',
             'personal_phone' => 'sometimes|nullable|string|max:20',
-            'address_line'   => 'sometimes|nullable|string|max:255',
-            'contract_type'  => ['sometimes', Rule::in(['cdi', 'cdd', 'freelance', 'intern', 'part_time'])],
-            'contract_end'   => 'sometimes|nullable|date',
-            'salary_base'    => 'sometimes|nullable|numeric|min:0',
-            'hourly_rate'    => 'sometimes|nullable|numeric|min:0',
-            'department_id'  => 'sometimes|nullable|integer|exists:departments,id',
-            'position_id'    => 'sometimes|nullable|integer|exists:positions,id',
-            'site_id'        => 'sometimes|nullable|integer|exists:sites,id',
-            'schedule_id'    => 'sometimes|nullable|integer|exists:schedules,id',
-            'status'         => ['sometimes', Rule::in(['active', 'inactive', 'on_leave', 'suspended'])],
+            'address_line' => 'sometimes|nullable|string|max:255',
+            'contract_type' => ['sometimes', Rule::in(['cdi', 'cdd', 'freelance', 'intern', 'part_time'])],
+            'contract_end' => 'sometimes|nullable|date',
+            'salary_base' => 'sometimes|nullable|numeric|min:0',
+            'hourly_rate' => 'sometimes|nullable|numeric|min:0',
+            'department_id' => 'sometimes|nullable|integer|exists:departments,id',
+            'position_id' => 'sometimes|nullable|integer|exists:positions,id',
+            'site_id' => 'sometimes|nullable|integer|exists:sites,id',
+            'schedule_id' => 'sometimes|nullable|integer|exists:schedules,id',
+            'status' => ['sometimes', Rule::in(['active', 'inactive', 'on_leave', 'suspended'])],
         ]);
 
         /** @var array<string, mixed> $validated */
@@ -243,7 +244,7 @@ class HrController extends Controller
 
         return response()->json([
             'message' => 'Employee updated successfully.',
-            'data'    => new EmployeeResource($employee->fresh(['department', 'position', 'schedule', 'site'])),
+            'data' => new EmployeeResource($employee->fresh(['department', 'position', 'schedule', 'site'])),
         ]);
     }
 
@@ -257,23 +258,23 @@ class HrController extends Controller
         $actor = $request->user();
 
         $employees = Employee::where('company_id', $actor->company_id)
-            ->whereNotIn('status', ['archived'])
+            ->whereNotIn('status', ['archived', 'departed'])
             ->with(['department', 'position'])
             ->orderBy('last_name')
             ->get(['id', 'first_name', 'last_name', 'email', 'role', 'manager_role', 'status', 'photo_path', 'contract_type', 'department_id', 'position_id']);
 
         return response()->json([
             'data' => $employees->map(fn (Employee $e): array => [
-                'id'            => $e->id,
-                'name'          => trim("{$e->first_name} {$e->last_name}"),
-                'email'         => $e->email,
-                'photo_path'    => $e->photo_path,
-                'role'          => $e->role,
-                'manager_role'  => $e->manager_role,
-                'status'        => $e->status,
+                'id' => $e->id,
+                'name' => trim("{$e->first_name} {$e->last_name}"),
+                'email' => $e->email,
+                'photo_path' => $e->photo_path,
+                'role' => $e->role,
+                'manager_role' => $e->manager_role,
+                'status' => $e->status,
                 'contract_type' => $e->contract_type,
-                'department'    => $e->department?->name,
-                'position'      => $e->position?->title,
+                'department' => $e->department?->name,
+                'position' => $e->position?->title,
             ]),
             'meta' => [
                 'total' => $employees->count(),
@@ -292,18 +293,18 @@ class HrController extends Controller
 
         return response()->json([
             'data' => [
-                'id'           => $employee->id,
-                'name'         => trim("{$employee->first_name} {$employee->last_name}"),
-                'email'        => $employee->email,
-                'role'         => $employee->role,
+                'id' => $employee->id,
+                'name' => trim("{$employee->first_name} {$employee->last_name}"),
+                'email' => $employee->email,
+                'role' => $employee->role,
                 'manager_role' => $employee->manager_role,
-                'role_label'   => 'Responsable RH',
-                'app'          => 'rh',
-                'company'      => [
-                    'id'   => $employee->company?->id,
+                'role_label' => 'Responsable RH',
+                'app' => 'rh',
+                'company' => [
+                    'id' => $employee->company?->id,
                     'name' => $employee->company?->name,
                 ],
-                'photo_path'   => $employee->photo_path,
+                'photo_path' => $employee->photo_path,
             ],
         ]);
     }

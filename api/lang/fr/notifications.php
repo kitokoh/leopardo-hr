@@ -9,6 +9,8 @@ return [
     'attendance_geofence_alert_phase_check_out' => 'pointé son départ',
 
     'generic_title' => 'Notification Leopardo RH',
+    'accounting_payment_reminder_title' => 'Relance de paiement',
+    'accounting_payment_reminder_body' => 'La facture {document_number} ({document_total}) est impayée depuis {due_date} — relance J+{days_overdue}.',
     'generic_body' => 'Une nouvelle information est disponible dans votre espace.',
 
     'absence_approved_title' => 'Demande d’absence approuvée',

@@ -125,19 +125,19 @@ Schedule::command('billing:generate-invoices')->monthlyOn(1, '02:00');
 Schedule::command('leave:accrue')->monthlyOn(1, '03:00');
 Schedule::command('leave:carry-forward --year='.(now()->year - 1))->yearlyOn(1, 1, '04:00');
 Schedule::command('contracts:alert-expiring')->daily()->at('07:00');
-Schedule::command('attendance:auto-close --threshold=12')
+// Fermeture automatique unique (ADR-0016 Phase 4, #5355) : pointages sans
+// check-out + sessions GPS orphelines — une seule commande, même cycle.
+Schedule::command('attendance:auto-close --threshold=12 --hours=14')
     ->hourly()
     ->withoutOverlapping()
     ->onOneServer();
-
-// SmartAttendance — fermeture automatique des sessions GPS orphelines
-Schedule::command('smart-attendance:auto-close --hours=14')
-    ->hourly()
-    ->withoutOverlapping()
-    ->onOneServer();
+// Supervision queue (issue #5282) : le driver actif peut être `redis` ou
+// `database` (prod 0 €). La détection < 15 min est garantie côté CI par
+// `.github/workflows/queue-supervision.yml` (cron 5 min) ; ce schedule couvre
+// les environnements où un scheduler tourne (worker dédié, local).
 Schedule::command('queue:health-check')
     ->everyFiveMinutes()
-    ->when(fn (): bool => config('queue.default') === 'redis')
+    ->when(fn (): bool => in_array(config('queue.default'), ['redis', 'database'], true))
     ->withoutOverlapping();
 
 Schedule::command('growth:approve-commissions')

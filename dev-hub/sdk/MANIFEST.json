@@ -1,16 +1,9 @@
 {
   "source": "api/openapi.yaml",
-<<<<<<< HEAD
-  "spec_sha256": "599440261ec90260eeff872227ed8d7a8e55e3d17abc5818ed6eeb9ccd414fbb",
+  "spec_sha256": "e570e0a1b66b3bb8b0ad812a5c1871c8491f24727b300f54642e897489fa299f",
   "openapi": "3.0.3",
   "api_version": "4.24.0",
-  "operation_count": 757,
-=======
-  "spec_sha256": "88feaa833c906ef6237ae253fcce4a6d8d7b9aa8bd009bde0b01092031ecdf31",
-  "openapi": "3.0.3",
-  "api_version": "4.24.0",
-  "operation_count": 767,
->>>>>>> 0946ae834 (feat(attendance): surface API pointage consolidée sous /attendance/* (ADR-0016 Phase 3, Closes #5354))
+  "operation_count": 800,
   "targets": [
     "javascript",
     "python"
