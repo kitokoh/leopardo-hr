@@ -4,8 +4,8 @@ import 'package:leopardo_core/features/attendance_geo/data/models/geo_attendance
 
 /// Repository Smart Attendance — app Manager.
 /// Expose validation des sessions GPS et dashboard stats.
-class ManagerAttendanceGeoRepository {
-  const ManagerAttendanceGeoRepository(this._apiClient);
+class AttendanceGeoRepository {
+  const AttendanceGeoRepository(this._apiClient);
 
   final ApiClient _apiClient;
 
