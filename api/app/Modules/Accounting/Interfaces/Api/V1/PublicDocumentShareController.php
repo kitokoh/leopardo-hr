@@ -51,7 +51,7 @@ final class PublicDocumentShareController
                 'total_ttc' => round((float) $document->total_ttc, 2),
                 'expires_at' => $share->expires_at?->toIso8601String(),
             ],
-        ]);
+        ])->header('Referrer-Policy', 'no-referrer');
     }
 
     public function download(string $token): StreamedResponse
@@ -73,7 +73,11 @@ final class PublicDocumentShareController
 
         $filename = $document->type.'-'.$document->number.'.pdf';
 
-        return Storage::disk(GenerateDocumentPdf::DISK)->download($document->pdf_path, $filename);
+        // #5521 — no-referrer strict : le token ne doit pas fuiter via Referer
+        // lors du téléchargement (règles navigateur + défense en profondeur).
+        return Storage::disk(GenerateDocumentPdf::DISK)
+            ->download($document->pdf_path, $filename)
+            ->header('Referrer-Policy', 'no-referrer');
     }
 
     /**

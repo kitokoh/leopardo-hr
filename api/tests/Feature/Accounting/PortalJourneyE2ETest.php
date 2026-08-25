@@ -77,12 +77,14 @@ class PortalJourneyE2ETest extends TestCase
         $this->getJson('/api/v1/accounting/documents/shared/'.$token)
             ->assertOk()
             ->assertJsonPath('data.number', $document->number)
-            ->assertJsonPath('data.status', 'sent');
+            ->assertJsonPath('data.status', 'sent')
+            ->assertHeader('referrer-policy', 'no-referrer');  // #5521
 
         // 4) Téléchargement du PDF réel.
         $this->get('/api/v1/accounting/documents/shared/'.$token.'/download')
             ->assertOk()
-            ->assertHeader('content-type', 'application/pdf');
+            ->assertHeader('content-type', 'application/pdf')
+            ->assertHeader('referrer-policy', 'no-referrer');  // #5521
 
         // 4bis) RGPD — les accès info/download sont tracés (issue #5429).
         $this->assertSame(1, AuditLog::query()->where('action', 'accounting.share.info')->count());
