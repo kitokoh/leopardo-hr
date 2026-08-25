@@ -125,7 +125,7 @@ export default function SmartAttendanceSessionsPage() {
     setLoading(true);
     try {
       const query = buildQuery(currentFilters, currentPage);
-      const response = await apiFetch(`/smart-attendance/sessions?${query}`);
+      const response = await apiFetch(`/attendance/geo-sessions?${query}`);
       const payload = await response.json() as SessionsPayload;
       setSessions(payload.data ?? []);
       setMeta(payload.meta ?? null);

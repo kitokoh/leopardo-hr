@@ -60,6 +60,9 @@ jobs:
       - name: Geofence single usage path guard (ADR-0016 Phase 2, issue #5353)
         run: bash dev-hub/tools/check-geofence-single-usage.sh
 
+      - name: SmartAttendance purge guard (ADR-0016 Phase 5, issue #5356)
+        run: bash dev-hub/tools/check-smartattendance-purged.sh
+
 
   phpstan-modules:
     timeout-minutes: 45
