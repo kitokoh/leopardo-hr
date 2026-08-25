@@ -6,9 +6,9 @@ namespace Tests\Feature\SmartAttendance;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\EmployeeLocationEvent;
+use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Modules\SmartAttendance\Domain\Models\EmployeeLocationEvent;
-use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
@@ -97,6 +97,9 @@ class GeoSessionDashboardTest extends TestCase
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
+    /**
+     * @param  array<string, mixed>  $override
+     */
     private function createSession(array $override = []): GeoAttendanceSession
     {
         /** @var GeoAttendanceSession */
@@ -189,7 +192,7 @@ class GeoSessionDashboardTest extends TestCase
 
         $response->assertStatus(200);
 
-        $statuses = collect($response->json('data'))->pluck('status')->unique()->all();
+        $statuses = collect((array) $response->json('data'))->pluck('status')->unique()->all();
         $this->assertSame([GeoAttendanceSession::STATUS_PENDING_VALIDATION], $statuses);
     }
 

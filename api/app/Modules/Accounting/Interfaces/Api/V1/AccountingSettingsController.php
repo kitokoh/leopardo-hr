@@ -92,6 +92,39 @@ class AccountingSettingsController extends Controller
         return array_intersect_key($validated, array_flip($allowed));
     }
 
+    /**
+     * Traduit le label d'un taux par `label_key` (défauts pays, issue #5227) ;
+     * un label personnalisé (sans `label_key`) est servi tel quel.
+     *
+     * @return array<int, array{label: string, label_key: string|null, rate: mixed}>
+     */
+    private function serializeTvaRates(mixed $rates): array
+    {
+        $out = [];
+
+        foreach ((is_array($rates) ? $rates : []) as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $labelKey = isset($row['label_key']) ? (string) $row['label_key'] : null;
+
+            // Seuls les label_key connus sont traduits ; une valeur inconnue
+            // (données legacy) retombe sur le label stocké (issue #5227).
+            $knownLabelKeys = ['standard', 'reduced', 'sales_tax', 'gst'];
+
+            $out[] = [
+                'label' => $labelKey !== null && in_array($labelKey, $knownLabelKeys, true)
+                    ? (string) __('accounting.tva_label_'.$labelKey)
+                    : (string) ($row['label'] ?? ''),
+                'label_key' => $labelKey,
+                'rate' => $row['rate'] ?? null,
+            ];
+        }
+
+        return $out;
+    }
+
     private function companyId(Request $request): string
     {
         // getAttribute() : compagnie de l'employé authentifié (même pattern
@@ -125,7 +158,7 @@ class AccountingSettingsController extends Controller
             'template_style' => $settings->template_style,
             'payment_terms' => $settings->payment_terms,
             'legal_mentions' => $settings->legal_mentions,
-            'tva_rates' => $settings->tva_rates ?? [],
+            'tva_rates' => $this->serializeTvaRates($settings->tva_rates),
             'number_series' => $settings->number_series ?? [],
             'updated_at' => $settings->updated_at?->toISOString(),
         ];

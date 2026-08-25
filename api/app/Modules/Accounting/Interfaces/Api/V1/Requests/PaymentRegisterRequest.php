@@ -25,9 +25,9 @@ class PaymentRegisterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'amount.required' => 'Le montant est requis.',
-            'amount.min' => 'Le montant doit être strictement positif.',
-            'method.in' => 'Méthode de paiement invalide (cash, bank_transfer, check, card, other).',
+            'amount.required' => __('accounting.validation.amount_required'),
+            'amount.min' => __('accounting.validation.amount_min'),
+            'method.in' => __('accounting.validation.method_invalid'),
         ];
     }
 }
