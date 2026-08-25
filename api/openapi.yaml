@@ -13887,40 +13887,6 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /accounting/documents/{document}/payments:
-    post:
-      tags: ["Accounting"]
-      summary: "Enregistrer un encaissement (→ partiellement paye / paye, #5223)"
-      description: "Cumul des paiements borne au total TTC. Un document paye ou annule refuse tout paiement. Statut paye jamais atteint sans paiement."
-      parameters:
-        - name: document
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [amount, method]
-              properties:
-                amount: { type: number, minimum: 0, exclusiveMinimum: true }
-                method: { type: string, enum: [cash, bank_transfer, check, card, other] }
-                received_at: { type: string, format: date }
-                reference: { type: string, maxLength: 120 }
-      responses:
-        "201":
-          description: "Paiement enregistre"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-        "404":
-          $ref: "#/components/responses/Error404"
-        "422":
-          $ref: "#/components/responses/Validation422"
-
   /accounting/documents/{document}/cancel:
     post:
       tags: ["Accounting"]

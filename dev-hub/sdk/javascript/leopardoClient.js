@@ -195,11 +195,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/accounting/documents/{document}/payments", options);
     },
 
-    /** Enregistrer un encaissement (→ partiellement paye / paye, #5223) */
-    postAccountingDocumentsByDocumentPayments2(options = {}) {
-      return request("POST", "/accounting/documents/{document}/payments", options);
-    },
-
     /** Envoyer un brouillon (draft → sent, #5223) */
     postAccountingDocumentsByDocumentSend(options = {}) {
       return request("POST", "/accounting/documents/{document}/send", options);

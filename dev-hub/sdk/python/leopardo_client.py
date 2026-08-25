@@ -176,10 +176,6 @@ class LeopardoClient:
         """Enregistrer un paiement"""
         return self.request("POST", "/accounting/documents/{document}/payments", **kwargs)
 
-    def post_accounting_documents_by_document_payments_2(self, **kwargs):
-        """Enregistrer un encaissement (→ partiellement paye / paye, #5223)"""
-        return self.request("POST", "/accounting/documents/{document}/payments", **kwargs)
-
     def post_accounting_documents_by_document_send(self, **kwargs):
         """Envoyer un brouillon (draft → sent, #5223)"""
         return self.request("POST", "/accounting/documents/{document}/send", **kwargs)

@@ -114,7 +114,10 @@ class EmployeeResource extends JsonResource
             // Présent uniquement quand la relation est chargée (show), jamais
             // sur les listes (évite un N+1 sur index).
             'documents_status' => $this->whenLoaded('employeeDocuments', function (): array {
-                return EmployeeDocumentService::dossierSummary((string) $this->status, $this->employeeDocuments);
+                /** @var \Illuminate\Support\Collection<int, \App\Modules\HR\Domain\Models\EmployeeDocument> $documents */
+                $documents = $this->employeeDocuments ?? collect();
+
+                return EmployeeDocumentService::dossierSummary((string) $this->status, $documents);
             }),
         ];
     }
