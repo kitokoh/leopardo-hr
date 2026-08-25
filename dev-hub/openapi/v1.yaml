@@ -14584,7 +14584,6 @@ paths:
               required: [amount, method]
               properties:
                 amount: { type: number, minimum: 0, exclusiveMinimum: true }
-                amount: { type: number, exclusiveMinimum: 0 }
                 method: { type: string, enum: [cash, bank_transfer, check, card, other] }
                 received_at: { type: string, format: date }
                 reference: { type: string, maxLength: 120 }

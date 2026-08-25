@@ -16,6 +16,8 @@ use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\TunisiaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\TurkeyPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\UnitedKingdomPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\UnitedStatesPayrollRules;
 use Illuminate\Support\Carbon;
 
 /**
@@ -83,6 +85,10 @@ class CountryRulesResolver
 
         // Canada (PA2-COUNTRY-009) : province = raffinement optionnel.
         $map['CA'] = new CanadaPayrollRules;
+
+        // Packs EN (#5255) : GB (PAYE/NI) et US (fédéral) — pilotes 2026-27.
+        $map['GB'] = new UnitedKingdomPayrollRules;
+        $map['US'] = new UnitedStatesPayrollRules;
 
         return $map;
     }

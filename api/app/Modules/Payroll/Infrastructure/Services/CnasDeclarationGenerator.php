@@ -26,6 +26,7 @@ class CnasDeclarationGenerator
         $slips = $run->paySlips()
             ->with(['employee:id,first_name,last_name,matricule', 'lines'])
             ->where('status', 'validated')
+            ->orderBy('id')
             ->get();
 
         $rules = $this->rulesFor($run->country_code);

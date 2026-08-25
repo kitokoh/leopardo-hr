@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CanadaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
@@ -12,6 +13,8 @@ use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\TunisiaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\TurkeyPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\UnitedKingdomPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\UnitedStatesPayrollRules;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 
@@ -58,6 +61,11 @@ class PayrollCountryConfigSeeder extends Seeder
             // les autres pays — les autres membres CEMAC restent placeholder
             // (pas de barèmes légaux à seed) jusqu'à leurs issues (#1824...).
             (new CemacPayrollRules)->forMemberCountry('CM'),
+            // Packs EN (#5255) : GB/US (pilot 2026-27) + Canada audité 2026
+            // (CPP/CPP2/EI plafonnés, barème fédéral 14 %).
+            new UnitedKingdomPayrollRules,
+            new UnitedStatesPayrollRules,
+            new CanadaPayrollRules,
         ];
 
         foreach ($rules as $countryRules) {

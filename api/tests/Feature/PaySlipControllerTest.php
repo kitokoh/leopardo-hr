@@ -253,11 +253,12 @@ class PaySlipControllerTest extends TestCase
     }
 
     /**
-     * Issue #2116 — rétro-compatibilité : un bulletin dont le run n'a pas de
-     * pays supporté par le moteur expose `compliance: null` (les clients
-     * n'affichent rien, aucune erreur).
+     * Issue #2116 — depuis #5255, US dispose de règles de paie (pilot) : le
+     * bulletin expose le bloc `compliance` comme tout pays supporté (la
+     * rétro-compatibilité « compliance: null » ne concernait que les pays
+     * display-only, désormais tous couverts par le moteur).
      */
-    public function test_pay_slips_compliance_null_for_unsupported_country(): void
+    public function test_pay_slips_expose_compliance_for_us(): void
     {
         [$company, $manager, $employee] = $this->payrollActor();
         $this->payrollSlip($company, $employee, ['country_code' => 'US']);
@@ -266,8 +267,11 @@ class PaySlipControllerTest extends TestCase
 
         $this->getJson('/api/v1/pay-slips?per_page=10')
             ->assertOk()
-            ->assertJsonPath('data.0.compliance', null)
-            ->assertJsonPath('data.0.country_code', 'US');
+            ->assertJsonPath('data.0.country_code', 'US')
+            ->assertJsonPath('data.0.compliance.level', 'pilot')
+            ->assertJsonPath('data.0.compliance.warning_key', 'payroll.compliance_warning_pilot')
+            ->assertJsonPath('data.0.compliance.source', 'docs/payroll/US_COMPLIANCE.md')
+            ->assertJsonPath('data.0.compliance.verification_date', null);
     }
 
     /**

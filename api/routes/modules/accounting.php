@@ -13,12 +13,13 @@ declare(strict_types=1);
  * BelongsToCompany (scope global fail-closed #3727).
  */
 
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCheckoutController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
 use Illuminate\Support\Facades\Route;
 
@@ -49,13 +50,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/documents/next-number', [AccountingDocumentController::class, 'nextNumber']);
             Route::get('/documents/{document}', [AccountingDocumentController::class, 'show'])->whereNumber('document');
             Route::post('/documents/{document}/send', [AccountingDocumentController::class, 'send'])->whereNumber('document');
-            Route::post('/documents/{document}/payments', [AccountingDocumentController::class, 'payments'])->whereNumber('document');
             Route::post('/documents/{document}/cancel', [AccountingDocumentController::class, 'cancel'])->whereNumber('document');
             Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
             // #5272 — paiement en ligne : initiation d'une session de checkout
             // (Chargily DZ / Stripe), routée par pays de l'entreprise (ADR-0017).
             Route::post('/documents/{document}/checkout', [AccountingCheckoutController::class, 'store'])->whereNumber('document');
+
+            // #5273 — audit trail du module (qui/quoi/quand) — RBAC principal/comptable.
+            Route::get('/audit-logs', [AccountingAuditController::class, 'index']);
         });
+<<<<<<< HEAD
+=======
 
 
             // ── Rapports (issue #5271) — déclaration TVA par période.
@@ -66,6 +71,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // de référence. Taux manuel requis dès que les devises diffèrent.
             Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
 
+>>>>>>> origin/main
     });
 /**
  * Routes API du module Comptabilité — trésorerie : paiements, rapprochement,
@@ -76,13 +82,19 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
  */
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
+<<<<<<< HEAD
+=======
 use App\Modules\Accounting\Interfaces\Api\V1\BankStatementController;
+>>>>>>> origin/main
 
 Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
     Route::get('accounting/payments', [AccountingPaymentController::class, 'index']);
     Route::post('accounting/documents/{document}/payments', [AccountingPaymentController::class, 'store']);
     Route::post('accounting/payments/{payment}/reconcile', [AccountingPaymentController::class, 'reconcile']);
     Route::post('accounting/reminders/run', [AccountingPaymentController::class, 'runReminders']);
+<<<<<<< HEAD
+});
+=======
     // #5435 — rapprochement bancaire Phase D : import de relevé, matching
     // auto/manuel, état. Même RBAC que la trésorerie (comptable/principal).
     Route::get('accounting/bank-statements', [BankStatementController::class, 'index']);
@@ -94,3 +106,4 @@ Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:princ
 });
 
 
+>>>>>>> origin/main
