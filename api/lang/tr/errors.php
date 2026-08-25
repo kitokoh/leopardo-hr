@@ -255,4 +255,9 @@ return [
     'TWO_FACTOR_REQUIRED' => 'Bu hesap için iki faktörlü doğrulama zorunludur. Giriş yapmadan önce etkinleştirin.',
     'TWO_FACTOR_ALREADY_ENABLED' => 'Bu hesapta iki faktörlü doğrulama zaten etkin.',
     'TWO_FACTOR_CHALLENGE_EXPIRED' => 'İki faktörlü doğrulama oturumunun süresi doldu. Lütfen tekrar giriş yapın.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'Paylaşım bağlantısı bulunamadı veya süresi doldu.',
+    'DOCUMENT_PDF_NOT_READY' => 'Belgenin PDF\'i henüz mevcut değil.',
+    'BANK_STATEMENT_DUPLICATE_IMPORT' => 'Bu banka hesap özeti bu dönem için zaten içe aktarılmış.',
+    'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'Bu satır veya ödeme zaten eşleştirilmiş.',
+    'BANK_STATEMENT_IMPORT_FORMAT' => 'Hesap özeti dosya biçimi geçersiz.',
 ];

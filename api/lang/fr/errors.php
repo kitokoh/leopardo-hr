@@ -256,4 +256,9 @@ return [
     'TWO_FACTOR_REQUIRED' => 'La double authentification est obligatoire pour ce compte. Activez-la avant de vous connecter.',
     'TWO_FACTOR_ALREADY_ENABLED' => 'La double authentification est déjà activée sur ce compte.',
     'TWO_FACTOR_CHALLENGE_EXPIRED' => 'Session de double authentification expirée. Reconnectez-vous.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'Lien de partage introuvable ou expiré.',
+    'DOCUMENT_PDF_NOT_READY' => 'Le PDF du document n\'est pas encore disponible.',
+    'BANK_STATEMENT_DUPLICATE_IMPORT' => 'Ce relevé bancaire a déjà été importé pour cette période.',
+    'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'Cette ligne ou ce paiement est déjà rapproché.',
+    'BANK_STATEMENT_IMPORT_FORMAT' => 'Le format du fichier de relevé est invalide.',
 ];

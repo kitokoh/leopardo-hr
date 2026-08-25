@@ -6473,4 +6473,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardEdgeNodesHint => 'On-premise sites — status and sync.';
+
+  @override
+  String get settingsEdgeRemoved => 'Edge pairing removed.';
+
+  @override
+  String get settingsViewProfile => 'View my profile';
+
+  @override
+  String get settingsRecoveryEmailHint => 'Optional, to recover access';
+
+  @override
+  String get settingsPersonalPhoneHint =>
+      'Optional, visible according to your future choices';
+
+  @override
+  String get settingsPortableIdentityTitle => 'Portable identity';
+
+  @override
+  String get settingsPortableIdentitySubtitle =>
+      'Company history, position, status and availability.';
+
+  @override
+  String get settingsPortableIdentityHint =>
+      'Personal email, recovery and phone remain attached to the account.';
+
+  @override
+  String get settingsDigitalLockerTitle => 'Digital locker';
+
+  @override
+  String get settingsDigitalLockerSubtitle =>
+      'CV, contracts, diplomas and documents with controlled visibility.';
+
+  @override
+  String settingsHistoryCompanyPeriod(String companyName, String period) {
+    return '$companyName - $period';
+  }
+
+  @override
+  String settingsStatusCurrent(String label) {
+    return 'Current status: $label';
+  }
+
+  @override
+  String settingsUpdateFailed(String error) {
+    return 'Update failed: $error';
+  }
+
+  @override
+  String settingsQrRejected(String error) {
+    return 'QR rejected: $error';
+  }
+
+  @override
+  String settingsSubmitFailed(String error) {
+    return 'Submission failed: $error';
+  }
 }

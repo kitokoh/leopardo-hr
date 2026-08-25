@@ -5999,7 +5999,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Disponible pour une nouvelle entreprise';
 
   @override
-  String get settingsRecoveryEmailLabel => 'Email de recuperation';
+  String get settingsRecoveryEmailLabel => 'Email de récupération';
 
   @override
   String get settingsPersonalEmailLabel => 'Email personnel';
@@ -6261,7 +6261,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get teamHourlyRate => 'Taux horaire';
 
   @override
-  String get settingsPersonalPhoneLabel => 'Telephone personnel';
+  String get settingsPersonalPhoneLabel => 'Téléphone personnel';
 
   @override
   String get notifMarkAllAsRead => 'Tout marquer comme lu';
@@ -6551,4 +6551,60 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get dashboardEdgeNodesHint =>
       'Sites on-premise — statut et synchronisation.';
+
+  @override
+  String get settingsEdgeRemoved => 'Appairage Edge supprimé.';
+
+  @override
+  String get settingsViewProfile => 'Voir mon profil';
+
+  @override
+  String get settingsRecoveryEmailHint => 'Optionnel pour récupérer l\'accès';
+
+  @override
+  String get settingsPersonalPhoneHint =>
+      'Optionnel, visible selon vos choix futurs';
+
+  @override
+  String get settingsPortableIdentityTitle => 'Identité portable';
+
+  @override
+  String get settingsPortableIdentitySubtitle =>
+      'Historique entreprise, poste, statut et disponibilité.';
+
+  @override
+  String get settingsPortableIdentityHint =>
+      'Email personnel, récupération et téléphone restent attachés au compte.';
+
+  @override
+  String get settingsDigitalLockerTitle => 'Placard numérique';
+
+  @override
+  String get settingsDigitalLockerSubtitle =>
+      'CV, contrats, diplômes et documents avec visibilité contrôlée.';
+
+  @override
+  String settingsHistoryCompanyPeriod(String companyName, String period) {
+    return '$companyName - $period';
+  }
+
+  @override
+  String settingsStatusCurrent(String label) {
+    return 'Statut actuel : $label';
+  }
+
+  @override
+  String settingsUpdateFailed(String error) {
+    return 'Mise à jour impossible : $error';
+  }
+
+  @override
+  String settingsQrRejected(String error) {
+    return 'QR refusé : $error';
+  }
+
+  @override
+  String settingsSubmitFailed(String error) {
+    return 'Échec de soumission : $error';
+  }
 }

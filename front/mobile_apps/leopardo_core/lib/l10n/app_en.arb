@@ -2005,5 +2005,63 @@
   "dashboardSupportClient": "Client support",
   "dashboardTicketsHint": "Tenant tickets — answer and triage.",
   "dashboardEdgeNodes": "Edge nodes",
-  "dashboardEdgeNodesHint": "On-premise sites — status and sync."
+  "dashboardEdgeNodesHint": "On-premise sites — status and sync.",
+  "settingsEdgeRemoved": "Edge pairing removed.",
+  "settingsViewProfile": "View my profile",
+  "settingsRecoveryEmailHint": "Optional, to recover access",
+  "settingsPersonalPhoneHint": "Optional, visible according to your future choices",
+  "settingsPortableIdentityTitle": "Portable identity",
+  "settingsPortableIdentitySubtitle": "Company history, position, status and availability.",
+  "settingsPortableIdentityHint": "Personal email, recovery and phone remain attached to the account.",
+  "settingsDigitalLockerTitle": "Digital locker",
+  "settingsDigitalLockerSubtitle": "CV, contracts, diplomas and documents with controlled visibility.",
+  "settingsHistoryCompanyPeriod": "{companyName} - {period}",
+  "@settingsHistoryCompanyPeriod": {
+    "placeholders": {
+      "companyName": {
+        "type": "String",
+        "example": "Acme"
+      },
+      "period": {
+        "type": "String",
+        "example": "2026-08"
+      }
+    }
+  },
+  "settingsStatusCurrent": "Current status: {label}",
+  "@settingsStatusCurrent": {
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "En ligne"
+      }
+    }
+  },
+  "settingsUpdateFailed": "Update failed: {error}",
+  "@settingsUpdateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsQrRejected": "QR rejected: {error}",
+  "@settingsQrRejected": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsSubmitFailed": "Submission failed: {error}",
+  "@settingsSubmitFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  }
 }

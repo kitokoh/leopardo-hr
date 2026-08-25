@@ -2,8 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/providers/base_providers.dart' as core;
-import 'package:leopardo_marketing/features/auth/data/auth_repository.dart';
-import 'package:leopardo_marketing/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_accounting/features/auth/data/auth_repository.dart';
+import 'package:leopardo_accounting/features/auth/providers/auth_provider.dart';
 
 // Ré-export des providers de base de leopardo_core (stockage sécurisé + prefs).
 final secureStorageProvider = core.secureStorageProvider;

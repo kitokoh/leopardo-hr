@@ -1479,3 +1479,11 @@ Note 2026-08-25 (issue #5439) : journal d'audit global — écriture unifiée `A
 - Scénarios à vérifier : chaque action sensible crée une entrée tracée ; 403 employé ; filtre module ; 404 cross-tenant ; purge respecte la rétention de l'entreprise et journalise ; non-régression suites HR/Attendance/Planning/Payroll.
 - Couverture : `tests/Feature/Audit/AuditLogGlobalTest.php` (9 tests) + suite existante `AuditLogExportTest`.
 >>>>>>> origin/main
+
+
+## Rapprochement bancaire (Phase D, #5435) — scénarios Feature
+
+- `BankStatementImportTest` : import CSV valide (201, 2 lignes) ; en-tête invalide (422, rien d'inséré) ; doublon d'import (409 `BANK_STATEMENT_DUPLICATE_IMPORT`) ; lignes partielles signalées (`errors[]` avec numéros de ligne) ; RBAC employé (403) ; relevé cross-tenant (404).
+- `BankReconciliationTest` : matching exact (score 100 → paiement `matched`, ligne `matched`, relevé `reconciled`) ; approximatif (score < 100 → ligne `pending` + proposition, relevé `reconciling`) ; sans candidat (ligne `pending`) ; idempotence (second passage sans nouvel auto-match).
+- `BankReconciliationManualTest` : rapprochement manuel + lettrage (`reconciled_at`) ; re-match d'une ligne déjà rapprochée (409) ; ligne cross-tenant (404).
+- `BankStatementStatusTest` : soldes attendus/réels, lignes matched/pending, écart de clôture.

@@ -119,6 +119,33 @@ fabrique jamais de taux — `CurrencyRateUnavailableException`).
 **Multi-devises des lignes** (prix unitaires en devises différentes au sein d'un document) :
 hors périmètre v1 — seul le total est converti.
 
+## 4.2 Rapprochement bancaire (Phase D, #5435)
+
+L'import de relevé et le rapprochement comblent le trou entre le relevé de la
+banque et les paiements saisis (`accounting_payments`).
+
+- **Modèle** : `bank_statements` (période, référence d'import, soldes, statut
+  `imported|reconciling|reconciled`, hash fichier) + `bank_statement_lines`
+  (date, libellé, montant signé, référence externe, statut `pending|matched`,
+  paiement rapproché, score de confiance). Unique d'import
+  `(company_id, statement_period, import_reference)` → ré-import refusé (409).
+- **Import CSV** : mapping configurable par entreprise
+  (`accounting_settings.bank_statement_mapping`) — colonnes date/libellé/montant/
+  référence, séparateur, format de date, signe. Validation stricte ligne à
+  ligne, erreurs signalées par numéro de ligne (aucun échec silencieux).
+- **Matching heuristique** : montant ± tolérance, date ± N jours, référence —
+  score 0-100. Score 100 → rapprochement automatique ; sinon proposition en
+  file de matching manuel. Le paiement passe `recorded → matched`
+  (`PaymentRegistrationService::reconcile`, horodaté `reconciled_at`) = lettrage
+  v1 (pas de `journal_entries` en Phase D — le lettrage comptable complet sera
+  porté par le journal #5234/#5239).
+- **État de rapprochement** : soldes attendus/réels, lignes rapprochées/en
+  attente, écart de clôture — endpoint dédié + export CSV de l'état.
+- **Sécurité** : RBAC `api.manager:principal,comptable`, isolation tenant
+  fail-closed (trait `BelongsToCompany`), 404 cross-tenant.
+- **Hors périmètre v1** : MT940/OFX (lot 2), multi-devises (tolérance en devise
+  société), lettrage des écritures du grand livre.
+
 ## 5. Architecture technique (structure du module)
 
 ```

@@ -76,10 +76,21 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
  */
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
+use App\Modules\Accounting\Interfaces\Api\V1\BankStatementController;
 
 Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
     Route::get('accounting/payments', [AccountingPaymentController::class, 'index']);
     Route::post('accounting/documents/{document}/payments', [AccountingPaymentController::class, 'store']);
     Route::post('accounting/payments/{payment}/reconcile', [AccountingPaymentController::class, 'reconcile']);
     Route::post('accounting/reminders/run', [AccountingPaymentController::class, 'runReminders']);
+    // #5435 — rapprochement bancaire Phase D : import de relevé, matching
+    // auto/manuel, état. Même RBAC que la trésorerie (comptable/principal).
+    Route::get('accounting/bank-statements', [BankStatementController::class, 'index']);
+    Route::post('accounting/bank-statements/import', [BankStatementController::class, 'import']);
+    Route::get('accounting/bank-statements/{statement}', [BankStatementController::class, 'show']);
+    Route::post('accounting/bank-statements/{statement}/reconcile', [BankStatementController::class, 'reconcile']);
+    Route::get('accounting/bank-statements/{statement}/status', [BankStatementController::class, 'status']);
+    Route::post('accounting/bank-statement-lines/{line}/match', [BankStatementController::class, 'match']);
 });
+
+
