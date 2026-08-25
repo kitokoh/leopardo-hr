@@ -63,7 +63,13 @@ return [
         'series_unknown' => 'Bilinmeyen seri: « :key » bir belge türü değil (:allowed).',
     ],
 
-    // İş hataları (issue #5227)
+        'bank_file_required' => 'CSV dosyası zorunludur.',
+        'bank_file_mimes' => 'Dosya CSV formatında olmalıdır.',
+        'bank_period_required' => 'Dönem zorunludur (YYYY-MM).',
+        'bank_period_format' => 'Dönem YYYY-MM formatında olmalıdır.',
+        'bank_reference_required' => 'İçe aktarma referansı zorunludur.',
+        'bank_payment_required' => 'Eşleştirilecek ödeme zorunludur.',
+        'bank_payment_exists' => 'Seçilen ödeme mevcut değil.',
     'errors' => [
         'gateway_checkout_failed' => 'Ödeme sağlayıcısı geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
         'payment_amount_positive' => 'Ödeme tutarı kesinlikle pozitif olmalıdır.',
@@ -79,6 +85,12 @@ return [
         'wf_source_invoice_not_issuable' => 'İptal edilmiş veya taslak bir fatura iade faturası oluşturamaz.',
         'wf_source_invoice_paid' => 'Kaynak fatura zaten tamamen ödendi: iade faturası mümkün değil.',
         'wf_credit_exceeds_remaining' => 'İade faturası tutarı, kaynak faturanın kalan bakiyesini aşıyor.',
+        'bank_line_empty' => 'Boş satır atlandı.',
+        'bank_line_invalid_date' => 'Geçersiz tarih: ":value".',
+        'bank_line_missing_label' => 'Açıklama eksik.',
+        'bank_line_invalid_amount' => 'Geçersiz tutar: ":value".',
+        'bank_empty_file' => 'CSV dosyası boş.',
+        'bank_missing_columns' => 'Geçersiz başlık: gerekli sütunlar eksik (:columns).',
         'wf_company_context' => 'Şirket bağlamı gereklidir.',
     ],
 

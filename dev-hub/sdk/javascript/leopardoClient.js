@@ -145,6 +145,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/accounting/audit-logs", options);
     },
 
+    /** Rapprochement manuel d'une ligne */
+    postAccountingBankStatementLinesByLineMatch(options = {}) {
+      return request("POST", "/accounting/bank-statement-lines/{line}/match", options);
+    },
+
+    /** Lister les relevés bancaires */
+    getAccountingBankStatements(options = {}) {
+      return request("GET", "/accounting/bank-statements", options);
+    },
+
+    /** Détail d'un relevé (avec lignes) */
+    getAccountingBankStatementsByStatement(options = {}) {
+      return request("GET", "/accounting/bank-statements/{statement}", options);
+    },
+
+    /** Lancer le rapprochement automatique */
+    postAccountingBankStatementsByStatementReconcile(options = {}) {
+      return request("POST", "/accounting/bank-statements/{statement}/reconcile", options);
+    },
+
+    /** État de rapprochement */
+    getAccountingBankStatementsByStatementStatus(options = {}) {
+      return request("GET", "/accounting/bank-statements/{statement}/status", options);
+    },
+
+    /** Importer un relevé bancaire CSV */
+    postAccountingBankStatementsImport(options = {}) {
+      return request("POST", "/accounting/bank-statements/import", options);
+    },
+
     /** Lister les contacts client/fournisseur */
     getAccountingContacts(options = {}) {
       return request("GET", "/accounting/contacts", options);

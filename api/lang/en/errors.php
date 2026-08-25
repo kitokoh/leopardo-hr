@@ -261,5 +261,10 @@ return [
     'TWO_FACTOR_INVALID' => 'Invalid or expired two-factor authentication code.',
     'TWO_FACTOR_REQUIRED' => 'Two-factor authentication is required for this account. Enable it before signing in.',
     'TWO_FACTOR_ALREADY_ENABLED' => 'Two-factor authentication is already enabled on this account.',
-    'TWO_FACTOR_CHALLENGE_EXPIRED' => 'Two-factor authentication session expired. Please sign in again.',
+    'TWO_FACTOR_CHALLENGE_EXPIRED' => 'Two-factor authentication session expired. Sign in again.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'Share link not found or expired.',
+    'DOCUMENT_PDF_NOT_READY' => 'The document PDF is not available yet.',
+    'BANK_STATEMENT_DUPLICATE_IMPORT' => 'This bank statement has already been imported for this period.',
+    'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'This line or payment is already reconciled.',
+    'BANK_STATEMENT_IMPORT_FORMAT' => 'The statement file format is invalid.',
 ];

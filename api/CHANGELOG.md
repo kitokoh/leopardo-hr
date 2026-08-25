@@ -13,6 +13,12 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 - **Payroll absence overlap predicates use direct date comparisons.** Replaced the four payroll `whereDate()` predicates on `absences.start_date` and `absences.end_date` with direct `where()` comparisons, preserving the overlap semantics while keeping the date columns directly usable by PostgreSQL indexes. No additional `absences` index was added before a staging plan comparison.
 
 - **Add composite index for payroll leave-balance lookup.** Added PostgreSQL index `idx_leave_balances_company_employee_year_type` on `(company_id, employee_id, year, absence_type_id)` to match `PayrollCalculator::accruedLeaveDays()` filters; created concurrently and guarded for non-PostgreSQL or missing-table environments. No other payroll index candidate was changed.
+### Accounting — Rapprochement bancaire (Phase D, #5435)
+- `bank_statements` + `bank_statement_lines` (tables tenant, unique d'import, FK cascade).
+- `BankStatementImportService` : CSV mapping paramétrable, validation stricte, idempotence 409, erreurs par ligne.
+- `BankReconciliationService` : matching auto (score 100) / propositions (file manuelle), matching manuel, lettrage paiement, état.
+- `BankStatementController` + 6 routes RBAC comptable/principal ; i18n ×4 ; OpenAPI + SDK ; tests Feature (import, matching, manuel, statut).
+
 - **Attendance ADR-0016 Phase 5 (issue #5356) — module SmartAttendance supprimé, contrat unique `/api/v1/attendance/*`**:
   - Controllers + FormRequests géo déplacés de `SmartAttendance/Interfaces/Api/V1/` vers `Attendance/Interfaces/Api/V1/` (namespaces alignés) ; dossier `api/app/Modules/SmartAttendance/`, `SmartAttendanceServiceProvider` et routes alias `smart_attendance.php` supprimés ; binding `GeofenceValidatorInterface` transféré dans `AttendanceServiceProvider`.
   - Chemins `/api/v1/smart-attendance/*` purgés (OpenAPI + miroir + SDK régénérés, 788 opérations) ; tests géo migrés sur `/attendance/*` (liste sessions → `/geo-sessions`) avec verrou 404 sur les anciens alias (`GeoRoutesMigrationTest`).

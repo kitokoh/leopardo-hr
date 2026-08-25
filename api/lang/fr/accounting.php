@@ -61,6 +61,13 @@ return [
         'amount_min' => 'Le montant doit être strictement positif.',
         'method_invalid' => 'Méthode de paiement invalide (cash, bank_transfer, check, card, other).',
         'series_unknown' => 'Série inconnue : « :key » n\'est pas un type de document (:allowed).',
+        'bank_file_required' => 'Le fichier CSV est requis.',
+        'bank_file_mimes' => 'Le fichier doit être au format CSV.',
+        'bank_period_required' => 'La période du relevé est requise (format AAAA-MM).',
+        'bank_period_format' => 'La période doit être au format AAAA-MM.',
+        'bank_reference_required' => 'La référence d'import est requise.',
+        'bank_payment_required' => 'Le paiement à rapprocher est requis.',
+        'bank_payment_exists' => 'Le paiement sélectionné n'existe pas.',
     ],
 
     // Erreurs métier (issue #5227)
@@ -79,6 +86,12 @@ return [
         'wf_source_invoice_not_issuable' => 'Une facture annulée ou brouillon ne peut pas générer d\'avoir.',
         'wf_source_invoice_paid' => 'La facture source est déjà entièrement payée : aucun avoir possible.',
         'wf_credit_exceeds_remaining' => 'Le montant de l\'avoir dépasse le reste à payer de la facture source.',
+        'bank_line_empty' => 'Ligne vide ignorée.',
+        'bank_line_invalid_date' => 'Date invalide : « :value ».',
+        'bank_line_missing_label' => 'Libellé manquant.',
+        'bank_line_invalid_amount' => 'Montant invalide : « :value ».',
+        'bank_empty_file' => 'Le fichier CSV est vide.',
+        'bank_missing_columns' => 'En-tête invalide : colonnes requises absentes (:columns).',
         'wf_company_context' => 'Contexte entreprise requis.',
     ],
 
