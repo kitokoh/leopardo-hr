@@ -60,6 +60,9 @@ jobs:
       - name: Geofence single usage path guard (ADR-0016 Phase 2, issue #5353)
         run: bash dev-hub/tools/check-geofence-single-usage.sh
 
+      - name: MVP schema parity guard — CreatesMvpSchema ↔ migrations tenant (issue #5443)
+        run: bash dev-hub/tools/check-mvp-schema-parity.sh api
+
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
