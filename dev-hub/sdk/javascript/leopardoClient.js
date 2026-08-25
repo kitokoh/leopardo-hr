@@ -140,6 +140,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/absences/{absence}/reject", options);
     },
 
+    /** Audit trail du module Comptabilité (qui/quoi/quand, #5273) */
+    getAccountingAuditLogs(options = {}) {
+      return request("GET", "/accounting/audit-logs", options);
+    },
+
     /** Lister les contacts client/fournisseur */
     getAccountingContacts(options = {}) {
       return request("GET", "/accounting/contacts", options);
@@ -853,6 +858,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Exporter le journal d'audit en CSV */
     getAuditLogsExportCsv(options = {}) {
       return request("GET", "/audit-logs/export-csv", options);
+    },
+
+    /** Confirmer l'enrolement 2FA (premier code) et activer */
+    postAuth2faConfirm(options = {}) {
+      return request("POST", "/auth/2fa/confirm", options);
+    },
+
+    /** Desactiver la 2FA (re-verification par code) */
+    postAuth2faDisable(options = {}) {
+      return request("POST", "/auth/2fa/disable", options);
+    },
+
+    /** Demarrer l'enrolement 2FA (secret + QR) */
+    postAuth2faEnroll(options = {}) {
+      return request("POST", "/auth/2fa/enroll", options);
+    },
+
+    /** Regenerer les codes de recuperation 2FA */
+    postAuth2faRecoveryCodes(options = {}) {
+      return request("POST", "/auth/2fa/recovery-codes", options);
+    },
+
+    /** Etat 2FA du compte connecte */
+    getAuth2faStatus(options = {}) {
+      return request("GET", "/auth/2fa/status", options);
+    },
+
+    /** Verifier le challenge 2FA et obtenir le token */
+    postAuth2faVerify(options = {}) {
+      return request("POST", "/auth/2fa/verify", options);
     },
 
     /** Derniere demande biometrie de l'utilisateur courant */

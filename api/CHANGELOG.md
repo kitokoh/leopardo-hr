@@ -4,7 +4,14 @@ Toutes les modifications notables de ce projet sont documentées ici.
 Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
+- **Enterprise 2FA/TOTP (#5436)**: shared `TotpService` (secret/QR/verify, pure-PHP TOTP fallback), enrollment `POST /auth/2fa/enroll|confirm|disable|recovery-codes`, login challenge (`mfa_challenge` response, token revoked, single-use 5-min challenge), `POST /auth/2fa/verify` (TOTP or hashed single-use recovery code → Sanctum token with tenant abilities), remember-device signed cookie (30 d), tenant policy `mfa_required_roles` (403 `TWO_FACTOR_REQUIRED`), i18n ×4 (`TWO_FACTOR_*`, 219 keys/locale), OpenAPI 6 paths (806 ops, SDK regenerated). Non-breaking: accounts without 2FA keep direct login. Tests: `TwoFactorAuthTest` (7 scenarios). Docs: `docs/security/2FA_ENTREPRISE.md`.
 
+### Performance
+- **PayrollCalculator mixed-value handling is explicit.** Normalized the historical gross aggregation through a typed `PaySlip` callback and validated the nullable aggregate result from `leave_balances` before casting, removing the two residual PHPStan level-8 errors without changing payroll formulas.
+
+- **Payroll absence overlap predicates use direct date comparisons.** Replaced the four payroll `whereDate()` predicates on `absences.start_date` and `absences.end_date` with direct `where()` comparisons, preserving the overlap semantics while keeping the date columns directly usable by PostgreSQL indexes. No additional `absences` index was added before a staging plan comparison.
+
+- **Add composite index for payroll leave-balance lookup.** Added PostgreSQL index `idx_leave_balances_company_employee_year_type` on `(company_id, employee_id, year, absence_type_id)` to match `PayrollCalculator::accruedLeaveDays()` filters; created concurrently and guarded for non-PostgreSQL or missing-table environments. No other payroll index candidate was changed.
 - **Attendance ADR-0016 Phase 5 (issue #5356) — module SmartAttendance supprimé, contrat unique `/api/v1/attendance/*`**:
   - Controllers + FormRequests géo déplacés de `SmartAttendance/Interfaces/Api/V1/` vers `Attendance/Interfaces/Api/V1/` (namespaces alignés) ; dossier `api/app/Modules/SmartAttendance/`, `SmartAttendanceServiceProvider` et routes alias `smart_attendance.php` supprimés ; binding `GeofenceValidatorInterface` transféré dans `AttendanceServiceProvider`.
   - Chemins `/api/v1/smart-attendance/*` purgés (OpenAPI + miroir + SDK régénérés, 788 opérations) ; tests géo migrés sur `/attendance/*` (liste sessions → `/geo-sessions`) avec verrou 404 sur les anciens alias (`GeoRoutesMigrationTest`).
@@ -61,6 +68,23 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 - **Corrections de pointage — workflow complet (issue #5267).** Justificatif optionnel (`proof` multipart ≤ 5 Mo, stockage privé scopé entreprise, téléchargement `GET /attendance/corrections/{correction}/proof` réservé propriétaire/manager) ; verrouillage de période (`attendance_period_closures` + commande `attendance:close-period` idempotente, tracée) → 422 `ATTENDANCE_PERIOD_CLOSED` (catalogue erreurs ×4) ; audit trail `AuditLog` sur request/approve/reject ; anti-fraude `anomaly` (conflit session géo validée vs horaires demandés, seuil 15 min) ; openapi.yaml 745/745 + dédoublonnage des chemins dupliqués pré-existants (parse redocly réparé).
 
 ### Fixed
+- **FamilyPartsRicfTest uses a deterministic contract period.** The three employee fixtures now start before the July 2026 payroll period, preventing factory randomness from prorating the expected 300,000 XOF gross and making the RICF assertions stable.
+- **Coverage gate tolerates empty JUnit reports.** Auxiliary causal-error extraction now ignores empty or malformed JUnit XML after preserving the PHPUnit exit status, preventing a post-test parsing artifact from masking a successful test run.
+
+- **PayrollAuditTest uses a deterministic manager contract period.** The manager fixture now starts before the July 2026 audit period, preventing random contract proration and preserving the expected aggregate gross of two complete 60,000 bulletins.
+
+- **NotPrivateUrl is safe in unbootstrapped unit tests.** The testing-environment check now confirms that `environment()` is callable before invoking it, preserving fail-closed SSRF behavior outside a Laravel application.
+
+- **Planning authorization scenarios match RBAC #2217.** The successful weekly optimization and shift rebalancing cases authenticate as a manager, while employee denial remains covered by explicit 403 assertions; the required employee fixture is typed so PHPStan strict remains clean.
+
+- **RefreshTenantDatabase detects missing `shared_tenants.employees`.** The canonical-schema probe now forces tenant migrations after MVP fixtures remove the employees table, preventing cascading `42P01` failures in `TrackingSyncTripsDateRangeTest`.
+
+- **Pint formatting is clean on the targeted PHP files.** `PilotReportCommand`, `ProbeAvailabilityCommandTest`, and `OnboardingStepControllerTest` now satisfy the strict-type and class-attribute formatting rules without a global reformat.
+
+- **SAML and OIDC public endpoints use the explicit `throttle:10,1` limiter.** The SAML callback, OIDC authorize, and OIDC callback routes now match the anti-abuse contract asserted by `SsoCallbackThrottleTest` instead of inheriting the generic `throttle:api` limiter.
+
+- **OpenAPI contract is Redocly-parseable.** Duplicate path definitions for positions, sites, schedules, task comments, and recruitment were merged; nullable schemas and recruitment path parameters now follow the OpenAPI 3.0 contract. Redocly reports validation success with historical completeness warnings only.
+
 - **Parallel PostgreSQL test database creation tolerates duplicate-database SQLSTATE.** `TestCase` now accepts SQLSTATE `42P04` directly when multiple workers race to create the same `{db}_test_{token}` database, preventing false backend-suite failures while still rethrowing unrelated database errors.
 - **Payroll validation is atomic.** Run status, related pay-slip statuses, and the validation audit are now committed inside the same transaction; the controller no longer performs a second partial transition.
 - **Trial signup slug-collision retries preserve PostgreSQL transactions.** Each bounded retry now uses an explicit savepoint when invoked inside an existing transaction, so an expected `23505` collision cannot poison subsequent queries or unrelated tests.

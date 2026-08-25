@@ -6,6 +6,8 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 
 Note 2026-06-28 : Migration des modeles d'authentification (User/Employee) vers l'architecture DDD dans Core/Auth terminee.
 
+Note 2026-08-22 (stabilisation CI, PR #5295) : les endpoints publics OIDC `GET /sso/oidc/{companyId}/authorize` et `GET /sso/oidc/{companyId}/callback` portent explicitement `throttle:10,1`; `SsoCallbackThrottleTest` vérifie ce contrat anti-abus. Le contrat `api/openapi.yaml` reste parsable par Redocly après fusion des chemins dupliqués, correction des nullable OpenAPI 3.0 et alignement des paramètres recruitment; le miroir et les SDK JavaScript/Python sont régénérés.
+
 ## Perimetre
 
 - API publique
@@ -1431,6 +1433,10 @@ Note 2026-08-23 (issue #5225) : envoi email des documents + portail client sécu
 - Commande artisan `accounting:send-document {document} [--email=]`.
 - Scénarios : envoi avec pièce jointe + lien, méta publiques, téléchargement PDF, token expiré/inconnu → 404, accès limité au document partagé (un token ne révèle que son document), RBAC sans effet sur les routes publiques.
 - Couverture : `DocumentShareEmailTest` (6 tests).
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/main
 ## Corrections de pointage — workflow complet (issue #5267, 2026-08-23)
 
 - `POST /attendance/corrections` — demande avec justificatif optionnel (`proof`, multipart ≤ 5 Mo, jpg/jpeg/png/pdf/heic) ; refusée (422 `ATTENDANCE_PERIOD_CLOSED`) si la date est dans une période clôturée (`attendance_period_closures`).
@@ -1453,6 +1459,8 @@ Note 2026-08-24 (issue #5227) : i18n ×4 du module Comptabilité — messages AP
 - PDF : labels des documents comptables (`accounting-document.blade.php`) localisés ×4 via les mêmes catalogues ; RTL arabe vérifié ; libellés de données (ex. TVA `label_key`) laissés aux données seed.
 - Scénarios à vérifier : chaque erreur métier renvoie un message dans la langue de l'utilisateur (fr/en/tr/ar) sans retomber sur la clé brute ; parité des clés ×4 des deux catalogues ; zéro littéral non localisé dans le module (scan CI) ; libellés PDF ×4 (type + statut) ; RTL arabe.
 - Couverture : `tests/Feature/Accounting/AccountingI18nTest.php`, `AccountingI18nMessagesTest.php`, `DocumentPdfRendererTest.php` + suite module Accounting (coverage 86,45 % ≥ 70 % DoD #5228) — garde `check-accounting-i18n.py` verte.
+Note 2026-08-25 (issue #5436) : 2FA/TOTP comptes entreprise. Scénarios à vérifier : (1) login sans 2FA → token direct (rétrocompat) ; (2) enroll → confirm (code invalide 422 / valide 201 + recovery codes) ; (3) login avec 2FA → `mfa_challenge` + token révoqué (jamais délivré) ; (4) verify code valide → token utilisable sur `/auth/me` ; (5) challenge à usage unique (2ᵉ use → 401) ; (6) recovery code à usage unique (2ᵉ use → 422) ; (7) politique `mfa_required_roles` → 403 `TWO_FACTOR_REQUIRED` ; (8) disable avec code ; (9) remember device → login suivant sans challenge ; (10) parité i18n ×4.
+
 Note 2026-08-25 (issue #5437) : garde anti-collision de préfixes de migrations inter-PRs — `dev-hub/tools/check-migration-prefixes.mjs` branché dans Hygiene Guards. Scénarios à vérifier : (1) PR introduisant un préfixe déjà sur main → échec ; (2) PR introduisant un préfixe déjà pris par une AUTRE PR ouverte → échec (cas réel détecté : `2026_08_24_000003` partagé entre #5406 attendance et #5394/#5424 paie→compta) ; (3) préfixe libre → vert ; (4) branche sans migrations → vert ; (5) main reste vert (0 faux positif — préfixes déjà sur main exclus du contrôle).
 
 Note 2026-08-24 (issues #5353/#5354/#5355) : ADR-0016 — consolidation des routes pointage sous `/api/v1/attendance/*` + fusion SmartAttendance.
@@ -1460,9 +1468,12 @@ Note 2026-08-24 (issues #5353/#5354/#5355) : ADR-0016 — consolidation des rout
 - Phase 4 : fusion des modèles/services/commandes SmartAttendance → Attendance (shims `@deprecated` dans SmartAttendance pour BC) ; commande console `AutoCloseGeoSessionsCommand` → `AutoCloseAttendanceCommand` (alias conservé, `api/routes/console.php`).
 - Scénarios à vérifier : routes `/attendance/*` uniquement (sessions/geo-events/mode), 404 sur `/smart-attendance/*` (alias supprimés Phase 5 #5356), migration console (schedule `attendance:auto-close` unique), isolation tenant géofence, PHPStan Strict vert sur les fichiers fusionnés.
 - Couverture : `tests/Feature/Attendance/Geo*` (6 tests migrés) + `GeoRoutesMigrationTest`.
+<<<<<<< HEAD
+=======
 Note 2026-08-25 (issue #5439) : journal d'audit global — écriture unifiée `AuditLog::record()` câblée sur les flux sensibles, lecture RBAC manager principal/rh, rétention RGPD par entreprise.
 - Écriture : approbation/rejet/annulation d'absence (`planning.absence.*`), validation/suppression de bulletin (`payroll.*`), import/recalcul de pointage (`attendance.*`), départ HR (`hr.departure.register`), révocation de jeton (`auth.token.revoked`) → entrée `audit_logs` avec module/request_id/company_id/avant-après.
 - Lecture : `GET /api/v1/audit-logs` (filtres module, action, auditable_type/id, user_id, from, to ; pagination ; isolation tenant stricte) + `GET /audit-logs/{id}` (404 cross-tenant) + `GET /audit-logs/export-csv` — RBAC `principal`/`rh` (403 employé).
 - Rétention : `audit:purge` tenant-par-tenant (pattern `biometric:purge-expired`), rétention par entreprise via `CompanySetting.audit_retention_months` (défaut 36), purge journalisée (`audit.purge`), schedule hebdomadaire.
 - Scénarios à vérifier : chaque action sensible crée une entrée tracée ; 403 employé ; filtre module ; 404 cross-tenant ; purge respecte la rétention de l'entreprise et journalise ; non-régression suites HR/Attendance/Planning/Payroll.
 - Couverture : `tests/Feature/Audit/AuditLogGlobalTest.php` (9 tests) + suite existante `AuditLogExportTest`.
+>>>>>>> origin/main
