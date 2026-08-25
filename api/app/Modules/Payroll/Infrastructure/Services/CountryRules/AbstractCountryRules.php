@@ -142,6 +142,17 @@ abstract class AbstractCountryRules implements CountryRulesInterface
         return $this;
     }
 
+    /**
+     * Lecture du flag « plafonds légaux actifs » (mode simulation #1815) —
+     * accesseur protégé : les classes pays (filles) appliquent leurs plafonds
+     * dans calculateSocialCharges() et doivent pouvoir lire le flag que
+     * withCapsEnabled() pose sur la propriété privée du parent.
+     */
+    protected function capsEnabled(): bool
+    {
+        return $this->capsEnabled;
+    }
+
     public function withTaxSlabs(array $slabs): static
     {
         $this->taxSlabsOverride = $slabs;
