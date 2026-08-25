@@ -182,7 +182,9 @@ class _AttendanceGeoScreenState extends ConsumerState<AttendanceGeoScreen> {
         if (sessionState.recentSessions.isEmpty && !sessionState.isLoading)
           _EmptySessionsPanel()
         else
-          ...sessionState.recentSessions.take(10).map(
+          ...sessionState.recentSessions
+              .take(10)
+              .map(
                 (session) => Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: _SessionCard(session: session),
@@ -478,7 +480,9 @@ class _GpsZoneStatusCard extends StatelessWidget {
                   Text(
                     context.l10n.saPresenceInProgress(
                       _formatTime(
-                          context, sessionState.activeSession!.startedAt),
+                        context,
+                        sessionState.activeSession!.startedAt,
+                      ),
                     ),
                     style: const TextStyle(
                       color: _green,
@@ -546,8 +550,9 @@ class _GpsZoneStatusCard extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      isMonitoring ? _red.withValues(alpha: 0.8) : _accent,
+                  backgroundColor: isMonitoring
+                      ? _red.withValues(alpha: 0.8)
+                      : _accent,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(

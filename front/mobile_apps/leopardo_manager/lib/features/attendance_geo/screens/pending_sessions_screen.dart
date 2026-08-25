@@ -300,8 +300,9 @@ class _SessionCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   context.l10n.smartAttendanceSessionExit(
-                      fmt.format(session.endedAt!.toLocal()),
-                      session.durationLabel),
+                    fmt.format(session.endedAt!.toLocal()),
+                    session.durationLabel,
+                  ),
                   style: AppTypography.bodySmall.copyWith(
                     color: MobileSurface.muted,
                   ),

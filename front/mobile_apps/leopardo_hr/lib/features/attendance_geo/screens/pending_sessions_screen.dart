@@ -165,8 +165,10 @@ class _PendingGeoSessionsScreenState
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
-          child: Text(context.l10n.smartAttendanceError(e),
-              style: TextStyle(color: AppColors.danger)),
+          child: Text(
+            context.l10n.smartAttendanceError(e),
+            style: TextStyle(color: AppColors.danger),
+          ),
         ),
       ),
     );
@@ -251,8 +253,9 @@ class _SessionCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   context.l10n.smartAttendanceSessionExit(
-                      fmt.format(session.endedAt!.toLocal()),
-                      session.durationLabel),
+                    fmt.format(session.endedAt!.toLocal()),
+                    session.durationLabel,
+                  ),
                   style: AppTypography.bodySmall.copyWith(
                     color: AppColors.textMutedDark,
                   ),

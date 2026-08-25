@@ -75,8 +75,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               const SizedBox(height: 12),
               Text(
                 context.l10n.errorUnexpected,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               Text(context.l10n.pageNotFound, textAlign: TextAlign.center),
@@ -289,8 +291,10 @@ class LeopardoApp extends ConsumerWidget {
 
   Locale _resolveLocale(String rawLocale) {
     final normalized = rawLocale.trim().replaceAll('_', '-');
-    final parts =
-        normalized.split('-').where((part) => part.isNotEmpty).toList();
+    final parts = normalized
+        .split('-')
+        .where((part) => part.isNotEmpty)
+        .toList();
 
     if (parts.isEmpty) {
       return const Locale('fr');
@@ -331,9 +335,11 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final deviceLanguage =
-        PlatformDispatcher.instance.locale.toLanguageTag().toLowerCase();
-    final languageCode = authState.employee?.language ??
+    final deviceLanguage = PlatformDispatcher.instance.locale
+        .toLanguageTag()
+        .toLowerCase();
+    final languageCode =
+        authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);

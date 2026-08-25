@@ -70,46 +70,63 @@ void main() {
       expect(service.isCurrentlyInside, isFalse);
     });
 
-    test('position exactement à l\'horizon (distance == rayon) → dans la zone', () {
-      final service = GeofenceService();
-      // 500 m de latitude ≈ 0.00449°.
-      service.checkPosition(centerLat + 0.00449, centerLng, config());
-      expect(service.isCurrentlyInside, isTrue);
-    });
+    test(
+      'position exactement à l\'horizon (distance == rayon) → dans la zone',
+      () {
+        final service = GeofenceService();
+        // 500 m de latitude ≈ 0.00449°.
+        service.checkPosition(centerLat + 0.00449, centerLng, config());
+        expect(service.isCurrentlyInside, isTrue);
+      },
+    );
   });
 
   group('checkPosition — transitions entrée/sortie', () {
     test('sortie → entrée déclenche ZoneEvent.enter une seule fois', () {
       final service = GeofenceService();
       // Départ hors zone (initialise l'état).
-      expect(service.checkPosition(centerLat + 0.01, centerLng, config()),
-          ZoneEvent.none);
+      expect(
+        service.checkPosition(centerLat + 0.01, centerLng, config()),
+        ZoneEvent.none,
+      );
       // Entrée dans la zone → événement.
-      expect(service.checkPosition(centerLat + 0.001, centerLng, config()),
-          ZoneEvent.enter);
+      expect(
+        service.checkPosition(centerLat + 0.001, centerLng, config()),
+        ZoneEvent.enter,
+      );
       // Toujours dans la zone → aucun événement (pas de doublon).
-      expect(service.checkPosition(centerLat, centerLng, config()),
-          ZoneEvent.none);
+      expect(
+        service.checkPosition(centerLat, centerLng, config()),
+        ZoneEvent.none,
+      );
     });
 
     test('entrée → sortie déclenche ZoneEvent.exit une seule fois', () {
       final service = GeofenceService();
       service.checkPosition(centerLat, centerLng, config());
-      expect(service.checkPosition(centerLat + 0.02, centerLng, config()),
-          ZoneEvent.exit);
-      expect(service.checkPosition(centerLat + 0.03, centerLng, config()),
-          ZoneEvent.none);
+      expect(
+        service.checkPosition(centerLat + 0.02, centerLng, config()),
+        ZoneEvent.exit,
+      );
+      expect(
+        service.checkPosition(centerLat + 0.03, centerLng, config()),
+        ZoneEvent.none,
+      );
     });
 
     test('aller-retour au voisinage de l\'horizon', () {
       final service = GeofenceService();
       service.checkPosition(centerLat, centerLng, config());
       // Sort légèrement (600 m) → exit.
-      expect(service.checkPosition(centerLat + 0.0054, centerLng, config()),
-          ZoneEvent.exit);
+      expect(
+        service.checkPosition(centerLat + 0.0054, centerLng, config()),
+        ZoneEvent.exit,
+      );
       // Rentre (400 m) → enter.
-      expect(service.checkPosition(centerLat + 0.0036, centerLng, config()),
-          ZoneEvent.enter);
+      expect(
+        service.checkPosition(centerLat + 0.0036, centerLng, config()),
+        ZoneEvent.enter,
+      );
     });
   });
 

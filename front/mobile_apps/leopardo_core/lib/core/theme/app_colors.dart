@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 /// APV L.05 — Couleur = domaine. L.07 — Grille partagee.
 ///
@@ -216,4 +216,3 @@ class AppColors {
     }
   }
 }
-

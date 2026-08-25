@@ -2,8 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/core/api/idempotency_keys.dart';
-import 'package:leopardo_employee/features/smart_attendance/data/models/geo_attendance_session.dart';
-import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
 import 'package:leopardo_employee/features/attendance_geo/data/models/geo_attendance_session.dart';
 import 'package:leopardo_employee/features/attendance_geo/data/models/attendance_geo_config.dart';
 
@@ -60,9 +58,7 @@ class AttendanceGeoRepository {
       },
       maxRetriesOverride: 0,
       timeoutOverride: _writeTimeout,
-      options: Options(
-        headers: {'Idempotency-Key': IdempotencyKeys.newKey()},
-      ),
+      options: Options(headers: {'Idempotency-Key': IdempotencyKeys.newKey()}),
     );
   }
 

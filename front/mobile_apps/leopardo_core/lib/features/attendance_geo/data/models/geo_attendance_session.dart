@@ -41,11 +41,13 @@ class GeoAttendanceSession {
       id: json['id'] as int,
       employeeId:
           (employeeMap?['id'] as int?) ?? (json['employee_id'] as int? ?? 0),
-      employeeName: (employeeMap?['name'] as String?) ??
+      employeeName:
+          (employeeMap?['name'] as String?) ??
           (json['employee_name'] as String?) ??
           '',
       companyId: (json['company_id'] as String?) ?? '',
-      startedAt: DateTime.tryParse(json['started_at']?.toString() ?? '') ??
+      startedAt:
+          DateTime.tryParse(json['started_at']?.toString() ?? '') ??
           DateTime.utc(1970),
       status: (json['status'] as String?) ?? 'detected',
       endedAt: json['ended_at'] != null
