@@ -34,7 +34,9 @@ class DsnExportServiceTest extends TestCase
 
     public function test_build_produces_well_formed_s21_xml(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['timezone' => 'Europe/Paris']);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Jeanne',
@@ -43,6 +45,7 @@ class DsnExportServiceTest extends TestCase
             'status' => 'active',
         ]);
 
+        /** @var PayrollRun $run */
         $run = PayrollRun::query()->create([
             'company_id' => $company->id,
             'country_code' => 'FR',
@@ -72,7 +75,11 @@ class DsnExportServiceTest extends TestCase
         // Bien formé + namespace DSN.
         $dom = new \DOMDocument;
         $this->assertTrue($dom->loadXML($xml), 'Le XML DSN doit être bien formé.');
-        $this->assertSame('urn:fr:dsi:dsn:v1', $dom->documentElement->namespaceURI);
+        $root = $dom->documentElement;
+        if ($root === null) {
+            $this->fail('DSN XML : élément racine manquant.');
+        }
+        $this->assertSame('urn:fr:dsi:dsn:v1', $root->namespaceURI);
 
         // Blocs attendus.
         $this->assertSame(1, $dom->getElementsByTagNameNS('urn:fr:dsi:dsn:v1', 'EnTete')->length);
