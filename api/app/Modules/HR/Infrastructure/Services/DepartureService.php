@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use App\Events\EmployeeDeparted;
@@ -66,11 +67,23 @@ class DepartureService
                 $this->tenantCache->invalidateEmployees($employee->company_id);
             }
 
-            if ($departure->id === null) {
+            // Garde défensive : create() renvoie toujours un modèle existant ;
+            // `exists` (bool) est la vérification PHPStan-compatible (id est int).
+            if (! $departure->exists) {
                 throw new RuntimeException('employees.departure_not_created');
             }
 
             EmployeeDeparted::dispatch($employee, $departure);
+
+            // #5439 — journal d'audit global : départ enregistré (HR).
+            AuditLog::record(
+                'hr',
+                'hr.departure.register',
+                $departure,
+                $actor,
+                ['employee_status' => 'active'],
+                ['employee_status' => 'departed', 'departure_type' => $departureType, 'last_work_day' => $departure->last_work_day],
+            );
 
             return $departure;
         });

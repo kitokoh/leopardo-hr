@@ -12,6 +12,7 @@ use App\Modules\Accounting\Domain\Models\AccountingSettings;
 use App\Support\I18nCatalog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 
 /**
  * Rendu PDF des documents comptables multi-langues (issue #5224).
@@ -33,6 +34,8 @@ final class DocumentPdfRenderer implements PdfRendererInterface
             app()->setLocale($locale);
 
             $html = view('pdf.accounting-document', $this->buildViewData($document, $locale))->render();
+
+            $this->ensureArabicFonts();
 
             return Pdf::loadHTML($html)
                 ->setPaper('a4')
@@ -108,5 +111,49 @@ final class DocumentPdfRenderer implements PdfRendererInterface
             'paid_amount' => $paid,
             'remaining' => round($total - $paid, 2),
         ];
+    }
+
+    /**
+     * Issue #5227 — enregistre la police arabe Almarai (OFL) auprès de dompdf
+     * pour le rendu RTL des documents comptables (même pattern que
+     * PaySlipPdfGenerator::ensureArabicFonts, issue #5242). Les TTFs vivent
+     * dans `api/resources/fonts/` (committés) ; les métriques dompdf sont
+     * cachées dans `storage/fonts` (runtime, gitignoré). Idempotent par
+     * processus ; fonts absentes → fallback DejaVu Sans, pas de crash.
+     */
+    private function ensureArabicFonts(): void
+    {
+        static $registered = false;
+
+        if ($registered) {
+            return;
+        }
+
+        $fontDir = resource_path('fonts');
+        $regular = $fontDir.'/Almarai-Regular.ttf';
+        $bold = $fontDir.'/Almarai-Bold.ttf';
+
+        if (! is_file($regular) || ! is_file($bold)) {
+            return; // fonts absentes (dev partiel) : fallback DejaVu, pas de crash.
+        }
+
+        $dompdf = app('dompdf');
+        $fontMetrics = $dompdf->getFontMetrics();
+
+        // Cache des métriques dompdf (storage/fonts, runtime — gitignoré).
+        File::ensureDirectoryExists(storage_path('fonts'));
+
+        $fontMetrics->registerFont([
+            'family' => 'Almarai',
+            'style' => 'normal',
+            'weight' => 'normal',
+        ], $regular);
+        $fontMetrics->registerFont([
+            'family' => 'Almarai',
+            'style' => 'normal',
+            'weight' => 'bold',
+        ], $bold);
+
+        $registered = true;
     }
 }

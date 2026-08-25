@@ -18,6 +18,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentWebhookController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
 use App\Modules\Payroll\Interfaces\Api\V1\IslamicCalendarController;
@@ -132,6 +133,11 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
         Route::post('/webhooks/stripe', StripeWebhookController::class);
         Route::post('/webhooks/chargily', [PaymentWebhookController::class, 'chargily']);
+        // #5272 — webhook des paiements en ligne des documents comptables.
+        // Public (signature HMAC fail-closed), tenant résolu par metadata.
+        // Pas de contrainte whereIn : la passerelle inconnue est rejetée par le
+        // service (401 WEBHOOK_SIGNATURE_INVALID, fail-closed).
+        Route::post('/accounting/payments/webhook/{gateway}', AccountingPaymentWebhookController::class);
         // PA2-COMM-007 - Email provider bounce/complaint notifications
         // (Postmark, SES, Mailgun, ...), protected by a shared secret header
         // instead of Sanctum since the caller is a third-party mail provider.
@@ -235,7 +241,6 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/absence.php';
     require __DIR__.'/modules/expense.php';
     require __DIR__.'/modules/marketing.php';
-    require __DIR__.'/modules/accounting.php';
 
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';

@@ -1429,3 +1429,38 @@ Note 2026-08-23 (issue #5225) : envoi email des documents + portail client sécu
 - Commande artisan `accounting:send-document {document} [--email=]`.
 - Scénarios : envoi avec pièce jointe + lien, méta publiques, téléchargement PDF, token expiré/inconnu → 404, accès limité au document partagé (un token ne révèle que son document), RBAC sans effet sur les routes publiques.
 - Couverture : `DocumentShareEmailTest` (6 tests).
+## Corrections de pointage — workflow complet (issue #5267, 2026-08-23)
+
+- `POST /attendance/corrections` — demande avec justificatif optionnel (`proof`, multipart ≤ 5 Mo, jpg/jpeg/png/pdf/heic) ; refusée (422 `ATTENDANCE_PERIOD_CLOSED`) si la date est dans une période clôturée (`attendance_period_closures`).
+- `GET /attendance/corrections` — file de corrections (manager/RH) avec `proof_url` + flag `anomaly` (conflit session géo validée > 15 min).
+- `GET /attendance/corrections/{correction}/proof` — téléchargement du justificatif (propriétaire + managers ; 404 cross-tenant / sans pièce).
+- `POST|PUT /attendance/corrections/{correction}/approve|reject` — décisions tracées `AuditLog` (requested/approved/rejected) ; bloquées sur période close (422).
+- Commande `attendance:close-period --company=<slug> --month=YYYY-MM` — clôture idempotente et tracée.
+- Couvert par `tests/Feature/Attendance/CorrectionWorkflowV2Test` (7 tests), `CorrectionWorkflowTest`.
+
+Note 2026-08-23 (issue #5229) : trésorerie Phase B — paiements + rapprochement + relances.
+- Enregistrement : `POST /accounting/documents/{document}/payments` — règle « jamais payé > total » (422 `PAYMENT_EXCEEDS_TOTAL`, rien n'est écrit), documents émis uniquement (422 `PAYMENT_ON_UNSENT_DOCUMENT`), `paid_amount` + statut document mis à jour (partially_paid/paid — transition minimale, workflow complet via #5223).
+- Rapprochement : `POST /accounting/payments/{payment}/reconcile` — pending/recorded → matched + `reconciled_at`, idempotent.
+- Liste : `GET /accounting/payments?document_id=&status=` — RBAC comptable/principal (403 sinon).
+- Relances : `POST /accounting/reminders/run` + commande `accounting:send-payment-reminders` — stages J+7/J+15/J+30 paramétrables (`accounting_settings.payment_reminder_days`), cibles documents émis non soldés échus, unique (document, stage) → zéro doublon, notification in-app aux managers principal/comptable (template `accounting_payment_reminder`, i18n ×4), échec notification ≠ échec relance (log).
+- Couverture : `AccountingPaymentTest` (14 tests) — suite `tests/Feature/Accounting` 23/23 ; PHPStan 0 ; Pint PASS ; OpenAPI couverture 754/754.
+
+Note 2026-08-24 (issue #5227) : i18n ×4 du module Comptabilité — messages API localisés (fr/en/tr/ar), zéro chaîne hardcodée, parité des catalogues.
+- Surface API : les messages d'erreur et de validation du module Accounting passent par `__('accounting.*')` / `__('errors.*')` (renderer #4171) — plus aucun littéral `message => '...'` ni `throw '...'` français brut (hors codes machine MAJUSCULES et clés de catalogue) dans `api/app/Modules/Accounting/**` ; la locale est pilotée par `preferred_language` de l'utilisateur authentifié (pattern #4592, fallback Accept-Language).
+- Catalogues : `api/lang/{fr,en,tr,ar}/accounting.php` (labels documents `document_type_*` ×6, statuts `status_*` ×6, TVA, workflow) et `errors.php` (codes des DomainException : `PAYMENT_EXCEEDS_TOTAL`, `PAYMENT_ON_UNSENT_DOCUMENT`, `CREDIT_NOTE_REQUIRES_SOURCE_INVOICE`, `DELIVERY_NOTE_REQUIRES_DELIVERY_DATE`, `DOCUMENT_NOT_FULLY_PAID`, `INVALID_DOCUMENT_TRANSITION`…) — parité stricte des clés ×4 (garde CI `dev-hub/tools/check-accounting-i18n.py`, job « i18n Comptabilité ×4 » du workflow `accounting-ci.yml`).
+- PDF : labels des documents comptables (`accounting-document.blade.php`) localisés ×4 via les mêmes catalogues ; RTL arabe vérifié ; libellés de données (ex. TVA `label_key`) laissés aux données seed.
+- Scénarios à vérifier : chaque erreur métier renvoie un message dans la langue de l'utilisateur (fr/en/tr/ar) sans retomber sur la clé brute ; parité des clés ×4 des deux catalogues ; zéro littéral non localisé dans le module (scan CI) ; libellés PDF ×4 (type + statut) ; RTL arabe.
+- Couverture : `tests/Feature/Accounting/AccountingI18nTest.php`, `AccountingI18nMessagesTest.php`, `DocumentPdfRendererTest.php` + suite module Accounting (coverage 86,45 % ≥ 70 % DoD #5228) — garde `check-accounting-i18n.py` verte.
+Note 2026-08-25 (issue #5437) : garde anti-collision de préfixes de migrations inter-PRs — `dev-hub/tools/check-migration-prefixes.mjs` branché dans Hygiene Guards. Scénarios à vérifier : (1) PR introduisant un préfixe déjà sur main → échec ; (2) PR introduisant un préfixe déjà pris par une AUTRE PR ouverte → échec (cas réel détecté : `2026_08_24_000003` partagé entre #5406 attendance et #5394/#5424 paie→compta) ; (3) préfixe libre → vert ; (4) branche sans migrations → vert ; (5) main reste vert (0 faux positif — préfixes déjà sur main exclus du contrôle).
+
+Note 2026-08-24 (issues #5353/#5354/#5355) : ADR-0016 — consolidation des routes pointage sous `/api/v1/attendance/*` + fusion SmartAttendance.
+- Phases 2-5 : chemin d'usage unique de la géofence (`GeofenceZoneService`) et surface API pointage consolidée sous `/attendance/*` (sessions → `/geo-sessions`, geo-events, mode) — alias `/smart-attendance/*` SUPPRIMÉS en Phase 5 (#5356), 404 attendus sur les anciens chemins.
+- Phase 4 : fusion des modèles/services/commandes SmartAttendance → Attendance (shims `@deprecated` dans SmartAttendance pour BC) ; commande console `AutoCloseGeoSessionsCommand` → `AutoCloseAttendanceCommand` (alias conservé, `api/routes/console.php`).
+- Scénarios à vérifier : routes `/attendance/*` uniquement (sessions/geo-events/mode), 404 sur `/smart-attendance/*` (alias supprimés Phase 5 #5356), migration console (schedule `attendance:auto-close` unique), isolation tenant géofence, PHPStan Strict vert sur les fichiers fusionnés.
+- Couverture : `tests/Feature/Attendance/Geo*` (6 tests migrés) + `GeoRoutesMigrationTest`.
+Note 2026-08-25 (issue #5439) : journal d'audit global — écriture unifiée `AuditLog::record()` câblée sur les flux sensibles, lecture RBAC manager principal/rh, rétention RGPD par entreprise.
+- Écriture : approbation/rejet/annulation d'absence (`planning.absence.*`), validation/suppression de bulletin (`payroll.*`), import/recalcul de pointage (`attendance.*`), départ HR (`hr.departure.register`), révocation de jeton (`auth.token.revoked`) → entrée `audit_logs` avec module/request_id/company_id/avant-après.
+- Lecture : `GET /api/v1/audit-logs` (filtres module, action, auditable_type/id, user_id, from, to ; pagination ; isolation tenant stricte) + `GET /audit-logs/{id}` (404 cross-tenant) + `GET /audit-logs/export-csv` — RBAC `principal`/`rh` (403 employé).
+- Rétention : `audit:purge` tenant-par-tenant (pattern `biometric:purge-expired`), rétention par entreprise via `CompanySetting.audit_retention_months` (défaut 36), purge journalisée (`audit.purge`), schedule hebdomadaire.
+- Scénarios à vérifier : chaque action sensible crée une entrée tracée ; 403 employé ; filtre module ; 404 cross-tenant ; purge respecte la rétention de l'entreprise et journalise ; non-régression suites HR/Attendance/Planning/Payroll.
+- Couverture : `tests/Feature/Audit/AuditLogGlobalTest.php` (9 tests) + suite existante `AuditLogExportTest`.

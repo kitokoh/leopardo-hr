@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Events\AttendanceCheckedIn;
@@ -13,9 +14,9 @@ use App\Exceptions\MissingCheckInException;
 use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Exceptions\PunchPhotoRequiredException;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -362,6 +363,22 @@ class AttendanceService
         }
 
         $log->save();
+
+        // #5439 — journal d'audit global : recalcul/correction tracé
+        // (avant/après sur les champs recalculés).
+        AuditLog::record(
+            'attendance',
+            'attendance.recalculate',
+            $log,
+            null,
+            [],
+            [
+                'hours_worked' => $log->hours_worked,
+                'overtime_hours' => $log->overtime_hours,
+                'late_minutes' => $log->late_minutes,
+                'status' => $log->status,
+            ],
+        );
 
         return $log->fresh();
     }
