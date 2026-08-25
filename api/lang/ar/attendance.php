@@ -26,7 +26,7 @@ return [
     'monthly_summary' => 'الملخص الشهري',
     'history' => 'السجل',
 
-    // جلسات الموقع (SmartAttendance)
+    // جلسات الموقع (Attendance)
     'geo_session_approved' => 'تمت الموافقة على الجلسة. تم إنشاء سجل الحضور.',
     'geo_session_rejected' => 'تم رفض الجلسة.',
 
