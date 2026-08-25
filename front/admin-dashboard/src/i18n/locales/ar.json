@@ -2999,5 +2999,29 @@
     "completeError": "فشل التفعيل. حاول مجددًا.",
     "retry": "إعادة المحاولة",
     "loading": "جارٍ التحميل…"
+  },
+  "shareAccesses": {
+    "title": "سجل الوصول",
+    "subtitle": "تدقيق RGPD: من اطّلع أو حمّل مستندًا مشاركًا على بوابة العملاء، ومتى، ومن أي عنوان IP.",
+    "documentLabel": "المستند",
+    "selectDocument": "اختر مستندًا…",
+    "noDocumentSelected": "اختر مستندًا لعرض سجل الوصول الخاص به.",
+    "actionHeader": "الإجراء",
+    "dateHeader": "التاريخ",
+    "ipHeader": "عنوان IP",
+    "userAgentHeader": "المتصفح",
+    "requestIdHeader": "معرّف الارتباط",
+    "actionInfo": "اطّلاع",
+    "actionDownload": "تحميل",
+    "emptyTitle": "لا يوجد وصول مسجّل",
+    "emptyBody": "لم تتم مشاهدة هذا المستند أو تحميله عبر بوابة العملاء بعد.",
+    "loadError": "تعذّر تحميل سجل الوصول. حاول مجددًا بعد قليل.",
+    "loadDocumentsError": "تعذّر تحميل المستندات. حاول مجددًا بعد قليل.",
+    "loading": "جارٍ التحميل…",
+    "previousPage": "الصفحة السابقة",
+    "nextPage": "الصفحة التالية",
+    "pageOf": "الصفحة {current} من {total}",
+    "total": "{count} وصول",
+    "retry": "إعادة المحاولة"
   }
 }

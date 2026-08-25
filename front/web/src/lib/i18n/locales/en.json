@@ -2999,5 +2999,29 @@
     "completeError": "Activation failed. Please try again.",
     "retry": "Retry",
     "loading": "Loading…"
+  },
+  "shareAccesses": {
+    "title": "Access history",
+    "subtitle": "RGPD audit: who consulted or downloaded a shared document on the client portal, when, and from which IP address.",
+    "documentLabel": "Document",
+    "selectDocument": "Select a document…",
+    "noDocumentSelected": "Select a document to view its access history.",
+    "actionHeader": "Action",
+    "dateHeader": "Date",
+    "ipHeader": "IP address",
+    "userAgentHeader": "User agent",
+    "requestIdHeader": "Correlation ID",
+    "actionInfo": "View",
+    "actionDownload": "Download",
+    "emptyTitle": "No access recorded",
+    "emptyBody": "This document has never been viewed or downloaded through the client portal.",
+    "loadError": "Unable to load accesses. Please try again shortly.",
+    "loadDocumentsError": "Unable to load documents. Please try again shortly.",
+    "loading": "Loading…",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "pageOf": "Page {current} of {total}",
+    "total": "{count} accesses",
+    "retry": "Retry"
   }
 }
