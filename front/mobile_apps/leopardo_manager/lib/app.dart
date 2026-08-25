@@ -26,7 +26,7 @@ import 'package:leopardo_manager/features/payrolls/screens/payroll_list_screen.d
 import 'package:leopardo_core/features/notifications/screens/notification_list_screen.dart';
 import 'package:leopardo_core/features/evaluations/screens/evaluation_list_screen.dart';
 import 'package:leopardo_core/features/cabinet/screens/cabinet_screen.dart';
-import 'package:leopardo_manager/features/settings/screens/settings_screen.dart';
+import 'package:leopardo_core/features/settings/screens/settings_screen.dart';
 import 'package:leopardo_core/features/team/screens/team_screen.dart';
 import 'package:leopardo_core/features/tasks/screens/task_list_screen.dart';
 import 'package:leopardo_core/features/user_auth/screens/user_register_screen.dart';
