@@ -232,14 +232,6 @@ class LeopardoClient:
         """Portail client — téléchargement du PDF partagé (token)"""
         return self.request("GET", "/accounting/documents/shared/{token}/download", **kwargs)
 
-    def get_accounting_journal(self, **kwargs):
-        """Journal comptable par periode"""
-        return self.request("GET", "/accounting/journal", **kwargs)
-
-    def get_accounting_journal_export_csv(self, **kwargs):
-        """Export CSV du journal (expert-comptable)"""
-        return self.request("GET", "/accounting/journal/export.csv", **kwargs)
-
     def post_accounting_journal_periods_by_period_close(self, **kwargs):
         """Cloturer une periode comptable"""
         return self.request("POST", "/accounting/journal/periods/{period}/close", **kwargs)
@@ -1519,6 +1511,14 @@ class LeopardoClient:
     def get_expense_claims_by_expenseclaim_accounting_entries(self, **kwargs):
         """Ecritures comptables d'une note de frais approuvee (#5235)"""
         return self.request("GET", "/expense-claims/{expenseClaim}/accounting-entries", **kwargs)
+
+    def get_expense_claims_by_expenseclaim_accounting_entries_2(self, **kwargs):
+        """Journal comptable par periode"""
+        return self.request("GET", "/expense-claims/{expenseClaim}/accounting-entries", **kwargs)
+
+    def get_expense_claims_by_expenseclaim_accounting_entries_regenerate(self, **kwargs):
+        """Export CSV du journal (expert-comptable)"""
+        return self.request("GET", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", **kwargs)
 
     def post_expense_claims_by_expenseclaim_accounting_entries_regenerate(self, **kwargs):
         """Regenerer les ecritures comptables d'une note (comptable, idempotent)"""
