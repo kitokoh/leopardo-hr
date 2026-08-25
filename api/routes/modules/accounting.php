@@ -64,9 +64,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         });
     });
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
-use Illuminate\Support\Facades\Route;
 
 /**
  * Routes Comptabilité — documents (Phase A, #5223).
@@ -101,3 +98,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         });
     });
 
+/**
+ * Routes API du module Comptabilité — journal des écritures (issue #5234).
+ * RBAC : `api.manager:principal,comptable` — journal réservé à la direction et aux comptables.
+ */
+
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
+
+Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])
+    ->prefix('accounting')
+    ->group(function (): void {
+        Route::get('/journal', [AccountingJournalController::class, 'index']);
+        Route::get('/journal/export.csv', [AccountingJournalController::class, 'export']);
+        Route::post('/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
+        Route::post('/documents/{document}/journal', [AccountingJournalController::class, 'postDocument']);
+    });

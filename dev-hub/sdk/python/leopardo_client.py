@@ -184,6 +184,10 @@ class LeopardoClient:
         """Creer un avoir lie a une facture source (#5223)"""
         return self.request("POST", "/accounting/documents/{document}/credit-note", **kwargs)
 
+    def post_accounting_documents_by_document_journal(self, **kwargs):
+        """Poster (ou re-poster) un document au journal"""
+        return self.request("POST", "/accounting/documents/{document}/journal", **kwargs)
+
     def post_accounting_documents_by_document_payments(self, **kwargs):
         """Enregistrer un encaissement (→ partiellement paye / paye, #5223)"""
         return self.request("POST", "/accounting/documents/{document}/payments", **kwargs)
@@ -203,6 +207,18 @@ class LeopardoClient:
     def get_accounting_documents_shared_by_token_download(self, **kwargs):
         """Portail client — téléchargement du PDF partagé (token)"""
         return self.request("GET", "/accounting/documents/shared/{token}/download", **kwargs)
+
+    def get_accounting_journal(self, **kwargs):
+        """Journal comptable par periode"""
+        return self.request("GET", "/accounting/journal", **kwargs)
+
+    def get_accounting_journal_export_csv(self, **kwargs):
+        """Export CSV du journal (expert-comptable)"""
+        return self.request("GET", "/accounting/journal/export.csv", **kwargs)
+
+    def post_accounting_journal_periods_by_period_close(self, **kwargs):
+        """Cloturer une periode comptable"""
+        return self.request("POST", "/accounting/journal/periods/{period}/close", **kwargs)
 
     def get_accounting_payments(self, **kwargs):
         """Lister les paiements"""
@@ -2847,6 +2863,54 @@ class LeopardoClient:
     def put_sites_by_site(self, **kwargs):
         """Modifier un site"""
         return self.request("PUT", "/sites/{site}", **kwargs)
+
+    def get_smart_attendance_config(self, **kwargs):
+        """Lire la configuration de mode active pour l'employe connecte"""
+        return self.request("GET", "/smart-attendance/config", **kwargs)
+
+    def get_smart_attendance_dashboard(self, **kwargs):
+        """Statistiques du jour — Smart Attendance (manager/RH)"""
+        return self.request("GET", "/smart-attendance/dashboard", **kwargs)
+
+    def get_smart_attendance_employees_by_employeeid_preference(self, **kwargs):
+        """Préférence mode géolocalisation d'un employé (manager/RH)"""
+        return self.request("GET", "/smart-attendance/employees/{employeeId}/preference", **kwargs)
+
+    def post_smart_attendance_geo_events(self, **kwargs):
+        """Envoyer un événement géographique (entrée/sortie de zone)"""
+        return self.request("POST", "/smart-attendance/geo-events", **kwargs)
+
+    def get_smart_attendance_mode_settings(self, **kwargs):
+        """Parametres du mode de pointage de l'entreprise"""
+        return self.request("GET", "/smart-attendance/mode-settings", **kwargs)
+
+    def put_smart_attendance_mode_settings(self, **kwargs):
+        """Configurer le mode de pointage (principal)"""
+        return self.request("PUT", "/smart-attendance/mode-settings", **kwargs)
+
+    def get_smart_attendance_my_sessions(self, **kwargs):
+        """Sessions GPS de l'employé courant"""
+        return self.request("GET", "/smart-attendance/my-sessions", **kwargs)
+
+    def put_smart_attendance_preferences(self, **kwargs):
+        """Mettre à jour les préférences de pointage"""
+        return self.request("PUT", "/smart-attendance/preferences", **kwargs)
+
+    def get_smart_attendance_sessions(self, **kwargs):
+        """Lister les sessions GPS"""
+        return self.request("GET", "/smart-attendance/sessions", **kwargs)
+
+    def get_smart_attendance_sessions_by_id(self, **kwargs):
+        """Détail d'une session GPS"""
+        return self.request("GET", "/smart-attendance/sessions/{id}", **kwargs)
+
+    def post_smart_attendance_sessions_by_id_approve(self, **kwargs):
+        """Approuver une session GPS (manager/RH)"""
+        return self.request("POST", "/smart-attendance/sessions/{id}/approve", **kwargs)
+
+    def post_smart_attendance_sessions_by_id_reject(self, **kwargs):
+        """Rejeter une session GPS (manager/RH)"""
+        return self.request("POST", "/smart-attendance/sessions/{id}/reject", **kwargs)
 
     def listsocialcontributions(self, **kwargs):
         """Lister les regles de cotisations sociales (manager)"""
