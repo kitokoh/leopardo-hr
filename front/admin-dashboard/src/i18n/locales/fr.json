@@ -3405,6 +3405,9 @@
       "empty": "Aucun impayé pour le moment.",
       "currency_hint": "Montants dans la devise de l'entreprise."
     }
+<<<<<<< HEAD
+  }
+=======
   },
   "attendanceToProcess": "A traiter",
   "settingsBiometryEnableFirst": "Active d abord la preparation biometrie.",
@@ -3555,4 +3558,5 @@
   "settingsPrefsUnavailable": "Preferences indisponibles pour le moment. Tire pour recharger plus tard.",
   "teamQrPrefilledHint": "Profil pre-rempli depuis QR. Renseignez l email professionnel unique de cette entreprise.",
   "settingsBiometryPendingHint": "Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH."
+>>>>>>> origin/main
 }

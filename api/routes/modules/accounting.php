@@ -40,12 +40,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/settings', [AccountingSettingsController::class, 'show']);
             Route::put('/settings', [AccountingSettingsController::class, 'update']);
 
-            // ── Conversion multi-devises (issue #5270) — utilitaire de
-            // conversion HT/TVA/TTC (calcul pur, aucun enregistrement).
-            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
-
-            // ── Rapports (issue #5271) — déclaration TVA par période.
-            Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
         });
 
         // ── Documents (Phase A, #5223) — RBAC principal/comptable ───────────
@@ -62,54 +56,30 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // (Chargily DZ / Stripe), routée par pays de l'entreprise (ADR-0017).
             Route::post('/documents/{document}/checkout', [AccountingCheckoutController::class, 'store'])->whereNumber('document');
         });
-    });
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
 
+
+            // ── Rapports (issue #5271) — déclaration TVA par période.
+            Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
+
+            // ── Conversion multi-devises (issue #5270) — calcul pur, aucun
+            // état persistant : HT/TVA/TTC entre devise de document et devise
+            // de référence. Taux manuel requis dès que les devises diffèrent.
+            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
+
+    });
 /**
- * Routes Comptabilité — documents (Phase A, #5223).
+ * Routes API du module Comptabilité — trésorerie : paiements, rapprochement,
+ * relances (issue #5229).
  *
- * RBAC : managers principal/comptable uniquement (api.manager:principal,comptable)
- * — le groupe externe api/v1 porte déjà auth:sanctum + tenant.
+ * RBAC : `api.manager:principal,comptable` — la trésorerie est réservée à la
+ * direction et aux comptables (aucun accès RH/marketing).
  */
-Route::middleware(['api.manager:principal,comptable'])->prefix('accounting')->group(function (): void {
-    Route::get('/documents', [AccountingDocumentController::class, 'index']);
-    Route::post('/documents', [AccountingDocumentController::class, 'store']);
-    Route::get('/documents/next-number', [AccountingDocumentController::class, 'nextNumber']);
-    Route::get('/documents/{document}', [AccountingDocumentController::class, 'show'])->whereNumber('document');
-    Route::post('/documents/{document}/send', [AccountingDocumentController::class, 'send'])->whereNumber('document');
-    Route::post('/documents/{document}/payments', [AccountingDocumentController::class, 'payments'])->whereNumber('document');
-    Route::post('/documents/{document}/cancel', [AccountingDocumentController::class, 'cancel'])->whereNumber('document');
-    Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
 
-    // #5273 — audit trail scope module (qui/quoi/quand).
-    Route::get('/audit-logs', [AccountingAuditController::class, 'index']);
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
+
+Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
+    Route::get('accounting/payments', [AccountingPaymentController::class, 'index']);
+    Route::post('accounting/documents/{document}/payments', [AccountingPaymentController::class, 'store']);
+    Route::post('accounting/payments/{payment}/reconcile', [AccountingPaymentController::class, 'reconcile']);
+    Route::post('accounting/reminders/run', [AccountingPaymentController::class, 'runReminders']);
 });
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
-    ->prefix('accounting')
-    ->group(function (): void {
-
-        // ── Contacts client/fournisseur (RBAC comptable + principal) ────────
-        Route::middleware('api.manager:comptable,principal')->group(function (): void {
-            Route::get('/contacts', [AccountingContactController::class, 'index']);
-            Route::post('/contacts', [AccountingContactController::class, 'store']);
-            Route::get('/contacts/{contact}', [AccountingContactController::class, 'show'])->whereNumber('contact');
-            Route::put('/contacts/{contact}', [AccountingContactController::class, 'update'])->whereNumber('contact');
-            Route::delete('/contacts/{contact}', [AccountingContactController::class, 'destroy'])->whereNumber('contact');
-        });
-    });
-
-/**
- * Routes API du module Comptabilité — journal des écritures (issue #5234).
- * RBAC : `api.manager:principal,comptable` — journal réservé à la direction et aux comptables.
- */
-
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
-
-Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])
-    ->prefix('accounting')
-    ->group(function (): void {
-        Route::get('/journal', [AccountingJournalController::class, 'index']);
-        Route::get('/journal/export.csv', [AccountingJournalController::class, 'export']);
-        Route::post('/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
-        Route::post('/documents/{document}/journal', [AccountingJournalController::class, 'postDocument']);
-    });
