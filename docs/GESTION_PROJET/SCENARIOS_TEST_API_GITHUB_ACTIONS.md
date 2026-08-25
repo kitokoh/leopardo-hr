@@ -1421,11 +1421,16 @@ Note 2026-08-22 (issue #5259) : plans de carrière — événements de carrière
 - `GET|POST /api/v1/career-events`, `GET|PUT|PATCH|DELETE /api/v1/career-events/{id}` (édit/suppression `pending` uniquement), `PUT /api/v1/career-events/{id}/approve|reject|apply`. Workflow `pending → approved → applied` (ou `rejected`) ; `apply` met à jour l'employé (position_id, department_id, salary_base) en transaction → impact paie au run suivant.
 - Scénarios à vérifier : création manager avec snapshot `from_*` (poste/département/salaire courants de l'employé), employé → 403 sur create et lecture limitée à son propre parcours, manager `dept` scopé (PA2-SEC-002) / `superviseur` (PA2-SEC-003), isolation tenant (ressource d'une autre société → 404, cible poste/département cross-tenant → 422), transitions invalides (apply sur `pending` → 403, apply sans cible → 422 CAREER_EVENT_NOTHING_TO_APPLY, edit/delete hors `pending` → 403), `GET /me/career` expose `data.career_events` (parcours complet contrats + événements).
 - Couverture : `tests/Feature/HR/CareerEventTest.php` (12 tests) — contrat OpenAPI documenté (9 opérations, 753/753 routes couvertes).
-Note 2026-08-23 (issue #5225) : envoi email des documents + portail client sécurisé.
-- Partage tokenisé (`accounting_document_shares` : token 64 caractères, expiration 14 j, email destinataire) — RGPD : accès strictement limité au document partagé (pattern CabinetShare #1817) ; le token est la credential, pas d'auth Sanctum.
-- `GET /accounting/documents/shared/{token}` : méta du document partagé (numéro, type, statut, TTC, expiration) — token inconnu/expiré → 404.
-- `GET /accounting/documents/shared/{token}/download` : PDF depuis le disque privé — token inconnu/expiré → 404 ; throttle dédié ; Content-Disposition `attachment`.
-- `DocumentShareMail` : PDF en pièce jointe + lien sécurisé ; `SendDocumentEmail` garantit le PDF (job #5224), crée le partage, envoie, `sent_at` + statut `sent` (transition minimale — workflow complet via #5223).
-- Commande artisan `accounting:send-document {document} [--email=]`.
-- Scénarios : envoi avec pièce jointe + lien, méta publiques, téléchargement PDF, token expiré/inconnu → 404, accès limité au document partagé (un token ne révèle que son document), RBAC sans effet sur les routes publiques.
-- Couverture : `DocumentShareEmailTest` (6 tests).
+Note 2026-08-23 (issue #5229) : trésorerie Phase B — paiements + rapprochement + relances.
+- Enregistrement : `POST /accounting/documents/{document}/payments` — règle « jamais payé > total » (422 `PAYMENT_EXCEEDS_TOTAL`, rien n'est écrit), documents émis uniquement (422 `PAYMENT_ON_UNSENT_DOCUMENT`), `paid_amount` + statut document mis à jour (partially_paid/paid — transition minimale, workflow complet via #5223).
+- Rapprochement : `POST /accounting/payments/{payment}/reconcile` — pending/recorded → matched + `reconciled_at`, idempotent.
+- Liste : `GET /accounting/payments?document_id=&status=` — RBAC comptable/principal (403 sinon).
+- Relances : `POST /accounting/reminders/run` + commande `accounting:send-payment-reminders` — stages J+7/J+15/J+30 paramétrables (`accounting_settings.payment_reminder_days`), cibles documents émis non soldés échus, unique (document, stage) → zéro doublon, notification in-app aux managers principal/comptable (template `accounting_payment_reminder`, i18n ×4), échec notification ≠ échec relance (log).
+- Couverture : `AccountingPaymentTest` (14 tests) — suite `tests/Feature/Accounting` 23/23 ; PHPStan 0 ; Pint PASS ; OpenAPI couverture 754/754.
+Note 2026-08-24 (issue #5223) : cycle de vie des documents comptables via l'API — couverture HTTP complète du contrôleur.
+- `POST /api/v1/accounting/documents` crée un brouillon numéroté (type invoice/credit_note/proforma…, lignes requises → 422 sinon, totaux HT/TVA/TTC calculés, série paramétrable via `number_series`).
+- `GET /api/v1/accounting/documents` liste avec filtres (`type`, `status`, `contact_id`, `from`, `to`, `per_page`) ; `GET /api/v1/accounting/documents/{id}` détail lignes + paiements ; `GET /api/v1/accounting/documents/next-number?type=` aperçu du prochain numéro.
+- `POST /api/v1/accounting/documents/{id}/send` draft → sent (facture/avoir sans contact → 422) ; `POST .../payments` encaissement (partiel → `partially_paid`, solde → `paid`, excédent → 422) ; `POST .../cancel` annulation motivée ; `POST .../credit-note` avoir lié à une facture émise (montant borné au reste à payer, 422 si facture brouillon/annulée/payée).
+- Overdue : lecture rafraîchit les statuts échus (`due_date` dépassée sur sent/partially_paid → `overdue`).
+- RBAC : manager principal/comptable autorisés, employé → 403 ; isolation tenant → 404 cross-company.
+- Couverture : `tests/Feature/Accounting/AccountingDocumentApiTest.php` (12 tests) — gate coverage module Accounting ≥ 70 % (DoD #5228) : 67,4 % → 86,5 % sur #5230, 87,7 % sur #5288.
