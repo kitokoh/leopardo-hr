@@ -14,8 +14,16 @@
 #      un agent peut croire sa migration exécutée alors qu'une autre du même
 #      préfixe a pris sa place dans l'ordre de tri.
 #
-# Usage : dev-hub/tools/check-migration-basename-collisions.sh [REPERTOIRE]
-# (argument optionnel : racine des migrations — pratique pour les tests)
+# Règle #5431 (récurrence #1962) : toute NOUVELLE migration doit porter une
+# référence d'issue dans son nom — ex. `2026_08_24_000001_5422_create_x_table.php`
+# ou préfixe `<issue>-` — sinon FAIL (whitelist `migrations-legacy-allowlist.txt`
+# pour l'existant). Le numéro d'issue est unique par branche (protocole #2400),
+# ce qui rend la collision de préfixes structurellement impossible.
+#
+# Usage : dev-hub/tools/check-migration-basename-collisions.sh [REPERTOIRE] [--remote]
+# (argument optionnel : racine des migrations — pratique pour les tests ;
+#  --remote : compare les préfixes avec les branches locales mod/*, fix/*,
+#  chore/*, security/* — best-effort)
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -63,6 +71,51 @@ if [[ -n "${CROSS_DUPES}" ]]; then
   echo "  → deux répertoires portent le même fichier de migration : si ces chemins"
   echo "    sont migrés ensemble (migrate --path multiple), Laravel en ignorera un."
   FAIL=1
+fi
+
+# --- 4. Référence d'issue obligatoire dans les NOUVELLES migrations (#5431) ---
+ALLOWLIST_FILE="${ROOT}/dev-hub/tools/migrations-legacy-allowlist.txt"
+if [[ ! -f "${ALLOWLIST_FILE}" ]]; then
+  echo "::error::Fichier whitelist legacy introuvable : ${ALLOWLIST_FILE}"
+  exit 1
+fi
+
+while IFS= read -r file; do
+  base="$(basename "${file}")"
+  grep -qxF "${base}" "${ALLOWLIST_FILE}" && continue
+  # après le préfixe date_séquence, le slug doit contenir une réf. d'issue
+  slug="${base#[0-9][0-9][0-9][0-9]_[0-9][0-9]_[0-9][0-9]_[0-9][0-9][0-9][0-9][0-9][0-9]_}"
+  if [[ "${slug}" == "${base}" ]]; then
+    # pas de préfixe date_séquence standard : migration hors convention
+    echo "::error::${base} : hors convention de nommage (préfixe date_séquence attendu)."
+    FAIL=1
+    continue
+  fi
+  if ! [[ "${slug}" =~ ^[0-9]{4,5}_ ]] && ! [[ "${slug}" =~ _[0-9]{4,5}_ ]]; then
+    echo "::error::${base} : NOUVELLE migration sans référence d'issue (règle #5431)."
+    echo "  → ajoutez le numéro d'issue au nom, ex. 2026_08_24_000001_5422_create_x_table.php"
+    echo "    (le numéro d'issue est unique par branche — protocole #2400)."
+    FAIL=1
+  fi
+done < <(find "${MIGRATIONS_DIR}" -name '*.php' 2>/dev/null || true)
+
+# --- 5. Collision de préfixes cross-branches (optionnel, --remote) ---
+if [[ "${1:-}" == "--remote" || "${2:-}" == "--remote" ]]; then
+  THIS_PREFIXES="$(find "${MIGRATIONS_DIR}" -name '*.php' -printf '%f\n' \
+    | sed -nE 's/^([0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9]{6})_.*\.php$/\1/p' | sort -u)"
+  for ref in $(git for-each-ref --format='%(refname:short)' refs/remotes/origin 2>/dev/null \
+      | grep -E '^(origin/)?(mod|fix|chore|security)/' || true); do
+    [[ "${ref}" == "origin/main" ]] && continue
+    REMOTE_PREFIXES="$(git ls-tree -r --name-only "${ref}" api/database/migrations 2>/dev/null \
+      | sed -nE 's|.*/([0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9]{6})_.*\.php$|\1|p' | sort -u || true)"
+    for pfx in ${REMOTE_PREFIXES}; do
+      if echo "${THIS_PREFIXES}" | grep -qx "${pfx}"; then
+        echo "::error::Préfixe de migration ${pfx} partagé avec la branche ${ref} (règle #5431)."
+        echo "  → renumérotez votre migration (ex. 000001 → 000004) pour éviter la collision au merge."
+        FAIL=1
+      fi
+    done
+  done
 fi
 
 if [[ "${FAIL}" -eq 1 ]]; then
