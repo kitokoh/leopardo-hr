@@ -19,7 +19,7 @@ class AccountingChartOfAccountsTest extends TestCase
 {
     public function test_all_countrydefaults_countries_are_covered(): void
     {
-        foreach (array_keys(CountryDefaults::all()) as $country) {
+        foreach (array_column(CountryDefaults::all(), 'country') as $country) {
             $chart = AccountingChartOfAccounts::for($country);
 
             foreach (AccountingChartOfAccounts::ACCOUNT_FAMILIES as $family) {

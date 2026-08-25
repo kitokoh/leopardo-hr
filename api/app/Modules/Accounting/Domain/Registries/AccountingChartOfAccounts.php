@@ -243,6 +243,6 @@ final class AccountingChartOfAccounts
      */
     public static function supportedCountries(): array
     {
-        return array_keys(CountryDefaults::all());
+        return array_column(CountryDefaults::all(), 'country');
     }
 }
