@@ -152,6 +152,10 @@ class LeopardoClient:
         """Mettre a jour un contact client/fournisseur"""
         return self.request("PUT", "/accounting/contacts/{contact}", **kwargs)
 
+    def post_accounting_currency_convert(self, **kwargs):
+        """Convertir un montant entre deux devises (multi-devises #5270)"""
+        return self.request("POST", "/accounting/currency/convert", **kwargs)
+
     def get_accounting_documents(self, **kwargs):
         """Lister les documents comptables du tenant (pagine, filtres, #5223)"""
         return self.request("GET", "/accounting/documents", **kwargs)
@@ -612,6 +616,10 @@ class LeopardoClient:
         """Approuver une correction de pointage (déprécié — utiliser POST)"""
         return self.request("PUT", "/attendance/corrections/{correction}/approve", **kwargs)
 
+    def get_attendance_corrections_by_correction_proof(self, **kwargs):
+        """Télécharger le justificatif d'une demande de correction"""
+        return self.request("GET", "/attendance/corrections/{correction}/proof", **kwargs)
+
     def post_attendance_corrections_by_correction_reject(self, **kwargs):
         """Refuser une demande de correction de pointage"""
         return self.request("POST", "/attendance/corrections/{correction}/reject", **kwargs)
@@ -621,7 +629,7 @@ class LeopardoClient:
         return self.request("PUT", "/attendance/corrections/{correction}/reject", **kwargs)
 
     def get_attendance_dashboard(self, **kwargs):
-        """Statistiques du jour — Smart Attendance (manager/RH)"""
+        """Statistiques du jour — Attendance (manager/RH)"""
         return self.request("GET", "/attendance/dashboard", **kwargs)
 
     def get_attendance_employees_by_employeeid_preference(self, **kwargs):
@@ -2560,9 +2568,25 @@ class LeopardoClient:
         """Planifier un entretien"""
         return self.request("POST", "/recruitment/applicants/{applicant}/interviews", **kwargs)
 
+    def delete_recruitment_applicants_by_id(self, **kwargs):
+        """Supprimer une candidature (manager)"""
+        return self.request("DELETE", "/recruitment/applicants/{id}", **kwargs)
+
+    def get_recruitment_applicants_by_id(self, **kwargs):
+        """Détail d'une candidature (manager)"""
+        return self.request("GET", "/recruitment/applicants/{id}", **kwargs)
+
     def patch_recruitment_applicants_by_id_status(self, **kwargs):
         """Changer le statut d'une candidature (principal/rh)"""
         return self.request("PATCH", "/recruitment/applicants/{id}/status", **kwargs)
+
+    def delete_recruitment_interviews_by_id(self, **kwargs):
+        """Supprimer un entretien (manager)"""
+        return self.request("DELETE", "/recruitment/interviews/{id}", **kwargs)
+
+    def patch_recruitment_interviews_by_id_feedback(self, **kwargs):
+        """Saisir le feedback d'un entretien (le clôture)"""
+        return self.request("PATCH", "/recruitment/interviews/{id}/feedback", **kwargs)
 
     def delete_recruitment_interviews_by_interview(self, **kwargs):
         """Supprimer un entretien (manager)"""
@@ -2583,6 +2607,10 @@ class LeopardoClient:
     def post_recruitment_jobs(self, **kwargs):
         """Creer une offre d'emploi"""
         return self.request("POST", "/recruitment/jobs", **kwargs)
+
+    def delete_recruitment_jobs_by_id(self, **kwargs):
+        """Supprimer une offre d'emploi (manager)"""
+        return self.request("DELETE", "/recruitment/jobs/{id}", **kwargs)
 
     def delete_recruitment_jobs_by_jobposting(self, **kwargs):
         """Supprimer une offre d'emploi (manager)"""
@@ -2803,54 +2831,6 @@ class LeopardoClient:
     def put_sites_by_site(self, **kwargs):
         """Modifier un site"""
         return self.request("PUT", "/sites/{site}", **kwargs)
-
-    def get_smart_attendance_config(self, **kwargs):
-        """Lire la configuration de mode active pour l'employe connecte"""
-        return self.request("GET", "/smart-attendance/config", **kwargs)
-
-    def get_smart_attendance_dashboard(self, **kwargs):
-        """Statistiques du jour — Smart Attendance (manager/RH)"""
-        return self.request("GET", "/smart-attendance/dashboard", **kwargs)
-
-    def get_smart_attendance_employees_by_employeeid_preference(self, **kwargs):
-        """Préférence mode géolocalisation d'un employé (manager/RH)"""
-        return self.request("GET", "/smart-attendance/employees/{employeeId}/preference", **kwargs)
-
-    def post_smart_attendance_geo_events(self, **kwargs):
-        """Envoyer un événement géographique (entrée/sortie de zone)"""
-        return self.request("POST", "/smart-attendance/geo-events", **kwargs)
-
-    def get_smart_attendance_mode_settings(self, **kwargs):
-        """Parametres du mode de pointage de l'entreprise"""
-        return self.request("GET", "/smart-attendance/mode-settings", **kwargs)
-
-    def put_smart_attendance_mode_settings(self, **kwargs):
-        """Configurer le mode de pointage (principal)"""
-        return self.request("PUT", "/smart-attendance/mode-settings", **kwargs)
-
-    def get_smart_attendance_my_sessions(self, **kwargs):
-        """Sessions GPS de l'employé courant"""
-        return self.request("GET", "/smart-attendance/my-sessions", **kwargs)
-
-    def put_smart_attendance_preferences(self, **kwargs):
-        """Mettre à jour les préférences de pointage"""
-        return self.request("PUT", "/smart-attendance/preferences", **kwargs)
-
-    def get_smart_attendance_sessions(self, **kwargs):
-        """Lister les sessions GPS"""
-        return self.request("GET", "/smart-attendance/sessions", **kwargs)
-
-    def get_smart_attendance_sessions_by_id(self, **kwargs):
-        """Détail d'une session GPS"""
-        return self.request("GET", "/smart-attendance/sessions/{id}", **kwargs)
-
-    def post_smart_attendance_sessions_by_id_approve(self, **kwargs):
-        """Approuver une session GPS (manager/RH)"""
-        return self.request("POST", "/smart-attendance/sessions/{id}/approve", **kwargs)
-
-    def post_smart_attendance_sessions_by_id_reject(self, **kwargs):
-        """Rejeter une session GPS (manager/RH)"""
-        return self.request("POST", "/smart-attendance/sessions/{id}/reject", **kwargs)
 
     def listsocialcontributions(self, **kwargs):
         """Lister les regles de cotisations sociales (manager)"""
