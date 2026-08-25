@@ -65,9 +65,9 @@ return [
         'bank_file_mimes' => 'Le fichier doit être au format CSV.',
         'bank_period_required' => 'La période du relevé est requise (format AAAA-MM).',
         'bank_period_format' => 'La période doit être au format AAAA-MM.',
-        'bank_reference_required' => 'La référence d'import est requise.',
+        'bank_reference_required' => 'La référence d\'import est requise.',
         'bank_payment_required' => 'Le paiement à rapprocher est requis.',
-        'bank_payment_exists' => 'Le paiement sélectionné n'existe pas.',
+        'bank_payment_exists' => 'Le paiement sélectionné n\'existe pas.',
     ],
 
     // Erreurs métier (issue #5227)

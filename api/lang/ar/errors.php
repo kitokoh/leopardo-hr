@@ -2,7 +2,7 @@
 
 return [
     // Auth
-        'UNKNOWN_ACCOUNT' => 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
+    'UNKNOWN_ACCOUNT' => 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
     'INVALID_CREDENTIALS' => 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
     'ACCOUNT_SUSPENDED' => 'تم تعليق حسابك. تواصل مع المسؤول.',
     'ACCOUNT_ARCHIVED' => 'هذا الحساب مؤرشف.',
@@ -255,8 +255,9 @@ return [
     'TWO_FACTOR_REQUIRED' => 'التحقق المزدوج إلزامي لهذا الحساب. فعّله قبل تسجيل الدخول.',
     'TWO_FACTOR_ALREADY_ENABLED' => 'التحقق المزدوج مفعّل بالفعل على هذا الحساب.',
     'TWO_FACTOR_CHALLENGE_EXPIRED' => 'انتهت جلسة التحقق المزدوج. سجّل الدخول مجددًا.',
+    'ALREADY_SEEDED' => 'تم بالفعل تحميل البيانات التجريبية.',
     'DOCUMENT_SHARE_NOT_FOUND' => 'رابط المشاركة غير موجود أو منتهي الصلاحية.',
     'DOCUMENT_PDF_NOT_READY' => 'ملف PDF للمستند غير متوفر بعد.',
     'BANK_STATEMENT_DUPLICATE_IMPORT' => 'تم استيراد هذا الكشف البنكي بالفعل لهذه الفترة.',
     'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'هذا السطر أو الدفعة مطابق بالفعل.',
-    'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.',];
+    'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.', ];

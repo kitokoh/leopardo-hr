@@ -140,6 +140,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/absences/{absence}/reject", options);
     },
 
+    /** Etat d'activation du module Comptabilite (check-list du wizard) */
+    getAccountingActivation(options = {}) {
+      return request("GET", "/accounting/activation", options);
+    },
+
+    /** Executer l'activation guidee du module Comptabilite (wizard) */
+    postAccountingActivation(options = {}) {
+      return request("POST", "/accounting/activation", options);
+    },
+
     /** Audit trail du module Comptabilité (qui/quoi/quand, #5273) */
     getAccountingAuditLogs(options = {}) {
       return request("GET", "/accounting/audit-logs", options);
@@ -203,6 +213,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Convertir un montant entre deux devises (multi-devises #5270) */
     postAccountingCurrencyConvert(options = {}) {
       return request("POST", "/accounting/currency/convert", options);
+    },
+
+    /** Tableau de bord comptable — factures emises, encaissements, impayes, depenses */
+    getAccountingDashboard(options = {}) {
+      return request("GET", "/accounting/dashboard", options);
+    },
+
+    /** Export CSV de la liste des impayes */
+    getAccountingDashboardExport(options = {}) {
+      return request("GET", "/accounting/dashboard/export", options);
     },
 
     /** Lister les documents comptables du tenant (pagine, filtres, #5223) */
@@ -3618,66 +3638,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier un site */
     putSitesBySite(options = {}) {
       return request("PUT", "/sites/{site}", options);
-    },
-
-    /** Lire la configuration de mode active pour l'employe connecte */
-    getSmartAttendanceConfig(options = {}) {
-      return request("GET", "/smart-attendance/config", options);
-    },
-
-    /** Statistiques du jour — Smart Attendance (manager/RH) */
-    getSmartAttendanceDashboard(options = {}) {
-      return request("GET", "/smart-attendance/dashboard", options);
-    },
-
-    /** Préférence mode géolocalisation d'un employé (manager/RH) */
-    getSmartAttendanceEmployeesByEmployeeIdPreference(options = {}) {
-      return request("GET", "/smart-attendance/employees/{employeeId}/preference", options);
-    },
-
-    /** Envoyer un événement géographique (entrée/sortie de zone) */
-    postSmartAttendanceGeoEvents(options = {}) {
-      return request("POST", "/smart-attendance/geo-events", options);
-    },
-
-    /** Parametres du mode de pointage de l'entreprise */
-    getSmartAttendanceModeSettings(options = {}) {
-      return request("GET", "/smart-attendance/mode-settings", options);
-    },
-
-    /** Configurer le mode de pointage (principal) */
-    putSmartAttendanceModeSettings(options = {}) {
-      return request("PUT", "/smart-attendance/mode-settings", options);
-    },
-
-    /** Sessions GPS de l'employé courant */
-    getSmartAttendanceMySessions(options = {}) {
-      return request("GET", "/smart-attendance/my-sessions", options);
-    },
-
-    /** Mettre à jour les préférences de pointage */
-    putSmartAttendancePreferences(options = {}) {
-      return request("PUT", "/smart-attendance/preferences", options);
-    },
-
-    /** Lister les sessions GPS */
-    getSmartAttendanceSessions(options = {}) {
-      return request("GET", "/smart-attendance/sessions", options);
-    },
-
-    /** Détail d'une session GPS */
-    getSmartAttendanceSessionsById(options = {}) {
-      return request("GET", "/smart-attendance/sessions/{id}", options);
-    },
-
-    /** Approuver une session GPS (manager/RH) */
-    postSmartAttendanceSessionsByIdApprove(options = {}) {
-      return request("POST", "/smart-attendance/sessions/{id}/approve", options);
-    },
-
-    /** Rejeter une session GPS (manager/RH) */
-    postSmartAttendanceSessionsByIdReject(options = {}) {
-      return request("POST", "/smart-attendance/sessions/{id}/reject", options);
     },
 
     /** Lister les regles de cotisations sociales (manager) */

@@ -2,7 +2,7 @@
 
 return [
     // Auth
-        'UNKNOWN_ACCOUNT' => 'Bu Google e-postasıyla ilişkili bir Leopardo RH hesabı yok. Yöneticinizden davet isteyin.',
+    'UNKNOWN_ACCOUNT' => 'Bu Google e-postasıyla ilişkili bir Leopardo RH hesabı yok. Yöneticinizden davet isteyin.',
     'INVALID_CREDENTIALS' => 'E-posta veya şifre hatalı.',
     'ACCOUNT_SUSPENDED' => 'Hesabınız askıya alındı. Yöneticinizle iletişime geçin.',
     'ACCOUNT_ARCHIVED' => 'Bu hesap arşivlenmiş.',
@@ -251,6 +251,7 @@ return [
     'DOCUMENT_NOT_FULLY_PAID' => 'Toplam tutar ödenmeden belge ödendi olarak işaretlenemez.',
     'INVALID_DOCUMENT_TRANSITION' => 'Bu belge için durum geçişine izin verilmiyor.',
     'DOCUMENT_PDF_NOT_READY' => 'Belgenin PDF\'i henüz hazır değil.',
+    'ALREADY_SEEDED' => 'Demo verileri zaten yüklendi.',
     'DOCUMENT_SHARE_NOT_FOUND' => 'Paylaşım bağlantısı bulunamadı veya süresi doldu.',
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.',
     'TWO_FACTOR_INVALID' => 'Geçersiz veya süresi dolmuş iki faktörlü doğrulama kodu.',

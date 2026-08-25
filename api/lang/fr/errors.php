@@ -2,7 +2,7 @@
 
 return [
     // Auth
-        'UNKNOWN_ACCOUNT' => "Aucun compte Leopardo RH n\'est associé à cet email Google. Demandez une invitation à votre administrateur.",
+    'UNKNOWN_ACCOUNT' => "Aucun compte Leopardo RH n\'est associé à cet email Google. Demandez une invitation à votre administrateur.",
     'INVALID_CREDENTIALS' => 'Email ou mot de passe incorrect.',
     'ACCOUNT_SUSPENDED' => 'Votre compte a été suspendu. Contactez votre responsable.',
     'ACCOUNT_ARCHIVED' => 'Ce compte est archivé.',
@@ -252,6 +252,7 @@ return [
     'DOCUMENT_NOT_FULLY_PAID' => 'Le document ne peut pas être marqué payé tant que le montant total n\'est pas réglé.',
     'INVALID_DOCUMENT_TRANSITION' => 'Transition de statut non autorisée pour ce document.',
     'DOCUMENT_PDF_NOT_READY' => 'Le PDF du document n\'est pas encore prêt.',
+    'ALREADY_SEEDED' => 'Les données de démonstration sont déjà présentes.',
     'DOCUMENT_SHARE_NOT_FOUND' => 'Lien de partage introuvable ou expiré.',
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Période invalide. Utilisez le format AAAA-MM.',
     'TWO_FACTOR_INVALID' => 'Code de double authentification invalide ou expiré.',
