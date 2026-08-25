@@ -13,6 +13,7 @@ declare(strict_types=1);
  * BelongsToCompany (scope global fail-closed #3727).
  */
 
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingCheckoutController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
@@ -57,6 +58,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/documents/{document}/payments', [AccountingDocumentController::class, 'payments'])->whereNumber('document');
             Route::post('/documents/{document}/cancel', [AccountingDocumentController::class, 'cancel'])->whereNumber('document');
             Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
+            // #5272 — paiement en ligne : initiation d'une session de checkout
+            // (Chargily DZ / Stripe), routée par pays de l'entreprise (ADR-0017).
+            Route::post('/documents/{document}/checkout', [AccountingCheckoutController::class, 'store'])->whereNumber('document');
         });
     });
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
