@@ -140,12 +140,19 @@ Route::prefix('v1')->group(function (): void {
         // Public (signature HMAC fail-closed), tenant résolu par metadata.
         // Pas de contrainte whereIn : la passerelle inconnue est rejetée par le
         // service (401 WEBHOOK_SIGNATURE_INVALID, fail-closed).
-        Route::post('/accounting/payments/webhook/{gateway}', AccountingPaymentWebhookController::class);
+        Route::post('/accounting/payment-webhooks/{gateway}', AccountingPaymentWebhookController::class);
         // PA2-COMM-007 - Email provider bounce/complaint notifications
         // (Postmark, SES, Mailgun, ...), protected by a shared secret header
         // instead of Sanctum since the caller is a third-party mail provider.
         Route::post('/webhooks/email-bounce', EmailBounceWebhookController::class);
     });
+
+    // #5225/#5357 — portail client : liens de partage de documents comptables.
+    // Public par conception : le token de partage EST la credential (PA2-AUTH
+    // fail-closed, #5428) ; la résolution du document ignore le scope tenant
+    // (le token est global), isolation RGPD limitée au document partagé.
+    Route::get('/accounting/documents/shared/{token}', [PublicDocumentShareController::class, 'info']);
+    Route::get('/accounting/documents/shared/{token}/download', [PublicDocumentShareController::class, 'download']);
 
     // Public careers portal (ATS): unauthenticated job listing/detail, the
     // Google Jobs / Indeed XML feed, and candidate application submission.

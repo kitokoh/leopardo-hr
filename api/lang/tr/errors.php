@@ -263,4 +263,13 @@ return [
     'BANK_STATEMENT_DUPLICATE_IMPORT' => 'Bu banka hesap özeti bu dönem için zaten içe aktarılmış.',
     'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'Bu satır veya ödeme zaten eşleştirilmiş.',
     'BANK_STATEMENT_IMPORT_FORMAT' => 'Hesap özeti dosya biçimi geçersiz.',
+    // Profondeur comptable (issue #5422)
+    'FISCAL_YEAR_ALREADY_CLOSED' => 'Bu mali yıl zaten kapatıldı veya mevcut değil.',
+    'LETTERING_INVALID' => 'Geçersiz mutabakat: kayıtlar aynı hesabı hedeflemelidir.',
+    'LETTERING_ALREADY_USED' => 'Bir veya daha fazla kayıt başka bir kodla mutabık kılınmış.',
+    'LETTERING_UNBALANCED' => 'Mutabakat dengeli olmalıdır: toplam borçlar toplam alacaklara eşit olmalıdır.',
+    'ALREADY_SEEDED' => 'Bu şirket için demo veriler zaten oluşturuldu.',
 ];
+
+
+

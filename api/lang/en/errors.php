@@ -270,4 +270,10 @@ return [
     'BANK_STATEMENT_DUPLICATE_IMPORT' => 'This bank statement has already been imported for this period.',
     'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'This line or payment is already reconciled.',
     'BANK_STATEMENT_IMPORT_FORMAT' => 'The statement file format is invalid.',
+    // Profondeur comptable (issue #5422)
+    'FISCAL_YEAR_ALREADY_CLOSED' => 'This fiscal year is already closed or does not exist.',
+    'LETTERING_INVALID' => 'Invalid lettering: entries must target the same account.',
+    'LETTERING_ALREADY_USED' => 'One or more entries are already lettered with another code.',
+    'LETTERING_UNBALANCED' => 'Lettering must be balanced: total debits must equal total credits.',
+    'ALREADY_SEEDED' => 'Demo data has already been seeded for this company.',
 ];
