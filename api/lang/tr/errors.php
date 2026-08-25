@@ -250,6 +250,8 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'İrsaliye, teslim tarihini içermelidir.',
     'DOCUMENT_NOT_FULLY_PAID' => 'Toplam tutar ödenmeden belge ödendi olarak işaretlenemez.',
     'INVALID_DOCUMENT_TRANSITION' => 'Bu belge için durum geçişine izin verilmiyor.',
+    'DOCUMENT_PDF_NOT_READY' => 'Belgenin PDF\'i henüz hazır değil.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'Paylaşım bağlantısı bulunamadı veya süresi doldu.',
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.',
     'TWO_FACTOR_INVALID' => 'Geçersiz veya süresi dolmuş iki faktörlü doğrulama kodu.',
     'TWO_FACTOR_REQUIRED' => 'Bu hesap için iki faktörlü doğrulama zorunludur. Giriş yapmadan önce etkinleştirin.',
