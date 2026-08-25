@@ -374,6 +374,36 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
     );
   }
 
+  /// Libellé localisé du pays (clés core `commonCountries*`), fallback sur la
+  /// valeur serveur (`PlatformCountryDefault.label`) pour les codes inconnus.
+  String _localizedCountryLabel(
+      AppLocalizations l10n, PlatformCountryDefault country) {
+    return switch (country.country) {
+      'DZ' => l10n.commonCountriesDz,
+      'MA' => l10n.commonCountriesMa,
+      'TN' => l10n.commonCountriesTn,
+      'SN' => l10n.commonCountriesSn,
+      'CI' => l10n.commonCountriesCi,
+      'ML' => l10n.commonCountriesMl,
+      'BF' => l10n.commonCountriesBf,
+      'BJ' => l10n.commonCountriesBj,
+      'TG' => l10n.commonCountriesTg,
+      'NE' => l10n.commonCountriesNe,
+      'CM' => l10n.commonCountriesCm,
+      'GA' => l10n.commonCountriesGa,
+      'CG' => l10n.commonCountriesCg,
+      'TD' => l10n.commonCountriesTd,
+      'CF' => l10n.commonCountriesCf,
+      'GQ' => l10n.commonCountriesGq,
+      'FR' => l10n.commonCountriesFr,
+      'TR' => l10n.commonCountriesTr,
+      'GB' => l10n.commonCountriesGb,
+      'US' => l10n.commonCountriesUs,
+      'CA' => l10n.commonCountriesCa,
+      _ => country.label,
+    };
+  }
+
   Widget _countryPicker(List<PlatformCountryDefault> countries) {
     final selected = _selectedCountry(countries);
 
@@ -395,7 +425,8 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
             .map(
               (country) => DropdownMenuItem(
                 value: country,
-                child: Text('${country.label} (${country.country})'),
+                child: Text(
+                    '${_localizedCountryLabel(context.l10n, country)} (${country.country})'),
               ),
             )
             .toList(),
