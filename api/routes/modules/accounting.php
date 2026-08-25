@@ -64,9 +64,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         });
     });
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
-use Illuminate\Support\Facades\Route;
 
 /**
  * Routes Comptabilité — documents (Phase A, #5223).
