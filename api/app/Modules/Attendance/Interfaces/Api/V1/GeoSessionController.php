@@ -214,6 +214,9 @@ class GeoSessionController extends Controller
 
     // ── Format ────────────────────────────────────────────────────────────────
 
+    /**
+     * @return array<string, mixed>
+     */
     private function formatSession(GeoAttendanceSession $session, bool $detail = false): array
     {
         $base = [
@@ -227,7 +230,7 @@ class GeoSessionController extends Controller
                 'id' => $session->site->id,
                 'name' => $session->site->name,
             ] : null,
-            'started_at' => $session->started_at?->toIso8601String(),
+            'started_at' => $session->started_at->toIso8601String(),
             'ended_at' => $session->ended_at?->toIso8601String(),
             'duration_seconds' => $session->duration_seconds,
             'duration_formatted' => $session->durationFormatted(),
@@ -249,7 +252,7 @@ class GeoSessionController extends Controller
                 'longitude' => $e->longitude,
                 'accuracy_meters' => $e->accuracy_meters,
                 'device_timestamp' => $e->device_timestamp?->toIso8601String(),
-                'created_at' => $e->created_at?->toIso8601String(),
+                'created_at' => $e->created_at->toIso8601String(),
             ]);
         }
 

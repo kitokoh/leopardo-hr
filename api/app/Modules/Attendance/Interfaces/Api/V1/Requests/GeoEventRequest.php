@@ -13,6 +13,9 @@ class GeoEventRequest extends FormRequest
         return true; // Auth via middleware sanctum
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [

@@ -62,7 +62,7 @@ class GeoAttendanceController extends Controller
                 'data' => [
                     'session_id' => $result->id,
                     'status' => $result->status,
-                    'started_at' => $result->started_at?->toIso8601String(),
+                    'started_at' => $result->started_at->toIso8601String(),
                     'ended_at' => $result->ended_at?->toIso8601String(),
                     'duration_seconds' => $result->duration_seconds,
                 ],
