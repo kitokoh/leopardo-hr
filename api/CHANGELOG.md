@@ -5,6 +5,12 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
 
+### Webhooks Stripe/Chargily — URL canonique documentée (#5537)
+- `ChargilyPaymentGateway::webhookUrl()` confirmé : retourne `/api/v1/accounting/payment-webhooks/chargily` (nouvelle URL, PR #5525).
+- ADR-0017 mis à jour : diagramme d'architecture corrigé (ancienne URL → nouvelle), historique des changements ajouté.
+- `docs/accounting/RUNBOOK.md` : nouvelle section §10 « Paiement en ligne — webhooks » — URL canonique, procédures de configuration Stripe/Chargily, vérification HMAC, dépannage.
+- **Action manuelle requise** : reconfigurer les URLs dans les dashboards Stripe et Chargily vers `/api/v1/accounting/payment-webhooks/{gateway}`.
+
 ### i18n — Parité errors.php ×4 vérifiée + garde consolidée (#5524)
 - `ALREADY_SEEDED` présent dans `lang/{ar,en,fr,tr}/errors.php` (introduit par #5525) — parité 236 clés ×4 vérifiée.
 - `check-accounting-i18n.py` : `ACCOUNTING_I18N_OK — 0 chaîne hardcodée, parité ×4`.
