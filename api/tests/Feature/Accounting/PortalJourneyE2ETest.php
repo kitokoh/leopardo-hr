@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Accounting;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Mail\DocumentShareMail;
 use App\Modules\Accounting\Application\Actions\SendDocumentEmail;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
@@ -69,7 +71,7 @@ class PortalJourneyE2ETest extends TestCase
         $token = app(SendDocumentEmail::class)->handle($document, 'client-e2e@exemple.dz');
         $this->assertNotEmpty($token);
 
-        Mail::assertSent(\App\Mail\DocumentShareMail::class);
+        Mail::assertSent(DocumentShareMail::class);
 
         // 3) Le client ouvre le lien : méta complète.
         $this->getJson('/api/v1/accounting/documents/shared/'.$token)
@@ -82,6 +84,18 @@ class PortalJourneyE2ETest extends TestCase
             ->assertOk()
             ->assertHeader('content-type', 'application/pdf');
 
+        // 4bis) RGPD — les accès info/download sont tracés (issue #5429).
+        $this->assertSame(1, AuditLog::query()->where('action', 'accounting.share.info')->count());
+        $this->assertSame(1, AuditLog::query()->where('action', 'accounting.share.download')->count());
+
+        // 4ter) RGPD — les métadonnées exposées sont limitées (pas de données sensibles).
+        $this->getJson('/api/v1/accounting/documents/shared/'.$token)
+            ->assertOk()
+            ->assertJsonMissingPath('data.contact_id')
+            ->assertJsonMissingPath('data.company_id')
+            ->assertJsonMissingPath('data.email')
+            ->assertJsonMissingPath('data.contact');
+
         // 5) Expiration → 404 (le lien devient mort).
         AccountingDocumentShare::query()
             ->where('share_token', $token)
@@ -92,5 +106,36 @@ class PortalJourneyE2ETest extends TestCase
 
         // 6) Token inconnu → 404 (aucune fuite).
         $this->getJson('/api/v1/accounting/documents/shared/'.str_repeat('x', 64))->assertStatus(404);
+
+        // 7) RGPD cross-tenant : un token ne mène JAMAIS aux documents d'un
+        // autre tenant (résolution par token unique + isExpired — fail-closed).
+        /** @var Company $otherCompany */
+        $otherCompany = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD', 'status' => 'active']);
+        /** @var AccountingContact $otherContact */
+        $otherContact = AccountingContact::create([
+            'company_id' => $otherCompany->id,
+            'type' => 'customer',
+            'name' => 'Autre Tenant',
+            'email' => 'autre@exemple.dz',
+        ]);
+        /** @var AccountingDocument $otherDocument */
+        $otherDocument = AccountingDocument::create([
+            'company_id' => $otherCompany->id,
+            'type' => 'invoice',
+            'number' => 'FAC-2026-'.random_int(1000, 9999),
+            'status' => 'draft',
+            'contact_id' => $otherContact->id,
+            'issue_date' => '2026-08-01',
+            'currency' => 'DZD',
+            'subtotal_ht' => 500,
+            'tax_amount' => 95,
+            'total_ttc' => 595,
+            'tva_rate' => 19,
+        ]);
+        $otherToken = app(SendDocumentEmail::class)->handle($otherDocument, 'autre@exemple.dz');
+
+        // Depuis le contexte du tenant A, le token du tenant B n'existe pas.
+        app()->instance('current_company', $this->company);
+        $this->getJson('/api/v1/accounting/documents/shared/'.$otherToken)->assertStatus(404);
     }
 }
