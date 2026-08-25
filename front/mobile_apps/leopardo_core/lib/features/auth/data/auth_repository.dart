@@ -180,6 +180,9 @@ class AuthRepository {
     required String firstName,
     required String lastName,
     required String email,
+    String? personalEmail,
+    String? recoveryEmail,
+    String? personalPhone,
   }) async {
     final response = await apiClient.requestWithRetry(
       '/auth/profile',
@@ -188,6 +191,9 @@ class AuthRepository {
         'first_name': firstName.trim(),
         'last_name': lastName.trim(),
         'email': email.trim(),
+        'personal_email': personalEmail?.trim(),
+        'recovery_email': recoveryEmail?.trim(),
+        'personal_phone': personalPhone?.trim(),
       },
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
@@ -230,12 +236,12 @@ class AuthRepository {
     return employee;
   }
 
-
   /// #3406 : lecture d'enveloppe racine sans TypeError sur payload non-Map
   /// (les réponses d'erreur ne sont pas des maps) — contrairement à
   /// extractDataMap, on garde la racine (token + data).
-  static Map<String, dynamic> _envelope(dynamic payload) =>
-      payload is Map ? payload.cast<String, dynamic>() : const <String, dynamic>{};
+  static Map<String, dynamic> _envelope(dynamic payload) => payload is Map
+      ? payload.cast<String, dynamic>()
+      : const <String, dynamic>{};
 
   static Map<String, dynamic> extractEmployeeJson(
     Map<String, dynamic> payload,
