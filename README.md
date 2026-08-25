@@ -25,6 +25,23 @@ The project is designed for self-hosting or SaaS deployment and includes web das
 
 </div>
 
+![Leopardo RH — open-source HR & Payroll OS](assets/branding/og-banner.png)
+
+---
+
+## 👥 Who is it for?
+
+Leopardo RH is built for **everyone who keeps a company running** — not only IT teams.
+
+| Audience | What they get |
+| :--- | :--- |
+| 👩‍💼 **HR teams** | Employee records, contracts, onboarding, leave, schedules and documents in one place — no more spreadsheet chasing. |
+| 🏗 **Managers & field operations** | Real-time attendance (mobile, GPS-fenced check-in, biometric kiosk), team schedules, approvals and alerts for multi-site teams. |
+| 🧮 **Accountants & payroll teams** | A payroll preparation engine with multi-country rules (DZ, MA, TN, FR, TR, CM, SN, CI…), validation workflows and compliant documents. |
+| 💻 **Developers** | A modular monolith (DDD), an OpenAPI spec with 700+ endpoints, JS/Python SDKs, webhooks and a clean multi-tenant core to extend. |
+| 🎓 **Students & learners** | A real-world HR/payroll codebase to study: architecture, 1,900+ tests, CI/CD and native mobile apps. |
+| 📱 **Employees** | Native mobile apps for attendance, leave requests, payslips and HR self-service — built for field workers. |
+
 ---
 
 ## 📊 Project Stats
@@ -61,6 +78,16 @@ AI-native insights, **open source from day one**.
 - 🕒 **Biometric attendance** — ZKTeco cloud bridge, on-prem edge kiosk, GPS-fenced mobile check-in.
 - 📱 **Omnichannel** — 5 native apps Flutter (Employee, Manager, HR, Marketing, Platform Admin) + web dashboards + PWA offline + kiosk biometrique web (`front/zkteco-kiosk`).
 - 🔐 **Security-first** — RBAC matrix, SSO SAML/OIDC, encrypted-at-rest sensitive data, GDPR / law 18-07 posture, Secret Scanning + full-history secret audit (Spec A-2).
+
+---
+
+## 🖼 Product preview
+
+Real product visuals — web dashboards, mobile employee apps and the biometric kiosk path.
+
+| Web platform | Mobile employee app | Biometric kiosk |
+| :--- | :--- | :--- |
+| ![Web platform](assets/screenshots/admin/payroll.png) | ![Mobile employee app](assets/screenshots/mobile_employee/attendance.png) | ![Biometric kiosk](assets/design/mockups/mockup-pilier-d-kiosk.png) |
 
 ---
 
@@ -123,6 +150,7 @@ graph TB
 | **Corporate Web** | [gestionemployer-backend.vercel.app](https://gestionemployer-backend.vercel.app) | Next.js 16 · Tailwind |
 | **Admin Panel** | [leo-admin.pages.dev](https://leo-admin.pages.dev) | Vue 3 · Cloudflare Pages |
 | **Mobile Suite** | [Employee / Manager / HR / Marketing / Platform Admin](docs/mobile/README.md) | Flutter · Riverpod |
+| **Product site** | [kitokoh.github.io/leopardo-hr](https://kitokoh.github.io/leopardo-hr) | Static landing page (GitHub Pages) |
 
 ---
 
@@ -202,6 +230,7 @@ Operational reality is tracked in [PILOTAGE.md](PILOTAGE.md) (source of truth, F
 - **Report a bug** : [Issues](https://github.com/kitokoh/leopardo-hr/issues) — always reference `Closes #X`
 - **Security issue** : private disclosure via [SECURITY.md](SECURITY.md)
 - **Documentation** : [docs/README.md](docs/README.md) (685 files, FR/EN)
+- **Product site** : [kitokoh.github.io/leopardo-hr](https://kitokoh.github.io/leopardo-hr) · **Demo guide** : [docs/DEMARRAGE_RAPIDE.md](docs/DEMARRAGE_RAPIDE.md)
 
 <div align="center">
 
