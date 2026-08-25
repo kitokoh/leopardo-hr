@@ -144,6 +144,12 @@ class CabinetDocumentController extends Controller
     {
         $actor = $this->employee($request);
 
+        // Fail-closed cross-tenant (revue #5445) : 404 avant tout test de
+        // propriété — ne pas révéler l'existence d'un document d'un autre tenant.
+        if ($document->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
         if ($document->employee_id !== $actor->id) {
             abort(403);
         }
