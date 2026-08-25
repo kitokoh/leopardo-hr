@@ -7,7 +7,6 @@ namespace App\Modules\HR\Domain\Models;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -35,7 +34,6 @@ use Illuminate\Support\Carbon;
 class EmployeeDocument extends Model
 {
     use BelongsToCompany;
-    use HasFactory;
 
     protected $table = 'employee_documents';
 
@@ -113,7 +111,10 @@ class EmployeeDocument extends Model
         return $this->belongsTo(Employee::class, 'uploaded_by');
     }
 
-    /** @param Builder<static> $query */
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
     public function scopeForEmployee(Builder $query, int $employeeId): Builder
     {
         return $query->where('employee_id', $employeeId);

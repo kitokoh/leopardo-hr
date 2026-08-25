@@ -147,6 +147,41 @@ class DocumentPdfRendererTest extends TestCase
         $this->assertFalse($renderer->buildViewData($document, 'tr')['rtl']);
     }
 
+    public function test_rtl_view_uses_alarai_font_and_shaped_arabic(): void
+    {
+        $renderer = new DocumentPdfRenderer;
+        $document = $this->makeDocument();
+
+        // buildViewData() et la vue résolvent les libellés via __() avec la
+        // locale applicative courante : on pose la locale comme le fait
+        // render() (try/finally), sinon la locale par défaut des tests (en)
+        // ne produit aucun caractère arabe.
+        $previous = app()->getLocale();
+
+        try {
+            app()->setLocale('ar');
+            $arHtml = view('pdf.accounting-document', $renderer->buildViewData($document, 'ar'))->render();
+
+            app()->setLocale('fr');
+            $frHtml = view('pdf.accounting-document', $renderer->buildViewData($document, 'fr'))->render();
+        } finally {
+            app()->setLocale($previous);
+        }
+
+        $this->assertStringContainsString('dir="rtl"', $arHtml);
+        $this->assertStringContainsString('font-family: Almarai', $arHtml);
+        $this->assertSame(
+            1,
+            preg_match('/[\x{FB50}-\x{FEFF}]/u', $arHtml),
+            'Le texte arabe doit être shapingé (formes de présentation) pour dompdf.',
+        );
+
+        $this->assertStringContainsString('dir="ltr"', $frHtml);
+        $this->assertStringContainsString('font-family: DejaVu Sans', $frHtml);
+        $this->assertStringNotContainsString('Almarai', $frHtml);
+        $this->assertSame(0, preg_match('/[\x{FB50}-\x{FEFF}]/u', $frHtml), 'Aucun shaping hors arabe.');
+    }
+
     public function test_legal_mentions_priority_settings_then_footer(): void
     {
         $renderer = new DocumentPdfRenderer;

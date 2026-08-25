@@ -16,7 +16,7 @@ class PaymentOnUnsentDocumentException extends DomainException
     public function __construct(string $status)
     {
         parent::__construct(
-            sprintf('Impossible d\'enregistrer un paiement sur un document au statut « %s ».', $status),
+            sprintf('PAYMENT_ON_UNSENT_DOCUMENT: status %s', $status),
             422,
             'PAYMENT_ON_UNSENT_DOCUMENT'
         );
