@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Infrastructure\Services;
+namespace App\Modules\Attendance\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\SmartAttendance\Application\DTOs\AttendanceModeConfigDTO;
-use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
-use App\Modules\SmartAttendance\Domain\Models\EmployeeAttendancePreference;
+use App\Modules\Attendance\Application\DTOs\AttendanceModeConfigDTO;
+use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
+use App\Modules\Attendance\Domain\Models\EmployeeAttendancePreference;
 
 /**
  * Résout le mode de pointage effectif pour un employé donné.
@@ -29,35 +29,35 @@ class AttendanceModeResolver
         // ── Niveau 1 : mode entreprise forcé ─────────────────────────────────
         if ($companySettings && $companySettings->hasForcedMode()) {
             return new AttendanceModeConfigDTO(
-                mode:              (string) $companySettings->forced_mode,
-                canOverride:       false,
-                gpsEnabled:        $companySettings->gps_enabled,
-                geofenceLat:       $companySettings->latitude,
-                geofenceLng:       $companySettings->longitude,
-                geofenceRadius:    $companySettings->radius_meters,
-                requiresConsent:   $companySettings->forced_mode === 'gps_auto',
+                mode: (string) $companySettings->forced_mode,
+                canOverride: false,
+                gpsEnabled: $companySettings->gps_enabled,
+                geofenceLat: $companySettings->latitude,
+                geofenceLng: $companySettings->longitude,
+                geofenceRadius: $companySettings->radius_meters,
+                requiresConsent: $companySettings->forced_mode === 'gps_auto',
                 requiresPunchPhoto: $companySettings->requiresPunchPhoto(),
             );
         }
 
         // ── Niveau 2 : préférence individuelle ───────────────────────────────
-        $canOverride = $companySettings?->allow_employee_override ?? true;
+        $canOverride = $companySettings->allow_employee_override ?? true;
 
         /** @var EmployeeAttendancePreference|null $pref */
         $pref = EmployeeAttendancePreference::where('employee_id', $employee->id)->first();
 
-        $mode      = $pref?->preferred_mode ?? 'manual';
-        $gpsEnabled = $companySettings?->gps_enabled
+        $mode = $pref->preferred_mode ?? 'manual';
+        $gpsEnabled = $companySettings->gps_enabled
             ?? ($mode === 'gps_auto');
 
         return new AttendanceModeConfigDTO(
-            mode:              $mode,
-            canOverride:       $canOverride,
-            gpsEnabled:        $gpsEnabled,
-            geofenceLat:       $companySettings?->latitude,
-            geofenceLng:       $companySettings?->longitude,
-            geofenceRadius:    $companySettings?->radius_meters ?? 100,
-            requiresConsent:   $mode === 'gps_auto' && ! ($pref?->hasGpsConsent() ?? false),
+            mode: $mode,
+            canOverride: $canOverride,
+            gpsEnabled: $gpsEnabled,
+            geofenceLat: $companySettings?->latitude,
+            geofenceLng: $companySettings?->longitude,
+            geofenceRadius: $companySettings->radius_meters ?? 100,
+            requiresConsent: $mode === 'gps_auto' && ! ($pref?->hasGpsConsent() ?? false),
             requiresPunchPhoto: $companySettings?->requiresPunchPhoto() ?? false,
         );
     }

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\SmartAttendance\Application\Actions;
+namespace App\Modules\Attendance\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\SmartAttendance\Domain\Exceptions\GpsConsentMissingException;
-use App\Modules\SmartAttendance\Domain\Models\EmployeeAttendancePreference;
+use App\Modules\Attendance\Domain\Exceptions\GpsConsentMissingException;
+use App\Modules\Attendance\Domain\Models\EmployeeAttendancePreference;
 use Illuminate\Support\Carbon;
 
 /**
@@ -17,6 +17,9 @@ class SetEmployeeAttendanceMode
 {
     /**
      * @throws GpsConsentMissingException
+     */
+    /**
+     * @param  array<string, mixed>  $data
      */
     public function handle(Employee $employee, array $data): EmployeeAttendancePreference
     {
@@ -33,19 +36,19 @@ class SetEmployeeAttendanceMode
         ]);
 
         $pref->fill([
-            'employee_id'    => $employee->id,
-            'company_id'     => $employee->company_id,
+            'employee_id' => $employee->id,
+            'company_id' => $employee->company_id,
             'preferred_mode' => $preferredMode,
         ]);
 
         if ($preferredMode === 'gps_auto' && ! empty($data['gps_consent_given'])) {
             $pref->gps_consent_given = true;
-            $pref->gps_consent_at    = Carbon::now();
+            $pref->gps_consent_at = Carbon::now();
         }
 
         if (($data['revoke_consent'] ?? false) === true) {
             $pref->gps_consent_given = false;
-            $pref->gps_consent_at    = null;
+            $pref->gps_consent_at = null;
             // Si on révoque le consentement, repasser en mode manuel
             $pref->preferred_mode = 'manual';
         }
