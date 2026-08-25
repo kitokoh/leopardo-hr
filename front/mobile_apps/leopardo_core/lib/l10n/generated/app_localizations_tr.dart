@@ -96,7 +96,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get accountingportalDownloaderror =>
       'İndirme başarısız oldu. Lütfen tekrar deneyin.';
 
-
   @override
   String get welcomeBrandSubtitle => 'Sohbet odakli, mobil oncelikli, moduler.';
 

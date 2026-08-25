@@ -13,9 +13,9 @@ import 'package:leopardo_core/features/payrolls/providers/payroll_provider.dart'
 import 'package:leopardo_manager/features/payrolls/screens/payroll_list_screen.dart';
 import 'package:leopardo_core/features/team/providers/team_provider.dart';
 import 'package:leopardo_core/features/team/screens/team_screen.dart';
-import 'package:leopardo_manager/features/attendance/providers/attendance_provider.dart';
-import 'package:leopardo_manager/features/attendance/screens/history_screen.dart';
-import 'package:leopardo_manager/features/attendance/screens/monthly_summary_screen.dart';
+import 'package:leopardo_core/features/attendance/providers/attendance_provider.dart';
+import 'package:leopardo_core/features/attendance/screens/history_screen.dart';
+import 'package:leopardo_core/features/attendance/screens/monthly_summary_screen.dart';
 import 'package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
 

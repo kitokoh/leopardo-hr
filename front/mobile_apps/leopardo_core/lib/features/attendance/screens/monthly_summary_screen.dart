@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
-import 'package:leopardo_hr/features/attendance/providers/attendance_provider.dart';
+import 'package:leopardo_core/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
@@ -137,7 +137,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
               textAlign: TextAlign.center,
             ),
           ),
-        _metricCard(
+        _metricGlassCard(
           context,
           icon: Icons.schedule,
           label: context.l10n.attendanceHoursWorkedLabel,
@@ -146,7 +146,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
               summary.daysPresent, summary.workingDays),
         ),
         const SizedBox(height: 12),
-        _metricCard(
+        _metricGlassCard(
           context,
           icon: Icons.timelapse,
           label: context.l10n.attendanceOvertimeLabel,
@@ -155,7 +155,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           accent: AppColors.warning,
         ),
         const SizedBox(height: 12),
-        _metricCard(
+        _metricGlassCard(
           context,
           icon: Icons.account_balance_wallet,
           label: context.l10n.attendanceGrossEstimate,
@@ -163,7 +163,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           sub: context.l10n.attendanceBeforeDeductions,
         ),
         const SizedBox(height: 12),
-        _metricCard(
+        _metricGlassCard(
           context,
           icon: Icons.paid,
           label: context.l10n.attendanceNetEstimate,
@@ -216,7 +216,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
     );
   }
 
-  Widget _metricCard(
+  Widget _metricGlassCard(
     BuildContext context, {
     required IconData icon,
     required String label,

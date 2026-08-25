@@ -15,9 +15,9 @@ import 'package:leopardo_core/features/auth/screens/access_denied_screen.dart';
 import 'package:leopardo_core/features/auth/screens/login_screen.dart';
 import 'package:leopardo_core/features/auth/screens/register_screen.dart';
 import 'package:leopardo_core/features/auth/screens/welcome_screen.dart';
-import 'package:leopardo_hr/features/attendance/screens/attendance_screen.dart';
-import 'package:leopardo_hr/features/attendance/screens/history_screen.dart';
-import 'package:leopardo_hr/features/attendance/screens/monthly_summary_screen.dart';
+import 'package:leopardo_core/features/attendance/screens/attendance_screen.dart';
+import 'package:leopardo_core/features/attendance/screens/history_screen.dart';
+import 'package:leopardo_core/features/attendance/screens/monthly_summary_screen.dart';
 import 'package:leopardo_core/features/evaluations/screens/evaluation_list_screen.dart';
 import 'package:leopardo_core/features/notifications/screens/notification_list_screen.dart';
 import 'package:leopardo_core/features/home/screens/home_screen.dart';
@@ -269,10 +269,8 @@ class LeopardoApp extends ConsumerWidget {
 
   Locale _resolveLocale(String rawLocale) {
     final normalized = rawLocale.trim().replaceAll('_', '-');
-    final parts = normalized
-        .split('-')
-        .where((part) => part.isNotEmpty)
-        .toList();
+    final parts =
+        normalized.split('-').where((part) => part.isNotEmpty).toList();
 
     if (parts.isEmpty) {
       return const Locale('fr');
@@ -313,11 +311,9 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final deviceLanguage = PlatformDispatcher.instance.locale
-        .toLanguageTag()
-        .toLowerCase();
-    final languageCode =
-        authState.employee?.language ??
+    final deviceLanguage =
+        PlatformDispatcher.instance.locale.toLanguageTag().toLowerCase();
+    final languageCode = authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);
