@@ -23667,6 +23667,33 @@ paths:
           description: "Relevé introuvable (ou autre tenant)"
           $ref: "#/components/responses/Error404"
 
+
+  /accounting/bank-statements/{statement}/export:
+    get:
+      tags:
+      - Accounting
+      summary: Export CSV de l'état de rapprochement bancaire
+      description: "Lignes du relevé (statut, paiement rapproché, confiance) + totaux et écart de clôture. Format expert-comptable (UTF-8 BOM, ';', anti-injection #4169). RBAC principal/comptable."
+      parameters:
+      - name: statement
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Fichier CSV
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /accounting/bank-statements/{statement}/reconcile:
     post:
       tags: ["Accounting"]
@@ -23843,6 +23870,29 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+
+  /attendance/{attendanceLog}/punch-photo:
+    get:
+      tags:
+      - Attendance
+      summary: Photo du pointage (ALIAS DÉPRÉCIÉ — utiliser /attendance/attendance-logs/{attendanceLog}/punch-photo)
+      description: "Alias déprécié de l'ancien chemin (issue #5538) — conservé pour les clients en circulation. À supprimer après la fenêtre de compat."
+      deprecated: true
+      parameters:
+      - name: attendanceLog
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Photo du pointage
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
 components:
   securitySchemes:
     BearerAuth:

@@ -160,6 +160,10 @@ class LeopardoClient:
         """Détail d'un relevé (avec lignes)"""
         return self.request("GET", "/accounting/bank-statements/{statement}", **kwargs)
 
+    def get_accounting_bank_statements_by_statement_export(self, **kwargs):
+        """Export CSV de l'état de rapprochement bancaire"""
+        return self.request("GET", "/accounting/bank-statements/{statement}/export", **kwargs)
+
     def post_accounting_bank_statements_by_statement_reconcile(self, **kwargs):
         """Lancer le rapprochement automatique"""
         return self.request("POST", "/accounting/bank-statements/{statement}/reconcile", **kwargs)
@@ -707,6 +711,10 @@ class LeopardoClient:
     def put_attendance_by_attendancelog(self, **kwargs):
         """Modifier directement un pointage"""
         return self.request("PUT", "/attendance/{attendanceLog}", **kwargs)
+
+    def get_attendance_by_attendancelog_punch_photo(self, **kwargs):
+        """Photo du pointage (ALIAS DÉPRÉCIÉ — utiliser /attendance/attendance-logs/{attendanceLog}/punch-photo)"""
+        return self.request("GET", "/attendance/{attendanceLog}/punch-photo", **kwargs)
 
     def get_attendance_anomalies(self, **kwargs):
         """Anomalies de pointage"""

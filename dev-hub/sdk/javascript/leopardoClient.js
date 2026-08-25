@@ -175,6 +175,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/accounting/bank-statements/{statement}", options);
     },
 
+    /** Export CSV de l'état de rapprochement bancaire */
+    getAccountingBankStatementsByStatementExport(options = {}) {
+      return request("GET", "/accounting/bank-statements/{statement}/export", options);
+    },
+
     /** Lancer le rapprochement automatique */
     postAccountingBankStatementsByStatementReconcile(options = {}) {
       return request("POST", "/accounting/bank-statements/{statement}/reconcile", options);
@@ -858,6 +863,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier directement un pointage */
     putAttendanceByAttendanceLog(options = {}) {
       return request("PUT", "/attendance/{attendanceLog}", options);
+    },
+
+    /** Photo du pointage (ALIAS DÉPRÉCIÉ — utiliser /attendance/attendance-logs/{attendanceLog}/punch-photo) */
+    getAttendanceByAttendanceLogPunchPhoto(options = {}) {
+      return request("GET", "/attendance/{attendanceLog}/punch-photo", options);
     },
 
     /** Anomalies de pointage */
