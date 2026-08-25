@@ -1188,6 +1188,24 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('employee_documents'))) {
+            Schema::create($this->moduleTable('employee_documents'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->index();
+                $table->string('type', 40);
+                $table->string('status', 20)->default('received');
+                $table->date('document_date')->nullable();
+                $table->string('reference', 100)->nullable();
+                $table->text('url')->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedInteger('uploaded_by')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'employee_id']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('ai_tool_registry'))) {
             Schema::create($this->moduleTable('ai_tool_registry'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
