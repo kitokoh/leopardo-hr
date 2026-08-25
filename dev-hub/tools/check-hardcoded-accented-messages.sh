@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 #
-# PA2-I18N-007 — CI guard: fail a diff that introduces a new hardcoded
-# French message (string literal containing an accented character) inside
-# an API controller, instead of going through the `__('xxx.yyy')` catalog.
+# PA2-I18N-007 + issue #5432 — CI guard: fail a diff that introduces a new
+# hardcoded French message (string literal containing an accented character)
+# inside API controllers, module Application services/actions, domain
+# exceptions or console commands, instead of going through the `__('xxx.yyy')`
+# catalog.
 #
 # Context: docs/archive/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md PA2-I18N-007 found a
 # hardcoded French string in
@@ -13,10 +15,28 @@
 # AttendanceModeController, GeoAttendanceController — tracked separately,
 # not blocking, since retrofitting all of them is a larger effort). This
 # guard only prevents the debt from growing: it looks at *added* lines in
-# the diff for the current PR/push under any `*Controller.php` file and
+# the diff for the current PR/push under the risk surfaces below and
 # fails if a new line adds a quoted string literal containing an accented
 # Latin character (a heuristic proxy for "hardcoded French text"), while
 # ignoring comment-only lines and lines that already use the __() helper.
+#
+# Issue #5432 (préventif #2755) : le cas Accounting (#5227) a montré que les
+# messages français hardcodés apparaissent aussi dans les Services/Actions
+# (DocumentWorkflowService, PaymentRegistrationService), les exceptions de
+# domaine (PaymentExceedsTotalException…) et les commandes artisan — surfaces
+# désormais couvertes :
+#   - api/app/**/*Controller.php                      (PA2-I18N-007, inchangé)
+#   - api/app/Modules/*/Application/**                (Services, Actions, Jobs)
+#   - api/app/Modules/*/Domain/Exceptions/**          (messages d'exception)
+#   - api/app/Modules/*/Console/**                    (descriptions de commandes)
+#
+# This is intentionally a lightweight grep-based heuristic (consistent with
+# the sibling guards in this directory), not a full PHP parser: it can have
+# false positives (e.g. an accented character inside a *routing constant* or
+# *enum* value) and false negatives (French text without any accented
+# character, e.g. "Le prix"). Reviewers remain the second line of defense;
+# the goal is to catch the common case (new user-facing message strings)
+# cheaply in CI.
 #
 # This is intentionally a lightweight grep-based heuristic (consistent with
 # the sibling guards in this directory), not a full PHP parser: it can have
@@ -46,17 +66,20 @@ if ! git cat-file -e "${HEAD_SHA}^{commit}" 2>/dev/null; then
   git fetch --no-tags --depth=1 origin "${HEAD_SHA}" 2>/dev/null || true
 fi
 
-# All Controller.php files touched (added or modified) in this diff, under
-# api/app (covers both api/app/Modules/*/Interfaces and legacy
-# api/app/Http/Controllers).
+# Fichiers PHP touchés (ajoutés ou modifiés) dans ce diff, sous api/app —
+# surfaces à risque i18n (issue #5432) :
+#   - tout *Controller.php (modules + legacy api/app/Http/Controllers)
+#   - api/app/Modules/*/Application/**  (Services, Actions, Jobs, Listeners)
+#   - api/app/Modules/*/Domain/Exceptions/**
+#   - api/app/Modules/*/Console/**
 mapfile -t touched_files < <(
   git diff --name-only --diff-filter=ACMR "${BASE_SHA}" "${HEAD_SHA}" -- "${API_DIR}/app" \
-    | grep -E 'Controller\.php$' \
+    | grep -E 'Controller\.php$|/Modules/[^/]+/Application/|/Modules/[^/]+/Domain/Exceptions/|/Modules/[^/]+/Console/' \
     | sort -u || true
 )
 
 if [ ${#touched_files[@]} -eq 0 ]; then
-  echo "No Controller.php files touched under ${API_DIR}/app in this diff — nothing to check."
+  echo "No i18n risk-surface file touched under ${API_DIR}/app in this diff — nothing to check."
   exit 0
 fi
 
@@ -95,12 +118,12 @@ for file in "${touched_files[@]}"; do
 done
 
 echo ""
-echo "Checked ${#touched_files[@]} touched Controller.php file(s) under ${API_DIR}/app."
+echo "Checked ${#touched_files[@]} touched i18n risk-surface file(s) under ${API_DIR}/app."
 
 if [ "$VIOLATIONS" -gt 0 ]; then
-  echo "Found $VIOLATIONS new hardcoded accented string(s) in controllers (CONVENTIONS.md, PA2-I18N-007)."
+  echo "Found $VIOLATIONS new hardcoded accented string(s) on i18n risk surfaces (CONVENTIONS.md, PA2-I18N-007, issue #5432)."
   echo "Use __('catalog.key') (api/lang/*/*.php) instead of a hardcoded French message."
   exit 1
 fi
 
-echo "✅ No new hardcoded accented strings introduced in controllers."
+echo "✅ No new hardcoded accented strings introduced on i18n risk surfaces."
