@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\SmartAttendance;
+namespace Tests\Feature\Attendance;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
@@ -16,7 +16,7 @@ use Tests\TestCase;
 /**
  * Tests Feature — Entrée/Sortie GPS (geo-events endpoint)
  *
- * Endpoint : POST /api/v1/smart-attendance/geo-events
+ * Endpoint : POST /api/v1/attendance/geo-events
  */
 class GeoEntryExitTest extends TestCase
 {
@@ -106,7 +106,7 @@ class GeoEntryExitTest extends TestCase
     {
         Sanctum::actingAs($this->employee);
 
-        $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
+        $response = $this->postJson('/api/v1/attendance/geo-events', [
             'event_type' => 'zone_enter',
             'latitude' => self::LAT_INSIDE,
             'longitude' => self::LNG_INSIDE,
@@ -145,7 +145,7 @@ class GeoEntryExitTest extends TestCase
 
         Sanctum::actingAs($this->employee);
 
-        $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
+        $response = $this->postJson('/api/v1/attendance/geo-events', [
             'event_type' => 'zone_exit',
             'latitude' => self::LAT_INSIDE,
             'longitude' => self::LNG_INSIDE,
@@ -173,7 +173,7 @@ class GeoEntryExitTest extends TestCase
     {
         Sanctum::actingAs($this->employee);
 
-        $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
+        $response = $this->postJson('/api/v1/attendance/geo-events', [
             'event_type' => 'zone_enter',
             'latitude' => self::LAT_OUTSIDE,
             'longitude' => self::LNG_OUTSIDE,
@@ -207,7 +207,7 @@ class GeoEntryExitTest extends TestCase
 
         Sanctum::actingAs($this->employee);
 
-        $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
+        $response = $this->postJson('/api/v1/attendance/geo-events', [
             'event_type' => 'zone_enter',
             'latitude' => self::LAT_INSIDE,
             'longitude' => self::LNG_INSIDE,
@@ -227,7 +227,7 @@ class GeoEntryExitTest extends TestCase
      */
     public function test_geo_event_requires_authentication(): void
     {
-        $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
+        $response = $this->postJson('/api/v1/attendance/geo-events', [
             'event_type' => 'zone_enter',
             'latitude' => self::LAT_INSIDE,
             'longitude' => self::LNG_INSIDE,
@@ -244,7 +244,7 @@ class GeoEntryExitTest extends TestCase
     {
         Sanctum::actingAs($this->employee);
 
-        $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
+        $response = $this->postJson('/api/v1/attendance/geo-events', [
             'event_type' => 'zone_exit',
             'latitude' => self::LAT_INSIDE,
             'longitude' => self::LNG_INSIDE,
