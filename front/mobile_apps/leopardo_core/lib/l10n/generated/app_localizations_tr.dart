@@ -6512,4 +6512,29 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get settingsDigitalLockerSubtitle =>
       'Kontrollü görünürlükle CV, sözleşmeler, diplomalar ve belgeler.';
+
+  @override
+  String settingsHistoryCompanyPeriod(String companyName, String period) {
+    return '$companyName - $period';
+  }
+
+  @override
+  String settingsStatusCurrent(String label) {
+    return 'Güncel durum: $label';
+  }
+
+  @override
+  String settingsUpdateFailed(String error) {
+    return 'Güncelleme başarısız: $error';
+  }
+
+  @override
+  String settingsQrRejected(String error) {
+    return 'QR reddedildi: $error';
+  }
+
+  @override
+  String settingsSubmitFailed(String error) {
+    return 'Gönderim başarısız: $error';
+  }
 }

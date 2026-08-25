@@ -6441,4 +6441,29 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get settingsDigitalLockerSubtitle =>
       'السيرة الذاتية والعقود والشهادات والمستندات برؤية خاضعة للتحكم.';
+
+  @override
+  String settingsHistoryCompanyPeriod(String companyName, String period) {
+    return '$companyName - $period';
+  }
+
+  @override
+  String settingsStatusCurrent(String label) {
+    return 'الحالة الحالية: $label';
+  }
+
+  @override
+  String settingsUpdateFailed(String error) {
+    return 'فشل التحديث: $error';
+  }
+
+  @override
+  String settingsQrRejected(String error) {
+    return 'تم رفض رمز QR: $error';
+  }
+
+  @override
+  String settingsSubmitFailed(String error) {
+    return 'فشل الإرسال: $error';
+  }
 }

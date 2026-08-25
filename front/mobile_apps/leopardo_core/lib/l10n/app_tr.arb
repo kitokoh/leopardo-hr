@@ -2014,5 +2014,54 @@
   "settingsPortableIdentitySubtitle": "Şirket geçmişi, pozisyon, durum ve müsaitlik.",
   "settingsPortableIdentityHint": "Kişisel e-posta, kurtarma ve telefon hesaba bağlı kalır.",
   "settingsDigitalLockerTitle": "Dijital kasa",
-  "settingsDigitalLockerSubtitle": "Kontrollü görünürlükle CV, sözleşmeler, diplomalar ve belgeler."
+  "settingsDigitalLockerSubtitle": "Kontrollü görünürlükle CV, sözleşmeler, diplomalar ve belgeler.",
+  "settingsHistoryCompanyPeriod": "{companyName} - {period}",
+  "@settingsHistoryCompanyPeriod": {
+    "placeholders": {
+      "companyName": {
+        "type": "String",
+        "example": "Acme"
+      },
+      "period": {
+        "type": "String",
+        "example": "2026-08"
+      }
+    }
+  },
+  "settingsStatusCurrent": "Güncel durum: {label}",
+  "@settingsStatusCurrent": {
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "En ligne"
+      }
+    }
+  },
+  "settingsUpdateFailed": "Güncelleme başarısız: {error}",
+  "@settingsUpdateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsQrRejected": "QR reddedildi: {error}",
+  "@settingsQrRejected": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsSubmitFailed": "Gönderim başarısız: {error}",
+  "@settingsSubmitFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  }
 }

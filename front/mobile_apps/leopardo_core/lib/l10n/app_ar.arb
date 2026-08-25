@@ -2014,5 +2014,54 @@
   "settingsPortableIdentitySubtitle": "سجل الشركة والمنصب والحالة والتوفر.",
   "settingsPortableIdentityHint": "يبقى البريد الشخصي والاسترداد والهاتف مرتبطين بالحساب.",
   "settingsDigitalLockerTitle": "خزانة رقمية",
-  "settingsDigitalLockerSubtitle": "السيرة الذاتية والعقود والشهادات والمستندات برؤية خاضعة للتحكم."
+  "settingsDigitalLockerSubtitle": "السيرة الذاتية والعقود والشهادات والمستندات برؤية خاضعة للتحكم.",
+  "settingsHistoryCompanyPeriod": "{companyName} - {period}",
+  "@settingsHistoryCompanyPeriod": {
+    "placeholders": {
+      "companyName": {
+        "type": "String",
+        "example": "Acme"
+      },
+      "period": {
+        "type": "String",
+        "example": "2026-08"
+      }
+    }
+  },
+  "settingsStatusCurrent": "الحالة الحالية: {label}",
+  "@settingsStatusCurrent": {
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "En ligne"
+      }
+    }
+  },
+  "settingsUpdateFailed": "فشل التحديث: {error}",
+  "@settingsUpdateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsQrRejected": "تم رفض رمز QR: {error}",
+  "@settingsQrRejected": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsSubmitFailed": "فشل الإرسال: {error}",
+  "@settingsSubmitFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  }
 }
