@@ -38,6 +38,7 @@ final class PaymentRegistrationService
         string $method,
         ?string $reference = null,
         ?Carbon $receivedAt = null,
+        ?string $gatewayPaymentId = null,
     ): AccountingPayment {
         if (in_array($document->status, [DocumentStatus::Draft->value, DocumentStatus::Cancelled->value], true)) {
             throw new PaymentOnUnsentDocumentException((string) $document->status);
@@ -54,13 +55,14 @@ final class PaymentRegistrationService
             throw new PaymentExceedsTotalException($total, $alreadyPaid, $amount);
         }
 
-        return DB::transaction(function () use ($document, $amount, $method, $reference, $receivedAt): AccountingPayment {
+        return DB::transaction(function () use ($document, $amount, $method, $reference, $receivedAt, $gatewayPaymentId): AccountingPayment {
             /** @var AccountingPayment $payment */
             $payment = AccountingPayment::create([
                 'document_id' => $document->id,
                 'amount' => $amount,
                 'method' => $method,
                 'reference' => $reference,
+                'gateway_payment_id' => $gatewayPaymentId,
                 'received_at' => $receivedAt ?? Carbon::today(),
                 'status' => 'recorded',
             ]);
