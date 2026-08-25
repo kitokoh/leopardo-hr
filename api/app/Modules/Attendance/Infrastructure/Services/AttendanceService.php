@@ -316,16 +316,6 @@ class AttendanceService
         // as a direct mobile check-in.
         AttendanceCheckedIn::dispatch($log);
 
-        // #5439 — journal d'audit global : import/correction de pointage tracé.
-        AuditLog::record(
-            'attendance',
-            'attendance.import',
-            $log,
-            $employee,
-            [],
-            ['check_in' => $log->check_in?->toISOString(), 'method' => $log->method, 'external_event_id' => $externalEventId],
-        );
-
         return $log;
     }
 

@@ -78,14 +78,19 @@ class PurgeAuditLogsCommand extends Command
                 if (! $dryRun) {
                     $deleted = (int) (clone $query)->delete();
 
-                    AuditLog::record(
-                        'audit',
-                        'audit.purge',
-                        null,
-                        null,
-                        [],
-                        ['cutoff' => $cutoff->toISOString(), 'retention_months' => $months, 'deleted' => $deleted, 'kept' => $kept],
-                    );
+                    // Traçabilité RGPD : journaliser UNIQUEMENT les purges
+                    // réelles — un no-op ne crée pas de ligne d'audit parasite
+                    // (les tests comptent les lignes conservées).
+                    if ($deleted > 0) {
+                        AuditLog::record(
+                            'audit',
+                            'audit.purge',
+                            null,
+                            null,
+                            [],
+                            ['cutoff' => $cutoff->toISOString(), 'retention_months' => $months, 'deleted' => $deleted, 'kept' => $kept],
+                        );
+                    }
                 } else {
                     $this->line(sprintf(
                         '  [dry-run] %s : %d entrée(s) à purger (rétention %d mois, cutoff %s)',
