@@ -89,7 +89,8 @@ final class PublicDocumentShareController
     private function resolveShare(string $token): ?AccountingDocumentShare
     {
         $share = AccountingDocumentShare::query()
-            ->with('document')
+            ->withoutGlobalScope('company')
+            ->with(['document' => fn ($query) => $query->withoutGlobalScope('company')])
             ->where('share_token', $token)
             ->first();
 

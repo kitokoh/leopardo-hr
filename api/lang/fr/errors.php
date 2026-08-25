@@ -249,5 +249,7 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'Un bordereau de livraison doit porter sa date de livraison.',
     'DOCUMENT_NOT_FULLY_PAID' => 'Le document ne peut pas être marqué payé tant que le montant total n\'est pas réglé.',
     'INVALID_DOCUMENT_TRANSITION' => 'Transition de statut non autorisée pour ce document.',
+    'DOCUMENT_PDF_NOT_READY' => 'Le PDF du document n\'est pas encore prêt.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'Lien de partage introuvable ou expiré.',
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Période invalide. Utilisez le format AAAA-MM.',
 ];

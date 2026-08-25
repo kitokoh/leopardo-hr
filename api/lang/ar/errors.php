@@ -248,5 +248,7 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'يجب أن يتضمن سند التسليم تاريخ التسليم.',
     'DOCUMENT_NOT_FULLY_PAID' => 'لا يمكن وضع علامة مدفوعة على المستند قبل تسديد المبلغ كاملاً.',
     'INVALID_DOCUMENT_TRANSITION' => 'تغيير الحالة غير مسموح به لهذا المستند.',
+    'DOCUMENT_PDF_NOT_READY' => 'ملف PDF للمستند غير جاهز بعد.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'رابط المشاركة غير موجود أو منتهي الصلاحية.',
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'فترة غير صالحة. استخدم صيغة YYYY-MM.',
 ];

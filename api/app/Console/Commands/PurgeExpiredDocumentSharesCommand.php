@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\Modules\Accounting\Domain\Models\AccountingDocumentShare;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -42,8 +43,9 @@ class PurgeExpiredDocumentSharesCommand extends Command
 
         $this->info("Partages expirés avant {$cutoff->toDateTimeString()} (grâce {$graceDays} j)...");
 
-        /** @var \Illuminate\Support\Collection<int, object{company_id: string, total: int}> $counts */
+        /** @var Collection<int, object{company_id: string, total: int}> $counts */
         $counts = AccountingDocumentShare::query()
+            ->withoutGlobalScope('company')
             ->where('expires_at', '<', $cutoff)
             ->select('company_id', DB::raw('count(*) as total'))
             ->groupBy('company_id')
@@ -69,6 +71,7 @@ class PurgeExpiredDocumentSharesCommand extends Command
         }
 
         $deleted = AccountingDocumentShare::query()
+            ->withoutGlobalScope('company')
             ->where('expires_at', '<', $cutoff)
             ->delete();
 

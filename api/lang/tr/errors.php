@@ -248,5 +248,7 @@ return [
     'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'İrsaliye, teslim tarihini içermelidir.',
     'DOCUMENT_NOT_FULLY_PAID' => 'Toplam tutar ödenmeden belge ödendi olarak işaretlenemez.',
     'INVALID_DOCUMENT_TRANSITION' => 'Bu belge için durum geçişine izin verilmiyor.',
+    'DOCUMENT_PDF_NOT_READY' => 'Belgenin PDF\'i henüz hazır değil.',
+    'DOCUMENT_SHARE_NOT_FOUND' => 'Paylaşım bağlantısı bulunamadı veya süresi doldu.',
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.',
 ];
