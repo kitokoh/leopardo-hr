@@ -177,7 +177,7 @@ class SalaryAdvanceController extends Controller
             abort(403, 'MANAGER_REQUIRED');
         }
         if ($salaryAdvance->validation_status !== 'manager_approved') {
-            return response()->json(['message' => 'Advance must be manager-approved before declaring payment.'], 422);
+            return response()->json(['message' => __('payroll.advance_manager_approve_first')], 422);
         }
 
         $validated = $request->validate([
@@ -222,7 +222,7 @@ class SalaryAdvanceController extends Controller
                 abort(404);
             }
 
-            return response()->json(['message' => 'Advance must be manager-approved before declaring payment.'], 422);
+            return response()->json(['message' => __('payroll.advance_manager_approve_first')], 422);
         }
 
         $salaryAdvance->refresh();
@@ -283,7 +283,7 @@ class SalaryAdvanceController extends Controller
             abort(403, 'ADVANCE_CONFIRM_FORBIDDEN');
         }
         if ($salaryAdvance->validation_status !== 'payment_declared') {
-            return response()->json(['message' => 'Payment must be declared before employee confirmation.'], 422);
+            return response()->json(['message' => __('payroll.payment_declared_before_confirm')], 422);
         }
 
         $salaryAdvance->update([
@@ -321,7 +321,7 @@ class SalaryAdvanceController extends Controller
             abort(403, 'ADVANCE_DISPUTE_FORBIDDEN');
         }
         if ($salaryAdvance->validation_status !== 'payment_declared') {
-            return response()->json(['message' => 'Payment must be declared before it can be disputed.'], 422);
+            return response()->json(['message' => __('payroll.payment_declared_before_dispute')], 422);
         }
 
         $salaryAdvance->update([
@@ -361,7 +361,7 @@ class SalaryAdvanceController extends Controller
             abort(403, 'MANAGER_REQUIRED');
         }
         if ($salaryAdvance->validation_status !== 'disputed') {
-            return response()->json(['message' => 'Advance is not currently disputed.'], 422);
+            return response()->json(['message' => __('payroll.advance_not_disputed')], 422);
         }
 
         $resolution = $request->validated('resolution');
@@ -398,7 +398,7 @@ class SalaryAdvanceController extends Controller
             abort(403, 'MANAGER_REQUIRED');
         }
         if (! in_array($salaryAdvance->status, ['pending', 'approved'], true)) {
-            return response()->json(['message' => 'Only pending advances can be manager-approved.'], 422);
+            return response()->json(['message' => __('payroll.only_pending_advances_approvable')], 422);
         }
 
         // Issue #4677 / #3597 : `status` n'est pas mass-assignable — un

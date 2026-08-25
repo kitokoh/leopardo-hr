@@ -56,9 +56,32 @@ class PaySlipResource extends JsonResource
             'working_days' => $this->working_days,
             'actual_days_worked' => $this->actual_days_worked,
             'overtime_hours' => $this->overtime_hours,
+            // Issue #5245 — détail des entrées de travail par employé
+            // (simulation du run) : congés payés pris, congés sans solde,
+            // jours fériés payés, prorata réel, soldes de congés de l'année.
+            // Bloc ADDITIF et rétro-compatible : les vieux bulletins (colonnes
+            // absentes) exposent des zéros, `leave_balance` est null tant que
+            // le contrôleur n'a pas attaché le solde (évite tout N+1).
+            'attendance' => [
+                'working_days' => $this->working_days,
+                'actual_days_worked' => $this->actual_days_worked,
+                'prorata_rate' => $this->working_days > 0.0
+                    ? round($this->actual_days_worked / $this->working_days, 4)
+                    : 0.0,
+                'paid_leave_days' => (float) ($this->paid_leave_days ?? 0.0),
+                'unpaid_leave_days' => (float) ($this->unpaid_leave_days ?? 0.0),
+                'public_holiday_days' => (float) ($this->public_holiday_days ?? 0.0),
+                'overtime_hours' => $this->overtime_hours,
+                'has_attendance_data' => $this->has_attendance_data,
+                'leave_balance' => $this->getAttribute('leave_balance'),
+            ],
             'status' => $this->status,
             'employee' => $this->whenLoaded('employee'),
-            'lines' => $this->whenLoaded('lines'),
+            'lines' => $this->whenLoaded('lines', fn (): \Illuminate\Support\Collection => $this->lines
+                ->map(fn (\App\Modules\Payroll\Domain\Models\PaySlipLine $line): array => array_merge(
+                    $line->toArray(),
+                    ['label' => $line->label],
+                ))),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

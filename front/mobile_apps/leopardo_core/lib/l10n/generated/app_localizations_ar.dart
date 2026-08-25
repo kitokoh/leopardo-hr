@@ -5191,4 +5191,531 @@ class AppLocalizationsAr extends AppLocalizations {
   String teamActionError(Object error) {
     return 'فشل: $error';
   }
+
+  @override
+  String get attendanceAccountSuspended => 'الحساب موقوف أو تم رفض الوصول.';
+
+  @override
+  String get attendanceBeforeDeductions => 'قبل الخصومات القانونية';
+
+  @override
+  String get attendanceBreakRegistered => 'تم تسجيل الاستراحة.';
+
+  @override
+  String get attendanceCheckinConfirmed => 'تم تأكيد الحضور.';
+
+  @override
+  String get attendanceCheckinNormal => 'حضور عادي';
+
+  @override
+  String get attendanceCheckinNotConfirmed => 'لم يتم تأكيد الحضور';
+
+  @override
+  String get attendanceCheckinRegistered => 'تم تسجيل الحضور الآن.';
+
+  @override
+  String get attendanceCheckoutConfirmed => 'تم تأكيد الانصراف.';
+
+  @override
+  String get attendanceCheckoutNotConfirmed => 'لم يتم تأكيد الانصراف';
+
+  @override
+  String get attendanceCheckoutRegistered => 'تم تسجيل الانصراف الآن.';
+
+  @override
+  String get attendanceCloseTask => 'إغلاق المهمة';
+
+  @override
+  String get attendanceCorrectionApplied =>
+      'سيتم تطبيق التصحيح على سجل الحضور.';
+
+  @override
+  String get attendanceCorrectionDirectBody => 'تصحيح سطر الحضور هذا مباشرة.';
+
+  @override
+  String attendanceCorrectionDirectSnack(Object date) {
+    return 'تم تعديل تسجيل $date.';
+  }
+
+  @override
+  String attendanceCorrectionEditDateTitle(Object date) {
+    return 'تعديل $date';
+  }
+
+  @override
+  String get attendanceCorrectionRequestBody =>
+      'إرسال تصحيح إلى الموارد البشرية للاعتماد.';
+
+  @override
+  String attendanceCorrectionRequestSnack(Object date) {
+    return 'تم إرسال طلب $date إلى الموارد البشرية - سيتم إشعارك بالقرار.';
+  }
+
+  @override
+  String get attendanceCorrectionSentToHr =>
+      'سيتم إرسال الطلب إلى الموارد البشرية للاعتماد.';
+
+  @override
+  String get attendanceCurrentMonth => 'الشهر الحالي';
+
+  @override
+  String get attendanceDayDetail => 'تفاصيل يومية';
+
+  @override
+  String get attendanceDayDetails => 'تفاصيل اليوم';
+
+  @override
+  String get attendanceDayDetailsBody =>
+      'عرض الحضور والاستراحات والساعات الإضافية والوقت الفعلي.';
+
+  @override
+  String get attendanceDayNoSessionsYet =>
+      'لا يحتوي هذا اليوم على أي تسجيل حضور بعد.';
+
+  @override
+  String attendanceDaySessionsSummary(Object hours, Object sessions) {
+    return '$sessions جلسة - $hours ساعة عمل.';
+  }
+
+  @override
+  String get attendanceDayTodayLabel => 'اليوم';
+
+  @override
+  String get attendanceDayYesterdayLabel => 'أمس';
+
+  @override
+  String attendanceDaysAbsentShort(Object count) {
+    return '$count غياب';
+  }
+
+  @override
+  String attendanceDaysPresentRatio(Object present, Object working) {
+    return '$present يوم حضور / $working يوم عمل';
+  }
+
+  @override
+  String get attendanceDeductionsLabel => 'الخصومات';
+
+  @override
+  String attendanceDeductionsSub(Object amount) {
+    return 'الخصومات: $amount';
+  }
+
+  @override
+  String get attendanceEndWork => 'إنهاء العمل';
+
+  @override
+  String get attendanceEstimateDisclaimer =>
+      'تقدير غير رسمي. كشف الراتب هو المرجع.';
+
+  @override
+  String get attendanceEstimatedEarnings => 'الأرباح المقدرة';
+
+  @override
+  String get attendanceFinish => 'إنهاء';
+
+  @override
+  String get attendanceGrossEstimate => 'الأرباح الإجمالية المقدرة';
+
+  @override
+  String get attendanceGrossLabel => 'الإجمالي';
+
+  @override
+  String get attendanceHistoryEmpty =>
+      'لا شيء هنا بعد. ستظهر تسجيلات حضورك تدريجيًا.';
+
+  @override
+  String get attendanceHoursLabel => 'الساعات';
+
+  @override
+  String get attendanceHoursWorkedLabel => 'ساعات العمل';
+
+  @override
+  String get attendanceIncludedGross => 'مشمولة في الأرباح الإجمالية';
+
+  @override
+  String get attendanceIncludedGrossShort => 'مشمولة في الإجمالي';
+
+  @override
+  String get attendanceInvalidDuration => 'مدة غير صالحة';
+
+  @override
+  String get attendanceInvalidPayload => 'بيانات الحضور غير صالحة.';
+
+  @override
+  String attendanceLateMinutes(Object minutes) {
+    return '$minutes دقيقة';
+  }
+
+  @override
+  String get attendanceLoadDegradedNotice =>
+      'تستغرق بيانات اليوم وقتًا أطول من المتوقع. تبقى الشاشة قابلة للاستخدام، يمكنك التحديث.';
+
+  @override
+  String attendanceLoadFailed(Object error) {
+    return 'تعذر تحميل البيانات: $error';
+  }
+
+  @override
+  String get attendanceMarkDone => 'وضع علامة مكتملة';
+
+  @override
+  String get attendanceMonthEmptyHint =>
+      'إذا لم توجد بيانات بعد، سيتم عرض ملخص فارغ.';
+
+  @override
+  String get attendanceMonthLoadedHint =>
+      'تم تحميل الشهر. ستبقى الأرباح والساعات صفرًا حتى وجود تسجيل حضور صالح.';
+
+  @override
+  String get attendanceMonthSyncing => 'جارٍ مزامنة الشهر...';
+
+  @override
+  String get attendanceMyMonth => 'شهري';
+
+  @override
+  String get attendanceNetEstimate => 'الصافي المقدر';
+
+  @override
+  String get attendanceNextMonth => 'الشهر التالي';
+
+  @override
+  String get attendanceNoHistory => 'لا يوجد سجل';
+
+  @override
+  String get attendanceNoLogToEdit =>
+      'لا يوجد سطر حضور قابل للتعديل لهذا اليوم.';
+
+  @override
+  String get attendanceNoPunchForDay => 'لا يوجد تسجيل حضور لهذا اليوم.';
+
+  @override
+  String get attendanceNoSession => 'لا توجد جلسة';
+
+  @override
+  String attendanceOutsideZoneManagerNotice(Object fallback) {
+    return '$fallback تم رصد تسجيل خارج المنطقة؛ تحقق من السياق قبل اعتماد الموارد البشرية.';
+  }
+
+  @override
+  String attendanceOutsideZoneNotice(Object fallback) {
+    return '$fallback يبدو أنك خارج المنطقة المسموح بها؛ سيتم إشعار مديرك إذا كانت قاعدة الشركة تتطلب ذلك.';
+  }
+
+  @override
+  String get attendanceOvertimeLabel => 'الساعات الإضافية';
+
+  @override
+  String get attendanceOvertimeShortLabel => 'ساعات إضافية';
+
+  @override
+  String get attendancePersonalTracking => 'المتابعة الشخصية';
+
+  @override
+  String get attendancePresence => 'الحضور';
+
+  @override
+  String get attendancePreviousMonth => 'الشهر السابق';
+
+  @override
+  String get attendancePunchFailed =>
+      'تعذر تأكيد تسجيل الحضور. تحقق من الاتصال وحاول مرة أخرى.';
+
+  @override
+  String get attendanceRealCheckinRequired => 'الحضور الفعلي *';
+
+  @override
+  String get attendanceRealCheckout => 'الانصراف الفعلي';
+
+  @override
+  String get attendanceRealTime => 'الوقت الفعلي';
+
+  @override
+  String get attendanceRealTimeHint =>
+      'أدخل الوقت الفعلي وملاحظة قصيرة قبل الانصراف.';
+
+  @override
+  String get attendanceRefresh => 'تحديث';
+
+  @override
+  String get attendanceRequestCorrection => 'طلب تصحيح';
+
+  @override
+  String get attendanceRetry => 'إعادة المحاولة';
+
+  @override
+  String get attendanceRoleForbidden =>
+      'دورك لا يسمح بهذا الإجراء الخاص بالحضور.';
+
+  @override
+  String get attendanceSaveDeparture => 'تسجيل انصراف هذه الجلسة';
+
+  @override
+  String get attendanceSeeHistory => 'عرض السجل';
+
+  @override
+  String get attendanceSendCheckin => 'جارٍ إرسال الحضور';
+
+  @override
+  String get attendanceSendCheckout => 'جارٍ إرسال الانصراف';
+
+  @override
+  String get attendanceSendModificationFailed => 'تعذر إرسال التعديل حاليًا.';
+
+  @override
+  String attendanceSessionRange(Object from, Object to) {
+    return 'من $from إلى $to';
+  }
+
+  @override
+  String get attendanceStartDay => 'بدء اليوم';
+
+  @override
+  String get attendanceSummaryUnavailable => 'الملخص غير متاح';
+
+  @override
+  String get attendanceTask => 'مهمة';
+
+  @override
+  String get attendanceTaskDone => 'تم إنهاء المهمة.';
+
+  @override
+  String attendanceTaskFailed(Object error) {
+    return 'فشل: $error';
+  }
+
+  @override
+  String get attendanceTaskNote => 'ملاحظة الإنجاز';
+
+  @override
+  String get attendanceTasksSectionTitle => 'مهام اليوم';
+
+  @override
+  String get attendanceTasksSyncing => 'جارٍ مزامنة مهام اليوم...';
+
+  @override
+  String get attendanceToPunch => 'بانتظار التسجيل';
+
+  @override
+  String get attendanceTotalDays => 'إجمالي الأيام';
+
+  @override
+  String get attendanceTotalHours => 'إجمالي الساعات';
+
+  @override
+  String get attendanceTotalLate => 'التأخير التراكمي';
+
+  @override
+  String get attendanceWorkedTime => 'وقت العمل';
+
+  @override
+  String get payrollAdvancesDeducted => 'السلف المخصومة';
+
+  @override
+  String get payrollAlreadyPaid => 'تم دفعه بالفعل';
+
+  @override
+  String get payrollBalanceUnavailable => 'الرصيد غير متاح مؤقتًا';
+
+  @override
+  String get payrollDocsUnavailable => 'المستندات غير متاحة مؤقتًا';
+
+  @override
+  String payrollDocumentDownloaded(Object path) {
+    return 'تم تنزيل المستند: $path';
+  }
+
+  @override
+  String get payrollDownloadPayslip => 'تنزيل كشف الراتب PDF';
+
+  @override
+  String get payrollDownloading => 'جارٍ التنزيل';
+
+  @override
+  String get payrollEmptyHint => 'ستظهر كشوف رواتبك هنا بمجرد اعتمادها.';
+
+  @override
+  String payrollError(Object error) {
+    return 'خطأ: $error';
+  }
+
+  @override
+  String get payrollLoading => 'جارٍ تحميل كشوف الرواتب';
+
+  @override
+  String payrollMonthLabel(Object month, Object year) {
+    return 'الشهر $month/$year';
+  }
+
+  @override
+  String get payrollMyBalance => 'رصيدي';
+
+  @override
+  String payrollNextPayment(Object date) {
+    return 'الراتب القادم في $date';
+  }
+
+  @override
+  String get payrollNoCycleDocuments =>
+      'لم يتم إنشاء مستند لهذه الدورة. ستظهر الإيصالات بعد الدفع.';
+
+  @override
+  String get payrollNoPayslips => 'لا يوجد كشف راتب';
+
+  @override
+  String get payrollNoReceipts => 'لا توجد إيصالات أو قسائم متاحة حاليًا.';
+
+  @override
+  String get payrollOvertimeLabel => 'ساعات إضافية';
+
+  @override
+  String get payrollPaymentDocuments => 'مستندات الدفع';
+
+  @override
+  String get payrollPaymentDocumentsTitle => 'مستندات الدفع';
+
+  @override
+  String payrollPdfDownloaded(Object path) {
+    return 'تم تنزيل PDF: $path';
+  }
+
+  @override
+  String payrollPeriodRange(Object end, Object start) {
+    return 'من $start إلى $end';
+  }
+
+  @override
+  String get payrollRecentPayslips => 'كشوف الرواتب الأخيرة';
+
+  @override
+  String get payrollRemainingToPay => 'المتبقي دفعه';
+
+  @override
+  String get payrollRemainingToReceive => 'المتبقي استلامه';
+
+  @override
+  String get payrollSubtitle => 'الرصيد الحالي والسلف وكشوف الرواتب';
+
+  @override
+  String get payrollSummaryUnavailable => 'ملخص الرواتب غير متاح مؤقتًا';
+
+  @override
+  String get payrollTeamBalance => 'رصيد الفريق';
+
+  @override
+  String payrollTeamMembers(Object count) {
+    return '$count موظف';
+  }
+
+  @override
+  String get payrollTeamSubtitle => 'الأرصدة والسلف وكشوف الرواتب';
+
+  @override
+  String get payrollTeamTitle => 'رواتب الفريق';
+
+  @override
+  String get payrollTitle => 'الرواتب والرصيد';
+
+  @override
+  String get payrollValidatedHint =>
+      'ستظهر كشوف الرواتب الصالحة هنا بعد المعالجة.';
+
+  @override
+  String get smartAttendanceActiveMode => 'الوضع النشط';
+
+  @override
+  String get smartAttendanceApprove => 'اعتماد';
+
+  @override
+  String get smartAttendanceCancel => 'إلغاء';
+
+  @override
+  String get smartAttendanceChangeMode => 'تغيير وضع الحضور الخاص بي';
+
+  @override
+  String get smartAttendanceConfirm => 'تأكيد';
+
+  @override
+  String get smartAttendanceDashboard => 'تسجيل GPS — لوحة التحكم';
+
+  @override
+  String get smartAttendanceDashboardTitle => 'تسجيل GPS — لوحة التحكم';
+
+  @override
+  String smartAttendanceError(Object message) {
+    return 'خطأ: $message';
+  }
+
+  @override
+  String get smartAttendanceForced => 'إجباري';
+
+  @override
+  String get smartAttendanceGpsAuto => 'GPS تلقائي';
+
+  @override
+  String get smartAttendanceGpsTitle => 'الحضور الذكي — GPS';
+
+  @override
+  String get smartAttendanceManual => 'يدوي';
+
+  @override
+  String get smartAttendanceNoGpsSessions => 'لا توجد جلسة GPS حاليًا.';
+
+  @override
+  String get smartAttendanceNoPending => 'لا توجد جلسات بانتظار';
+
+  @override
+  String get smartAttendanceNoPendingSessions =>
+      'لا توجد جلسات بانتظار الاعتماد';
+
+  @override
+  String get smartAttendancePending => 'قيد الانتظار';
+
+  @override
+  String smartAttendancePendingCount(Object count) {
+    return '$count قيد الانتظار';
+  }
+
+  @override
+  String get smartAttendanceQr => 'رمز QR';
+
+  @override
+  String get smartAttendanceReject => 'رفض';
+
+  @override
+  String get smartAttendanceRejectHint => 'اشرح سبب الرفض...';
+
+  @override
+  String get smartAttendanceRejectReason => 'سبب الرفض';
+
+  @override
+  String smartAttendanceSessionExit(Object duration, Object time) {
+    return 'خروج: $time · $duration';
+  }
+
+  @override
+  String get smartAttendanceSessionsTitle => 'جلسات الحضور الذكي';
+
+  @override
+  String get smartAttendanceSmart => 'تسجيل ذكي';
+
+  @override
+  String get smartAttendanceSurveillanceActive => 'المراقبة نشطة';
+
+  @override
+  String get smartAttendanceSurveillanceInactive => 'المراقبة غير نشطة';
+
+  @override
+  String get smartAttendanceTapToReview => 'اضغط للاعتماد أو الرفض';
+
+  @override
+  String get smartAttendanceTitle => 'الحضور الذكي';
+
+  @override
+  String smartAttendanceTodayTitle(Object date) {
+    return 'اليوم — $date';
+  }
+
+  @override
+  String get smartAttendanceZoneSurveillance => 'مراقبة المنطقة';
 }

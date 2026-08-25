@@ -403,6 +403,18 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - Self-service : un employe ne peut pas consulter, generer le PDF ou lire les avenants du contrat d'un collegue
 - Scheduler : `contracts:alert-expiring` alerte a 30/15/7 jours
 
+### Module L — Checklist documents du dossier employe (issue #5326, gap G3)
+- `POST /api/v1/employee-documents` enregistre un document (type, statut, date, reference, url) — RBAC : principal/rh uniquement (403 employe)
+- `GET /api/v1/employee-documents` liste les documents du tenant (filtres `employee_id`, `type`, pagination `per_page`)
+- `GET /api/v1/employee-documents/{id}` detail d'un document du tenant
+- `PUT|PATCH /api/v1/employee-documents/{id}` met a jour type/statut/reference/url/notes
+- `DELETE /api/v1/employee-documents/{id}` supprime un document du dossier
+- `GET /api/v1/me/documents` self-service : l'employe lit UNIQUEMENT les documents de son propre dossier
+- Badge dossier : `GET /api/v1/employees/{id}` expose `documents_status` (complete/present/missing, types requis par statut employe)
+- Isolation : un document d'un autre tenant repond 404 (scope `BelongsToCompany` fail-closed #3727)
+- Validation : type hors liste ou `employee_id` d'un autre tenant repond 422
+- Tests : `tests/Feature/HR/EmployeeDocumentTest.php` (8 scenarios)
+
 ### Module C â Avances salaire mobile
 - `GET /api/v1/salary-advances` retourne les avances de l'employe connecte, et la liste tenant pour manager/RH autorise.
 - `POST /api/v1/salary-advances` permet a un employe de demander une avance avec `amount`, `reason` et `repayment_months`.
@@ -525,7 +537,7 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - RBAC : employe connecte, ses propres bulletins uniquement
 
 ### Bank Exports
-- `POST /api/v1/payroll-runs/{id}/bank-export` genere un fichier export (format: sepa_xml, ccp_dz, virement_ma, csv_generic)
+- `POST /api/v1/payroll-runs/{id}/bank-export` genere un fichier export (format: sepa_xml, ccp_dz, cpa_dz, bna_dz, cnep_dz, edx_dz, virement_ma, csv_generic)
 - `GET /api/v1/bank-exports/{id}` detail de l'export
 - `GET /api/v1/bank-exports/{id}/download` telecharge le fichier genere
 - Validation : payroll run doit etre validated ou paid
@@ -781,9 +793,11 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - Verifie que le run est valide avant envoi
 
 ### Export bancaire reel
-- `POST /api/v1/payroll-runs/{id}/bank-export` avec format : sepa_xml, ccp_dz, virement_ma, csv_generic
+- `POST /api/v1/payroll-runs/{id}/bank-export` avec format : sepa_xml, ccp_dz, cpa_dz, bna_dz, cnep_dz, edx_dz, virement_ma, csv_generic
 - SEPA XML : format pain.001.001.03 pour virements europeens
 - CCP Algerie Poste : format texte fixe (entete, detail, total)
+- CPA/BNA/CNEP (DZ) : pipe-delimited HEADER/DETAIL/FOOTER (RIB, nom, net) — conventions internes a valider avec la banque (#5243)
+- EDX (DZ) : enregistrements a largeur fixe H/D/F, montants DZD — convention interne documentee (#5243)
 - CSV generique / virement_ma : employee_id, first_name, last_name, iban, bank_account, net_salary, currency, period
 - Les tests doivent couvrir que l'export ne selectionne pas de colonnes employees inexistantes (`rib`, `bank_name`)
 
@@ -801,15 +815,16 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - `leave:carry-forward` (annuel) : reporter les soldes non utilises selon LeavePolicy
 - Expiration des reports selon carry_forward_expiry_days
 
-### Declarations sociales (CNAS DZ / CNSS MA / DSN FR)
+### Declarations sociales (CNAS DZ / CNSS MA / DSN FR / DAS DZ)
 - `POST /api/v1/social-declarations/cnas-dz` genere une declaration trimestrielle CNAS Algerie avec taux salarie 9% et employeur 26%
 - `POST /api/v1/social-declarations/cnss-ma` genere une declaration trimestrielle CNSS Maroc avec jours travailles
 - `POST /api/v1/social-declarations/dsn-fr` genere une declaration mensuelle DSN simplifiee France (format S10/S20/S21/S44)
   - Parametres : `month` (1-12), `year` (2020-2099)
   - Mapping types contrat : CDIâ01, CDDâ02, INTERIMâ03, APPRENTISSAGEâ04, PROFESSIONNALISATIONâ05, STAGEâ07
   - La reponse contient `content` (texte DSN), `filename` (DSN_FR_MM_YYYY_date.dsn), `employee_count`
-- Les trois endpoints sont reserves aux roles manager (isManager)
-- Les calculs s'appuient sur les bulletins valides (`pay_slips` status=validated) du mois/trimestre demande
+- `POST /api/v1/social-declarations/das-dz` genere la Declaration Annuelle des Salaires DZ (CSV une ligne par employe : NIS, nom, mois, brut, CNAS 9%/26%, IRG, net + TOTAUX), agregee des bulletins valides des runs DZ de l'annee (#5243) — parametre `year` (2020-2099), managers uniquement, audit `payroll.das_declaration`
+- Les quatre endpoints sont reserves aux roles manager (isManager)
+- Les calculs s'appuient sur les bulletins valides (`pay_slips` status=validated) du mois/trimestre/annee demande
 - Isolation tenant : les bulletins et employes doivent etre scopes au `company_id` de l'acteur
 - La requete company ne doit effectuer qu'un seul SELECT (pas de requetes dupliquees name + tax_id)
 
@@ -1323,8 +1338,10 @@ La matrice RGPD référençait `audit:purge --older-than=24months` sans que la c
 
 - Scenario a valider : `tests/Unit/PurgeAuditLogsCommandTest` (purge des logs > N mois, respect de l'option `--older-than`, no-op si rien d'expiré) + la matrice de conformité RGPD passe le point « limitation de conservation » de PARTIEL a CONFORME (politique documentée dans `docs/security/POLITIQUE_RETENTION_DOCUMENTS.md`).
 Note 2026-08-09 (F-11, #1541) : le workflow de cloture de paie est expose via l'API. `POST /payroll-runs/{run}/validate` passe par `PayrollClosingService::validateRh` (audit `payroll_run_validated`), `POST /payroll-runs/{run}/lock` verrouille le run (conditionnel atomique, audit `payroll_run_locked`, reserve principal/comptable), `POST /payroll-runs/{run}/unlock` exige une `reason` (audit `payroll_run_unlocked`), `cancel` refuse les runs verrouilles, `PayrollRunResource` expose `locked_by`/`locked_at`. Les scenarios API doivent verifier : RBAC employee 403, isolation tenant 404, lock sans validation 422, unlock sans raison 422, recalcul d'un run verrouille refuse.
+Note 2026-08-23 (#5243) : `GET /payroll-runs/{run}/bordereau` exporte le bordereau de paie d'un run (CSV : section TOTAUX_PAR_COTISATION — lignes de bulletin groupees par type/libelle — puis section RECAPITULATIF_RUN — brut, cotisations salariales, IRG, autres deductions, net, cotisations patronales, cout employeur, bulletins). Scenarios a verifier : RBAC manager (employee 403), isolation tenant (404), run non-DZ (422), totaux CSV egaux aux totaux de la cloture, audit `payroll.bordereau`.
 Note 2026-08-09 (F-10, #1540) : `GET /payroll-runs/{run}/journal` exporte le journal de paie mensuel (CSV, toutes rubriques par employe) depuis un run verrouille/cloture. Les scenarios API doivent verifier : RBAC principal/comptable uniquement (employee 403), isolation tenant 404, run non cloture 422, totaux du CSV egaux aux totaux de la cloture, contenu horodate et rejouable.
 Note 2026-08-09 (F-20, #1550) : ecarts pointage → paie. `GET /api/v1/payroll-runs/{run}/anomalies` (lecture seule, principal/comptable) agrege doublons de pointage, incoherences, variance brut et ecarts heures pointees vs heures integrees au bulletin (`attendance_vs_payroll`, tolerance 2 h, severite medium/high). Scenarios : RBAC employee 403, isolation tenant 404, totaux coherents avec la cloture.
+Note 2026-08-23 (#5243) : `GET /payroll-runs/{run}/bordereau` exporte le bordereau de paie d'un run (CSV : section TOTAUX_PAR_COTISATION — lignes de bulletin groupees par type/libelle — puis section RECAPITULATIF_RUN — brut, cotisations salariales, IRG, autres deductions, net, cotisations patronales, cout employeur, bulletins). Scenarios a verifier : RBAC manager (employee 403), isolation tenant (404), run non-DZ (422), totaux CSV egaux aux totaux de la cloture, audit `payroll.bordereau`.
 Note 2026-08-09 (F-10, #1540) : `GET /payroll-runs/{run}/journal` exporte le journal de paie mensuel (CSV, toutes rubriques par employe) depuis un run verrouille/cloture. Les scenarios API doivent verifier : RBAC principal/comptable uniquement (employee 403), isolation tenant 404, run non cloture 422, totaux du CSV egaux aux totaux de la cloture, contenu horodate et rejouable.
 
 ## CI main rouge 2026-08-09 — réparation des 43 tests pré-existants
@@ -1393,3 +1410,34 @@ Note 2026-08-24 (issue #5232) : paramétrage comptable par entreprise — `GET/P
 - Provisioning : listener `ProvisionAccountingSettings` sur `CompanyCreated` (withinTenant, additif non bloquant, idempotent).
 - Scénarios à vérifier : défauts pays DZ (DZD, fr, TVA 19 %, série `FAC`), upsert puis relecture, validation 422 ×4, RBAC, isolation tenant, provisioning + idempotence.
 - Couverture : `tests/Feature/Accounting/AccountingSettingsTest.php` (12 tests) — OpenAPI documenté (756/756 routes couvertes), SDK régénérés.
+
+Note 2026-08-24 (issue #5271) : déclaration TVA simplifiée par période — `GET /api/v1/accounting/reports/vat-declaration`.
+- `GET /api/v1/accounting/reports/vat-declaration?period=YYYY-MM[&format=json|csv]` : déclaration mensuelle du tenant courant (RBAC `api.manager:comptable,principal`, employé → 403) — TVA collectée (factures + reçus), déductible (avoirs), net, détail par taux (assiette HT, taxe, TTC) ; brouillons et annulés exclus ; période invalide → 422 ; `format=csv` → export `vat-declaration-<period>.csv`.
+- Multi-taux TVA par pays dans les défauts settings (DZ 19/9, MA 20, TN 19, SN 18, CI 18, TR 20, FR 20…) + mentions légales par défaut par pays.
+- Scénarios à vérifier : golden août 2026 (collectée 6 200/678/6 878 · déductible 300/57/357 · net 5 900/621/6 521), période vide → zéros, exclusion brouillon/annulé/hors période/proforma, isolation tenant, CSV, RBAC.
+- Couverture : `tests/Feature/Accounting/VatDeclarationTest.php` (8 tests) — OpenAPI documenté (757/757 routes couvertes), SDK régénérés.
+Note 2026-08-22 (issue #5282) : supervision queue prod — la commande `php artisan queue:health-check` couvre désormais le driver `database` (table `jobs`, driver prod 0 €) en plus de Redis : profondeur par queue (jobs prêts, non réservés), jobs réservés > 10 min (worker mort → `stale_reserved_jobs`), `failed_jobs` ; sortie JSON ; exit FAILURE si seuils dépassés (`--max-pending=50`, `--max-failed=10`, `--max-stale-minutes=10`) + alerte Slack opt-in (`SLACK_MONITORING_WEBHOOK_URL`, silencieux si absent). Workflow `.github/workflows/queue-supervision.yml` (cron 5 min, offset +2 min du drain `queue-worker-fallback.yml`) → run rouge < 15 min après une panne (DoD #5282). `GET /api/v1/health` expose `failed_jobs` (scrapers d'uptime externe).
+- Scénarios à vérifier : queue vide → SUCCESS ; backlog > seuil → FAILURE (exit 1) ; job réservé > 10 min → FAILURE avec `stale_reserved_jobs` ; job réservé récent → SUCCESS (pas de faux positif) ; `failed_jobs` > seuil → FAILURE ; driver `sync` → SUCCESS (pas de check Redis en test).
+- Couverture : `QueueSupervisionDatabaseTest` (5 tests) + `QueueFailedJobsTableTest` (existant).
+Note 2026-08-22 (issue #5259) : plans de carrière — événements de carrière (promotion/raise/transfer/title_change).
+- `GET|POST /api/v1/career-events`, `GET|PUT|PATCH|DELETE /api/v1/career-events/{id}` (édit/suppression `pending` uniquement), `PUT /api/v1/career-events/{id}/approve|reject|apply`. Workflow `pending → approved → applied` (ou `rejected`) ; `apply` met à jour l'employé (position_id, department_id, salary_base) en transaction → impact paie au run suivant.
+- Scénarios à vérifier : création manager avec snapshot `from_*` (poste/département/salaire courants de l'employé), employé → 403 sur create et lecture limitée à son propre parcours, manager `dept` scopé (PA2-SEC-002) / `superviseur` (PA2-SEC-003), isolation tenant (ressource d'une autre société → 404, cible poste/département cross-tenant → 422), transitions invalides (apply sur `pending` → 403, apply sans cible → 422 CAREER_EVENT_NOTHING_TO_APPLY, edit/delete hors `pending` → 403), `GET /me/career` expose `data.career_events` (parcours complet contrats + événements).
+- Couverture : `tests/Feature/HR/CareerEventTest.php` (12 tests) — contrat OpenAPI documenté (9 opérations, 753/753 routes couvertes).
+Note 2026-08-23 (issue #5229) : trésorerie Phase B — paiements + rapprochement + relances.
+- Enregistrement : `POST /accounting/documents/{document}/payments` — règle « jamais payé > total » (422 `PAYMENT_EXCEEDS_TOTAL`, rien n'est écrit), documents émis uniquement (422 `PAYMENT_ON_UNSENT_DOCUMENT`), `paid_amount` + statut document mis à jour (partially_paid/paid — transition minimale, workflow complet via #5223).
+- Rapprochement : `POST /accounting/payments/{payment}/reconcile` — pending/recorded → matched + `reconciled_at`, idempotent.
+- Liste : `GET /accounting/payments?document_id=&status=` — RBAC comptable/principal (403 sinon).
+- Relances : `POST /accounting/reminders/run` + commande `accounting:send-payment-reminders` — stages J+7/J+15/J+30 paramétrables (`accounting_settings.payment_reminder_days`), cibles documents émis non soldés échus, unique (document, stage) → zéro doublon, notification in-app aux managers principal/comptable (template `accounting_payment_reminder`, i18n ×4), échec notification ≠ échec relance (log).
+- Couverture : `AccountingPaymentTest` (14 tests) — suite `tests/Feature/Accounting` 23/23 ; PHPStan 0 ; Pint PASS ; OpenAPI couverture 754/754.
+
+Note 2026-08-24 (issue #5227) : i18n ×4 du module Comptabilité — messages API localisés (fr/en/tr/ar), zéro chaîne hardcodée, parité des catalogues.
+- Surface API : les messages d'erreur et de validation du module Accounting passent par `__('accounting.*')` / `__('errors.*')` (renderer #4171) — plus aucun littéral `message => '...'` ni `throw '...'` français brut (hors codes machine MAJUSCULES et clés de catalogue) dans `api/app/Modules/Accounting/**` ; la locale est pilotée par `preferred_language` de l'utilisateur authentifié (pattern #4592, fallback Accept-Language).
+- Catalogues : `api/lang/{fr,en,tr,ar}/accounting.php` (labels documents `document_type_*` ×6, statuts `status_*` ×6, TVA, workflow) et `errors.php` (codes des DomainException : `PAYMENT_EXCEEDS_TOTAL`, `PAYMENT_ON_UNSENT_DOCUMENT`, `CREDIT_NOTE_REQUIRES_SOURCE_INVOICE`, `DELIVERY_NOTE_REQUIRES_DELIVERY_DATE`, `DOCUMENT_NOT_FULLY_PAID`, `INVALID_DOCUMENT_TRANSITION`…) — parité stricte des clés ×4 (garde CI `dev-hub/tools/check-accounting-i18n.py`, job « i18n Comptabilité ×4 » du workflow `accounting-ci.yml`).
+- PDF : labels des documents comptables (`accounting-document.blade.php`) localisés ×4 via les mêmes catalogues ; RTL arabe vérifié ; libellés de données (ex. TVA `label_key`) laissés aux données seed.
+- Scénarios à vérifier : chaque erreur métier renvoie un message dans la langue de l'utilisateur (fr/en/tr/ar) sans retomber sur la clé brute ; parité des clés ×4 des deux catalogues ; zéro littéral non localisé dans le module (scan CI) ; libellés PDF ×4 (type + statut) ; RTL arabe.
+- Couverture : `tests/Feature/Accounting/AccountingI18nTest.php`, `AccountingI18nMessagesTest.php`, `DocumentPdfRendererTest.php` + suite module Accounting (coverage 86,45 % ≥ 70 % DoD #5228) — garde `check-accounting-i18n.py` verte.
+Note 2026-08-24 (issues #5353/#5354/#5355) : ADR-0016 — consolidation des routes pointage sous `/api/v1/attendance/*` + fusion SmartAttendance.
+- Phases 2-3 : chemin d'usage unique de la géofence (`GeofenceZoneService`) et surface API pointage consolidée sous `/attendance/*` (sessions, geo-events, mode) — alias `/smart-attendance/*` conservés (BC mobile, Phase 5 #5265).
+- Phase 4 : fusion des modèles/services/commandes SmartAttendance → Attendance (shims `@deprecated` dans SmartAttendance pour BC) ; commande console `AutoCloseGeoSessionsCommand` → `AutoCloseAttendanceCommand` (alias conservé, `api/routes/console.php`).
+- Scénarios à vérifier : routes `/attendance/*` (sessions/geo-events/mode), rétro-compat `/smart-attendance/*`, migration console (schedule), isolation tenant géofence, PHPStan Strict vert sur les fichiers fusionnés.
+- Couverture : `tests/Feature/Attendance/Geo*` (6 tests migrés) + `GeoRoutesMigrationTest`.

@@ -348,7 +348,7 @@ class SalaryAdvanceSecurityTest extends TestCase
         $this->actingAs($manager, 'sanctum')
             ->putJson("/api/v1/salary-advances/{$advance->id}/mark-paid")
             ->assertStatus(422)
-            ->assertJsonPath('message', 'Advance must be manager-approved before declaring payment.');
+            ->assertJsonPath('message', 'L\'avance doit être approuvée par le manager avant de déclarer le paiement.');
     }
 
     public function test_employee_cannot_confirm_salary_advance_before_payment_declaration(): void
@@ -369,7 +369,7 @@ class SalaryAdvanceSecurityTest extends TestCase
         $this->actingAs($employee, 'sanctum')
             ->putJson("/api/v1/salary-advances/{$advance->id}/confirm-received")
             ->assertStatus(422)
-            ->assertJsonPath('message', 'Payment must be declared before employee confirmation.');
+            ->assertJsonPath('message', 'Le paiement doit être déclaré avant la confirmation de l\'employé.');
     }
 
     public function test_employee_cannot_confirm_salary_advance_of_another_employee(): void
@@ -477,7 +477,7 @@ class SalaryAdvanceSecurityTest extends TestCase
                 'dispute_reason' => 'Nothing declared yet.',
             ])
             ->assertStatus(422)
-            ->assertJsonPath('message', 'Payment must be declared before it can be disputed.');
+            ->assertJsonPath('message', 'Le paiement doit être déclaré avant de pouvoir être contesté.');
     }
 
     public function test_employee_cannot_dispute_salary_advance_of_another_employee(): void
@@ -619,7 +619,7 @@ class SalaryAdvanceSecurityTest extends TestCase
                 'resolution' => 'confirmed',
             ])
             ->assertStatus(422)
-            ->assertJsonPath('message', 'Advance is not currently disputed.');
+            ->assertJsonPath('message', 'L\'avance n\'est pas actuellement contestée.');
     }
 
     public function test_manager_cannot_resolve_dispute_of_another_tenant(): void

@@ -220,6 +220,7 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/payroll_engine.php';
     require __DIR__.'/modules/cameras.php';
     require __DIR__.'/modules/cabinet.php';
+    require __DIR__.'/modules/accounting.php';
     require __DIR__.'/modules/user.php';
     require __DIR__.'/modules/tracking.php';
     require __DIR__.'/modules/dashboard.php';
@@ -234,7 +235,6 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/absence.php';
     require __DIR__.'/modules/expense.php';
     require __DIR__.'/modules/marketing.php';
-    require __DIR__.'/modules/accounting.php';
 
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';

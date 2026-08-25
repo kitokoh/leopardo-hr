@@ -145,7 +145,7 @@ class TaxSlabController extends Controller
 
         $taxSlab->delete();
 
-        return response()->json(['message' => 'Tax slab deleted successfully.']);
+        return response()->json(['message' => __('payroll.tax_slab_deleted')]);
     }
 
     /**

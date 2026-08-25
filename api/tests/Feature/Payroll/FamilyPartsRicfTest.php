@@ -80,9 +80,9 @@ class FamilyPartsRicfTest extends TestCase
             'company_id' => $this->company->id,
             'salary_type' => 'fixed',
             'salary_base' => 300000,
-            // Épinglé avant la période du run (2026-07) : la factory tire un
-            // contract_start aléatoire (faker) qui pouvait tomber en juillet
-            // → prorata → 270 954,55 au lieu de 300 000 (flake, Refs #5241).
+            // #5321 : contract_start figé AVANT la période du run (2026-07) —
+            // le défaut aléatoire de la factory (jusqu'à −1 mois) pouvait
+            // déclencher un prorata d'entrée → net ≠ 251 400 (flake CI).
             'contract_start' => '2026-01-01',
         ]);
 
@@ -107,6 +107,7 @@ class FamilyPartsRicfTest extends TestCase
             'salary_base' => 300000,
             'contract_start' => '2026-01-01',
             'family_parts' => 3.0,
+            // #5321 : contract_start figé (voir test précédent).
             'contract_start' => '2026-01-01',
         ]);
 
@@ -129,6 +130,7 @@ class FamilyPartsRicfTest extends TestCase
             'salary_base' => 300000,
             'contract_start' => '2026-01-01',
             'family_parts' => 5.0,
+            // #5321 : contract_start figé (voir test précédent).
             'contract_start' => '2026-01-01',
         ]);
 

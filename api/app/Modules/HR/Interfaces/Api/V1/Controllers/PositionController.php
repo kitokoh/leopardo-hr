@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\PositionResource;
+use App\Modules\HR\Domain\Models\Position;
 use App\Modules\HR\Interfaces\Api\V1\Requests\StorePositionRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdatePositionRequest;
-use App\Http\Resources\Api\V1\PositionResource;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\HR\Domain\Models\Position;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -74,7 +74,6 @@ class PositionController extends Controller
 
         $position->delete();
 
-        return response()->json(['message' => 'Position deleted successfully']);
+        return response()->json(['message' => __('errors.POSITION_DELETED')]);
     }
 }
-

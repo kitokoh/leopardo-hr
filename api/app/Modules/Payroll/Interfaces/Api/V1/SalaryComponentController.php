@@ -138,7 +138,7 @@ class SalaryComponentController extends Controller
 
         $salaryComponent->delete();
 
-        return response()->json(['message' => 'Salary component deleted successfully.']);
+        return response()->json(['message' => __('payroll.salary_component_deleted')]);
     }
 }
 

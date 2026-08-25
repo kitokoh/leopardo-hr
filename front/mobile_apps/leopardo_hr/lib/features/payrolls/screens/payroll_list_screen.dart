@@ -13,6 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 class PayrollListScreen extends ConsumerStatefulWidget {
   const PayrollListScreen({super.key});
@@ -41,7 +42,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('PDF telecharge: $path'),
+            content: Text(context.l10n.payrollPdfDownloaded(path)),
             backgroundColor: AppColors.success,
           ),
         );
@@ -75,7 +76,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Document telecharge: $path'),
+            content: Text(context.l10n.payrollDocumentDownloaded(path)),
             backgroundColor: AppColors.success,
           ),
         );
@@ -133,8 +134,8 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
     return Scaffold(
       backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: 'Paie equipe',
-        subtitle: 'Soldes, avances et bulletins',
+        title: context.l10n.payrollTeamTitle,
+        subtitle: context.l10n.payrollTeamSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           tooltip: 'Retour',
@@ -153,7 +154,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
               _SummaryCard(summaryAsync: summaryAsync),
               const SizedBox(height: 16),
               Text(
-                'Bulletins recents',
+                context.l10n.payrollRecentPayslips,
                 style: AppTypography.bodySmall.copyWith(
                   color: MobileSurface.text,
                   fontWeight: FontWeight.w800,
@@ -161,13 +162,12 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
               ),
               const SizedBox(height: 10),
               if (payrolls.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.only(top: 40),
+                Padding(
+                  padding: const EdgeInsets.only(top: 40),
                   child: EmptyState(
                     icon: Icons.description,
-                    title: 'Aucune fiche de paie',
-                    description:
-                        'Les bulletins valides apparaitront ici apres traitement.',
+                    title: context.l10n.payrollNoPayslips,
+                    description: context.l10n.payrollValidatedHint,
                   ),
                 )
               else
@@ -187,7 +187,8 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Mois ${payroll.month}/${payroll.year}',
+                                context.l10n.payrollMonthLabel(
+                                    payroll.month, payroll.year),
                                 style: AppTypography.bodySmall.copyWith(
                                   color: MobileSurface.text,
                                   fontWeight: FontWeight.w700,
@@ -213,12 +214,13 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                           ),
                         ),
                         isDownloading
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 24,
                                 height: 24,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  semanticsLabel: 'Telechargement en cours',
+                                  semanticsLabel:
+                                      context.l10n.payrollDownloading,
                                 ),
                               )
                             : IconButton(
@@ -226,7 +228,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                                   Icons.picture_as_pdf,
                                   color: AppColors.info,
                                 ),
-                                tooltip: 'Telecharger le bulletin PDF',
+                                tooltip: context.l10n.payrollDownloadPayslip,
                                 onPressed: payroll.pdfPath != null
                                     ? () => _downloadPdf(payroll.id)
                                     : null,
@@ -236,7 +238,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                             Icons.folder_copy_outlined,
                             color: AppColors.warning,
                           ),
-                          tooltip: 'Documents de paiement',
+                          tooltip: context.l10n.payrollPaymentDocumentsTitle,
                           onPressed: () => _showPaymentDocuments(payroll.id),
                         ),
                       ],
@@ -251,9 +253,9 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
             children: [
               _SummaryCard(summaryAsync: summaryAsync),
               const SizedBox(height: 120),
-              const Center(
+              Center(
                 child: CircularProgressIndicator(
-                  semanticsLabel: 'Chargement des fiches de paie',
+                  semanticsLabel: context.l10n.payrollLoading,
                 ),
               ),
             ],
@@ -318,7 +320,7 @@ class _PayrollDocumentsSheet extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Documents paiement',
+                    context.l10n.payrollPaymentDocuments,
                     style: AppTypography.bodySmall.copyWith(
                       color: MobileSurface.text,
                       fontWeight: FontWeight.w800,
@@ -339,7 +341,7 @@ class _PayrollDocumentsSheet extends StatelessWidget {
             documentsAsync.when(
               data: (documents) => documents.isEmpty
                   ? Text(
-                      'Aucun document genere pour ce cycle. Les recus apparaitront apres paiement.',
+                      context.l10n.payrollNoCycleDocuments,
                       style: AppTypography.caption.copyWith(
                         color: MobileSurface.secondary,
                       ),
@@ -362,7 +364,7 @@ class _PayrollDocumentsSheet extends StatelessWidget {
                 backgroundColor: MobileSurface.surface,
               ),
               error: (_, __) => Text(
-                'Documents temporairement indisponibles',
+                context.l10n.payrollDocsUnavailable,
                 style: AppTypography.caption.copyWith(
                   color: MobileSurface.secondary,
                 ),
@@ -465,14 +467,14 @@ class _SummaryCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Solde equipe',
+                        context.l10n.payrollTeamBalance,
                         style: AppTypography.bodySmall.copyWith(
                           color: MobileSurface.text,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                       Text(
-                        '${summary.items.length} collaborateur(s)',
+                        context.l10n.payrollTeamMembers(summary.items.length),
                         style: AppTypography.caption.copyWith(
                           color: MobileSurface.secondary,
                         ),
@@ -484,13 +486,13 @@ class _SummaryCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _MoneyLine(
-              label: 'Reste a payer',
+              label: context.l10n.payrollRemainingToPay,
               value: summary.remaining,
               color: AppColors.rh,
             ),
             const SizedBox(height: 8),
             _MoneyLine(
-              label: 'Avances deduites',
+              label: context.l10n.payrollAdvancesDeducted,
               value: summary.advances,
               color: AppColors.warning,
             ),
@@ -560,16 +562,16 @@ class _SummaryCard extends StatelessWidget {
           ],
         ),
       ),
-      loading: () => const MobilePanel(
+      loading: () => MobilePanel(
         child: LinearProgressIndicator(
           minHeight: 3,
           color: AppColors.rh,
           backgroundColor: MobileSurface.surface,
         ),
       ),
-      error: (_, __) => const MobilePanel(
+      error: (_, __) => MobilePanel(
         child: Text(
-          'Resume paie temporairement indisponible',
+          context.l10n.payrollSummaryUnavailable,
           style: TextStyle(color: MobileSurface.secondary),
         ),
       ),
