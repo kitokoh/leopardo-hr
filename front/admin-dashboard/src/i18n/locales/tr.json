@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-24T00:00:00Z",
+  "_updated_at": "2026-08-25T00:00:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -2974,5 +2974,30 @@
   "settingsEdgeOptionalHint": "Opsiyonel: İnternet olmadan yoklama için sitedeki Edge sunucusunu gösterin.",
   "settingsPrefsUnavailable": "Tercihler şu anda kullanılamıyor. Daha sonra yenilemek için çekin.",
   "teamQrPrefilledHint": "Profil QR'dan ön dolduruldu. Bu şirket için benzersiz iş e-postasını girin.",
-  "settingsBiometryPendingHint": "Gönderildikten sonra biyometrik verileriniz beklemede kalır. Her ilk aktivasyon veya değişiklik yönetici/İK onayı gerektirir."
+  "settingsBiometryPendingHint": "Gönderildikten sonra biyometrik verileriniz beklemede kalır. Her ilk aktivasyon veya değişiklik yönetici/İK onayı gerektirir.",
+  "accountingActivation": {
+    "title": "Muhasebeyi Etkinleştir",
+    "subtitle": "Modülü birkaç adımda kurun: kontrol listesi ayarları, test kişisini ve örnek faturayı doğrular.",
+    "stepsTitle": "Etkinleştirme kontrol listesi",
+    "stepSettings": "Muhasebe ayarları",
+    "stepSettingsDone": "Muhasebe ayarları — tamam",
+    "stepSettingsTodo": "Muhasebe ayarları — yapılacak",
+    "stepContact": "Test kişisi",
+    "stepContactDone": "Test kişisi — oluşturuldu",
+    "stepContactTodo": "Test kişisi — oluşturulacak",
+    "stepExampleInvoice": "Örnek fatura",
+    "stepExampleInvoiceDone": "Örnek fatura — oluşturuldu",
+    "stepExampleInvoiceTodo": "Örnek fatura — oluşturulacak",
+    "done": "Tamam",
+    "todo": "Yapılacak",
+    "activateButton": "Etkinleştirmeyi tamamla",
+    "activating": "Etkinleştiriliyor…",
+    "completedTitle": "Muhasebe etkinleştirildi",
+    "completedBody": "Muhasebe modülü hazır: ayarlar, kişi ve örnek fatura yerinde.",
+    "goToModule": "Muhasebe modülünü aç",
+    "loadError": "Etkinleştirme durumu yüklenemedi. Tekrar deneyin.",
+    "completeError": "Etkinleştirme başarısız oldu. Tekrar deneyin.",
+    "retry": "Yeniden dene",
+    "loading": "Yükleniyor…"
+  }
 }

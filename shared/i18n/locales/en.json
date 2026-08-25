@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-24T00:00:00Z",
+  "_updated_at": "2026-08-25T00:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -2974,5 +2974,30 @@
   "settingsEdgeOptionalHint": "Optional: point to an on-site Edge server to clock in without Internet.",
   "settingsPrefsUnavailable": "Preferences unavailable right now. Pull to refresh later.",
   "teamQrPrefilledHint": "Profile pre-filled from QR. Fill in the unique work email for this company.",
-  "settingsBiometryPendingHint": "Once submitted, your biometric data stays pending. Any first activation or change requires manager/HR approval."
+  "settingsBiometryPendingHint": "Once submitted, your biometric data stays pending. Any first activation or change requires manager/HR approval.",
+  "accountingActivation": {
+    "title": "Activate Accounting",
+    "subtitle": "Set up the module in a few steps: the checklist verifies settings, the test contact and the sample invoice.",
+    "stepsTitle": "Activation checklist",
+    "stepSettings": "Accounting settings",
+    "stepSettingsDone": "Accounting settings — done",
+    "stepSettingsTodo": "Accounting settings — to do",
+    "stepContact": "Test contact",
+    "stepContactDone": "Test contact — created",
+    "stepContactTodo": "Test contact — to create",
+    "stepExampleInvoice": "Sample invoice",
+    "stepExampleInvoiceDone": "Sample invoice — created",
+    "stepExampleInvoiceTodo": "Sample invoice — to create",
+    "done": "Done",
+    "todo": "To do",
+    "activateButton": "Complete activation",
+    "activating": "Activating…",
+    "completedTitle": "Accounting activated",
+    "completedBody": "The Accounting module is ready: settings, contact and sample invoice are in place.",
+    "goToModule": "Open the Accounting module",
+    "loadError": "Unable to load the activation status. Please try again.",
+    "completeError": "Activation failed. Please try again.",
+    "retry": "Retry",
+    "loading": "Loading…"
+  }
 }
