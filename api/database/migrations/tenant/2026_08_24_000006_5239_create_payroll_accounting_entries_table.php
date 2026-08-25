@@ -22,6 +22,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (schemaTableExists('payroll_accounting_entries')) {
+            return; // renommage #5431 : re-run sans effet (table déjà créée)
+        }
+
         Schema::create('payroll_accounting_entries', function (Blueprint $table): void {
             $table->id();
             $table->uuid('company_id')->index();

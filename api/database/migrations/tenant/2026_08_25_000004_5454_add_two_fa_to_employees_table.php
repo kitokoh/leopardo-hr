@@ -15,6 +15,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (schemaHasColumn('employees', 'two_fa_secret')) {
+            return; // renommage #5431 : re-run sans effet (colonnes déjà présentes)
+        }
+
         Schema::table('employees', function (Blueprint $table): void {
             $table->string('two_fa_secret')->nullable()->after('password_hash');
             $table->timestamp('two_fa_enabled_at')->nullable()->after('two_fa_secret');
