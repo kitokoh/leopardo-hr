@@ -5406,10 +5406,10 @@ paths:
       description: |
         Upsert (une ligne unique par entreprise). Chaque champ est optionnel ;
         seuls les champs fournis remplacent la valeur existante. Devise limitee
-        aux devises du registre CountryDefaults (multi-devises hors perimetre
-        v1, #5270) ; langue des documents fr/ar/tr/en ; tva_rates : liste de
-        {label, rate} avec taux entre 0 et 100 % ; number_series : prefixe par
-        type de document (DocumentType).
+        aux devises du registre CountryDefaults (multi-devises #5270) ; langue
+        des documents fr/ar/tr/en ; tva_rates : liste de {label, rate} avec
+        taux entre 0 et 100 % ; number_series : prefixe par type de document
+        (DocumentType).
       requestBody:
         required: true
         content:
@@ -5464,6 +5464,40 @@ paths:
                 properties:
                   data:
                     $ref: "#/components/schemas/VatDeclaration"
+        "422":
+          $ref: "#/components/responses/Validation422"
+        "403":
+          $ref: "#/components/responses/Error401"
+
+  /accounting/currency/convert:
+    post:
+      tags: ["Accounting"]
+      summary: "Convertir un montant entre deux devises (multi-devises #5270)"
+      description: |
+        Utilitaire de conversion HT/TVA/TTC entre la devise d'un document et la
+        devise de reference de l'entreprise. Calcul pur, aucun etat persiste.
+        Regles documentees (.specify/features/5270-multi-currency/spec.md) :
+        arrondi half-up a 2 decimales ; devises identiques -> taux 1 (identite,
+        source 'identity') ; sinon le taux manuel est OBLIGATOIRE (le
+        convertisseur ne fabrique jamais de taux — fail-closed). `rate` = valeur
+        de 1 unite de `from_currency` exprimee dans `to_currency` (multiplication).
+        Source externe : interface CurrencyRateProviderInterface (v1 : manuel).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConvertCurrencyPayload"
+      responses:
+        "200":
+          description: "Montant converti (devise source + cible, taux et source)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ConvertCurrencyResult"
         "422":
           $ref: "#/components/responses/Validation422"
         "403":
@@ -23675,6 +23709,7 @@ components:
         currency:
           type: string
           nullable: true
+          description: "Code ISO 4217 parmi les devises du registre CountryDefaults (multi-devises #5270). Absent a la creation : devise par defaut de l'entreprise (settings -> pays)."
         payment_terms:
           type: string
           nullable: true
@@ -23738,6 +23773,7 @@ components:
         currency:
           type: string
           nullable: true
+          description: "Code ISO 4217 parmi les devises du registre CountryDefaults (multi-devises #5270)."
         document_language:
           type: string
           enum: ["fr", "ar", "tr", "en"]
@@ -23825,7 +23861,51 @@ components:
                 type: number
               total:
                 type: number
+    ConvertCurrencyPayload:
+      type: object
+      description: "Conversion multi-devises #5270 — taux manuel obligatoire dès que les devises diffèrent."
+      required:
+        - amount
+        - from_currency
+        - to_currency
+      properties:
+        amount:
+          type: number
+          exclusiveMinimum: 0
+        from_currency:
+          type: string
+          description: "Code ISO 4217 (3 lettres) parmi les devises du registre CountryDefaults."
+        to_currency:
+          type: string
+          description: "Code ISO 4217 (3 lettres) parmi les devises du registre CountryDefaults."
+        rate:
+          type: number
+          exclusiveMinimum: 0
+          nullable: true
+          description: "Valeur de 1 unité de from_currency dans to_currency. Requis si from_currency != to_currency."
 
+    ConvertCurrencyResult:
+      type: object
+      description: "Résultat de conversion — arrondi half-up à 2 décimales, source du taux (identity | manual | provider)."
+      properties:
+        amount:
+          type: number
+        from_currency:
+          type: string
+        to_currency:
+          type: string
+        rate:
+          type: number
+        source:
+          type: string
+          enum: ["identity", "manual"]
+        converted_amount:
+          type: number
+        rounding:
+          type: string
+          enum: ["half_up"]
+        decimals:
+          type: integer
     MarketingLeadContact:
       type: object
       properties:

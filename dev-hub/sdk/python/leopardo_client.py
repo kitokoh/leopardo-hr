@@ -132,14 +132,6 @@ class LeopardoClient:
         """Refuser une absence (déprécié — utiliser POST)"""
         return self.request("PUT", "/absences/{absence}/reject", **kwargs)
 
-    def get_accounting_activation(self, **kwargs):
-        """Etat d'activation du module Comptabilite (check-list du wizard)"""
-        return self.request("GET", "/accounting/activation", **kwargs)
-
-    def post_accounting_activation(self, **kwargs):
-        """Executer l'activation guidee du module Comptabilite (wizard)"""
-        return self.request("POST", "/accounting/activation", **kwargs)
-
     def get_accounting_contacts(self, **kwargs):
         """Lister les contacts client/fournisseur"""
         return self.request("GET", "/accounting/contacts", **kwargs)
@@ -160,13 +152,9 @@ class LeopardoClient:
         """Mettre a jour un contact client/fournisseur"""
         return self.request("PUT", "/accounting/contacts/{contact}", **kwargs)
 
-    def get_accounting_dashboard(self, **kwargs):
-        """Tableau de bord comptable — factures emises, encaissements, impayes, depenses"""
-        return self.request("GET", "/accounting/dashboard", **kwargs)
-
-    def get_accounting_dashboard_export(self, **kwargs):
-        """Export CSV de la liste des impayes"""
-        return self.request("GET", "/accounting/dashboard/export", **kwargs)
+    def post_accounting_currency_convert(self, **kwargs):
+        """Convertir un montant entre deux devises (multi-devises #5270)"""
+        return self.request("POST", "/accounting/currency/convert", **kwargs)
 
     def get_accounting_documents(self, **kwargs):
         """Lister les documents comptables du tenant (pagine, filtres, #5223)"""
@@ -189,7 +177,7 @@ class LeopardoClient:
         return self.request("POST", "/accounting/documents/{document}/credit-note", **kwargs)
 
     def post_accounting_documents_by_document_payments(self, **kwargs):
-        """Enregistrer un paiement"""
+        """Enregistrer un encaissement (→ partiellement paye / paye, #5223)"""
         return self.request("POST", "/accounting/documents/{document}/payments", **kwargs)
 
     def post_accounting_documents_by_document_send(self, **kwargs):
@@ -1440,14 +1428,6 @@ class LeopardoClient:
         """Modifier une note de frais"""
         return self.request("PUT", "/expense-claims/{expenseClaim}", **kwargs)
 
-    def get_expense_claims_by_expenseclaim_accounting_entries(self, **kwargs):
-        """Ecritures comptables d'une note de frais approuvee (#5235)"""
-        return self.request("GET", "/expense-claims/{expenseClaim}/accounting-entries", **kwargs)
-
-    def post_expense_claims_by_expenseclaim_accounting_entries_regenerate(self, **kwargs):
-        """Regenerer les ecritures comptables d'une note (comptable, idempotent)"""
-        return self.request("POST", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", **kwargs)
-
     def post_expense_claims_by_expenseclaim_approve(self, **kwargs):
         """Approuver une note de frais"""
         return self.request("POST", "/expense-claims/{expenseClaim}/approve", **kwargs)
@@ -1461,7 +1441,7 @@ class LeopardoClient:
         return self.request("POST", "/expense-claims/{expenseClaim}/reject", **kwargs)
 
     def put_expense_claims_by_expenseclaim_reject(self, **kwargs):
-        """Rejeter une note de frais (deprecie)"""
+        """Refuser une note de frais (déprécié — utiliser POST)"""
         return self.request("PUT", "/expense-claims/{expenseClaim}/reject", **kwargs)
 
     def put_expense_claims_by_expenseclaim_submit(self, **kwargs):
@@ -2048,22 +2028,6 @@ class LeopardoClient:
         """Confirmer la reception d'un paiement"""
         return self.request("POST", "/payment-confirmations/{paymentItem}/confirm", **kwargs)
 
-    def get_payment_orders(self, **kwargs):
-        """Lister les ordres de virement du tenant (pagine)"""
-        return self.request("GET", "/payment-orders", **kwargs)
-
-    def get_payment_orders_by_paymentorder(self, **kwargs):
-        """Detail d'un ordre de virement"""
-        return self.request("GET", "/payment-orders/{paymentOrder}", **kwargs)
-
-    def post_payment_orders_by_paymentorder_execute(self, **kwargs):
-        """Executer un ordre de virement prepare (comptable)"""
-        return self.request("POST", "/payment-orders/{paymentOrder}/execute", **kwargs)
-
-    def post_payment_orders_by_paymentorder_reconcile(self, **kwargs):
-        """Rapprocher un ordre de virement execute (comptable)"""
-        return self.request("POST", "/payment-orders/{paymentOrder}/reconcile", **kwargs)
-
     def get_payments_by_payrollrun_documents(self, **kwargs):
         """Documents de paiement d.un cycle paie"""
         return self.request("GET", "/payments/{payrollRun}/documents", **kwargs)
@@ -2079,14 +2043,6 @@ class LeopardoClient:
     def get_payroll_runs_by_payrollrun(self, **kwargs):
         """Voir une session de paie"""
         return self.request("GET", "/payroll-runs/{payrollRun}", **kwargs)
-
-    def get_payroll_runs_by_payrollrun_accounting_entries(self, **kwargs):
-        """Ecrires comptables d'un run de paie valide (#5239)"""
-        return self.request("GET", "/payroll-runs/{payrollRun}/accounting-entries", **kwargs)
-
-    def post_payroll_runs_by_payrollrun_accounting_entries_regenerate(self, **kwargs):
-        """Regenerer les ecritures comptables d'un run (comptable, idempotent)"""
-        return self.request("POST", "/payroll-runs/{payrollRun}/accounting-entries/regenerate", **kwargs)
 
     def get_payroll_runs_by_payrollrun_anomalies(self, **kwargs):
         """Rapport d'anomalies pre-cloture (F-20)"""
@@ -2159,10 +2115,6 @@ class LeopardoClient:
     def listpayrollrunpayslips(self, **kwargs):
         """Lister les bulletins de paie d'une session"""
         return self.request("GET", "/payroll-runs/{payrollRun}/pay-slips", **kwargs)
-
-    def post_payroll_runs_by_payrollrun_payment_order(self, **kwargs):
-        """Preparer un ordre de virement pour un run valide (comptable)"""
-        return self.request("POST", "/payroll-runs/{payrollRun}/payment-order", **kwargs)
 
     def listpayrollrunregularizations(self, **kwargs):
         """Lister les régularisations d'un run (DZ-DEPTH #1818)"""

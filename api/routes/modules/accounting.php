@@ -5,12 +5,12 @@ declare(strict_types=1);
 /**
  * Routes Module Comptabilité — #5222 contacts, #5223 documents, #5225 portail
  * client, #5229 trésorerie (paiements/rapprochement/relances), #5232 settings,
- * #5234 journal, #5230 tableaux de bord, #5236 → #5240 (Phase C), #5271 TVA.
+ * #5234 journal, #5230 tableaux de bord, #5270 multi-devises, #5271 TVA.
  *
  * RBAC (matrice comptabilité, COMPTABILITE_CONCEPTION.md §5) :
  *  - contacts/settings/TVA/dashboard : `comptable` (CRUD) + `principal`
  *    (lecture + paramétrage) ;
- *  - documents, trésorerie, journal, audit : `principal`/`comptable` ;
+ *  - documents, trésorerie, journal, audit, devises : `principal`/`comptable` ;
  *  - portail client : endpoints PUBLICS — le token de partage est la
  *    credential (accès RGPD limité au document partagé, pattern
  *    CabinetShare #1817).
@@ -21,8 +21,8 @@ declare(strict_types=1);
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingActivationController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
-
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDashboardController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
@@ -42,7 +42,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     ->prefix('accounting')
     ->group(function (): void {
 
-        // ── Contacts / settings / TVA / activation / dashboard (RBAC comptable + principal)
+        // ── Contacts / settings / TVA / dashboard (RBAC comptable + principal)
         Route::middleware('api.manager:comptable,principal')->group(function (): void {
             Route::get('/contacts', [AccountingContactController::class, 'index']);
             Route::post('/contacts', [AccountingContactController::class, 'store']);
@@ -57,17 +57,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // Déclaration TVA par période (issue #5271).
             Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
 
-            // Wizard d'activation Comptabilité (issue #5288) — check-list + complétion idempotente.
-            Route::get('/activation', [AccountingActivationController::class, 'show']);
-            Route::post('/activation', [AccountingActivationController::class, 'complete']);
-
-            // Activation guidée du module (issue #5288) — wizard comptable/principal.
-            Route::get('/activation', [AccountingActivationController::class, 'show']);
-            Route::post('/activation', [AccountingActivationController::class, 'complete']);
-
             // Tableaux de bord comptables (issue #5230) — rapports manager/comptable.
             Route::get('/dashboard', [AccountingDashboardController::class, 'show']);
             Route::get('/dashboard/export', [AccountingDashboardController::class, 'export']);
+
+            // Wizard d'activation Comptabilité (issue #5288) — check-list + complétion idempotente.
+            Route::get('/activation', [AccountingActivationController::class, 'show']);
+            Route::post('/activation', [AccountingActivationController::class, 'complete']);
         });
 
         // ── Documents (Phase A, #5223) — RBAC principal/comptable ───────────
@@ -84,7 +80,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/audit-logs', [AccountingAuditController::class, 'index']);
         });
 
-        // ── Trésorerie (issue #5229) — paiements, rapprochement, relances ───
+        // ── Trésorerie / journal / devises (RBAC principal/comptable) ───────
         Route::middleware('api.manager:principal,comptable')->group(function (): void {
             Route::get('/payments', [AccountingPaymentController::class, 'index']);
             Route::post('/documents/{document}/payments', [AccountingPaymentController::class, 'store'])->whereNumber('document');
@@ -96,5 +92,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/journal/export.csv', [AccountingJournalController::class, 'export']);
             Route::post('/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
             Route::post('/documents/{document}/journal', [AccountingJournalController::class, 'postDocument']);
+
+            // ── Multi-devises (issue #5270) — conversion de devises.
+            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
         });
     });
