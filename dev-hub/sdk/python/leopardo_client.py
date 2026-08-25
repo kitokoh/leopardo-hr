@@ -152,6 +152,10 @@ class LeopardoClient:
         """Mettre a jour un contact client/fournisseur"""
         return self.request("PUT", "/accounting/contacts/{contact}", **kwargs)
 
+    def post_accounting_currency_convert(self, **kwargs):
+        """Convertir un montant entre deux devises (multi-devises #5270)"""
+        return self.request("POST", "/accounting/currency/convert", **kwargs)
+
     def get_accounting_documents(self, **kwargs):
         """Lister les documents comptables du tenant (pagine, filtres, #5223)"""
         return self.request("GET", "/accounting/documents", **kwargs)
