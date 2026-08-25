@@ -20634,7 +20634,20 @@ paths:
           description: "Préférence de l'employé"
         "401":
           $ref: "#/components/responses/Error401"
-  /accounting/journal:
+  /expense-claims/{expenseClaim}/accounting-entries:
+    get:
+      tags: ["Expenses"]
+      summary: "Ecritures comptables d'une note de frais approuvee (#5235)"
+      description: "Lignes d'ecriture (debit charge / credit personnel 425) generees automatiquement a l'approbation de la note (observer Eloquent) depuis le module Expense. Reserve aux managers principal/comptable, isolation tenant (404)."
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des ecritures de la note"
+/accounting/journal:
     get:
       tags: ["Accounting"]
       summary: "Journal comptable par periode"
@@ -20653,7 +20666,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  period: { type: string }
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ExpenseAccountingEntry"
+period: { type: string }
                   balanced: { type: boolean }
                   closed: { type: boolean }
                   totals:
@@ -20680,7 +20697,22 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
-  /accounting/journal/export.csv:
+        "404":
+          description: "Note introuvable (isolation tenant)"
+  /expense-claims/{expenseClaim}/accounting-entries/regenerate:
+    post:
+      tags: ["Expenses"]
+      summary: "Regenerer les ecritures comptables d'une note (comptable, idempotent)"
+      description: "Remplace les lignes existantes de la note (contrainte unique note/compte). Reserve au role comptable (403 sinon). Refuse un journal desequilibre (422)."
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Regeneration effectuee"
+/accounting/journal/export.csv:
     get:
       tags: ["Accounting"]
       summary: "Export CSV du journal (expert-comptable)"
@@ -20720,7 +20752,24 @@ paths:
               schema:
                 type: object
                 properties:
-                  period: { type: string }
+                  expense_claim_id: { type: integer }
+                  generated_lines: { type: integer }
+                  balance: { type: number, format: float }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Role comptable requis"
+        "404":
+          description: "Note introuvable (isolation tenant)"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  # =============================================
+  # ITERATION 33.4 — ADMIN, INTEGRATIONS
+  # =============================================
+
+  # --- Approvals ---
+period: { type: string }
                   closed_at: { type: string, format: date-time, nullable: true }
         "401":
           $ref: "#/components/responses/Error401"
@@ -27282,3 +27331,17 @@ components:
             total_sessions: { type: integer }
             auto_approved_rate: { type: number, format: float }
     # ── End SmartAttendance schemas ──
+    ExpenseAccountingEntry:
+      type: object
+      properties:
+        id: { type: integer }
+        expense_claim_id: { type: integer }
+        employee_id: { type: integer, nullable: true }
+        date: { type: string, format: date }
+        account_code: { type: string }
+        account_label: { type: string }
+        debit: { type: number, format: float }
+        credit: { type: number, format: float }
+        reference: { type: string }
+        created_by: { type: integer, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }
