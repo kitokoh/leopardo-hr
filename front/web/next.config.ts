@@ -149,6 +149,18 @@ const nextConfig: NextConfig = {
       ],
     },
     {
+      // Issue #5429 — URL tokenisées du portail client : le token ne doit
+      // JAMAIS fuiter dans l'en-tête Referer (règle APRÈS la règle générique
+      // pour priorité sur le Referrer-Policy global).
+      source: "/documents/shared/:path*",
+      headers: [
+        {
+          key: "Referrer-Policy",
+          value: "no-referrer",
+        },
+      ],
+    },
+    {
       source: "/sitemap.xml",
       headers: [
         {
