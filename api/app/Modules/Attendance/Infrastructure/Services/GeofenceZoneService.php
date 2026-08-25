@@ -7,7 +7,7 @@ namespace App\Modules\Attendance\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\Site;
-use App\Modules\SmartAttendance\Domain\Exceptions\OutsideGeofenceException;
+use App\Modules\Attendance\Domain\Exceptions\OutsideGeofenceException;
 
 /**
  * Chemin d'usage UNIQUE de la géofence (ADR-0016 Phase 2, issue #5353).
@@ -31,7 +31,8 @@ class GeofenceZoneService
 {
     public function __construct(
         private readonly AttendanceGeofenceService $geofenceService,
-    ) {}
+    ) {
+    }
 
     /**
      * Évaluation pure de la zone — ne jette jamais.

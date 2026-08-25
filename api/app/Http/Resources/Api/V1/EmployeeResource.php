@@ -12,6 +12,7 @@ use App\Shared\Models\Language;
 use DateTimeInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection;
 
 /**
  * @mixin Employee
@@ -115,6 +116,7 @@ class EmployeeResource extends JsonResource
             // Présent uniquement quand la relation est chargée (show), jamais
             // sur les listes (évite un N+1 sur index).
             'documents_status' => $this->whenLoaded('employeeDocuments', function (): array {
+                // whenLoaded garantit que la relation est chargée (non nulle) ici.
                 /** @var Collection<int, EmployeeDocument> $documents */
                 $documents = $this->employeeDocuments;
 
