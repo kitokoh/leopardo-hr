@@ -6582,4 +6582,29 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settingsDigitalLockerSubtitle =>
       'CV, contrats, diplômes et documents avec visibilité contrôlée.';
+
+  @override
+  String settingsHistoryCompanyPeriod(String companyName, String period) {
+    return '$companyName - $period';
+  }
+
+  @override
+  String settingsStatusCurrent(String label) {
+    return 'Statut actuel : $label';
+  }
+
+  @override
+  String settingsUpdateFailed(String error) {
+    return 'Mise à jour impossible : $error';
+  }
+
+  @override
+  String settingsQrRejected(String error) {
+    return 'QR refusé : $error';
+  }
+
+  @override
+  String settingsSubmitFailed(String error) {
+    return 'Échec de soumission : $error';
+  }
 }

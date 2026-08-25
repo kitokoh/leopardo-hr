@@ -12114,6 +12114,36 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'CV, contrats, diplômes et documents avec visibilité contrôlée.'**
   String get settingsDigitalLockerSubtitle;
+
+  /// No description provided for @settingsHistoryCompanyPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'{companyName} - {period}'**
+  String settingsHistoryCompanyPeriod(String companyName, String period);
+
+  /// No description provided for @settingsStatusCurrent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut actuel : {label}'**
+  String settingsStatusCurrent(String label);
+
+  /// No description provided for @settingsUpdateFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mise à jour impossible : {error}'**
+  String settingsUpdateFailed(String error);
+
+  /// No description provided for @settingsQrRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'QR refusé : {error}'**
+  String settingsQrRejected(String error);
+
+  /// No description provided for @settingsSubmitFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de soumission : {error}'**
+  String settingsSubmitFailed(String error);
 }
 
 class _AppLocalizationsDelegate

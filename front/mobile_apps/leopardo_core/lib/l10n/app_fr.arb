@@ -2014,5 +2014,54 @@
   "settingsPortableIdentitySubtitle": "Historique entreprise, poste, statut et disponibilité.",
   "settingsPortableIdentityHint": "Email personnel, récupération et téléphone restent attachés au compte.",
   "settingsDigitalLockerTitle": "Placard numérique",
-  "settingsDigitalLockerSubtitle": "CV, contrats, diplômes et documents avec visibilité contrôlée."
+  "settingsDigitalLockerSubtitle": "CV, contrats, diplômes et documents avec visibilité contrôlée.",
+  "settingsHistoryCompanyPeriod": "{companyName} - {period}",
+  "@settingsHistoryCompanyPeriod": {
+    "placeholders": {
+      "companyName": {
+        "type": "String",
+        "example": "Acme"
+      },
+      "period": {
+        "type": "String",
+        "example": "2026-08"
+      }
+    }
+  },
+  "settingsStatusCurrent": "Statut actuel : {label}",
+  "@settingsStatusCurrent": {
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "En ligne"
+      }
+    }
+  },
+  "settingsUpdateFailed": "Mise à jour impossible : {error}",
+  "@settingsUpdateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsQrRejected": "QR refusé : {error}",
+  "@settingsQrRejected": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsSubmitFailed": "Échec de soumission : {error}",
+  "@settingsSubmitFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  }
 }
