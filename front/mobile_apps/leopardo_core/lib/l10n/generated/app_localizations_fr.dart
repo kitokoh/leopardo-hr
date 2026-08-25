@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1142,7 +1143,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-      Object date, Object hours, Object range, Object status) {
+    Object date,
+    Object hours,
+    Object range,
+    Object status,
+  ) {
     return 'Journée du $date, statut $status, $range, $hours.';
   }
 
@@ -4200,6 +4205,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get billingCheckoutFailed =>
       'Impossible de créer la session de paiement.';
+
+  @override
+  String get billingRedirectUrlInvalid =>
+      'Les URLs de redirection doivent appartenir au site autorisé.';
 
   @override
   String get contractsListSubtitle =>

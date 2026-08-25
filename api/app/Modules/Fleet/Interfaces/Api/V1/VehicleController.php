@@ -21,19 +21,25 @@ class VehicleController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        $filters = $request->validate([
+            'status' => ['sometimes', 'string', Rule::in(['active', 'maintenance', 'decommissioned'])],
+            'type' => ['sometimes', 'string', Rule::in(['car', 'van', 'truck', 'motorcycle', 'bus'])],
+            'per_page' => ['sometimes', 'integer', 'min:0', 'max:1000'],
+        ]);
+
         /** @var Employee $user */
         $user = $request->user();
         $query = Vehicle::where('company_id', $user->company_id);
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->input('status'));
+        if (isset($filters['status'])) {
+            $query->where('status', $filters['status']);
         }
-        if ($request->filled('type')) {
-            $query->where('type', $request->input('type'));
+        if (isset($filters['type'])) {
+            $query->where('type', $filters['type']);
         }
 
         $vehicles = $query->orderByDesc('created_at')
-            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
+            ->paginate(max(1, min(100, (int) ($filters['per_page'] ?? 20))));
 
         return VehicleResource::collection($vehicles)->response();
     }

@@ -1781,7 +1781,8 @@
     "period_label": "Dönem",
     "checkout_sandbox_message": "Simüle edilmiş ödeme (sandbox modu). Karttan ücret alınmaz.",
     "checkout_unavailable": "Çevrimiçi ödeme geçici olarak kullanılamıyor. support@leopardo-rh.com adresinden destek ile iletişime geçin.",
-    "checkout_failed": "Ödeme oturumu oluşturulamadı."
+    "checkout_failed": "Ödeme oturumu oluşturulamadı.",
+    "redirect_url_invalid": "Yönlendirme URL'leri yetkili siteye ait olmalıdır."
   },
   "contracts": {
     "list_subtitle": "Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API'sine bağlı.",

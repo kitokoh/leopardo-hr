@@ -1387,6 +1387,8 @@ Note 2026-08-15 (campagne QA complète, issues #2652/#2653/#2654/#2662) : durcis
 - Garde CI : `dev-hub/tools/check-openapi-route-coverage.py` étendu (routes DDD `api/routes/**` incluses, allowlist `openapi-coverage-allowlist.txt` ajustée — 524/706, 0 drift) — un endpoint non documenté OpenAPI fait échouer la CI.
 - SDK régénérés (`dev-hub/sdk/javascript/leopardoClient.js`, `dev-hub/sdk/python/leopardo_client.py`, `dev-hub/openapi/v1.yaml`, `MANIFEST.json`) alignés sur `api/openapi.yaml` (534 opérations).
 
+Note 2026-08-22 (PA2-SEC-INPUTS) : toute nouvelle surface d'entree doit etre testee en rejet fail-closed avant l'action metier. Le lot de stabilisation couvre les signatures webhook et headers malformes, les parametres camera (`camera_id`, token, IP), les filtres Fleet/Cabinet allowlistes et bornes, les en-tetes CSV employes (colonnes inconnues ou dupliquees, contenu invalide, volume maximal), les uploads audio IA (MIME, taille, langue, conversation_id et voice) ainsi que les URLs de redirection checkout limitees a l'origine autorisee. Ajouter un cas 422 ou 401 pour toute valeur hors contrat et verifier qu'aucune donnee sensible n'apparaisse dans les URLs ou logs.
+
 Note 2026-08-22 (issue #5268) : rapports de pointage par période — `GET /attendance/monthly-report` généralisé en moteur de rapports.
 - `period=day|week|month` (défaut `month`, rétro-compatible) ; ancres `date` (Y-m-d), `week` (Y-m-d — semaine ISO lundi→dimanche), `month` (Y-m), interprétées dans le fuseau entreprise.
 - Filtres `department_id` (équipe) et `employee_id` (fiche individuelle) ; `format=json|csv|pdf`.

@@ -9,6 +9,19 @@ test.describe('Marketing funnel preview', () => {
   test.setTimeout(90_000);
 
   test.beforeEach(async ({ page }) => {
+    await page.route('**/api/v1/supported-countries', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: [
+            { country: 'DZ', label: 'Algérie', available: true },
+            { country: 'FR', label: 'France', available: true },
+          ],
+        }),
+      });
+    });
+
     // Mock marketing form APIs to avoid dependency on live backend and provisioning delays
     await page.route('**/api/forms/signup', async (route) => {
       await route.fulfill({
@@ -85,6 +98,8 @@ test.describe('Marketing funnel preview', () => {
     await signupForm.getByLabel(/entreprise|company/i).fill('Leopardo Trial Co');
     await signupForm.getByLabel(/votre role|your role/i).selectOption('manager');
     await signupForm.getByLabel(/taille equipe|team size/i).selectOption('11-50');
+    await expect(signupForm.getByRole('option', { name: /algérie|algeria/i })).toBeAttached();
+    await signupForm.getByLabel(/pays|country/i).selectOption('DZ');
     await signupForm.locator('input[type="checkbox"]').check();
     const submitButton = signupForm.locator('button[type="submit"]');
     await expect(submitButton).toBeVisible();

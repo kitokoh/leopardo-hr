@@ -4494,13 +4494,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 6
 			path: tests/Feature/CompanyBrandingControllerTest.php
 
 		-
 			message: '#^Parameter \#1 \$user of method Illuminate\\Foundation\\Testing\\TestCase\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 4
+			count: 6
 			path: tests/Feature/CompanyBrandingControllerTest.php
 
 		-
