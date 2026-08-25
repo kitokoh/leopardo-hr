@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Domain\Models;
 
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -26,7 +27,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $confirmed_at
  * @property array<string, mixed>|null $metadata
  * @property-read PayrollRun|null $payrollRun
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class PaymentBatch extends Model
 {

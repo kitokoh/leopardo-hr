@@ -95,6 +95,8 @@ return [
         'statement_year_invalid' => 'سنة مالية غير صالحة.',
         'statement_period_invalid' => 'فترة محاسبية غير صالحة (YYYY-MM).',
 
+        'vat_period_invalid' => 'فترة غير صالحة. استخدم صيغة YYYY-MM.',
+
     ],
 
     // تسميات الضريبة الافتراضية (issue #5227)

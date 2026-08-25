@@ -29,7 +29,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $notes
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class EmployeeLoan extends Model
 {

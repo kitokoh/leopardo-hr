@@ -29,7 +29,7 @@ use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules
 class IpresDeclarationGenerator
 {
     public function __construct(
-        private readonly SenegalPayrollRules $rules = new SenegalPayrollRules(),
+        private readonly SenegalPayrollRules $rules = new SenegalPayrollRules,
     ) {}
 
     /**

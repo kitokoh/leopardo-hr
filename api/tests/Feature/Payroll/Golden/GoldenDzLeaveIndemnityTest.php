@@ -21,11 +21,11 @@ class GoldenDzLeaveIndemnityTest extends TestCase
     {
         return [
             // [base, leaveDays, workingDays, refGross12, accrued, expected]
-            '5 j, maintien gagne'   => [60000.0, 5.0, 22.0, 720000.0, 30.0, 13636.36], // 60k×5/22 > 72k×5/30
-            '10 j, 1/10e gagne'     => [60000.0, 10.0, 22.0, 900000.0, 30.0, 30000.0], // 90k×10/30 > 60k×10/22
-            'aucun congé'           => [60000.0, 0.0, 22.0, 720000.0, 30.0, 0.0],
-            'mois complet (22 j)'   => [60000.0, 22.0, 22.0, 720000.0, 30.0, 60000.0], // maintien = 60k > 52,8k
-            'tout l-acquis (30 j)'  => [60000.0, 30.0, 22.0, 720000.0, 30.0, 81818.18], // 60k×30/22 > 72k
+            '5 j, maintien gagne' => [60000.0, 5.0, 22.0, 720000.0, 30.0, 13636.36], // 60k×5/22 > 72k×5/30
+            '10 j, 1/10e gagne' => [60000.0, 10.0, 22.0, 900000.0, 30.0, 30000.0], // 90k×10/30 > 60k×10/22
+            'aucun congé' => [60000.0, 0.0, 22.0, 720000.0, 30.0, 0.0],
+            'mois complet (22 j)' => [60000.0, 22.0, 22.0, 720000.0, 30.0, 60000.0], // maintien = 60k > 52,8k
+            'tout l-acquis (30 j)' => [60000.0, 30.0, 22.0, 720000.0, 30.0, 81818.18], // 60k×30/22 > 72k
         ];
     }
 
@@ -40,7 +40,7 @@ class GoldenDzLeaveIndemnityTest extends TestCase
     ): void {
         $this->assertSame(
             $expected,
-            (new PayrollCalculator())->computeLeaveIndemnity($base, $leaveDays, $workingDays, $refGross, $accrued)
+            (new PayrollCalculator)->computeLeaveIndemnity($base, $leaveDays, $workingDays, $refGross, $accrued)
         );
     }
 }

@@ -7,6 +7,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -19,7 +20,7 @@ use Tests\TestCase;
  */
 class GoldenDzSalaryStructurePerEmployeeTest extends TestCase
 {
-    use \Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     public function test_employees_are_paid_on_their_own_salary_structure(): void
     {
@@ -77,7 +78,7 @@ class GoldenDzSalaryStructurePerEmployeeTest extends TestCase
             'employee_count' => 0,
         ]);
 
-        (new PayrollCalculator())->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
         $slips = $run->paySlips()->get()->keyBy('employee_id');
 

@@ -27,7 +27,8 @@ use Illuminate\Support\Carbon;
  * @property bool $active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class SalaryComponent extends Model
 {

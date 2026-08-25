@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PublicHoliday;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Support\Carbon;
@@ -229,7 +230,7 @@ class PublicHolidayService
 
         $this->forget($countryCode, $year, null);
 
-        $tenantIds = \App\Core\Tenant\Domain\Models\Company::query()
+        $tenantIds = Company::query()
             ->where('country', $countryCode)
             ->pluck('id');
 

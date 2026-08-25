@@ -7,12 +7,12 @@ namespace App\Modules\Accounting\Providers;
 use App\Events\CompanyCreated;
 use App\Modules\Accounting\Application\Listeners\ProvisionAccountingSettings;
 use App\Modules\Accounting\Application\Listeners\ProvisionChartOfAccounts;
+use App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface;
+use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
+use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
+use App\Modules\Accounting\Infrastructure\Services\DocumentPdfRenderer;
 use App\Modules\Accounting\Interfaces\Console\SeedAccountingDemoCommand;
 use Illuminate\Support\Facades\Event;
-use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
-use App\Modules\Accounting\Infrastructure\Services\DocumentPdfRenderer;
-use App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface;
-use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
 use Illuminate\Support\ServiceProvider;
 
 /**

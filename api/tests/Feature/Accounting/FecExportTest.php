@@ -135,8 +135,11 @@ class FecExportTest extends TestCase
      *
      * @return list<array<string, string>>
      */
-    private function parseFecRows(string $csv): array
+    private function parseFecRows(string|false $csv): array
     {
+        if ($csv === false) {
+            $this->fail('La réponse CSV FEC est vide.');
+        }
         $csv = ltrim($csv, "\xEF\xBB\xBF");
         $lines = preg_split('/\r\n/', $csv);
         if ($lines === false) {
@@ -185,7 +188,8 @@ class FecExportTest extends TestCase
         $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
         $response->assertHeader('Content-Disposition', 'attachment; filename="fec-2026-08.csv"');
 
-        $csv = $response->streamedContent();
+        $csv = $response->getContent();
+        $this->assertIsString($csv);
         $this->assertStringStartsWith("\xEF\xBB\xBF", $csv);
         $this->assertStringContainsString(self::FEC_HEADER, $csv);
 
@@ -218,7 +222,7 @@ class FecExportTest extends TestCase
         $response = $this->get('/api/v1/accounting/journal/export-fec?period=2026-08');
         $response->assertOk();
 
-        $rows = $this->parseFecRows($response->streamedContent());
+        $rows = $this->parseFecRows($response->getContent());
         $this->assertCount(6, $rows);
 
         // Même EcritureNum pour toutes les lignes d'une même pièce.
@@ -256,7 +260,7 @@ class FecExportTest extends TestCase
         $response = $this->get('/api/v1/accounting/journal/export-fec?period=2026-08');
         $response->assertOk();
 
-        $rows = $this->parseFecRows($response->streamedContent());
+        $rows = $this->parseFecRows($response->getContent());
 
         $debit = 0.0;
         $credit = 0.0;
@@ -289,7 +293,7 @@ class FecExportTest extends TestCase
         $response = $this->get('/api/v1/accounting/journal/export-fec?period=2026-08');
         $response->assertOk();
 
-        $rows = $this->parseFecRows($response->streamedContent());
+        $rows = $this->parseFecRows($response->getContent());
         $this->assertNotEmpty($rows);
 
         foreach ($rows as $row) {
@@ -346,7 +350,7 @@ class FecExportTest extends TestCase
         $this->actingAsManager($companyA);
         $responseA = $this->get('/api/v1/accounting/journal/export-fec?period=2026-08');
         $responseA->assertOk();
-        $this->assertCount(3, $this->parseFecRows($responseA->streamedContent()));
+        $this->assertCount(3, $this->parseFecRows($responseA->getContent()));
     }
 
     public function test_export_maps_journal_codes_labels_and_amounts(): void
@@ -364,7 +368,7 @@ class FecExportTest extends TestCase
         $response = $this->get('/api/v1/accounting/journal/export-fec?period=2026-08');
         $response->assertOk();
 
-        $rows = $this->parseFecRows($response->streamedContent());
+        $rows = $this->parseFecRows($response->getContent());
         $this->assertCount(5, $rows);
 
         // Facture : 411 et 70 → VE, 4457 → OD (ni 6xx ni 7xx/411).

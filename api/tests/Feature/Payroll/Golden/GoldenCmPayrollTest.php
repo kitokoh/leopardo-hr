@@ -72,13 +72,13 @@ class GoldenCmPayrollTest extends TestCase
         //   (plaf. 350 000) ; annuel = (brut − CNPS − abattement) × 12 ;
         //   barème progressif 10/15/25/35 % → mensuel → ×1,10.
         return [
-            'SMIG 41 875 (40 116,25)'        => [41875.0, 40116.25, 3030.91],
-            'junior 100 000 (95 800)'         => [100000.0, 95800.0, 7238.0],
-            'cadre bas 200 000 (191 600)'     => [200000.0, 191600.0, 14476.0],
-            'cadre moyen 400 000 (383 200)'   => [400000.0, 383200.0, 35713.33],
-            'cadre senior 600 000 (574 800)'  => [600000.0, 574800.0, 71903.33],
-            'haut salaire 750 000 (718 500)'  => [750000.0, 718500.0, 107497.5],
-            '1 000 000 brut (968 500)'        => [1000000.0, 968500.0, 174872.5],
+            'SMIG 41 875 (40 116,25)' => [41875.0, 40116.25, 3030.91],
+            'junior 100 000 (95 800)' => [100000.0, 95800.0, 7238.0],
+            'cadre bas 200 000 (191 600)' => [200000.0, 191600.0, 14476.0],
+            'cadre moyen 400 000 (383 200)' => [400000.0, 383200.0, 35713.33],
+            'cadre senior 600 000 (574 800)' => [600000.0, 574800.0, 71903.33],
+            'haut salaire 750 000 (718 500)' => [750000.0, 718500.0, 107497.5],
+            '1 000 000 brut (968 500)' => [1000000.0, 968500.0, 174872.5],
         ];
     }
 
@@ -98,9 +98,9 @@ class GoldenCmPayrollTest extends TestCase
     {
         // [brut, salariale attendue, patronale attendue]
         return [
-            'SMIG 41 875'              => [41875.0, 1758.75, 5527.5],
-            'junior 100 000'           => [100000.0, 4200.0, 13200.0],
-            'brut = plafond 750 000'   => [750000.0, 31500.0, 99000.0],
+            'SMIG 41 875' => [41875.0, 1758.75, 5527.5],
+            'junior 100 000' => [100000.0, 4200.0, 13200.0],
+            'brut = plafond 750 000' => [750000.0, 31500.0, 99000.0],
             'brut > plafond 1 000 000' => [1000000.0, 31500.0, 104000.0],
         ];
     }
@@ -190,7 +190,7 @@ class GoldenCmPayrollTest extends TestCase
     {
         return [
             'entrée le 15 (12/22)' => [200000.0, 22.0, 12.0, 109090.91],   // 200 000 × 12/22
-            'sortie le 10 (7/22)'  => [200000.0, 22.0, 7.0, 63636.36],    // 200 000 × 7/22
+            'sortie le 10 (7/22)' => [200000.0, 22.0, 7.0, 63636.36],    // 200 000 × 7/22
         ];
     }
 
@@ -199,7 +199,7 @@ class GoldenCmPayrollTest extends TestCase
     {
         // Calcul manuel (CM_COMPLIANCE.md §7, méthode F-05) :
         //   base × (jours effectivement travaillés / jours ouvrés).
-        $this->assertSame($expected, (new PayrollCalculator())->computeProratedBase($base, $working, $actual));
+        $this->assertSame($expected, (new PayrollCalculator)->computeProratedBase($base, $working, $actual));
     }
 
     public function test_golden_cm_overtime_5h_first_tier(): void
@@ -238,13 +238,13 @@ class GoldenCmPayrollTest extends TestCase
         // Issue #2219 : JOURS OUVRÉS (15 j calendaires = 11 j ouvrés,
         // 1 mois = 22 · 2 mois = 44 · 3 mois = 66).
         return [
-            'moins de 6 mois'    => [0.25, 11.0],
-            '6 mois (borne)'     => [0.5, 22.0],
-            '3 ans'              => [3.0, 22.0],
-            '5 ans (borne)'      => [5.0, 44.0],
-            '7 ans'              => [7.0, 44.0],
-            '10 ans (borne)'     => [10.0, 66.0],
-            '15 ans'             => [15.0, 66.0],
+            'moins de 6 mois' => [0.25, 11.0],
+            '6 mois (borne)' => [0.5, 22.0],
+            '3 ans' => [3.0, 22.0],
+            '5 ans (borne)' => [5.0, 44.0],
+            '7 ans' => [7.0, 44.0],
+            '10 ans (borne)' => [10.0, 66.0],
+            '15 ans' => [15.0, 66.0],
         ];
     }
 
@@ -310,7 +310,7 @@ class GoldenCmPayrollTest extends TestCase
         // jours fériés par pays arrive avec #1811/#1812 (CRUD admin +
         // working_days dynamique) ; ici le mécanisme est verrouillé :
         //   base × (20 / 21) = 190 476,19 XAF.
-        $this->assertSame(190476.19, (new PayrollCalculator())->computeProratedBase(200000.0, 21.0, 20.0));
+        $this->assertSame(190476.19, (new PayrollCalculator)->computeProratedBase(200000.0, 21.0, 20.0));
         // Le défaut STANDARD_WORKING_DAYS reste 22 hors calendrier férié.
         $this->assertSame(22.0, (float) PayrollCalculator::STANDARD_WORKING_DAYS);
     }

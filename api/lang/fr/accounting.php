@@ -95,6 +95,8 @@ return [
         'statement_year_invalid' => 'Année d\'exercice invalide.',
         'statement_period_invalid' => 'Période comptable invalide (format AAAA-MM).',
 
+        'vat_period_invalid' => 'Période invalide. Utilisez le format AAAA-MM.',
+
     ],
 
     // Labels TVA par défaut (issue #5227)

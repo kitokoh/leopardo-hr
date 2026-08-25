@@ -30,18 +30,18 @@ class GoldenDzEndOfContractFullTest extends TestCase
     {
         return [
             // [ancienneté, jours de préavis (OUVRÉS #1943), indemnité sur base 200 000 / 22 j]
-            'moins de 1 an (0,5)'   => [0.5, 22.0, 200000.0],  // 200 000 × 22/22 = 1 mois exact
-            '5 ans (1 mois)'        => [5.0, 22.0, 200000.0],  // 200 000 × 22/22
-            '9 ans 11 mois'         => [9.9, 22.0, 200000.0],
-            '10 ans (2 mois)'       => [10.0, 44.0, 400000.0], // 200 000 × 44/22 = 2 mois exacts
-            '12 ans'                => [12.0, 44.0, 400000.0],
+            'moins de 1 an (0,5)' => [0.5, 22.0, 200000.0],  // 200 000 × 22/22 = 1 mois exact
+            '5 ans (1 mois)' => [5.0, 22.0, 200000.0],  // 200 000 × 22/22
+            '9 ans 11 mois' => [9.9, 22.0, 200000.0],
+            '10 ans (2 mois)' => [10.0, 44.0, 400000.0], // 200 000 × 44/22 = 2 mois exacts
+            '12 ans' => [12.0, 44.0, 400000.0],
         ];
     }
 
     #[DataProvider('noticeProvider')]
     public function test_notice_period_days_and_pay(float $years, float $expectedDays, float $expectedPay): void
     {
-        $rules = new AlgeriaPayrollRules();
+        $rules = new AlgeriaPayrollRules;
 
         $this->assertSame($expectedDays, $rules->noticePeriodDays($years));
 

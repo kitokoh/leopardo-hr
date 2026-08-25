@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Planning\Infrastructure\Services\EstimationService;
 use App\Modules\Planning\Interfaces\Api\V1\Requests\DailySummaryRequest;
 use App\Modules\Planning\Interfaces\Api\V1\Requests\QuickEstimateRequest;
 use App\Modules\Planning\Interfaces\Api\V1\Requests\ReceiptRequest;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Planning\Infrastructure\Services\EstimationService;
 use App\Support\I18nCatalog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -89,7 +89,7 @@ class EstimationController extends Controller
         ));
 
         $pdf = Pdf::loadView('pdf.receipt', [
-            'company'  => $company,
+            'company' => $company,
             'employee' => $employee,
             'estimate' => $estimate,
         ]);

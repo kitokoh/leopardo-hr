@@ -95,6 +95,8 @@ return [
         'statement_year_invalid' => 'Invalid fiscal year.',
         'statement_period_invalid' => 'Invalid accounting period (YYYY-MM).',
 
+        'vat_period_invalid' => 'Invalid period. Use the YYYY-MM format.',
+
     ],
 
     // Default VAT labels (issue #5227)

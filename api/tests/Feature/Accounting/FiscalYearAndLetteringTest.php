@@ -32,8 +32,6 @@ class FiscalYearAndLetteringTest extends TestCase
 
     private int $sourceCounter = 0;
 
-
-
     private function company(string $country = 'DZ'): Company
     {
         /** @var Company $company */
@@ -160,8 +158,10 @@ class FiscalYearAndLetteringTest extends TestCase
             ->where('source_type', 'fiscal_year_close')
             ->get();
         $this->assertCount(2, $closing);
-        $this->assertSame('CLO-2026', $closing->first()?->piece);
-        $this->assertSame('2026-12', $closing->first()?->period);
+        $first = $closing->first();
+        $this->assertNotNull($first);
+        $this->assertSame('CLO-2026', $first->piece);
+        $this->assertSame('2026-12', $first->period);
         $this->assertSame(600.0, (float) $closing->firstWhere('account_code', '12')?->debit);
         $this->assertSame(600.0, (float) $closing->firstWhere('account_code', '891')?->credit);
     }

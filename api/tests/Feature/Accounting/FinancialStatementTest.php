@@ -38,7 +38,6 @@ class FinancialStatementTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-
     private function company(string $country = 'DZ'): Company
     {
         /** @var Company $company */
@@ -163,21 +162,24 @@ class FinancialStatementTest extends TestCase
         $data = $response->json('data');
         $this->assertIsArray($data);
 
-        // Totaux : actif (411) = passif (4457) + résultat (70).
+        // Totaux : actif (411) = passif (4457) + résultat (70) — l'équilibre
+        // se lit sur total_passif_et_capitaux (le total_passif seul exclut
+        // les capitaux propres).
         $this->assertEquals(1190.0, $data['total_actif']);
-        $this->assertEquals(1190.0, $data['total_passif']);
+        $this->assertEquals(190.0, $data['total_passif']);
+        $this->assertEquals(1190.0, $data['total_passif_et_capitaux']);
         $this->assertEquals(1000.0, $data['resultat_net']);
         $this->assertTrue($data['balanced']);
 
         // 411 dans la section Créances de l'actif.
-        $creances = collect($this->sections($data, 'actif'))->firstWhere('section', 'Créances');
+        $creances = $this->section($data, 'actif', 'Créances');
         $this->assertIsArray($creances);
         $this->assertEquals(1190.0, $creances['total']);
         $this->assertSame('411', $creances['accounts'][0]['code']);
         $this->assertEquals(1190.0, $creances['accounts'][0]['balance']);
 
         // TVA collectée au passif (dettes tiers), résultat dans les capitaux.
-        $dettes = collect($this->sections($data, 'passif'))->firstWhere('section', 'Dettes fournisseurs/tiers');
+        $dettes = $this->section($data, 'passif', 'Dettes fournisseurs/tiers');
         $this->assertIsArray($dettes);
         $this->assertEquals(190.0, $dettes['total']);
         $this->assertSame('4457', $dettes['accounts'][0]['code']);
@@ -403,5 +405,25 @@ class FinancialStatementTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         app(FinancialStatementService::class)->incomeStatement($company->id, '2026-13');
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array{section: string, accounts: list<array{code: string, label: string, balance: float}>, total: float}
+     */
+    private function section(array $data, string $area, string $sectionName): array
+    {
+        $sections = $this->sections($data, $area);
+        $found = null;
+        foreach ($sections as $section) {
+            if (is_array($section) && ($section['section'] ?? null) === $sectionName) {
+                $found = $section;
+                break;
+            }
+        }
+        $this->assertIsArray($found, "Section « {$sectionName} » absente de {$area}.");
+
+        /** @var array{section: string, accounts: list<array{code: string, label: string, balance: float}>, total: float} $found */
+        return $found;
     }
 }

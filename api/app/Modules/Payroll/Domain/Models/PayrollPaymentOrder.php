@@ -68,6 +68,6 @@ class PayrollPaymentOrder extends Model
     /** @return HasMany<PayrollPaymentOrderItem, $this> */
     public function items(): HasMany
     {
-        return $this->hasMany(PayrollPaymentOrderItem::class);
+        return $this->hasMany(PayrollPaymentOrderItem::class, 'payment_order_id');
     }
 }

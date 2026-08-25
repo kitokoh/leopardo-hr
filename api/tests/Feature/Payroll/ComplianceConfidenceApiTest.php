@@ -12,6 +12,7 @@ use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationPresenter;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Laravel\Sanctum\Sanctum;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -189,25 +190,25 @@ class ComplianceConfidenceApiTest extends TestCase
 
     // ── i18n : les 4 catalogues portent les clés (PA2-I18N-007) ───────────
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('localeProvider')]
+    #[DataProvider('localeProvider')]
     public function test_i18n_keys_present_in_all_locales(string $locale): void
     {
-        $this->assertNotSame("payroll.placeholder_acknowledge_required", __(
+        $this->assertNotSame('payroll.placeholder_acknowledge_required', __(
             'payroll.placeholder_acknowledge_required',
             ['country' => 'BJ'],
             $locale
         ));
-        $this->assertNotSame("payroll.compliance_warning_placeholder", __(
+        $this->assertNotSame('payroll.compliance_warning_placeholder', __(
             'payroll.compliance_warning_placeholder',
             ['country' => 'BJ'],
             $locale
         ));
-        $this->assertNotSame("payroll.compliance_warning_pilot", __(
+        $this->assertNotSame('payroll.compliance_warning_pilot', __(
             'payroll.compliance_warning_pilot',
             ['country' => 'CI'],
             $locale
         ));
-        $this->assertNotSame("payroll.compliance_warning_production", __(
+        $this->assertNotSame('payroll.compliance_warning_production', __(
             'payroll.compliance_warning_production',
             ['country' => 'DZ'],
             $locale
@@ -229,7 +230,8 @@ class ComplianceConfidenceApiTest extends TestCase
 
     public function test_abstract_rules_compliance_defaults(): void
     {
-        $rules = new class extends AbstractCountryRules {
+        $rules = new class extends AbstractCountryRules
+        {
             protected function defaultTaxSlabs(): array
             {
                 return [];

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Payroll;
 
+use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
 use App\Modules\Payroll\Infrastructure\Services\CedeaoCnsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CemacCnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnssDeclarationGenerator;
@@ -48,8 +49,8 @@ class DeclarationRatesMatchEngineTest extends TestCase
     /**
      * @dataProvider declarationConstantProvider
      *
-     * @param class-string $generatorClass
-     * @param class-string $rulesClass
+     * @param  class-string  $generatorClass
+     * @param  class-string  $rulesClass
      */
     public function test_generator_constant_matches_country_rules(
         string $generatorClass,
@@ -61,7 +62,7 @@ class DeclarationRatesMatchEngineTest extends TestCase
     ): void {
         $generatorValue = (new ReflectionClass($generatorClass))->getConstant($constant);
 
-        /** @var \App\Modules\Payroll\Domain\Contracts\CountryRulesInterface $rules */
+        /** @var CountryRulesInterface $rules */
         $rules = new $rulesClass($memberCountryCode);
         $contrib = null;
         foreach ($rules->socialContributions() as $entry) {

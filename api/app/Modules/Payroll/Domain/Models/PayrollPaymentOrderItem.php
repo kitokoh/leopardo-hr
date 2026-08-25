@@ -35,6 +35,6 @@ class PayrollPaymentOrderItem extends Model
     /** @return BelongsTo<PayrollPaymentOrder, $this> */
     public function paymentOrder(): BelongsTo
     {
-        return $this->belongsTo(PayrollPaymentOrder::class);
+        return $this->belongsTo(PayrollPaymentOrder::class, 'payment_order_id');
     }
 }

@@ -47,7 +47,7 @@ class PayrollServiceTest extends TestCase
 
     public function test_create_computes_net_from_all_components(): void
     {
-        $payroll = (new PayrollService())->create($this->manager, [
+        $payroll = (new PayrollService)->create($this->manager, [
             'employee_id' => $this->employee->id,
             'period_month' => 7,
             'period_year' => 2026,
@@ -72,7 +72,7 @@ class PayrollServiceTest extends TestCase
 
     public function test_create_rejects_duplicate_period(): void
     {
-        $service = new PayrollService();
+        $service = new PayrollService;
         $service->create($this->manager, [
             'employee_id' => $this->employee->id,
             'period_month' => 7,
@@ -91,7 +91,7 @@ class PayrollServiceTest extends TestCase
 
     public function test_update_recomputes_net(): void
     {
-        $service = new PayrollService();
+        $service = new PayrollService;
         $payroll = $service->create($this->manager, [
             'employee_id' => $this->employee->id,
             'period_month' => 7,
@@ -107,7 +107,7 @@ class PayrollServiceTest extends TestCase
 
     public function test_update_rejects_validated_payroll(): void
     {
-        $service = new PayrollService();
+        $service = new PayrollService;
         $payroll = $service->create($this->manager, [
             'employee_id' => $this->employee->id,
             'period_month' => 7,
@@ -124,7 +124,7 @@ class PayrollServiceTest extends TestCase
     {
         Event::fake([PayrollValidated::class]);
 
-        $service = new PayrollService();
+        $service = new PayrollService;
         $payroll = $service->create($this->manager, [
             'employee_id' => $this->employee->id,
             'period_month' => 7,
@@ -153,7 +153,7 @@ class PayrollServiceTest extends TestCase
             'validation_status' => 'employee_confirmed',
         ]);
 
-        $service = new PayrollService();
+        $service = new PayrollService;
         $payroll = $service->create($this->manager, [
             'employee_id' => $this->employee->id,
             'period_month' => 7,
@@ -182,7 +182,7 @@ class PayrollServiceTest extends TestCase
             'validation_status' => 'employee_confirmed',
         ]);
 
-        $service = new PayrollService();
+        $service = new PayrollService;
         $payroll = $service->create($this->manager, [
             'employee_id' => $this->employee->id,
             'period_month' => 7,
@@ -200,7 +200,7 @@ class PayrollServiceTest extends TestCase
 
     public function test_delete_removes_draft_and_rejects_validated(): void
     {
-        $service = new PayrollService();
+        $service = new PayrollService;
         $payroll = $service->create($this->manager, [
             'employee_id' => $this->employee->id,
             'period_month' => 7,
@@ -226,7 +226,7 @@ class PayrollServiceTest extends TestCase
 
     public function test_net_never_negative(): void
     {
-        $payroll = (new PayrollService())->create($this->manager, [
+        $payroll = (new PayrollService)->create($this->manager, [
             'employee_id' => $this->employee->id,
             'period_month' => 7,
             'period_year' => 2026,

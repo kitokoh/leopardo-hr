@@ -9,6 +9,7 @@ use App\Jobs\ProcessPayrollBatchJob;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Mockery;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -29,7 +30,7 @@ use Tests\TestCase;
  */
 class ProcessPayrollBatchJobTest extends TestCase
 {
-    use \Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     protected function tearDown(): void
     {

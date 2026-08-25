@@ -42,7 +42,7 @@ class AccountingChartController extends Controller
         $activeOnly = $request->boolean('active_only', true);
 
         $accounts = $service->list(
-            (string) $request->user()?->company_id,
+            (string) $request->user()?->getAttribute('company_id'),
             $type,
             $activeOnly,
         );
@@ -63,7 +63,7 @@ class AccountingChartController extends Controller
     public function store(StoreChartAccountRequest $request): JsonResponse
     {
         $payload = $request->validated();
-        $payload['company_id'] = $request->user()?->company_id;
+        $payload['company_id'] = $request->user()?->getAttribute('company_id');
         $payload['code'] = $this->normalizeCode((string) $payload['code']);
         $payload['is_system'] = false;
 
@@ -83,7 +83,10 @@ class AccountingChartController extends Controller
 
         $account->update($payload);
 
-        return response()->json(['data' => $this->serialize($account->fresh())]);
+        /** @var AccountingChartAccount $fresh */
+        $fresh = $account->fresh();
+
+        return response()->json(['data' => $this->serialize($fresh)]);
     }
 
     public function destroy(Request $request, string $code): JsonResponse
@@ -113,7 +116,7 @@ class AccountingChartController extends Controller
     private function findAccount(Request $request, string $code): AccountingChartAccount
     {
         $account = AccountingChartAccount::query()
-            ->where('company_id', $request->user()?->company_id)
+            ->where('company_id', $request->user()?->getAttribute('company_id'))
             ->where('code', $this->normalizeCode($code))
             ->first();
 

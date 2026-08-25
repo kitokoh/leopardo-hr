@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\SalaryComponentResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\SalaryComponent;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -141,4 +141,3 @@ class SalaryComponentController extends Controller
         return response()->json(['message' => __('payroll.salary_component_deleted')]);
     }
 }
-

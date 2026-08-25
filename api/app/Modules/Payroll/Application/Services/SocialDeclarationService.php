@@ -55,7 +55,7 @@ class SocialDeclarationService
      * `months_worked` (nombre de mois distincts avec bulletin).
      *
      * @param  list<int>  $months
-     * @return \Illuminate\Support\Collection<int|string, \stdClass>  keyBy employee_id
+     * @return \Illuminate\Support\Collection<int|string, \stdClass> keyBy employee_id
      */
     public function quarterPayrollData(string $companyId, int $year, array $months, bool $withMonthsCount = false)
     {
@@ -84,7 +84,7 @@ class SocialDeclarationService
      * Agrégation mensuelle des bulletins validés par employé :
      * `total_gross` + `total_net` (DSN France).
      *
-     * @return \Illuminate\Support\Collection<int|string, \stdClass>  keyBy employee_id
+     * @return \Illuminate\Support\Collection<int|string, \stdClass> keyBy employee_id
      */
     public function monthPayrollData(string $companyId, int $year, int $month)
     {

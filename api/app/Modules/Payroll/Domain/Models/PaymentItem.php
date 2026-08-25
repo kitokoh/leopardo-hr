@@ -6,6 +6,7 @@ namespace App\Modules\Payroll\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -24,7 +25,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $confirmed_at
  * @property array<string, mixed>|null $metadata
  * @property-read PaymentBatch $batch
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class PaymentItem extends Model
 {

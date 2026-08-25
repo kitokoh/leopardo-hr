@@ -7,6 +7,7 @@ namespace Tests\Feature\Payroll;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\Payroll;
+use App\Modules\Payroll\Infrastructure\Services\PayrollService;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -45,7 +46,7 @@ class PayrollCrudApiTest extends TestCase
 
     private function createPayroll(): Payroll
     {
-        return (new \App\Modules\Payroll\Infrastructure\Services\PayrollService())->create($this->manager, [
+        return (new PayrollService)->create($this->manager, [
             'employee_id' => $this->employee->id,
             'period_month' => 7,
             'period_year' => 2026,
@@ -104,7 +105,7 @@ class PayrollCrudApiTest extends TestCase
         $this->deleteJson("/api/v1/payrolls/{$payroll->id}")->assertStatus(422);
 
         // Une fiche non validée se supprime (période différente).
-        $draft = (new \App\Modules\Payroll\Infrastructure\Services\PayrollService())->create($this->manager, [
+        $draft = (new PayrollService)->create($this->manager, [
             'employee_id' => $this->employee->id,
             'period_month' => 8,
             'period_year' => 2026,
@@ -128,7 +129,7 @@ class PayrollCrudApiTest extends TestCase
         $deptManager = Employee::factory()->managerDept()->create(['company_id' => $this->manager->company_id]);
         Sanctum::actingAs($deptManager);
 
-        $payroll = (new \App\Modules\Payroll\Infrastructure\Services\PayrollService())->create($this->manager, [
+        $payroll = (new PayrollService)->create($this->manager, [
             'employee_id' => $this->employee->id,
             'period_month' => 6,
             'period_year' => 2026,

@@ -26,20 +26,18 @@ final class AccountingFecController extends Controller
 
     /**
      * Export FEC de la période demandée.
-     *
-     * @return Response|JsonResponse
      */
     public function export(Request $request): Response|JsonResponse
     {
         $validated = Validator::make($request->only('period'), [
             'period' => ['required', 'string', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/'],
         ], [
-            'period.required' => 'La période est requise (format YYYY-MM).',
-            'period.regex' => 'La période doit être au format YYYY-MM (ex. 2026-08).',
+            'period.required' => __('accounting.validation.period_required'),
+            'period.regex' => __('accounting.validation.period_invalid'),
         ])->validate();
 
         $period = (string) $validated['period'];
-        $companyId = (string) ($request->user()?->company_id ?? '');
+        $companyId = (string) ($request->user()?->getAttribute('company_id') ?? '');
 
         if (! AccountingJournalEntry::query()
             ->where('company_id', $companyId)

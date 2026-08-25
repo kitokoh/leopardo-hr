@@ -112,7 +112,6 @@ class CemacPayrollRules extends AbstractCountryRules
             ];
         }
 
-
         return [
             ['name' => 'CNPS/CNSS Salariale', 'code' => 'CNPS_CEMAC_EMP', 'type' => 'employee', 'rate' => 4.2, 'cap' => null],
             ['name' => 'CNPS/CNSS Patronale (pension/famille/AT)', 'code' => 'CNPS_CEMAC_PAT', 'type' => 'employer', 'rate' => 16.2, 'cap' => null],
@@ -160,7 +159,6 @@ class CemacPayrollRules extends AbstractCountryRules
                 ['min' => 13000001, 'max' => null, 'rate' => 45, 'fixed_deduction' => 0],
             ];
         }
-
 
         // Conservative placeholder progressive IRPP-style schedule, common
         // shape across CEMAC members. confidenceLevel() below explicitly
@@ -300,7 +298,6 @@ class CemacPayrollRules extends AbstractCountryRules
                 ),
             ];
         }
-
 
         // Placeholder ZONE-INFRA (#1820): the other CEMAC members (CF/TD/GQ)
         // stay on the placeholder (uncapped) rates until their own

@@ -38,7 +38,7 @@ final class AccountingStatementController extends Controller
             'year.max' => __('accounting.validation.year_range'),
         ]);
 
-        $companyId = (string) $request->user()?->company_id;
+        $companyId = (string) $request->user()?->getAttribute('company_id');
         if ($companyId === '') {
             abort(403, __('accounting.errors.wf_company_context'));
         }
@@ -52,7 +52,11 @@ final class AccountingStatementController extends Controller
                 'passif' => $statement['passif'],
                 'capitaux_propres' => $statement['capitaux'],
                 'total_actif' => $statement['total_actif'],
-                'total_passif' => $statement['total_passif_capitaux'],
+                // Passif seul (dettes) vs capitaux propres (dont résultat net) :
+                // l'équilibre du bilan se lit sur total_passif_et_capitaux.
+                'total_passif' => $statement['total_passif'],
+                'total_capitaux' => $statement['total_capitaux'],
+                'total_passif_et_capitaux' => $statement['total_passif_capitaux'],
                 'resultat_net' => $statement['resultat_net'],
                 'balanced' => $statement['balanced'],
             ],
@@ -75,7 +79,7 @@ final class AccountingStatementController extends Controller
             'period.regex' => __('accounting.validation.period_invalid'),
         ]);
 
-        $companyId = (string) $request->user()?->company_id;
+        $companyId = (string) $request->user()?->getAttribute('company_id');
         if ($companyId === '') {
             abort(403, __('accounting.errors.wf_company_context'));
         }

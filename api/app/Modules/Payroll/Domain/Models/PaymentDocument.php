@@ -31,7 +31,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $generated_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class PaymentDocument extends Model
 {

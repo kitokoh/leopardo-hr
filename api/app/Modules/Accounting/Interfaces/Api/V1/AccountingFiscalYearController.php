@@ -101,7 +101,7 @@ final class AccountingFiscalYearController extends Controller
 
     private function companyId(Request $request): string
     {
-        return (string) $request->user()?->company_id;
+        return (string) $request->user()?->getAttribute('company_id');
     }
 
     /**

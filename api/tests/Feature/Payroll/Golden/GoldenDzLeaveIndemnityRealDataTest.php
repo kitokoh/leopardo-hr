@@ -13,6 +13,7 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
+use Carbon\Carbon;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -80,7 +81,7 @@ class GoldenDzLeaveIndemnityRealDataTest extends TestCase
         // (2025-07 → 2026-06, soit les 12 mois précédant la période du run).
         // NB : un run par mois — contrainte unique (payroll_run_id, employee_id).
         for ($m = 0; $m < 12; $m++) {
-            $ref = \Carbon\Carbon::parse('2025-07-01')->addMonths($m);
+            $ref = Carbon::parse('2025-07-01')->addMonths($m);
             /** @var PayrollRun $historyRun */
             $historyRun = PayrollRun::create([
                 'company_id' => $company->id,
@@ -123,7 +124,7 @@ class GoldenDzLeaveIndemnityRealDataTest extends TestCase
             'status' => 'draft',
         ]);
 
-        (new PayrollCalculator())->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
         $slip = $run->paySlips()->first();
         $this->assertNotNull($slip);
@@ -179,7 +180,7 @@ class GoldenDzLeaveIndemnityRealDataTest extends TestCase
             'status' => 'draft',
         ]);
 
-        (new PayrollCalculator())->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
         $slip = $run->paySlips()->first();
         $this->assertNotNull($slip);

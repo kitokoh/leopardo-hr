@@ -143,7 +143,8 @@ class PayrollJournalApiTest extends TestCase
     }
 
     public function test_journal_only_returns_validated_slips(): void
-    {        Sanctum::actingAs($this->manager);
+    {
+        Sanctum::actingAs($this->manager);
 
         $run = $this->seededRun();
         /** @var Employee $e3 */

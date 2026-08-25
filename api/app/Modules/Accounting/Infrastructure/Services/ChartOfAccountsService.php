@@ -7,6 +7,7 @@ namespace App\Modules\Accounting\Infrastructure\Services;
 use App\Modules\Accounting\Application\Actions\ChartOfAccountsDefaults;
 use App\Modules\Accounting\Domain\Enums\AccountType;
 use App\Modules\Accounting\Domain\Models\AccountingChartAccount;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -81,7 +82,7 @@ final class ChartOfAccountsService
     /**
      * Comptes actifs d'une entreprise, optionnellement filtrés par nature.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, AccountingChartAccount>
+     * @return Collection<int, AccountingChartAccount>
      */
     public function list(string $companyId, ?string $type = null, ?bool $activeOnly = true)
     {

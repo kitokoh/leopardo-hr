@@ -14,6 +14,7 @@ use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
+use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -109,8 +110,8 @@ class PaySlipCabinetArchiveTest extends TestCase
         $slipId = PaySlip::query()->where('payroll_run_id', $run->id)->value('id');
 
         // Exécution manuelle du job deux fois → un seul document.
-        (new ArchivePaySlipsToCabinetJob($run->id))->handle(new \App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator);
-        (new ArchivePaySlipsToCabinetJob($run->id))->handle(new \App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator);
+        (new ArchivePaySlipsToCabinetJob($run->id))->handle(new PaySlipPdfGenerator);
+        (new ArchivePaySlipsToCabinetJob($run->id))->handle(new PaySlipPdfGenerator);
 
         $this->assertSame(
             1,
@@ -130,7 +131,7 @@ class PaySlipCabinetArchiveTest extends TestCase
         $run = $this->makeCalculatedRunWithSlips($company);
         $slip = PaySlip::query()->where('payroll_run_id', $run->id)->firstOrFail();
 
-        (new ArchivePaySlipsToCabinetJob($run->id))->handle(new \App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator);
+        (new ArchivePaySlipsToCabinetJob($run->id))->handle(new PaySlipPdfGenerator);
 
         $document = CabinetDocument::query()->where('document_type', 'payslip')->firstOrFail();
 
@@ -158,7 +159,7 @@ class PaySlipCabinetArchiveTest extends TestCase
         // Si l'employé de structure n'est pas celui attendu, on prend le premier bulletin.
         $slip ??= PaySlip::query()->where('payroll_run_id', $run->id)->firstOrFail();
 
-        (new ArchivePaySlipsToCabinetJob($run->id))->handle(new \App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator);
+        (new ArchivePaySlipsToCabinetJob($run->id))->handle(new PaySlipPdfGenerator);
 
         // Propriétaire du bulletin.
         /** @var Employee $owner */

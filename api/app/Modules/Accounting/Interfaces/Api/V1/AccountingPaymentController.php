@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Accounting\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
@@ -23,6 +25,7 @@ final class AccountingPaymentController extends Controller
     public function __construct(
         private readonly PaymentRegistrationService $payments,
         private readonly PaymentReminderService $reminders,
+        private readonly DataAccessAuditLogger $auditLogger,
     ) {}
 
     /**
@@ -65,6 +68,14 @@ final class AccountingPaymentController extends Controller
             reference: $request->validated('reference') !== null ? (string) $request->validated('reference') : null,
             receivedAt: $request->filled('received_at') ? Carbon::parse((string) $request->validated('received_at')) : null,
         );
+
+        // #5273 — audit trail : chaque encaissement est tracé (qui/quoi/quand).
+        $actor = $request->user();
+        if ($actor instanceof Employee) {
+            $this->auditLogger->recordSensitive($request, $actor, 'accounting.document_payment', $documentModel, [
+                'amount' => (float) $request->validated('amount'),
+            ]);
+        }
 
         return response()->json([
             'data' => [

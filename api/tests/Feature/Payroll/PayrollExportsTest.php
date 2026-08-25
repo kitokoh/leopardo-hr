@@ -9,6 +9,7 @@ use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
 use App\Modules\Payroll\Infrastructure\Services\CnasDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -18,8 +19,7 @@ use Tests\TestCase;
  */
 class PayrollExportsTest extends TestCase
 {
-    use \Tests\RefreshTenantDatabase;
-
+    use RefreshTenantDatabase;
 
     private function seededRun(): array
     {
@@ -70,7 +70,7 @@ class PayrollExportsTest extends TestCase
     {
         [$run] = $this->seededRun();
 
-        $csv = (new PayrollJournalGenerator())->generate($run);
+        $csv = (new PayrollJournalGenerator)->generate($run);
         $lines = array_map('str_getcsv', explode("\n", trim($csv)));
 
         // En-tête + 2 bulletins + ligne TOTAL.
@@ -91,7 +91,7 @@ class PayrollExportsTest extends TestCase
     {
         [$run] = $this->seededRun();
 
-        $csv = (new CnasDeclarationGenerator())->generate($run);
+        $csv = (new CnasDeclarationGenerator)->generate($run);
         $lines = array_map('str_getcsv', explode("\n", trim($csv)));
 
         $this->assertCount(4, $lines);

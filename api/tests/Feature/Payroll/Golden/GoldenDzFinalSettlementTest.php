@@ -20,8 +20,8 @@ class GoldenDzFinalSettlementTest extends TestCase
         return [
             // [base, years, proratedDays, working, leaveDays, ref12, notice, expected total]
             'départ mi-mois, 5 ans, 15 j congés' => [60000.0, 5.0, 10.0, 22.0, 15.0, 720000.0, 0.0, 368181.82],
-            'aucune ancienneté, mois complet'    => [60000.0, 0.0, 22.0, 22.0, 0.0, 720000.0, 0.0, 60000.0],
-            'avec préavis non effectué'          => [60000.0, 2.0, 22.0, 22.0, 0.0, 720000.0, 22.0, 240000.0],  // #1943 : préavis 22 j OUVRÉS = 1 mois exact
+            'aucune ancienneté, mois complet' => [60000.0, 0.0, 22.0, 22.0, 0.0, 720000.0, 0.0, 60000.0],
+            'avec préavis non effectué' => [60000.0, 2.0, 22.0, 22.0, 0.0, 720000.0, 22.0, 240000.0],  // #1943 : préavis 22 j OUVRÉS = 1 mois exact
         ];
     }
 
@@ -36,7 +36,7 @@ class GoldenDzFinalSettlementTest extends TestCase
         float $notice,
         float $expectedTotal
     ): void {
-        $calc = new PayrollCalculator();
+        $calc = new PayrollCalculator;
         $result = $calc->computeFinalSettlement($base, $years, $proratedDays, $working, $leaveDays, $ref12, 1.0, $notice);
 
         $this->assertSame($expectedTotal, $result['total']);
@@ -47,7 +47,7 @@ class GoldenDzFinalSettlementTest extends TestCase
         // 60 000, 5 ans, 10 j travaillés, 15 j congés, réf. 720 000 :
         // prorata 27 272,73 · congés max(40 909,09 ; 36 000) = 40 909,09
         // licenciement 60 000×5 = 300 000 · total 368 181,82
-        $result = (new PayrollCalculator())->computeFinalSettlement(60000.0, 5.0, 10.0, 22.0, 15.0, 720000.0);
+        $result = (new PayrollCalculator)->computeFinalSettlement(60000.0, 5.0, 10.0, 22.0, 15.0, 720000.0);
 
         $this->assertSame(27272.73, $result['prorated_pay']);
         $this->assertSame(40909.09, $result['leave_indemnity']);

@@ -316,7 +316,6 @@ class TaxSlabValidationWorkflowTest extends TestCase
         ]);
         $createdSuperAdmin->forceFill(['password_hash' => bcrypt('secret123')])->save();
 
-
         Sanctum::actingAs($this->manager);
 
         $created = $this->postJson('/api/v1/tax-slabs', [

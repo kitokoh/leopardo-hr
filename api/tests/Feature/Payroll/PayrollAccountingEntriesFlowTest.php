@@ -7,10 +7,12 @@ namespace Tests\Feature\Payroll;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Payroll\Domain\Exceptions\UnbalancedPayrollEntriesException;
 use App\Modules\Payroll\Domain\Models\PayrollAccountingEntry;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
+use App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollAccountingEntryService;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\Sanctum;
@@ -39,11 +41,13 @@ class PayrollAccountingEntriesFlowTest extends TestCase
 
         // Reproduit la séquence réelle de PayrollClosingService::validateRh() :
         // 1) mass-update du run en `validated` (aucun event Eloquent émis),
-        // 2) écriture de l'audit `payroll_run_validated` (le signal observé).
+        // 2) validation atomique des bulletins du run,
+        // 3) écriture de l'audit `payroll_run_validated` (le signal observé).
         PayrollRun::query()->whereKey($run->id)->update([
             'status' => PayrollRun::STATUS_VALIDATED,
             'validated_at' => now(),
         ]);
+        $run->paySlips()->update(['status' => 'validated']);
 
         AuditLog::create([
             'company_id' => $company->id,
@@ -56,14 +60,14 @@ class PayrollAccountingEntriesFlowTest extends TestCase
         ]);
 
         $this->assertSame(12, PayrollAccountingEntry::query()->where('payroll_run_id', $run->id)->count());
-        $this->assertSame(0.0, (new PayrollAccountingEntryService(new \App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService))->balanceForRun($run));
+        $this->assertSame(0.0, (new PayrollAccountingEntryService(new PayrollAccountingExportService))->balanceForRun($run));
     }
 
     public function test_golden_dz_entries_are_balanced_and_use_pcn_accounts(): void
     {
         [$company, $run] = $this->runWithSlips('DZ', status: 'validated');
 
-        $service = new PayrollAccountingEntryService(new \App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService);
+        $service = new PayrollAccountingEntryService(new PayrollAccountingExportService);
         $count = $service->generateForRun($run);
         $this->assertSame(12, $count);
 
@@ -101,7 +105,7 @@ class PayrollAccountingEntriesFlowTest extends TestCase
     {
         [$company, $run] = $this->runWithSlips('DZ', status: 'validated');
 
-        $service = new PayrollAccountingEntryService(new \App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService);
+        $service = new PayrollAccountingEntryService(new PayrollAccountingExportService);
         $this->assertSame(12, $service->generateForRun($run));
         $this->assertSame(12, $service->generateForRun($run)); // 2e appel → remplacement, pas doublon
 
@@ -112,7 +116,7 @@ class PayrollAccountingEntriesFlowTest extends TestCase
     {
         [$company, $run] = $this->runWithSlips('DZ', status: 'calculated');
 
-        $service = new PayrollAccountingEntryService(new \App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService);
+        $service = new PayrollAccountingEntryService(new PayrollAccountingExportService);
         $this->expectException(\RuntimeException::class);
         $service->generateForRun($run);
     }
@@ -123,7 +127,7 @@ class PayrollAccountingEntriesFlowTest extends TestCase
 
         // Mock du socle : journal DÉSÉQUILIBRÉ (débit 100, crédit 90) → le
         // service doit refuser la persistance (US3 de la spec #5239).
-        $export = $this->createMock(\App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService::class);
+        $export = $this->createMock(PayrollAccountingExportService::class);
         $export->method('journalLines')->willReturn([
             [
                 'date' => '2026-06-30',
@@ -156,7 +160,7 @@ class PayrollAccountingEntriesFlowTest extends TestCase
         try {
             $service->generateForRun($run);
             $this->fail('UnbalancedPayrollEntriesException attendue pour un journal déséquilibré.');
-        } catch (\App\Modules\Payroll\Domain\Exceptions\UnbalancedPayrollEntriesException $e) {
+        } catch (UnbalancedPayrollEntriesException $e) {
             $this->assertStringContainsString('déséquilibré', $e->getMessage());
         }
 
@@ -169,7 +173,7 @@ class PayrollAccountingEntriesFlowTest extends TestCase
         [$companyA, $runA] = $this->runWithSlips('DZ', status: 'validated');
         [$companyB, $runB] = $this->runWithSlips('DZ', status: 'validated');
 
-        $service = new PayrollAccountingEntryService(new \App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService);
+        $service = new PayrollAccountingEntryService(new PayrollAccountingExportService);
         $service->generateForRun($runA);
         $service->generateForRun($runB);
 
@@ -225,7 +229,7 @@ class PayrollAccountingEntriesFlowTest extends TestCase
     {
         [$company, $run] = $this->runWithSlips('DZ', status: 'validated');
 
-        $service = new PayrollAccountingEntryService(new \App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService);
+        $service = new PayrollAccountingEntryService(new PayrollAccountingExportService);
         $service->generateForRun($run);
 
         /** @var Employee $manager */

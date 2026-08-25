@@ -58,12 +58,12 @@ final class LetteringService
             ->get();
 
         if ($entries->count() < 2) {
-            throw new InvalidLetteringException();
+            throw new InvalidLetteringException;
         }
 
         $accountCodes = $entries->pluck('account_code')->unique();
         if ($accountCodes->count() !== 1) {
-            throw new InvalidLetteringException();
+            throw new InvalidLetteringException;
         }
 
         $alreadyLettered = $entries->filter(
@@ -72,7 +72,7 @@ final class LetteringService
         );
 
         if ($alreadyLettered->isNotEmpty()) {
-            throw new LetteringAlreadyUsedException();
+            throw new LetteringAlreadyUsedException;
         }
 
         $debit = round((float) $entries->sum('debit'), 2);

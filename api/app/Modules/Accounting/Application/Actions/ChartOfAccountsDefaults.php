@@ -16,11 +16,12 @@ namespace App\Modules\Accounting\Application\Actions;
  *
  * L'entreprise peut ensuite créer ses comptes analytiques et désactiver les
  * comptes inutilisés — le plan n'est jamais figé (paramétrable).
- *
- * @var list<array{code: string, label: string, type: string, class: int}>
  */
 final class ChartOfAccountsDefaults
 {
+    /**
+     * @var list<array{code: string, label: string, type: string, class: int}>
+     */
     public const ACCOUNTS = [
         // ── Classe 1 — Comptes de capitaux ────────────────────────────────
         ['code' => '101', 'label' => 'Capital social', 'type' => 'equity', 'class' => 1],

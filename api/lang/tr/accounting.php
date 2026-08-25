@@ -95,6 +95,8 @@ return [
         'statement_year_invalid' => 'Geçersiz mali yıl.',
         'statement_period_invalid' => 'Geçersiz muhasebe dönemi (YYYY-AA).',
 
+        'vat_period_invalid' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.',
+
     ],
 
     // Varsayılan KDV etiketleri (issue #5227)

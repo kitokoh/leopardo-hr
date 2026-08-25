@@ -6,6 +6,7 @@ namespace App\Modules\Accounting\Infrastructure\Services;
 
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
@@ -59,7 +60,7 @@ class AccountingRetentionService
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder<AccountingDocument>
+     * @return Builder<AccountingDocument>
      */
     private function query(int $months, Carbon $now)
     {

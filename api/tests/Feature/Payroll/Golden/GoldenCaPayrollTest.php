@@ -23,7 +23,7 @@ class GoldenCaPayrollTest extends TestCase
 {
     private function rules(): CanadaPayrollRules
     {
-        return new CanadaPayrollRules();
+        return new CanadaPayrollRules;
     }
 
     public function test_golden_ca_smig_2999(): void

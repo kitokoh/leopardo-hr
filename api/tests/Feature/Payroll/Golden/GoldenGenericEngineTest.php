@@ -37,14 +37,14 @@ class GoldenGenericEngineTest extends TestCase
         // Calculs à la main : base × (jours travaillés / jours ouvrés).
         return [
             'entrée le 15 (12/22)' => [300000.0, 22.0, 12.0, 163636.36],
-            'sortie le 10 (7/22)'  => [300000.0, 22.0, 7.0, 95454.55],
+            'sortie le 10 (7/22)' => [300000.0, 22.0, 7.0, 95454.55],
         ];
     }
 
     #[DataProvider('prorataProvider')]
     public function test_generic_prorated_base(float $base, float $working, float $actual, float $expected): void
     {
-        $this->assertSame($expected, (new PayrollCalculator())->computeProratedBase($base, $working, $actual));
+        $this->assertSame($expected, (new PayrollCalculator)->computeProratedBase($base, $working, $actual));
     }
 
     // ── Heures supplémentaires — mécanique horaire générique ─────────────
@@ -82,7 +82,8 @@ class GoldenGenericEngineTest extends TestCase
         // BF/ML/GA/CG verrouillaient auparavant ce 1,0 comme si c'était
         // l'indemnité légale locale (« 1 mois de base × N ans ») — c'est un
         // défaut technique à valider pays par pays (suivi #1904/#1912).
-        $rules = new class extends AbstractCountryRules {
+        $rules = new class extends AbstractCountryRules
+        {
             protected function defaultTaxSlabs(): array
             {
                 return [];

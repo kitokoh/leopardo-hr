@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Payroll;
 
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
@@ -112,7 +113,7 @@ class NoticePeriodWorkingDaysTest extends TestCase
     {
         // Référence #1943 : DZ renvoie déjà des jours ouvrés (22/44) — aucun
         // changement attendu sur les golden DZ.
-        $rules = new \App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+        $rules = new AlgeriaPayrollRules;
 
         $this->assertSame(22.0, $rules->noticePeriodDays(3.0));
         $this->assertSame(44.0, $rules->noticePeriodDays(12.0));

@@ -9,15 +9,16 @@ use App\Jobs\ProcessPayrollBatchJob;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
-use Tests\TestCase;
 use Illuminate\Testing\PendingCommand;
+use Tests\RefreshTenantDatabase;
+use Tests\TestCase;
 
 /**
  * PA2-PAY-012 — nightly progressive payroll pre-calculation.
  */
 class PrecalculatePayrollRunsCommandTest extends TestCase
 {
-    use \Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     public function test_dispatches_batch_job_for_a_draft_run_approaching_its_pay_day(): void
     {

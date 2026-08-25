@@ -36,7 +36,7 @@ final class AccountingLedgerController extends Controller
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 
-        $companyId = (string) $request->user()?->company_id;
+        $companyId = (string) $request->user()?->getAttribute('company_id');
         $accountCode = isset($validated['account_code']) ? (string) $validated['account_code'] : null;
         $period = (string) $validated['period'];
         $perPage = (int) ($validated['per_page'] ?? 20);
@@ -80,7 +80,7 @@ final class AccountingLedgerController extends Controller
             'period' => ['required', 'string', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/'],
         ]);
 
-        $companyId = (string) $request->user()?->company_id;
+        $companyId = (string) $request->user()?->getAttribute('company_id');
         $period = (string) $validated['period'];
 
         $balance = $service->balance($companyId, $period);

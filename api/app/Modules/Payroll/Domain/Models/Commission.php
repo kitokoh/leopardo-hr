@@ -6,6 +6,7 @@ namespace App\Modules\Payroll\Domain\Models;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\Partner;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -23,7 +24,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $paid_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class Commission extends Model
 {

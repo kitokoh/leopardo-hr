@@ -93,6 +93,8 @@ final class FinancialStatementService
      *   passif: list<array{section: string, accounts: list<array{code: string, label: string, balance: float}>, total: float}>,
      *   capitaux: list<array{section: string, accounts: list<array{code: string, label: string, balance: float}>, total: float}>,
      *   total_actif: float,
+     *   total_passif: float,
+     *   total_capitaux: float,
      *   total_passif_capitaux: float,
      *   resultat_net: float,
      *   balanced: bool
@@ -181,7 +183,7 @@ final class FinancialStatementService
         $capitaux = [
             $this->buildBalanceSection(self::SECTION_CAPITAUX_PROPRES, $equityAccounts),
             $this->buildBalanceSection(self::SECTION_RESULTAT, [
-                '12' => [
+                'resultat' => [
                     'code' => '12',
                     'label' => self::SECTION_RESULTAT,
                     'balance' => $resultatNet,
@@ -190,13 +192,17 @@ final class FinancialStatementService
         ];
 
         $totalActif = $this->sumBalanceSections($actif);
-        $totalPassifCapitaux = $this->sumBalanceSections($passif) + $this->sumBalanceSections($capitaux);
+        $totalPassif = $this->sumBalanceSections($passif);
+        $totalCapitaux = $this->sumBalanceSections($capitaux);
+        $totalPassifCapitaux = $totalPassif + $totalCapitaux;
 
         return [
             'actif' => $actif,
             'passif' => $passif,
             'capitaux' => $capitaux,
             'total_actif' => round($totalActif, 2),
+            'total_passif' => round($totalPassif, 2),
+            'total_capitaux' => round($totalCapitaux, 2),
             'total_passif_capitaux' => round($totalPassifCapitaux, 2),
             'resultat_net' => $resultatNet,
             'balanced' => abs($totalActif - $totalPassifCapitaux) <= self::TOLERANCE,
