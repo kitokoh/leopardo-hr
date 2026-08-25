@@ -1,9 +1,37 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-20T00:00:00Z",
+  "_updated_at": "2026-08-24T00:00:00Z",
   "_locale": "ar",
   "app": {
     "title": "ليوباردو للموارد البشرية"
+  },
+  "accountingPortal": {
+    "title": "مساحة المستندات الآمنة",
+    "subtitle": "الوصول مقتصر على المستند الذي شاركه المرسِل",
+    "number": "رقم المستند",
+    "type": "نوع المستند",
+    "status": "الحالة",
+    "issueDate": "تاريخ الإصدار",
+    "total": "المبلغ الإجمالي",
+    "currency": "العملة",
+    "expiresAt": "الرابط صالح حتى :date",
+    "download": "تحميل PDF",
+    "downloadHint": "تحميل المستند بصيغة PDF",
+    "notFoundTitle": "رابط غير صالح أو منتهي الصلاحية",
+    "notFoundBody": "لم يعد هذا الرابط صالحًا أو انتهت صلاحيته. تواصل مع المرسِل للحصول على رابط جديد.",
+    "errorTitle": "تعذّر تحميل المستند",
+    "errorBody": "حدث خطأ ما. يرجى المحاولة مرة أخرى بعد قليل.",
+    "retry": "إعادة المحاولة",
+    "backToSite": "العودة إلى الموقع",
+    "securityNote": "مشاركة آمنة — لا تنقل هذا الرابط",
+    "statusDraft": "مسودة",
+    "statusSent": "تم الإرسال",
+    "statusPartiallyPaid": "مدفوع جزئيًا",
+    "statusPaid": "مدفوع",
+    "statusCancelled": "ملغى",
+    "statusOverdue": "متأخر",
+    "loading": "جارٍ التحميل…",
+    "downloadError": "فشل التحميل. يرجى المحاولة مرة أخرى."
   },
   "welcome": {
     "brand": {

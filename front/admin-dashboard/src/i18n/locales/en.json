@@ -512,7 +512,7 @@
     "trialUnit": "d"
   },
   "_version": "1.0.0",
-  "_updated_at": "2026-08-20T00:00:00Z",
+  "_updated_at": "2026-08-24T00:00:00Z",
   "holidays": {
     "saving": "Saving…",
     "page_subtitle": "Calendar of holidays used by the payroll engine to compute real working days. Fixed holidays (issue #1811) and mobile Islamic festivities (issue #1812) feed the payslips of all concerned countries automatically.",
@@ -3404,5 +3404,33 @@
       "empty": "No outstanding documents right now.",
       "currency_hint": "Amounts in the company currency."
     }
+  },
+  "accountingPortal": {
+    "title": "Secure document space",
+    "subtitle": "Access limited to the document shared by the issuer",
+    "number": "Document no.",
+    "type": "Document type",
+    "status": "Status",
+    "issueDate": "Issue date",
+    "total": "Total amount",
+    "currency": "Currency",
+    "expiresAt": "Link valid until :date",
+    "download": "Download PDF",
+    "downloadHint": "Download the document as PDF",
+    "notFoundTitle": "Invalid or expired link",
+    "notFoundBody": "This link is no longer valid or has expired. Contact the issuer to receive a new link.",
+    "errorTitle": "Unable to load the document",
+    "errorBody": "Something went wrong. Please try again in a few moments.",
+    "retry": "Try again",
+    "backToSite": "Back to website",
+    "securityNote": "Secure share — do not forward this link",
+    "statusDraft": "Draft",
+    "statusSent": "Sent",
+    "statusPartiallyPaid": "Partially paid",
+    "statusPaid": "Paid",
+    "statusCancelled": "Cancelled",
+    "statusOverdue": "Overdue",
+    "loading": "Loading…",
+    "downloadError": "Download failed. Please try again."
   }
 }

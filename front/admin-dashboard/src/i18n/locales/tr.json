@@ -1180,7 +1180,7 @@
     }
   },
   "_locale": "tr",
-  "_updated_at": "2026-08-20T00:00:00Z",
+  "_updated_at": "2026-08-24T00:00:00Z",
   "profile": {
     "subtitle": "Kisisel bilgiler ve dil",
     "department_label": "Departman",
@@ -3404,5 +3404,33 @@
       "empty": "Şu an ödenmemiş belge yok.",
       "currency_hint": "Tutarlar şirket para birimindedir."
     }
+  },
+  "accountingPortal": {
+    "title": "Güvenli belge alanı",
+    "subtitle": "Erişim, gönderenin paylaştığı belgeyle sınırlıdır",
+    "number": "Belge no.",
+    "type": "Belge türü",
+    "status": "Durum",
+    "issueDate": "Düzenlenme tarihi",
+    "total": "Toplam tutar",
+    "currency": "Para birimi",
+    "expiresAt": "Bağlantı :date tarihine kadar geçerli",
+    "download": "PDF indir",
+    "downloadHint": "Belgeyi PDF olarak indir",
+    "notFoundTitle": "Geçersiz veya süresi dolmuş bağlantı",
+    "notFoundBody": "Bu bağlantı artık geçerli değil veya süresi doldu. Yeni bir bağlantı almak için gönderenle iletişime geçin.",
+    "errorTitle": "Belge yüklenemedi",
+    "errorBody": "Bir hata oluştu. Lütfen birkaç dakika sonra tekrar deneyin.",
+    "retry": "Tekrar dene",
+    "backToSite": "Siteye dön",
+    "securityNote": "Güvenli paylaşım — bu bağlantıyı iletmeyin",
+    "statusDraft": "Taslak",
+    "statusSent": "Gönderildi",
+    "statusPartiallyPaid": "Kısmen ödendi",
+    "statusPaid": "Ödendi",
+    "statusCancelled": "İptal edildi",
+    "statusOverdue": "Gecikmiş",
+    "loading": "Yükleniyor…",
+    "downloadError": "İndirme başarısız oldu. Lütfen tekrar deneyin."
   }
 }
