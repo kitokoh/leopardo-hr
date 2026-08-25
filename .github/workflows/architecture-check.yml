@@ -60,6 +60,9 @@ jobs:
       - name: Geofence single usage path guard (ADR-0016 Phase 2, issue #5353)
         run: bash dev-hub/tools/check-geofence-single-usage.sh
 
+      - name: .claim-marker forbidden in working tree (issue #5447)
+        run: bash dev-hub/tools/check-no-claim-marker.sh
+
 
   phpstan-modules:
     timeout-minutes: 45
