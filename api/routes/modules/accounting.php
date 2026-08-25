@@ -76,9 +76,11 @@ Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:princ
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
 
-Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
-    Route::get('accounting/journal', [AccountingJournalController::class, 'index']);
-    Route::get('accounting/journal/export.csv', [AccountingJournalController::class, 'export']);
-    Route::post('accounting/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
-    Route::post('accounting/documents/{document}/journal', [AccountingJournalController::class, 'postDocument']);
-});
+Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])
+    ->prefix('accounting')
+    ->group(function (): void {
+        Route::get('/journal', [AccountingJournalController::class, 'index']);
+        Route::get('/journal/export.csv', [AccountingJournalController::class, 'export']);
+        Route::post('/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
+        Route::post('/documents/{document}/journal', [AccountingJournalController::class, 'postDocument']);
+    });
