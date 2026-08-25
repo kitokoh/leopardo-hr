@@ -5,6 +5,11 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
 
+### i18n — Parité errors.php ×4 vérifiée + garde consolidée (#5524)
+- `ALREADY_SEEDED` présent dans `lang/{ar,en,fr,tr}/errors.php` (introduit par #5525) — parité 236 clés ×4 vérifiée.
+- `check-accounting-i18n.py` : `ACCOUNTING_I18N_OK — 0 chaîne hardcodée, parité ×4`.
+- `LangCatalogParityTest` (`test_key_parity_across_locales_per_catalog`) couvre TOUS les catalogues `lang/**/*.php` ×4, dont `errors.php` — aucune régression possible sans signal rouge CI.
+
 ### Portail client — E2E + routes restaurées (#5433/#5429)
 - Routes publiques `documents/shared/{token}` + `/download` restaurées (disparues dans les merges #5495/#5377) — throttle 60/min.
 - `PortalJourneyE2ETest` : parcours complet de bout en bout + couverture AuditLog (info/download) + RGPD (métadonnées limitées, cross-tenant 404).
