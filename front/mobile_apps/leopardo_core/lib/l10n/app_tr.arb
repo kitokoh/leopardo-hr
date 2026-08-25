@@ -1286,6 +1286,7 @@
   "billingCheckoutSandboxMessage": "Simüle edilmiş ödeme (sandbox modu). Karttan ücret alınmaz.",
   "billingCheckoutUnavailable": "Çevrimiçi ödeme geçici olarak kullanılamıyor. support@leopardo-rh.com adresinden destek ile iletişime geçin.",
   "billingCheckoutFailed": "Ödeme oturumu oluşturulamadı.",
+  "billingRedirectUrlInvalid": "Yönlendirme URL'leri yetkili siteye ait olmalıdır.",
   "contractsListSubtitle": "Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API'sine bağlı.",
   "contractsSearchplaceholder": "Çalışan veya sözleşme türü ara...",
   "contractsAllstatuses": "Tüm durumlar",

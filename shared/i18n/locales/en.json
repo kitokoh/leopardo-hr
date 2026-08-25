@@ -1777,7 +1777,8 @@
     "period_label": "Period",
     "checkout_sandbox_message": "Simulated payment (sandbox mode). No card is charged.",
     "checkout_unavailable": "Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.",
-    "checkout_failed": "Unable to create the payment session."
+    "checkout_failed": "Unable to create the payment session.",
+    "redirect_url_invalid": "Redirect URLs must belong to the authorized site."
   },
   "contracts": {
     "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",

@@ -29,6 +29,7 @@ return [
         //    le job Web E2E échoue en masse sur le health-check CORS bloqué.
         'http://localhost:3000',
         'http://localhost:3001',
+        // Isolated admin E2E preview (Vite preview on loopback).
         'http://127.0.0.1:4173',
         env('FRONTEND_URL', 'http://localhost:3000'),
         env('APP_URL', 'http://localhost'),

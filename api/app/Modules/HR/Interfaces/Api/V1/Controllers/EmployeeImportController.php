@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -31,17 +31,40 @@ class EmployeeImportController extends Controller
 
         $file = $request->file('file');
         $content = file_get_contents($file->getRealPath());
-        $lines = array_filter(explode("\n", str_replace("\r\n", "\n", $content)));
+        if ($content === false || $content === '' || str_contains($content, "\0")) {
+            return response()->json(['message' => 'CSV_CONTENT_INVALID'], 422);
+        }
 
+        $lines = array_values(array_filter(
+            explode("\n", str_replace("\r\n", "\n", $content)),
+            static fn (string $line): bool => trim($line) !== '',
+        ));
         if (count($lines) < 2) {
             return response()->json([
                 'message' => __('errors.CSV_HEADER_REQUIRED'),
             ], 422);
         }
 
-        $headers = array_map('trim', str_getcsv(array_shift($lines)));
+        $headers = array_map('trim', str_getcsv((string) array_shift($lines)));
+        if (count($headers) !== count(array_unique($headers))) {
+            return response()->json(['message' => 'CSV_HEADERS_INVALID'], 422);
+        }
+
+        $allowedColumns = [
+            'first_name', 'last_name', 'email', 'phone',
+            'national_id', 'date_of_birth', 'gender',
+            'address_line', 'postal_code', 'nationality',
+            'contract_start', 'contract_type', 'status',
+        ];
         $requiredHeaders = ['first_name', 'last_name', 'email'];
+        $unknown = array_diff($headers, $allowedColumns);
         $missing = array_diff($requiredHeaders, $headers);
+        if ($unknown !== []) {
+            return response()->json([
+                'message' => 'CSV_HEADERS_UNKNOWN',
+                'columns' => array_values($unknown),
+            ], 422);
+        }
 
         if (! empty($missing)) {
             return response()->json([
@@ -51,12 +74,9 @@ class EmployeeImportController extends Controller
             ], 422);
         }
 
-        $allowedColumns = [
-            'first_name', 'last_name', 'email', 'phone',
-            'national_id', 'date_of_birth', 'gender',
-            'address_line', 'postal_code', 'nationality',
-            'contract_start', 'contract_type', 'status',
-        ];
+        if (count($lines) > 1000) {
+            return response()->json(['message' => 'CSV_TOO_MANY_ROWS'], 422);
+        }
 
         $imported = 0;
         $skipped = 0;
