@@ -5,6 +5,22 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
 
+### Webhooks Stripe/Chargily — URL canonique documentée (#5537)
+- `ChargilyPaymentGateway::webhookUrl()` confirmé : retourne `/api/v1/accounting/payment-webhooks/chargily` (nouvelle URL, PR #5525).
+- ADR-0017 mis à jour : diagramme d'architecture corrigé (ancienne URL → nouvelle), historique des changements ajouté.
+- `docs/accounting/RUNBOOK.md` : nouvelle section §10 « Paiement en ligne — webhooks » — URL canonique, procédures de configuration Stripe/Chargily, vérification HMAC, dépannage.
+- **Action manuelle requise** : reconfigurer les URLs dans les dashboards Stripe et Chargily vers `/api/v1/accounting/payment-webhooks/{gateway}`.
+
+### i18n — Parité errors.php ×4 vérifiée + garde consolidée (#5524)
+- `ALREADY_SEEDED` présent dans `lang/{ar,en,fr,tr}/errors.php` (introduit par #5525) — parité 236 clés ×4 vérifiée.
+- `check-accounting-i18n.py` : `ACCOUNTING_I18N_OK — 0 chaîne hardcodée, parité ×4`.
+- `LangCatalogParityTest` (`test_key_parity_across_locales_per_catalog`) couvre TOUS les catalogues `lang/**/*.php` ×4, dont `errors.php` — aucune régression possible sans signal rouge CI.
+### AuditLog unifié — accès portail client (#5520)
+- `PublicDocumentShareController::auditAccess()` refactoré pour utiliser `AuditLog::record()` (#5439) au lieu de `AuditLog::create()` direct.
+- `module: 'accounting'` + `request_id` (via `correlation_id()`) désormais renseignés sur chaque entrée portail : les accès sont chaînables via les logs de corrélation.
+- Actions renommées : `'accounting.share.info'` → `'share.info'`, `'accounting.share.download'` → `'share.download'` (module dédié).
+- `PortalJourneyE2ETest` adapté : assertions `module`, `request_id` non nul.
+
 ### Portail client — E2E + routes restaurées (#5433/#5429)
 - Routes publiques `documents/shared/{token}` + `/download` restaurées (disparues dans les merges #5495/#5377) — throttle 60/min.
 - `PortalJourneyE2ETest` : parcours complet de bout en bout + couverture AuditLog (info/download) + RGPD (métadonnées limitées, cross-tenant 404).
