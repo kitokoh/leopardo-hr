@@ -58,7 +58,7 @@ final class ShareAccessController extends Controller
 
         $query = AuditLog::query()
             ->forCompany((string) $actor->company_id)
-            ->where('auditable_type', (new AccountingDocumentShare())->getMorphClass())
+            ->where('auditable_type', (new AccountingDocumentShare)->getMorphClass())
             ->whereIn('auditable_id', $shareIds)
             ->whereIn('action', ['accounting.share.info', 'accounting.share.download']);
 

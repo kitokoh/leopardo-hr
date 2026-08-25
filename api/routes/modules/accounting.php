@@ -13,24 +13,24 @@ declare(strict_types=1);
  * BelongsToCompany (scope global fail-closed #3727).
  */
 
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingActivationController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingChartController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingCheckoutController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDashboardController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingFecController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingFiscalYearController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingLedgerController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingLetteringController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingStatementController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingCheckoutController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
-use App\Modules\Accounting\Interfaces\Api\V1\ShareAccessController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingStatementController;
 use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
+use App\Modules\Accounting\Interfaces\Api\V1\ShareAccessController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
@@ -116,14 +116,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::delete('/journal/lettering/{letter}', [AccountingLetteringController::class, 'destroy']);
         });
 
+        // ── Rapports (issue #5271) — déclaration TVA par période.
+        Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
 
-            // ── Rapports (issue #5271) — déclaration TVA par période.
-            Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
-
-            // ── Conversion multi-devises (issue #5270) — calcul pur, aucun
-            // état persistant : HT/TVA/TTC entre devise de document et devise
-            // de référence. Taux manuel requis dès que les devises diffèrent.
-            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
+        // ── Conversion multi-devises (issue #5270) — calcul pur, aucun
+        // état persistant : HT/TVA/TTC entre devise de document et devise
+        // de référence. Taux manuel requis dès que les devises diffèrent.
+        Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
 
     });
 /**
