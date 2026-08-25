@@ -85,7 +85,7 @@ class CheckThenCreateRaceTest extends TestCase
 
         // Jamais de 500 : 422 idempotent, même message que le check exists().
         $response->assertStatus(422)
-            ->assertJsonPath('message', 'Already enrolled in this session.');
+            ->assertJsonPath('message', __('errors.ALREADY_ENROLLED_SESSION'));
 
         $this->assertSame(1, TrainingEnrollment::where('training_session_id', $session->id)
             ->where('employee_id', $employeeId)

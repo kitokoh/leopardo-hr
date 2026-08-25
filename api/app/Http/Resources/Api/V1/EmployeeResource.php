@@ -5,12 +5,14 @@ namespace App\Http\Resources\Api\V1;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Modules\HR\Application\Services\EmployeeDocumentService;
+use App\Modules\HR\Domain\Models\EmployeeDocument;
 use App\Modules\HR\Infrastructure\Services\MobileExperienceService;
 use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
 use App\Shared\Models\Language;
 use DateTimeInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection;
 
 /**
  * @mixin Employee
@@ -114,7 +116,11 @@ class EmployeeResource extends JsonResource
             // Présent uniquement quand la relation est chargée (show), jamais
             // sur les listes (évite un N+1 sur index).
             'documents_status' => $this->whenLoaded('employeeDocuments', function (): array {
-                return EmployeeDocumentService::dossierSummary((string) $this->status, $this->employeeDocuments);
+                // whenLoaded garantit que la relation est chargée (non nulle) ici.
+                /** @var Collection<int, EmployeeDocument> $documents */
+                $documents = $this->employeeDocuments;
+
+                return EmployeeDocumentService::dossierSummary((string) $this->status, $documents);
             }),
         ];
     }

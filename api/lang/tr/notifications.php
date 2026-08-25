@@ -9,6 +9,8 @@ return [
     'attendance_geofence_alert_phase_check_out' => 'çıkış yaptı',
 
     'generic_title' => 'Leopardo RH bildirimi',
+    'accounting_payment_reminder_title' => 'Ödeme hatırlatması',
+    'accounting_payment_reminder_body' => '{document_number} numaralı fatura ({document_total}) {due_date} tarihinden beri ödenmedi — {days_overdue}. gün hatırlatması.',
     'generic_body' => 'Alanınızda yeni bilgi mevcut.',
 
     'absence_approved_title' => 'İzin talebi onaylandı',

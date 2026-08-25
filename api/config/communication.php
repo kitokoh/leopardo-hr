@@ -188,6 +188,12 @@ return [
             'title' => 'Avance sur salaire approuvée',
             'body' => 'Votre demande d’avance sur salaire a été approuvée par votre manager. Le paiement sera déclaré prochainement.',
         ],
+        'accounting_payment_reminder' => [
+            'category' => 'accounting',
+            'title_key' => 'notifications.accounting_payment_reminder_title',
+            'body_key' => 'notifications.accounting_payment_reminder_body',
+            'vars' => ['document_number', 'document_type', 'document_total', 'due_date', 'days_overdue', 'reminder_stage'],
+        ],
         'salary_advance_rejected' => [
             'category' => 'payroll',
             'title' => 'Avance sur salaire refusée',
