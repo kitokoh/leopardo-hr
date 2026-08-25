@@ -1937,6 +1937,133 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+
+  /auth/2fa/status:
+    get:
+      tags: ["Auth"]
+      summary: "Etat 2FA du compte connecte"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Etat 2FA (activee ? politique requise ?)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorStatusResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /auth/2fa/enroll:
+    post:
+      tags: ["Auth"]
+      summary: "Demarrer l'enrolement 2FA (secret + QR)"
+      security:
+        - BearerAuth: []
+      responses:
+        "201":
+          description: "Secret TOTP et URL du QR code"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorEnrollResponse"
+        "409":
+          description: "TWO_FACTOR_ALREADY_ENABLED"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /auth/2fa/confirm:
+    post:
+      tags: ["Auth"]
+      summary: "Confirmer l'enrolement 2FA (premier code) et activer"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                  description: "Code TOTP a verifier"
+      responses:
+        "201":
+          description: "2FA activee + codes de recuperation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorConfirmResponse"
+        "422":
+          description: "TWO_FACTOR_INVALID (code invalide)"
+        "409":
+          description: "TWO_FACTOR_ALREADY_ENABLED"
+
+  /auth/2fa/disable:
+    post:
+      tags: ["Auth"]
+      summary: "Desactiver la 2FA (re-verification par code)"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+      responses:
+        "200":
+          description: "2FA desactivee"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorStatusResponse"
+        "422":
+          description: "TWO_FACTOR_INVALID"
+
+  /auth/2fa/recovery-codes:
+    post:
+      tags: ["Auth"]
+      summary: "Regenerer les codes de recuperation 2FA"
+      security:
+        - BearerAuth: []
+      responses:
+        "201":
+          description: "Nouveaux codes de recuperation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorConfirmResponse"
+
+  /auth/2fa/verify:
+    post:
+      tags: ["Auth"]
+      summary: "Verifier le challenge 2FA et obtenir le token"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TwoFactorVerifyRequest"
+      responses:
+        "200":
+          description: "Token Sanctum delivre"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorVerifyResponse"
+        "401":
+          description: "TWO_FACTOR_CHALLENGE_EXPIRED"
+        "422":
+          description: "TWO_FACTOR_INVALID ou validation"
+
   /auth/me:
     get:
       tags: ["Auth"]
@@ -19779,6 +19906,75 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 components:
+
+  TwoFactorStatusResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          mfa_required:
+            type: boolean
+
+  TwoFactorEnrollResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          secret:
+            type: string
+          qr_url:
+            type: string
+
+  TwoFactorConfirmResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          recovery_codes:
+            type: array
+            items:
+              type: string
+
+  TwoFactorVerifyRequest:
+    type: object
+    required: [challenge_token]
+    properties:
+      challenge_token:
+        type: string
+      code:
+        type: string
+        description: "Code TOTP (ou recovery_code)"
+      recovery_code:
+        type: string
+      device_name:
+        type: string
+        nullable: true
+      remember_device:
+        type: boolean
+
+  TwoFactorVerifyResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          id:
+            type: integer
+          email:
+            type: string
+      token:
+        type: string
+      token_type:
+        type: string
+      token_expires_at:
+        type: string
+        nullable: true
+
   securitySchemes:
     BearerAuth:
       type: http
