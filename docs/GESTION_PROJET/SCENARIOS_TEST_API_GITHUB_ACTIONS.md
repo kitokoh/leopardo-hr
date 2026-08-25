@@ -6,6 +6,8 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 
 Note 2026-06-28 : Migration des modeles d'authentification (User/Employee) vers l'architecture DDD dans Core/Auth terminee.
 
+Note 2026-08-22 (stabilisation CI, PR #5295) : les endpoints publics OIDC `GET /sso/oidc/{companyId}/authorize` et `GET /sso/oidc/{companyId}/callback` portent explicitement `throttle:10,1`; `SsoCallbackThrottleTest` vérifie ce contrat anti-abus. Le contrat `api/openapi.yaml` reste parsable par Redocly après fusion des chemins dupliqués, correction des nullable OpenAPI 3.0 et alignement des paramètres recruitment; le miroir et les SDK JavaScript/Python sont régénérés.
+
 ## Perimetre
 
 - API publique
