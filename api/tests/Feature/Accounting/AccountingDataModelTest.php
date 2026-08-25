@@ -215,7 +215,7 @@ class AccountingDataModelTest extends TestCase
         $this->assertSame(['customer', 'supplier', 'both'], ContactType::values());
         $this->assertSame(['invoice', 'proforma', 'quote', 'credit_note', 'delivery_note', 'receipt'], DocumentType::values());
         $this->assertSame(['draft', 'sent', 'partially_paid', 'paid', 'cancelled', 'overdue'], DocumentStatus::values());
-        $this->assertSame(['cash', 'bank_transfer', 'check', 'card', 'other'], PaymentMethod::values());
+        $this->assertSame(['cash', 'bank_transfer', 'check', 'card', 'other', 'online_chargily', 'online_stripe'], PaymentMethod::values());
         $this->assertSame(['pending', 'recorded', 'matched'], PaymentStatus::values());
     }
 }
