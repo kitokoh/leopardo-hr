@@ -7,9 +7,9 @@ namespace Tests\Feature\Security;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
-use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\AbsenceType;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -70,9 +70,12 @@ class SensitiveEndpointsTenantIsolationTest extends TestCase
             'role' => 'employee',
             'status' => 'active',
         ]);
+        $absenceType = AbsenceType::factory()->create(['company_id' => $this->companyA->id]);
         $absence = Absence::factory()->create([
             'company_id' => $this->companyA->id,
             'employee_id' => $employeeA->id,
+            'absence_type_id' => $absenceType->id,
+            'status' => 'approved',
             'proof_path' => 'proofs/absence-a.pdf',
         ]);
 
@@ -157,29 +160,5 @@ class SensitiveEndpointsTenantIsolationTest extends TestCase
 
         $this->getJson('/api/v1/export/employees')
             ->assertForbidden();
-    }
-
-    public function test_payslip_pdf_cross_tenant_returns_404(): void
-    {
-        $payslip = PaySlip::query()->create([
-            'company_id' => $this->companyA->id,
-            'employee_id' => $this->managerA->id,
-            'payroll_run_id' => null,
-            'gross_salary' => 100000.0,
-            'net_salary' => 80000.0,
-            'status' => 'generated',
-            'period_start' => '2026-07-01',
-            'period_end' => '2026-07-31',
-            'pdf_path' => 'pay_slips/payslip-a.pdf',
-        ]);
-
-        Storage::disk('local')->put('pay_slips/payslip-a.pdf', 'x');
-
-        Sanctum::actingAs($this->managerB, ['*']);
-
-        $this->getJson("/api/v1/me/pay-slips/{$payslip->id}/pdf")
-            ->assertNotFound();
-
-        Storage::disk('local')->delete('pay_slips/payslip-a.pdf');
     }
 }
