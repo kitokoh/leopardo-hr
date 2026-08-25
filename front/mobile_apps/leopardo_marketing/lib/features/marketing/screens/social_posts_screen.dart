@@ -9,15 +9,7 @@ import 'package:leopardo_accounting/features/marketing/models/social_post.dart';
 
 import '../data/social_post_repository.dart';
 
-class _StatusFilter extends Notifier<String?> {
-  @override
-  String? build() => null;
-
-  void set(String? value) => state = value;
-}
-
-final _statusFilterProvider =
-    NotifierProvider<_StatusFilter, String?>(_StatusFilter.new);
+final _statusFilterProvider = StateProvider<String?>((ref) => null);
 
 final socialPostRepositoryProvider = Provider<SocialPostRepository>((ref) {
   return SocialPostRepository(ref.watch(apiClientProvider));
@@ -91,7 +83,7 @@ class SocialPostsScreen extends ConsumerWidget {
                     ),
                     backgroundColor: Colors.white10,
                     onSelected: (_) =>
-                        ref.read(_statusFilterProvider.notifier).set(s),
+                        ref.read(_statusFilterProvider.notifier).state = s,
                   ),
                 );
               }).toList(),
@@ -221,9 +213,7 @@ class _PostCard extends ConsumerWidget {
                   if (post.isDraft)
                     TextButton.icon(
                       icon: const Icon(Icons.send_rounded, size: 14),
-                      label:
-                          const Text('Publier', style: TextStyle(fontSize: 12)),
-label: const Text(
+                      label: const Text(
                         'Publier',
                         style: TextStyle(fontSize: 12),
                       ),
@@ -242,8 +232,7 @@ label: const Text(
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                    color: Colors.white, fontSize: 13, height: 1.4),
-color: Colors.white,
+                  color: Colors.white,
                   fontSize: 13,
                   height: 1.4,
                 ),
@@ -272,9 +261,7 @@ color: Colors.white,
                     const SizedBox(width: 4),
                     Text(
                       post.providerPostRef!,
-                      style:
-                          const TextStyle(color: Colors.white38, fontSize: 10),
-style: const TextStyle(
+                      style: const TextStyle(
                         color: Colors.white38,
                         fontSize: 10,
                       ),
