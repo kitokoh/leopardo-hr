@@ -234,6 +234,7 @@ return [
     // Platform — RTMX (#5277): idempotent replay of mobile writes
     'INVALID_IDEMPOTENCY_KEY' => 'Invalid idempotency key.',
     'IDEMPOTENCY_IN_PROGRESS' => 'An identical request is already in progress. Retry shortly.',
+    'ATTENDANCE_PERIOD_CLOSED' => 'The attendance period is closed: corrections are locked.',
     'DEPARTMENT_DELETED' => 'Department deleted.',
     'POSITION_DELETED' => 'Position deleted.',
     'SITE_DELETED' => 'Site deleted.',
@@ -243,4 +244,16 @@ return [
     'CONTRACT_NOT_FOUND_EMPLOYEE' => 'No contract found for this employee.',
     'ALREADY_ENROLLED_SESSION' => 'Already enrolled in this session.',
     'DELETION_REQUEST_RECEIVED' => 'Deletion request received for HR/legal review.',
+    // Accounting (issue #5227)
+    'PAYMENT_EXCEEDS_TOTAL' => 'The payment amount exceeds the remaining balance of the document.',
+    'PAYMENT_ON_UNSENT_DOCUMENT' => 'Cannot record a payment on a document that has not been issued.',
+    'PAYMENT_GATEWAY_NOT_CONFIGURED' => 'No online payment gateway is configured for this company\'s country.',
+    'DOCUMENT_NOT_SENDABLE' => 'This document cannot be paid online (not issued or already settled).',
+    'PAYMENT_AMOUNT_MISMATCH' => 'The amount notified by the gateway does not match the document balance.',
+    'WEBHOOK_SIGNATURE_INVALID' => 'Invalid or missing webhook signature.',
+    'CREDIT_NOTE_REQUIRES_SOURCE_INVOICE' => 'A credit note must be linked to its source invoice.',
+    'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'A delivery note must include its delivery date.',
+    'DOCUMENT_NOT_FULLY_PAID' => 'The document cannot be marked paid until the full amount is settled.',
+    'INVALID_DOCUMENT_TRANSITION' => 'Status transition not allowed for this document.',
+    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Invalid period. Use the YYYY-MM format.',
 ];

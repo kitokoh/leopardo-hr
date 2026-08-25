@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Planning\Infrastructure\Services;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -19,12 +19,15 @@ class EstimationService
 
     private const DEFAULT_OVERTIME_RATE_1 = 1.25;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function dailySummary(Employee $employee, ?string $date = null): array
     {
         $company = currentCompany();
 
         $dateLocal = $date
-            ? Carbon::createFromFormat('Y-m-d', $date, $company->timezone)->startOfDay()
+            ? (Carbon::createFromFormat('Y-m-d', $date, $company->timezone) ?? now()->setTimezone($company->timezone))->startOfDay()
             : now('UTC')->setTimezone($company->timezone)->startOfDay();
 
         $dateKey = $dateLocal->toDateString();
@@ -39,12 +42,15 @@ class EstimationService
         return $this->dailySummaryFromLogs($employee, $logs, $dateKey);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function quickEstimate(Employee $employee, string $from, string $to): array
     {
         $company = currentCompany();
 
-        $fromLocal = Carbon::createFromFormat('Y-m-d', $from, $company->timezone)->startOfDay();
-        $toLocal = Carbon::createFromFormat('Y-m-d', $to, $company->timezone)->startOfDay();
+        $fromLocal = (Carbon::createFromFormat('Y-m-d', $from, $company->timezone) ?? now()->setTimezone($company->timezone))->startOfDay();
+        $toLocal = (Carbon::createFromFormat('Y-m-d', $to, $company->timezone) ?? now()->setTimezone($company->timezone))->startOfDay();
 
         $logsByDate = AttendanceLog::query()
             ->select(['id', 'employee_id', 'date', 'session_number', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'work_type', 'late_minutes'])
@@ -54,7 +60,7 @@ class EstimationService
             ->orderBy('date')
             ->orderBy('session_number')
             ->get()
-            ->groupBy(fn (AttendanceLog $log) => $log->date->format('Y-m-d'));
+            ->groupBy(fn (AttendanceLog $log) => $log->date?->format('Y-m-d') ?? 'unknown-date');
 
         $workingDays = $this->countWorkingDaysInclusive($employee, $fromLocal, $toLocal);
 
@@ -113,6 +119,9 @@ class EstimationService
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function dailySummaryFromLog(Employee $employee, ?AttendanceLog $log, ?string $date = null): array
     {
         return $this->dailySummaryFromLogs(
@@ -203,8 +212,12 @@ class EstimationService
             'matricule' => $employee->matricule,
             'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
             'date' => $dateKey,
-            'check_in' => $checkInUtc->copy()->setTimezone($company->timezone)->format('H:i'),
-            'check_out' => $checkOutUtc?->copy()->setTimezone($company->timezone)->format('H:i'),
+            'check_in' => $checkInUtc !== null
+                ? $checkInUtc->copy()->setTimezone($company->timezone)->format('H:i')
+                : null,
+            'check_out' => $checkOutUtc !== null
+                ? $checkOutUtc->copy()->setTimezone($company->timezone)->format('H:i')
+                : null,
             'sessions_count' => $sessions->count(),
             'hours_worked' => $hoursWorked,
             'overtime_hours' => $overtimeHours,
@@ -217,6 +230,9 @@ class EstimationService
         ];
     }
 
+    /**
+     * @return array{0: float, 1: float}
+     */
     private function resolveRates(Employee $employee): array
     {
         $salaryType = $employee->salary_type ?? 'fixed';
@@ -229,9 +245,8 @@ class EstimationService
         } elseif ($salaryType === 'daily') {
             $baseHourlyRate = $salaryBase / self::EXPECTED_HOURS_PER_DAY;
         } else {
-            $daily = self::DEFAULT_WORKING_DAYS_PER_MONTH > 0
-                ? ($salaryBase / self::DEFAULT_WORKING_DAYS_PER_MONTH)
-                : 0.0;
+            // DEFAULT_WORKING_DAYS_PER_MONTH = 22 — garde superflue (PHPStan greater.alwaysTrue)
+            $daily = $salaryBase / self::DEFAULT_WORKING_DAYS_PER_MONTH;
             $baseHourlyRate = $daily / self::EXPECTED_HOURS_PER_DAY;
         }
 
@@ -311,4 +326,3 @@ class EstimationService
         return $table?->table_name !== null;
     }
 }
-

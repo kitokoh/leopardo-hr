@@ -21,7 +21,7 @@ const PROTECTED_PREFIXES = [
   '/reports',
   '/training',
   '/settings',
-  '/smart-attendance',
+  '/attendance/geo',
   '/social',
   '/social-marketing',
 ];

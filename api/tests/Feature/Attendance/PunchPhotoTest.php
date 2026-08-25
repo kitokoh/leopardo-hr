@@ -7,8 +7,8 @@ namespace Tests\Feature\Attendance;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -210,7 +210,7 @@ class PunchPhotoTest extends TestCase
         $this->assertNotNull($log->punch_photo_path);
     }
 
-    public function test_smart_attendance_config_exposes_requires_punch_photo(): void
+    public function test_attendance_config_exposes_requires_punch_photo(): void
     {
         AttendanceModeSettings::query()->create([
             'company_id' => $this->company->id,
@@ -219,7 +219,7 @@ class PunchPhotoTest extends TestCase
 
         Sanctum::actingAs($this->employee);
 
-        $response = $this->getJson('/api/v1/smart-attendance/config');
+        $response = $this->getJson('/api/v1/attendance/config');
 
         $response->assertStatus(200);
         $response->assertJsonPath('data.requires_punch_photo', true);

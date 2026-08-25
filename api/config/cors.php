@@ -73,9 +73,19 @@ return [
         'X-Request-Id',
         'X-API-Version',
         'X-App-Context',
+        // RTMX (#5277/#5446) : GET conditionnels (ETag/If-None-Match) et
+        // rejeu idempotent des écritures (Idempotency-Key) depuis les clients
+        // web cross-origin (admin-dashboard Vue).
+        'If-None-Match',
+        'Idempotency-Key',
     ],
 
-    'exposed_headers' => [],
+    'exposed_headers' => [
+        // RTMX : l'ETag et le marqueur de rejeu doivent être lisibles par le
+        // JS des clients web cross-origin (sinon cache ETag inutilisable).
+        'ETag',
+        'Idempotent-Replayed',
+    ],
 
     'max_age' => 0,
 

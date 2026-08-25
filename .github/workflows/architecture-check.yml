@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   group: architecture-check-${{ github.workflow }}-${{ github.ref }}
@@ -46,6 +47,13 @@ jobs:
       - name: Migration basename collision guard (issue #1962)
         run: bash dev-hub/tools/check-migration-basename-collisions.sh
 
+      - name: Migration prefix inter-PR guard (issue #5437)
+        run: node dev-hub/tools/check-migration-prefixes.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+
       - name: Country catalog guard (issue #2600)
         run: bash dev-hub/tools/check-country-catalog.sh
 
@@ -59,6 +67,15 @@ jobs:
         run: bash dev-hub/tools/check-migrations-tenant-schema.sh
       - name: Geofence single usage path guard (ADR-0016 Phase 2, issue #5353)
         run: bash dev-hub/tools/check-geofence-single-usage.sh
+
+      - name: SmartAttendance purge guard (ADR-0016 Phase 5, issue #5356)
+        run: bash dev-hub/tools/check-smartattendance-purged.sh
+
+      - name: MVP schema parity guard — CreatesMvpSchema ↔ migrations tenant (issue #5443)
+        run: bash dev-hub/tools/check-mvp-schema-parity.sh api
+
+      - name: .claim-marker forbidden in working tree (issue #5447)
+        run: bash dev-hub/tools/check-no-claim-marker.sh
 
 
   phpstan-modules:
@@ -268,6 +285,29 @@ jobs:
           fi
 
           dev-hub/tools/check-phpstan-baseline-delta.sh "${base_sha}" "${head_sha}" api
+
+      - name: Check no PR adds PHPStan baseline debt (#5448 - garde 0 nouvelle entree)
+        env:
+          DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          base_sha="${DIFF_BASE_SHA:-}"
+          head_sha="${DIFF_HEAD_SHA:-}"
+
+          if [[ -z "${base_sha}" || "${base_sha}" == "0000000000000000000000000000000000000000" ]]; then
+            if git rev-parse HEAD~1 >/dev/null 2>&1; then
+              base_sha="$(git rev-parse HEAD~1)"
+            else
+              base_sha="$(git rev-parse HEAD)"
+            fi
+          fi
+
+          if [[ -z "${head_sha}" ]]; then
+            head_sha="$(git rev-parse HEAD)"
+          fi
+
+          dev-hub/tools/check-phpstan-baseline-debt.sh guard "${base_sha}" "${head_sha}" api
 
   frontend-lint:
     timeout-minutes: 15

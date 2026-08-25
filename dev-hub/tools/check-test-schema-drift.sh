@@ -25,7 +25,7 @@ set -uo pipefail
 if [[ "${1:-}" == "--report-f13" ]]; then
   API_DIR="${2:-api}"
   FEATURE_DIR="${API_DIR}/tests/Feature"
-  CORE_MODULES="Payroll HR Attendance SmartAttendance Contracts"
+  CORE_MODULES="Payroll HR Attendance Contracts"
   total=0; real=0; manual=0
   for mod in $CORE_MODULES; do
     dir="${FEATURE_DIR}/${mod}"

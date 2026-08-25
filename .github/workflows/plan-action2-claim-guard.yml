@@ -60,6 +60,13 @@ jobs:
           chmod +x dev-hub/tools/check-plan-action2-claim.sh
           dev-hub/tools/check-plan-action2-claim.sh "${{ github.repository }}" "${{ github.event.pull_request.number }}"
 
+      - name: Check unique issue claim per PR (issue #5442)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x dev-hub/tools/check-issue-claim-unique.sh
+          dev-hub/tools/check-issue-claim-unique.sh "${{ github.repository }}"
+
       - name: Check PR references a PA2-* ticket (PA2-AUTO-004)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

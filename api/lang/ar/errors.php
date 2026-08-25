@@ -227,6 +227,7 @@ return [
     // النظام الأساسي — RTMX (#5277): إعادة تشغيل آمنة للكتابات من الجوال
     'INVALID_IDEMPOTENCY_KEY' => 'مفتاح التكرار غير صالح.',
     'IDEMPOTENCY_IN_PROGRESS' => 'طلب مماثل قيد المعالجة بالفعل. أعد المحاولة بعد قليل.',
+    'ATTENDANCE_PERIOD_CLOSED' => 'فترة الحضور مغلقة: التصحيحات مقفلة.',
     'DEPARTMENT_DELETED' => 'تم حذف القسم.',
     'POSITION_DELETED' => 'تم حذف المنصب.',
     'SITE_DELETED' => 'تم حذف الموقع.',
@@ -236,4 +237,16 @@ return [
     'CONTRACT_NOT_FOUND_EMPLOYEE' => 'لا يوجد عقد لهذا الموظف.',
     'ALREADY_ENROLLED_SESSION' => 'مسجل بالفعل في هذه الجلسة.',
     'DELETION_REQUEST_RECEIVED' => 'تم استلام طلب الحذف للمراجعة من قبل الموارد البشرية/القانونية.',
+    // المحاسبة (issue #5227)
+    'PAYMENT_EXCEEDS_TOTAL' => 'يتجاوز مبلغ الدفع الرصيد المتبقي للمستند.',
+    'PAYMENT_ON_UNSENT_DOCUMENT' => 'لا يمكن تسجيل دفعة على مستند لم يُصدر بعد.',
+    'PAYMENT_GATEWAY_NOT_CONFIGURED' => 'لا توجد بوابة دفع عبر الإنترنت مهيأة لبلد هذه الشركة.',
+    'DOCUMENT_NOT_SENDABLE' => 'لا يمكن دفع هذا المستند عبر الإنترنت (غير مصدر أو مسدد بالكامل).',
+    'PAYMENT_AMOUNT_MISMATCH' => 'المبلغ المُبلغ من البوابة لا يطابق رصيد المستند.',
+    'WEBHOOK_SIGNATURE_INVALID' => 'توقيع الويب هوك غير صالح أو مفقود.',
+    'CREDIT_NOTE_REQUIRES_SOURCE_INVOICE' => 'يجب ربط الإشعار الدائن بفاتورته المصدرية.',
+    'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'يجب أن يتضمن سند التسليم تاريخ التسليم.',
+    'DOCUMENT_NOT_FULLY_PAID' => 'لا يمكن وضع علامة مدفوعة على المستند قبل تسديد المبلغ كاملاً.',
+    'INVALID_DOCUMENT_TRANSITION' => 'تغيير الحالة غير مسموح به لهذا المستند.',
+    'ACCOUNTING_VAT_PERIOD_INVALID' => 'فترة غير صالحة. استخدم صيغة YYYY-MM.',
 ];

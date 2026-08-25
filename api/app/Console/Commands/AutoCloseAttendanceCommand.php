@@ -5,21 +5,54 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use App\Jobs\DispatchCommunicationJob;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Fermeture automatique unique (ADR-0016 Phase 4, #5355) :
+ *  1. les pointages sans check-out (politique tenant, logique historique) ;
+ *  2. les sessions GPS restées ouvertes trop longtemps (fusion de
+ *     l'ex-commande `smart-attendance:auto-close` (supprimée en Phase 5 #5356) — itère
+ *     TOUS les tenants actifs (chaque tenant dans son schéma via
+ *     TenantManager::withinTenant).
+ */
 class AutoCloseAttendanceCommand extends Command
 {
     protected $signature = 'attendance:auto-close
                                 {--threshold=12 : Fallback hours without check-out before auto-closing}
-                                {--dry-run : Preview without writing}';
+                                {--hours=14 : Close geo sessions open longer than N hours}
+                                {--company= : Company (tenant) to target for geo sessions — otherwise all active tenants}
+                                {--dry-run : Preview without writing}
+                                {--logs-only : Only close forgotten attendance logs (skip geo sessions)}
+                                {--sessions-only : Only close stale geo sessions (skip attendance logs)}';
 
-    protected $description = 'Auto-close attendance logs that have no check-out after the tenant policy delay';
+    protected $description = 'Auto-close forgotten attendance logs and stale GPS sessions (unique auto-close, ADR-0016)';
 
-    public function handle(): int
+    public function handle(TenantManager $tenantManager): int
+    {
+        $logsOnly = (bool) $this->option('logs-only');
+        $sessionsOnly = (bool) $this->option('sessions-only');
+
+        if (! $sessionsOnly) {
+            $this->closeForgottenAttendanceLogs();
+        }
+
+        if (! $logsOnly) {
+            $this->closeStaleGeoSessions($tenantManager);
+        }
+
+        return self::SUCCESS;
+    }
+
+    /**
+     * Ferme les pointages sans check-out après le délai de la politique tenant.
+     */
+    private function closeForgottenAttendanceLogs(): void
     {
         $fallbackThreshold = max(1, (int) $this->option('threshold'));
         $dryRun = (bool) $this->option('dry-run');
@@ -39,7 +72,7 @@ class AutoCloseAttendanceCommand extends Command
         if ($dryRun) {
             $this->warn('Dry-run mode: no changes written.');
 
-            return self::SUCCESS;
+            return;
         }
 
         $closed = 0;
@@ -107,8 +140,111 @@ class AutoCloseAttendanceCommand extends Command
         $this->info("Auto-closed {$closed} attendance log(s).");
 
         Log::info('attendance:auto-close run complete', ['closed' => $closed]);
+    }
 
-        return self::SUCCESS;
+    /**
+     * Ferme les sessions GPS restées ouvertes trop longtemps (fusion #5355 —
+     * ex-commande smart-attendance:auto-close #4797, supprimée en Phase 5 #5356).
+     *
+     * Multi-tenant : itère TOUTES les companies actives (chaque tenant dans
+     * son schéma via TenantManager::withinTenant) — sans itération, seules les
+     * sessions du schéma par défaut seraient fermées.
+     */
+    private function closeStaleGeoSessions(TenantManager $tenantManager): void
+    {
+        $maxHours = max(1, (int) $this->option('hours'));
+        $dryRun = (bool) $this->option('dry-run');
+        $cutoff = Carbon::now()->subHours($maxHours);
+
+        $companies = Company::query()
+            ->where('status', 'active')
+            ->when($this->option('company'), fn ($q, $id) => $q->whereKey($id))
+            ->orderBy('id')
+            ->get();
+
+        if ($companies->isEmpty()) {
+            $this->warn('Aucune société active — rien à fermer.');
+
+            return;
+        }
+
+        $totalClosed = 0;
+        $totalSkipped = 0;
+
+        foreach ($companies as $company) {
+            [$closed, $skipped] = $tenantManager->withinTenant(
+                $company,
+                fn (): array => $this->closeGeoSessionsForTenant($company, $cutoff, $dryRun),
+            );
+
+            $totalClosed += $closed;
+            $totalSkipped += $skipped;
+        }
+
+        if ($totalClosed === 0 && $totalSkipped === 0) {
+            $this->info("Aucune session GPS à fermer ({$companies->count()} tenant(s) parcouru(s)).");
+        } else {
+            $this->info("{$companies->count()} tenant(s) parcouru(s) — {$totalClosed} session(s) fermée(s), {$totalSkipped} en dry-run.");
+        }
+
+        if ($dryRun) {
+            $this->warn('[dry-run] Aucune modification effectuée.');
+        }
+    }
+
+    /**
+     * Ferme les sessions GPS expirées dans le schéma du tenant courant.
+     *
+     * @return array{0: int, 1: int} [fermées, ignorées (dry-run)]
+     */
+    private function closeGeoSessionsForTenant(Company $company, Carbon $cutoff, bool $dryRun): array
+    {
+        $sessions = GeoAttendanceSession::query()
+            ->whereNull('ended_at')
+            ->whereIn('status', [
+                GeoAttendanceSession::STATUS_DETECTED,
+                GeoAttendanceSession::STATUS_PENDING_VALIDATION,
+            ])
+            ->where('started_at', '<', $cutoff)
+            ->get();
+
+        if ($sessions->isEmpty()) {
+            return [0, 0];
+        }
+
+        $this->line(sprintf(
+            '  [%s] Sessions GPS à fermer : %d',
+            $company->slug,
+            $sessions->count(),
+        ));
+
+        $handled = 0;
+
+        foreach ($sessions as $session) {
+            $endedAt = Carbon::now();
+            $durationSeconds = (int) $session->started_at->diffInSeconds($endedAt);
+
+            $this->line(sprintf(
+                '    → Session #%d / Employee #%d / démarrée à %s (durée: %dh)',
+                $session->id,
+                $session->employee_id,
+                $session->started_at->toDateTimeString(),
+                intdiv($durationSeconds, 3600),
+            ));
+
+            if (! $dryRun) {
+                $session->update([
+                    'ended_at' => $endedAt,
+                    'duration_seconds' => $durationSeconds,
+                    'status' => GeoAttendanceSession::STATUS_PENDING_VALIDATION,
+                    'validation_note' => 'Fermée automatiquement (timeout système).',
+                ]);
+            }
+
+            $handled++;
+        }
+
+        return $dryRun ? [0, $handled] : [$handled, 0];
     }
 
     /**

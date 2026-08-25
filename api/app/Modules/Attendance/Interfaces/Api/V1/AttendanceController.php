@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AttendanceLogResource;
@@ -12,6 +13,8 @@ use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceMonthlyReportService;
+use App\Modules\Attendance\Infrastructure\Services\AttendancePeriodClosureService;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceRegularityService;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceReportService;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceService;
@@ -23,9 +26,11 @@ use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceTodayRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckInRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckOutRequest;
 use App\Modules\Planning\Infrastructure\Services\EstimationService;
+use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -34,7 +39,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AttendanceController extends Controller
 {
-    public function __construct(private readonly AttendanceService $attendanceService) {}
+    public function __construct(
+        private readonly AttendanceService $attendanceService,
+        private readonly AttendancePeriodClosureService $periodClosures,
+    ) {}
 
     public function checkIn(CheckInRequest $request): JsonResponse
     {
@@ -306,13 +314,19 @@ class AttendanceController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        /** @var array<string, mixed> $validated */
         $validated = $request->validate([
             'attendance_log_id' => ['nullable', 'integer', 'exists:attendance_logs,id'],
             'date' => ['required', 'date'],
             'requested_check_in' => ['required', 'date'],
             'requested_check_out' => ['nullable', 'date'],
             'reason' => ['required', 'string', 'max:500'],
+            // Issue #5267 : justificatif optionnel (mêmes règles que les absences).
+            'proof' => ['nullable', 'file', 'max:5120', 'mimes:jpg,jpeg,png,pdf,heic'],
         ]);
+
+        // Issue #5267 : une période clôturée verrouille les corrections.
+        $this->periodClosures->assertPeriodOpen((string) $actor->company_id, Carbon::parse($validated['date']));
 
         $company = currentCompany();
         $timezone = $company->timezone;
@@ -346,6 +360,13 @@ class AttendanceController extends Controller
                 ->firstOrFail();
         }
 
+        // Issue #5267 : stockage du justificatif sous un chemin scopé entreprise
+        // (même pattern que les absences, PA2-MOB-006).
+        $proof = $request->file('proof');
+        $proofPath = $proof instanceof UploadedFile
+            ? $proof->store('attendance-corrections/proofs/'.$actor->company_id, 'local')
+            : null;
+
         $correction = AttendanceCorrectionRequest::query()->create([
             'company_id' => $actor->company_id,
             'employee_id' => $actor->id,
@@ -354,7 +375,23 @@ class AttendanceController extends Controller
             'requested_check_in' => $requestedCheckIn,
             'requested_check_out' => $requestedCheckOut,
             'reason' => $validated['reason'],
+            'proof_path' => $proofPath,
             'status' => 'pending',
+        ]);
+
+        AuditLog::create([
+            'company_id' => $actor->company_id,
+            'user_id' => $actor->id,
+            'action' => 'attendance_correction_requested',
+            'auditable_type' => $correction->getMorphClass(),
+            'auditable_id' => $correction->id,
+            'old_values' => [],
+            'new_values' => [
+                'date' => $correction->date->format('Y-m-d'),
+                'requested_check_in' => $requestedCheckIn->toIso8601String(),
+                'requested_check_out' => $requestedCheckOut?->toIso8601String(),
+                'has_proof' => $proofPath !== null,
+            ],
         ]);
 
         return response()->json([
@@ -364,6 +401,9 @@ class AttendanceController extends Controller
                 'date' => $correction->date->format('Y-m-d'),
                 'requested_check_in' => $correction->requested_check_in->toIso8601String(),
                 'requested_check_out' => $correction->requested_check_out?->toIso8601String(),
+                'proof_url' => $correction->proof_path !== null
+                    ? route('attendance.corrections.proof', ['correction' => $correction->id])
+                    : null,
             ],
             'message' => __('attendance.correction_transmitted'),
         ], 201);
@@ -412,6 +452,9 @@ class AttendanceController extends Controller
         $this->authorize('update', new AttendanceLog(['company_id' => $correction->company_id]));
         $this->ensureCorrectionBelongsToActorCompany($correction, $actor);
 
+        // Issue #5267 : une période clôturée verrouille les décisions aussi.
+        $this->periodClosures->assertPeriodOpen((string) $correction->company_id, $correction->date);
+
         if ($correction->status !== 'pending') {
             throw ValidationException::withMessages([
                 'status' => [__('attendance.correction_already_processed')],
@@ -457,6 +500,22 @@ class AttendanceController extends Controller
             'reviewed_at' => now(),
         ])->save();
 
+        // Issue #5267 : décision tracée (audit trail).
+        AuditLog::create([
+            'company_id' => $actor->company_id,
+            'user_id' => $actor->id,
+            'action' => 'attendance_correction_approved',
+            'auditable_type' => $correction->getMorphClass(),
+            'auditable_id' => $correction->id,
+            'old_values' => ['status' => 'pending'],
+            'new_values' => [
+                'status' => 'applied',
+                'attendance_log_id' => $log->id,
+                'check_in' => $log->check_in?->toIso8601String(),
+                'check_out' => $log->check_out?->toIso8601String(),
+            ],
+        ]);
+
         $correction->load(['employee', 'attendanceLog']);
 
         return response()->json([
@@ -474,6 +533,9 @@ class AttendanceController extends Controller
         $this->authorize('update', new AttendanceLog(['company_id' => $correction->company_id]));
         $this->ensureCorrectionBelongsToActorCompany($correction, $actor);
 
+        // Issue #5267 : une période clôturée verrouille les décisions aussi.
+        $this->periodClosures->assertPeriodOpen((string) $correction->company_id, $correction->date);
+
         if ($correction->status !== 'pending') {
             throw ValidationException::withMessages([
                 'status' => [__('attendance.correction_already_processed')],
@@ -485,6 +547,17 @@ class AttendanceController extends Controller
             'reviewed_by' => $actor->id,
             'reviewed_at' => now(),
         ])->save();
+
+        // Issue #5267 : décision tracée (audit trail).
+        AuditLog::create([
+            'company_id' => $actor->company_id,
+            'user_id' => $actor->id,
+            'action' => 'attendance_correction_rejected',
+            'auditable_type' => $correction->getMorphClass(),
+            'auditable_id' => $correction->id,
+            'old_values' => ['status' => 'pending'],
+            'new_values' => ['status' => 'rejected'],
+        ]);
 
         $correction->load(['employee', 'attendanceLog']);
 
@@ -593,10 +666,89 @@ class AttendanceController extends Controller
             'requested_check_in' => $correction->requested_check_in->toIso8601String(),
             'requested_check_out' => $correction->requested_check_out?->toIso8601String(),
             'reason' => $correction->reason,
+            // Issue #5267 : justificatif + signalement anti-fraude.
+            'proof_url' => $correction->proof_path !== null
+                ? route('attendance.corrections.proof', ['correction' => $correction->id])
+                : null,
+            'anomaly' => $this->correctionAnomaly($correction),
             'status' => $correction->status,
             'reviewed_by' => $correction->reviewed_by,
             'reviewed_at' => $correction->reviewed_at?->toIso8601String(),
         ];
+    }
+
+    /**
+     * Issue #5267 — anti-fraude : signale une correction dont les horaires
+     * demandés contredisent une session géo VALIDÉE (écart > 15 min).
+     *
+     * @return array{flagged: bool, reason: string|null, session: array<string, mixed>|null}|null
+     */
+    private function correctionAnomaly(AttendanceCorrectionRequest $correction): ?array
+    {
+        $session = GeoAttendanceSession::query()
+            ->where('company_id', $correction->company_id)
+            ->where('employee_id', $correction->employee_id)
+            ->where('status', 'approved')
+            ->whereDate('started_at', $correction->date->toDateString())
+            ->first();
+
+        if ($session === null) {
+            return null;
+        }
+
+        $thresholdMinutes = 15;
+        $conflicts = [];
+
+        if (abs($correction->requested_check_in->diffInMinutes($session->started_at)) > $thresholdMinutes) {
+            $conflicts[] = 'check_in';
+        }
+        if ($session->ended_at !== null && $correction->requested_check_out !== null
+            && abs($correction->requested_check_out->diffInMinutes($session->ended_at)) > $thresholdMinutes) {
+            $conflicts[] = 'check_out';
+        }
+
+        if ($conflicts === []) {
+            return null;
+        }
+
+        return [
+            'flagged' => true,
+            'reason' => 'geo_session_conflict',
+            'session' => [
+                'id' => $session->id,
+                'started_at' => $session->started_at->toIso8601String(),
+                'ended_at' => $session->ended_at?->toIso8601String(),
+            ],
+        ];
+    }
+
+    /**
+     * Issue #5267 — téléchargement du justificatif d'une demande de
+     * correction. Réservé au propriétaire de la demande et aux managers du
+     * tenant (jamais de fuite cross-tenant).
+     */
+    public function downloadProofCorrection(Request $request, AttendanceCorrectionRequest $correction): StreamedResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $this->ensureCorrectionBelongsToActorCompany($correction, $actor);
+
+        if ($actor->id !== $correction->employee_id && ! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+            abort(403);
+        }
+
+        if ($correction->proof_path === null) {
+            abort(404, 'NO_PROOF_ATTACHED');
+        }
+
+        $disk = Storage::disk('local');
+
+        if (! $disk->exists($correction->proof_path)) {
+            abort(404, 'NO_PROOF_ATTACHED');
+        }
+
+        return $disk->download($correction->proof_path);
     }
 
     /**

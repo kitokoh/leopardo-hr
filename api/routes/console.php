@@ -125,13 +125,9 @@ Schedule::command('billing:generate-invoices')->monthlyOn(1, '02:00');
 Schedule::command('leave:accrue')->monthlyOn(1, '03:00');
 Schedule::command('leave:carry-forward --year='.(now()->year - 1))->yearlyOn(1, 1, '04:00');
 Schedule::command('contracts:alert-expiring')->daily()->at('07:00');
-Schedule::command('attendance:auto-close --threshold=12')
-    ->hourly()
-    ->withoutOverlapping()
-    ->onOneServer();
-
-// SmartAttendance — fermeture automatique des sessions GPS orphelines
-Schedule::command('smart-attendance:auto-close --hours=14')
+// Fermeture automatique unique (ADR-0016 Phase 4, #5355) : pointages sans
+// check-out + sessions GPS orphelines — une seule commande, même cycle.
+Schedule::command('attendance:auto-close --threshold=12 --hours=14')
     ->hourly()
     ->withoutOverlapping()
     ->onOneServer();
@@ -163,9 +159,10 @@ Schedule::command('announcements:publish-scheduled')
 Schedule::command('growth:archive-clicks --days=90')
     ->weekly();
 
-// RGPD / Loi 18-07 — rétention des audit logs (24 mois par défaut, voir
+// RGPD / Loi 18-07 — rétention des audit logs (#5439 : par entreprise via
+// CompanySetting `audit_retention_months`, défaut 36 mois — voir
 // docs/security/POLITIQUE_RETENTION_DOCUMENTS.md, issue #1474).
-Schedule::command('audit:purge --older-than=24')
+Schedule::command('audit:purge')
     ->weekly()
     ->onOneServer();
 

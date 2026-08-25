@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Interfaces\Api\V1\Requests;
 
 use App\Modules\Accounting\Domain\Enums\DocumentType;
-use App\Support\CountryDefaults;
+use App\Modules\Accounting\Domain\Support\AccountingCurrencies;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -19,7 +19,7 @@ use Illuminate\Validation\Validator;
  *
  * Validation :
  *   - devise : code ISO 4217 (3 lettres) parmi les devises du registre
- *     CountryDefaults (multi-devises hors périmètre v1, #5270) ;
+ *     `AccountingCurrencies` (union CountryDefaults, multi-devises #5270) ;
  *   - langue des documents : fr/ar/tr/en (i18n ×4 du module) ;
  *   - tva_rates : liste de {label, rate} — taux entre 0 et 100 % ;
  *   - number_series : préfixe par type de document (DocumentType), 20
@@ -39,7 +39,7 @@ class UpdateAccountingSettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'currency' => ['nullable', 'string', 'max:10', Rule::in(self::supportedCurrencies())],
+            'currency' => ['nullable', 'string', Rule::in(AccountingCurrencies::supported())],
             'document_language' => ['nullable', Rule::in(['fr', 'ar', 'tr', 'en'])],
             'template_style' => ['nullable', 'string', 'max:60'],
             'payment_terms' => ['nullable', 'string', 'max:60'],
@@ -74,27 +74,13 @@ class UpdateAccountingSettingsRequest extends FormRequest
                 if (! in_array((string) $key, $allowed, true)) {
                     $validator->errors()->add(
                         'number_series.'.$key,
-                        'Série inconnue : « '.$key.' » n\'est pas un type de document ('.implode(', ', $allowed).').',
+                        __('accounting.validation.series_unknown', [
+                            'key' => $key,
+                            'allowed' => implode(', ', $allowed),
+                        ]),
                     );
                 }
             }
         });
-    }
-
-    /**
-     * Devises supportées v1 : l'union des devises du registre CountryDefaults
-     * (DZ/MA/TN/SN/CI/ML/BF/BJ/TG/NE/CM/GA/CG/TD/CF/GQ/FR/TR/GB/US/CA).
-     *
-     * @return array<int, string>
-     */
-    private static function supportedCurrencies(): array
-    {
-        $currencies = [];
-
-        foreach (CountryDefaults::all() as $defaults) {
-            $currencies[strtoupper((string) $defaults['currency'])] = true;
-        }
-
-        return array_keys($currencies);
     }
 }

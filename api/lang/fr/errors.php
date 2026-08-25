@@ -228,6 +228,7 @@ return [
     // Plateforme — RTMX (#5277) : rejeu idempotent des écritures mobiles
     'INVALID_IDEMPOTENCY_KEY' => "Clé d'idempotence invalide.",
     'IDEMPOTENCY_IN_PROGRESS' => 'Une requête identique est déjà en cours. Réessayez dans un instant.',
+    'ATTENDANCE_PERIOD_CLOSED' => 'La période de pointage est clôturée : aucune correction possible.',
     'DEPARTMENT_DELETED' => 'Département supprimé.',
     'POSITION_DELETED' => 'Poste supprimé.',
     'SITE_DELETED' => 'Site supprimé.',
@@ -237,4 +238,16 @@ return [
     'CONTRACT_NOT_FOUND_EMPLOYEE' => 'Aucun contrat trouvé pour cet employé.',
     'ALREADY_ENROLLED_SESSION' => 'Déjà inscrit à cette session.',
     'DELETION_REQUEST_RECEIVED' => 'Demande de suppression reçue pour revue RH/juridique.',
+    // Comptabilité (issue #5227)
+    'PAYMENT_EXCEEDS_TOTAL' => 'Le montant du paiement dépasse le solde restant du document.',
+    'PAYMENT_ON_UNSENT_DOCUMENT' => 'Impossible d\'enregistrer un paiement sur un document non émis.',
+    'PAYMENT_GATEWAY_NOT_CONFIGURED' => 'Aucune passerelle de paiement en ligne n\'est configurée pour le pays de cette entreprise.',
+    'DOCUMENT_NOT_SENDABLE' => 'Ce document ne peut pas être payé en ligne (non émis ou déjà soldé).',
+    'PAYMENT_AMOUNT_MISMATCH' => 'Le montant notifié par la passerelle ne correspond pas au solde du document.',
+    'WEBHOOK_SIGNATURE_INVALID' => 'Signature de webhook invalide ou absente.',
+    'CREDIT_NOTE_REQUIRES_SOURCE_INVOICE' => 'Un avoir doit être lié à sa facture source.',
+    'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'Un bordereau de livraison doit porter sa date de livraison.',
+    'DOCUMENT_NOT_FULLY_PAID' => 'Le document ne peut pas être marqué payé tant que le montant total n\'est pas réglé.',
+    'INVALID_DOCUMENT_TRANSITION' => 'Transition de statut non autorisée pour ce document.',
+    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Période invalide. Utilisez le format AAAA-MM.',
 ];

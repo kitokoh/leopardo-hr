@@ -355,6 +355,16 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        Schema::create($this->tenantTable('attendance_period_closures'), function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->date('period_start');
+            $table->date('period_end');
+            $table->unsignedInteger('closed_by')->nullable();
+            $table->timestampTz('closed_at')->useCurrent();
+            $table->unique(['company_id', 'period_start', 'period_end'], 'attendance_period_closures_unique');
+        });
+
         Schema::create($this->tenantTable('biometric_enrollment_requests'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
@@ -459,6 +469,8 @@ trait CreatesMvpSchema
             $table->uuid('company_id')->nullable()->index();
             $table->unsignedInteger('user_id')->nullable();
             $table->string('action', 100);
+            $table->string('module', 100)->nullable()->index();
+            $table->string('request_id', 64)->nullable()->index();
             $table->string('auditable_type', 100)->nullable();
             $table->unsignedBigInteger('auditable_id')->nullable();
             $table->json('old_values')->nullable();
@@ -471,6 +483,15 @@ trait CreatesMvpSchema
             $table->index(['company_id', 'created_at']);
             $table->index(['auditable_type', 'auditable_id']);
         });
+
+        // #5439 — colonnes additives (mêmes guards que les migrations tenant).
+        foreach (['module' => 'string', 'request_id' => 'string'] as $auditColumn => $auditType) {
+            if (! Schema::hasColumn($this->tenantTable('audit_logs'), $auditColumn)) {
+                Schema::table($this->tenantTable('audit_logs'), function (Blueprint $table) use ($auditColumn, $auditType): void {
+                    $table->{$auditType}($auditColumn, $auditColumn === 'module' ? 100 : 64)->nullable()->index();
+                });
+            }
+        }
 
         Schema::create('absence_types', function (Blueprint $table): void {
             $table->increments('id');
@@ -1185,6 +1206,24 @@ trait CreatesMvpSchema
                 $table->unsignedInteger('duration_ms')->default(0);
                 $table->text('error')->nullable();
                 $table->timestampTz('created_at')->useCurrent();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('employee_documents'))) {
+            Schema::create($this->moduleTable('employee_documents'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->index();
+                $table->string('type', 40);
+                $table->string('status', 20)->default('received');
+                $table->date('document_date')->nullable();
+                $table->string('reference', 100)->nullable();
+                $table->text('url')->nullable();
+                $table->text('notes')->nullable();
+                $table->unsignedInteger('uploaded_by')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'employee_id']);
             });
         }
 
@@ -2017,15 +2056,33 @@ trait CreatesMvpSchema
         // schéma : hasTable est true mais les colonnes récentes manquent.
         // Même garde `hasColumn` que les migrations tenant.
         $zktecoAdditive = [
-            ['sync_token_hash', function (Blueprint $t): void { $t->string('sync_token_hash', 255)->nullable(); }],
-            ['location_label', function (Blueprint $t): void { $t->string('location_label', 120)->nullable(); }],
-            ['model', function (Blueprint $t): void { $t->string('model', 60)->nullable(); }],
-            ['firmware_version', function (Blueprint $t): void { $t->string('firmware_version', 60)->nullable(); }],
-            ['employee_capacity', function (Blueprint $t): void { $t->unsignedInteger('employee_capacity')->default(1000); }],
-            ['fingerprint_capacity', function (Blueprint $t): void { $t->unsignedInteger('fingerprint_capacity')->default(3000); }],
-            ['face_capacity', function (Blueprint $t): void { $t->unsignedInteger('face_capacity')->default(500); }],
-            ['capabilities', function (Blueprint $t): void { $t->json('capabilities')->nullable(); }],
-            ['punch_methods', function (Blueprint $t): void { $t->json('punch_methods')->nullable(); }],
+            ['sync_token_hash', function (Blueprint $t): void {
+                $t->string('sync_token_hash', 255)->nullable();
+            }],
+            ['location_label', function (Blueprint $t): void {
+                $t->string('location_label', 120)->nullable();
+            }],
+            ['model', function (Blueprint $t): void {
+                $t->string('model', 60)->nullable();
+            }],
+            ['firmware_version', function (Blueprint $t): void {
+                $t->string('firmware_version', 60)->nullable();
+            }],
+            ['employee_capacity', function (Blueprint $t): void {
+                $t->unsignedInteger('employee_capacity')->default(1000);
+            }],
+            ['fingerprint_capacity', function (Blueprint $t): void {
+                $t->unsignedInteger('fingerprint_capacity')->default(3000);
+            }],
+            ['face_capacity', function (Blueprint $t): void {
+                $t->unsignedInteger('face_capacity')->default(500);
+            }],
+            ['capabilities', function (Blueprint $t): void {
+                $t->json('capabilities')->nullable();
+            }],
+            ['punch_methods', function (Blueprint $t): void {
+                $t->json('punch_methods')->nullable();
+            }],
         ];
         foreach ($zktecoAdditive as [$column, $columnDef]) {
             if (! Schema::hasColumn($this->moduleTable('zkteco_devices'), $column)) {
@@ -2151,6 +2208,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "attendance_kiosks"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "biometric_enrollment_requests"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_correction_requests"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "attendance_period_closures"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "camera_access_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "camera_permissions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "camera_access_tokens"'.$cascade);
@@ -2202,6 +2260,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_correction_requests"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "attendance_period_closures"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "salary_advances"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "evaluations"'.$cascade);
