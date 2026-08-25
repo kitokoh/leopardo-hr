@@ -9,6 +9,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\Accounting\Application\Jobs\GenerateDocumentPdf;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentShare;
+use App\Modules\Accounting\Domain\Models\DocumentShareLookup;
 use App\Modules\Accounting\Infrastructure\Services\DocumentShareService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
@@ -72,22 +73,28 @@ final class PublicDocumentShareController
     }
 
     /**
-     * Résout le token dans le contexte tenant de chaque entreprise active
-     * (le scope global BelongsToCompany exige current_company).
+     * Résout le token en O(1) via le lookup public token → company (issue
+     * #5428) : une requête publique + une bascule unique vers le tenant de la
+     * compagnie du partage — plus d'itération de toutes les entreprises
+     * actives (ancien comportement O(N) : N bascules de search_path par
+     * requête publique, risque d'oracle de timing).
      */
     private function resolveShare(string $token): ?AccountingDocumentShare
     {
-        $tenantManager = app(TenantManager::class);
-        $companies = Company::query()->where('status', 'active')->orderBy('id')->get();
+        $lookup = DocumentShareLookup::query()->where('share_token', $token)->first();
 
-        foreach ($companies as $company) {
-            $share = $tenantManager->withinTenant($company, fn (): ?AccountingDocumentShare => $this->shareService->resolve($token));
-
-            if ($share !== null) {
-                return $share;
-            }
+        if ($lookup === null) {
+            return null;
         }
 
-        return null;
+        /** @var Company|null $company */
+        $company = Company::query()->where('id', $lookup->company_id)->first();
+
+        if ($company === null) {
+            return null;
+        }
+
+        return app(TenantManager::class)
+            ->withinTenant($company, fn (): ?AccountingDocumentShare => $this->shareService->resolve($token));
     }
 }

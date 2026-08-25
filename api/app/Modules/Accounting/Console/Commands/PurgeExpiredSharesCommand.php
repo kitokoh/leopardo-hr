@@ -7,6 +7,7 @@ namespace App\Modules\Accounting\Console\Commands;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentShare;
+use App\Modules\Accounting\Domain\Models\DocumentShareLookup;
 use Illuminate\Console\Command;
 
 /**
@@ -44,7 +45,10 @@ final class PurgeExpiredSharesCommand extends Command
 
                 $count = (clone $query)->count();
                 if ($count > 0 && ! $dryRun) {
+                    $tokens = (clone $query)->pluck('share_token');
                     $query->delete();
+                    // Issue #5428 — le lookup public doit suivre la purge.
+                    DocumentShareLookup::query()->whereIn('share_token', $tokens)->delete();
                 }
 
                 return $count;
