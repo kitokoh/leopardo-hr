@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
  * @property float $amount
  * @property string $method
  * @property string|null $reference
+ * @property string|null $gateway_payment_id
  * @property Carbon|null $received_at
  * @property Carbon|null $reconciled_at
  * @property string $status
@@ -42,6 +43,7 @@ class AccountingPayment extends Model
         'amount',
         'method',
         'reference',
+        'gateway_payment_id',
         'received_at',
         'reconciled_at',
         'status',
