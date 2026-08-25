@@ -11,12 +11,12 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * ADR-0016 Phase 3 (issue #5354) — surface API de pointage consolidée.
+ * ADR-0016 Phase 3+5 (issues #5354 / #5356) — surface API de pointage consolidée.
  *
- * Les routes géo sont ré-exposées sous /api/v1/attendance/* (fichier
- * `Attendance/routes/geo.php`) ; les alias /smart-attendance/* restent
- * enregistrés (double enregistrement, bascule mobile, purge Phase 5).
- * Ce test verrouille le nouveau contrat SANS rupture de l'ancien.
+ * Les routes géo sont exposées sous /api/v1/attendance/* (fichier
+ * `Attendance/routes/geo.php`). Phase 5 : les alias /smart-attendance/*
+ * ont été SUPPRIMÉS — ce test verrouille le contrat unique /attendance/*
+ * et vérifie que les anciens chemins répondent 404 (aucune résurgence).
  */
 class GeoRoutesMigrationTest extends TestCase
 {
@@ -52,7 +52,7 @@ class GeoRoutesMigrationTest extends TestCase
         $this->managerRh = $managerRh;
     }
 
-    public function test_employee_can_read_config_on_new_attendance_path(): void
+    public function test_employee_can_read_config_on_attendance_path(): void
     {
         Sanctum::actingAs($this->employee, ['*']);
 
@@ -61,16 +61,15 @@ class GeoRoutesMigrationTest extends TestCase
             ->assertJsonStructure(['data' => ['mode', 'gps_enabled']]);
     }
 
-    public function test_alias_smart_attendance_config_still_works(): void
+    public function test_old_smart_attendance_alias_config_is_gone(): void
     {
         Sanctum::actingAs($this->employee, ['*']);
 
         $this->getJson('/api/v1/smart-attendance/config')
-            ->assertOk()
-            ->assertJsonStructure(['data' => ['mode', 'gps_enabled']]);
+            ->assertNotFound();
     }
 
-    public function test_manager_can_list_sessions_on_new_path(): void
+    public function test_manager_can_list_sessions_on_attendance_path(): void
     {
         Sanctum::actingAs($this->managerRh, ['*']);
 
@@ -78,12 +77,12 @@ class GeoRoutesMigrationTest extends TestCase
             ->assertOk();
     }
 
-    public function test_manager_alias_sessions_still_works(): void
+    public function test_old_smart_attendance_alias_sessions_is_gone(): void
     {
         Sanctum::actingAs($this->managerRh, ['*']);
 
         $this->getJson('/api/v1/smart-attendance/sessions')
-            ->assertOk();
+            ->assertNotFound();
     }
 
     public function test_employee_cannot_access_manager_geo_sessions(): void
@@ -94,7 +93,7 @@ class GeoRoutesMigrationTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_geo_event_creation_on_new_path(): void
+    public function test_geo_event_creation_on_attendance_path(): void
     {
         Sanctum::actingAs($this->employee, ['*']);
 
@@ -103,5 +102,16 @@ class GeoRoutesMigrationTest extends TestCase
             'longitude' => 3.0588,
             'event_type' => 'zone_enter',
         ])->assertStatus(201);
+    }
+
+    public function test_old_smart_attendance_alias_geo_events_is_gone(): void
+    {
+        Sanctum::actingAs($this->employee, ['*']);
+
+        $this->postJson('/api/v1/smart-attendance/geo-events', [
+            'latitude' => 36.7538,
+            'longitude' => 3.0588,
+            'event_type' => 'zone_enter',
+        ])->assertNotFound();
     }
 }
