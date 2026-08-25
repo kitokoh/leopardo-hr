@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
-import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -37,9 +37,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     HapticFeedback.lightImpact();
     FocusScope.of(context).unfocus();
 
-    final success = await ref
-        .read(authProvider.notifier)
-        .register(
+    final success = await ref.read(authProvider.notifier).register(
           firstName: _firstNameController.text.trim(),
           lastName: _lastNameController.text.trim(),
           email: _emailController.text.trim(),

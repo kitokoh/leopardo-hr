@@ -6,17 +6,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:leopardo_hr/core/providers/core_providers.dart';
+import 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/mobile_decision_actions.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
-import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/features/salary_advances/providers/salary_advance_provider.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/models/salary_advance.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
@@ -95,10 +96,10 @@ class _SalaryAdvanceListScreenState
 
                 return Semantics(
                   label:
-                      '$requester demande une avance de $amount, motif : $reason, statut ${_getStatusLabel(advance)}.',
+                      '$requester demande une avance de $amount, motif : $reason, statut ${_getStatusLabel(advance, context.l10n)}.',
                   container: true,
                   child: ExcludeSemantics(
-                    child: MobileListCard(
+                    child: MobileListGlassCard(
                       icon: Icons.payments_outlined,
                       iconColor: color,
                       title: requester,
@@ -106,7 +107,7 @@ class _SalaryAdvanceListScreenState
                           ? '$amount - $reason'
                           : '$amount - $reason - $months mois',
                       trailing: MobileStatusPill(
-                        label: _getStatusLabel(advance),
+                        label: _getStatusLabel(advance, context.l10n),
                         color: color,
                       ),
                       footer: _advanceFooter(context, advance, actor: actor),
@@ -278,7 +279,7 @@ class _SalaryAdvanceListScreenState
     final company = advance.companyName?.trim().isNotEmpty == true
         ? advance.companyName!.trim()
         : 'Entreprise courante';
-    final validation = _validationLabel(advance.validationStatus);
+    final validation = _validationLabel(advance.validationStatus, context.l10n);
     final payment = [
       if (advance.managerApprovedAt != null)
         'Validation manager : ${DateFormat('d MMM yyyy', deviceIntlDateLocale).format(advance.managerApprovedAt!)}',
@@ -317,9 +318,7 @@ class _SalaryAdvanceListScreenState
       context: context,
       builder: (_) => AlertDialog(
         title: Text(context.l10n.salaryAdvanceCancelTitle),
-        content: Text(
-          context.l10n.salaryAdvanceCancelBody,
-        ),
+        content: Text(context.l10n.salaryAdvanceCancelBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -476,33 +475,29 @@ class _SalaryAdvanceListScreenState
         advance.status == 'approved';
   }
 
-  String _getStatusLabel(SalaryAdvance advance) {
+  String _getStatusLabel(SalaryAdvance advance, AppLocalizations l10n) {
     final validation = advance.validationStatus;
-    if (validation == 'manager_approved') {
-      return context.l10n.salaryStatusValidated;
-    }
+    if (validation == 'manager_approved') return l10n.salaryStatusValidated;
     if (validation == 'payment_declared') return 'envoyee';
-    if (validation == 'employee_confirmed') {
-      return context.l10n.salaryStatusReceived;
-    }
-
-    if (advance.status == 'active') return context.l10n.salaryStatusActive;
+    if (validation == 'employee_confirmed') return l10n.salaryStatusReceived;
 
     switch (advance.status) {
+      case 'active':
+        return l10n.salaryStatusActive;
       case 'approved':
-        return context.l10n.salaryStatusApproved;
+        return l10n.salaryStatusApproved;
       case 'pending':
-        return context.l10n.salaryStatusPending;
+        return l10n.salaryStatusPending;
       case 'rejected':
-        return context.l10n.salaryStatusRejected;
+        return l10n.salaryStatusRejected;
       case 'cancelled':
-        return context.l10n.salaryStatusCancelled;
+        return l10n.salaryStatusCancelled;
       default:
         return advance.status;
     }
   }
 
-  String _validationLabel(String? status) {
+  String _validationLabel(String? status, AppLocalizations l10n) {
     switch (status) {
       case 'manager_approved':
         return 'manager valide, paiement a declarer';
@@ -511,19 +506,18 @@ class _SalaryAdvanceListScreenState
       case 'employee_confirmed':
         return 'reception confirmee par l employe';
       case 'rejected':
-        return context.l10n.salaryStatusRejected;
+        return l10n.salaryStatusRejected;
       case 'pending':
       case null:
-        return context.l10n.salaryStatusPending;
+        return l10n.salaryStatusPending;
       default:
         return status;
     }
   }
 
-  Color _getStatusColor(String status) {
-    if (status == 'active' || status == 'approved') return AppColors.rh;
-
+  static Color _getStatusColor(String status) {
     switch (status) {
+      case 'active':
       case 'approved':
         return AppColors.rh;
       case 'pending':

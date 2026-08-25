@@ -6,7 +6,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/shimmer_loading.dart';
 import 'package:leopardo_hr/features/attendance/providers/attendance_provider.dart';
-import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 class HistoryScreen extends ConsumerStatefulWidget {

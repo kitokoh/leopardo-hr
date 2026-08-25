@@ -6,7 +6,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/theme/mobile_experience_icons.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
-import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/models/mobile_experience.dart';
 
 class ModulesHubScreen extends ConsumerWidget {

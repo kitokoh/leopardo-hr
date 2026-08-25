@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -13,8 +13,8 @@ import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_core/core/branding/tenant_brand_mark.dart';
 import 'package:leopardo_core/core/branding/tenant_branding.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
-import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
-import 'package:leopardo_manager/features/company_branding/providers/tenant_branding_provider.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/models/mobile_experience.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 
@@ -820,4 +820,3 @@ class _DigestTile extends StatelessWidget {
     );
   }
 }
-

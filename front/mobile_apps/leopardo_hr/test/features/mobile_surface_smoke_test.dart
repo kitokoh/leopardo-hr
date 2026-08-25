@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_core/features/absences/providers/absence_provider.dart';
-import 'package:leopardo_hr/features/absences/screens/absence_list_screen.dart';
+import 'package:leopardo_core/features/absences/screens/absence_list_screen.dart';
 import 'package:leopardo_hr/features/auth/screens/login_screen.dart';
 import 'package:leopardo_hr/features/auth/screens/register_screen.dart';
 import 'package:leopardo_core/features/auth/screens/welcome_screen.dart';
@@ -12,11 +12,11 @@ import 'package:leopardo_core/features/notifications/screens/notification_list_s
 import 'package:leopardo_core/features/payrolls/providers/payroll_provider.dart';
 import 'package:leopardo_hr/features/payrolls/screens/payroll_list_screen.dart';
 import 'package:leopardo_core/features/team/providers/team_provider.dart';
-import 'package:leopardo_hr/features/team/screens/team_screen.dart';
+import 'package:leopardo_core/features/team/screens/team_screen.dart';
 import 'package:leopardo_hr/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_hr/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_hr/features/attendance/screens/monthly_summary_screen.dart';
-import 'package:leopardo_hr/features/company_branding/providers/tenant_branding_provider.dart';
+import 'package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
 
 import '../helpers/mobile_test_harness.dart';

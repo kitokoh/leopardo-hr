@@ -12,8 +12,8 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/core/branding/tenant_brand_mark.dart';
 import 'package:leopardo_core/core/branding/tenant_branding.dart';
 import 'package:leopardo_hr/core/providers/core_providers.dart';
-import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
-import 'package:leopardo_hr/features/company_branding/providers/tenant_branding_provider.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/models/mobile_experience.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 
