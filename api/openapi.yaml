@@ -16212,10 +16212,24 @@ paths:
     get:
       tags: ["Admin"]
       summary: "Journal d'audit"
+      description: |
+        Journal d'audit global (#5439) — manager `principal` ou `rh` du tenant.
+        Isolation tenant stricte (company_id de l'acteur). Filtres : module
+        (attendance, payroll, planning, hr, auth, audit...), action,
+        auditable_type/auditable_id, user_id, from, to.
       parameters:
+        - name: module
+          in: query
+          schema: { type: string }
         - name: action
           in: query
           schema: { type: string }
+        - name: auditable_type
+          in: query
+          schema: { type: string }
+        - name: auditable_id
+          in: query
+          schema: { type: integer }
         - name: user_id
           in: query
           schema: { type: integer }
@@ -16252,9 +16266,13 @@ paths:
       tags: ["Admin"]
       summary: "Exporter le journal d'audit en CSV"
       description: |
-        Reserve au manager `principal`. Applique les memes filtres que `GET /audit-logs`
-        (action, user_id, from, to) et retourne un flux CSV (`Content-Type: text/csv`).
+        Reserve aux managers `principal` et `rh`. Applique les memes filtres que
+        `GET /audit-logs` (module, action, user_id, from, to) et retourne un flux
+        CSV (`Content-Type: text/csv`).
       parameters:
+        - name: module
+          in: query
+          schema: { type: string }
         - name: action
           in: query
           schema: { type: string }
@@ -25966,6 +25984,12 @@ components:
           nullable: true
         action:
           type: string
+        module:
+          type: string
+          nullable: true
+        request_id:
+          type: string
+          nullable: true
         entity_type:
           type: string
         entity_id:

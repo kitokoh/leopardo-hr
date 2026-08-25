@@ -534,6 +534,8 @@ CREATE TABLE shared_tenants.audit_logs (
     company_id uuid NULL,
     user_id integer NULL,
     action varchar(100) NOT NULL,
+    module varchar(100) NULL,
+    request_id varchar(64) NULL,
     auditable_type varchar(100) NULL,
     auditable_id bigint NULL,
     old_values jsonb NULL,
@@ -548,6 +550,10 @@ CREATE INDEX audit_logs_company_id_created_at_index
     ON shared_tenants.audit_logs (company_id, created_at);
 CREATE INDEX audit_logs_auditable_type_auditable_id_index
     ON shared_tenants.audit_logs (auditable_type, auditable_id);
+CREATE INDEX audit_logs_module_index
+    ON shared_tenants.audit_logs (module);
+CREATE INDEX audit_logs_request_id_index
+    ON shared_tenants.audit_logs (request_id);
 
 CREATE TABLE shared_tenants.absence_types (
     id serial PRIMARY KEY,

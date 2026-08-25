@@ -469,6 +469,8 @@ trait CreatesMvpSchema
             $table->uuid('company_id')->nullable()->index();
             $table->unsignedInteger('user_id')->nullable();
             $table->string('action', 100);
+            $table->string('module', 100)->nullable()->index();
+            $table->string('request_id', 64)->nullable()->index();
             $table->string('auditable_type', 100)->nullable();
             $table->unsignedBigInteger('auditable_id')->nullable();
             $table->json('old_values')->nullable();
@@ -481,6 +483,15 @@ trait CreatesMvpSchema
             $table->index(['company_id', 'created_at']);
             $table->index(['auditable_type', 'auditable_id']);
         });
+
+        // #5439 — colonnes additives (mêmes guards que les migrations tenant).
+        foreach (['module' => 'string', 'request_id' => 'string'] as $auditColumn => $auditType) {
+            if (! Schema::hasColumn($this->tenantTable('audit_logs'), $auditColumn)) {
+                Schema::table($this->tenantTable('audit_logs'), function (Blueprint $table) use ($auditColumn, $auditType): void {
+                    $table->{$auditType}($auditColumn, $auditColumn === 'module' ? 100 : 64)->nullable()->index();
+                });
+            }
+        }
 
         Schema::create('absence_types', function (Blueprint $table): void {
             $table->increments('id');
