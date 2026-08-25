@@ -19,6 +19,7 @@ use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
 use Illuminate\Support\Facades\Route;
@@ -55,29 +56,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/documents/{document}/payments', [AccountingDocumentController::class, 'payments'])->whereNumber('document');
             Route::post('/documents/{document}/cancel', [AccountingDocumentController::class, 'cancel'])->whereNumber('document');
             Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
+
+            // #5273 — audit trail scope module (qui/quoi/quand).
+            Route::get('/audit-logs', [AccountingAuditController::class, 'index']);
         });
     });
 
-// ── Portail client (issue #5225) — endpoints PUBLICS, le token est la credential.
-// Accès RGPD limité au document partagé, pattern CabinetShare (#1817).
-Route::get('/accounting/documents/shared/{token}', [PublicDocumentShareController::class, 'info'])
-    ->middleware('throttle:60,1');
-Route::get('/accounting/documents/shared/{token}/download', [PublicDocumentShareController::class, 'download'])
-    ->middleware('throttle:60,1');
-
-// ── Trésorerie : paiements, rapprochement, relances (issue #5229) ──────────
-// RBAC : `api.manager:principal,comptable` — réservé direction + comptables.
-Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
-    Route::get('accounting/payments', [AccountingPaymentController::class, 'index']);
-    Route::post('accounting/documents/{document}/payments', [AccountingPaymentController::class, 'store']);
-    Route::post('accounting/payments/{payment}/reconcile', [AccountingPaymentController::class, 'reconcile']);
-    Route::post('accounting/reminders/run', [AccountingPaymentController::class, 'runReminders']);
-});
-
-// ── Journal des écritures (issue #5234) — RBAC principal/comptable ─────────
-Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
-    Route::get('accounting/journal', [AccountingJournalController::class, 'index']);
-    Route::get('accounting/journal/export.csv', [AccountingJournalController::class, 'export']);
-    Route::post('accounting/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
-    Route::post('accounting/documents/{document}/journal', [AccountingJournalController::class, 'postDocument']);
-});

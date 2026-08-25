@@ -140,14 +140,97 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/absences/{absence}/reject", options);
     },
 
-    /** Portail client — informations du document partagé (token) */
-    getAccountingDocumentsSharedByToken(options = {}) {
-      return request("GET", "/accounting/documents/shared/{token}", options);
+    /** Lister les contacts client/fournisseur */
+    getAccountingContacts(options = {}) {
+      return request("GET", "/accounting/contacts", options);
     },
 
-    /** Portail client — téléchargement du PDF partagé (token) */
-    getAccountingDocumentsSharedByTokenDownload(options = {}) {
-      return request("GET", "/accounting/documents/shared/{token}/download", options);
+    /** Creer un contact client/fournisseur */
+    postAccountingContacts(options = {}) {
+      return request("POST", "/accounting/contacts", options);
+    },
+
+    /** Supprimer un contact client/fournisseur */
+    deleteAccountingContactsByContact(options = {}) {
+      return request("DELETE", "/accounting/contacts/{contact}", options);
+    },
+
+    /** Detail d'un contact client/fournisseur */
+    getAccountingContactsByContact(options = {}) {
+      return request("GET", "/accounting/contacts/{contact}", options);
+    },
+
+    /** Mettre a jour un contact client/fournisseur */
+    putAccountingContactsByContact(options = {}) {
+      return request("PUT", "/accounting/contacts/{contact}", options);
+    /** Audit trail du module Comptabilité (qui/quoi/quand, #5273) */
+    getAccountingAuditLogs(options = {}) {
+      return request("GET", "/accounting/audit-logs", options);
+    },
+
+    /** Lister les contacts client/fournisseur */
+    getAccountingContacts(options = {}) {
+      return request("GET", "/accounting/contacts", options);
+    },
+
+    /** Creer un contact client/fournisseur */
+    postAccountingContacts(options = {}) {
+      return request("POST", "/accounting/contacts", options);
+    },
+
+    /** Supprimer un contact client/fournisseur */
+    deleteAccountingContactsByContact(options = {}) {
+      return request("DELETE", "/accounting/contacts/{contact}", options);
+    },
+
+    /** Detail d'un contact client/fournisseur */
+    getAccountingContactsByContact(options = {}) {
+      return request("GET", "/accounting/contacts/{contact}", options);
+    },
+
+    /** Mettre a jour un contact client/fournisseur */
+    putAccountingContactsByContact(options = {}) {
+      return request("PUT", "/accounting/contacts/{contact}", options);
+    },
+
+    /** Lister les documents comptables du tenant (pagine, filtres, #5223) */
+    getAccountingDocuments(options = {}) {
+      return request("GET", "/accounting/documents", options);
+    },
+
+    /** Creer un brouillon de document numerote (facture, proforma, devis, avoir, irsaliye, recu, #5223) */
+    postAccountingDocuments(options = {}) {
+      return request("POST", "/accounting/documents", options);
+    },
+
+    /** Detail d'un document comptable (lignes + paiements, #5223) */
+    getAccountingDocumentsByDocument(options = {}) {
+      return request("GET", "/accounting/documents/{document}", options);
+    },
+
+    /** Annuler un document non paye (#5223) */
+    postAccountingDocumentsByDocumentCancel(options = {}) {
+      return request("POST", "/accounting/documents/{document}/cancel", options);
+    },
+
+    /** Creer un avoir lie a une facture source (#5223) */
+    postAccountingDocumentsByDocumentCreditNote(options = {}) {
+      return request("POST", "/accounting/documents/{document}/credit-note", options);
+    },
+
+    /** Enregistrer un encaissement (→ partiellement paye / paye, #5223) */
+    postAccountingDocumentsByDocumentPayments(options = {}) {
+      return request("POST", "/accounting/documents/{document}/payments", options);
+    },
+
+    /** Envoyer un brouillon (draft → sent, #5223) */
+    postAccountingDocumentsByDocumentSend(options = {}) {
+      return request("POST", "/accounting/documents/{document}/send", options);
+    },
+
+    /** Apercu du prochain numero de la serie configuree (#5223) */
+    getAccountingDocumentsNextNumber(options = {}) {
+      return request("GET", "/accounting/documents/next-number", options);
     },
 
     /** Envoyer un message a l'assistant IA (super-admin) */
@@ -650,7 +733,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/attendance/corrections/{correction}/reject", options);
     },
 
-    /** Rapport mensuel de pointage */
+    /** Rapport de pointage (journalier, hebdomadaire ou mensuel) */
     getAttendanceMonthlyReport(options = {}) {
       return request("GET", "/attendance/monthly-report", options);
     },
@@ -1018,51 +1101,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Tester une URL RTSP */
     postCamerasTestRtsp(options = {}) {
       return request("POST", "/cameras/test-rtsp", options);
-    },
-
-    /** Lister les evenements de carriere (plans de carriere, issue #5259) */
-    getCareerEvents(options = {}) {
-      return request("GET", "/career-events", options);
-    },
-
-    /** Creer un evenement de carriere (manager) */
-    postCareerEvents(options = {}) {
-      return request("POST", "/career-events", options);
-    },
-
-    /** Supprimer un evenement de carriere (pending uniquement) */
-    deleteCareerEventsByCareerEvent(options = {}) {
-      return request("DELETE", "/career-events/{careerEvent}", options);
-    },
-
-    /** Voir un evenement de carriere */
-    getCareerEventsByCareerEvent(options = {}) {
-      return request("GET", "/career-events/{careerEvent}", options);
-    },
-
-    /** Modifier partiellement un evenement de carriere (pending uniquement) */
-    patchCareerEventsByCareerEvent(options = {}) {
-      return request("PATCH", "/career-events/{careerEvent}", options);
-    },
-
-    /** Modifier un evenement de carriere (pending uniquement) */
-    putCareerEventsByCareerEvent(options = {}) {
-      return request("PUT", "/career-events/{careerEvent}", options);
-    },
-
-    /** Appliquer un evenement approuve (approved → applied) — met a jour l'employe (poste/departement/salaire de base, impact paie) */
-    putCareerEventsByCareerEventApply(options = {}) {
-      return request("PUT", "/career-events/{careerEvent}/apply", options);
-    },
-
-    /** Approuver un evenement de carriere (pending → approved) */
-    putCareerEventsByCareerEventApprove(options = {}) {
-      return request("PUT", "/career-events/{careerEvent}/approve", options);
-    },
-
-    /** Rejeter un evenement de carriere (pending → rejected) */
-    putCareerEventsByCareerEventReject(options = {}) {
-      return request("PUT", "/career-events/{careerEvent}/reject", options);
     },
 
     /** Persister un evenement UX client tenant-scope */
@@ -1465,14 +1503,9 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/employees/{employee}/daily-summary", options);
     },
 
-    /** Lire le depart d'un employe (manager : entreprise ; employe : le sien) */
-    getEmployeesByEmployeeDeparture(options = {}) {
-      return request("GET", "/employees/{employee}/departure", options);
-    },
-
-    /** Enregistrer le depart d'un employe (offboarding, issue #5324) */
-    postEmployeesByEmployeeDeparture(options = {}) {
-      return request("POST", "/employees/{employee}/departure", options);
+    /** Récapitulatif du préavis légal (issue #5325, G2) */
+    getEmployeesByEmployeeDepartureNotice(options = {}) {
+      return request("GET", "/employees/{employee}/departure/notice", options);
     },
 
     /** Solde de tout compte (fin de contrat, F-08) */
@@ -1940,6 +1973,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/marketing/leads", options);
     },
 
+    /** Lire le contact comptabilite cree depuis un lead qualifie */
+    getMarketingLeadsByLeadContact(options = {}) {
+      return request("GET", "/marketing/leads/{lead}/contact", options);
+    },
+
+    /** Qualifier un lead et creer le contact comptabilite associe */
+    postMarketingLeadsByLeadQualify(options = {}) {
+      return request("POST", "/marketing/leads/{lead}/qualify", options);
+    },
+
     /** Lister les publications (alias court de /social-posts) */
     getMarketingPosts(options = {}) {
       return request("GET", "/marketing/posts", options);
@@ -2063,11 +2106,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Resume journalier utilisateur courant */
     getMeDailySummary(options = {}) {
       return request("GET", "/me/daily-summary", options);
-    },
-
-    /** Mon depart (self-service, issue #5324) */
-    getMeDeparture(options = {}) {
-      return request("GET", "/me/departure", options);
     },
 
     /** Mes soldes de conges */
