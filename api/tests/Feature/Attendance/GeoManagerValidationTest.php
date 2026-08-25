@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\SmartAttendance;
+namespace Tests\Feature\Attendance;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
@@ -18,8 +18,8 @@ use Tests\TestCase;
  * Tests Feature — Validation Manager/RH des sessions GPS
  *
  * Endpoints :
- *   POST /api/v1/smart-attendance/sessions/{id}/approve
- *   POST /api/v1/smart-attendance/sessions/{id}/reject
+ *   POST /api/v1/attendance/geo-sessions/{id}/approve
+ *   POST /api/v1/attendance/geo-sessions/{id}/reject
  */
 class GeoManagerValidationTest extends TestCase
 {
@@ -122,7 +122,7 @@ class GeoManagerValidationTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $response = $this->postJson("/api/v1/smart-attendance/sessions/{$session->id}/approve", [
+        $response = $this->postJson("/api/v1/attendance/geo-sessions/{$session->id}/approve", [
             'note' => 'Validé — présence confirmée',
         ]);
 
@@ -145,7 +145,7 @@ class GeoManagerValidationTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $response = $this->postJson("/api/v1/smart-attendance/sessions/{$session->id}/reject", [
+        $response = $this->postJson("/api/v1/attendance/geo-sessions/{$session->id}/reject", [
             'reason' => 'Position GPS suspecte, hors zone habituelle.',
         ]);
 
@@ -166,7 +166,7 @@ class GeoManagerValidationTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $response = $this->postJson("/api/v1/smart-attendance/sessions/{$session->id}/reject", [
+        $response = $this->postJson("/api/v1/attendance/geo-sessions/{$session->id}/reject", [
             // 'reason' absent
         ]);
 
@@ -182,7 +182,7 @@ class GeoManagerValidationTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $this->postJson("/api/v1/smart-attendance/sessions/{$session->id}/approve", [
+        $this->postJson("/api/v1/attendance/geo-sessions/{$session->id}/approve", [
             'note' => 'OK',
         ])->assertStatus(200);
 
@@ -203,7 +203,7 @@ class GeoManagerValidationTest extends TestCase
 
         Sanctum::actingAs($this->employee);
 
-        $response = $this->postJson("/api/v1/smart-attendance/sessions/{$session->id}/approve", [
+        $response = $this->postJson("/api/v1/attendance/geo-sessions/{$session->id}/approve", [
             'note' => 'Tentative non autorisée',
         ]);
 
@@ -272,7 +272,7 @@ class GeoManagerValidationTest extends TestCase
         // Le manager de company A tente d'approuver la session de company B
         Sanctum::actingAs($this->manager);
 
-        $response = $this->postJson("/api/v1/smart-attendance/sessions/{$foreignSession->id}/approve", [
+        $response = $this->postJson("/api/v1/attendance/geo-sessions/{$foreignSession->id}/approve", [
             'note' => 'Cross-tenant attempt',
         ]);
 

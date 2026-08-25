@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Console;
+namespace Tests\Feature\Attendance;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Carbon;
@@ -12,11 +13,11 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * #4797 — la commande smart-attendance:auto-close doit itérer TOUS les
+ * #4797 — attendance:auto-close --sessions-only doit itérer TOUS les
  * tenants actifs (multi-schéma). Avant le correctif, le scheduler ne
  * fermait que les sessions du schéma par défaut.
  */
-class AutoCloseGeoSessionsCommandTest extends TestCase
+class AutoCloseSessionsOnlyCommandTest extends TestCase
 {
     use RefreshTenantDatabase;
 
@@ -36,8 +37,8 @@ class AutoCloseGeoSessionsCommandTest extends TestCase
         ]);
         $this->company = $company;
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
-        $employee = \App\Core\Auth\Domain\Models\Employee::factory()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
         ]);
 
@@ -62,7 +63,7 @@ class AutoCloseGeoSessionsCommandTest extends TestCase
 
     public function test_command_closes_stale_sessions_only(): void
     {
-        $exit = Artisan::call('smart-attendance:auto-close', ['--hours' => 14]);
+        $exit = Artisan::call('attendance:auto-close', ['--sessions-only' => true, '--hours' => 14]);
 
         $this->assertSame(0, $exit);
 
@@ -76,7 +77,7 @@ class AutoCloseGeoSessionsCommandTest extends TestCase
 
     public function test_command_dry_run_does_not_modify(): void
     {
-        $exit = Artisan::call('smart-attendance:auto-close', [
+        $exit = Artisan::call('attendance:auto-close', ['--sessions-only' => true,
             '--hours' => 14,
             '--dry-run' => true,
         ]);
@@ -95,8 +96,8 @@ class AutoCloseGeoSessionsCommandTest extends TestCase
             'status' => 'active',
         ]);
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $otherEmployee */
-        $otherEmployee = \App\Core\Auth\Domain\Models\Employee::factory()->create([
+        /** @var Employee $otherEmployee */
+        $otherEmployee = Employee::factory()->create([
             'company_id' => $otherCompany->id,
         ]);
 
@@ -109,7 +110,7 @@ class AutoCloseGeoSessionsCommandTest extends TestCase
             'check_in_lng' => 3.05,
         ]);
 
-        $exit = Artisan::call('smart-attendance:auto-close', [
+        $exit = Artisan::call('attendance:auto-close', ['--sessions-only' => true,
             '--hours' => 14,
             '--company' => $this->company->id,
         ]);

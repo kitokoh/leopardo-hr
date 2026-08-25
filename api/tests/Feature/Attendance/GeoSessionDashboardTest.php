@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\SmartAttendance;
+namespace Tests\Feature\Attendance;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
@@ -19,11 +19,11 @@ use Tests\TestCase;
  * Tests Feature — Dashboard Manager/RH (sessions GPS)
  *
  * Endpoints :
- *   GET /api/v1/smart-attendance/sessions                      (liste paginée)
- *   GET /api/v1/smart-attendance/sessions?status=...           (filtre statut)
- *   GET /api/v1/smart-attendance/sessions?date_from=&date_to=  (filtre dates)
- *   GET /api/v1/smart-attendance/sessions/{id}                 (détail)
- *   GET /api/v1/smart-attendance/dashboard                     (stats du jour)
+ *   GET /api/v1/attendance/geo-sessions                      (liste paginée)
+ *   GET /api/v1/attendance/geo-sessions?status=...           (filtre statut)
+ *   GET /api/v1/attendance/geo-sessions?date_from=&date_to=  (filtre dates)
+ *   GET /api/v1/attendance/geo-sessions/{id}                 (détail)
+ *   GET /api/v1/attendance/dashboard                     (stats du jour)
  */
 class GeoSessionDashboardTest extends TestCase
 {
@@ -129,7 +129,7 @@ class GeoSessionDashboardTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $response = $this->getJson('/api/v1/smart-attendance/sessions');
+        $response = $this->getJson('/api/v1/attendance/geo-sessions');
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -154,7 +154,7 @@ class GeoSessionDashboardTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $response = $this->getJson('/api/v1/smart-attendance/sessions?per_page=999999');
+        $response = $this->getJson('/api/v1/attendance/geo-sessions?per_page=999999');
 
         $response->assertStatus(200);
         $response->assertJsonPath('meta.per_page', 100);
@@ -170,7 +170,7 @@ class GeoSessionDashboardTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $response = $this->getJson('/api/v1/smart-attendance/sessions?per_page=0');
+        $response = $this->getJson('/api/v1/attendance/geo-sessions?per_page=0');
 
         $response->assertStatus(200);
         $response->assertJsonPath('meta.per_page', 1);
@@ -188,7 +188,7 @@ class GeoSessionDashboardTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $response = $this->getJson('/api/v1/smart-attendance/sessions?status=pending_validation');
+        $response = $this->getJson('/api/v1/attendance/geo-sessions?status=pending_validation');
 
         $response->assertStatus(200);
 
@@ -221,7 +221,7 @@ class GeoSessionDashboardTest extends TestCase
         $dateFrom = Carbon::yesterday()->toDateString();
         $dateTo = Carbon::yesterday()->toDateString();
 
-        $response = $this->getJson("/api/v1/smart-attendance/sessions?date_from={$dateFrom}&date_to={$dateTo}");
+        $response = $this->getJson("/api/v1/attendance/geo-sessions?date_from={$dateFrom}&date_to={$dateTo}");
 
         $response->assertStatus(200);
 
@@ -249,7 +249,7 @@ class GeoSessionDashboardTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $response = $this->getJson("/api/v1/smart-attendance/sessions/{$session->id}");
+        $response = $this->getJson("/api/v1/attendance/geo-sessions/{$session->id}");
 
         $response->assertStatus(200);
         $response->assertJsonPath('data.id', $session->id);
@@ -295,7 +295,7 @@ class GeoSessionDashboardTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $response = $this->getJson('/api/v1/smart-attendance/dashboard');
+        $response = $this->getJson('/api/v1/attendance/dashboard');
 
         $response->assertStatus(200);
         $response->assertJsonStructure([

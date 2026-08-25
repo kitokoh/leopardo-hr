@@ -18,7 +18,6 @@ use App\Modules\Payroll\Providers\PayrollServiceProvider;
 use App\Modules\Planning\Providers\PlanningServiceProvider;
 use App\Modules\Platform\Providers\PlatformServiceProvider;
 use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
-use App\Modules\SmartAttendance\Providers\SmartAttendanceServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
@@ -43,8 +42,6 @@ return [
     // — New DDD modules (Phase 2)
     GrowthServiceProvider::class,
     AbsenceServiceProvider::class,
-    // — SmartAttendance module
-    SmartAttendanceServiceProvider::class,
     ExpenseServiceProvider::class,
     NotificationServiceProvider::class,
     // — New DDD modules (Phase 3–4)

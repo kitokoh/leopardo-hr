@@ -228,6 +228,7 @@ return [
     // Plateforme — RTMX (#5277) : rejeu idempotent des écritures mobiles
     'INVALID_IDEMPOTENCY_KEY' => "Clé d'idempotence invalide.",
     'IDEMPOTENCY_IN_PROGRESS' => 'Une requête identique est déjà en cours. Réessayez dans un instant.',
+    'ATTENDANCE_PERIOD_CLOSED' => 'La période de pointage est clôturée : aucune correction possible.',
     'DEPARTMENT_DELETED' => 'Département supprimé.',
     'POSITION_DELETED' => 'Poste supprimé.',
     'SITE_DELETED' => 'Site supprimé.',
