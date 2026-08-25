@@ -4,6 +4,40 @@
  */
 import { apiFetch } from '@/lib/api-client';
 
+// jsdom (testEnvironment) n'expose pas l'API fetch/Response — mock minimal
+// couvrant ce que apiFetch consomme : status/ok/headers/clone/json.
+class MockResponse {
+  status: number;
+  statusText: string;
+  ok: boolean;
+  headers: Headers;
+  private bodyText: string;
+
+  constructor(body: string | null, init: { status?: number; statusText?: string; headers?: Record<string, string> } = {}) {
+    this.bodyText = body ?? '';
+    this.status = init.status ?? 200;
+    this.statusText = init.statusText ?? '';
+    this.ok = this.status >= 200 && this.status < 300;
+    this.headers = new Headers(init.headers);
+  }
+
+  clone(): MockResponse {
+    return new MockResponse(this.bodyText, {
+      status: this.status,
+      statusText: this.statusText,
+      headers: Object.fromEntries(this.headers.entries()),
+    });
+  }
+
+  async json(): Promise<unknown> {
+    return JSON.parse(this.bodyText);
+  }
+}
+
+// jsdom n'expose pas l'API fetch : le wrapper (et les tests) utilisent
+// `Response` — on expose le mock comme global du test.
+(globalThis as unknown as { Response: typeof MockResponse }).Response = MockResponse;
+
 describe('apiFetch RTMX (#5446)', () => {
   const originalFetch = global.fetch;
 
@@ -18,7 +52,7 @@ describe('apiFetch RTMX (#5446)', () => {
 
     // 1er appel : 200 + ETag
     global.fetch = jest.fn().mockResolvedValueOnce(
-      new Response(JSON.stringify(body), {
+      new MockResponse(JSON.stringify(body), {
         status: 200,
         headers: { 'Content-Type': 'application/json', ETag: '"abc123"' },
       }),
@@ -33,7 +67,7 @@ describe('apiFetch RTMX (#5446)', () => {
       calls.push(input);
       const headers = new Headers(init?.headers);
       expect(headers.get('If-None-Match')).toBe('"abc123"');
-      return new Response(null, { status: 304, headers: { ETag: '"abc123"' } });
+      return new MockResponse(null, { status: 304, headers: { ETag: '"abc123"' } });
     }) as unknown as typeof fetch;
 
     const second = await apiFetch('/me');
@@ -50,7 +84,7 @@ describe('apiFetch RTMX (#5446)', () => {
       expect(headers.get('Idempotency-Key')).toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
       );
-      return new Response(JSON.stringify({ id: 1 }), {
+      return new MockResponse(JSON.stringify({ id: 1 }), {
         status: 201,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -66,7 +100,7 @@ describe('apiFetch RTMX (#5446)', () => {
   it('respecte _cacheBust (pas de If-None-Match)', async () => {
     // Remplit d'abord le cache.
     global.fetch = jest.fn().mockResolvedValueOnce(
-      new Response(JSON.stringify({ a: 1 }), {
+      new MockResponse(JSON.stringify({ a: 1 }), {
         status: 200,
         headers: { 'Content-Type': 'application/json', ETag: '"etag1"' },
       }),
@@ -76,7 +110,7 @@ describe('apiFetch RTMX (#5446)', () => {
     global.fetch = jest.fn().mockImplementation(async (_input: RequestInfo, init?: RequestInit) => {
       const headers = new Headers(init?.headers);
       expect(headers.get('If-None-Match')).toBeNull();
-      return new Response(JSON.stringify({ a: 2 }), {
+      return new MockResponse(JSON.stringify({ a: 2 }), {
         status: 200,
         headers: { 'Content-Type': 'application/json', ETag: '"etag2"' },
       });
