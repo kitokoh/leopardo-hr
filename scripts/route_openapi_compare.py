@@ -76,7 +76,7 @@ def extract_routes():
     files = [API / "routes" / "api.php", API / "routes" / "web.php",
              API / "routes" / "ai.php",
              API / "app" / "Modules" / "EdgeSync" / "routes" / "api.php",
-             API / "app" / "Modules" / "SmartAttendance" / "routes" / "smart_attendance.php"] + sorted(
+             ] + sorted(
         (API / "routes" / "modules").glob("*.php")
     )
     for f in files:
@@ -84,8 +84,8 @@ def extract_routes():
         name = f.name
         is_inside_v1 = name in ("api.php", "ai.php") or f.parent.name == "modules"
         is_web = name == "web.php"
-        # EdgeSync/SmartAttendance module routes use explicit api/v1 prefixes
-        full_prefix = f.parent.name == "routes" and f.parent.parent.name in ("EdgeSync", "SmartAttendance")
+        # EdgeSync module routes use explicit api/v1 prefixes
+        full_prefix = f.parent.name == "routes" and f.parent.parent.name in ("EdgeSync", "Attendance")
         prefixes = prefixes_for_file(text)
         lines = text.splitlines(keepends=True)
         for m in ROUTE_CALL.finditer(text):

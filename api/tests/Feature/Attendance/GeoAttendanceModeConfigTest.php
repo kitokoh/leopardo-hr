@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\SmartAttendance;
+namespace Tests\Feature\Attendance;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
@@ -17,9 +17,9 @@ use Tests\TestCase;
  * Tests Feature — Configuration des modes de pointage
  *
  * Endpoints :
- *   GET  /api/v1/smart-attendance/config
- *   PUT  /api/v1/smart-attendance/preferences
- *   PUT  /api/v1/smart-attendance/mode-settings  (principal uniquement)
+ *   GET  /api/v1/attendance/config
+ *   PUT  /api/v1/attendance/preferences
+ *   PUT  /api/v1/attendance/mode-settings  (principal uniquement)
  */
 class GeoAttendanceModeConfigTest extends TestCase
 {
@@ -125,7 +125,7 @@ class GeoAttendanceModeConfigTest extends TestCase
 
         Sanctum::actingAs($this->employee);
 
-        $response = $this->getJson('/api/v1/smart-attendance/config');
+        $response = $this->getJson('/api/v1/attendance/config');
 
         $response->assertStatus(200);
         $response->assertJsonPath('data.mode', 'gps_auto');
@@ -143,7 +143,7 @@ class GeoAttendanceModeConfigTest extends TestCase
 
         Sanctum::actingAs($this->employee);
 
-        $response = $this->getJson('/api/v1/smart-attendance/config');
+        $response = $this->getJson('/api/v1/attendance/config');
 
         $response->assertStatus(200);
         // Sans forced_mode, le mode par défaut est 'manual' et can_override=true
@@ -168,7 +168,7 @@ class GeoAttendanceModeConfigTest extends TestCase
 
         Sanctum::actingAs($this->employee);
 
-        $response = $this->putJson('/api/v1/smart-attendance/preferences', [
+        $response = $this->putJson('/api/v1/attendance/preferences', [
             'preferred_mode' => 'gps_auto',
             'gps_consent_given' => true,
         ]);
@@ -194,7 +194,7 @@ class GeoAttendanceModeConfigTest extends TestCase
         Sanctum::actingAs($this->employee);
 
         // Tenter de changer la préférence → 403 COMPANY_MODE_FORCED
-        $response = $this->putJson('/api/v1/smart-attendance/preferences', [
+        $response = $this->putJson('/api/v1/attendance/preferences', [
             'preferred_mode' => 'gps_auto',
             'gps_consent_given' => true,
         ]);
@@ -203,7 +203,7 @@ class GeoAttendanceModeConfigTest extends TestCase
         $response->assertJsonPath('code', 'COMPANY_MODE_FORCED');
 
         // Vérifier que /config retourne bien le mode forcé
-        $configResponse = $this->getJson('/api/v1/smart-attendance/config');
+        $configResponse = $this->getJson('/api/v1/attendance/config');
         $configResponse->assertJsonPath('data.mode', 'manual');
         $configResponse->assertJsonPath('data.can_override', false);
     }
@@ -217,7 +217,7 @@ class GeoAttendanceModeConfigTest extends TestCase
     {
         Sanctum::actingAs($this->principal);
 
-        $response = $this->putJson('/api/v1/smart-attendance/mode-settings', [
+        $response = $this->putJson('/api/v1/attendance/mode-settings', [
             'forced_mode' => 'gps_auto',
             'gps_enabled' => true,
             'latitude' => 36.7538,
@@ -244,7 +244,7 @@ class GeoAttendanceModeConfigTest extends TestCase
     {
         Sanctum::actingAs($this->manager); // rôle rh, pas principal
 
-        $response = $this->putJson('/api/v1/smart-attendance/mode-settings', [
+        $response = $this->putJson('/api/v1/attendance/mode-settings', [
             'forced_mode' => 'manual',
             'gps_enabled' => false,
         ]);
