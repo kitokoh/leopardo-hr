@@ -1431,6 +1431,10 @@ Note 2026-08-23 (issue #5225) : envoi email des documents + portail client sécu
 - Commande artisan `accounting:send-document {document} [--email=]`.
 - Scénarios : envoi avec pièce jointe + lien, méta publiques, téléchargement PDF, token expiré/inconnu → 404, accès limité au document partagé (un token ne révèle que son document), RBAC sans effet sur les routes publiques.
 - Couverture : `DocumentShareEmailTest` (6 tests).
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/main
 ## Corrections de pointage — workflow complet (issue #5267, 2026-08-23)
 
 - `POST /attendance/corrections` — demande avec justificatif optionnel (`proof`, multipart ≤ 5 Mo, jpg/jpeg/png/pdf/heic) ; refusée (422 `ATTENDANCE_PERIOD_CLOSED`) si la date est dans une période clôturée (`attendance_period_closures`).
@@ -1460,9 +1464,12 @@ Note 2026-08-24 (issues #5353/#5354/#5355) : ADR-0016 — consolidation des rout
 - Phase 4 : fusion des modèles/services/commandes SmartAttendance → Attendance (shims `@deprecated` dans SmartAttendance pour BC) ; commande console `AutoCloseGeoSessionsCommand` → `AutoCloseAttendanceCommand` (alias conservé, `api/routes/console.php`).
 - Scénarios à vérifier : routes `/attendance/*` uniquement (sessions/geo-events/mode), 404 sur `/smart-attendance/*` (alias supprimés Phase 5 #5356), migration console (schedule `attendance:auto-close` unique), isolation tenant géofence, PHPStan Strict vert sur les fichiers fusionnés.
 - Couverture : `tests/Feature/Attendance/Geo*` (6 tests migrés) + `GeoRoutesMigrationTest`.
+<<<<<<< HEAD
+=======
 Note 2026-08-25 (issue #5439) : journal d'audit global — écriture unifiée `AuditLog::record()` câblée sur les flux sensibles, lecture RBAC manager principal/rh, rétention RGPD par entreprise.
 - Écriture : approbation/rejet/annulation d'absence (`planning.absence.*`), validation/suppression de bulletin (`payroll.*`), import/recalcul de pointage (`attendance.*`), départ HR (`hr.departure.register`), révocation de jeton (`auth.token.revoked`) → entrée `audit_logs` avec module/request_id/company_id/avant-après.
 - Lecture : `GET /api/v1/audit-logs` (filtres module, action, auditable_type/id, user_id, from, to ; pagination ; isolation tenant stricte) + `GET /audit-logs/{id}` (404 cross-tenant) + `GET /audit-logs/export-csv` — RBAC `principal`/`rh` (403 employé).
 - Rétention : `audit:purge` tenant-par-tenant (pattern `biometric:purge-expired`), rétention par entreprise via `CompanySetting.audit_retention_months` (défaut 36), purge journalisée (`audit.purge`), schedule hebdomadaire.
 - Scénarios à vérifier : chaque action sensible crée une entrée tracée ; 403 employé ; filtre module ; 404 cross-tenant ; purge respecte la rétention de l'entreprise et journalise ; non-régression suites HR/Attendance/Planning/Payroll.
 - Couverture : `tests/Feature/Audit/AuditLogGlobalTest.php` (9 tests) + suite existante `AuditLogExportTest`.
+>>>>>>> origin/main

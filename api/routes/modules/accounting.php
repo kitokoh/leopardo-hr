@@ -22,14 +22,6 @@ use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
 use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
 use Illuminate\Support\Facades\Route;
 
-// Public: consultation + téléchargement d'un document partagé (token + throttle).
-// Issue #5225 — le token de partage est la credential (pas d'auth Sanctum),
-// accès RGPD limité au document partagé (pattern CabinetShare #1817).
-Route::get('/accounting/documents/shared/{token}', [PublicDocumentShareController::class, 'info'])
-    ->middleware('throttle:60,1');
-Route::get('/accounting/documents/shared/{token}/download', [PublicDocumentShareController::class, 'download'])
-    ->middleware('throttle:60,1');
-
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
     ->prefix('accounting')
     ->group(function (): void {
