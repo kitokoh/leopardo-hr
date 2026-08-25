@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_hr/features/auth/screens/access_denied_screen.dart';
+import 'package:leopardo_core/features/auth/screens/access_denied_screen.dart';
 import 'package:leopardo_core/features/auth/screens/welcome_screen.dart';
-import 'package:leopardo_hr/features/home/screens/home_screen.dart';
+import 'package:leopardo_core/features/home/screens/home_screen.dart';
 
 import '../helpers/mobile_test_harness.dart';
 
