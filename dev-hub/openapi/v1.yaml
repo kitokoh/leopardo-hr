@@ -5419,6 +5419,227 @@ paths:
                           month:
                             type: integer
 
+  /accounting/bank-statements:
+    get:
+      tags: ["Accounting"]
+      summary: "Lister les relevés bancaires"
+      description: "Relevés du tenant (filtre status). RBAC comptable/principal. Issue #5435."
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: "Filtre par statut (imported, reconciling, reconciled)."
+          schema: { type: string, enum: [imported, reconciling, reconciled] }
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste des relevés"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/BankStatement"
+        "403":
+          description: "Rôle insuffisant (manager requis)"
+          $ref: "#/components/responses/Error403"
+  /accounting/bank-statements/import:
+    post:
+      tags: ["Accounting"]
+      summary: "Importer un relevé bancaire CSV"
+      description: "Import CSV paramétrable (mapping par entreprise). Idempotent : ré-import refusé (409). Erreurs de ligne signalées dans errors[]. RBAC comptable/principal. Issue #5435."
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, statement_period, import_reference]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "Fichier CSV (séparateur configurable, défaut ';')"
+                statement_period:
+                  type: string
+                  pattern: "^\\d{4}-\\d{2}$"
+                  description: "Période du relevé, ex. 2026-08"
+                import_reference:
+                  type: string
+                  description: "Référence externe d'import (unicité avec la période)"
+      responses:
+        "201":
+          description: "Relevé importé (imported lignes, skipped, errors par ligne)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      statement:
+                        $ref: "#/components/schemas/BankStatement"
+                      imported: { type: integer }
+                      skipped: { type: integer }
+                      errors:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            line: { type: integer }
+                            error: { type: string }
+        "409":
+          description: "Relevé déjà importé pour cette période (BANK_STATEMENT_DUPLICATE_IMPORT)"
+          $ref: "#/components/responses/Error409"
+        "422":
+          description: "En-tête invalide ou validation échouée (BANK_STATEMENT_IMPORT_FORMAT)"
+          $ref: "#/components/responses/Error422"
+  /accounting/bank-statements/{statement}:
+    get:
+      tags: ["Accounting"]
+      summary: "Détail d'un relevé (avec lignes)"
+      description: "Relevé du tenant avec ses lignes. 404 cross-tenant (fail-closed). RBAC comptable/principal. Issue #5435."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: statement
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: "Relevé détaillé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/BankStatement"
+        "404":
+          description: "Relevé introuvable (ou autre tenant)"
+          $ref: "#/components/responses/Error404"
+  /accounting/bank-statements/{statement}/reconcile:
+    post:
+      tags: ["Accounting"]
+      summary: "Lancer le rapprochement automatique"
+      description: "Matching heuristique lignes relevé ↔ paiements recorded (montant ± tolérance, date ± N jours, référence). Score 100 → auto ; sinon proposition en file manuelle. RBAC comptable/principal. Issue #5435."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: statement
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: "Résultat du matching (auto_matched, proposed, pending + état)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      auto_matched: { type: integer }
+                      proposed: { type: integer }
+                      pending: { type: integer }
+                      matched_lines: { type: integer }
+                      pending_lines: { type: integer }
+                      closing_gap: { type: number, nullable: true }
+        "404":
+          description: "Relevé introuvable (ou autre tenant)"
+          $ref: "#/components/responses/Error404"
+  /accounting/bank-statements/{statement}/status:
+    get:
+      tags: ["Accounting"]
+      summary: "État de rapprochement"
+      description: "Soldes attendus/réels, lignes rapprochées/en attente, écart de clôture. RBAC comptable/principal. Issue #5435."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: statement
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: "État de rapprochement"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      statement_id: { type: string }
+                      statement_period: { type: string }
+                      status: { type: string, enum: [imported, reconciling, reconciled] }
+                      opening_balance: { type: number, nullable: true }
+                      closing_balance_expected: { type: number, nullable: true }
+                      closing_balance_reported: { type: number, nullable: true }
+                      closing_gap: { type: number, nullable: true }
+                      total_lines: { type: integer }
+                      matched_lines: { type: integer }
+                      pending_lines: { type: integer }
+                      matched_amount: { type: number }
+                      pending_amount: { type: number }
+        "404":
+          description: "Relevé introuvable (ou autre tenant)"
+          $ref: "#/components/responses/Error404"
+  /accounting/bank-statement-lines/{line}/match:
+    post:
+      tags: ["Accounting"]
+      summary: "Rapprochement manuel d'une ligne"
+      description: "Matche une ligne pending avec un paiement recorded explicite (lettrage). 409 si déjà rapproché. RBAC comptable/principal. Issue #5435."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: line
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [payment_id]
+              properties:
+                payment_id: { type: integer }
+      responses:
+        "200":
+          description: "Ligne rapprochée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      line_id: { type: string }
+                      status: { type: string, enum: [pending, matched] }
+                      matched_payment_id: { type: string, nullable: true }
+                      confidence: { type: integer, nullable: true }
+                      payment_status: { type: string }
+                      reconciled_at: { type: string, format: date-time, nullable: true }
+        "404":
+          description: "Ligne ou paiement introuvable (ou autre tenant)"
+          $ref: "#/components/responses/Error404"
+        "409":
+          description: "Ligne ou paiement déjà rapproché (BANK_STATEMENT_LINE_ALREADY_MATCHED)"
+          $ref: "#/components/responses/Error409"
   /accounting/contacts:
     get:
       tags: ["Accounting"]
@@ -24229,6 +24450,34 @@ components:
             type: string
 
     AccountingCheckout:
+    BankStatementLine:
+      type: object
+      description: "Ligne de relevé bancaire (issue #5435)."
+      properties:
+        id: { type: string, format: uuid }
+        line_number: { type: integer }
+        line_date: { type: string, format: date }
+        label: { type: string }
+        amount: { type: number }
+        external_reference: { type: string, nullable: true }
+        status: { type: string, enum: [pending, matched] }
+        matched_payment_id: { type: string, nullable: true }
+        confidence: { type: integer, nullable: true }
+    BankStatement:
+      type: object
+      description: "Relevé bancaire importé (issue #5435)."
+      properties:
+        id: { type: string, format: uuid }
+        statement_period: { type: string }
+        import_reference: { type: string }
+        opening_balance: { type: number, nullable: true }
+        closing_balance: { type: number, nullable: true }
+        status: { type: string, enum: [imported, reconciling, reconciled] }
+        created_at: { type: string, format: date-time, nullable: true }
+        lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/BankStatementLine"
       type: object
       description: "Session de paiement en ligne creee (issue #5272)."
       required:

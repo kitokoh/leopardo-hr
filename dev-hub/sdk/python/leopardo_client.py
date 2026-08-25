@@ -136,6 +136,30 @@ class LeopardoClient:
         """Audit trail du module Comptabilité (qui/quoi/quand, #5273)"""
         return self.request("GET", "/accounting/audit-logs", **kwargs)
 
+    def post_accounting_bank_statement_lines_by_line_match(self, **kwargs):
+        """Rapprochement manuel d'une ligne"""
+        return self.request("POST", "/accounting/bank-statement-lines/{line}/match", **kwargs)
+
+    def get_accounting_bank_statements(self, **kwargs):
+        """Lister les relevés bancaires"""
+        return self.request("GET", "/accounting/bank-statements", **kwargs)
+
+    def get_accounting_bank_statements_by_statement(self, **kwargs):
+        """Détail d'un relevé (avec lignes)"""
+        return self.request("GET", "/accounting/bank-statements/{statement}", **kwargs)
+
+    def post_accounting_bank_statements_by_statement_reconcile(self, **kwargs):
+        """Lancer le rapprochement automatique"""
+        return self.request("POST", "/accounting/bank-statements/{statement}/reconcile", **kwargs)
+
+    def get_accounting_bank_statements_by_statement_status(self, **kwargs):
+        """État de rapprochement"""
+        return self.request("GET", "/accounting/bank-statements/{statement}/status", **kwargs)
+
+    def post_accounting_bank_statements_import(self, **kwargs):
+        """Importer un relevé bancaire CSV"""
+        return self.request("POST", "/accounting/bank-statements/import", **kwargs)
+
     def get_accounting_contacts(self, **kwargs):
         """Lister les contacts client/fournisseur"""
         return self.request("GET", "/accounting/contacts", **kwargs)
