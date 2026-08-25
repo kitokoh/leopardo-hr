@@ -4,7 +4,7 @@
 > Source d'architecture : **ADR 0016** (`docs/architecture/adr/0016-attendance-smartattendance-fusion.md`).
 > Spec cible : **`.specify/features/attendance-target/spec.md`**.
 
-**État** : 2026-08-23 — ADR proposée (décision fondateur requise), spec draft, plan chiffré.
+**État** : 2026-08-24 — ADR-0016 validée (PR #5318), phases 2-4 MERGÉES (#5362/#5364/#5381), **Phase 5 livrée (PR #5398)** — module SmartAttendance supprimé, contrat unique `/attendance/*`.
 
 ## Cadrage
 

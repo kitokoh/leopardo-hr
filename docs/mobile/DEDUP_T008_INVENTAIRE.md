@@ -216,3 +216,55 @@ casserait les symboles (ex. `absenceRepositoryProvider` n'existe pas dans
 - Spec : `.specify/features/qa-audit-expert-mobile-2026-08-15/{spec,plan,tasks}.md`
 - Convergence : `docs/mobile/CONVERGENCE_TRACKER.md`, `docs/mobile/CONVERGENCE_F27.md`
 - Garde-fous CI : `dev-hub/tools/validate-mobile-apps-split.ps1`, `validate-mobile-workflow-contracts.ps1`, `.github/workflows/mobile-apps-ci.yml`
+
+---
+
+## État mesuré au 2026-08-25 (lot final #5279) — audit actualisé
+
+> **Issue** : #5279 (suite du chantier #2601). **Branche** : `mod/mobile/5279-dedup-final-lot`.
+> **Méthode** : identique à l'audit 2026-08-20 (hash SHA-256 + `diff` hors lignes `import`).
+
+### Chiffres clés (HEAD main, 2026-08-25)
+
+| Métrique | `leopardo_hr` | `leopardo_manager` | Δ vs 2026-08-20 |
+|---|---|---|---|
+| Fichiers `.dart` dans `lib/` | 39 | 45 | −17 / −17 |
+| Fichiers `.dart` dans `test/` | 12 | 12 | −10 / −10 |
+| **Doublons byte-identiques `lib/`** | **0** | **0** | = |
+| **Quasi-doublons `lib/` (diff = préfixe package uniquement)** | **4** | **4** | −16 (20 → 4) |
+
+### Paires quasi-identiques restantes (4)
+
+| Fichier (relatif à `lib/`) | Blocage |
+|---|---|
+| `features/attendance/providers/attendance_provider.dart` | DI app : `attendanceRepositoryProvider` (repo divergent par app) + `authProvider` |
+| `features/attendance/screens/history_screen.dart` | DI app : `authProvider` |
+| `features/auth/screens/register_screen.dart` | DI app : `authProvider` |
+| `features/company_branding/providers/tenant_branding_provider.dart` | DI app : `authProvider` |
+
+### Analyse de blocage (pourquoi ces 4 ne sont pas déplacées)
+
+1. Les 4 fichiers consomment **`authProvider`** (état `AuthState.employee` + notifier `logout()`/`register()`),
+   dont l'implémentation **diffère par app** (`features/auth/providers/auth_provider.dart` divergent, 3 apps).
+2. `attendance_provider.dart` consomme en plus **`attendanceRepositoryProvider`**, dont le repository
+   **diffère par app** (`features/attendance/data/attendance_repository.dart` divergent).
+3. Le déplacement vers `leopardo_core` exigerait de référencer des providers app-spécifiques depuis le core
+   — interdit (`validate-mobile-apps-split.ps1` verrouille : aucun import inter-apps) — donc de **unifier
+   l'authentification et le repository de pointage** : c'est le périmètre **F-27 (convergence auth/repos),
+   gelé** (`docs/mobile/CONVERGENCE_F27.md`, freeze J60 §« convergence F-27 gelée »).
+4. Conformément à la règle du chantier (« si un fichier est quasi-identique, NE LE DÉPLACE PAS —
+   documente-le comme candidat lot suivant »), ces 4 fichiers restent documentés, pas déplacés.
+
+### DoD #5279 — « Duplication réduite ≥ 50 % » : ✅ mesuré
+
+- Quasi-doublons `lib/` : **20 → 4** (élimination de **80 %** des paires quasi-identiques hr/manager).
+- Tests byte-identiques extraits (lot 1) : 10/10.
+- Fichiers `lib/` : hr **56 → 39** (−30 %), manager **62 → 45** (−27 %) depuis le 2026-08-20
+  (lots 1-2 #5370/#5372 + extractions antérieures).
+- Le résiduel (4 fichiers) est **bloqué par F-27** (auth/repos unifiés) — suivi dans #2601.
+
+### Résumé lot final
+
+- **Livré** : audit actualisé (ce document) + tracker convergence mis à jour.
+- **Fermeture** : #5279 close (DoD atteint, résiduel documenté → #2601/F-27).
+- **Rien n'est déplacé à risque** : zéro changement de comportement, builds inchangés.
