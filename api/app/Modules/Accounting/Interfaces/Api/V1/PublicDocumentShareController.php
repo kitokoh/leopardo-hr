@@ -130,6 +130,11 @@ final class PublicDocumentShareController
      * Trace un accès public au portail (issue #5429) — RGPD : qui a consulté
      * / téléchargé quel document partagé, quand, depuis quelle IP. Écrit dans
      * le tenant de la compagnie du partage (user_id null : accès non authentifié).
+     *
+     * Passe par l'API d'écriture unifiée `AuditLog::record()` (#5439) :
+     * `module` renseigné, `request_id` posé via corrélation, company_id/ip/
+     * user_agent déduits — les entrées portail restent chaînables avec les
+     * logs applicatifs (#5520).
      */
     private function auditAccess(AccountingDocumentShare $share, string $action): void
     {
@@ -140,18 +145,13 @@ final class PublicDocumentShareController
         }
 
         app(TenantManager::class)->withinTenant($company, function () use ($share, $action): void {
-            AuditLog::create([
-                'company_id' => $share->company_id,
-                'user_id' => null,
-                'action' => $action,
-                'auditable_type' => $share->getMorphClass(),
-                'auditable_id' => $share->id,
-                'old_values' => [],
-                'new_values' => [],
-                'ip_address' => request()->ip(),
-                'user_agent' => substr((string) request()->userAgent(), 0, 255),
-                'metadata' => ['share_token' => $share->share_token],
-            ]);
+            AuditLog::record(
+                module: 'accounting',
+                action: $action,
+                subject: $share,
+                actor: null,
+                metadata: ['share_token' => $share->share_token],
+            );
         });
     }
 }
