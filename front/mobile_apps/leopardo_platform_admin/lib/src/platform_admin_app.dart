@@ -111,7 +111,8 @@ class PlatformAdminApp extends ConsumerWidget {
       title: 'Leopardo Platform Admin',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.dark,
+      // #5515 : le thème suit le système (parité avec employee/hr/manager).
+      themeMode: ThemeMode.system,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       // Issue #2761 — locale résolue depuis les préférences utilisateur
