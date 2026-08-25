@@ -6,12 +6,12 @@ namespace App\Modules\Accounting\Providers;
 
 use App\Events\CompanyCreated;
 use App\Modules\Accounting\Application\Listeners\ProvisionAccountingSettings;
+use App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface;
+use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
+use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
+use App\Modules\Accounting\Infrastructure\Services\DocumentPdfRenderer;
 use App\Modules\Accounting\Interfaces\Console\SeedAccountingDemoCommand;
 use Illuminate\Support\Facades\Event;
-use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
-use App\Modules\Accounting\Infrastructure\Services\DocumentPdfRenderer;
-use App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface;
-use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -37,9 +37,6 @@ class AccountingServiceProvider extends ServiceProvider
         $this->commands([
             SeedAccountingDemoCommand::class,
         ]);
-    }
-
-        // #5224 — rendu PDF (fr + ar RTL) fourni par l'issue #5224.
     }
 
     public function boot(): void
