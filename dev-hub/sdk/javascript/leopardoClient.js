@@ -305,6 +305,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/accounting/documents/next-number", options);
     },
 
+    /** Audit des accès au portail client pour un document partagé (#5522) */
+    getAccountingDocumentsSharedByDocumentAccesses(options = {}) {
+      return request("GET", "/accounting/documents/shared/{document}/accesses", options);
+    },
+
     /** Portail client — informations du document partagé (token) */
     getAccountingDocumentsSharedByToken(options = {}) {
       return request("GET", "/accounting/documents/shared/{token}", options);

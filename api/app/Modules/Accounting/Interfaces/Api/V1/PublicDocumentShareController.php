@@ -75,9 +75,13 @@ final class PublicDocumentShareController
 
         // #5521 — no-referrer strict : le token ne doit pas fuiter via Referer
         // lors du téléchargement (règles navigateur + défense en profondeur).
-        return Storage::disk(GenerateDocumentPdf::DISK)
-            ->download($document->pdf_path, $filename)
-            ->header('Referrer-Policy', 'no-referrer');
+        // NB : Storage::download() renvoie un StreamedResponse Symfony — la
+        // macro Laravel ->header() n'existe pas dessus (500 en prod) ; on
+        // pose le header via HeaderBag (#5522 — fix main 2026-08-25).
+        $response = Storage::disk(GenerateDocumentPdf::DISK)->download($document->pdf_path, $filename);
+        $response->headers->set('Referrer-Policy', 'no-referrer');
+
+        return $response;
     }
 
     /**

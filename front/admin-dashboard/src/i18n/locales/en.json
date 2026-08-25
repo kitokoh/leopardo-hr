@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-24T00:00:00Z",
+  "_updated_at": "2026-08-25T00:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -2974,5 +2974,29 @@
   "settingsEdgeOptionalHint": "Optional: point to an on-site Edge server to clock in without Internet.",
   "settingsPrefsUnavailable": "Preferences unavailable right now. Pull to refresh later.",
   "teamQrPrefilledHint": "Profile pre-filled from QR. Fill in the unique work email for this company.",
-  "settingsBiometryPendingHint": "Once submitted, your biometric data stays pending. Any first activation or change requires manager/HR approval."
+  "settingsBiometryPendingHint": "Once submitted, your biometric data stays pending. Any first activation or change requires manager/HR approval.",
+  "shareAccesses": {
+    "title": "Access history",
+    "subtitle": "RGPD audit: who consulted or downloaded a shared document on the client portal, when, and from which IP address.",
+    "documentLabel": "Document",
+    "selectDocument": "Select a document…",
+    "noDocumentSelected": "Select a document to view its access history.",
+    "actionHeader": "Action",
+    "dateHeader": "Date",
+    "ipHeader": "IP address",
+    "userAgentHeader": "User agent",
+    "requestIdHeader": "Correlation ID",
+    "actionInfo": "View",
+    "actionDownload": "Download",
+    "emptyTitle": "No access recorded",
+    "emptyBody": "This document has never been viewed or downloaded through the client portal.",
+    "loadError": "Unable to load accesses. Please try again shortly.",
+    "loadDocumentsError": "Unable to load documents. Please try again shortly.",
+    "loading": "Loading…",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "pageOf": "Page {current} of {total}",
+    "total": "{count} accesses",
+    "retry": "Retry"
+  }
 }
