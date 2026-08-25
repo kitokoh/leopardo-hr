@@ -1927,5 +1927,19 @@
   "settingsEdgeOptionalHint": "اختياري: التوجيه إلى خادم Edge محلي لتسجيل الحضور دون إنترنت.",
   "settingsPrefsUnavailable": "التفضيلات غير متاحة حالياً. اسحب للتحديث لاحقاً.",
   "teamQrPrefilledHint": "تم ملء الملف مسبقاً من رمز QR. أدخل البريد المهني الفريد لهذه الشركة.",
-  "settingsBiometryPendingHint": "بعد الإرسال، تبقى بياناتك الحيوية قيد الانتظار. أي تفعيل أول أو تعديل يتطلب موافقة المدير/الموارد البشرية."
+  "settingsBiometryPendingHint": "بعد الإرسال، تبقى بياناتك الحيوية قيد الانتظار. أي تفعيل أول أو تعديل يتطلب موافقة المدير/الموارد البشرية.",
+  "companiesRequiredField": "حقل مطلوب",
+  "companiesCompanyCreated": "تم إنشاء الشركة",
+  "companiesNewClient": "عميل جديد",
+  "companiesProvisioning": "إعداد المنصة",
+  "companiesCompanyEmail": "البريد الإلكتروني للشركة",
+  "companiesCreateClient": "إنشاء العميل",
+  "companiesCreating": "جارٍ الإنشاء...",
+  "companiesActiveImmediatelyHint": "سيتم إنشاء العميل بحالة نشطة.",
+  "companiesTrialHint": "يبدأ العميل بنسخة تجريبية، ثم يمكن تفعيله من ملفه.",
+  "companydetailClientFile": "ملف العميل",
+  "companydetailProductAdoption": "تبنّي المنتج",
+  "companydetailActiveEmployees": "الموظفون النشطون",
+  "companydetailAnomaliesCritical": "الحالات الشاذة الحرجة",
+  "commonBack": "رجوع"
 }

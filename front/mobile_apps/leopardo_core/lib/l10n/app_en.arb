@@ -1927,5 +1927,19 @@
   "settingsEdgeOptionalHint": "Optional: point to an on-site Edge server to clock in without Internet.",
   "settingsPrefsUnavailable": "Preferences unavailable right now. Pull to refresh later.",
   "teamQrPrefilledHint": "Profile pre-filled from QR. Fill in the unique work email for this company.",
-  "settingsBiometryPendingHint": "Once submitted, your biometric data stays pending. Any first activation or change requires manager/HR approval."
+  "settingsBiometryPendingHint": "Once submitted, your biometric data stays pending. Any first activation or change requires manager/HR approval.",
+  "companiesRequiredField": "Required field",
+  "companiesCompanyCreated": "Company created",
+  "companiesNewClient": "New client",
+  "companiesProvisioning": "Platform provisioning",
+  "companiesCompanyEmail": "Company email",
+  "companiesCreateClient": "Create the client",
+  "companiesCreating": "Creating...",
+  "companiesActiveImmediatelyHint": "The client will be created with active status.",
+  "companiesTrialHint": "The client starts on trial, then can be activated from its profile.",
+  "companydetailClientFile": "Client profile",
+  "companydetailProductAdoption": "Product adoption",
+  "companydetailActiveEmployees": "Active employees",
+  "companydetailAnomaliesCritical": "Critical anomalies",
+  "commonBack": "Back"
 }

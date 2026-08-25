@@ -5,6 +5,8 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 
+import 'package:leopardo_core/l10n/l10n.dart';
+
 import '../../core/platform_providers.dart';
 import '../platform/platform_models.dart';
 import 'company_screen.dart';
@@ -183,14 +185,16 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
   bool _activateImmediately = false;
   bool _submitting = false;
 
-  String? _required(String? value) =>
-      value == null || value.trim().isEmpty ? 'Champ requis' : null;
+  String? _required(AppLocalizations l10n, String? value) =>
+      value == null || value.trim().isEmpty
+          ? l10n.companiesRequiredField
+          : null;
 
-  String? _emailValidator(String? value) {
+  String? _emailValidator(AppLocalizations l10n, String? value) {
     final trimmed = value?.trim() ?? '';
-    if (trimmed.isEmpty) return 'Champ requis';
+    if (trimmed.isEmpty) return l10n.companiesRequiredField;
     if (!trimmed.contains('@') || !trimmed.contains('.')) {
-      return 'Email invalide';
+      return l10n.authEmailInvalid;
     }
     return null;
   }
@@ -227,9 +231,9 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
           );
       ref.invalidate(platformCompaniesProvider);
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Entreprise creee')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.companiesCompanyCreated)),
+      );
       if (company.id.isNotEmpty) {
         final route = '/platform/companies/${Uri.encodeComponent(company.id)}';
         context.go(route);
@@ -248,13 +252,14 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final countries = _countries();
     return MobilePage(
       appBar: MobileTopBar(
-        title: 'Nouveau client',
-        subtitle: 'Provisionnement plateforme',
+        title: l10n.companiesNewClient,
+        subtitle: l10n.companiesProvisioning,
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: l10n.commonBack,
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
@@ -267,25 +272,25 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
               children: [
                 _field(
                   _name,
-                  'Nom entreprise',
+                  l10n.companiesCompanyname,
                   Icons.business_rounded,
-                  validator: _required,
+                  validator: (v) => _required(l10n, v),
                 ),
                 _field(
                   _email,
-                  'Email entreprise',
+                  l10n.companiesCompanyEmail,
                   Icons.mail_rounded,
                   keyboardType: TextInputType.emailAddress,
-                  validator: _emailValidator,
+                  validator: (v) => _emailValidator(l10n, v),
                 ),
                 Row(
                   children: [
                     Expanded(
                       child: _field(
                         _city,
-                        'Ville',
+                        l10n.companiesCity,
                         Icons.location_city,
-                        validator: _required,
+                        validator: (v) => _required(l10n, v),
                       ),
                     ),
                   ],
@@ -295,27 +300,29 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
                 _activationSwitch(),
                 _field(
                   _managerFirstName,
-                  'Prenom manager principal',
+                  l10n.companiesManagerfirst,
                   Icons.person_rounded,
-                  validator: _required,
+                  validator: (v) => _required(l10n, v),
                 ),
                 _field(
                   _managerLastName,
-                  'Nom manager principal',
+                  l10n.companiesManagerlast,
                   Icons.person_rounded,
-                  validator: _required,
+                  validator: (v) => _required(l10n, v),
                 ),
                 _field(
                   _managerEmail,
-                  'Email manager principal',
+                  l10n.companiesManageremail,
                   Icons.alternate_email_rounded,
                   keyboardType: TextInputType.emailAddress,
-                  validator: _emailValidator,
+                  validator: (v) => _emailValidator(l10n, v),
                 ),
                 const SizedBox(height: 14),
                 MobilePrimaryAction(
                   icon: Icons.add_business_rounded,
-                  label: _submitting ? 'Creation...' : 'Creer le client',
+                  label: _submitting
+                      ? l10n.companiesCreating
+                      : l10n.companiesCreateClient,
                   onPressed: _submitting ? null : _submit,
                 ),
               ],
@@ -378,7 +385,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
         iconEnabledColor: MobileSurface.secondary,
         style: const TextStyle(color: MobileSurface.text),
         decoration: InputDecoration(
-          labelText: 'Pays du client',
+          labelText: context.l10n.companiesCountry,
           prefixIcon: const Icon(Icons.public_rounded),
           filled: true,
           fillColor: MobileSurface.chip,
@@ -402,9 +409,12 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
 
   Widget _countryPreview(PlatformCountryDefault selectedCountry) {
     final items = [
-      ('Devise', selectedCountry.currency),
-      ('Fuseau', selectedCountry.timezone),
-      ('Langue', selectedCountry.language.toUpperCase()),
+      (context.l10n.companiesCurrency, selectedCountry.currency),
+      (context.l10n.companiesTimezone, selectedCountry.timezone),
+      (
+        context.l10n.commonLanguageLabel,
+        selectedCountry.language.toUpperCase()
+      ),
     ];
 
     return Container(
@@ -442,8 +452,8 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
         onChanged: (value) => setState(() => _activateImmediately = value),
         activeThumbColor: Colors.white,
         activeTrackColor: AppColors.rh,
-        title: const Text(
-          'Activer immediatement',
+        title: Text(
+          context.l10n.companiesActivatenow,
           style: TextStyle(
             color: MobileSurface.text,
             fontWeight: FontWeight.w600,
@@ -451,8 +461,8 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
         ),
         subtitle: Text(
           _activateImmediately
-              ? 'Le client sera cree en statut actif.'
-              : 'Le client demarre en essai, puis peut etre active depuis sa fiche.',
+              ? context.l10n.companiesActiveImmediatelyHint
+              : context.l10n.companiesTrialHint,
           style: const TextStyle(color: MobileSurface.muted, fontSize: 12),
         ),
       ),

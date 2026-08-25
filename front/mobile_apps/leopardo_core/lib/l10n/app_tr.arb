@@ -1927,5 +1927,19 @@
   "settingsEdgeOptionalHint": "Opsiyonel: İnternet olmadan yoklama için sitedeki Edge sunucusunu gösterin.",
   "settingsPrefsUnavailable": "Tercihler şu anda kullanılamıyor. Daha sonra yenilemek için çekin.",
   "teamQrPrefilledHint": "Profil QR'dan ön dolduruldu. Bu şirket için benzersiz iş e-postasını girin.",
-  "settingsBiometryPendingHint": "Gönderildikten sonra biyometrik verileriniz beklemede kalır. Her ilk aktivasyon veya değişiklik yönetici/İK onayı gerektirir."
+  "settingsBiometryPendingHint": "Gönderildikten sonra biyometrik verileriniz beklemede kalır. Her ilk aktivasyon veya değişiklik yönetici/İK onayı gerektirir.",
+  "companiesRequiredField": "Zorunlu alan",
+  "companiesCompanyCreated": "Şirket oluşturuldu",
+  "companiesNewClient": "Yeni müşteri",
+  "companiesProvisioning": "Platform sağlama",
+  "companiesCompanyEmail": "Şirket e-postası",
+  "companiesCreateClient": "Müşteriyi oluştur",
+  "companiesCreating": "Oluşturuluyor...",
+  "companiesActiveImmediatelyHint": "Müşteri aktif durumda oluşturulacak.",
+  "companiesTrialHint": "Müşteri deneme ile başlar, ardından profilinden etkinleştirilebilir.",
+  "companydetailClientFile": "Müşteri profili",
+  "companydetailProductAdoption": "Ürün benimsenmesi",
+  "companydetailActiveEmployees": "Aktif çalışanlar",
+  "companydetailAnomaliesCritical": "Kritik anormallikler",
+  "commonBack": "Geri"
 }

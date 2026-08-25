@@ -1927,5 +1927,19 @@
   "settingsEdgeOptionalHint": "Optionnel: pointer vers un serveur Edge installe sur site pour pointer sans Internet.",
   "settingsPrefsUnavailable": "Preferences indisponibles pour le moment. Tire pour recharger plus tard.",
   "teamQrPrefilledHint": "Profil pre-rempli depuis QR. Renseignez l email professionnel unique de cette entreprise.",
-  "settingsBiometryPendingHint": "Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH."
+  "settingsBiometryPendingHint": "Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.",
+  "companiesRequiredField": "Champ requis",
+  "companiesCompanyCreated": "Entreprise créée",
+  "companiesNewClient": "Nouveau client",
+  "companiesProvisioning": "Provisionnement plateforme",
+  "companiesCompanyEmail": "Email entreprise",
+  "companiesCreateClient": "Créer le client",
+  "companiesCreating": "Création...",
+  "companiesActiveImmediatelyHint": "Le client sera créé en statut actif.",
+  "companiesTrialHint": "Le client démarre en essai, puis peut être activé depuis sa fiche.",
+  "companydetailClientFile": "Fiche client",
+  "companydetailProductAdoption": "Adoption produit",
+  "companydetailActiveEmployees": "Employés actifs",
+  "companydetailAnomaliesCritical": "Anomalies critiques",
+  "commonBack": "Retour"
 }

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1115,11 +1114,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-    Object date,
-    Object hours,
-    Object range,
-    Object status,
-  ) {
+      Object date, Object hours, Object range, Object status) {
     return 'يوم $date، الحالة $status، $range، $hours.';
   }
 
@@ -6212,4 +6207,47 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get settingsBiometryPendingHint =>
       'بعد الإرسال، تبقى بياناتك الحيوية قيد الانتظار. أي تفعيل أول أو تعديل يتطلب موافقة المدير/الموارد البشرية.';
+
+  @override
+  String get companiesRequiredField => 'حقل مطلوب';
+
+  @override
+  String get companiesCompanyCreated => 'تم إنشاء الشركة';
+
+  @override
+  String get companiesNewClient => 'عميل جديد';
+
+  @override
+  String get companiesProvisioning => 'إعداد المنصة';
+
+  @override
+  String get companiesCompanyEmail => 'البريد الإلكتروني للشركة';
+
+  @override
+  String get companiesCreateClient => 'إنشاء العميل';
+
+  @override
+  String get companiesCreating => 'جارٍ الإنشاء...';
+
+  @override
+  String get companiesActiveImmediatelyHint => 'سيتم إنشاء العميل بحالة نشطة.';
+
+  @override
+  String get companiesTrialHint =>
+      'يبدأ العميل بنسخة تجريبية، ثم يمكن تفعيله من ملفه.';
+
+  @override
+  String get companydetailClientFile => 'ملف العميل';
+
+  @override
+  String get companydetailProductAdoption => 'تبنّي المنتج';
+
+  @override
+  String get companydetailActiveEmployees => 'الموظفون النشطون';
+
+  @override
+  String get companydetailAnomaliesCritical => 'الحالات الشاذة الحرجة';
+
+  @override
+  String get commonBack => 'رجوع';
 }

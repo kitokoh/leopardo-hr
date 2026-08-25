@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/leopardo_qr_card.dart';
@@ -43,10 +44,10 @@ class CompanyDetailScreen extends ConsumerWidget {
 
     return MobilePage(
       appBar: MobileTopBar(
-        title: 'Fiche client',
+        title: context.l10n.companydetailClientFile,
         subtitle: companyId,
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: context.l10n.commonBack,
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
@@ -192,18 +193,18 @@ class _CompanyDetailContent extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 18),
-        const MobileSectionLabel('Adoption produit'),
+        MobileSectionLabel(context.l10n.companydetailProductAdoption),
         Row(
           children: [
             MobileMetricTile(
               value: '${health.activeEmployees}/${health.totalEmployees}',
-              label: 'Employes actifs',
+              label: context.l10n.companydetailActiveEmployees,
               color: AppColors.info,
             ),
             const SizedBox(width: 10),
             MobileMetricTile(
               value: '${health.attendanceLogs30d}',
-              label: 'Pointages 30j',
+              label: context.l10n.dashboardCheckins30d,
               color: AppColors.rh,
             ),
           ],
@@ -213,13 +214,13 @@ class _CompanyDetailContent extends ConsumerWidget {
           children: [
             MobileMetricTile(
               value: '${health.onboardingProgress}%',
-              label: 'Onboarding',
+              label: context.l10n.companydetailOnboarding,
               color: AppColors.success,
             ),
             const SizedBox(width: 10),
             MobileMetricTile(
               value: '${health.criticalAnomalies30d}',
-              label: 'Anomalies critiques',
+              label: context.l10n.companydetailAnomaliesCritical,
               color: health.criticalAnomalies30d > 0
                   ? AppColors.danger
                   : AppColors.rh,

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1126,11 +1125,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-    Object date,
-    Object hours,
-    Object range,
-    Object status,
-  ) {
+      Object date, Object hours, Object range, Object status) {
     return '$date günü, durum $status, $range, $hours.';
   }
 
@@ -6277,4 +6272,48 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get settingsBiometryPendingHint =>
       'Gönderildikten sonra biyometrik verileriniz beklemede kalır. Her ilk aktivasyon veya değişiklik yönetici/İK onayı gerektirir.';
+
+  @override
+  String get companiesRequiredField => 'Zorunlu alan';
+
+  @override
+  String get companiesCompanyCreated => 'Şirket oluşturuldu';
+
+  @override
+  String get companiesNewClient => 'Yeni müşteri';
+
+  @override
+  String get companiesProvisioning => 'Platform sağlama';
+
+  @override
+  String get companiesCompanyEmail => 'Şirket e-postası';
+
+  @override
+  String get companiesCreateClient => 'Müşteriyi oluştur';
+
+  @override
+  String get companiesCreating => 'Oluşturuluyor...';
+
+  @override
+  String get companiesActiveImmediatelyHint =>
+      'Müşteri aktif durumda oluşturulacak.';
+
+  @override
+  String get companiesTrialHint =>
+      'Müşteri deneme ile başlar, ardından profilinden etkinleştirilebilir.';
+
+  @override
+  String get companydetailClientFile => 'Müşteri profili';
+
+  @override
+  String get companydetailProductAdoption => 'Ürün benimsenmesi';
+
+  @override
+  String get companydetailActiveEmployees => 'Aktif çalışanlar';
+
+  @override
+  String get companydetailAnomaliesCritical => 'Kritik anormallikler';
+
+  @override
+  String get commonBack => 'Geri';
 }

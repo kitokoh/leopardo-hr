@@ -137,7 +137,7 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
                       icon: Icons.lock_outline_rounded,
                       obscureText: _obscurePassword,
                       suffixIcon: IconButton(
-                        tooltip: 'Afficher ou masquer le mot de passe',
+                        tooltip: l10n.authTogglePasswordVisibility,
                         onPressed: () => setState(
                           () => _obscurePassword = !_obscurePassword,
                         ),
@@ -167,19 +167,20 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
                       onPressed: auth.isSubmitting ? null : _submit,
                     ),
                     const SizedBox(height: 12),
-                    if (kDebugMode) OutlinedButton.icon(
-                      onPressed: auth.isSubmitting ? null : _fillDemoAccount,
-                      icon: const Icon(Icons.science_rounded),
-                      label: Text(l10n.platformLoginUseDemoAccount),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: MobileSurface.secondary,
-                        side: const BorderSide(color: MobileSurface.border),
-                        padding: const EdgeInsets.symmetric(vertical: 13),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                    if (kDebugMode)
+                      OutlinedButton.icon(
+                        onPressed: auth.isSubmitting ? null : _fillDemoAccount,
+                        icon: const Icon(Icons.science_rounded),
+                        label: Text(l10n.platformLoginUseDemoAccount),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: MobileSurface.secondary,
+                          side: const BorderSide(color: MobileSurface.border),
+                          padding: const EdgeInsets.symmetric(vertical: 13),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),

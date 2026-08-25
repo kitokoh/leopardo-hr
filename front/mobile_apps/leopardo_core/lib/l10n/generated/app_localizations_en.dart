@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1126,11 +1125,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-    Object date,
-    Object hours,
-    Object range,
-    Object status,
-  ) {
+      Object date, Object hours, Object range, Object status) {
     return 'Day of $date, status $status, $range, $hours.';
   }
 
@@ -6273,4 +6268,48 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsBiometryPendingHint =>
       'Once submitted, your biometric data stays pending. Any first activation or change requires manager/HR approval.';
+
+  @override
+  String get companiesRequiredField => 'Required field';
+
+  @override
+  String get companiesCompanyCreated => 'Company created';
+
+  @override
+  String get companiesNewClient => 'New client';
+
+  @override
+  String get companiesProvisioning => 'Platform provisioning';
+
+  @override
+  String get companiesCompanyEmail => 'Company email';
+
+  @override
+  String get companiesCreateClient => 'Create the client';
+
+  @override
+  String get companiesCreating => 'Creating...';
+
+  @override
+  String get companiesActiveImmediatelyHint =>
+      'The client will be created with active status.';
+
+  @override
+  String get companiesTrialHint =>
+      'The client starts on trial, then can be activated from its profile.';
+
+  @override
+  String get companydetailClientFile => 'Client profile';
+
+  @override
+  String get companydetailProductAdoption => 'Product adoption';
+
+  @override
+  String get companydetailActiveEmployees => 'Active employees';
+
+  @override
+  String get companydetailAnomaliesCritical => 'Critical anomalies';
+
+  @override
+  String get commonBack => 'Back';
 }

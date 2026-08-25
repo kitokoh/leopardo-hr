@@ -65,7 +65,7 @@ import 'app_localizations_tr.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -88,18 +88,18 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
     Locale('en'),
     Locale('fr'),
-    Locale('tr'),
+    Locale('tr')
   ];
 
   /// No description provided for @appTitle.
@@ -2207,11 +2207,7 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Journée du {date}, statut {status}, {range}, {hours}.'**
   String attendanceDaySummary(
-    Object date,
-    Object hours,
-    Object range,
-    Object status,
-  );
+      Object date, Object hours, Object range, Object status);
 
   /// No description provided for @attendanceDayToday.
   ///
@@ -11674,6 +11670,90 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.'**
   String get settingsBiometryPendingHint;
+
+  /// No description provided for @companiesRequiredField.
+  ///
+  /// In fr, this message translates to:
+  /// **'Champ requis'**
+  String get companiesRequiredField;
+
+  /// No description provided for @companiesCompanyCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entreprise créée'**
+  String get companiesCompanyCreated;
+
+  /// No description provided for @companiesNewClient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau client'**
+  String get companiesNewClient;
+
+  /// No description provided for @companiesProvisioning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Provisionnement plateforme'**
+  String get companiesProvisioning;
+
+  /// No description provided for @companiesCompanyEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email entreprise'**
+  String get companiesCompanyEmail;
+
+  /// No description provided for @companiesCreateClient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer le client'**
+  String get companiesCreateClient;
+
+  /// No description provided for @companiesCreating.
+  ///
+  /// In fr, this message translates to:
+  /// **'Création...'**
+  String get companiesCreating;
+
+  /// No description provided for @companiesActiveImmediatelyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le client sera créé en statut actif.'**
+  String get companiesActiveImmediatelyHint;
+
+  /// No description provided for @companiesTrialHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le client démarre en essai, puis peut être activé depuis sa fiche.'**
+  String get companiesTrialHint;
+
+  /// No description provided for @companydetailClientFile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fiche client'**
+  String get companydetailClientFile;
+
+  /// No description provided for @companydetailProductAdoption.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adoption produit'**
+  String get companydetailProductAdoption;
+
+  /// No description provided for @companydetailActiveEmployees.
+  ///
+  /// In fr, this message translates to:
+  /// **'Employés actifs'**
+  String get companydetailActiveEmployees;
+
+  /// No description provided for @companydetailAnomaliesCritical.
+  ///
+  /// In fr, this message translates to:
+  /// **'Anomalies critiques'**
+  String get companydetailAnomaliesCritical;
+
+  /// No description provided for @commonBack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get commonBack;
 }
 
 class _AppLocalizationsDelegate
@@ -11707,9 +11787,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
-  );
+      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }
