@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Planning\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Events\AbsenceApproved;
 use App\Events\AbsenceRejected;
@@ -237,6 +238,16 @@ class AbsenceService
 
         AbsenceApproved::dispatch($absence, $approver);
 
+        // #5439 — journal d'audit global : approbation d'une absence (planning).
+        AuditLog::record(
+            'planning',
+            'planning.absence.approve',
+            $absence,
+            $approver,
+            ['status' => 'pending'],
+            ['status' => $absence->status, 'approved_by' => $approver->id],
+        );
+
         return $absence;
     }
 
@@ -308,6 +319,16 @@ class AbsenceService
 
         AbsenceRejected::dispatch($absence);
 
+        // #5439 — journal d'audit global : rejet d'une absence (planning).
+        AuditLog::record(
+            'planning',
+            'planning.absence.reject',
+            $absence,
+            null,
+            ['status' => 'pending'],
+            ['status' => $absence->status, 'rejected_reason' => $absence->rejected_reason],
+        );
+
         return $absence;
     }
 
@@ -321,6 +342,16 @@ class AbsenceService
 
         // Issue #2329: a cancelled pending absence releases its pending days.
         $this->syncLeaveBalanceSnapshot($absence, 'cancel');
+
+        // #5439 — journal d'audit global : annulation d'une absence (planning).
+        AuditLog::record(
+            'planning',
+            'planning.absence.cancel',
+            $absence,
+            null,
+            ['status' => 'pending'],
+            ['status' => 'cancelled'],
+        );
 
         return $absence->fresh()
             ?? throw new \RuntimeException('Absence introuvable après annulation.');

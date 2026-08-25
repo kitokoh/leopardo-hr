@@ -11196,6 +11196,42 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /accounting/documents/shared/{token}:
+    get:
+      tags: ["Accounting"]
+      summary: "Portail client — informations du document partagé (token)"
+      description: "Endpoint public : le token de partage est la credential. Accès RGPD limité au document partagé (issue #5225)."
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Méta-données du document (numéro, type, statut, total TTC, expiration)"
+        "404":
+          description: "Token invalide ou expiré"
+        "429":
+          description: "Trop de requêtes (throttle)"
+
+  /accounting/documents/shared/{token}/download:
+    get:
+      tags: ["Accounting"]
+      summary: "Portail client — téléchargement du PDF partagé (token)"
+      description: "Endpoint public : télécharge le PDF du document partagé (issue #5225)."
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "PDF du document"
+        "404":
+          description: "Token invalide/expiré ou PDF non prêt"
+        "429":
+          description: "Trop de requêtes (throttle)"
+
   /supported-countries:
     get:
       tags: ["Payroll Engine"]
@@ -16223,10 +16259,24 @@ paths:
     get:
       tags: ["Admin"]
       summary: "Journal d'audit"
+      description: |
+        Journal d'audit global (#5439) — manager `principal` ou `rh` du tenant.
+        Isolation tenant stricte (company_id de l'acteur). Filtres : module
+        (attendance, payroll, planning, hr, auth, audit...), action,
+        auditable_type/auditable_id, user_id, from, to.
       parameters:
+        - name: module
+          in: query
+          schema: { type: string }
         - name: action
           in: query
           schema: { type: string }
+        - name: auditable_type
+          in: query
+          schema: { type: string }
+        - name: auditable_id
+          in: query
+          schema: { type: integer }
         - name: user_id
           in: query
           schema: { type: integer }
@@ -16263,9 +16313,13 @@ paths:
       tags: ["Admin"]
       summary: "Exporter le journal d'audit en CSV"
       description: |
-        Reserve au manager `principal`. Applique les memes filtres que `GET /audit-logs`
-        (action, user_id, from, to) et retourne un flux CSV (`Content-Type: text/csv`).
+        Reserve aux managers `principal` et `rh`. Applique les memes filtres que
+        `GET /audit-logs` (module, action, user_id, from, to) et retourne un flux
+        CSV (`Content-Type: text/csv`).
       parameters:
+        - name: module
+          in: query
+          schema: { type: string }
         - name: action
           in: query
           schema: { type: string }
@@ -25977,6 +26031,12 @@ components:
           nullable: true
         action:
           type: string
+        module:
+          type: string
+          nullable: true
+        request_id:
+          type: string
+          nullable: true
         entity_type:
           type: string
         entity_id:

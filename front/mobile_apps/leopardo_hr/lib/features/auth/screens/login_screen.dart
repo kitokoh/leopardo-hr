@@ -121,11 +121,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Leopardo RH',
+                          context.l10n.appTitle,
                           style: AppTypography.title.copyWith(color: text),
                         ),
                         Text(
-                          'Connexion Manager / RH',
+                          context.l10n.authManagerLoginSubtitle,
                           style: AppTypography.caption.copyWith(color: muted),
                         ),
                       ],
@@ -152,9 +152,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         validator: (value) {
                           final v = value?.trim() ?? '';
-                          if (v.isEmpty) return 'Email obligatoire';
+                          if (v.isEmpty) return context.l10n.authEmailRequired;
                           if (!v.contains('@') || !v.contains('.')) {
-                            return 'Email invalide';
+                            return context.l10n.settingsEmailInvalid;
                           }
                           return null;
                         },
@@ -167,10 +167,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         onFieldSubmitted: (_) => _submit(),
                         decoration: _inputDecoration(
                           context,
-                          label: 'Mot de passe',
+                          label: context.l10n.registerPassword,
                           icon: Icons.lock_outline_rounded,
                           suffix: IconButton(
-                            tooltip: 'Afficher ou masquer le mot de passe',
+                            tooltip: context.l10n.authTogglePasswordVisibility,
                             icon: Icon(
                               _obscurePassword
                                   ? Icons.visibility_off_rounded
@@ -184,10 +184,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         validator: (value) {
                           if ((value ?? '').isEmpty) {
-                            return 'Mot de passe obligatoire';
+                            return context.l10n.authPasswordRequired;
                           }
                           if ((value ?? '').length < 4) {
-                            return 'Mot de passe trop court';
+                            return context.l10n.authPasswordTooShort;
                           }
                           return null;
                         },
@@ -208,8 +208,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     color: Colors.white,
                                   ),
                                 )
-                              : const Text(
-                                  'Se connecter',
+                              : Text(
+                                  context.l10n.signupLogincta,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -232,7 +232,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                       .loginWithGoogle();
                                 },
                           icon: const Icon(Icons.login_rounded, size: 18),
-                          label: const Text('Continuer avec Google'),
+                          label: Text(context.l10n.authContinueWithGoogle),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -241,7 +241,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Center(
                         child: TextButton(
                           onPressed: () => context.go('/register'),
-                          child: const Text("Activer mon acces manager"),
+                          child: Text(context.l10n.authActivateManagerAccess),
                         ),
                       ),
                       const SizedBox(height: 8),

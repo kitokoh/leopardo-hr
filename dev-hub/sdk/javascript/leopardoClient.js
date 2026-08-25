@@ -215,6 +215,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/accounting/documents/next-number", options);
     },
 
+    /** Portail client — informations du document partagé (token) */
+    getAccountingDocumentsSharedByToken(options = {}) {
+      return request("GET", "/accounting/documents/shared/{token}", options);
+    },
+
+    /** Portail client — téléchargement du PDF partagé (token) */
+    getAccountingDocumentsSharedByTokenDownload(options = {}) {
+      return request("GET", "/accounting/documents/shared/{token}/download", options);
+    },
+
     /** Lister les paiements */
     getAccountingPayments(options = {}) {
       return request("GET", "/accounting/payments", options);
