@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/shimmer_loading.dart';
 
@@ -22,16 +23,16 @@ class CompanyScreen extends ConsumerWidget {
 
     return MobilePage(
       appBar: MobileTopBar(
-        title: 'Entreprises',
-        subtitle: 'Tenants plateforme',
+        title: context.l10n.navigationCompanies,
+        subtitle: context.l10n.companiesTenantsPlatform,
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: context.l10n.commonBack,
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
-            tooltip: 'Creer',
+            tooltip: context.l10n.cabinetScreenCreate,
             onPressed: () => context.push('/platform/companies/new'),
             icon: const Icon(Icons.add_rounded),
           ),
@@ -40,9 +41,9 @@ class CompanyScreen extends ConsumerWidget {
       children: [
         companies.when(
           data: (items) => items.isEmpty
-              ? const MobilePanel(
+              ? MobilePanel(
                   child: Text(
-                    'Aucune entreprise a afficher.',
+                    context.l10n.companiesEmpty,
                     style: TextStyle(color: MobileSurface.secondary),
                   ),
                 )

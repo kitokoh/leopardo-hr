@@ -18,8 +18,10 @@ use App\Modules\Payroll\Interfaces\Api\V1\BulkPaymentController;
 use App\Modules\Payroll\Interfaces\Api\V1\CotisationSimulationController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaymentBatchController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaymentDocumentController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollAccountingController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollAuditController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollPaymentOrderController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollRunController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaySlipController;
@@ -124,6 +126,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/bank-exports', [BankExportController::class, 'store']);
         Route::get('/bank-exports/{bankExport}', [BankExportController::class, 'show'])->whereNumber('bankExport');
         Route::get('/bank-exports/{bankExport}/download', [BankExportController::class, 'download'])->whereNumber('bankExport');
+
+        // Issue #5239 — Phase C : flux Paie → Comptabilité.
+        // Écritures salariales automatiques (lecture) + régénération (comptable).
+        Route::get('/payroll-runs/{payrollRun}/accounting-entries', [PayrollAccountingController::class, 'index'])->whereNumber('payrollRun');
+        Route::post('/payroll-runs/{payrollRun}/accounting-entries/regenerate', [PayrollAccountingController::class, 'regenerate'])->whereNumber('payrollRun');
+        // Ordre de virement : préparation (comptable) + consultation (principal/comptable).
+        Route::post('/payroll-runs/{payrollRun}/payment-order', [PayrollPaymentOrderController::class, 'prepare'])->whereNumber('payrollRun');
+        Route::get('/payment-orders', [PayrollPaymentOrderController::class, 'index']);
+        Route::get('/payment-orders/{paymentOrder}', [PayrollPaymentOrderController::class, 'show'])->whereNumber('paymentOrder');
+        Route::post('/payment-orders/{paymentOrder}/execute', [PayrollPaymentOrderController::class, 'execute'])->whereNumber('paymentOrder');
+        Route::post('/payment-orders/{paymentOrder}/reconcile', [PayrollPaymentOrderController::class, 'reconcile'])->whereNumber('paymentOrder');
 
         // Social Declarations — CNPS Cameroun DAS (CEMAC/CM #1823)
         Route::get('/payroll-runs/{payrollRun}/declarations/cnps-cm', [SocialDeclarationController::class, 'generateCnpsCmDeclaration'])->whereNumber('payrollRun');

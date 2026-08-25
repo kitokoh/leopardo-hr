@@ -14,7 +14,7 @@ use App\Core\Auth\Infrastructure\Services\AuthService;
  * to the AuthService (Infrastructure layer), keeping the
  * controller thin.
  *
- * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string}
+ * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string, tenant_schema: ?string}
  */
 final class LoginAction
 {
@@ -23,7 +23,7 @@ final class LoginAction
     ) {}
 
     /**
-     * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string}
+     * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string, tenant_schema: ?string}
      */
     public function execute(string $email, string $password, ?string $deviceName = null): array
     {

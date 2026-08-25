@@ -1871,7 +1871,7 @@
   "teamNewEmployee": "Yeni çalışan",
   "teamNewEmployeeViaQr": "QR ile yeni çalışan",
   "settingsRecoveryEmailOptionalHint": "Erişimi kurtarmak için opsiyonel",
-  "settingsPersonalEmailHint": "Opsiyonel, hesabınızı şirket dışında tutar",
+  "settingsPersonalEmailHint": "İsteğe bağlı, hesabınızı şirket dışında tutar",
   "settingsPhoneHint": "Opsiyonel, gelecekteki seçimlerinize göre görünür",
   "settingsOpenMyLocker": "Dolabımı aç",
   "settingsShareProfileOrScan": "Profilinizi paylaşın veya bir şirketi tarayın.",
@@ -1927,5 +1927,141 @@
   "settingsEdgeOptionalHint": "Opsiyonel: İnternet olmadan yoklama için sitedeki Edge sunucusunu gösterin.",
   "settingsPrefsUnavailable": "Tercihler şu anda kullanılamıyor. Daha sonra yenilemek için çekin.",
   "teamQrPrefilledHint": "Profil QR'dan ön dolduruldu. Bu şirket için benzersiz iş e-postasını girin.",
-  "settingsBiometryPendingHint": "Gönderildikten sonra biyometrik verileriniz beklemede kalır. Her ilk aktivasyon veya değişiklik yönetici/İK onayı gerektirir."
+  "settingsBiometryPendingHint": "Gönderildikten sonra biyometrik verileriniz beklemede kalır. Her ilk aktivasyon veya değişiklik yönetici/İK onayı gerektirir.",
+  "companiesRequiredField": "Zorunlu alan",
+  "companiesCompanyCreated": "Şirket oluşturuldu",
+  "companiesNewClient": "Yeni müşteri",
+  "companiesProvisioning": "Platform sağlama",
+  "companiesCompanyEmail": "Şirket e-postası",
+  "companiesCreateClient": "Müşteriyi oluştur",
+  "companiesCreating": "Oluşturuluyor...",
+  "companiesActiveImmediatelyHint": "Müşteri aktif durumda oluşturulacak.",
+  "companiesTrialHint": "Müşteri deneme ile başlar, ardından profilinden etkinleştirilebilir.",
+  "companydetailClientFile": "Müşteri profili",
+  "companydetailProductAdoption": "Ürün benimsenmesi",
+  "companydetailActiveEmployees": "Aktif çalışanlar",
+  "companydetailAnomaliesCritical": "Kritik anormallikler",
+  "commonBack": "Geri",
+  "companydetailClientReference": "Müşteri referansı",
+  "companydetailTenantIdHint": "Desteğe göstermek veya sahada taratmak için kiracı kimliği — müşteriyi anında bulur.",
+  "companydetailCopyId": "Kimliği kopyala",
+  "companydetailSubscription": "Abonelik",
+  "companydetailPlan": "Plan",
+  "companydetailStatus": "Durum",
+  "companydetailMonthlyPrice": "Aylık fiyat",
+  "companydetailEmployeeLimit": "Çalışan limiti",
+  "companydetailUnlimited": "Sınırsız",
+  "companydetailSubscriptionEnd": "Abonelik bitişi",
+  "companydetailUndefined": "Tanımsız",
+  "companydetailActivateClient": "Müşteriyi etkinleştir",
+  "companydetailEditSubscription": "Aboneliği düzenle",
+  "companydetailActiveModules": "Aktif modüller",
+  "companydetailEditModules": "Modülleri düzenle",
+  "companydetailNextActions": "Sonraki eylemler",
+  "companydetailNoUrgentActions": "Bu müşteri için acil eylem tespit edilmedi.",
+  "companydetailRecommendedActionHint": "Platform kokpitinden önerilen eylem.",
+  "companydetailPlanNotFound": "Geçerli plan bulunamadı",
+  "companydetailClientActivated": "Müşteri etkinleştirildi",
+  "companydetailChoosePlan": "Bir plan seçin",
+  "companydetailSubscriptionUpdated": "Abonelik güncellendi",
+  "companydetailOptionalInternalNote": "İsteğe bağlı dahili not",
+  "companydetailSaving": "Kaydediliyor...",
+  "commonSave": "Kaydet",
+  "companydetailLoadingPlans": "Planlar yükleniyor",
+  "companydetailPlanWithPrice": "{planName} - {price}/ay",
+  "companydetailSaveModules": "Modülleri kaydet",
+  "companydetailCoreModuleAlwaysActive": "Çekirdek modül her zaman aktiftir",
+  "companydetailModulesUpdated": "Modüller güncellendi",
+  "@companydetailPlanWithPrice": {
+    "description": "Dropdown item for a plan with its monthly price.",
+    "placeholders": {
+      "planName": {
+        "type": "String",
+        "example": "Essentiel"
+      },
+      "price": {
+        "type": "String",
+        "example": "990"
+      }
+    }
+  },
+  "companiesTenantsPlatform": "Platform kiracıları",
+  "companiesEmpty": "Görüntülenecek şirket yok.",
+  "companyrequestsValidationSuperadmin": "Süper yönetici doğrulaması",
+  "companyrequestsApprovedToast": "Talep onaylandı",
+  "companyrequestsRejectedToast": "Talep reddedildi",
+  "dashboardPlatformAdministration": "Platform yönetimi",
+  "dashboardSuperAdmin": "Süper yönetici",
+  "dashboardExecutiveView": "Yönetici görünümü",
+  "dashboardActiveLabel": "Aktif",
+  "dashboardTrials": "Denemeler",
+  "dashboardLoadingCockpit": "Kokpit yükleniyor",
+  "dashboardPlatformActions": "Platform eylemleri",
+  "dashboardClientCompanies": "Müşteri şirketleri",
+  "dashboardClientCompaniesHint": "Kiracıları, durumlarını ve planlarını takip edin.",
+  "dashboardCreateCompany": "Şirket oluştur",
+  "dashboardCreateCompanyHint": "Yeni bir müşteri ve ana yöneticisini sağlayın.",
+  "dashboardClientRequestsHint": "Oluşturma taleplerini onaylayın veya reddedin.",
+  "dashboardSupportClient": "Müşteri desteği",
+  "dashboardTicketsHint": "Kiracı biletleri — yanıtla ve sırala.",
+  "dashboardEdgeNodes": "Uç düğümler",
+  "dashboardEdgeNodesHint": "Şirket içi siteler — durum ve senkronizasyon.",
+  "settingsEdgeRemoved": "Edge eşleştirme kaldırıldı.",
+  "settingsViewProfile": "Profilimi görüntüle",
+  "settingsRecoveryEmailHint": "İsteğe bağlı, erişimi kurtarmak için",
+  "settingsPersonalPhoneHint": "İsteğe bağlı, gelecekteki seçimlerinize göre görünür",
+  "settingsPortableIdentityTitle": "Taşınabilir kimlik",
+  "settingsPortableIdentitySubtitle": "Şirket geçmişi, pozisyon, durum ve müsaitlik.",
+  "settingsPortableIdentityHint": "Kişisel e-posta, kurtarma ve telefon hesaba bağlı kalır.",
+  "settingsDigitalLockerTitle": "Dijital kasa",
+  "settingsDigitalLockerSubtitle": "Kontrollü görünürlükle CV, sözleşmeler, diplomalar ve belgeler.",
+  "settingsHistoryCompanyPeriod": "{companyName} - {period}",
+  "@settingsHistoryCompanyPeriod": {
+    "placeholders": {
+      "companyName": {
+        "type": "String",
+        "example": "Acme"
+      },
+      "period": {
+        "type": "String",
+        "example": "2026-08"
+      }
+    }
+  },
+  "settingsStatusCurrent": "Güncel durum: {label}",
+  "@settingsStatusCurrent": {
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "En ligne"
+      }
+    }
+  },
+  "settingsUpdateFailed": "Güncelleme başarısız: {error}",
+  "@settingsUpdateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsQrRejected": "QR reddedildi: {error}",
+  "@settingsQrRejected": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsSubmitFailed": "Gönderim başarısız: {error}",
+  "@settingsSubmitFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  }
 }

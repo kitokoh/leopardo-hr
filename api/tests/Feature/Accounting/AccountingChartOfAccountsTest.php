@@ -114,7 +114,6 @@ class AccountingChartOfAccountsTest extends TestCase
     {
         foreach (AccountingChartOfAccounts::supportedCountries() as $country) {
             AccountingChartOfAccounts::assertComplete($country);
-            $this->assertTrue(true);
         }
     }
 }

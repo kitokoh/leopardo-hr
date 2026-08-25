@@ -1825,7 +1825,7 @@
   "attendanceEmployeeRequestsPending": "Demandes employees en attente RH",
   "teamDepartmentOptional": "Departement (optionnel)",
   "settingsAvailableForNewCompany": "Disponible pour une nouvelle entreprise",
-  "settingsRecoveryEmailLabel": "Email de recuperation",
+  "settingsRecoveryEmailLabel": "Email de récupération",
   "settingsPersonalEmailLabel": "Email personnel",
   "teamEmployeeAdded": "Employe ajoute.",
   "settingsBiometryFingerprintDesired": "Empreinte digitale souhaitee",
@@ -1905,7 +1905,7 @@
   "attendanceSyncingPresence": "Synchronisation des presences...",
   "settingsNotifTasksHint": "Taches, decisions RH, pointage et rappels.",
   "teamHourlyRate": "Taux horaire",
-  "settingsPersonalPhoneLabel": "Telephone personnel",
+  "settingsPersonalPhoneLabel": "Téléphone personnel",
   "notifMarkAllAsRead": "Tout marquer comme lu",
   "teamManagerType": "Type de manager",
   "teamPayType": "Type de paie",
@@ -1927,5 +1927,141 @@
   "settingsEdgeOptionalHint": "Optionnel: pointer vers un serveur Edge installe sur site pour pointer sans Internet.",
   "settingsPrefsUnavailable": "Preferences indisponibles pour le moment. Tire pour recharger plus tard.",
   "teamQrPrefilledHint": "Profil pre-rempli depuis QR. Renseignez l email professionnel unique de cette entreprise.",
-  "settingsBiometryPendingHint": "Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH."
+  "settingsBiometryPendingHint": "Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.",
+  "companiesRequiredField": "Champ requis",
+  "companiesCompanyCreated": "Entreprise créée",
+  "companiesNewClient": "Nouveau client",
+  "companiesProvisioning": "Provisionnement plateforme",
+  "companiesCompanyEmail": "Email entreprise",
+  "companiesCreateClient": "Créer le client",
+  "companiesCreating": "Création...",
+  "companiesActiveImmediatelyHint": "Le client sera créé en statut actif.",
+  "companiesTrialHint": "Le client démarre en essai, puis peut être activé depuis sa fiche.",
+  "companydetailClientFile": "Fiche client",
+  "companydetailProductAdoption": "Adoption produit",
+  "companydetailActiveEmployees": "Employés actifs",
+  "companydetailAnomaliesCritical": "Anomalies critiques",
+  "commonBack": "Retour",
+  "companydetailClientReference": "Reference client",
+  "companydetailTenantIdHint": "Identifiant tenant a presenter au support ou scanner sur site pour retrouver ce client instantanement.",
+  "companydetailCopyId": "Copier l'identifiant",
+  "companydetailSubscription": "Abonnement",
+  "companydetailPlan": "Plan",
+  "companydetailStatus": "Statut",
+  "companydetailMonthlyPrice": "Prix mensuel",
+  "companydetailEmployeeLimit": "Limite employes",
+  "companydetailUnlimited": "Illimite",
+  "companydetailSubscriptionEnd": "Fin abonnement",
+  "companydetailUndefined": "Non definie",
+  "companydetailActivateClient": "Activer client",
+  "companydetailEditSubscription": "Modifier abonnement",
+  "companydetailActiveModules": "Modules actifs",
+  "companydetailEditModules": "Modifier modules",
+  "companydetailNextActions": "Prochaines actions",
+  "companydetailNoUrgentActions": "Aucune action urgente detectee pour ce client.",
+  "companydetailRecommendedActionHint": "Action recommandee par le cockpit plateforme.",
+  "companydetailPlanNotFound": "Plan actuel introuvable",
+  "companydetailClientActivated": "Client active",
+  "companydetailChoosePlan": "Choisir un plan",
+  "companydetailSubscriptionUpdated": "Abonnement mis a jour",
+  "companydetailOptionalInternalNote": "Note interne optionnelle",
+  "companydetailSaving": "Enregistrement...",
+  "commonSave": "Enregistrer",
+  "companydetailLoadingPlans": "Chargement plans",
+  "companydetailPlanWithPrice": "{planName} - {price}/mois",
+  "companydetailSaveModules": "Enregistrer modules",
+  "companydetailCoreModuleAlwaysActive": "Module socle toujours actif",
+  "companydetailModulesUpdated": "Modules mis a jour",
+  "@companydetailPlanWithPrice": {
+    "description": "Dropdown item for a plan with its monthly price.",
+    "placeholders": {
+      "planName": {
+        "type": "String",
+        "example": "Essentiel"
+      },
+      "price": {
+        "type": "String",
+        "example": "990"
+      }
+    }
+  },
+  "companiesTenantsPlatform": "Tenants plateforme",
+  "companiesEmpty": "Aucune entreprise à afficher.",
+  "companyrequestsValidationSuperadmin": "Validation super-admin",
+  "companyrequestsApprovedToast": "Demande approuvée",
+  "companyrequestsRejectedToast": "Demande refusée",
+  "dashboardPlatformAdministration": "Administration plateforme",
+  "dashboardSuperAdmin": "Super-admin",
+  "dashboardExecutiveView": "Vue executive",
+  "dashboardActiveLabel": "Actives",
+  "dashboardTrials": "Essais",
+  "dashboardLoadingCockpit": "Chargement cockpit",
+  "dashboardPlatformActions": "Actions plateforme",
+  "dashboardClientCompanies": "Entreprises clientes",
+  "dashboardClientCompaniesHint": "Suivre les tenants, leur statut et leur plan.",
+  "dashboardCreateCompany": "Créer une entreprise",
+  "dashboardCreateCompanyHint": "Provisionner un nouveau client et son manager principal.",
+  "dashboardClientRequestsHint": "Approuver ou refuser les demandes de création.",
+  "dashboardSupportClient": "Support client",
+  "dashboardTicketsHint": "Tickets tenant — repondre et trier.",
+  "dashboardEdgeNodes": "Noeuds Edge",
+  "dashboardEdgeNodesHint": "Sites on-premise — statut et synchronisation.",
+  "settingsEdgeRemoved": "Appairage Edge supprimé.",
+  "settingsViewProfile": "Voir mon profil",
+  "settingsRecoveryEmailHint": "Optionnel pour récupérer l'accès",
+  "settingsPersonalPhoneHint": "Optionnel, visible selon vos choix futurs",
+  "settingsPortableIdentityTitle": "Identité portable",
+  "settingsPortableIdentitySubtitle": "Historique entreprise, poste, statut et disponibilité.",
+  "settingsPortableIdentityHint": "Email personnel, récupération et téléphone restent attachés au compte.",
+  "settingsDigitalLockerTitle": "Placard numérique",
+  "settingsDigitalLockerSubtitle": "CV, contrats, diplômes et documents avec visibilité contrôlée.",
+  "settingsHistoryCompanyPeriod": "{companyName} - {period}",
+  "@settingsHistoryCompanyPeriod": {
+    "placeholders": {
+      "companyName": {
+        "type": "String",
+        "example": "Acme"
+      },
+      "period": {
+        "type": "String",
+        "example": "2026-08"
+      }
+    }
+  },
+  "settingsStatusCurrent": "Statut actuel : {label}",
+  "@settingsStatusCurrent": {
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "En ligne"
+      }
+    }
+  },
+  "settingsUpdateFailed": "Mise à jour impossible : {error}",
+  "@settingsUpdateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsQrRejected": "QR refusé : {error}",
+  "@settingsQrRejected": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  },
+  "settingsSubmitFailed": "Échec de soumission : {error}",
+  "@settingsSubmitFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "détail"
+      }
+    }
+  }
 }

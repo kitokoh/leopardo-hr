@@ -23,14 +23,6 @@ use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
 use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
 use Illuminate\Support\Facades\Route;
 
-// Public: consultation + téléchargement d'un document partagé (token + throttle).
-// Issue #5225 — le token de partage est la credential (pas d'auth Sanctum),
-// accès RGPD limité au document partagé (pattern CabinetShare #1817).
-Route::get('/accounting/documents/shared/{token}', [PublicDocumentShareController::class, 'info'])
-    ->middleware('throttle:60,1');
-Route::get('/accounting/documents/shared/{token}/download', [PublicDocumentShareController::class, 'download'])
-    ->middleware('throttle:60,1');
-
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
     ->prefix('accounting')
     ->group(function (): void {
@@ -49,12 +41,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/settings', [AccountingSettingsController::class, 'show']);
             Route::put('/settings', [AccountingSettingsController::class, 'update']);
 
-            // ── Conversion multi-devises (issue #5270) — utilitaire de
-            // conversion HT/TVA/TTC (calcul pur, aucun enregistrement).
-            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
-
-            // ── Rapports (issue #5271) — déclaration TVA par période.
-            Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
         });
 
         // ── Documents (Phase A, #5223) — RBAC principal/comptable ───────────
@@ -73,6 +59,19 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // #5273 — audit trail du module (qui/quoi/quand) — RBAC principal/comptable.
             Route::get('/audit-logs', [AccountingAuditController::class, 'index']);
         });
+<<<<<<< HEAD
+=======
+
+
+            // ── Rapports (issue #5271) — déclaration TVA par période.
+            Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
+
+            // ── Conversion multi-devises (issue #5270) — calcul pur, aucun
+            // état persistant : HT/TVA/TTC entre devise de document et devise
+            // de référence. Taux manuel requis dès que les devises diffèrent.
+            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
+
+>>>>>>> origin/main
     });
 /**
  * Routes API du module Comptabilité — trésorerie : paiements, rapprochement,
@@ -83,10 +82,28 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
  */
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
+<<<<<<< HEAD
+=======
+use App\Modules\Accounting\Interfaces\Api\V1\BankStatementController;
+>>>>>>> origin/main
 
 Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
     Route::get('accounting/payments', [AccountingPaymentController::class, 'index']);
     Route::post('accounting/documents/{document}/payments', [AccountingPaymentController::class, 'store']);
     Route::post('accounting/payments/{payment}/reconcile', [AccountingPaymentController::class, 'reconcile']);
     Route::post('accounting/reminders/run', [AccountingPaymentController::class, 'runReminders']);
+<<<<<<< HEAD
 });
+=======
+    // #5435 — rapprochement bancaire Phase D : import de relevé, matching
+    // auto/manuel, état. Même RBAC que la trésorerie (comptable/principal).
+    Route::get('accounting/bank-statements', [BankStatementController::class, 'index']);
+    Route::post('accounting/bank-statements/import', [BankStatementController::class, 'import']);
+    Route::get('accounting/bank-statements/{statement}', [BankStatementController::class, 'show']);
+    Route::post('accounting/bank-statements/{statement}/reconcile', [BankStatementController::class, 'reconcile']);
+    Route::get('accounting/bank-statements/{statement}/status', [BankStatementController::class, 'status']);
+    Route::post('accounting/bank-statement-lines/{line}/match', [BankStatementController::class, 'match']);
+});
+
+
+>>>>>>> origin/main
