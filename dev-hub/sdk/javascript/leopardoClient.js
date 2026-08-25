@@ -165,6 +165,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/accounting/contacts/{contact}", options);
     },
 
+    /** Convertir un montant entre deux devises (multi-devises #5270) */
+    postAccountingCurrencyConvert(options = {}) {
+      return request("POST", "/accounting/currency/convert", options);
+    },
+
     /** Lister les documents comptables du tenant (pagine, filtres, #5223) */
     getAccountingDocuments(options = {}) {
       return request("GET", "/accounting/documents", options);
