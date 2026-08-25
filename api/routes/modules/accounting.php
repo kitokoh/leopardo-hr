@@ -14,6 +14,15 @@ declare(strict_types=1);
  */
 
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingActivationController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingChartController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingDashboardController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingFecController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingFiscalYearController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingLedgerController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingLetteringController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingStatementController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCheckoutController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
@@ -59,6 +68,47 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
             // #5273 — audit trail du module (qui/quoi/quand) — RBAC principal/comptable.
             Route::get('/audit-logs', [AccountingAuditController::class, 'index']);
+            // ── Profondeur comptable (issue #5422) — RBAC principal/comptable ────
+            Route::get('/chart', [AccountingChartController::class, 'index']);
+            Route::post('/chart', [AccountingChartController::class, 'store']);
+            Route::get('/chart/{code}', [AccountingChartController::class, 'show']);
+            Route::put('/chart/{code}', [AccountingChartController::class, 'update']);
+            Route::delete('/chart/{code}', [AccountingChartController::class, 'destroy']);
+
+            // Grand livre + balance de vérification (running balance continu).
+            Route::get('/ledger', [AccountingLedgerController::class, 'index']);
+            Route::get('/balance', [AccountingLedgerController::class, 'balance']);
+
+            // Bilan + compte de résultat (sections par classe PCG).
+            Route::get('/statements/balance-sheet', [AccountingStatementController::class, 'balanceSheet']);
+            Route::get('/statements/income-statement', [AccountingStatementController::class, 'incomeStatement']);
+
+            // Export FEC DGFiP (13 colonnes, numérotation par pièce).
+            Route::get('/journal/export-fec', [AccountingFecController::class, 'export']);
+
+            // Exercices comptables : ouverture + clôture (report à nouveau 12/891).
+            Route::get('/fiscal-years', [AccountingFiscalYearController::class, 'index']);
+            Route::post('/fiscal-years', [AccountingFiscalYearController::class, 'store']);
+            Route::post('/fiscal-years/{year}/close', [AccountingFiscalYearController::class, 'close'])->whereNumber('year');
+
+            // Journal des écritures (issue #5234) — période, export CSV expert,
+            // clôture de période (fige le journal) et re-posting d'un document.
+            Route::get('/journal', [AccountingJournalController::class, 'index']);
+            Route::get('/journal/export.csv', [AccountingJournalController::class, 'export']);
+            Route::post('/journal/periods/{period}/close', [AccountingJournalController::class, 'closePeriod']);
+            Route::post('/documents/{document}/journal', [AccountingJournalController::class, 'postDocument'])->whereNumber('document');
+
+            // Tableaux de bord comptables (issue #5395) — synthèse + export CSV impayés.
+            Route::get('/dashboard', [AccountingDashboardController::class, 'show']);
+            Route::get('/dashboard/export', [AccountingDashboardController::class, 'export']);
+
+            // Wizard d'activation Comptabilité (issue #5288).
+            Route::get('/activation', [AccountingActivationController::class, 'show']);
+            Route::post('/activation/complete', [AccountingActivationController::class, 'complete']);
+
+            // Lettrage des comptes de tiers (équilibre Σ débits = Σ crédits).
+            Route::post('/journal/lettering', [AccountingLetteringController::class, 'store']);
+            Route::delete('/journal/lettering/{letter}', [AccountingLetteringController::class, 'destroy']);
         });
 
 

@@ -61,6 +61,18 @@ return [
         'amount_min' => 'يجب أن يكون المبلغ موجباً تماماً.',
         'method_invalid' => 'طريقة دفع غير صالحة (cash, bank_transfer, check, card, other).',
         'series_unknown' => 'سلسلة غير معروفة: « :key » ليست نوع مستند (:allowed).',
+        // Rapprochement / profondeur (issue #5422)
+        'year_required' => 'السنة مطلوبة.',
+        'year_integer' => 'يجب أن تكون السنة رقماً صحيحاً.',
+        'year_range' => 'يجب أن تكون السنة بين 2000 و 2100.',
+        'period_required' => 'الفترة مطلوبة (YYYY-MM).',
+        'period_invalid' => 'فترة غير صالحة. استخدم صيغة YYYY-MM.',
+        'letter_required' => 'رمز التسوية مطلوب.',
+        'letter_max' => 'لا يمكن أن يتجاوز رمز التسوية 32 حرفاً.',
+        'entry_ids_required' => 'اختر قيدين على الأقل للتسوية.',
+        'entry_ids_integer' => 'معرّفات قيود غير صالحة.',
+        'entry_ids_min' => 'تتطلب التسوية قيدين على الأقل.',
+        'year_between' => 'يجب أن تكون السنة بين 2000 و 2100.',
     ],
 
         'bank_file_required' => 'ملف CSV مطلوب.',
@@ -92,6 +104,9 @@ return [
         'bank_empty_file' => 'ملف CSV فارغ.',
         'bank_missing_columns' => 'ترويسة غير صالحة: أعمدة مطلوبة مفقودة (:columns).',
         'wf_company_context' => 'سياق الشركة مطلوب.',
+        'statement_year_invalid' => 'سنة مالية غير صالحة.',
+        'statement_period_invalid' => 'فترة محاسبية غير صالحة (YYYY-MM).',
+        'vat_period_invalid' => 'فترة غير صالحة. استخدم صيغة YYYY-MM.',
     ],
 
     // تسميات الضريبة الافتراضية (issue #5227)
@@ -100,4 +115,16 @@ return [
     'tva_label_gst' => 'ضريبة السلع والخدمات',
     'tva_label_reduced' => 'الضريبة المخفضة',
 
+
+    // Profondeur comptable (issue #5422)
+    'chart_system_account_not_deletable' => 'لا يمكن حذف الحسابات النظامية (المجهزة) — يمكن تعطيلها إذا لزم الأمر.',
+    'chart_account_has_entries' => 'هذا الحساب يحمل قيوداً في اليومية ولا يمكن حذفه.',
+    'fec_no_entries' => 'لا توجد قيود لهذه الفترة — تعذر تصدير FEC.',
+    'fiscal_year_already_closed' => 'هذه السنة المالية مغلقة بالفعل أو غير موجودة.',
+    'lettering_unbalanced' => 'يجب أن تكون التسوية متوازنة: مجموع المدين يجب أن يساوي مجموع الدائن.',
+    'lettering_invalid' => 'تسوية غير صالحة: يجب أن تستهدف القيود نفس الحساب.',
+    'lettering_already_used' => 'قيد واحد أو أكثر مسوّى بالفعل برمز آخر.',
 ];
+
+
+

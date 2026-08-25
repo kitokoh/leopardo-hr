@@ -260,4 +260,12 @@ return [
     'DOCUMENT_PDF_NOT_READY' => 'ملف PDF للمستند غير متوفر بعد.',
     'BANK_STATEMENT_DUPLICATE_IMPORT' => 'تم استيراد هذا الكشف البنكي بالفعل لهذه الفترة.',
     'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'هذا السطر أو الدفعة مطابق بالفعل.',
-    'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.',];
+    // Profondeur comptable (issue #5422)
+    'FISCAL_YEAR_ALREADY_CLOSED' => 'هذه السنة المالية مغلقة بالفعل أو غير موجودة.',
+    'LETTERING_INVALID' => 'تسوية غير صالحة: يجب أن تستهدف القيود نفس الحساب.',
+    'LETTERING_ALREADY_USED' => 'قيد واحد أو أكثر مسوّى بالفعل برمز آخر.',
+    'LETTERING_UNBALANCED' => 'يجب أن تكون التسوية متوازنة: مجموع المدين يجب أن يساوي مجموع الدائن.',
+    'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.',
+    'ALREADY_SEEDED' => 'تم بالفعل إنشاء البيانات التجريبية لهذه الشركة.',
+];
+

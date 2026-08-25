@@ -264,4 +264,10 @@ return [
     'BANK_STATEMENT_DUPLICATE_IMPORT' => 'Ce relevé bancaire a déjà été importé pour cette période.',
     'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'Cette ligne ou ce paiement est déjà rapproché.',
     'BANK_STATEMENT_IMPORT_FORMAT' => 'Le format du fichier de relevé est invalide.',
+    // Profondeur comptable (issue #5422)
+    'FISCAL_YEAR_ALREADY_CLOSED' => 'Cet exercice est déjà clôturé ou n\'existe pas.',
+    'LETTERING_INVALID' => 'Lettrage invalide : les écritures doivent porter sur le même compte.',
+    'LETTERING_ALREADY_USED' => 'Une ou plusieurs écritures sont déjà lettrées avec une autre lettre.',
+    'LETTERING_UNBALANCED' => 'Le lettrage doit être équilibré : la somme des débits doit égaler la somme des crédits.',
+    'ALREADY_SEEDED' => 'Les données de démonstration ont déjà été créées pour cette entreprise.',
 ];
