@@ -12,91 +12,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get appTitle => 'Leopardo IK';
 
   @override
-  String get accountingportalTitle => 'Güvenli belge alanı';
-
-  @override
-  String get accountingportalSubtitle =>
-      'Erişim, gönderenin paylaştığı belgeyle sınırlıdır';
-
-  @override
-  String get accountingportalNumber => 'Belge no.';
-
-  @override
-  String get accountingportalType => 'Belge türü';
-
-  @override
-  String get accountingportalStatus => 'Durum';
-
-  @override
-  String get accountingportalIssuedate => 'Düzenlenme tarihi';
-
-  @override
-  String get accountingportalTotal => 'Toplam tutar';
-
-  @override
-  String get accountingportalCurrency => 'Para birimi';
-
-  @override
-  String get accountingportalExpiresat =>
-      'Bağlantı :date tarihine kadar geçerli';
-
-  @override
-  String get accountingportalDownload => 'PDF indir';
-
-  @override
-  String get accountingportalDownloadhint => 'Belgeyi PDF olarak indir';
-
-  @override
-  String get accountingportalNotfoundtitle =>
-      'Geçersiz veya süresi dolmuş bağlantı';
-
-  @override
-  String get accountingportalNotfoundbody =>
-      'Bu bağlantı artık geçerli değil veya süresi doldu. Yeni bir bağlantı almak için gönderenle iletişime geçin.';
-
-  @override
-  String get accountingportalErrortitle => 'Belge yüklenemedi';
-
-  @override
-  String get accountingportalErrorbody =>
-      'Bir hata oluştu. Lütfen birkaç dakika sonra tekrar deneyin.';
-
-  @override
-  String get accountingportalRetry => 'Tekrar dene';
-
-  @override
-  String get accountingportalBacktosite => 'Siteye dön';
-
-  @override
-  String get accountingportalSecuritynote =>
-      'Güvenli paylaşım — bu bağlantıyı iletmeyin';
-
-  @override
-  String get accountingportalStatusdraft => 'Taslak';
-
-  @override
-  String get accountingportalStatussent => 'Gönderildi';
-
-  @override
-  String get accountingportalStatuspartiallypaid => 'Kısmen ödendi';
-
-  @override
-  String get accountingportalStatuspaid => 'Ödendi';
-
-  @override
-  String get accountingportalStatuscancelled => 'İptal edildi';
-
-  @override
-  String get accountingportalStatusoverdue => 'Gecikmiş';
-
-  @override
-  String get accountingportalLoading => 'Yükleniyor…';
-
-  @override
-  String get accountingportalDownloaderror =>
-      'İndirme başarısız oldu. Lütfen tekrar deneyin.';
-
-  @override
   String get welcomeBrandSubtitle => 'Sohbet odakli, mobil oncelikli, moduler.';
 
   @override
@@ -6359,214 +6274,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Gönderildikten sonra biyometrik verileriniz beklemede kalır. Her ilk aktivasyon veya değişiklik yönetici/İK onayı gerektirir.';
 
   @override
-  String get companiesRequiredField => 'Zorunlu alan';
-
-  @override
-  String get companiesCompanyCreated => 'Şirket oluşturuldu';
-
-  @override
-  String get companiesNewClient => 'Yeni müşteri';
-
-  @override
-  String get companiesProvisioning => 'Platform sağlama';
-
-  @override
-  String get companiesCompanyEmail => 'Şirket e-postası';
-
-  @override
-  String get companiesCreateClient => 'Müşteriyi oluştur';
-
-  @override
-  String get companiesCreating => 'Oluşturuluyor...';
-
-  @override
-  String get companiesActiveImmediatelyHint =>
-      'Müşteri aktif durumda oluşturulacak.';
-
-  @override
-  String get companiesTrialHint =>
-      'Müşteri deneme ile başlar, ardından profilinden etkinleştirilebilir.';
-
-  @override
-  String get companydetailClientFile => 'Müşteri profili';
-
-  @override
-  String get companydetailProductAdoption => 'Ürün benimsenmesi';
-
-  @override
-  String get companydetailActiveEmployees => 'Aktif çalışanlar';
-
-  @override
-  String get companydetailAnomaliesCritical => 'Kritik anormallikler';
-
-  @override
-  String get commonBack => 'Geri';
-
-  @override
-  String get companydetailClientReference => 'Müşteri referansı';
-
-  @override
-  String get companydetailTenantIdHint =>
-      'Desteğe göstermek veya sahada taratmak için kiracı kimliği — müşteriyi anında bulur.';
-
-  @override
-  String get companydetailCopyId => 'Kimliği kopyala';
-
-  @override
-  String get companydetailSubscription => 'Abonelik';
-
-  @override
-  String get companydetailPlan => 'Plan';
-
-  @override
-  String get companydetailStatus => 'Durum';
-
-  @override
-  String get companydetailMonthlyPrice => 'Aylık fiyat';
-
-  @override
-  String get companydetailEmployeeLimit => 'Çalışan limiti';
-
-  @override
-  String get companydetailUnlimited => 'Sınırsız';
-
-  @override
-  String get companydetailSubscriptionEnd => 'Abonelik bitişi';
-
-  @override
-  String get companydetailUndefined => 'Tanımsız';
-
-  @override
-  String get companydetailActivateClient => 'Müşteriyi etkinleştir';
-
-  @override
-  String get companydetailEditSubscription => 'Aboneliği düzenle';
-
-  @override
-  String get companydetailActiveModules => 'Aktif modüller';
-
-  @override
-  String get companydetailEditModules => 'Modülleri düzenle';
-
-  @override
-  String get companydetailNextActions => 'Sonraki eylemler';
-
-  @override
-  String get companydetailNoUrgentActions =>
-      'Bu müşteri için acil eylem tespit edilmedi.';
-
-  @override
-  String get companydetailRecommendedActionHint =>
-      'Platform kokpitinden önerilen eylem.';
-
-  @override
-  String get companydetailPlanNotFound => 'Geçerli plan bulunamadı';
-
-  @override
-  String get companydetailClientActivated => 'Müşteri etkinleştirildi';
-
-  @override
-  String get companydetailChoosePlan => 'Bir plan seçin';
-
-  @override
-  String get companydetailSubscriptionUpdated => 'Abonelik güncellendi';
-
-  @override
-  String get companydetailOptionalInternalNote => 'İsteğe bağlı dahili not';
-
-  @override
-  String get companydetailSaving => 'Kaydediliyor...';
-
-  @override
-  String get commonSave => 'Kaydet';
-
-  @override
-  String get companydetailLoadingPlans => 'Planlar yükleniyor';
-
-  @override
-  String companydetailPlanWithPrice(String planName, String price) {
-    return '$planName - $price/ay';
-  }
-
-  @override
-  String get companydetailSaveModules => 'Modülleri kaydet';
-
-  @override
-  String get companydetailCoreModuleAlwaysActive =>
-      'Çekirdek modül her zaman aktiftir';
-
-  @override
-  String get companydetailModulesUpdated => 'Modüller güncellendi';
-
-  @override
-  String get companiesTenantsPlatform => 'Platform kiracıları';
-
-  @override
-  String get companiesEmpty => 'Görüntülenecek şirket yok.';
-
-  @override
-  String get companyrequestsValidationSuperadmin =>
-      'Süper yönetici doğrulaması';
-
-  @override
-  String get companyrequestsApprovedToast => 'Talep onaylandı';
-
-  @override
-  String get companyrequestsRejectedToast => 'Talep reddedildi';
-
-  @override
-  String get dashboardPlatformAdministration => 'Platform yönetimi';
-
-  @override
-  String get dashboardSuperAdmin => 'Süper yönetici';
-
-  @override
-  String get dashboardExecutiveView => 'Yönetici görünümü';
-
-  @override
-  String get dashboardActiveLabel => 'Aktif';
-
-  @override
-  String get dashboardTrials => 'Denemeler';
-
-  @override
-  String get dashboardLoadingCockpit => 'Kokpit yükleniyor';
-
-  @override
-  String get dashboardPlatformActions => 'Platform eylemleri';
-
-  @override
-  String get dashboardClientCompanies => 'Müşteri şirketleri';
-
-  @override
-  String get dashboardClientCompaniesHint =>
-      'Kiracıları, durumlarını ve planlarını takip edin.';
-
-  @override
-  String get dashboardCreateCompany => 'Şirket oluştur';
-
-  @override
-  String get dashboardCreateCompanyHint =>
-      'Yeni bir müşteri ve ana yöneticisini sağlayın.';
-
-  @override
-  String get dashboardClientRequestsHint =>
-      'Oluşturma taleplerini onaylayın veya reddedin.';
-
-  @override
-  String get dashboardSupportClient => 'Müşteri desteği';
-
-  @override
-  String get dashboardTicketsHint => 'Kiracı biletleri — yanıtla ve sırala.';
-
-  @override
-  String get dashboardEdgeNodes => 'Uç düğümler';
-
-  @override
-  String get dashboardEdgeNodesHint =>
-      'Şirket içi siteler — durum ve senkronizasyon.';
-
-  @override
   String get settingsEdgeRemoved => 'Edge eşleştirme kaldırıldı.';
 
   @override
@@ -6599,19 +6306,231 @@ class AppLocalizationsTr extends AppLocalizations {
       'Kontrollü görünürlükle CV, sözleşmeler, diplomalar ve belgeler.';
 
   @override
-  String settingsHistoryCompanyPeriod(String companyName, String period) {
-    return '$companyName - $period';
+  String get settingsQrOnboardingTitle => 'QR kayıt';
+
+  @override
+  String get settingsQrOnboardingSubtitle =>
+      'Profilinizi paylaşın veya bir şirketi tarayın.';
+
+  @override
+  String get settingsJourneyAvailable => 'Yeni bir şirket için müsait';
+
+  @override
+  String settingsJourneyAttachedTo(String company) {
+    return '$company şirketine bağlı';
   }
 
   @override
-  String settingsStatusCurrent(String label) {
-    return 'Güncel durum: $label';
+  String get settingsJourneyYourCompany => 'şirketiniz';
+
+  @override
+  String get settingsProfessionalQr => 'Profesyonel QR';
+
+  @override
+  String get settingsQrEmployeeHint =>
+      'Yönetici, daveti önceden doldurmak için tarar.';
+
+  @override
+  String get settingsPasteQrButton => 'Şirket QR\'ını yapıştır';
+
+  @override
+  String get settingsCompanyQrLabel => 'Şirket QR';
+
+  @override
+  String get settingsRequestIntegration => 'Entegrasyon iste';
+
+  @override
+  String get settingsCabinetSubtitle =>
+      'CV, sözleşmeler, diplomalar ve idari belgeler.';
+
+  @override
+  String get settingsCabinetDocuments => 'belgeler';
+
+  @override
+  String get settingsCabinetShared => 'paylaşılan';
+
+  @override
+  String get settingsCabinetPublic => 'genel';
+
+  @override
+  String get settingsOpenLocker => 'Kasamı aç';
+
+  @override
+  String get settingsLanguageSyncHint =>
+      'Bu tercih hesabınızla senkronizedir ve RTL modunu da yönetir.';
+
+  @override
+  String get settingsUpdating => 'Güncelleniyor...';
+
+  @override
+  String get settingsUpdateLanguage => 'Dili güncelle';
+
+  @override
+  String settingsJourneyCompanyPeriod(String company, String period) {
+    return '$company - $period';
   }
 
   @override
-  String settingsUpdateFailed(String error) {
+  String get settingsPasswordModernizationHint =>
+      'Modernizasyon adımlarından önce şifrenizi değiştirin.';
+
+  @override
+  String get settingsUpdatePassword => 'Şifreyi güncelle';
+
+  @override
+  String get settingsBiometricPreparationTitle => 'Biyometrik hazırlık';
+
+  @override
+  String get settingsBiometricExplanation =>
+      'Yüz, mobil cihazdan yakalanıp yönetici/İK onayına sunulabilir. Parmak izi için Android/iOS, kayıtlı bir parmak kullandığınızı yerel olarak doğrulayabilir ancak ham şablona erişim sağlamaz; nokta atışı tarafındaki etkin aktivasyon, onaylandıktan sonra şirket terminali tarafından kullanılır.';
+
+  @override
+  String settingsBiometricTodayStatus(String face, String fingerprint) {
+    return 'Bugün aktif - yüz: $face | parmak izi: $fingerprint';
+  }
+
+  @override
+  String get settingsYes => 'evet';
+
+  @override
+  String get settingsNo => 'hayır';
+
+  @override
+  String get settingsBiometricEnablePreparation =>
+      'Biyometrik hazırlığı etkinleştir';
+
+  @override
+  String get settingsBiometricFingerprintWanted => 'Parmak izi isteniyor';
+
+  @override
+  String get settingsBiometricFaceWanted => 'Yüz tanıma isteniyor';
+
+  @override
+  String get settingsBiometricFutureConsent =>
+      'Gelecekteki biyometrik yoklamaya rıza';
+
+  @override
+  String get settingsBiometricSensorLabel =>
+      'Parmak izi sensörü / terminal kimliği';
+
+  @override
+  String get settingsBiometricSensorHint =>
+      'Örnek: FP-ENTREE-01 veya biyometrik kimlik';
+
+  @override
+  String get settingsBiometricNotesTitle => 'Notlar ve rıza';
+
+  @override
+  String get settingsBiometricNotesHint =>
+      'Örnek: selfie izinli, ana giriş terminali tercih, yüz fotoğrafı onayı...';
+
+  @override
+  String get settingsBiometricCaptureFace => 'Yüzümü yakala / seç';
+
+  @override
+  String get settingsBiometricFaceSelected => 'Yüz görüntüsü seçildi';
+
+  @override
+  String get settingsSavingShort => 'Kaydediliyor...';
+
+  @override
+  String get settingsSubmitBiometric => 'Yöneticiye / İK\'ya gönder';
+
+  @override
+  String get settingsSubmitting => 'Gönderiliyor...';
+
+  @override
+  String get settingsBiometricPendingExplanation =>
+      'Gönderildikten sonra biyometrik verileriniz beklemede kalır. İlk aktivasyon veya değişiklik yönetici/İK onayı gerektirir.';
+
+  @override
+  String get settingsEdgeNodeTitle => 'Edge düğümü (yerel ağ)';
+
+  @override
+  String get settingsEdgeNodeHint =>
+      'İsteğe bağlı: İnternet olmadan yoklama için sitedeki bir Edge sunucusuna bağlanın.';
+
+  @override
+  String get settingsEdgeCloudStatus => 'Buluta bağlı';
+
+  @override
+  String get settingsEdgeLocalStatus => 'Yerel Edge düğümüne bağlı';
+
+  @override
+  String get settingsEdgeOfflineStatus => 'Çevrimdışı';
+
+  @override
+  String settingsEdgeCurrentStatus(String label) {
+    return 'Mevcut durum: $label';
+  }
+
+  @override
+  String get settingsEdgeAddressLabel => 'Edge düğümü adresi';
+
+  @override
+  String get settingsEdgeUuidLabel => 'Düğüm kimliği (UUID)';
+
+  @override
+  String get settingsEdgeTokenLabel => 'Edge jetonu';
+
+  @override
+  String get settingsEdgeUuidHint => 'Yöneticiniz tarafından sağlanır';
+
+  @override
+  String get settingsEdgeTokenHint => 'Kayıt sırasında bir kez sağlanır';
+
+  @override
+  String get settingsRemove => 'Kaldır';
+
+  @override
+  String get settingsSessionLogoutHint =>
+      'Bu alandan bu telefonda temiz bir şekilde çık.';
+
+  @override
+  String get settingsNotificationsUnavailable =>
+      'Tercihler şu anda kullanılamıyor. Daha sonra yenilemek için çekin.';
+
+  @override
+  String get settingsNotificationsSaved => 'Bildirim tercihleri güncellendi.';
+
+  @override
+  String settingsNotificationsSaveFailed(String error) {
     return 'Güncelleme başarısız: $error';
   }
+
+  @override
+  String get settingsNotificationsIntro =>
+      'Önemli İK uyarılarını kaçırmadan faydalı kanalları seçin.';
+
+  @override
+  String get settingsChannelInApp => 'Uygulama içi uyarılar';
+
+  @override
+  String get settingsChannelInAppHint =>
+      'Görevler, İK kararları, yoklama ve hatırlatmalar.';
+
+  @override
+  String get settingsChannelPush => 'Mobil push';
+
+  @override
+  String get settingsChannelPushHint => 'Bu telefonda anlık bildirimler.';
+
+  @override
+  String get settingsChannelEmailHint => 'Özet ve önemli onaylar.';
+
+  @override
+  String get settingsChannelSmsHint =>
+      'Acil durumlar için ayrılmış kısa kanal, opt-in sonrası aktif.';
+
+  @override
+  String get settingsChannelWhatsappHint =>
+      'Konuşma kanalı, açık onayınızı gerektirir.';
+
+  @override
+  String get settingsNotificationsLanguage => 'Bildirim dili';
+
+  @override
+  String get settingsQrPasted => 'Şirket QR\'ı yapıştırıldı.';
 
   @override
   String settingsQrRejected(String error) {
@@ -6619,7 +6538,38 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String settingsSubmitFailed(String error) {
+  String get settingsLanguageUpdated => 'Dil güncellendi.';
+
+  @override
+  String get settingsBiometricSavedLocal =>
+      'Biyometrik hazırlık yerel olarak kaydedildi.';
+
+  @override
+  String get settingsBiometricEnableFirst =>
+      'Önce biyometrik hazırlığı etkinleştirin.';
+
+  @override
+  String get settingsBiometricConsentRequired =>
+      'Herhangi bir gönderimden önce rıza gereklidir.';
+
+  @override
+  String get settingsBiometricFaceRequired =>
+      'Göndermeden önce bir yüz yakalaması ekleyin.';
+
+  @override
+  String get settingsBiometricLocalVerifyCancel =>
+      'Yerel biyometrik doğrulama iptal edildi.';
+
+  @override
+  String get settingsBiometricSubmitted =>
+      'Talep doğrulama için yöneticiye / İK\'ya gönderildi.';
+
+  @override
+  String settingsBiometricSubmitFailed(String error) {
     return 'Gönderim başarısız: $error';
   }
+
+  @override
+  String get settingsBiometricConfirmIdentity =>
+      'Biyometrik talebinizi göndermek için kimliğinizi doğrulayın';
 }

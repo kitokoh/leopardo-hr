@@ -12,88 +12,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appTitle => 'ليوباردو للموارد البشرية';
 
   @override
-  String get accountingportalTitle => 'مساحة المستندات الآمنة';
-
-  @override
-  String get accountingportalSubtitle =>
-      'الوصول مقتصر على المستند الذي شاركه المرسِل';
-
-  @override
-  String get accountingportalNumber => 'رقم المستند';
-
-  @override
-  String get accountingportalType => 'نوع المستند';
-
-  @override
-  String get accountingportalStatus => 'الحالة';
-
-  @override
-  String get accountingportalIssuedate => 'تاريخ الإصدار';
-
-  @override
-  String get accountingportalTotal => 'المبلغ الإجمالي';
-
-  @override
-  String get accountingportalCurrency => 'العملة';
-
-  @override
-  String get accountingportalExpiresat => 'الرابط صالح حتى :date';
-
-  @override
-  String get accountingportalDownload => 'تحميل PDF';
-
-  @override
-  String get accountingportalDownloadhint => 'تحميل المستند بصيغة PDF';
-
-  @override
-  String get accountingportalNotfoundtitle => 'رابط غير صالح أو منتهي الصلاحية';
-
-  @override
-  String get accountingportalNotfoundbody =>
-      'لم يعد هذا الرابط صالحًا أو انتهت صلاحيته. تواصل مع المرسِل للحصول على رابط جديد.';
-
-  @override
-  String get accountingportalErrortitle => 'تعذّر تحميل المستند';
-
-  @override
-  String get accountingportalErrorbody =>
-      'حدث خطأ ما. يرجى المحاولة مرة أخرى بعد قليل.';
-
-  @override
-  String get accountingportalRetry => 'إعادة المحاولة';
-
-  @override
-  String get accountingportalBacktosite => 'العودة إلى الموقع';
-
-  @override
-  String get accountingportalSecuritynote => 'مشاركة آمنة — لا تنقل هذا الرابط';
-
-  @override
-  String get accountingportalStatusdraft => 'مسودة';
-
-  @override
-  String get accountingportalStatussent => 'تم الإرسال';
-
-  @override
-  String get accountingportalStatuspartiallypaid => 'مدفوع جزئيًا';
-
-  @override
-  String get accountingportalStatuspaid => 'مدفوع';
-
-  @override
-  String get accountingportalStatuscancelled => 'ملغى';
-
-  @override
-  String get accountingportalStatusoverdue => 'متأخر';
-
-  @override
-  String get accountingportalLoading => 'جارٍ التحميل…';
-
-  @override
-  String get accountingportalDownloaderror =>
-      'فشل التحميل. يرجى المحاولة مرة أخرى.';
-
-  @override
   String get welcomeBrandSubtitle =>
       'تجربة محادثية، موجهة للهاتف، وقابلة للتوسع.';
 
@@ -6291,209 +6209,6 @@ class AppLocalizationsAr extends AppLocalizations {
       'بعد الإرسال، تبقى بياناتك الحيوية قيد الانتظار. أي تفعيل أول أو تعديل يتطلب موافقة المدير/الموارد البشرية.';
 
   @override
-  String get companiesRequiredField => 'حقل مطلوب';
-
-  @override
-  String get companiesCompanyCreated => 'تم إنشاء الشركة';
-
-  @override
-  String get companiesNewClient => 'عميل جديد';
-
-  @override
-  String get companiesProvisioning => 'إعداد المنصة';
-
-  @override
-  String get companiesCompanyEmail => 'البريد الإلكتروني للشركة';
-
-  @override
-  String get companiesCreateClient => 'إنشاء العميل';
-
-  @override
-  String get companiesCreating => 'جارٍ الإنشاء...';
-
-  @override
-  String get companiesActiveImmediatelyHint => 'سيتم إنشاء العميل بحالة نشطة.';
-
-  @override
-  String get companiesTrialHint =>
-      'يبدأ العميل بنسخة تجريبية، ثم يمكن تفعيله من ملفه.';
-
-  @override
-  String get companydetailClientFile => 'ملف العميل';
-
-  @override
-  String get companydetailProductAdoption => 'تبنّي المنتج';
-
-  @override
-  String get companydetailActiveEmployees => 'الموظفون النشطون';
-
-  @override
-  String get companydetailAnomaliesCritical => 'الحالات الشاذة الحرجة';
-
-  @override
-  String get commonBack => 'رجوع';
-
-  @override
-  String get companydetailClientReference => 'مرجع العميل';
-
-  @override
-  String get companydetailTenantIdHint =>
-      'معرّف المستأجر لتقديمه للدعم أو مسحه ضوئياً في الموقع للعثور على هذا العميل فوراً.';
-
-  @override
-  String get companydetailCopyId => 'نسخ المعرّف';
-
-  @override
-  String get companydetailSubscription => 'الاشتراك';
-
-  @override
-  String get companydetailPlan => 'الخطة';
-
-  @override
-  String get companydetailStatus => 'الحالة';
-
-  @override
-  String get companydetailMonthlyPrice => 'السعر الشهري';
-
-  @override
-  String get companydetailEmployeeLimit => 'حد الموظفين';
-
-  @override
-  String get companydetailUnlimited => 'غير محدود';
-
-  @override
-  String get companydetailSubscriptionEnd => 'نهاية الاشتراك';
-
-  @override
-  String get companydetailUndefined => 'غير محدد';
-
-  @override
-  String get companydetailActivateClient => 'تفعيل العميل';
-
-  @override
-  String get companydetailEditSubscription => 'تعديل الاشتراك';
-
-  @override
-  String get companydetailActiveModules => 'الوحدات النشطة';
-
-  @override
-  String get companydetailEditModules => 'تعديل الوحدات';
-
-  @override
-  String get companydetailNextActions => 'الإجراءات التالية';
-
-  @override
-  String get companydetailNoUrgentActions =>
-      'لم يتم رصد أي إجراء عاجل لهذا العميل.';
-
-  @override
-  String get companydetailRecommendedActionHint =>
-      'إجراء موصى به من منصة القيادة.';
-
-  @override
-  String get companydetailPlanNotFound => 'الخطة الحالية غير موجودة';
-
-  @override
-  String get companydetailClientActivated => 'تم تفعيل العميل';
-
-  @override
-  String get companydetailChoosePlan => 'اختر خطة';
-
-  @override
-  String get companydetailSubscriptionUpdated => 'تم تحديث الاشتراك';
-
-  @override
-  String get companydetailOptionalInternalNote => 'ملاحظة داخلية اختيارية';
-
-  @override
-  String get companydetailSaving => 'جارٍ الحفظ...';
-
-  @override
-  String get commonSave => 'حفظ';
-
-  @override
-  String get companydetailLoadingPlans => 'جارٍ تحميل الخطط';
-
-  @override
-  String companydetailPlanWithPrice(String planName, String price) {
-    return '$planName - $price/شهرياً';
-  }
-
-  @override
-  String get companydetailSaveModules => 'حفظ الوحدات';
-
-  @override
-  String get companydetailCoreModuleAlwaysActive =>
-      'الوحدة الأساسية نشطة دائماً';
-
-  @override
-  String get companydetailModulesUpdated => 'تم تحديث الوحدات';
-
-  @override
-  String get companiesTenantsPlatform => 'مستأجرو المنصة';
-
-  @override
-  String get companiesEmpty => 'لا توجد شركة لعرضها.';
-
-  @override
-  String get companyrequestsValidationSuperadmin => 'تحقق المشرف الأعلى';
-
-  @override
-  String get companyrequestsApprovedToast => 'تمت الموافقة على الطلب';
-
-  @override
-  String get companyrequestsRejectedToast => 'تم رفض الطلب';
-
-  @override
-  String get dashboardPlatformAdministration => 'إدارة المنصة';
-
-  @override
-  String get dashboardSuperAdmin => 'مشرف أعلى';
-
-  @override
-  String get dashboardExecutiveView => 'عرض تنفيذي';
-
-  @override
-  String get dashboardActiveLabel => 'نشطة';
-
-  @override
-  String get dashboardTrials => 'تجارب';
-
-  @override
-  String get dashboardLoadingCockpit => 'جارٍ تحميل لوحة القيادة';
-
-  @override
-  String get dashboardPlatformActions => 'إجراءات المنصة';
-
-  @override
-  String get dashboardClientCompanies => 'الشركات العملاء';
-
-  @override
-  String get dashboardClientCompaniesHint => 'تابع المستأجرين وحالتهم وخططهم.';
-
-  @override
-  String get dashboardCreateCompany => 'إنشاء شركة';
-
-  @override
-  String get dashboardCreateCompanyHint => 'تجهيز عميل جديد ومديره الرئيسي.';
-
-  @override
-  String get dashboardClientRequestsHint =>
-      'الموافقة على طلبات الإنشاء أو رفضها.';
-
-  @override
-  String get dashboardSupportClient => 'دعم العملاء';
-
-  @override
-  String get dashboardTicketsHint => 'تذاكر المستأجر — الرد والفرز.';
-
-  @override
-  String get dashboardEdgeNodes => 'عقد الحافة';
-
-  @override
-  String get dashboardEdgeNodesHint => 'مواقع محلية — الحالة والمزامنة.';
-
-  @override
   String get settingsEdgeRemoved => 'تمت إزالة اقتران Edge.';
 
   @override
@@ -6525,19 +6240,228 @@ class AppLocalizationsAr extends AppLocalizations {
       'السيرة الذاتية والعقود والشهادات والمستندات برؤية خاضعة للتحكم.';
 
   @override
-  String settingsHistoryCompanyPeriod(String companyName, String period) {
-    return '$companyName - $period';
+  String get settingsQrOnboardingTitle => 'إعداد QR';
+
+  @override
+  String get settingsQrOnboardingSubtitle =>
+      'شارك ملفك الشخصي أو امسح شركة ضوئيًا.';
+
+  @override
+  String get settingsJourneyAvailable => 'متاح لشركة جديدة';
+
+  @override
+  String settingsJourneyAttachedTo(String company) {
+    return 'مرتبط بـ $company';
   }
 
   @override
-  String settingsStatusCurrent(String label) {
+  String get settingsJourneyYourCompany => 'شركتك';
+
+  @override
+  String get settingsProfessionalQr => 'رمز QR المهني';
+
+  @override
+  String get settingsQrEmployeeHint =>
+      'يقوم المدير بمسحه ضوئيًا لملء دعوة مسبقًا.';
+
+  @override
+  String get settingsPasteQrButton => 'لصق رمز QR الخاص بالشركة';
+
+  @override
+  String get settingsCompanyQrLabel => 'رمز QR للشركة';
+
+  @override
+  String get settingsRequestIntegration => 'طلب الاندماج';
+
+  @override
+  String get settingsCabinetSubtitle =>
+      'السيرة الذاتية والعقود والشهادات والمستندات الإدارية.';
+
+  @override
+  String get settingsCabinetDocuments => 'مستندات';
+
+  @override
+  String get settingsCabinetShared => 'مشاركة';
+
+  @override
+  String get settingsCabinetPublic => 'عامة';
+
+  @override
+  String get settingsOpenLocker => 'افتح خزانتي';
+
+  @override
+  String get settingsLanguageSyncHint =>
+      'يتم مزامنة هذا التفضيل مع حسابك ويتحكم أيضًا في وضع RTL.';
+
+  @override
+  String get settingsUpdating => 'جارٍ التحديث...';
+
+  @override
+  String get settingsUpdateLanguage => 'تحديث اللغة';
+
+  @override
+  String settingsJourneyCompanyPeriod(String company, String period) {
+    return '$company - $period';
+  }
+
+  @override
+  String get settingsPasswordModernizationHint =>
+      'غيّر كلمة المرور قبل خطوات التحديث القادمة.';
+
+  @override
+  String get settingsUpdatePassword => 'تحديث كلمة المرور';
+
+  @override
+  String get settingsBiometricPreparationTitle => 'التحضير البيومتري';
+
+  @override
+  String get settingsBiometricExplanation =>
+      'يمكن التقاط الوجه من الجوال ثم إرساله لموافقة المدير/الموارد البشرية. بالنسبة لبصمة الإصبع، يمكن لنظامي Android/iOS التحقق محليًا من أنك تستخدم إصبعًا مسجلاً، لكنهما لا يوفران الوصول إلى القالب الخام؛ لذا يبقى التفعيل الفعلي في جهاز الحضور معتمدًا ثم تستخدمه محطة الشركة.';
+
+  @override
+  String settingsBiometricTodayStatus(String face, String fingerprint) {
+    return 'نشط اليوم - الوجه: $face | بصمة الإصبع: $fingerprint';
+  }
+
+  @override
+  String get settingsYes => 'نعم';
+
+  @override
+  String get settingsNo => 'لا';
+
+  @override
+  String get settingsBiometricEnablePreparation => 'تفعيل التحضير البيومتري';
+
+  @override
+  String get settingsBiometricFingerprintWanted => 'بصمة الإصبع مرغوبة';
+
+  @override
+  String get settingsBiometricFaceWanted => 'التعرف على الوجه مرغوب';
+
+  @override
+  String get settingsBiometricFutureConsent =>
+      'الموافقة على الحضور البيومتري المستقبلي';
+
+  @override
+  String get settingsBiometricSensorLabel => 'معرف مستشعر البصمة / المحطة';
+
+  @override
+  String get settingsBiometricSensorHint => 'مثال: FP-ENTREE-01 أو رقم بيومتري';
+
+  @override
+  String get settingsBiometricNotesTitle => 'ملاحظات وموافقة';
+
+  @override
+  String get settingsBiometricNotesHint =>
+      'مثال: السيلفي مسموح، يفضل محطة المدخل الرئيسي، موافقة على صورة الوجه...';
+
+  @override
+  String get settingsBiometricCaptureFace => 'التقاط / اختيار وجهي';
+
+  @override
+  String get settingsBiometricFaceSelected => 'تم تحديد صورة الوجه';
+
+  @override
+  String get settingsSavingShort => 'جارٍ الحفظ...';
+
+  @override
+  String get settingsSubmitBiometric => 'إرسال إلى المدير / الموارد البشرية';
+
+  @override
+  String get settingsSubmitting => 'جارٍ الإرسال...';
+
+  @override
+  String get settingsBiometricPendingExplanation =>
+      'بعد الإرسال، تظل بياناتك البيومترية معلقة. أي تفعيل أول أو تعديل يتطلب موافقة المدير/الموارد البشرية.';
+
+  @override
+  String get settingsEdgeNodeTitle => 'عقدة Edge (شبكة محلية)';
+
+  @override
+  String get settingsEdgeNodeHint =>
+      'اختياري: وجّه إلى خادم Edge مثبت في الموقع للتحقق من الحضور دون إنترنت.';
+
+  @override
+  String get settingsEdgeCloudStatus => 'متصل بالسحابة';
+
+  @override
+  String get settingsEdgeLocalStatus => 'متصل بعقدة Edge المحلية';
+
+  @override
+  String get settingsEdgeOfflineStatus => 'غير متصل';
+
+  @override
+  String settingsEdgeCurrentStatus(String label) {
     return 'الحالة الحالية: $label';
   }
 
   @override
-  String settingsUpdateFailed(String error) {
+  String get settingsEdgeAddressLabel => 'عنوان عقدة Edge';
+
+  @override
+  String get settingsEdgeUuidLabel => 'معرف العقدة (UUID)';
+
+  @override
+  String get settingsEdgeTokenLabel => 'رمز Edge';
+
+  @override
+  String get settingsEdgeUuidHint => 'يوفره المسؤول';
+
+  @override
+  String get settingsEdgeTokenHint => 'يُقدم مرة واحدة عند التسجيل';
+
+  @override
+  String get settingsRemove => 'إزالة';
+
+  @override
+  String get settingsSessionLogoutHint =>
+      'اخرج من هذا الفضاء على هذا الهاتف بشكل نظيف.';
+
+  @override
+  String get settingsNotificationsUnavailable =>
+      'التفضيلات غير متاحة حاليًا. اسحب لإعادة التحميل لاحقًا.';
+
+  @override
+  String get settingsNotificationsSaved => 'تم تحديث تفضيلات الإشعارات.';
+
+  @override
+  String settingsNotificationsSaveFailed(String error) {
     return 'فشل التحديث: $error';
   }
+
+  @override
+  String get settingsNotificationsIntro =>
+      'اختر القنوات المفيدة دون فقدان تنبيهات الموارد البشرية المهمة.';
+
+  @override
+  String get settingsChannelInApp => 'تنبيهات داخل التطبيق';
+
+  @override
+  String get settingsChannelInAppHint =>
+      'المهام وقرارات الموارد البشرية والحضور والتذكيرات.';
+
+  @override
+  String get settingsChannelPush => 'إشعار الجوال';
+
+  @override
+  String get settingsChannelPushHint => 'إشعارات فورية على هذا الهاتف.';
+
+  @override
+  String get settingsChannelEmailHint => 'ملخص وتأكيدات مهمة.';
+
+  @override
+  String get settingsChannelSmsHint =>
+      'قناة قصيرة مخصصة للطوارئ، نشطة بعد الاشتراك.';
+
+  @override
+  String get settingsChannelWhatsappHint =>
+      'قناة محادثة، تتطلب اشتراكك الصريح.';
+
+  @override
+  String get settingsNotificationsLanguage => 'لغة الإشعارات';
+
+  @override
+  String get settingsQrPasted => 'تم لصق رمز QR الخاص بالشركة.';
 
   @override
   String settingsQrRejected(String error) {
@@ -6545,7 +6469,35 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String settingsSubmitFailed(String error) {
+  String get settingsLanguageUpdated => 'تم تحديث اللغة.';
+
+  @override
+  String get settingsBiometricSavedLocal => 'تم حفظ التحضير البيومتري محليًا.';
+
+  @override
+  String get settingsBiometricEnableFirst => 'فعّل التحضير البيومتري أولاً.';
+
+  @override
+  String get settingsBiometricConsentRequired =>
+      'الموافقة مطلوبة قبل أي إرسال.';
+
+  @override
+  String get settingsBiometricFaceRequired => 'أضف التقاط وجه قبل الإرسال.';
+
+  @override
+  String get settingsBiometricLocalVerifyCancel =>
+      'تم إلغاء التحقق البيومتري المحلي.';
+
+  @override
+  String get settingsBiometricSubmitted =>
+      'أُرسل الطلب إلى المدير / الموارد البشرية للتحقق.';
+
+  @override
+  String settingsBiometricSubmitFailed(String error) {
     return 'فشل الإرسال: $error';
   }
+
+  @override
+  String get settingsBiometricConfirmIdentity =>
+      'أكد هويتك لإرسال طلبك البيومتري';
 }
