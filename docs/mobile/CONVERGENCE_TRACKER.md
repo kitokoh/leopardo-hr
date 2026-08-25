@@ -33,8 +33,8 @@
 |---|---|---|---|---|
 | `leopardo_core` | partagé | — | Package partagé (API, offline, push, i18n, thème, widgets, modèles, providers) | socle |
 | `leopardo_employee` | ~79 | oui | App employé canonique | référence |
-| `leopardo_manager` | 45 | oui | Manager/RH | **#2601/#5279** — 0 doublon identique, 4 quasi-doublons restants (bloqués F-27) |
-| `leopardo_hr` | 39 | oui | RH dédiée | **#2601/#5279** — idem |
+| `leopardo_manager` | 42 | oui | Manager/RH | **#2601/#5279** — 0 doublon identique, 0 quasi-doublon restant (lots 7-8 mergés : attendance, manager_monitoring, user_home, onboarding) ; restent settings (divergé, F-27) + payroll_list (module payroll) |
+| `leopardo_hr` | 36 | oui | RH dédiée | **#2601/#5279** — idem (lots 7-8 mergés) |
 | `leopardo_platform_admin` | ~12 | oui | Super-admin plateforme | parité widgets (S-6) |
 | `leopardo_marketing` | ~6 | oui | Marketing | #3910 |
 
