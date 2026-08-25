@@ -286,7 +286,7 @@ paths:
   /attendance/dashboard:
     get:
       tags: ["Attendance"]
-      summary: "Statistiques du jour — Smart Attendance (manager/RH)"
+      summary: "Statistiques du jour — Attendance (manager/RH)"
       security:
         - BearerAuth: []
       responses:
@@ -295,7 +295,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SmartAttendanceDashboard"
+                $ref: "#/components/schemas/AttendanceDashboard"
 
   # --- ZKTeco (pointeuses biometriques) ---
   /attendance/mode-settings:
@@ -5359,10 +5359,10 @@ paths:
       description: |
         Upsert (une ligne unique par entreprise). Chaque champ est optionnel ;
         seuls les champs fournis remplacent la valeur existante. Devise limitee
-        aux devises du registre CountryDefaults (multi-devises hors perimetre
-        v1, #5270) ; langue des documents fr/ar/tr/en ; tva_rates : liste de
-        {label, rate} avec taux entre 0 et 100 % ; number_series : prefixe par
-        type de document (DocumentType).
+        aux devises du registre CountryDefaults (multi-devises #5270) ; langue
+        des documents fr/ar/tr/en ; tva_rates : liste de {label, rate} avec
+        taux entre 0 et 100 % ; number_series : prefixe par type de document
+        (DocumentType).
       requestBody:
         required: true
         content:
@@ -5417,6 +5417,40 @@ paths:
                 properties:
                   data:
                     $ref: "#/components/schemas/VatDeclaration"
+        "422":
+          $ref: "#/components/responses/Validation422"
+        "403":
+          $ref: "#/components/responses/Error401"
+
+  /accounting/currency/convert:
+    post:
+      tags: ["Accounting"]
+      summary: "Convertir un montant entre deux devises (multi-devises #5270)"
+      description: |
+        Utilitaire de conversion HT/TVA/TTC entre la devise d'un document et la
+        devise de reference de l'entreprise. Calcul pur, aucun etat persiste.
+        Regles documentees (.specify/features/5270-multi-currency/spec.md) :
+        arrondi half-up a 2 decimales ; devises identiques -> taux 1 (identite,
+        source 'identity') ; sinon le taux manuel est OBLIGATOIRE (le
+        convertisseur ne fabrique jamais de taux — fail-closed). `rate` = valeur
+        de 1 unite de `from_currency` exprimee dans `to_currency` (multiplication).
+        Source externe : interface CurrencyRateProviderInterface (v1 : manuel).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConvertCurrencyPayload"
+      responses:
+        "200":
+          description: "Montant converti (devise source + cible, taux et source)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ConvertCurrencyResult"
         "422":
           $ref: "#/components/responses/Validation422"
         "403":
@@ -18357,7 +18391,7 @@ paths:
         "404": { description: "Étape inconnue" }
 
   # ─────────────────────────────────────────────────────────────────────────
-  # SmartAttendance — Pointage GPS automatique par géofencing
+  # Attendance — Pointage GPS automatique par géofencing
   # Ajouté dans v4.18.0
   # ─────────────────────────────────────────────────────────────────────────
     patch:
@@ -18378,55 +18412,6 @@ paths:
           description: "Non autorisé"
         "404":
           description: "Introuvable"
-
-  /smart-attendance/mode-settings:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Parametres du mode de pointage de l'entreprise"
-      deprecated: true
-      responses:
-        "200":
-          description: "Configuration (forced_mode, punch_photo_mode, gps_enabled, latitude, longitude, radius_meters, allow_employee_override)"
-        "401":
-          $ref: "#/components/responses/Error401"
-    put:
-      tags: ["SmartAttendance"]
-      summary: "Configurer le mode de pointage (principal)"
-      deprecated: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                forced_mode:
-                  type: string
-                  enum: [gps_auto, qr, manual, mixed]
-                punch_photo_mode:
-                  type: string
-                  enum: [kiosk, photo_required]
-                gps_enabled:
-                  type: boolean
-                latitude:
-                  type: number
-                  minimum: -90
-                  maximum: 90
-                longitude:
-                  type: number
-                  minimum: -180
-                  maximum: 180
-                radius_meters:
-                  type: integer
-                  minimum: 10
-                  maximum: 5000
-                allow_employee_override:
-                  type: boolean
-      responses:
-        "200":
-          description: "Configuration mise a jour"
-        "401":
-          $ref: "#/components/responses/Error401"
 
   /payrolls/{payroll}:
     get:
@@ -18635,215 +18620,6 @@ paths:
 
 
 
-  /smart-attendance/config:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Lire la configuration de mode active pour l'employe connecte"
-      deprecated: true
-      description: "Resout le mode de pointage effectif (GPS/QR/manuel) et indique si une photo de pointage est obligatoire (punch_photo_mode=photo_required)."
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Configuration de mode active"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      mode: { type: string, enum: [manual, gps_auto, qr, mixed] }
-                      can_override: { type: boolean }
-                      gps_enabled: { type: boolean }
-                      geofence:
-                        type: object
-                        nullable: true
-                        properties:
-                          latitude: { type: number, nullable: true }
-                          longitude: { type: number, nullable: true }
-                          radius_meters: { type: integer, nullable: true }
-                      requires_consent: { type: boolean }
-                      requires_punch_photo:
-                        type: boolean
-                        description: "true si l'entreprise impose une photo a chaque pointage mobile (arrivee/depart)."
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /smart-attendance/preferences:
-    put:
-      tags: ["SmartAttendance"]
-      summary: "Mettre à jour les préférences de pointage"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [preferred_mode]
-              properties:
-                preferred_mode:
-                  type: string
-                  enum: [gps_auto, qr, manual]
-                gps_consent_given:
-                  type: boolean
-                revoke_consent:
-                  type: boolean
-      responses:
-        "200":
-          description: "Préférences mises à jour"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  data:
-                    $ref: "#/components/schemas/EmployeeAttendancePreference"
-        "403":
-          $ref: "#/components/responses/Error403"
-        "422":
-          $ref: "#/components/responses/Validation422"
-
-  /smart-attendance/geo-events:
-    post:
-      tags: ["SmartAttendance"]
-      summary: "Envoyer un événement géographique (entrée/sortie de zone)"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/GeoEventRequest"
-      responses:
-        "200":
-          description: "Événement enregistré"
-        "422":
-          $ref: "#/components/responses/Validation422"
-
-  /smart-attendance/sessions:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Lister les sessions GPS"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [detected, pending_validation, approved, rejected, cancelled]
-        - name: per_page
-          in: query
-          schema:
-            type: integer
-            default: 20
-      responses:
-        "200":
-          description: "Liste paginée des sessions GPS"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/GeoAttendanceSession"
-
-  /smart-attendance/sessions/{id}:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Détail d'une session GPS"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Session GPS"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/GeoAttendanceSession"
-        "404":
-          $ref: "#/components/responses/Error404"
-
-  /smart-attendance/sessions/{id}/approve:
-    post:
-      tags: ["SmartAttendance"]
-      summary: "Approuver une session GPS (manager/RH)"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Session mise à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "404":
-          $ref: "#/components/responses/Error404"
-
-  /smart-attendance/sessions/{id}/reject:
-    post:
-      tags: ["SmartAttendance"]
-      summary: "Rejeter une session GPS (manager/RH)"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Session mise à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "404":
-          $ref: "#/components/responses/Error404"
-
-  /smart-attendance/dashboard:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Statistiques du jour — Smart Attendance (manager/RH)"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Statistiques du jour"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SmartAttendanceDashboard"
-
-  # --- ZKTeco (pointeuses biometriques) ---
   /zkteco/devices:
     get:
       tags: ["ZKTeco"]
@@ -19157,39 +18933,6 @@ paths:
           $ref: "#/components/responses/Error403"
         "404":
           description: "Aucune pointeuse enregistree avec ce numero de serie"
-
-  /smart-attendance/my-sessions:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Sessions GPS de l'employé courant"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Sessions de l'employé"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-
-  /smart-attendance/employees/{employeeId}/preference:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Préférence mode géolocalisation d'un employé (manager/RH)"
-      deprecated: true
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: employeeId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Préférence de l'employé"
-        "401":
-          $ref: "#/components/responses/Error401"
 
   /growth/partner/dashboard:
     get:
@@ -20068,6 +19811,112 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /attendance/corrections/{correction}/proof:
+    get:
+      tags: ["Attendance"]
+      summary: "Télécharger le justificatif d'une demande de correction"
+      parameters:
+        - name: correction
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Fichier justificatif (jpg/jpeg/png/pdf/heic)"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "403":
+          description: "Non autorisé (ni le propriétaire ni un manager du tenant)"
+        "404":
+          description: "Correction introuvable ou sans justificatif"
+  /recruitment/jobs/{id}:
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer une offre d'emploi (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Offre supprimée"
+        "401":
+          $ref: "#/components/responses/Error401"
+  /recruitment/applicants/{id}:
+    get:
+      tags: ["Recruitment"]
+      summary: "Détail d'une candidature (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Candidature"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer une candidature (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Candidature supprimée"
+        "401":
+          $ref: "#/components/responses/Error401"
+  /recruitment/interviews/{id}/feedback:
+    patch:
+      tags: ["Recruitment"]
+      summary: "Saisir le feedback d'un entretien (le clôture)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [feedback]
+              properties:
+                feedback:
+                  type: string
+                  maxLength: 5000
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+      responses:
+        "200":
+          description: "Entretien clôturé (status=completed)"
+        "401":
+          $ref: "#/components/responses/Error401"
+  /recruitment/interviews/{id}:
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer un entretien (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Entretien supprimé"
+        "401":
+          $ref: "#/components/responses/Error401"
 components:
   securitySchemes:
     BearerAuth:
@@ -20238,7 +20087,7 @@ components:
             $ref: "#/components/schemas/ValidationErrorResponse"
 
   schemas:
-    # ── SmartAttendance schemas (v4.18.0) ──
+    # ── Attendance schemas (v4.18.0) ──
     AttendanceModeSettings:
       type: object
       properties:
@@ -20309,7 +20158,7 @@ components:
         validated_at: { type: string, format: date-time, nullable: true }
         validation_note: { type: string, nullable: true }
 
-    SmartAttendanceDashboard:
+    AttendanceDashboard:
       type: object
       properties:
         today:
@@ -20326,7 +20175,7 @@ components:
           properties:
             total_sessions: { type: integer }
             auto_approved_rate: { type: number, format: float }
-    # ── End SmartAttendance schemas ──
+    # ── End Attendance schemas ──
 
     CompanyBranding:
       type: object
@@ -23597,6 +23446,7 @@ components:
         currency:
           type: string
           nullable: true
+          description: "Code ISO 4217 parmi les devises du registre CountryDefaults (multi-devises #5270). Absent a la creation : devise par defaut de l'entreprise (settings -> pays)."
         payment_terms:
           type: string
           nullable: true
@@ -23660,6 +23510,7 @@ components:
         currency:
           type: string
           nullable: true
+          description: "Code ISO 4217 parmi les devises du registre CountryDefaults (multi-devises #5270)."
         document_language:
           type: string
           enum: ["fr", "ar", "tr", "en"]
@@ -23747,7 +23598,53 @@ components:
                 type: number
               total:
                 type: number
+    ConvertCurrencyPayload:
+      type: object
+      description: "Conversion multi-devises #5270 — taux manuel obligatoire dès que les devises diffèrent."
+      required:
+        - amount
+        - from_currency
+        - to_currency
+      properties:
+        amount:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+        from_currency:
+          type: string
+          description: "Code ISO 4217 (3 lettres) parmi les devises du registre CountryDefaults."
+        to_currency:
+          type: string
+          description: "Code ISO 4217 (3 lettres) parmi les devises du registre CountryDefaults."
+        rate:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          nullable: true
+          description: "Valeur de 1 unité de from_currency dans to_currency. Requis si from_currency != to_currency."
 
+    ConvertCurrencyResult:
+      type: object
+      description: "Résultat de conversion — arrondi half-up à 2 décimales, source du taux (identity | manual | provider)."
+      properties:
+        amount:
+          type: number
+        from_currency:
+          type: string
+        to_currency:
+          type: string
+        rate:
+          type: number
+        source:
+          type: string
+          enum: ["identity", "manual"]
+        converted_amount:
+          type: number
+        rounding:
+          type: string
+          enum: ["half_up"]
+        decimals:
+          type: integer
     MarketingLeadContact:
       type: object
       properties:

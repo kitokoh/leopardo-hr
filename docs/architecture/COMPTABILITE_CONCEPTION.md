@@ -85,6 +85,40 @@ MarketingLead (existant) — non modifié
 └── status qualified → déclenche création AccountingContact (workflow §6.1)
 ```
 
+## 4.1 Multi-devises (#5270)
+
+La facturation multi-devises est portée par les champs posés en §4 (`AccountingContact.currency`,
+`AccountingDocument.currency`/`exchange_rate`, `AccountingSettings.currency`) — aucune migration
+supplémentaire.
+
+**Chaîne de résolution de la devise** (défaut : entreprise) :
+`AccountingContact.currency` → `AccountingSettings.currency` → devise du pays (`CountryDefaults`).
+Un document hérite de la devise de son contact. La devise des contacts/settings est validée contre
+le registre `AccountingCurrencies` (union des devises `CountryDefaults` — source de vérité unique,
+jamais de liste dupliquée).
+
+**Sémantique du taux de change** : `exchange_rate` = valeur de 1 unité de la devise du document
+exprimée dans la devise de référence de l'entreprise (multiplication : `converti = montant × taux`).
+Taux = 1 quand les devises sont identiques (source `identity`).
+
+**Ordre de calcul de la TVA** : la TVA est TOUJOURS calculée dans la devise du document (montants
+des lignes), puis les totaux (HT, TVA, TTC) sont convertis dans la devise de référence — jamais de
+taux appliqué avant le calcul de la TVA.
+
+**Arrondis** : tout montant monétaire exposé est arrondi HALF-UP à 2 décimales (`round(…,
+2, PHP_ROUND_HALF_UP)`) ; précision interne 4 décimales ; taux strictement positif, jusqu'à 6
+décimales significatives.
+
+**Sources de taux** : manuelle (taux saisi, porté par `document.exchange_rate` ou le champ `rate`
+de `POST /accounting/currency/convert`) ou externe via `CurrencyRateProviderInterface`
+(implémentation par défaut `ManualCurrencyRateProvider` ; une source temps réel — BCE/ECB, banque
+— s'intègre par une nouvelle implémentation injectée par le provider du module). Aucun appel réseau
+dans la v1 : entre devises différentes, un taux manuel est OBLIGATOIRE (le convertisseur ne
+fabrique jamais de taux — `CurrencyRateUnavailableException`).
+
+**Multi-devises des lignes** (prix unitaires en devises différentes au sein d'un document) :
+hors périmètre v1 — seul le total est converti.
+
 ## 5. Architecture technique (structure du module)
 
 ```
