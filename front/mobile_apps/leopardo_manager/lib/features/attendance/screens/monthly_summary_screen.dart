@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_manager/features/attendance/providers/attendance_provider.dart';
-import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 

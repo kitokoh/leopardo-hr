@@ -9,11 +9,12 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/theme/mobile_experience_icons.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_core/core/branding/tenant_brand_mark.dart';
 import 'package:leopardo_core/core/branding/tenant_branding.dart';
-import 'package:leopardo_hr/core/providers/core_providers.dart';
-import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
-import 'package:leopardo_hr/features/company_branding/providers/tenant_branding_provider.dart';
+import 'package:leopardo_core/core/providers/core_providers.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/models/mobile_experience.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 
@@ -182,20 +183,8 @@ class _HeroHeader extends StatelessWidget {
       deviceIntlDateLocale,
     ).add_d().add_MMMM().format(DateTime.now());
 
-    return Container(
+    return GlassCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: MobileSurface.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: MobileSurface.border, width: 0.7),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.rh.withValues(alpha: 0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -306,13 +295,8 @@ class _QuickActionCard extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () => context.push(action.route),
-      child: Ink(
+      child: GlassCard(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: MobileSurface.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: MobileSurface.border, width: 0.7),
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -397,14 +381,8 @@ class _ModuleCard extends StatelessWidget {
     return InkWell(
       onTap: module.isActive ? () => context.push(module.route!) : null,
       borderRadius: BorderRadius.circular(24),
-      child: Ink(
-        width: 206,
+      child: GlassCard(
         padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceFor(context),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.borderFor(context)),
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -509,13 +487,8 @@ class _ManagerDigestCard extends ConsumerWidget {
     final digest = ref.watch(managerDigestProvider);
     final resolvedDigest = digest.asData?.value;
 
-    return Container(
+    return GlassCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceFor(context),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppColors.borderFor(context)),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -601,24 +574,24 @@ class _ManagerDigestContent extends StatelessWidget {
             Expanded(
               child: _DigestActionButton(
                 icon: Icons.group_outlined,
-                label: 'Paies',
-                onTap: () => context.push('/payrolls'),
+                label: 'Presences',
+                onTap: () => context.push('/manager/attendance'),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: _DigestActionButton(
                 icon: Icons.warning_amber_rounded,
-                label: 'Contrats',
-                onTap: () => context.push('/contracts'),
+                label: 'Anomalies',
+                onTap: () => context.push('/manager/anomalies'),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: _DigestActionButton(
                 icon: Icons.fact_check_outlined,
-                label: 'Cabinet',
-                onTap: () => context.push('/cabinet'),
+                label: 'Corrections',
+                onTap: () => context.push('/manager/corrections'),
               ),
             ),
           ],
@@ -628,17 +601,17 @@ class _ManagerDigestContent extends StatelessWidget {
           children: [
             Expanded(
               child: _DigestActionButton(
-                icon: Icons.calendar_today_outlined,
-                label: 'Absences',
-                onTap: () => context.push('/absences'),
+                icon: Icons.schedule_outlined,
+                label: 'Horaires',
+                onTap: () => context.push('/schedules'),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: _DigestActionButton(
-                icon: Icons.account_balance_wallet_outlined,
-                label: 'Avances',
-                onTap: () => context.push('/salary-advances'),
+                icon: Icons.add_task_rounded,
+                label: 'Taches',
+                onTap: () => context.push('/tasks'),
               ),
             ),
             const SizedBox(width: 8),
@@ -691,7 +664,7 @@ class _ManagerDigestContent extends StatelessWidget {
         if (data.pendingCorrections > 0) ...[
           const SizedBox(height: 8),
           InkWell(
-            onTap: () => context.push('/cabinet'),
+            onTap: () => context.push('/manager/corrections'),
             borderRadius: BorderRadius.circular(12),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),

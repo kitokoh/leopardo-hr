@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_manager/features/auth/screens/access_denied_screen.dart';
+import 'package:leopardo_core/features/auth/screens/access_denied_screen.dart';
 import 'package:leopardo_core/features/auth/screens/welcome_screen.dart';
-import 'package:leopardo_manager/features/home/screens/home_screen.dart';
+import 'package:leopardo_core/features/home/screens/home_screen.dart';
 
 import '../helpers/mobile_test_harness.dart';
 
@@ -33,7 +33,8 @@ void main() {
     expect(find.byType(HomeScreen), findsOneWidget);
   });
 
-  testWidgets('authenticated non-manager sees access denied (no redirect loop)', (
+  testWidgets('authenticated non-manager sees access denied (no redirect loop)',
+      (
     tester,
   ) async {
     await tester.pumpWidget(

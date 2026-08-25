@@ -9,7 +9,7 @@ import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_core/core/widgets/leopardo_qr_card.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
-import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/features/schedules/data/schedule_repository.dart';
 import 'package:leopardo_core/features/schedules/providers/schedule_provider.dart';
 import 'package:leopardo_core/features/team/data/employee_repository.dart';
