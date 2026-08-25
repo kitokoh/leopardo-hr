@@ -15,14 +15,13 @@ class _StatusFilter extends Notifier<String?> {
   void set(String? value) => state = value;
 }
 
-final _statusFilterProvider = NotifierProvider<_StatusFilter, String?>(_StatusFilter.new);
+final _statusFilterProvider =
+    NotifierProvider<_StatusFilter, String?>(_StatusFilter.new);
 
 final platformSupportTicketsProvider =
     FutureProvider.family<List<PlatformSupportTicket>, String?>(
         (ref, status) async {
-  return ref
-      .watch(platformRepositoryProvider)
-      .supportTickets(status: status);
+  return ref.watch(platformRepositoryProvider).supportTickets(status: status);
 });
 
 class SupportTicketsScreen extends ConsumerWidget {
@@ -66,8 +65,7 @@ class SupportTicketsScreen extends ConsumerWidget {
                   selectedColor: AppColors.rh.withValues(alpha: 0.25),
                   labelStyle: TextStyle(
                     color: selected ? AppColors.rh : MobileSurface.secondary,
-                    fontWeight:
-                        selected ? FontWeight.w700 : FontWeight.normal,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.normal,
                   ),
                   onSelected: (_) =>
                       ref.read(_statusFilterProvider.notifier).set(s),
@@ -88,15 +86,14 @@ class SupportTicketsScreen extends ConsumerWidget {
               );
             }
             return Column(
-              children: items
-                  .map((t) => _TicketCard(ticket: t))
-                  .toList(),
+              children: items.map((t) => _TicketCard(ticket: t)).toList(),
             );
           },
           loading: () => const MobileEmptyLoading(label: 'Chargement tickets'),
           error: (e, _) => MobileErrorPanel(
             message: e.toString(),
-            onRetry: () => ref.invalidate(platformSupportTicketsProvider(status)),
+            onRetry: () =>
+                ref.invalidate(platformSupportTicketsProvider(status)),
           ),
         ),
       ],
@@ -480,7 +477,8 @@ class _MessageBubble extends StatelessWidget {
                   Text(
                     message.authorName,
                     style: TextStyle(
-                      color: isSuperAdmin ? AppColors.rh : MobileSurface.secondary,
+                      color:
+                          isSuperAdmin ? AppColors.rh : MobileSurface.secondary,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),

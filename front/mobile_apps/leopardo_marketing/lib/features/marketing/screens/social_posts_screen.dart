@@ -15,7 +15,8 @@ class _StatusFilter extends Notifier<String?> {
   void set(String? value) => state = value;
 }
 
-final _statusFilterProvider = NotifierProvider<_StatusFilter, String?>(_StatusFilter.new);
+final _statusFilterProvider =
+    NotifierProvider<_StatusFilter, String?>(_StatusFilter.new);
 
 final socialPostRepositoryProvider = Provider<SocialPostRepository>((ref) {
   return SocialPostRepository(ref.watch(apiClientProvider));
@@ -212,7 +213,8 @@ class _PostCard extends ConsumerWidget {
                   if (post.isDraft)
                     TextButton.icon(
                       icon: const Icon(Icons.send_rounded, size: 14),
-                      label: const Text('Publier', style: TextStyle(fontSize: 12)),
+                      label:
+                          const Text('Publier', style: TextStyle(fontSize: 12)),
                       onPressed: () => _publishNow(context, ref),
                       style: TextButton.styleFrom(
                         foregroundColor: AppColors.rh,
@@ -227,8 +229,8 @@ class _PostCard extends ConsumerWidget {
                 post.content,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style:
-                    const TextStyle(color: Colors.white, fontSize: 13, height: 1.4),
+                style: const TextStyle(
+                    color: Colors.white, fontSize: 13, height: 1.4),
               ),
               const SizedBox(height: 8),
               // Footer
@@ -239,8 +241,7 @@ class _PostCard extends ConsumerWidget {
                   const SizedBox(width: 4),
                   Text(
                     _formatDate(post.scheduledAt ?? post.createdAt),
-                    style:
-                        const TextStyle(color: Colors.white38, fontSize: 11),
+                    style: const TextStyle(color: Colors.white38, fontSize: 11),
                   ),
                   if (post.providerPostRef != null) ...[
                     const Spacer(),
@@ -249,8 +250,8 @@ class _PostCard extends ConsumerWidget {
                     const SizedBox(width: 4),
                     Text(
                       post.providerPostRef!,
-                      style: const TextStyle(
-                          color: Colors.white38, fontSize: 10),
+                      style:
+                          const TextStyle(color: Colors.white38, fontSize: 10),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
