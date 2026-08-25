@@ -52,8 +52,8 @@ class EmployeeDepartureTest extends TestCase
 
         // Statut + révocation d'accès (fail-closed : AuthController refuse
         // tout status ≠ active ; tokens Sanctum supprimés comme à l'archive).
-        $this->assertSame('departed', $employee->fresh()?->status);
-        $this->assertSame(0, $employee->fresh()?->tokens()->count());
+        $this->assertSame('departed', $employee->refresh()->status);
+        $this->assertSame(0, $employee->refresh()->tokens()->count());
     }
 
     public function test_rh_can_register_departure(): void
@@ -156,8 +156,8 @@ class EmployeeDepartureTest extends TestCase
         ])->assertStatus(201);
 
         // Tokens révoqués → le client mobile perd l'accès immédiatement.
-        $this->assertSame(0, $employee->fresh()?->tokens()->count());
-        $this->assertSame('departed', $employee->fresh()?->status);
+        $this->assertSame(0, $employee->refresh()->tokens()->count());
+        $this->assertSame('departed', $employee->refresh()->status);
     }
 
     public function test_employee_can_view_own_departure(): void
@@ -207,6 +207,9 @@ class EmployeeDepartureTest extends TestCase
 
     // ── Fixtures ────────────────────────────────────────────────────────────
 
+    /**
+     * @return array{Company, Employee, Employee}
+     */
     private function createActors(string $suffix = 'a'): array
     {
         /** @var Company $company */

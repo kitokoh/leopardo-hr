@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $currency
  * @property string|null $payment_terms
  * @property string $document_language
+ * @property array<int, int>|null $payment_reminder_days
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -42,10 +43,12 @@ class AccountingSettings extends Model
         'currency',
         'payment_terms',
         'document_language',
+        'payment_reminder_days',
     ];
 
     protected $casts = [
         'number_series' => 'array',
         'tva_rates' => 'array',
+        'payment_reminder_days' => 'array',
     ];
 }

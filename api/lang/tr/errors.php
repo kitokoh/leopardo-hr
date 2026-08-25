@@ -237,4 +237,12 @@ return [
     'ALREADY_ENROLLED_SESSION' => 'Bu oturuma zaten kayıtlısınız.',
     'DELETION_REQUEST_RECEIVED' => 'Silme talebi İK/hukuk incelemesi için alındı.',
     'PERIOD_CLOSED' => 'Muhasebe dönemi zaten kapatıldı — kayıt yapılamaz.',
+    // Muhasebe (issue #5227)
+    'PAYMENT_EXCEEDS_TOTAL' => 'Ödeme tutarı, belgenin kalan bakiyesini aşıyor.',
+    'PAYMENT_ON_UNSENT_DOCUMENT' => 'Düzenlenmemiş bir belge üzerinde ödeme kaydedilemez.',
+    'CREDIT_NOTE_REQUIRES_SOURCE_INVOICE' => 'İade faturası, kaynak faturasına bağlı olmalıdır.',
+    'DELIVERY_NOTE_REQUIRES_DELIVERY_DATE' => 'İrsaliye, teslim tarihini içermelidir.',
+    'DOCUMENT_NOT_FULLY_PAID' => 'Toplam tutar ödenmeden belge ödendi olarak işaretlenemez.',
+    'INVALID_DOCUMENT_TRANSITION' => 'Bu belge için durum geçişine izin verilmiyor.',
+    'ACCOUNTING_VAT_PERIOD_INVALID' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.',
 ];

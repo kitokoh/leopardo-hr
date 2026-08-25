@@ -66,7 +66,9 @@ class DepartureService
                 $this->tenantCache->invalidateEmployees($employee->company_id);
             }
 
-            if ($departure->id === null) {
+            // Garde défensive : create() renvoie toujours un modèle existant ;
+            // `exists` (bool) est la vérification PHPStan-compatible (id est int).
+            if (! $departure->exists) {
                 throw new RuntimeException('employees.departure_not_created');
             }
 

@@ -5,6 +5,8 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
 
+- **feat(attendance): ADR-0016 Phase 4 — fusion modèles/services/commandes SmartAttendance dans le module Attendance (Closes #5355).** 4 modèles (`GeoAttendanceSession`, `EmployeeLocationEvent`, `AttendanceModeSettings`, `EmployeeAttendancePreference`), 2 services (`AttendanceModeResolver`, `GeoSessionManager`), 6 actions, 2 DTOs, 3 exceptions et le contrat `GeofenceValidatorInterface` déplacés dans `App\Modules\Attendance\*` avec classes de re-export `@deprecated` dans SmartAttendance (imports existants préservés). `AutoCloseGeoSessionsCommand` fusionnée dans `AutoCloseAttendanceCommand` (une seule fermeture automatique — pointages sans check-out + sessions GPS orphelines, options `--hours`/`--company`/`--logs-only`/`--sessions-only`) ; `smart-attendance:auto-close` conservée comme alias délégué `@deprecated` ; scheduler unifié sur `attendance:auto-close`. Tests : 6 fichiers `tests/Feature/SmartAttendance/*` migrés vers `tests/Feature/Attendance/Geo*` sans perte de scénarios. Garde géofence (`check-geofence-single-usage.sh`) mise à jour. Aucune route `/smart-attendance/*` cassée (surface conservée jusqu'à la Phase 5 #5356).
+
 ### Added
 - **Accounting document workflow + concurrent-safe numbering (issue #5223)**:
   - `SequentialDocumentNumbering` implements `DocumentNumberingInterface`: per-type series from `AccountingSettings.number_series` (defaults FAC/PRF/DEV/AVR/BL/RCP), `{SERIE}-{ANNEE}-{NUMERO}` format, atomic `INSERT ... ON CONFLICT ... RETURNING` increment (no duplicates under concurrency)
@@ -32,6 +34,12 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - i18n: `errors.*` ×4 gains `PERIOD_CLOSED`
   - OpenAPI: 4 paths documented + mirror/SDK regenerated (750 ops, route coverage 751/751)
   - Tests: `AccountingJournalTest` (15) — suite `tests/Feature/Accounting` 24/24
+- **Accounting treasury Phase B — payments + reconciliation + reminders (issue #5229)**:
+  - `PaymentRegistrationService`: register (never paid > total — 422 `PAYMENT_EXCEEDS_TOTAL`; issued documents only — 422 `PAYMENT_ON_UNSENT_DOCUMENT`), update `paid_amount` + document status (partially_paid/paid), idempotent reconcile (`matched` + `reconciled_at`)
+  - `PaymentReminderService` + `accounting:send-payment-reminders` command: J+7/J+15/J+30 configurable (`accounting_settings.payment_reminder_days`), `accounting_payment_reminders` unique (document, stage) — zero duplicates, Notification to principal/comptable managers (template `accounting_payment_reminder`, i18n ×4)
+  - API (RBAC principal/comptable): `GET /accounting/payments`, `POST /accounting/documents/{document}/payments`, `POST /accounting/payments/{payment}/reconcile`, `POST /accounting/reminders/run`
+  - OpenAPI: 4 paths documented + mirror/SDK regenerated (750 ops, route coverage 754/754)
+  - Tests: `AccountingPaymentTest` (14) — suite `tests/Feature/Accounting` 23/23
 
 ### Added
 - **Attendance reports by period (issue #5268)** — the monthly report endpoint `GET /attendance/monthly-report` is now a full report engine:
