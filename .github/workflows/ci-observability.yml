@@ -1,0 +1,39 @@
+name: CI Observability
+# ============================================================
+# Issue #5507 : signale les PRs ouvertes dont le head SHA n'a
+# AUCUN check-run (création de runs défaillante sous congestion,
+# leçon #3545) + publie l'état de la file Actions.
+# Non bloquant (informations) — cron 10 min + workflow_dispatch.
+# ============================================================
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: ci-observability
+  cancel-in-progress: true
+
+jobs:
+  observability:
+    timeout-minutes: 10
+    name: Detect PRs without checks (issue #5507)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Run missing-checks detection
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x dev-hub/tools/check-pr-runs-missing.sh
+          dev-hub/tools/check-pr-runs-missing.sh "${{ github.repository }}" --min-age-min 10
