@@ -142,6 +142,7 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Manager web/mobile | CNPS Cameroun — déclaration DAS CSV (CEMAC/CM #1823) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/cnps-cm` | manager principal/comptable | `CnpsDeclarationTest` |
 | Manager web/mobile | DAS DZ — déclaration annuelle des salaires CSV (#5243) | `POST /api/v1/social-declarations/das-dz` | manager principal/comptable | `DzLegalExportsTest` |
 | Manager web/mobile | Bordereau de paie DZ — CSV totaux par cotisation (#5243) | `GET /api/v1/payroll-runs/{payrollRun}/bordereau` | manager principal/comptable | `DzLegalExportsTest` |
+| Manager web/mobile | Comptabilité — audit trail scope module (#5273) | `GET /api/v1/accounting/audit-logs` | manager principal/comptable | `AccountingAuditRetentionTest` |
 | Manager web/mobile | Comptabilité — liste documents (filtres + pagination, #5223) | `GET /api/v1/accounting/documents` | manager principal/comptable | `AccountingDocumentWorkflowTest` |
 | Manager web/mobile | Comptabilité — création brouillon document numéroté (#5223) | `POST /api/v1/accounting/documents` | manager principal/comptable | `AccountingDocumentNumberingTest` |
 | Manager web/mobile | Comptabilité — envoi / paiement / annulation / avoir (#5223) | `POST /api/v1/accounting/documents/{id}/send` · `/payments` · `/cancel` · `/credit-note` | manager principal/comptable | `AccountingDocumentWorkflowTest` |

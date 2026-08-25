@@ -1,5 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
-import { sessionCookieHeader, setSessionCookie } from './session-helpers';
+import { expect, test } from './fixtures/authenticated';
+import type { Page } from '@playwright/test';
 
 /**
  * Issue #2116 — la Web App affiche le badge de conformité par niveau de
@@ -76,57 +76,7 @@ const complianceSlips = [
   },
 ];
 
-async function mockManagerSession(page: Page) {
-  await page.route('**/api/v1/auth/login', async (route) => {
-    await route.fulfill({
-        headers: { 'Set-Cookie': sessionCookieHeader },
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        data: {
-          id: 101,
-          first_name: 'Fatima',
-          last_name: 'Meziane',
-          email: 'fatima.meziane@techcorp-algerie.dz',
-          role: 'manager',
-          manager_role: 'rh',
-          language: 'fr',
-          is_rtl: false,
-        },
-        token: 'client-web-token',
-        token_type: 'Bearer',
-      }),
-    });
-  });
-
-  await page.route('**/api/v1/auth/me', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        data: {
-          id: 101,
-          first_name: 'Fatima',
-          last_name: 'Meziane',
-          email: 'fatima.meziane@techcorp-algerie.dz',
-          role: 'manager',
-          manager_role: 'rh',
-          language: 'fr',
-          is_rtl: false,
-          capabilities: { can_view_dashboard: true, employees: true, attendance: true, absences: true },
-          company: {
-            id: 'company-1',
-            name: 'TechCorp Algerie SARL',
-            language: 'fr',
-            timezone: 'Africa/Algiers',
-            currency: 'DZD',
-            metadata: { onboarding_completed: true },
-          },
-        },
-      }),
-    });
-  });
-
+async function mockPayrollApis(page: Page) {
   await page.route('**/api/v1/pay-slips**', async (route) => {
     await route.fulfill({
       status: 200,
@@ -151,22 +101,12 @@ async function mockManagerSession(page: Page) {
     });
   });
 
-  await page.route('**/api/v1/auth/logout', async (route) => {
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true }) });
-  });
 }
 
 test.describe('Client web — conformité paie par niveau de confiance (#2116)', () => {
-  test('manager sees localized compliance badges per confidence level on pay slips', async ({ page }) => {
-    await mockManagerSession(page);
+  test('manager sees localized compliance badges per confidence level on pay slips', async ({ authenticatedPage: page }) => {
+    await mockPayrollApis(page);
 
-    await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
-    // Issue #2746 — poser le cookie de session avant la soumission (middleware serveur).
-    await setSessionCookie(page);
-    await page.getByLabel(/adresse email|email address/i).fill('fatima.meziane@techcorp-algerie.dz');
-    await page.getByLabel(/^mot de passe$|^password$/i).fill('password123');
-    await page.getByRole('button', { name: /sign in|se connecter/i }).click();
-    await expect(page).toHaveURL(/\/dashboard$/);
 
     await page.goto('/payroll', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(/\/payroll$/);

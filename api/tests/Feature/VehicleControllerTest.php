@@ -177,6 +177,20 @@ class VehicleControllerTest extends TestCase
         $this->deleteJson("/api/v1/vehicles/{$vehicle->id}")->assertOk();
     }
 
+    public function test_invalid_list_filters_return_validation_error(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/vehicles?status=unknown&type=spaceship&per_page=not-a-number')
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['status', 'type', 'per_page']);
+    }
+
     public function test_filter_vehicles_by_status(): void
     {
         /** @var Company $company */

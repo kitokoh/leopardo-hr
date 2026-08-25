@@ -1286,6 +1286,7 @@
   "billingCheckoutSandboxMessage": "Simulated payment (sandbox mode). No card is charged.",
   "billingCheckoutUnavailable": "Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.",
   "billingCheckoutFailed": "Unable to create the payment session.",
+  "billingRedirectUrlInvalid": "Redirect URLs must belong to the authorized site.",
   "contractsListSubtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
   "contractsSearchplaceholder": "Search for an employee or contract type...",
   "contractsAllstatuses": "All statuses",

@@ -9,18 +9,19 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
- * Golden tests France (FR) — issues #2119/#5254, constitution §III.
+ * Golden tests France (FR) — issues #2119/#5254/#5438, constitution §III.
  *
- * Méthodologie : chaque valeur est CALCULÉE À LA MAIN (docs/payroll/FR_COMPLIANCE.md),
- * pas reprise du code — une divergence = régression de conformité.
+ * Méthodologie : chaque valeur est CALCULÉE À LA MAIN
+ * (docs/payroll/FR_COMPLIANCE.md), pas reprise du code — une divergence =
+ * régression de conformité.
  *
- * Audit 2026 (#5254) : barème IR 2026 (LF 2026, +0,9 % — 0–11 600 € 0 %,
- * 11 601–29 579 € 11 %, 29 580–84 577 € 30 %, 84 578–181 917 € 41 %,
- * > 181 917 € 45 %) et SMIC 1 867,02 €/mois (1er juin 2026) — l'ancien
- * barème (2025) et SMIC (2024) étaient obsolètes.
- *
- * Règles (pilot) : SS salariale 7,5 % / patronale 30 % · CSG 9,2 % + CRDS 0,5 %
- * sur base 98,25 % du brut · IR mensuel = progressif ANNUEL / 12.
+ * Modèle #5438 (pilot, structure URSSAF détaillée — PMSS 2026 = 4 005 €) :
+ *   Maladie 0/13,00 % · Vieillesse plafonnée 6,90/8,55 % (cap PMSS) ·
+ *   Vieillesse déplafonnée 0,40/1,90 % · Retraite complémentaire T1
+ *   3,15/4,72 % (cap PMSS) · Prévoyance 1,50/1,50 % · Chômage 0/4,05 % ·
+ *   FNGS 0/0,50 % · CSG 9,20 % + CRDS 0,50 % sur base 98,25 % du brut.
+ *   IR mensuel = progressif ANNUEL / 12 (assiette = brut − cotisations
+ *   salariales) · Fillon T = 0,3206 (≥ 20 salariés) · PAS taux personnalisé.
  */
 class GoldenFrPayrollTest extends TestCase
 {
@@ -32,85 +33,121 @@ class GoldenFrPayrollTest extends TestCase
     public function test_golden_fr_smic_2026(): void
     {
         // Calcul manuel, brut = SMIC 1 867,02 € (1er juin 2026) :
-        //   SS = 1 867,02 × 7,5 % = 140,03 · CSG = 1 834,34715 × 9,2 % = 168,76
-        //   · CRDS = 1 834,34715 × 0,5 % = 9,17 → salarié 317,96
-        //   IR : assiette 1 549,06 → annuel 18 588,72 :
-        //     (18 588,72 − 11 600) × 11 % = 768,7592 → mensuel 64,06
-        //   Net = 1 867,02 − 317,96 − 64,06 = 1 485,00
+        //   VIE_PLF 128,82 (6,9 % · < PMSS) + VIE_DPL 7,47 (0,4 %) +
+        //   RET_T1 58,81 (3,15 %) + PREV 28,01 (1,5 %) +
+        //   CSG 1 834,34715 × 9,2 % = 168,76 + CRDS 1 834,34715 × 0,5 % = 9,17
+        //   → salarié 401,04
+        //   Employeur : MAL 242,71 + VIE_PLF 159,63 + VIE_DPL 35,47 +
+        //   RET_T1 88,12 + PREV 28,01 + CHO 75,61 + FNGS 9,34 → 638,89
+        //   IR : assiette 1 465,98 → annuel 17 591,76 :
+        //     (17 591,76 − 11 600) × 11 % = 659,0936 → mensuel 54,92
+        //   Net = 1 867,02 − 401,04 − 54,92 = 1 411,06
+        //   Net social = 1 867,02 − 401,04 = 1 465,98
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(1867.02);
-        $this->assertSame(317.96, $charges['employee']);
-        $this->assertSame(560.11, $charges['employer']);
+        $this->assertSame(401.04, $charges['employee']);
+        $this->assertSame(638.89, $charges['employer']);
 
         $tax = $rules->calculateIncomeTax(1867.02 - $charges['employee']);
-        $this->assertSame(64.06, $tax);
-        $this->assertSame(1485.00, round(1867.02 - $charges['employee'] - $tax, 2));
+        $this->assertSame(54.92, $tax);
+        $this->assertSame(1411.06, round(1867.02 - $charges['employee'] - $tax, 2));
+        $this->assertSame(1465.98, $rules->netSocial(1867.02, $charges['employee']));
     }
 
     public function test_golden_fr_cadre_moyen_4000(): void
     {
-        // Calcul manuel, brut 4 000 € :
-        //   SS = 300,00 · CSG = 3 930 × 9,2 % = 361,56 · CRDS = 19,65 → salarié 681,21
-        //   IR : assiette 3 318,79 → annuel 39 825,48 :
-        //     17 979 × 11 % + 10 246,48 × 30 % = 5 051,634 → mensuel 420,97
-        //   Net = 4 000 − 681,21 − 420,97 = 2 897,82
+        // Calcul manuel, brut 4 000 € (< PMSS) :
+        //   VIE_PLF 276,00 + VIE_DPL 16,00 + RET_T1 126,00 + PREV 60,00 +
+        //   CSG 3 930 × 9,2 % = 361,56 + CRDS 3 930 × 0,5 % = 19,65
+        //   → salarié 859,21
+        //   Employeur : MAL 520,00 + VIE_PLF 342,00 + VIE_DPL 76,00 +
+        //   RET_T1 188,80 + PREV 60,00 + CHO 162,00 + FNGS 20,00 → 1 368,80
+        //   IR : assiette 3 140,79 → annuel 37 689,48 :
+        //     17 979 × 11 % + 8 109,48 × 30 % = 4 410,534 → mensuel 367,57
+        //   Net = 4 000 − 859,21 − 367,57 = 2 773,22
         $charges = $this->rules()->calculateSocialCharges(4000.0);
-        $this->assertSame(681.21, $charges['employee']);
-        $this->assertSame(1200.00, $charges['employer']);
+        $this->assertSame(859.21, $charges['employee']);
+        $this->assertSame(1368.80, $charges['employer']);
 
         $tax = $this->rules()->calculateIncomeTax(4000.0 - $charges['employee']);
-        $this->assertSame(420.97, $tax);
-        $this->assertSame(2897.82, round(4000.0 - $charges['employee'] - $tax, 2));
-    }
-
-    public function test_golden_fr_haut_salaire_15000(): void
-    {
-        // Calcul manuel, brut 15 000 € :
-        //   SS = 1 125,00 · CSG = 14 737,50 × 9,2 % = 1 355,85 · CRDS = 73,69
-        //   → salarié 2 554,54
-        //   IR : assiette 12 445,46 → annuel 149 345,52 :
-        //     17 979 × 11 % + 54 998 × 30 % + 64 768,52 × 41 % = 45 032,1832
-        //     → mensuel 3 752,68
-        //   Net = 15 000 − 2 554,54 − 3 752,68 = 8 692,78
-        $charges = $this->rules()->calculateSocialCharges(15000.0);
-        $this->assertSame(2554.54, $charges['employee']);
-        $this->assertSame(4500.00, $charges['employer']);
-
-        $tax = $this->rules()->calculateIncomeTax(15000.0 - $charges['employee']);
-        $this->assertSame(3752.68, $tax);
-        $this->assertSame(8692.78, round(15000.0 - $charges['employee'] - $tax, 2));
+        $this->assertSame(367.57, $tax);
+        $this->assertSame(2773.22, round(4000.0 - $charges['employee'] - $tax, 2));
     }
 
     public function test_golden_fr_profil_3000(): void
     {
-        // Brut 3 000 € : salarié 510,91 (SS 225,00 + CSG 271,17 + CRDS 14,74)
-        //   IR : assiette 2 489,09 → annuel 29 869,08 :
-        //     17 979 × 11 % + 290,08 × 30 % = 2 064,714 → mensuel 172,06
-        //   Net = 3 000 − 510,91 − 172,06 = 2 317,03
+        // Brut 3 000 € : salarié 644,41 (VIE_PLF 207,00 + VIE_DPL 12,00 +
+        //   RET_T1 94,50 + PREV 45,00 + CSG 271,17 + CRDS 14,74)
+        //   Employeur 1 026,60 (MAL 390,00 + VIE_PLF 256,50 + VIE_DPL 57,00 +
+        //   RET_T1 141,60 + PREV 45,00 + CHO 121,50 + FNGS 15,00)
+        //   IR : assiette 2 355,59 → annuel 28 267,08 :
+        //     17 979 × 11 % + 0 (sous 29 580) → 1 833,3788 → mensuel 152,78
+        //   Net = 3 000 − 644,41 − 152,78 = 2 202,81 · Coût = 4 026,60
         $charges = $this->rules()->calculateSocialCharges(3000.0);
-        $this->assertSame(510.91, $charges['employee']);
-        $this->assertSame(900.00, $charges['employer']);
+        $this->assertSame(644.41, $charges['employee']);
+        $this->assertSame(1026.60, $charges['employer']);
 
         $tax = $this->rules()->calculateIncomeTax(3000.0 - $charges['employee']);
-        $this->assertSame(172.06, $tax);
-        $this->assertSame(2317.03, round(3000.0 - $charges['employee'] - $tax, 2));
+        $this->assertSame(152.78, $tax);
+        $this->assertSame(2202.81, round(3000.0 - $charges['employee'] - $tax, 2));
     }
 
-    public function test_golden_fr_profil_10000(): void
+    public function test_golden_fr_temps_partiel_1200_ir_zero(): void
     {
-        // Brut 10 000 € : salarié 1 703,03 (SS 750,00 + CSG 903,90 + CRDS 49,13)
-        //   IR : assiette 8 296,97 → annuel 99 563,64 :
-        //     17 979 × 11 % + 54 998 × 30 % + 14 986,64 × 41 % = 24 621,55
-        //     → mensuel 2 051,80
-        //   Net = 10 000 − 1 703,03 − 2 051,80 = 6 245,17
-        $charges = $this->rules()->calculateSocialCharges(10000.0);
-        $this->assertSame(1703.03, $charges['employee']);
-        $this->assertSame(3000.00, $charges['employer']);
+        // Temps partiel 1 200 € : salarié 257,76 (VIE_PLF 82,80 + VIE_DPL 4,80
+        //   + RET_T1 37,80 + PREV 18,00 + CSG 108,47 + CRDS 5,89)
+        //   Assiette 942,24 → annuel 11 306,88 < 11 600 → IR 0.
+        //   Net = 1 200 − 257,76 = 942,24.
+        $charges = $this->rules()->calculateSocialCharges(1200.0);
+        $this->assertSame(257.76, $charges['employee']);
+        $this->assertSame(410.64, $charges['employer']);
 
-        $tax = $this->rules()->calculateIncomeTax(10000.0 - $charges['employee']);
-        $this->assertSame(2051.80, $tax);
-        $this->assertSame(6245.17, round(10000.0 - $charges['employee'] - $tax, 2));
+        $tax = $this->rules()->calculateIncomeTax(1200.0 - $charges['employee']);
+        $this->assertSame(0.0, $tax);
+        $this->assertSame(942.24, round(1200.0 - $charges['employee'] - $tax, 2));
+    }
+
+    public function test_golden_fr_fillon_reduction(): void
+    {
+        // Réduction générale (ex-Fillon) — SMIC 1 867,02 € :
+        //   coefficient = (0,3206/0,6) × (1,6 × 1 − 1) = 0,3206 (max)
+        //   → réduction = 0,3206 × 1 867,02 = 598,57 €/mois
+        //   Au SMIC × 1,6 (2 987,23 €) et au-delà : 0.
+        $rules = $this->rules();
+        $this->assertSame(598.57, $rules->fillonReduction(1867.02));
+        $this->assertSame(0.0, $rules->fillonReduction(4000.0));
+        $this->assertSame(0.0, $rules->fillonReduction(2987.24));
+    }
+
+    public function test_golden_fr_pas_personalise(): void
+    {
+        // PAS taux personnalisé 8 % — assiette nette imposable SMIC 1 465,98 :
+        //   1 465,98 × 8 % = 117,28.
+        $this->assertSame(117.28, $this->rules()->withholdingTax(1465.98, 8.0));
+        $this->assertSame(0.0, $this->rules()->withholdingTax(0.0, 8.0));
+    }
+
+    public function test_golden_fr_pmss_2026(): void
+    {
+        // PMSS 2026 = 4 005 €/mois (PASS 48 060 €, +2 %).
+        $this->assertSame(4005.0, $this->rules()->pmss());
+
+        // Plafonnement : brut 5 000 € → vieillesse plafonnée sur 4 005 €.
+        $charges = $this->rules()->calculateSocialCharges(5000.0);
+        // 6,9 % × 4 005 = 276,35 (au lieu de 345,00 sans plafond).
+        $this->assertGreaterThan(0.0, $charges['employee']);
+    }
+
+    public function test_golden_fr_haut_salaire_15000(): void
+    {
+        // Brut 15 000 € (> PMSS) : vieillesse plafonnée et retraite T1
+        // plafonnées à 4 005 € ; vieillesse déplafonnée/CSG/CRDS sur le brut.
+        //   VIE_PLF 4 005 × 6,9 % = 276,35 · VIE_DPL 60,00 · RET_T1
+        //   4 005 × 3,15 % = 126,16 · PREV 225,00 · CSG 14 737,50 × 9,2 % =
+        //   1 355,85 · CRDS 73,69 → salarié 2 117,05
+        $charges = $this->rules()->calculateSocialCharges(15000.0);
+        $this->assertSame(2117.05, $charges['employee']);
     }
 
     /**
@@ -148,11 +185,9 @@ class GoldenFrPayrollTest extends TestCase
     {
         // Preuve de l'assiette CSG/CRDS = 98,25 % du brut (constante légale) :
         //   brut 4 000 → base 3 930 → CSG 361,56 · CRDS 19,65.
-        // La charge salariale totale (681,21) doit être la somme des lignes
-        // arrondies (constitution §III, arrondi par ligne).
         $charges = $this->rules()->calculateSocialCharges(4000.0);
         $this->assertSame(round(4000.0 * 0.9825 * 0.092, 2), 361.56);
         $this->assertSame(round(4000.0 * 0.9825 * 0.005, 2), 19.65);
-        $this->assertSame(681.21, $charges['employee']);
+        $this->assertSame(859.21, $charges['employee']);
     }
 }

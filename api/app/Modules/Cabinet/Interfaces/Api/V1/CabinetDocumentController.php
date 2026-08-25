@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Cabinet\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\CabinetDocumentResource;
+use App\Modules\Cabinet\Domain\Models\CabinetDocument;
+use App\Modules\Cabinet\Infrastructure\Services\CabinetService;
 use App\Modules\Cabinet\Interfaces\Api\V1\Requests\MoveDocumentRequest;
 use App\Modules\Cabinet\Interfaces\Api\V1\Requests\StoreDocumentRequest;
 use App\Modules\Cabinet\Interfaces\Api\V1\Requests\UpdateDocumentRequest;
-use App\Http\Resources\Api\V1\CabinetDocumentResource;
-use App\Modules\Cabinet\Domain\Models\CabinetDocument;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Cabinet\Infrastructure\Services\CabinetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -24,6 +24,13 @@ class CabinetDocumentController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $filters = $request->validate([
+            'folder_id' => ['sometimes', 'nullable', 'integer', 'min:1'],
+            'root_only' => ['sometimes', 'boolean'],
+            'search' => ['sometimes', 'string', 'max:120'],
+            'per_page' => ['sometimes', 'integer', 'min:0', 'max:1000'],
+        ]);
+
         $actor = $this->employee($request);
 
         $query = CabinetDocument::query()
@@ -41,22 +48,21 @@ class CabinetDocumentController extends Controller
             ])
             ->where('employee_id', $actor->id);
 
-        if ($request->has('folder_id')) {
-            $folderId = $request->input('folder_id');
-            $query->where('folder_id', $folderId);
-        } elseif ($request->boolean('root_only', false)) {
+        if (array_key_exists('folder_id', $filters) && $filters['folder_id'] !== null) {
+            $query->where('folder_id', $filters['folder_id']);
+        } elseif (($filters['root_only'] ?? false) === true) {
             $query->whereNull('folder_id');
         }
 
-        if ($request->filled('search')) {
-            $search = $request->string('search')->value();
+        if (isset($filters['search']) && $filters['search'] !== '') {
+            $search = $filters['search'];
             $query->where(function ($q) use ($search): void {
                 $q->where('name', 'ilike', "%{$search}%")
                     ->orWhere('original_name', 'ilike', "%{$search}%");
             });
         }
 
-        $perPage = max(1, min(100, $request->integer('per_page', 20)));
+        $perPage = max(1, min(100, (int) ($filters['per_page'] ?? 20)));
         $paginated = $query->orderByDesc('created_at')->paginate($perPage);
 
         return CabinetDocumentResource::collection($paginated)->response();
@@ -143,4 +149,3 @@ class CabinetDocumentController extends Controller
         }
     }
 }
-
