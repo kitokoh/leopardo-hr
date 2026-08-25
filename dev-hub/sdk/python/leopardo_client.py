@@ -1760,6 +1760,10 @@ class LeopardoClient:
         """Readiness probe — base de données disponible"""
         return self.request("GET", "/health/ready", **kwargs)
 
+    def post_hr_candidates_by_applicant_hire(self, **kwargs):
+        """Embauche d'un candidat (principal/RH)"""
+        return self.request("POST", "/hr/candidates/{applicant}/hire", **kwargs)
+
     def get_hr_dashboard(self, **kwargs):
         """Dashboard RH — indicateurs et actions en attente"""
         return self.request("GET", "/hr/dashboard", **kwargs)
