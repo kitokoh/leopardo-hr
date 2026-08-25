@@ -2092,6 +2092,22 @@ class LeopardoClient:
         """Confirmer la reception d'un paiement"""
         return self.request("POST", "/payment-confirmations/{paymentItem}/confirm", **kwargs)
 
+    def get_payment_orders(self, **kwargs):
+        """Lister les ordres de virement du tenant (pagine)"""
+        return self.request("GET", "/payment-orders", **kwargs)
+
+    def get_payment_orders_by_paymentorder(self, **kwargs):
+        """Detail d'un ordre de virement"""
+        return self.request("GET", "/payment-orders/{paymentOrder}", **kwargs)
+
+    def post_payment_orders_by_paymentorder_execute(self, **kwargs):
+        """Executer un ordre de virement prepare (comptable)"""
+        return self.request("POST", "/payment-orders/{paymentOrder}/execute", **kwargs)
+
+    def post_payment_orders_by_paymentorder_reconcile(self, **kwargs):
+        """Rapprocher un ordre de virement execute (comptable)"""
+        return self.request("POST", "/payment-orders/{paymentOrder}/reconcile", **kwargs)
+
     def get_payments_by_payrollrun_documents(self, **kwargs):
         """Documents de paiement d.un cycle paie"""
         return self.request("GET", "/payments/{payrollRun}/documents", **kwargs)
@@ -2107,6 +2123,14 @@ class LeopardoClient:
     def get_payroll_runs_by_payrollrun(self, **kwargs):
         """Voir une session de paie"""
         return self.request("GET", "/payroll-runs/{payrollRun}", **kwargs)
+
+    def get_payroll_runs_by_payrollrun_accounting_entries(self, **kwargs):
+        """Ecrires comptables d'un run de paie valide (#5239)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/accounting-entries", **kwargs)
+
+    def post_payroll_runs_by_payrollrun_accounting_entries_regenerate(self, **kwargs):
+        """Regenerer les ecritures comptables d'un run (comptable, idempotent)"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/accounting-entries/regenerate", **kwargs)
 
     def get_payroll_runs_by_payrollrun_anomalies(self, **kwargs):
         """Rapport d'anomalies pre-cloture (F-20)"""
@@ -2179,6 +2203,10 @@ class LeopardoClient:
     def listpayrollrunpayslips(self, **kwargs):
         """Lister les bulletins de paie d'une session"""
         return self.request("GET", "/payroll-runs/{payrollRun}/pay-slips", **kwargs)
+
+    def post_payroll_runs_by_payrollrun_payment_order(self, **kwargs):
+        """Preparer un ordre de virement pour un run valide (comptable)"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/payment-order", **kwargs)
 
     def listpayrollrunregularizations(self, **kwargs):
         """Lister les régularisations d'un run (DZ-DEPTH #1818)"""
