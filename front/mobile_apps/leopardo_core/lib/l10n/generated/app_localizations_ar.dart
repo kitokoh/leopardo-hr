@@ -6250,4 +6250,164 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get commonBack => 'رجوع';
+
+  @override
+  String get companydetailClientReference => 'مرجع العميل';
+
+  @override
+  String get companydetailTenantIdHint =>
+      'معرّف المستأجر لتقديمه للدعم أو مسحه ضوئياً في الموقع للعثور على هذا العميل فوراً.';
+
+  @override
+  String get companydetailCopyId => 'نسخ المعرّف';
+
+  @override
+  String get companydetailSubscription => 'الاشتراك';
+
+  @override
+  String get companydetailPlan => 'الخطة';
+
+  @override
+  String get companydetailStatus => 'الحالة';
+
+  @override
+  String get companydetailMonthlyPrice => 'السعر الشهري';
+
+  @override
+  String get companydetailEmployeeLimit => 'حد الموظفين';
+
+  @override
+  String get companydetailUnlimited => 'غير محدود';
+
+  @override
+  String get companydetailSubscriptionEnd => 'نهاية الاشتراك';
+
+  @override
+  String get companydetailUndefined => 'غير محدد';
+
+  @override
+  String get companydetailActivateClient => 'تفعيل العميل';
+
+  @override
+  String get companydetailEditSubscription => 'تعديل الاشتراك';
+
+  @override
+  String get companydetailActiveModules => 'الوحدات النشطة';
+
+  @override
+  String get companydetailEditModules => 'تعديل الوحدات';
+
+  @override
+  String get companydetailNextActions => 'الإجراءات التالية';
+
+  @override
+  String get companydetailNoUrgentActions =>
+      'لم يتم رصد أي إجراء عاجل لهذا العميل.';
+
+  @override
+  String get companydetailRecommendedActionHint =>
+      'إجراء موصى به من منصة القيادة.';
+
+  @override
+  String get companydetailPlanNotFound => 'الخطة الحالية غير موجودة';
+
+  @override
+  String get companydetailClientActivated => 'تم تفعيل العميل';
+
+  @override
+  String get companydetailChoosePlan => 'اختر خطة';
+
+  @override
+  String get companydetailSubscriptionUpdated => 'تم تحديث الاشتراك';
+
+  @override
+  String get companydetailOptionalInternalNote => 'ملاحظة داخلية اختيارية';
+
+  @override
+  String get companydetailSaving => 'جارٍ الحفظ...';
+
+  @override
+  String get commonSave => 'حفظ';
+
+  @override
+  String get companydetailLoadingPlans => 'جارٍ تحميل الخطط';
+
+  @override
+  String companydetailPlanWithPrice(String planName, String price) {
+    return '$planName - $price/شهرياً';
+  }
+
+  @override
+  String get companydetailSaveModules => 'حفظ الوحدات';
+
+  @override
+  String get companydetailCoreModuleAlwaysActive =>
+      'الوحدة الأساسية نشطة دائماً';
+
+  @override
+  String get companydetailModulesUpdated => 'تم تحديث الوحدات';
+
+  @override
+  String get companiesTenantsPlatform => 'مستأجرو المنصة';
+
+  @override
+  String get companiesEmpty => 'لا توجد شركة لعرضها.';
+
+  @override
+  String get companyrequestsValidationSuperadmin => 'تحقق المشرف الأعلى';
+
+  @override
+  String get companyrequestsApprovedToast => 'تمت الموافقة على الطلب';
+
+  @override
+  String get companyrequestsRejectedToast => 'تم رفض الطلب';
+
+  @override
+  String get dashboardPlatformAdministration => 'إدارة المنصة';
+
+  @override
+  String get dashboardSuperAdmin => 'مشرف أعلى';
+
+  @override
+  String get dashboardExecutiveView => 'عرض تنفيذي';
+
+  @override
+  String get dashboardActiveLabel => 'نشطة';
+
+  @override
+  String get dashboardTrials => 'تجارب';
+
+  @override
+  String get dashboardLoadingCockpit => 'جارٍ تحميل لوحة القيادة';
+
+  @override
+  String get dashboardPlatformActions => 'إجراءات المنصة';
+
+  @override
+  String get dashboardClientCompanies => 'الشركات العملاء';
+
+  @override
+  String get dashboardClientCompaniesHint => 'تابع المستأجرين وحالتهم وخططهم.';
+
+  @override
+  String get dashboardCreateCompany => 'إنشاء شركة';
+
+  @override
+  String get dashboardCreateCompanyHint => 'تجهيز عميل جديد ومديره الرئيسي.';
+
+  @override
+  String get dashboardClientRequestsHint =>
+      'الموافقة على طلبات الإنشاء أو رفضها.';
+
+  @override
+  String get dashboardSupportClient => 'دعم العملاء';
+
+  @override
+  String get dashboardTicketsHint => 'تذاكر المستأجر — الرد والفرز.';
+
+  @override
+  String get dashboardEdgeNodes => 'عقد الحافة';
+
+  @override
+  String get dashboardEdgeNodesHint => 'مواقع محلية — الحالة والمزامنة.';
 }

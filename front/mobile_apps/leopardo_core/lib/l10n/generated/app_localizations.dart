@@ -11754,6 +11754,312 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Retour'**
   String get commonBack;
+
+  /// No description provided for @companydetailClientReference.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reference client'**
+  String get companydetailClientReference;
+
+  /// No description provided for @companydetailTenantIdHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identifiant tenant a presenter au support ou scanner sur site pour retrouver ce client instantanement.'**
+  String get companydetailTenantIdHint;
+
+  /// No description provided for @companydetailCopyId.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier l\'identifiant'**
+  String get companydetailCopyId;
+
+  /// No description provided for @companydetailSubscription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Abonnement'**
+  String get companydetailSubscription;
+
+  /// No description provided for @companydetailPlan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plan'**
+  String get companydetailPlan;
+
+  /// No description provided for @companydetailStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get companydetailStatus;
+
+  /// No description provided for @companydetailMonthlyPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix mensuel'**
+  String get companydetailMonthlyPrice;
+
+  /// No description provided for @companydetailEmployeeLimit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Limite employes'**
+  String get companydetailEmployeeLimit;
+
+  /// No description provided for @companydetailUnlimited.
+  ///
+  /// In fr, this message translates to:
+  /// **'Illimite'**
+  String get companydetailUnlimited;
+
+  /// No description provided for @companydetailSubscriptionEnd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fin abonnement'**
+  String get companydetailSubscriptionEnd;
+
+  /// No description provided for @companydetailUndefined.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non definie'**
+  String get companydetailUndefined;
+
+  /// No description provided for @companydetailActivateClient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer client'**
+  String get companydetailActivateClient;
+
+  /// No description provided for @companydetailEditSubscription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier abonnement'**
+  String get companydetailEditSubscription;
+
+  /// No description provided for @companydetailActiveModules.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modules actifs'**
+  String get companydetailActiveModules;
+
+  /// No description provided for @companydetailEditModules.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier modules'**
+  String get companydetailEditModules;
+
+  /// No description provided for @companydetailNextActions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prochaines actions'**
+  String get companydetailNextActions;
+
+  /// No description provided for @companydetailNoUrgentActions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune action urgente detectee pour ce client.'**
+  String get companydetailNoUrgentActions;
+
+  /// No description provided for @companydetailRecommendedActionHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Action recommandee par le cockpit plateforme.'**
+  String get companydetailRecommendedActionHint;
+
+  /// No description provided for @companydetailPlanNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plan actuel introuvable'**
+  String get companydetailPlanNotFound;
+
+  /// No description provided for @companydetailClientActivated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Client active'**
+  String get companydetailClientActivated;
+
+  /// No description provided for @companydetailChoosePlan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir un plan'**
+  String get companydetailChoosePlan;
+
+  /// No description provided for @companydetailSubscriptionUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Abonnement mis a jour'**
+  String get companydetailSubscriptionUpdated;
+
+  /// No description provided for @companydetailOptionalInternalNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Note interne optionnelle'**
+  String get companydetailOptionalInternalNote;
+
+  /// No description provided for @companydetailSaving.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrement...'**
+  String get companydetailSaving;
+
+  /// No description provided for @commonSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get commonSave;
+
+  /// No description provided for @companydetailLoadingPlans.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement plans'**
+  String get companydetailLoadingPlans;
+
+  /// Dropdown item for a plan with its monthly price.
+  ///
+  /// In fr, this message translates to:
+  /// **'{planName} - {price}/mois'**
+  String companydetailPlanWithPrice(String planName, String price);
+
+  /// No description provided for @companydetailSaveModules.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer modules'**
+  String get companydetailSaveModules;
+
+  /// No description provided for @companydetailCoreModuleAlwaysActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Module socle toujours actif'**
+  String get companydetailCoreModuleAlwaysActive;
+
+  /// No description provided for @companydetailModulesUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modules mis a jour'**
+  String get companydetailModulesUpdated;
+
+  /// No description provided for @companiesTenantsPlatform.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tenants plateforme'**
+  String get companiesTenantsPlatform;
+
+  /// No description provided for @companiesEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune entreprise à afficher.'**
+  String get companiesEmpty;
+
+  /// No description provided for @companyrequestsValidationSuperadmin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validation super-admin'**
+  String get companyrequestsValidationSuperadmin;
+
+  /// No description provided for @companyrequestsApprovedToast.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande approuvée'**
+  String get companyrequestsApprovedToast;
+
+  /// No description provided for @companyrequestsRejectedToast.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande refusée'**
+  String get companyrequestsRejectedToast;
+
+  /// No description provided for @dashboardPlatformAdministration.
+  ///
+  /// In fr, this message translates to:
+  /// **'Administration plateforme'**
+  String get dashboardPlatformAdministration;
+
+  /// No description provided for @dashboardSuperAdmin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Super-admin'**
+  String get dashboardSuperAdmin;
+
+  /// No description provided for @dashboardExecutiveView.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vue executive'**
+  String get dashboardExecutiveView;
+
+  /// No description provided for @dashboardActiveLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actives'**
+  String get dashboardActiveLabel;
+
+  /// No description provided for @dashboardTrials.
+  ///
+  /// In fr, this message translates to:
+  /// **'Essais'**
+  String get dashboardTrials;
+
+  /// No description provided for @dashboardLoadingCockpit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement cockpit'**
+  String get dashboardLoadingCockpit;
+
+  /// No description provided for @dashboardPlatformActions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actions plateforme'**
+  String get dashboardPlatformActions;
+
+  /// No description provided for @dashboardClientCompanies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entreprises clientes'**
+  String get dashboardClientCompanies;
+
+  /// No description provided for @dashboardClientCompaniesHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivre les tenants, leur statut et leur plan.'**
+  String get dashboardClientCompaniesHint;
+
+  /// No description provided for @dashboardCreateCompany.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer une entreprise'**
+  String get dashboardCreateCompany;
+
+  /// No description provided for @dashboardCreateCompanyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Provisionner un nouveau client et son manager principal.'**
+  String get dashboardCreateCompanyHint;
+
+  /// No description provided for @dashboardClientRequestsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Approuver ou refuser les demandes de création.'**
+  String get dashboardClientRequestsHint;
+
+  /// No description provided for @dashboardSupportClient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Support client'**
+  String get dashboardSupportClient;
+
+  /// No description provided for @dashboardTicketsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tickets tenant — repondre et trier.'**
+  String get dashboardTicketsHint;
+
+  /// No description provided for @dashboardEdgeNodes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Noeuds Edge'**
+  String get dashboardEdgeNodes;
+
+  /// No description provided for @dashboardEdgeNodesHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sites on-premise — statut et synchronisation.'**
+  String get dashboardEdgeNodesHint;
 }
 
 class _AppLocalizationsDelegate

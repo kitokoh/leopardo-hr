@@ -6312,4 +6312,165 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonBack => 'Back';
+
+  @override
+  String get companydetailClientReference => 'Client reference';
+
+  @override
+  String get companydetailTenantIdHint =>
+      'Tenant identifier to show to support or scan on site to find this client instantly.';
+
+  @override
+  String get companydetailCopyId => 'Copy identifier';
+
+  @override
+  String get companydetailSubscription => 'Subscription';
+
+  @override
+  String get companydetailPlan => 'Plan';
+
+  @override
+  String get companydetailStatus => 'Status';
+
+  @override
+  String get companydetailMonthlyPrice => 'Monthly price';
+
+  @override
+  String get companydetailEmployeeLimit => 'Employee limit';
+
+  @override
+  String get companydetailUnlimited => 'Unlimited';
+
+  @override
+  String get companydetailSubscriptionEnd => 'Subscription end';
+
+  @override
+  String get companydetailUndefined => 'Undefined';
+
+  @override
+  String get companydetailActivateClient => 'Activate client';
+
+  @override
+  String get companydetailEditSubscription => 'Edit subscription';
+
+  @override
+  String get companydetailActiveModules => 'Active modules';
+
+  @override
+  String get companydetailEditModules => 'Edit modules';
+
+  @override
+  String get companydetailNextActions => 'Next actions';
+
+  @override
+  String get companydetailNoUrgentActions =>
+      'No urgent action detected for this client.';
+
+  @override
+  String get companydetailRecommendedActionHint =>
+      'Recommended action from the platform cockpit.';
+
+  @override
+  String get companydetailPlanNotFound => 'Current plan not found';
+
+  @override
+  String get companydetailClientActivated => 'Client activated';
+
+  @override
+  String get companydetailChoosePlan => 'Choose a plan';
+
+  @override
+  String get companydetailSubscriptionUpdated => 'Subscription updated';
+
+  @override
+  String get companydetailOptionalInternalNote => 'Optional internal note';
+
+  @override
+  String get companydetailSaving => 'Saving...';
+
+  @override
+  String get commonSave => 'Save';
+
+  @override
+  String get companydetailLoadingPlans => 'Loading plans';
+
+  @override
+  String companydetailPlanWithPrice(String planName, String price) {
+    return '$planName - $price/month';
+  }
+
+  @override
+  String get companydetailSaveModules => 'Save modules';
+
+  @override
+  String get companydetailCoreModuleAlwaysActive => 'Core module always active';
+
+  @override
+  String get companydetailModulesUpdated => 'Modules updated';
+
+  @override
+  String get companiesTenantsPlatform => 'Platform tenants';
+
+  @override
+  String get companiesEmpty => 'No company to display.';
+
+  @override
+  String get companyrequestsValidationSuperadmin => 'Super-admin validation';
+
+  @override
+  String get companyrequestsApprovedToast => 'Request approved';
+
+  @override
+  String get companyrequestsRejectedToast => 'Request rejected';
+
+  @override
+  String get dashboardPlatformAdministration => 'Platform administration';
+
+  @override
+  String get dashboardSuperAdmin => 'Super-admin';
+
+  @override
+  String get dashboardExecutiveView => 'Executive view';
+
+  @override
+  String get dashboardActiveLabel => 'Active';
+
+  @override
+  String get dashboardTrials => 'Trials';
+
+  @override
+  String get dashboardLoadingCockpit => 'Loading cockpit';
+
+  @override
+  String get dashboardPlatformActions => 'Platform actions';
+
+  @override
+  String get dashboardClientCompanies => 'Client companies';
+
+  @override
+  String get dashboardClientCompaniesHint =>
+      'Track tenants, their status and plan.';
+
+  @override
+  String get dashboardCreateCompany => 'Create a company';
+
+  @override
+  String get dashboardCreateCompanyHint =>
+      'Provision a new client and its main manager.';
+
+  @override
+  String get dashboardClientRequestsHint =>
+      'Approve or reject creation requests.';
+
+  @override
+  String get dashboardSupportClient => 'Client support';
+
+  @override
+  String get dashboardTicketsHint => 'Tenant tickets — answer and triage.';
+
+  @override
+  String get dashboardEdgeNodes => 'Edge nodes';
+
+  @override
+  String get dashboardEdgeNodesHint => 'On-premise sites — status and sync.';
 }

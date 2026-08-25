@@ -6388,4 +6388,167 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get commonBack => 'Retour';
+
+  @override
+  String get companydetailClientReference => 'Reference client';
+
+  @override
+  String get companydetailTenantIdHint =>
+      'Identifiant tenant a presenter au support ou scanner sur site pour retrouver ce client instantanement.';
+
+  @override
+  String get companydetailCopyId => 'Copier l\'identifiant';
+
+  @override
+  String get companydetailSubscription => 'Abonnement';
+
+  @override
+  String get companydetailPlan => 'Plan';
+
+  @override
+  String get companydetailStatus => 'Statut';
+
+  @override
+  String get companydetailMonthlyPrice => 'Prix mensuel';
+
+  @override
+  String get companydetailEmployeeLimit => 'Limite employes';
+
+  @override
+  String get companydetailUnlimited => 'Illimite';
+
+  @override
+  String get companydetailSubscriptionEnd => 'Fin abonnement';
+
+  @override
+  String get companydetailUndefined => 'Non definie';
+
+  @override
+  String get companydetailActivateClient => 'Activer client';
+
+  @override
+  String get companydetailEditSubscription => 'Modifier abonnement';
+
+  @override
+  String get companydetailActiveModules => 'Modules actifs';
+
+  @override
+  String get companydetailEditModules => 'Modifier modules';
+
+  @override
+  String get companydetailNextActions => 'Prochaines actions';
+
+  @override
+  String get companydetailNoUrgentActions =>
+      'Aucune action urgente detectee pour ce client.';
+
+  @override
+  String get companydetailRecommendedActionHint =>
+      'Action recommandee par le cockpit plateforme.';
+
+  @override
+  String get companydetailPlanNotFound => 'Plan actuel introuvable';
+
+  @override
+  String get companydetailClientActivated => 'Client active';
+
+  @override
+  String get companydetailChoosePlan => 'Choisir un plan';
+
+  @override
+  String get companydetailSubscriptionUpdated => 'Abonnement mis a jour';
+
+  @override
+  String get companydetailOptionalInternalNote => 'Note interne optionnelle';
+
+  @override
+  String get companydetailSaving => 'Enregistrement...';
+
+  @override
+  String get commonSave => 'Enregistrer';
+
+  @override
+  String get companydetailLoadingPlans => 'Chargement plans';
+
+  @override
+  String companydetailPlanWithPrice(String planName, String price) {
+    return '$planName - $price/mois';
+  }
+
+  @override
+  String get companydetailSaveModules => 'Enregistrer modules';
+
+  @override
+  String get companydetailCoreModuleAlwaysActive =>
+      'Module socle toujours actif';
+
+  @override
+  String get companydetailModulesUpdated => 'Modules mis a jour';
+
+  @override
+  String get companiesTenantsPlatform => 'Tenants plateforme';
+
+  @override
+  String get companiesEmpty => 'Aucune entreprise à afficher.';
+
+  @override
+  String get companyrequestsValidationSuperadmin => 'Validation super-admin';
+
+  @override
+  String get companyrequestsApprovedToast => 'Demande approuvée';
+
+  @override
+  String get companyrequestsRejectedToast => 'Demande refusée';
+
+  @override
+  String get dashboardPlatformAdministration => 'Administration plateforme';
+
+  @override
+  String get dashboardSuperAdmin => 'Super-admin';
+
+  @override
+  String get dashboardExecutiveView => 'Vue executive';
+
+  @override
+  String get dashboardActiveLabel => 'Actives';
+
+  @override
+  String get dashboardTrials => 'Essais';
+
+  @override
+  String get dashboardLoadingCockpit => 'Chargement cockpit';
+
+  @override
+  String get dashboardPlatformActions => 'Actions plateforme';
+
+  @override
+  String get dashboardClientCompanies => 'Entreprises clientes';
+
+  @override
+  String get dashboardClientCompaniesHint =>
+      'Suivre les tenants, leur statut et leur plan.';
+
+  @override
+  String get dashboardCreateCompany => 'Créer une entreprise';
+
+  @override
+  String get dashboardCreateCompanyHint =>
+      'Provisionner un nouveau client et son manager principal.';
+
+  @override
+  String get dashboardClientRequestsHint =>
+      'Approuver ou refuser les demandes de création.';
+
+  @override
+  String get dashboardSupportClient => 'Support client';
+
+  @override
+  String get dashboardTicketsHint => 'Tickets tenant — repondre et trier.';
+
+  @override
+  String get dashboardEdgeNodes => 'Noeuds Edge';
+
+  @override
+  String get dashboardEdgeNodesHint =>
+      'Sites on-premise — statut et synchronisation.';
 }

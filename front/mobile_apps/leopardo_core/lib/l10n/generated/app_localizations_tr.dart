@@ -6316,4 +6316,168 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get commonBack => 'Geri';
+
+  @override
+  String get companydetailClientReference => 'Müşteri referansı';
+
+  @override
+  String get companydetailTenantIdHint =>
+      'Desteğe göstermek veya sahada taratmak için kiracı kimliği — müşteriyi anında bulur.';
+
+  @override
+  String get companydetailCopyId => 'Kimliği kopyala';
+
+  @override
+  String get companydetailSubscription => 'Abonelik';
+
+  @override
+  String get companydetailPlan => 'Plan';
+
+  @override
+  String get companydetailStatus => 'Durum';
+
+  @override
+  String get companydetailMonthlyPrice => 'Aylık fiyat';
+
+  @override
+  String get companydetailEmployeeLimit => 'Çalışan limiti';
+
+  @override
+  String get companydetailUnlimited => 'Sınırsız';
+
+  @override
+  String get companydetailSubscriptionEnd => 'Abonelik bitişi';
+
+  @override
+  String get companydetailUndefined => 'Tanımsız';
+
+  @override
+  String get companydetailActivateClient => 'Müşteriyi etkinleştir';
+
+  @override
+  String get companydetailEditSubscription => 'Aboneliği düzenle';
+
+  @override
+  String get companydetailActiveModules => 'Aktif modüller';
+
+  @override
+  String get companydetailEditModules => 'Modülleri düzenle';
+
+  @override
+  String get companydetailNextActions => 'Sonraki eylemler';
+
+  @override
+  String get companydetailNoUrgentActions =>
+      'Bu müşteri için acil eylem tespit edilmedi.';
+
+  @override
+  String get companydetailRecommendedActionHint =>
+      'Platform kokpitinden önerilen eylem.';
+
+  @override
+  String get companydetailPlanNotFound => 'Geçerli plan bulunamadı';
+
+  @override
+  String get companydetailClientActivated => 'Müşteri etkinleştirildi';
+
+  @override
+  String get companydetailChoosePlan => 'Bir plan seçin';
+
+  @override
+  String get companydetailSubscriptionUpdated => 'Abonelik güncellendi';
+
+  @override
+  String get companydetailOptionalInternalNote => 'İsteğe bağlı dahili not';
+
+  @override
+  String get companydetailSaving => 'Kaydediliyor...';
+
+  @override
+  String get commonSave => 'Kaydet';
+
+  @override
+  String get companydetailLoadingPlans => 'Planlar yükleniyor';
+
+  @override
+  String companydetailPlanWithPrice(String planName, String price) {
+    return '$planName - $price/ay';
+  }
+
+  @override
+  String get companydetailSaveModules => 'Modülleri kaydet';
+
+  @override
+  String get companydetailCoreModuleAlwaysActive =>
+      'Çekirdek modül her zaman aktiftir';
+
+  @override
+  String get companydetailModulesUpdated => 'Modüller güncellendi';
+
+  @override
+  String get companiesTenantsPlatform => 'Platform kiracıları';
+
+  @override
+  String get companiesEmpty => 'Görüntülenecek şirket yok.';
+
+  @override
+  String get companyrequestsValidationSuperadmin =>
+      'Süper yönetici doğrulaması';
+
+  @override
+  String get companyrequestsApprovedToast => 'Talep onaylandı';
+
+  @override
+  String get companyrequestsRejectedToast => 'Talep reddedildi';
+
+  @override
+  String get dashboardPlatformAdministration => 'Platform yönetimi';
+
+  @override
+  String get dashboardSuperAdmin => 'Süper yönetici';
+
+  @override
+  String get dashboardExecutiveView => 'Yönetici görünümü';
+
+  @override
+  String get dashboardActiveLabel => 'Aktif';
+
+  @override
+  String get dashboardTrials => 'Denemeler';
+
+  @override
+  String get dashboardLoadingCockpit => 'Kokpit yükleniyor';
+
+  @override
+  String get dashboardPlatformActions => 'Platform eylemleri';
+
+  @override
+  String get dashboardClientCompanies => 'Müşteri şirketleri';
+
+  @override
+  String get dashboardClientCompaniesHint =>
+      'Kiracıları, durumlarını ve planlarını takip edin.';
+
+  @override
+  String get dashboardCreateCompany => 'Şirket oluştur';
+
+  @override
+  String get dashboardCreateCompanyHint =>
+      'Yeni bir müşteri ve ana yöneticisini sağlayın.';
+
+  @override
+  String get dashboardClientRequestsHint =>
+      'Oluşturma taleplerini onaylayın veya reddedin.';
+
+  @override
+  String get dashboardSupportClient => 'Müşteri desteği';
+
+  @override
+  String get dashboardTicketsHint => 'Kiracı biletleri — yanıtla ve sırala.';
+
+  @override
+  String get dashboardEdgeNodes => 'Uç düğümler';
+
+  @override
+  String get dashboardEdgeNodesHint =>
+      'Şirket içi siteler — durum ve senkronizasyon.';
 }
