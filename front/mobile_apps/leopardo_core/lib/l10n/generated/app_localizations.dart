@@ -10780,889 +10780,889 @@ abstract class AppLocalizations {
   /// No description provided for @attendanceToProcess.
   ///
   /// In fr, this message translates to:
-  /// **'A traiter'**
+  /// **'\"A traiter\"'**
   String get attendanceToProcess;
 
   /// No description provided for @settingsBiometryEnableFirst.
   ///
   /// In fr, this message translates to:
-  /// **'Active d abord la preparation biometrie.'**
+  /// **'\"Active d abord la preparation biometrie.\"'**
   String get settingsBiometryEnableFirst;
 
   /// No description provided for @settingsBiometryEnableAction.
   ///
   /// In fr, this message translates to:
-  /// **'Activer la preparation biometrie'**
+  /// **'\"Activer la preparation biometrie\"'**
   String get settingsBiometryEnableAction;
 
   /// No description provided for @settingsEdgeNodeAddress.
   ///
   /// In fr, this message translates to:
-  /// **'Adresse du noeud Edge'**
+  /// **'\"Adresse du noeud Edge\"'**
   String get settingsEdgeNodeAddress;
 
   /// No description provided for @settingsBiometryAddFaceCapture.
   ///
   /// In fr, this message translates to:
-  /// **'Ajoute une capture visage avant soumission.'**
+  /// **'\"Ajoute une capture visage avant soumission.\"'**
   String get settingsBiometryAddFaceCapture;
 
   /// No description provided for @notifTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Alertes RH, paie et validations'**
+  /// **'\"Alertes RH, paie et validations\"'**
   String get notifTitle;
 
   /// No description provided for @settingsPushInApp.
   ///
   /// In fr, this message translates to:
-  /// **'Alertes dans l application'**
+  /// **'\"Alertes dans l application\"'**
   String get settingsPushInApp;
 
   /// No description provided for @attendanceAnalyzingAnomalies.
   ///
   /// In fr, this message translates to:
-  /// **'Analyse des anomalies...'**
+  /// **'\"Analyse des anomalies...\"'**
   String get attendanceAnalyzingAnomalies;
 
   /// No description provided for @settingsEdgePairingRemoved.
   ///
   /// In fr, this message translates to:
-  /// **'Appairage Edge supprime.'**
+  /// **'\"Appairage Edge supprime.\"'**
   String get settingsEdgePairingRemoved;
 
   /// No description provided for @teamQrNoneInClipboard.
   ///
   /// In fr, this message translates to:
-  /// **'Aucun code QR dans le presse-papiers.'**
+  /// **'\"Aucun code QR dans le presse-papiers.\"'**
   String get teamQrNoneInClipboard;
 
   /// No description provided for @teamNoScheduleYet.
   ///
   /// In fr, this message translates to:
-  /// **'Aucun horaire cree. Vous pourrez en definir dans le module Horaires.'**
+  /// **'\"Aucun horaire cree. Vous pourrez en definir dans le module Horaires.\"'**
   String get teamNoScheduleYet;
 
   /// No description provided for @attendanceNoPunchToday.
   ///
   /// In fr, this message translates to:
-  /// **'Aucun pointage aujourd hui'**
+  /// **'\"Aucun pointage aujourd hui\"'**
   String get attendanceNoPunchToday;
 
   /// No description provided for @attendanceNoRecentAnomalies.
   ///
   /// In fr, this message translates to:
-  /// **'Aucune anomalie recente'**
+  /// **'\"Aucune anomalie recente\"'**
   String get attendanceNoRecentAnomalies;
 
   /// No description provided for @teamNoPendingInvites.
   ///
   /// In fr, this message translates to:
-  /// **'Aucune invitation en cours'**
+  /// **'\"Aucune invitation en cours\"'**
   String get teamNoPendingInvites;
 
   /// No description provided for @settingsLockerDocsAdmin.
   ///
   /// In fr, this message translates to:
-  /// **'CV, contrats, diplomes et documents administratifs.'**
+  /// **'\"CV, contrats, diplomes et documents administratifs.\"'**
   String get settingsLockerDocsAdmin;
 
   /// No description provided for @settingsLockerDocsVisibility.
   ///
   /// In fr, this message translates to:
-  /// **'CV, contrats, diplomes et documents avec visibilite controlee.'**
+  /// **'\"CV, contrats, diplomes et documents avec visibilite controlee.\"'**
   String get settingsLockerDocsVisibility;
 
   /// No description provided for @settingsNotifChannelChat.
   ///
   /// In fr, this message translates to:
-  /// **'Canal conversationnel, necessite votre opt-in explicite.'**
+  /// **'\"Canal conversationnel, necessite votre opt-in explicite.\"'**
   String get settingsNotifChannelChat;
 
   /// No description provided for @settingsNotifChannelSms.
   ///
   /// In fr, this message translates to:
-  /// **'Canal court reserve aux urgences, actif apres opt-in.'**
+  /// **'\"Canal court reserve aux urgences, actif apres opt-in.\"'**
   String get settingsNotifChannelSms;
 
   /// No description provided for @settingsNotifChannelsSummary.
   ///
   /// In fr, this message translates to:
-  /// **'Canaux, heures calmes et alertes operationnelles.'**
+  /// **'\"Canaux, heures calmes et alertes operationnelles.\"'**
   String get settingsNotifChannelsSummary;
 
   /// No description provided for @settingsBiometryCaptureFace.
   ///
   /// In fr, this message translates to:
-  /// **'Capturer / choisir mon visage'**
+  /// **'\"Capturer / choisir mon visage\"'**
   String get settingsBiometryCaptureFace;
 
   /// No description provided for @attendanceEmployeeNotPunchedToday.
   ///
   /// In fr, this message translates to:
-  /// **'Cet employe n a pas encore pointe pour la journee en cours.'**
+  /// **'\"Cet employe n a pas encore pointe pour la journee en cours.\"'**
   String get attendanceEmployeeNotPunchedToday;
 
   /// No description provided for @settingsFieldRequired.
   ///
   /// In fr, this message translates to:
-  /// **'Champ requis'**
+  /// **'\"Champ requis\"'**
   String get settingsFieldRequired;
 
   /// No description provided for @attendanceLoadingRequests.
   ///
   /// In fr, this message translates to:
-  /// **'Chargement des demandes...'**
+  /// **'\"Chargement des demandes...\"'**
   String get attendanceLoadingRequests;
 
   /// No description provided for @teamLoadingInvites.
   ///
   /// In fr, this message translates to:
-  /// **'Chargement des invitations'**
+  /// **'\"Chargement des invitations\"'**
   String get teamLoadingInvites;
 
   /// No description provided for @attendanceLoadingEmployeeDetail.
   ///
   /// In fr, this message translates to:
-  /// **'Chargement du detail employe...'**
+  /// **'\"Chargement du detail employe...\"'**
   String get attendanceLoadingEmployeeDetail;
 
   /// No description provided for @settingsNotifChannelsHint.
   ///
   /// In fr, this message translates to:
-  /// **'Choisissez les canaux utiles sans perdre les alertes RH importantes.'**
+  /// **'\"Choisissez les canaux utiles sans perdre les alertes RH importantes.\"'**
   String get settingsNotifChannelsHint;
 
   /// No description provided for @teamEmployeeQrCode.
   ///
   /// In fr, this message translates to:
-  /// **'Code QR employe'**
+  /// **'\"Code QR employe\"'**
   String get teamEmployeeQrCode;
 
   /// No description provided for @settingsPasteCompanyQr.
   ///
   /// In fr, this message translates to:
-  /// **'Coller le QR entreprise'**
+  /// **'\"Coller le QR entreprise\"'**
   String get settingsPasteCompanyQr;
 
   /// No description provided for @settingsPasteManagerQr.
   ///
   /// In fr, this message translates to:
-  /// **'Coller le QR fourni par le manager'**
+  /// **'\"Coller le QR fourni par le manager\"'**
   String get settingsPasteManagerQr;
 
   /// No description provided for @teamPasteScannedQr.
   ///
   /// In fr, this message translates to:
-  /// **'Coller le QR scanne'**
+  /// **'\"Coller le QR scanne\"'**
   String get teamPasteScannedQr;
 
   /// No description provided for @settingsPasteCompanyQrHint.
   ///
   /// In fr, this message translates to:
-  /// **'Collez le QR entreprise.'**
+  /// **'\"Collez le QR entreprise.\"'**
   String get settingsPasteCompanyQrHint;
 
   /// No description provided for @teamPasteQrHint.
   ///
   /// In fr, this message translates to:
-  /// **'Collez le code QR.'**
+  /// **'\"Collez le code QR.\"'**
   String get teamPasteQrHint;
 
   /// No description provided for @settingsBiometryConfirmIdentity.
   ///
   /// In fr, this message translates to:
-  /// **'Confirmer votre identite pour soumettre votre demande biometrie'**
+  /// **'\"Confirmer votre identite pour soumettre votre demande biometrie\"'**
   String get settingsBiometryConfirmIdentity;
 
   /// No description provided for @settingsEdgeConnectedCloud.
   ///
   /// In fr, this message translates to:
-  /// **'Connecte au Cloud'**
+  /// **'\"Connecte au Cloud\"'**
   String get settingsEdgeConnectedCloud;
 
   /// No description provided for @settingsEdgeConnectedLocal.
   ///
   /// In fr, this message translates to:
-  /// **'Connecte au noeud Edge local'**
+  /// **'\"Connecte au noeud Edge local\"'**
   String get settingsEdgeConnectedLocal;
 
   /// No description provided for @settingsBiometryConsentTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Consentement au futur pointage biometrie'**
+  /// **'\"Consentement au futur pointage biometrie\"'**
   String get settingsBiometryConsentTitle;
 
   /// No description provided for @attendanceCorrectionAppliedToast.
   ///
   /// In fr, this message translates to:
-  /// **'Correction appliquee.'**
+  /// **'\"Correction appliquee.\"'**
   String get attendanceCorrectionAppliedToast;
 
   /// No description provided for @attendanceCorrectionRejected.
   ///
   /// In fr, this message translates to:
-  /// **'Correction refusee.'**
+  /// **'\"Correction refusee.\"'**
   String get attendanceCorrectionRejected;
 
   /// No description provided for @teamCreateFromQrAndInvite.
   ///
   /// In fr, this message translates to:
-  /// **'Creer depuis QR et inviter'**
+  /// **'\"Creer depuis QR et inviter\"'**
   String get teamCreateFromQrAndInvite;
 
   /// No description provided for @teamHireDate.
   ///
   /// In fr, this message translates to:
-  /// **'Date d embauche'**
+  /// **'\"Date d embauche\"'**
   String get teamHireDate;
 
   /// No description provided for @settingsRequestSent.
   ///
   /// In fr, this message translates to:
-  /// **'Demande envoyee'**
+  /// **'\"Demande envoyee\"'**
   String get settingsRequestSent;
 
   /// No description provided for @settingsBiometryRequestSentHint.
   ///
   /// In fr, this message translates to:
-  /// **'Demande envoyee au manager / RH pour validation.'**
+  /// **'\"Demande envoyee au manager / RH pour validation.\"'**
   String get settingsBiometryRequestSentHint;
 
   /// No description provided for @settingsRequestJoin.
   ///
   /// In fr, this message translates to:
-  /// **'Demander l integration'**
+  /// **'\"Demander l integration\"'**
   String get settingsRequestJoin;
 
   /// No description provided for @attendanceEmployeeRequestsPending.
   ///
   /// In fr, this message translates to:
-  /// **'Demandes employees en attente RH'**
+  /// **'\"Demandes employees en attente RH\"'**
   String get attendanceEmployeeRequestsPending;
 
   /// No description provided for @teamDepartmentOptional.
   ///
   /// In fr, this message translates to:
-  /// **'Departement (optionnel)'**
+  /// **'\"Departement (optionnel)\"'**
   String get teamDepartmentOptional;
 
   /// No description provided for @settingsAvailableForNewCompany.
   ///
   /// In fr, this message translates to:
-  /// **'Disponible pour une nouvelle entreprise'**
+  /// **'\"Disponible pour une nouvelle entreprise\"'**
   String get settingsAvailableForNewCompany;
 
   /// No description provided for @settingsRecoveryEmailLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Email de recuperation'**
+  /// **'\"Email de récupération\"'**
   String get settingsRecoveryEmailLabel;
 
   /// No description provided for @settingsPersonalEmailLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Email personnel'**
+  /// **'\"Email personnel\"'**
   String get settingsPersonalEmailLabel;
 
   /// No description provided for @teamEmployeeAdded.
   ///
   /// In fr, this message translates to:
-  /// **'Employe ajoute.'**
+  /// **'\"Employe ajoute.\"'**
   String get teamEmployeeAdded;
 
   /// No description provided for @settingsBiometryFingerprintDesired.
   ///
   /// In fr, this message translates to:
-  /// **'Empreinte digitale souhaitee'**
+  /// **'\"Empreinte digitale souhaitee\"'**
   String get settingsBiometryFingerprintDesired;
 
   /// No description provided for @settingsBiometrySaveEnrollment.
   ///
   /// In fr, this message translates to:
-  /// **'Enregistrer la preparation'**
+  /// **'\"Enregistrer la preparation\"'**
   String get settingsBiometrySaveEnrollment;
 
   /// No description provided for @teamSendInvite.
   ///
   /// In fr, this message translates to:
-  /// **'Envoyer l invitation'**
+  /// **'\"Envoyer l invitation\"'**
   String get teamSendInvite;
 
   /// No description provided for @settingsBiometryFpExample.
   ///
   /// In fr, this message translates to:
-  /// **'Exemple: FP-ENTREE-01 ou matricule biometrie'**
+  /// **'\"Exemple: FP-ENTREE-01 ou matricule biometrie\"'**
   String get settingsBiometryFpExample;
 
   /// No description provided for @teamEmployeeRecordUpdated.
   ///
   /// In fr, this message translates to:
-  /// **'Fiche collaborateur mise a jour.'**
+  /// **'\"Fiche collaborateur mise a jour.\"'**
   String get teamEmployeeRecordUpdated;
 
   /// No description provided for @attendanceEmptyCorrectionQueue.
   ///
   /// In fr, this message translates to:
-  /// **'File de correction vide'**
+  /// **'\"File de correction vide\"'**
   String get attendanceEmptyCorrectionQueue;
 
   /// No description provided for @settingsEdgeTokenFromAdmin.
   ///
   /// In fr, this message translates to:
-  /// **'Fourni par votre administrateur'**
+  /// **'\"Fourni par votre administrateur\"'**
   String get settingsEdgeTokenFromAdmin;
 
   /// No description provided for @settingsEdgeTokenOneTime.
   ///
   /// In fr, this message translates to:
-  /// **'Fourni une seule fois a l enregistrement'**
+  /// **'\"Fourni une seule fois a l enregistrement\"'**
   String get settingsEdgeTokenOneTime;
 
   /// No description provided for @settingsQuietHours.
   ///
   /// In fr, this message translates to:
-  /// **'Heures calmes'**
+  /// **'\"Heures calmes\"'**
   String get settingsQuietHours;
 
   /// No description provided for @settingsJourneyHint.
   ///
   /// In fr, this message translates to:
-  /// **'Historique entreprise, poste, statut et disponibilite.'**
+  /// **'\"Historique entreprise, poste, statut et disponibilite.\"'**
   String get settingsJourneyHint;
 
   /// No description provided for @teamWorkSchedule.
   ///
   /// In fr, this message translates to:
-  /// **'Horaire de travail'**
+  /// **'\"Horaire de travail\"'**
   String get teamWorkSchedule;
 
   /// No description provided for @teamDefaultSchedule.
   ///
   /// In fr, this message translates to:
-  /// **'Horaire par defaut'**
+  /// **'\"Horaire par defaut\"'**
   String get teamDefaultSchedule;
 
   /// No description provided for @commonOffline.
   ///
   /// In fr, this message translates to:
-  /// **'Hors ligne'**
+  /// **'\"Hors ligne\"'**
   String get commonOffline;
 
   /// No description provided for @settingsBiometrySensorId.
   ///
   /// In fr, this message translates to:
-  /// **'Identifiant capteur empreinte / borne'**
+  /// **'\"Identifiant capteur empreinte / borne\"'**
   String get settingsBiometrySensorId;
 
   /// No description provided for @settingsEdgeNodeId.
   ///
   /// In fr, this message translates to:
-  /// **'Identifiant du noeud (UUID)'**
+  /// **'\"Identifiant du noeud (UUID)\"'**
   String get settingsEdgeNodeId;
 
   /// No description provided for @settingsPortableIdentity.
   ///
   /// In fr, this message translates to:
-  /// **'Identite portable'**
+  /// **'\"Identite portable\"'**
   String get settingsPortableIdentity;
 
   /// No description provided for @settingsBiometryFaceSelected.
   ///
   /// In fr, this message translates to:
-  /// **'Image visage selectionnee'**
+  /// **'\"Image visage selectionnee\"'**
   String get settingsBiometryFaceSelected;
 
   /// No description provided for @teamImportFromQr.
   ///
   /// In fr, this message translates to:
-  /// **'Importer depuis QR'**
+  /// **'\"Importer depuis QR\"'**
   String get teamImportFromQr;
 
   /// No description provided for @teamInviteResent.
   ///
   /// In fr, this message translates to:
-  /// **'Invitation renvoyee.'**
+  /// **'\"Invitation renvoyee.\"'**
   String get teamInviteResent;
 
   /// No description provided for @settingsEdgeToken.
   ///
   /// In fr, this message translates to:
-  /// **'Jeton Edge'**
+  /// **'\"Jeton Edge\"'**
   String get settingsEdgeToken;
 
   /// No description provided for @settingsPasswordConfirmationMismatch.
   ///
   /// In fr, this message translates to:
-  /// **'La confirmation ne correspond pas'**
+  /// **'\"La confirmation ne correspond pas\"'**
   String get settingsPasswordConfirmationMismatch;
 
   /// No description provided for @settingsNotifLanguage.
   ///
   /// In fr, this message translates to:
-  /// **'Langue des notifications'**
+  /// **'\"Langue des notifications\"'**
   String get settingsNotifLanguage;
 
   /// No description provided for @settingsBiometryConsentRequired.
   ///
   /// In fr, this message translates to:
-  /// **'Le consentement est requis avant toute soumission.'**
+  /// **'\"Le consentement est requis avant toute soumission.\"'**
   String get settingsBiometryConsentRequired;
 
   /// No description provided for @settingsQrManagerScanHint.
   ///
   /// In fr, this message translates to:
-  /// **'Le manager le scanne pour pre-remplir une invitation.'**
+  /// **'\"Le manager le scanne pour pre-remplir une invitation.\"'**
   String get settingsQrManagerScanHint;
 
   /// No description provided for @teamWorkLocation.
   ///
   /// In fr, this message translates to:
-  /// **'Lieu de travail'**
+  /// **'\"Lieu de travail\"'**
   String get teamWorkLocation;
 
   /// No description provided for @teamWorkLocationOptional.
   ///
   /// In fr, this message translates to:
-  /// **'Lieu de travail (optionnel)'**
+  /// **'\"Lieu de travail (optionnel)\"'**
   String get teamWorkLocationOptional;
 
   /// No description provided for @settingsQuietHoursHint.
   ///
   /// In fr, this message translates to:
-  /// **'Limiter les canaux externes hors horaires.'**
+  /// **'\"Limiter les canaux externes hors horaires.\"'**
   String get settingsQuietHoursHint;
 
   /// No description provided for @teamReadAndPrefill.
   ///
   /// In fr, this message translates to:
-  /// **'Lire et pre-remplir'**
+  /// **'\"Lire et pre-remplir\"'**
   String get teamReadAndPrefill;
 
   /// No description provided for @notifMarkAsRead.
   ///
   /// In fr, this message translates to:
-  /// **'Marquer comme lue'**
+  /// **'\"Marquer comme lue\"'**
   String get notifMarkAsRead;
 
   /// No description provided for @teamEmployeeIdOptional.
   ///
   /// In fr, this message translates to:
-  /// **'Matricule (optionnel)'**
+  /// **'\"Matricule (optionnel)\"'**
   String get teamEmployeeIdOptional;
 
   /// No description provided for @teamMonthlyFixed.
   ///
   /// In fr, this message translates to:
-  /// **'Mensuel / fixe'**
+  /// **'\"Mensuel / fixe\"'**
   String get teamMonthlyFixed;
 
   /// No description provided for @settingsPasswordUpdateTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Mettre a jour le mot de passe'**
+  /// **'\"Mettre a jour le mot de passe\"'**
   String get settingsPasswordUpdateTitle;
 
   /// No description provided for @settingsPasswordMinCharacters.
   ///
   /// In fr, this message translates to:
-  /// **'Minimum 8 caracteres'**
+  /// **'\"Minimum 8 caracteres\"'**
   String get settingsPasswordMinCharacters;
 
   /// No description provided for @teamSalaryMode.
   ///
   /// In fr, this message translates to:
-  /// **'Mode salaire'**
+  /// **'\"Mode salaire\"'**
   String get teamSalaryMode;
 
   /// No description provided for @settingsMyEmployeeQr.
   ///
   /// In fr, this message translates to:
-  /// **'Mon QR employe'**
+  /// **'\"Mon QR employe\"'**
   String get settingsMyEmployeeQr;
 
   /// No description provided for @teamAmountRequired.
   ///
   /// In fr, this message translates to:
-  /// **'Montant obligatoire'**
+  /// **'\"Montant obligatoire\"'**
   String get teamAmountRequired;
 
   /// No description provided for @settingsPasswordUpdated.
   ///
   /// In fr, this message translates to:
-  /// **'Mot de passe mis a jour.'**
+  /// **'\"Mot de passe mis a jour.\"'**
   String get settingsPasswordUpdated;
 
   /// No description provided for @settingsEdgeNodeLocal.
   ///
   /// In fr, this message translates to:
-  /// **'Noeud Edge (reseau local)'**
+  /// **'\"Noeud Edge (reseau local)\"'**
   String get settingsEdgeNodeLocal;
 
   /// No description provided for @settingsBiometryNotesConsent.
   ///
   /// In fr, this message translates to:
-  /// **'Notes et consentement'**
+  /// **'\"Notes et consentement\"'**
   String get settingsBiometryNotesConsent;
 
   /// No description provided for @settingsPushImmediateHint.
   ///
   /// In fr, this message translates to:
-  /// **'Notifications immediates sur ce telephone.'**
+  /// **'\"Notifications immediates sur ce telephone.\"'**
   String get settingsPushImmediateHint;
 
   /// No description provided for @teamNewEmployee.
   ///
   /// In fr, this message translates to:
-  /// **'Nouvel employe'**
+  /// **'\"Nouvel employe\"'**
   String get teamNewEmployee;
 
   /// No description provided for @teamNewEmployeeViaQr.
   ///
   /// In fr, this message translates to:
-  /// **'Nouvel employe via QR'**
+  /// **'\"Nouvel employe via QR\"'**
   String get teamNewEmployeeViaQr;
 
   /// No description provided for @settingsRecoveryEmailOptionalHint.
   ///
   /// In fr, this message translates to:
-  /// **'Optionnel pour recuperer l acces'**
+  /// **'\"Optionnel pour recuperer l acces\"'**
   String get settingsRecoveryEmailOptionalHint;
 
   /// No description provided for @settingsPersonalEmailHint.
   ///
   /// In fr, this message translates to:
-  /// **'Optionnel, conserve votre compte hors entreprise'**
+  /// **'\"Optionnel, conserve votre compte hors entreprise\"'**
   String get settingsPersonalEmailHint;
 
   /// No description provided for @settingsPhoneHint.
   ///
   /// In fr, this message translates to:
-  /// **'Optionnel, visible selon vos choix futurs'**
+  /// **'\"Optionnel, visible selon vos choix futurs\"'**
   String get settingsPhoneHint;
 
   /// No description provided for @settingsOpenMyLocker.
   ///
   /// In fr, this message translates to:
-  /// **'Ouvrir mon placard'**
+  /// **'\"Ouvrir mon placard\"'**
   String get settingsOpenMyLocker;
 
   /// No description provided for @settingsShareProfileOrScan.
   ///
   /// In fr, this message translates to:
-  /// **'Partager votre profil ou scanner une entreprise.'**
+  /// **'\"Partager votre profil ou scanner une entreprise.\"'**
   String get settingsShareProfileOrScan;
 
   /// No description provided for @settingsShareProfileOrScanQr.
   ///
   /// In fr, this message translates to:
-  /// **'Partagez votre profil ou scannez le QR d une entreprise.'**
+  /// **'\"Partagez votre profil ou scannez le QR d une entreprise.\"'**
   String get settingsShareProfileOrScanQr;
 
   /// No description provided for @settingsDigitalLocker.
   ///
   /// In fr, this message translates to:
-  /// **'Placard numerique'**
+  /// **'\"Placard numerique\"'**
   String get settingsDigitalLocker;
 
   /// No description provided for @attendanceTodayPunchesOpenSessions.
   ///
   /// In fr, this message translates to:
-  /// **'Pointages du jour et sessions ouvertes'**
+  /// **'\"Pointages du jour et sessions ouvertes\"'**
   String get attendanceTodayPunchesOpenSessions;
 
   /// No description provided for @teamPositionOptional.
   ///
   /// In fr, this message translates to:
-  /// **'Poste (optionnel)'**
+  /// **'\"Poste (optionnel)\"'**
   String get teamPositionOptional;
 
   /// No description provided for @settingsNotifPrefsUpdated.
   ///
   /// In fr, this message translates to:
-  /// **'Preferences notifications mises a jour.'**
+  /// **'\"Preferences notifications mises a jour.\"'**
   String get settingsNotifPrefsUpdated;
 
   /// No description provided for @settingsBiometryEnrollment.
   ///
   /// In fr, this message translates to:
-  /// **'Preparation biometrie'**
+  /// **'\"Preparation biometrie\"'**
   String get settingsBiometryEnrollment;
 
   /// No description provided for @settingsBiometrySavedLocally.
   ///
   /// In fr, this message translates to:
-  /// **'Preparation biometrie enregistree localement.'**
+  /// **'\"Preparation biometrie enregistree localement.\"'**
   String get settingsBiometrySavedLocally;
 
   /// No description provided for @settingsBiometryEnrollHint.
   ///
   /// In fr, this message translates to:
-  /// **'Preparer doigt et visage pour les bornes terrain.'**
+  /// **'\"Preparer doigt et visage pour les bornes terrain.\"'**
   String get settingsBiometryEnrollHint;
 
   /// No description provided for @attendanceTeamPresence.
   ///
   /// In fr, this message translates to:
-  /// **'Presences equipe'**
+  /// **'\"Presences equipe\"'**
   String get attendanceTeamPresence;
 
   /// No description provided for @settingsProfileUpdated.
   ///
   /// In fr, this message translates to:
-  /// **'Profil mis a jour.'**
+  /// **'\"Profil mis a jour.\"'**
   String get settingsProfileUpdated;
 
   /// No description provided for @settingsPushMobile.
   ///
   /// In fr, this message translates to:
-  /// **'Push mobile'**
+  /// **'\"Push mobile\"'**
   String get settingsPushMobile;
 
   /// No description provided for @commonCompanyQr.
   ///
   /// In fr, this message translates to:
-  /// **'QR entreprise'**
+  /// **'\"QR entreprise\"'**
   String get commonCompanyQr;
 
   /// No description provided for @teamCompanyQrScannable.
   ///
   /// In fr, this message translates to:
-  /// **'QR entreprise scannable'**
+  /// **'\"QR entreprise scannable\"'**
   String get teamCompanyQrScannable;
 
   /// No description provided for @settingsQrUnavailable.
   ///
   /// In fr, this message translates to:
-  /// **'QR indisponible pour le moment.'**
+  /// **'\"QR indisponible pour le moment.\"'**
   String get settingsQrUnavailable;
 
   /// No description provided for @settingsQrOnboarding.
   ///
   /// In fr, this message translates to:
-  /// **'QR onboarding'**
+  /// **'\"QR onboarding\"'**
   String get settingsQrOnboarding;
 
   /// No description provided for @settingsQrProfessional.
   ///
   /// In fr, this message translates to:
-  /// **'QR professionnel'**
+  /// **'\"QR professionnel\"'**
   String get settingsQrProfessional;
 
   /// No description provided for @settingsEdgeLogoutHint.
   ///
   /// In fr, this message translates to:
-  /// **'Quitter proprement cet espace sur ce telephone.'**
+  /// **'\"Quitter proprement cet espace sur ce telephone.\"'**
   String get settingsEdgeLogoutHint;
 
   /// No description provided for @teamReloadSchedules.
   ///
   /// In fr, this message translates to:
-  /// **'Recharger les horaires'**
+  /// **'\"Recharger les horaires\"'**
   String get teamReloadSchedules;
 
   /// No description provided for @settingsBiometryFaceRecognitionDesired.
   ///
   /// In fr, this message translates to:
-  /// **'Reconnaissance faciale souhaitee'**
+  /// **'\"Reconnaissance faciale souhaitee\"'**
   String get settingsBiometryFaceRecognitionDesired;
 
   /// No description provided for @settingsNotifSummaryHint.
   ///
   /// In fr, this message translates to:
-  /// **'Resume et confirmations importantes.'**
+  /// **'\"Resume et confirmations importantes.\"'**
   String get settingsNotifSummaryHint;
 
   /// No description provided for @attendanceLateMissedToCheck.
   ///
   /// In fr, this message translates to:
-  /// **'Retards, oublis et pointages a verifier'**
+  /// **'\"Retards, oublis et pointages a verifier\"'**
   String get attendanceLateMissedToCheck;
 
   /// No description provided for @teamBaseSalary.
   ///
   /// In fr, this message translates to:
-  /// **'Salaire de base'**
+  /// **'\"Salaire de base\"'**
   String get teamBaseSalary;
 
   /// No description provided for @teamDailySalary.
   ///
   /// In fr, this message translates to:
-  /// **'Salaire journalier'**
+  /// **'\"Salaire journalier\"'**
   String get teamDailySalary;
 
   /// No description provided for @teamMonthlyGrossSalary.
   ///
   /// In fr, this message translates to:
-  /// **'Salaire mensuel brut'**
+  /// **'\"Salaire mensuel brut\"'**
   String get teamMonthlyGrossSalary;
 
   /// No description provided for @teamSelectType.
   ///
   /// In fr, this message translates to:
-  /// **'Selectionnez un type'**
+  /// **'\"Selectionnez un type\"'**
   String get teamSelectType;
 
   /// No description provided for @attendanceTodaySessions.
   ///
   /// In fr, this message translates to:
-  /// **'Sessions du jour'**
+  /// **'\"Sessions du jour\"'**
   String get attendanceTodaySessions;
 
   /// No description provided for @settingsBiometrySubmit.
   ///
   /// In fr, this message translates to:
-  /// **'Soumettre au manager / RH'**
+  /// **'\"Soumettre au manager / RH\"'**
   String get settingsBiometrySubmit;
 
   /// No description provided for @attendanceSyncingPresence.
   ///
   /// In fr, this message translates to:
-  /// **'Synchronisation des presences...'**
+  /// **'\"Synchronisation des presences...\"'**
   String get attendanceSyncingPresence;
 
   /// No description provided for @settingsNotifTasksHint.
   ///
   /// In fr, this message translates to:
-  /// **'Taches, decisions RH, pointage et rappels.'**
+  /// **'\"Taches, decisions RH, pointage et rappels.\"'**
   String get settingsNotifTasksHint;
 
   /// No description provided for @teamHourlyRate.
   ///
   /// In fr, this message translates to:
-  /// **'Taux horaire'**
+  /// **'\"Taux horaire\"'**
   String get teamHourlyRate;
 
   /// No description provided for @settingsPersonalPhoneLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Telephone personnel'**
+  /// **'\"Téléphone personnel\"'**
   String get settingsPersonalPhoneLabel;
 
   /// No description provided for @notifMarkAllAsRead.
   ///
   /// In fr, this message translates to:
-  /// **'Tout marquer comme lu'**
+  /// **'\"Tout marquer comme lu\"'**
   String get notifMarkAllAsRead;
 
   /// No description provided for @teamManagerType.
   ///
   /// In fr, this message translates to:
-  /// **'Type de manager'**
+  /// **'\"Type de manager\"'**
   String get teamManagerType;
 
   /// No description provided for @teamPayType.
   ///
   /// In fr, this message translates to:
-  /// **'Type de paie'**
+  /// **'\"Type de paie\"'**
   String get teamPayType;
 
   /// No description provided for @settingsBiometryLocalCheckCancelled.
   ///
   /// In fr, this message translates to:
-  /// **'Verification biometrie locale annulee.'**
+  /// **'\"Verification biometrie locale annulee.\"'**
   String get settingsBiometryLocalCheckCancelled;
 
   /// No description provided for @settingsViewMyProfile.
   ///
   /// In fr, this message translates to:
-  /// **'Voir mon profil'**
+  /// **'\"Voir mon profil\"'**
   String get settingsViewMyProfile;
 
   /// No description provided for @notifUpToDate.
   ///
   /// In fr, this message translates to:
-  /// **'Vous etes a jour. Cette page se rafraichit automatiquement.'**
+  /// **'\"Vous etes a jour. Cette page se rafraichit automatiquement.\"'**
   String get notifUpToDate;
 
   /// No description provided for @teamOperationalView.
   ///
   /// In fr, this message translates to:
-  /// **'Vue operationnelle'**
+  /// **'\"Vue operationnelle\"'**
   String get teamOperationalView;
 
   /// No description provided for @commonLanguageArabic.
   ///
   /// In fr, this message translates to:
-  /// **'العربية'**
+  /// **'\"العربية\"'**
   String get commonLanguageArabic;
 
   /// No description provided for @settingsPrefSyncAccount.
   ///
   /// In fr, this message translates to:
-  /// **'Cette preference est synchronisee avec votre compte et pilote aussi le mode RTL.'**
+  /// **'\"Cette preference est synchronisee avec votre compte et pilote aussi le mode RTL.\"'**
   String get settingsPrefSyncAccount;
 
   /// No description provided for @settingsPasswordModernizeHint.
   ///
   /// In fr, this message translates to:
-  /// **'Changez votre mot de passe avant les prochaines etapes de modernisation.'**
+  /// **'\"Changez votre mot de passe avant les prochaines etapes de modernisation.\"'**
   String get settingsPasswordModernizeHint;
 
   /// No description provided for @teamPasteEmployeeQrHint.
   ///
   /// In fr, this message translates to:
-  /// **'Collez le code QR employe. Le formulaire restera modifiable avant invitation.'**
+  /// **'\"Collez le code QR employe. Le formulaire restera modifiable avant invitation.\"'**
   String get teamPasteEmployeeQrHint;
 
   /// No description provided for @teamInviteSummary.
   ///
   /// In fr, this message translates to:
-  /// **'Invitation, role, date d embauche et base salariale sont envoyes a l API.'**
+  /// **'\"Invitation, role, date d embauche et base salariale sont envoyes a l API.\"'**
   String get teamInviteSummary;
 
   /// No description provided for @teamQrEmployeeScanHint.
   ///
   /// In fr, this message translates to:
-  /// **'L employe le scanne depuis son espace compte pour demander son integration.'**
+  /// **'\"L employe le scanne depuis son espace compte pour demander son integration.\"'**
   String get teamQrEmployeeScanHint;
 
   /// No description provided for @settingsBiometryFaceHint.
   ///
   /// In fr, this message translates to:
-  /// **'Le visage peut etre capture depuis le mobile puis soumis a validation manager / RH. Pour l empreinte, Android/iOS permettent de verifier localement que vous utilisez bien un doigt enregistre, mais ne donnent pas acces au gabarit brut; l activation effective cote pointage restera donc approuvee puis exploitee par la borne entreprise.'**
+  /// **'\"Le visage peut etre capture depuis le mobile puis soumis a validation manager / RH. Pour l empreinte, Android/iOS permettent de verifier localement que vous utilisez bien un doigt enregistre, mais ne donnent pas acces au gabarit brut; l activation effective cote pointage restera donc approuvee puis exploitee par la borne entreprise.\"'**
   String get settingsBiometryFaceHint;
 
   /// No description provided for @attendanceAnomaliesHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les alertes de pointage, sorties manquantes et heures supplementaires apparaitront ici.'**
+  /// **'\"Les alertes de pointage, sorties manquantes et heures supplementaires apparaitront ici.\"'**
   String get attendanceAnomaliesHint;
 
   /// No description provided for @attendanceRequestsHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les demandes envoyees depuis les trois points du pointage seront listees ici.'**
+  /// **'\"Les demandes envoyees depuis les trois points du pointage seront listees ici.\"'**
   String get attendanceRequestsHint;
 
   /// No description provided for @teamInvitesHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les invitations envoyees a vos futurs collaborateurs s afficheront ici.'**
+  /// **'\"Les invitations envoyees a vos futurs collaborateurs s afficheront ici.\"'**
   String get teamInvitesHint;
 
   /// No description provided for @attendanceTeamPunchesHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les pointages equipe apparaitront ici des qu ils arrivent depuis mobile ou kiosque.'**
+  /// **'\"Les pointages equipe apparaitront ici des qu ils arrivent depuis mobile ou kiosque.\"'**
   String get attendanceTeamPunchesHint;
 
   /// No description provided for @settingsEdgeOptionalHint.
   ///
   /// In fr, this message translates to:
-  /// **'Optionnel: pointer vers un serveur Edge installe sur site pour pointer sans Internet.'**
+  /// **'\"Optionnel: pointer vers un serveur Edge installe sur site pour pointer sans Internet.\"'**
   String get settingsEdgeOptionalHint;
 
   /// No description provided for @settingsPrefsUnavailable.
   ///
   /// In fr, this message translates to:
-  /// **'Preferences indisponibles pour le moment. Tire pour recharger plus tard.'**
+  /// **'\"Preferences indisponibles pour le moment. Tire pour recharger plus tard.\"'**
   String get settingsPrefsUnavailable;
 
   /// No description provided for @teamQrPrefilledHint.
   ///
   /// In fr, this message translates to:
-  /// **'Profil pre-rempli depuis QR. Renseignez l email professionnel unique de cette entreprise.'**
+  /// **'\"Profil pre-rempli depuis QR. Renseignez l email professionnel unique de cette entreprise.\"'**
   String get teamQrPrefilledHint;
 
   /// No description provided for @settingsBiometryPendingHint.
@@ -12060,6 +12060,60 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Sites on-premise — statut et synchronisation.'**
   String get dashboardEdgeNodesHint;
+
+  /// No description provided for @settingsEdgeRemoved.
+  ///
+  /// In fr, this message translates to:
+  /// **'\"Appairage Edge supprimé.\"'**
+  String get settingsEdgeRemoved;
+
+  /// No description provided for @settingsViewProfile.
+  ///
+  /// In fr, this message translates to:
+  /// **'\"Voir mon profil\"'**
+  String get settingsViewProfile;
+
+  /// No description provided for @settingsRecoveryEmailHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'\"Optionnel pour récupérer l\'accès\"'**
+  String get settingsRecoveryEmailHint;
+
+  /// No description provided for @settingsPersonalPhoneHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'\"Optionnel, visible selon vos choix futurs\"'**
+  String get settingsPersonalPhoneHint;
+
+  /// No description provided for @settingsPortableIdentityTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'\"Identité portable\"'**
+  String get settingsPortableIdentityTitle;
+
+  /// No description provided for @settingsPortableIdentitySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'\"Historique entreprise, poste, statut et disponibilité.\"'**
+  String get settingsPortableIdentitySubtitle;
+
+  /// No description provided for @settingsPortableIdentityHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'\"Email personnel, récupération et téléphone restent attachés au compte.\"'**
+  String get settingsPortableIdentityHint;
+
+  /// No description provided for @settingsDigitalLockerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'\"Placard numérique\"'**
+  String get settingsDigitalLockerTitle;
+
+  /// No description provided for @settingsDigitalLockerSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'CV, contrats, diplômes et documents avec visibilité contrôlée.'**
+  String get settingsDigitalLockerSubtitle;
 }
 
 class _AppLocalizationsDelegate
