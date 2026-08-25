@@ -2,6 +2,7 @@
 
 return [
     // Auth
+        'UNKNOWN_ACCOUNT' => 'Bu Google e-postasıyla ilişkili bir Leopardo RH hesabı yok. Yöneticinizden davet isteyin.',
     'INVALID_CREDENTIALS' => 'E-posta veya şifre hatalı.',
     'ACCOUNT_SUSPENDED' => 'Hesabınız askıya alındı. Yöneticinizle iletişime geçin.',
     'ACCOUNT_ARCHIVED' => 'Bu hesap arşivlenmiş.',

@@ -2,6 +2,7 @@
 
 return [
     // Auth
+        'UNKNOWN_ACCOUNT' => 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
     'INVALID_CREDENTIALS' => 'Invalid email or password.',
     'ACCOUNT_SUSPENDED' => 'Your account has been suspended. Contact your manager.',
     'ACCOUNT_ARCHIVED' => 'This account is archived.',

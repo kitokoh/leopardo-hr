@@ -244,9 +244,12 @@ class AuthController extends Controller
             // de démo explicitement configurés (DEMO_MODE_ENABLED=true), en
             // parité avec le 401 de handleGoogleToken.
             if (! config('app.demo_mode_enabled')) {
+                // Issue #5171 : message localisé ×4 (parité i18n) — le parcours
+                // invitation-first (#2617) crée toujours la ligne employé en
+                // amont ; le 401 guide le nouvel utilisateur vers son admin.
                 return new JsonResponse([
                     'error' => 'UNKNOWN_ACCOUNT',
-                    'message' => 'No account exists for this Google email. Ask your administrator for an invitation.',
+                    'message' => __('errors.UNKNOWN_ACCOUNT'),
                 ], 401);
             }
 
