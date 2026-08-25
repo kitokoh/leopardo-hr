@@ -57,6 +57,12 @@ return [
             'payroll.dsn_declaration',
             'payroll.bank_export',
             'payroll.accounting_export',
+            // Comptabilité (#5273) — audit trail des actions documents.
+            'accounting.document_created',
+            'accounting.document_sent',
+            'accounting.document_payment',
+            'accounting.document_cancelled',
+            'accounting.credit_note_created',
         ],
     ],
 ];
