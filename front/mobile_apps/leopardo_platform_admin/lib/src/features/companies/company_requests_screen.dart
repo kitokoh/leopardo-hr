@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_core/core/widgets/shimmer_loading.dart';
 
 import '../../core/platform_providers.dart';
@@ -23,10 +24,10 @@ class CompanyRequestsScreen extends ConsumerWidget {
 
     return MobilePage(
       appBar: MobileTopBar(
-        title: 'Demandes clients',
-        subtitle: 'Validation super-admin',
+        title: context.l10n.dashboardClientrequests,
+        subtitle: context.l10n.companyrequestsValidationSuperadmin,
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: context.l10n.commonBack,
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
@@ -34,9 +35,9 @@ class CompanyRequestsScreen extends ConsumerWidget {
       children: [
         requests.when(
           data: (items) => items.isEmpty
-              ? const MobilePanel(
+              ? MobilePanel(
                   child: Text(
-                    'Aucune demande en attente.',
+                    context.l10n.dashboardNopendingrequests,
                     style: TextStyle(color: MobileSurface.secondary),
                   ),
                 )
@@ -112,7 +113,9 @@ class _CompanyRequestCard extends ConsumerWidget {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(approved ? 'Demande approuvee' : 'Demande refusee'),
+        content: Text(approved
+            ? context.l10n.companyrequestsApprovedToast
+            : context.l10n.companyrequestsRejectedToast),
       ),
     );
   }
@@ -134,7 +137,7 @@ class _CompanyRequestCard extends ConsumerWidget {
             child: OutlinedButton.icon(
               onPressed: () => _review(context, ref, false),
               icon: const Icon(Icons.close_rounded),
-              label: const Text('Refuser'),
+              label: Text(context.l10n.actionReject),
             ),
           ),
           const SizedBox(width: 10),
@@ -142,7 +145,7 @@ class _CompanyRequestCard extends ConsumerWidget {
             child: ElevatedButton.icon(
               onPressed: () => _review(context, ref, true),
               icon: const Icon(Icons.check_rounded),
-              label: const Text('Approuver'),
+              label: Text(context.l10n.actionApprove),
             ),
           ),
         ],

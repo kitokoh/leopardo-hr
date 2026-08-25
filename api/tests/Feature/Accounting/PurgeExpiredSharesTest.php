@@ -26,6 +26,7 @@ class PurgeExpiredSharesTest extends TestCase
     use RefreshTenantDatabase;
 
     /** Crée une entreprise active avec un document et retourne (company, document). */
+    /** @return array<int, mixed> */
     private function makeCompanyWithDocument(string $suffix): array
     {
         /** @var Company $company */

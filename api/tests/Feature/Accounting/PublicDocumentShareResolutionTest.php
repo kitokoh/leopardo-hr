@@ -28,6 +28,7 @@ class PublicDocumentShareResolutionTest extends TestCase
     use RefreshTenantDatabase;
 
     /** Crée une entreprise active + un document partagé, retourne (company, document, token). */
+    /** @return array<int, mixed> */
     private function makeCompanyWithShare(string $suffix): array
     {
         /** @var Company $company */

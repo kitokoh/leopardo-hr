@@ -6,6 +6,7 @@ import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 import '../../core/platform_providers.dart';
 import '../auth/platform_auth_controller.dart';
@@ -25,11 +26,11 @@ class PlatformDashboardScreen extends ConsumerWidget {
 
     return MobilePage(
       appBar: MobileTopBar(
-        title: 'Administration plateforme',
-        subtitle: auth.user?.email ?? 'Super-admin',
+        title: context.l10n.dashboardPlatformAdministration,
+        subtitle: auth.user?.email ?? context.l10n.dashboardSuperAdmin,
         actions: [
           IconButton(
-            tooltip: 'Deconnexion',
+            tooltip: context.l10n.navigationLogout,
             onPressed: () =>
                 ref.read(platformAuthControllerProvider.notifier).logout(),
             icon: const Icon(Icons.logout_rounded),
@@ -42,8 +43,8 @@ class PlatformDashboardScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Vue executive',
+                Text(
+                  context.l10n.dashboardExecutiveView,
                   style: TextStyle(
                     color: MobileSurface.text,
                     fontSize: 18,
@@ -55,13 +56,13 @@ class PlatformDashboardScreen extends ConsumerWidget {
                   children: [
                     MobileMetricTile(
                       value: '${data.totalCompanies}',
-                      label: 'Entreprises',
+                      label: context.l10n.navigationCompanies,
                       color: AppColors.rh,
                     ),
                     const SizedBox(width: 10),
                     MobileMetricTile(
                       value: '${data.activeCompanies}',
-                      label: 'Actives',
+                      label: context.l10n.dashboardActiveLabel,
                       color: AppColors.info,
                     ),
                   ],
@@ -71,7 +72,7 @@ class PlatformDashboardScreen extends ConsumerWidget {
                   children: [
                     MobileMetricTile(
                       value: '${data.trialCompanies}',
-                      label: 'Essais',
+                      label: context.l10n.dashboardTrials,
                       color: AppColors.warning,
                     ),
                     const SizedBox(width: 10),
@@ -89,8 +90,10 @@ class PlatformDashboardScreen extends ConsumerWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    LeopardoBadge.present(label: '${data.activeCompanies} actives'),
-                    LeopardoBadge.onLeave(label: '${data.trialCompanies} essais'),
+                    LeopardoBadge.present(
+                        label: '${data.activeCompanies} actives'),
+                    LeopardoBadge.onLeave(
+                        label: '${data.trialCompanies} essais'),
                     LeopardoBadge(
                       label: '${data.totalCompanies} totales',
                       color: AppColors.rh,
@@ -100,35 +103,36 @@ class PlatformDashboardScreen extends ConsumerWidget {
               ],
             ),
           ),
-          loading: () => const MobileEmptyLoading(label: 'Chargement cockpit'),
+          loading: () =>
+              MobileEmptyLoading(label: context.l10n.dashboardLoadingCockpit),
           error: (error, _) => MobileErrorPanel(
             message: error.toString(),
             onRetry: () => ref.invalidate(platformMetricsProvider),
           ),
         ),
         const SizedBox(height: 18),
-        const MobileSectionLabel('Actions plateforme'),
+        MobileSectionLabel(context.l10n.dashboardPlatformActions),
         MobileListGlassCard(
           icon: Icons.business_rounded,
           iconColor: AppColors.rh,
-          title: 'Entreprises clientes',
-          subtitle: 'Suivre les tenants, leur statut et leur plan.',
+          title: context.l10n.dashboardClientCompanies,
+          subtitle: context.l10n.dashboardClientCompaniesHint,
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () => context.push('/platform/companies'),
         ),
         MobileListGlassCard(
           icon: Icons.add_business_rounded,
           iconColor: AppColors.info,
-          title: 'Creer une entreprise',
-          subtitle: 'Provisionner un nouveau client et son manager principal.',
+          title: context.l10n.dashboardCreateCompany,
+          subtitle: context.l10n.dashboardCreateCompanyHint,
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () => context.push('/platform/companies/new'),
         ),
         MobileListGlassCard(
           icon: Icons.fact_check_rounded,
           iconColor: AppColors.warning,
-          title: 'Demandes clients',
-          subtitle: 'Approuver ou refuser les demandes de creation.',
+          title: context.l10n.dashboardClientrequests,
+          subtitle: context.l10n.dashboardClientRequestsHint,
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () => context.push('/platform/company-requests'),
         ),
@@ -136,16 +140,16 @@ class PlatformDashboardScreen extends ConsumerWidget {
         MobileListGlassCard(
           icon: Icons.support_agent_rounded,
           iconColor: AppColors.danger,
-          title: 'Support client',
-          subtitle: 'Tickets tenant — repondre et trier.',
+          title: context.l10n.dashboardSupportClient,
+          subtitle: context.l10n.dashboardTicketsHint,
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () => context.push('/platform/support-tickets'),
         ),
         MobileListGlassCard(
           icon: Icons.router_rounded,
           iconColor: AppColors.rh,
-          title: 'Noeuds Edge',
-          subtitle: 'Sites on-premise — statut et synchronisation.',
+          title: context.l10n.dashboardEdgeNodes,
+          subtitle: context.l10n.dashboardEdgeNodesHint,
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () => context.push('/platform/edge-nodes'),
         ),
