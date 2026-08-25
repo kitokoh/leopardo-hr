@@ -153,6 +153,8 @@ jobs:
       fail-fast: false
       matrix:
         project:
+          - name: leopardo_accounting
+            path: front/mobile_apps/leopardo_accounting
           - name: leopardo_core
             path: front/mobile_apps/leopardo_core
           - name: leopardo_employee
@@ -266,6 +268,9 @@ jobs:
           - name: leopardo_marketing
             path: front/mobile_apps/leopardo_marketing
             artifact: leopardo-marketing-debug-apk
+          - name: leopardo_accounting
+            path: front/mobile_apps/leopardo_accounting
+            artifact: leopardo-accounting-debug-apk
 
     steps:
       - name: Checkout code
