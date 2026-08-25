@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
+import 'package:leopardo_core/core/api/idempotency_keys.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
 import 'package:leopardo_core/models/employee_day_detail.dart';
@@ -36,6 +38,9 @@ class AttendanceRepository {
       if (gpsLng != null) 'gps_lng': gpsLng,
       if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
     };
+    // RTMX (#5407) : une clé par pointage logique — envoyée en header et
+    // stockée dans la file hors-ligne pour que le rejeu réutilise la MÊME clé.
+    final idempotencyKey = IdempotencyKeys.newKey();
 
     try {
       final response = await apiClient.requestWithRetry(
@@ -44,11 +49,12 @@ class AttendanceRepository {
         data: payload,
         maxRetriesOverride: 0,
         timeoutOverride: _actionTimeout,
+        options: Options(headers: {'Idempotency-Key': idempotencyKey}),
       );
       return AttendanceLog.fromJson(extractDataMap(response.data));
     } catch (e) {
       if (_isOfflineError(e)) {
-        await _saveOfflinePunch('check-in', payload);
+        await _saveOfflinePunch('check-in', payload, idempotencyKey);
         return _offlinePendingLog(checkIn: true);
       }
       rethrow;
@@ -66,6 +72,7 @@ class AttendanceRepository {
       if (gpsLng != null) 'gps_lng': gpsLng,
       if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
     };
+    final idempotencyKey = IdempotencyKeys.newKey();
 
     try {
       final response = await apiClient.requestWithRetry(
@@ -74,11 +81,12 @@ class AttendanceRepository {
         data: payload,
         maxRetriesOverride: 0,
         timeoutOverride: _actionTimeout,
+        options: Options(headers: {'Idempotency-Key': idempotencyKey}),
       );
       return AttendanceLog.fromJson(extractDataMap(response.data));
     } catch (e) {
       if (_isOfflineError(e)) {
-        await _saveOfflinePunch('check-out', payload);
+        await _saveOfflinePunch('check-out', payload, idempotencyKey);
         return _offlinePendingLog(checkIn: false);
       }
       rethrow;
@@ -91,7 +99,18 @@ class AttendanceRepository {
   /// `leopardo_core`) can replay it once connectivity returns, instead of
   /// letting the raw `ApiException` reach the UI and lose the punch
   /// (issue #1289).
+  ///
+  /// RTMX (#5407) : `requestWithRetry` relance la `DioException` brute pour
+  /// les écritures (maxRetries 0) — on reconnaît explicitement les erreurs
+  /// de transport comme `leopardo_employee` (`_isOfflineNetworkError`), sinon
+  /// la file hors-ligne ne s'active jamais sur coupure réseau.
   static bool _isOfflineError(Object e) {
+    if (e is DioException) {
+      return e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.sendTimeout ||
+          e.type == DioExceptionType.receiveTimeout;
+    }
     return e is ApiException &&
         (e.message.toLowerCase().contains('connexion') ||
             e.message.toLowerCase().contains('internet'));
@@ -100,6 +119,7 @@ class AttendanceRepository {
   static Future<void> _saveOfflinePunch(
     String type,
     Map<String, dynamic> payload,
+    String? idempotencyKey,
   ) async {
     final box = Hive.isBoxOpen('offline_punches')
         ? Hive.box<Map<dynamic, dynamic>>('offline_punches')
@@ -107,6 +127,9 @@ class AttendanceRepository {
     await box.add({
       'type': type,
       'payload': payload,
+      // RTMX (#5407) : la clé générée au pointage initial est conservée pour
+      // que le rejeu (OfflineSyncService) réutilise la MÊME clé.
+      if (idempotencyKey != null) 'idempotencyKey': idempotencyKey,
       'timestamp': DateTime.now().toIso8601String(),
     });
   }
