@@ -708,6 +708,30 @@ class LeopardoClient:
         """Exporter le journal d'audit en CSV"""
         return self.request("GET", "/audit-logs/export-csv", **kwargs)
 
+    def post_auth_2fa_confirm(self, **kwargs):
+        """Confirmer l'enrolement 2FA (premier code) et activer"""
+        return self.request("POST", "/auth/2fa/confirm", **kwargs)
+
+    def post_auth_2fa_disable(self, **kwargs):
+        """Desactiver la 2FA (re-verification par code)"""
+        return self.request("POST", "/auth/2fa/disable", **kwargs)
+
+    def post_auth_2fa_enroll(self, **kwargs):
+        """Demarrer l'enrolement 2FA (secret + QR)"""
+        return self.request("POST", "/auth/2fa/enroll", **kwargs)
+
+    def post_auth_2fa_recovery_codes(self, **kwargs):
+        """Regenerer les codes de recuperation 2FA"""
+        return self.request("POST", "/auth/2fa/recovery-codes", **kwargs)
+
+    def get_auth_2fa_status(self, **kwargs):
+        """Etat 2FA du compte connecte"""
+        return self.request("GET", "/auth/2fa/status", **kwargs)
+
+    def post_auth_2fa_verify(self, **kwargs):
+        """Verifier le challenge 2FA et obtenir le token"""
+        return self.request("POST", "/auth/2fa/verify", **kwargs)
+
     def get_auth_biometric_enrollment(self, **kwargs):
         """Derniere demande biometrie de l'utilisateur courant"""
         return self.request("GET", "/auth/biometric-enrollment", **kwargs)

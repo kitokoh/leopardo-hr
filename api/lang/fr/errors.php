@@ -250,4 +250,8 @@ return [
     'DOCUMENT_NOT_FULLY_PAID' => 'Le document ne peut pas être marqué payé tant que le montant total n\'est pas réglé.',
     'INVALID_DOCUMENT_TRANSITION' => 'Transition de statut non autorisée pour ce document.',
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Période invalide. Utilisez le format AAAA-MM.',
+    'TWO_FACTOR_INVALID' => 'Code de double authentification invalide ou expiré.',
+    'TWO_FACTOR_REQUIRED' => 'La double authentification est obligatoire pour ce compte. Activez-la avant de vous connecter.',
+    'TWO_FACTOR_ALREADY_ENABLED' => 'La double authentification est déjà activée sur ce compte.',
+    'TWO_FACTOR_CHALLENGE_EXPIRED' => 'Session de double authentification expirée. Reconnectez-vous.',
 ];

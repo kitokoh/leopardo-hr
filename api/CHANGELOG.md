@@ -4,6 +4,7 @@ Toutes les modifications notables de ce projet sont documentées ici.
 Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
+- **Enterprise 2FA/TOTP (#5436)**: shared `TotpService` (secret/QR/verify, pure-PHP TOTP fallback), enrollment `POST /auth/2fa/enroll|confirm|disable|recovery-codes`, login challenge (`mfa_challenge` response, token revoked, single-use 5-min challenge), `POST /auth/2fa/verify` (TOTP or hashed single-use recovery code → Sanctum token with tenant abilities), remember-device signed cookie (30 d), tenant policy `mfa_required_roles` (403 `TWO_FACTOR_REQUIRED`), i18n ×4 (`TWO_FACTOR_*`, 219 keys/locale), OpenAPI 6 paths (806 ops, SDK regenerated). Non-breaking: accounts without 2FA keep direct login. Tests: `TwoFactorAuthTest` (7 scenarios). Docs: `docs/security/2FA_ENTREPRISE.md`.
 
 ### Performance
 - **PayrollCalculator mixed-value handling is explicit.** Normalized the historical gross aggregation through a typed `PaySlip` callback and validated the nullable aggregate result from `leave_balances` before casting, removing the two residual PHPStan level-8 errors without changing payroll formulas.

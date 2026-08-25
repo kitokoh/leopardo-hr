@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Accounting\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\Accounting\Application\Jobs\GenerateDocumentPdf;
@@ -34,6 +35,8 @@ final class PublicDocumentShareController
             abort(404, 'DOCUMENT_SHARE_NOT_FOUND');
         }
 
+        $this->auditAccess($share, 'accounting.share.info');
+
         /** @var AccountingDocument $document */
         $document = $share->document;
 
@@ -58,6 +61,8 @@ final class PublicDocumentShareController
         if ($share === null) {
             abort(404, 'DOCUMENT_SHARE_NOT_FOUND');
         }
+
+        $this->auditAccess($share, 'accounting.share.download');
 
         /** @var AccountingDocument $document */
         $document = $share->document;
@@ -114,5 +119,34 @@ final class PublicDocumentShareController
         }
 
         return null;
+    }
+
+    /**
+     * Trace un accès public au portail (issue #5429) — RGPD : qui a consulté
+     * / téléchargé quel document partagé, quand, depuis quelle IP. Écrit dans
+     * le tenant de la compagnie du partage (user_id null : accès non authentifié).
+     */
+    private function auditAccess(AccountingDocumentShare $share, string $action): void
+    {
+        $company = Company::query()->where('id', $share->company_id)->first();
+
+        if ($company === null) {
+            return;
+        }
+
+        app(TenantManager::class)->withinTenant($company, function () use ($share, $action): void {
+            AuditLog::create([
+                'company_id' => $share->company_id,
+                'user_id' => null,
+                'action' => $action,
+                'auditable_type' => $share->getMorphClass(),
+                'auditable_id' => $share->id,
+                'old_values' => [],
+                'new_values' => [],
+                'ip_address' => request()->ip(),
+                'user_agent' => substr((string) request()->userAgent(), 0, 255),
+                'metadata' => ['share_token' => $share->share_token],
+            ]);
+        });
     }
 }
