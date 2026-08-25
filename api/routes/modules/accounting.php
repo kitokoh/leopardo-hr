@@ -20,6 +20,7 @@ use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
+use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
@@ -56,6 +57,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
         });
     });
+
+// ── Portail client (issue #5225) — endpoints PUBLICS, le token est la credential.
+// Accès RGPD limité au document partagé, pattern CabinetShare (#1817).
+Route::get('/accounting/documents/shared/{token}', [PublicDocumentShareController::class, 'info'])
+    ->middleware('throttle:60,1');
+Route::get('/accounting/documents/shared/{token}/download', [PublicDocumentShareController::class, 'download'])
+    ->middleware('throttle:60,1');
 
 // ── Trésorerie : paiements, rapprochement, relances (issue #5229) ──────────
 // RBAC : `api.manager:principal,comptable` — réservé direction + comptables.

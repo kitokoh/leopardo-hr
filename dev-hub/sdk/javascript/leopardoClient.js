@@ -140,24 +140,14 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/absences/{absence}/reject", options);
     },
 
-    /** Poster (ou re-poster) un document au journal */
-    postAccountingDocumentsByDocumentJournal(options = {}) {
-      return request("POST", "/accounting/documents/{document}/journal", options);
+    /** Portail client — informations du document partagé (token) */
+    getAccountingDocumentsSharedByToken(options = {}) {
+      return request("GET", "/accounting/documents/shared/{token}", options);
     },
 
-    /** Journal comptable par periode */
-    getAccountingJournal(options = {}) {
-      return request("GET", "/accounting/journal", options);
-    },
-
-    /** Export CSV du journal (expert-comptable) */
-    getAccountingJournalExportCsv(options = {}) {
-      return request("GET", "/accounting/journal/export.csv", options);
-    },
-
-    /** Cloturer une periode comptable */
-    postAccountingJournalPeriodsByPeriodClose(options = {}) {
-      return request("POST", "/accounting/journal/periods/{period}/close", options);
+    /** Portail client — téléchargement du PDF partagé (token) */
+    getAccountingDocumentsSharedByTokenDownload(options = {}) {
+      return request("GET", "/accounting/documents/shared/{token}/download", options);
     },
 
     /** Envoyer un message a l'assistant IA (super-admin) */
