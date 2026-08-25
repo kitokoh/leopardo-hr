@@ -173,7 +173,7 @@ class LeopardoClient:
         return self.request("POST", "/accounting/documents/{document}/credit-note", **kwargs)
 
     def post_accounting_documents_by_document_payments(self, **kwargs):
-        """Enregistrer un encaissement (→ partiellement paye / paye, #5223)"""
+        """Enregistrer un paiement"""
         return self.request("POST", "/accounting/documents/{document}/payments", **kwargs)
 
     def post_accounting_documents_by_document_send(self, **kwargs):
