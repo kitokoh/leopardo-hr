@@ -53,6 +53,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('trial-provisionings:sweep')->everyFifteenMinutes();
         // Plan 64 — Auto-close attendance logs without check-out after 12h
         $schedule->command('attendance:auto-close')->hourly();
+        // Issue #5430 — purge des partages de documents expirés (RGPD, grâce 30 j).
+        $schedule->command('accounting:purge-expired-shares')->dailyAt('03:30');
         // PA2-PAY-012 — Nightly progressive payroll pre-calculation
         $schedule->command('payroll:precalculate')->dailyAt('02:00');
         // Audit Mobile+Edge 2026-07-26 (issue #1288) — Edge node silence /
