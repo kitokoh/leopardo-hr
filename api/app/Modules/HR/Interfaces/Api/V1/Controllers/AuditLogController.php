@@ -26,13 +26,17 @@ class AuditLogController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->hasManagerRole('principal')) {
+        if (! $this->canViewAuditLogs($actor)) {
             abort(403);
         }
 
         $query = AuditLog::query()
             ->forCompany($actor->company_id)
             ->with('user:id,first_name,last_name');
+
+        if ($request->filled('module')) {
+            $query->where('module', $request->input('module'));
+        }
 
         if ($request->filled('action')) {
             $query->where('action', $request->input('action'));
@@ -67,7 +71,7 @@ class AuditLogController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->hasManagerRole('principal')) {
+        if (! $this->canViewAuditLogs($actor)) {
             abort(403);
         }
         if ($auditLog->company_id !== $actor->company_id) {
@@ -81,7 +85,7 @@ class AuditLogController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->hasManagerRole('principal')) {
+        if (! $this->canViewAuditLogs($actor)) {
             abort(403);
         }
 
@@ -89,6 +93,10 @@ class AuditLogController extends Controller
             ->forCompany($actor->company_id)
             ->with('user:id,first_name,last_name')
             ->orderByDesc('created_at');
+
+        if ($request->filled('module')) {
+            $query->where('module', $request->input('module'));
+        }
 
         if ($request->filled('from')) {
             $query->where('created_at', '>=', $request->input('from'));
@@ -133,5 +141,14 @@ class AuditLogController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv',
         ]);
+    }
+
+    /**
+     * RBAC #5439 — le journal d'audit global est lisible par le manager
+     * principal ET le manager RH du tenant (l'employé reste exclu).
+     */
+    private function canViewAuditLogs(Employee $actor): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh');
     }
 }
