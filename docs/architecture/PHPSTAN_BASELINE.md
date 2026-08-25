@@ -81,7 +81,7 @@ Règle : **1 agent par module**, jamais de re-baseline d'une erreur corrigée. O
 plus gros contributeur au plus petit, en évitant les modules en cours de refonte par
 d'autres agents (Accounting, Attendance, Payroll, HR, SmartAttendance).
 
-- Lot 1 (2026-08-25) : module **Planning** — voir diff de la PR #5448.
+- Lot 1 (2026-08-25) : module **Planning** — 39 entrées retirées (voir diff de la PR #5448) ; 4 entrées `missingType.generics` (HasFactory réellement utilisé) conservées — trait retiré de Project/Task (code mort).
 - Cible : **-20 % d'entrées en 4 semaines**, puis **-10 %/mois**.
 
 ## Classes d'erreur dominantes (strict)
