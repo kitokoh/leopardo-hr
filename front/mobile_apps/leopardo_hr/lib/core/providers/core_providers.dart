@@ -4,7 +4,7 @@ export 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_hr/features/settings/data/settings_repository.dart';
 import 'package:leopardo_hr/features/contracts/data/contract_repository.dart';
-import 'package:leopardo_hr/features/onboarding/data/onboarding_repository.dart';
+import 'package:leopardo_core/features/onboarding/data/onboarding_repository.dart';
 
 // ── Providers spécifiques à leopardo_hr (issue #5279, lot 1) ───────────────
 // Les providers communs vivent dans leopardo_core (re-export ci-dessus).
