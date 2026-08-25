@@ -165,7 +165,8 @@ class EmployeeDocumentTest extends TestCase
     {
         [$company, $manager, $employee] = $this->createActors();
 
-        // Une ligne « missing » ne satisfait pas le type requis.
+        // Une ligne « missing » ne satisfait pas le type requis : le type reste
+        // compté manquant, comme ceux sans ligne du tout (docblock du service).
         $this->makeDocument($company, $employee, 'contract_signed', 'missing');
 
         Sanctum::actingAs($manager);
@@ -173,7 +174,7 @@ class EmployeeDocumentTest extends TestCase
         $this->getJson('/api/v1/employees/'.$employee->id)
             ->assertOk()
             ->assertJsonPath('data.documents_status.complete', false)
-            ->assertJsonPath('data.documents_status.missing', ['contract_signed']);
+            ->assertJsonPath('data.documents_status.missing', ['contract_signed', 'employee_file']);
     }
 
     public function test_update_document_keeps_tenant_and_changes_fields(): void

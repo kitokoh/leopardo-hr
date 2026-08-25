@@ -1440,6 +1440,14 @@ class LeopardoClient:
         """Modifier une note de frais"""
         return self.request("PUT", "/expense-claims/{expenseClaim}", **kwargs)
 
+    def get_expense_claims_by_expenseclaim_accounting_entries(self, **kwargs):
+        """Ecritures comptables d'une note de frais approuvee (#5235)"""
+        return self.request("GET", "/expense-claims/{expenseClaim}/accounting-entries", **kwargs)
+
+    def post_expense_claims_by_expenseclaim_accounting_entries_regenerate(self, **kwargs):
+        """Regenerer les ecritures comptables d'une note (comptable, idempotent)"""
+        return self.request("POST", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", **kwargs)
+
     def post_expense_claims_by_expenseclaim_approve(self, **kwargs):
         """Approuver une note de frais"""
         return self.request("POST", "/expense-claims/{expenseClaim}/approve", **kwargs)
@@ -1453,7 +1461,7 @@ class LeopardoClient:
         return self.request("POST", "/expense-claims/{expenseClaim}/reject", **kwargs)
 
     def put_expense_claims_by_expenseclaim_reject(self, **kwargs):
-        """Refuser une note de frais (déprécié — utiliser POST)"""
+        """Rejeter une note de frais (deprecie)"""
         return self.request("PUT", "/expense-claims/{expenseClaim}/reject", **kwargs)
 
     def put_expense_claims_by_expenseclaim_submit(self, **kwargs):

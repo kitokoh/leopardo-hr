@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseClaimController;
+use App\Modules\Expense\Interfaces\Api\V1\ExpenseAccountingController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -20,5 +21,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/expense-claims/{expenseClaim}/approve', [ExpenseClaimController::class, 'approve']); // déprécié #4930
         Route::post('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']);
         Route::put('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']); // déprécié #4930
+    });
+
+    // ── Écritures comptables des notes de frais (issue #5235, Phase C) ────
+    // RBAC : lecture principal/comptable, régénération réservée au comptable
+    // (garde défensive `hasManagerRole('comptable')` dans le contrôleur —
+    // miroir du flux paie #5239). Isolation tenant fail-closed (404 cross-tenant).
+    Route::middleware('api.manager:principal,comptable')->group(function (): void {
+        Route::get('/expense-claims/{expenseClaim}/accounting-entries', [ExpenseAccountingController::class, 'index']);
+        Route::post('/expense-claims/{expenseClaim}/accounting-entries/regenerate', [ExpenseAccountingController::class, 'regenerate']);
     });
 });

@@ -1775,6 +1775,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/expense-claims/{expenseClaim}", options);
     },
 
+    /** Ecritures comptables d'une note de frais approuvee (#5235) */
+    getExpenseClaimsByExpenseClaimAccountingEntries(options = {}) {
+      return request("GET", "/expense-claims/{expenseClaim}/accounting-entries", options);
+    },
+
+    /** Regenerer les ecritures comptables d'une note (comptable, idempotent) */
+    postExpenseClaimsByExpenseClaimAccountingEntriesRegenerate(options = {}) {
+      return request("POST", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", options);
+    },
+
     /** Approuver une note de frais */
     postExpenseClaimsByExpenseClaimApprove(options = {}) {
       return request("POST", "/expense-claims/{expenseClaim}/approve", options);
@@ -1790,7 +1800,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/expense-claims/{expenseClaim}/reject", options);
     },
 
-    /** Refuser une note de frais (déprécié — utiliser POST) */
+    /** Rejeter une note de frais (deprecie) */
     putExpenseClaimsByExpenseClaimReject(options = {}) {
       return request("PUT", "/expense-claims/{expenseClaim}/reject", options);
     },
