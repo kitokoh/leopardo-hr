@@ -52,7 +52,9 @@ return new class extends Migration
                 $table->string('external_reference', 120)->nullable();
                 $table->string('category', 60)->nullable();
                 $table->string('status', 20)->default('pending'); // pending|matched
-                $table->uuid('matched_payment_id')->nullable()->index();
+                // #5435 — FK vers accounting_payments.id (bigint) : le type doit
+                // correspondre (uuid cassait le matching, jamais vérifié par CI).
+                $table->unsignedBigInteger('matched_payment_id')->nullable()->index();
                 $table->unsignedSmallInteger('confidence')->nullable(); // score 0-100
                 $table->text('metadata')->nullable();
                 $table->timestamps();
