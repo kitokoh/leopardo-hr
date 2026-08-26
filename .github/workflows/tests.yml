@@ -223,7 +223,10 @@ jobs:
 
       - name: Run Composer audit
         working-directory: ./api
-        run: composer audit --locked --no-dev
+        # Issue #5590 : fail sur les vulnérabilités connues (comportement par
+        # défaut de `composer audit`) + alerte non-bloquante sur les paquets
+        # abandonnés (--abandoned=report, Composer >= 2.8).
+        run: composer audit --locked --no-dev --abandoned=report
 
   backend-quality:
     # This job may push an explicitly generated Pint formatting commit on
@@ -403,7 +406,11 @@ jobs:
 
           mapfile -t changed_php_files < <(
             git diff --name-only "${base_sha}" "${head_sha}" \
-              | grep -E '^api/(app/AI|app/Http/Middleware|routes)/.*\.php$' \
+              # Issue #5590 : périmètre étendu au full scope de phpstan.neon
+              # (app/ + routes/ + tests/) — avant, seuls app/AI, Http/Middleware
+              # et routes étaient analysés au niveau max ; config/ reste exclu
+              # (hors paths de phpstan.neon, conventionnellement).
+              | grep -E '^api/(app|routes|tests)/.*\.php$' \
               | sort -u || true
           )
 
