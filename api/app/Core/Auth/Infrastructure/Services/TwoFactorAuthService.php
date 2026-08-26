@@ -8,8 +8,8 @@ use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanySetting;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -140,10 +140,10 @@ final class TwoFactorAuthService
                 ->where('key', 'mfa_required_roles')
                 ->first();
         } catch (QueryException $e) {
-            // #5585 : table absente (fixture MVP ou migration partielle) →
-            // la politique tenant ne s'applique pas, SANS 500 (le login ne
-            // doit jamais planter sur une lecture de réglage). La 2FA
-            // individuelle (two_fa_enabled_at) reste fail-closed.
+            // #5585/#5579 : table/colonne absente (fixture MVP ou migration
+            // partielle) → la politique tenant ne s'applique pas, SANS 500
+            // (le login ne doit jamais planter sur une lecture de réglage).
+            // La 2FA individuelle (two_fa_enabled_at) reste fail-closed.
             Log::warning('two_factor.policy_lookup_failed', [
                 'employee_id' => $employee->id,
                 'error' => $e->getMessage(),

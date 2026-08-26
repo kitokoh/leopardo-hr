@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\HR;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -24,19 +24,23 @@ class HrControllerTest extends TestCase
     use RefreshTenantDatabase;
 
     protected Company $company;
+
     protected Company $otherCompany;
+
     protected Employee $manager;
+
     protected Employee $employee;
+
     protected Employee $otherManager;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->company      = Company::factory()->create();
+        $this->company = Company::factory()->create();
         $this->otherCompany = Company::factory()->create();
-        $this->manager      = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
-        $this->employee     = Employee::factory()->create(['company_id' => $this->company->id]);
+        $this->manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        $this->employee = Employee::factory()->create(['company_id' => $this->company->id]);
         $this->otherManager = Employee::factory()->manager()->create(['company_id' => $this->otherCompany->id]);
     }
 
@@ -144,4 +148,3 @@ class HrControllerTest extends TestCase
         $response->assertUnauthorized();
     }
 }
-
