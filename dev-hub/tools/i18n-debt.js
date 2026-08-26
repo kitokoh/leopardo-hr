@@ -106,7 +106,9 @@ const stringLiteralPattern = /(['"])((?:\\.|(?!\1).)*)\1/g;
 
 // Lines that are dev/log-only: the string inside them is developer output,
 // not something an end user reads on screen.
-const devLogLinePattern = /\b(console\.(log|warn|error|info|debug)|debugPrint|print(?:ln)?|Log\.[dewiv]|logger\.(debug|info|warn|error)|dev\.log)\s*\(/i;
+// #5510 — assert() messages are developer-only diagnostics (Dart/JS),
+// never shown to end users. toString() method body strings are debug output.
+const devLogLinePattern = /\b(console\.(log|warn|error|info|debug)|debugPrint|print(?:ln)?|Log\.[dewiv]|logger\.(debug|info|warn|error)|dev\.log|assert)\s*\(/i;
 const todoLinePattern = /\/\/\s*TODO|#\s*TODO/i;
 
 // Tokens that look like Tailwind/CSS utility classes: lowercase/digits,
@@ -176,6 +178,14 @@ function isTechnicalToken(value) {
   if (/\$\{|\.(toString|padLeft|padRight|encodeComponent)\(/.test(trimmed)) {
     return true;
   }
+  // #5510 — Dart toString() / constructor diagnostic pattern:
+  // `ClassName(field: $field, ...)` or `SomeClass(a: $a, b: $b)`.
+  // Recognisable by: starts with uppercase, contains `(`, and has ≥2 $interp
+  // tokens. These are developer debug representations, not UI text.
+  { const _di = (trimmed.match(/\$[a-zA-Z_]\w*/g) || []).length;
+    if (_di >= 2 && /^[A-Z][a-zA-Z]*\(/.test(trimmed)) return true;
+    // Also filter continuation lines like `lat: $lat, lng: $lng, radius: $r)`
+    if (_di >= 2 && /[a-zA-Z_]+:\s*\$/.test(trimmed)) return true; }
   // CSS/DOM selector literal, e.g. `#contact-form`, `#companyName`.
   if (/^#[a-zA-Z][\w-]*$/.test(trimmed)) {
     return true;
@@ -186,6 +196,10 @@ function isTechnicalToken(value) {
   }
   // Package import specifier, e.g. `@heroicons/vue/24/outline`, `lodash/get`.
   if (/^@?[a-zA-Z0-9_.-]+(?:\/[a-zA-Z0-9_.-]+)+$/.test(trimmed)) {
+    return true;
+  }
+  // #5510 — Email addresses are technical tokens (no i18n needed).
+  if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(trimmed)) {
     return true;
   }
   return /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|Bearer\s|https?:\/\/|api\/|\/api|[A-Z_]{2,})$/.test(trimmed);

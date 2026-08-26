@@ -201,29 +201,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get authTwoFactorRequired => '2FA kodu gereklidir.';
 
   @override
-  String get twoFaChallengeTitle => 'İki faktörlü doğrulama';
-
-  @override
-  String get twoFaChallengeSubtitle =>
-      'Kimlik doğrulama uygulamanızdan 6 haneli kodu girin.';
-
-  @override
-  String get twoFaChallengeCodeHint => 'TOTP kodu (6 hane)';
-
-  @override
-  String get twoFaChallengeVerifyBtn => 'Doğrula';
-
-  @override
-  String get twoFaChallengeRecoveryToggle => 'Kurtarma kodu kullan';
-
-  @override
-  String get twoFaChallengeRecoveryHint => 'Kurtarma kodu';
-
-  @override
-  String get twoFaChallengeInvalidError =>
-      'Geçersiz veya süresi dolmuş kod. Tekrar deneyin.';
-
-  @override
   String get authDemoAccess => 'Demo erisimi';
 
   @override
@@ -3456,18 +3433,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get shellTeam => 'Ekip';
 
   @override
-  String get shellHome => 'Ana Sayfa';
-
-  @override
-  String get shellAttendance => 'Devam';
-
-  @override
-  String get shellAbsences => 'İzinler';
-
-  @override
-  String get shellApprovals => 'Onaylar';
-
-  @override
   String get exportsReportemployees => 'Calisanlar';
 
   @override
@@ -4278,46 +4243,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get contractsAllstatuses => 'Tüm durumlar';
-
-  @override
-  String get contractsMobileTitle => 'Sözleşmem';
-
-  @override
-  String get contractsBackTooltip => 'Geri';
-
-  @override
-  String get contractsEmptyTitle => 'Sözleşme yok';
-
-  @override
-  String get contractsEmptyDescription =>
-      'Sözleşmeniz yapılandırıldıktan sonra burada görünecek.';
-
-  @override
-  String get contractsLabelType => 'Tür';
-
-  @override
-  String get contractsLabelStartDate => 'Başlangıç';
-
-  @override
-  String get contractsLabelEndDate => 'Bitiş';
-
-  @override
-  String get contractsLabelBaseSalary => 'Temel maaş';
-
-  @override
-  String get contractsLoading => 'Sözleşmeler yükleniyor...';
-
-  @override
-  String get contractsStatusActive => 'Aktif';
-
-  @override
-  String get contractsStatusExpired => 'Süresi dolmuş';
-
-  @override
-  String get contractsStatusDraft => 'Taslak';
-
-  @override
-  String get contractsStatusCdi => 'Belirsiz süreli (CDI)';
 
   @override
   String get trainingTitleplaceholder => 'Başlık *';
@@ -7132,6 +7057,173 @@ class AppLocalizationsTr extends AppLocalizations {
   String get bankreconRetry => 'Yeniden dene';
 
   @override
+  String get personalOnboardingStatusTitle => 'Kişisel durumum';
+
+  @override
+  String get personalOnboardingStatusSubtitle =>
+      'Mevcut tüm statülerinizi seçin. Birden fazla seçebilirsiniz.';
+
+  @override
+  String get personalOnboardingStatusSave => 'Kaydet';
+
+  @override
+  String get personalOnboardingStatusStudent => 'Öğrenci';
+
+  @override
+  String get personalOnboardingStatusEmployee => 'Çalışan';
+
+  @override
+  String get personalOnboardingStatusEntrepreneur => 'Girişimci';
+
+  @override
+  String get personalOnboardingStatusSeeking => 'İş arıyor';
+
+  @override
+  String get personalOnboardingStatusSaved => 'Statüler güncellendi.';
+
+  @override
+  String get personalOnboardingStatusError => 'Hata: statüler kaydedilemedi.';
+
+  @override
+  String get personalOnboardingSearchTitle => 'Bir şirkete katıl';
+
+  @override
+  String get personalOnboardingSearchSubtitle =>
+      'Başvurmak için bir şirket arayın.';
+
+  @override
+  String get personalOnboardingSearchHint => 'Şirket adı...';
+
+  @override
+  String personalOnboardingSearchEmpty(Object query) {
+    return '« $query » için şirket bulunamadı.';
+  }
+
+  @override
+  String get personalOnboardingSearchMinChars => 'En az 2 karakter girin.';
+
+  @override
+  String get personalOnboardingRequestTitle => 'Entegrasyon talebi';
+
+  @override
+  String get personalOnboardingRequestCompany => 'Hedef şirket';
+
+  @override
+  String get personalOnboardingRequestMessageLabel =>
+      'Yöneticiye mesaj (isteğe bağlı)';
+
+  @override
+  String get personalOnboardingRequestMessageHint =>
+      'Kendinizi kısaca tanıtın...';
+
+  @override
+  String get personalOnboardingRequestSend => 'Talep gönder';
+
+  @override
+  String personalOnboardingRequestSent(Object company) {
+    return '$company şirketine talep gönderildi.';
+  }
+
+  @override
+  String personalOnboardingRequestError(Object error) {
+    return 'Hata: $error';
+  }
+
+  @override
+  String get personalOnboardingRequestAlreadyPending =>
+      'Bu şirket için zaten bekleyen bir talebiniz var.';
+
+  @override
+  String get personalOnboardingRequestsTitle => 'Entegrasyon taleplerim';
+
+  @override
+  String get personalOnboardingRequestsEmpty => 'Bekleyen talep yok.';
+
+  @override
+  String get personalOnboardingStatusPending => 'Beklemede';
+
+  @override
+  String get personalOnboardingStatusApproved => 'Kabul edildi';
+
+  @override
+  String get personalOnboardingStatusRejected => 'Reddedildi';
+
+  @override
+  String get twoFaChallengeTitle => 'İki faktörlü doğrulama';
+
+  @override
+  String get twoFaChallengeSubtitle =>
+      'Kimlik doğrulama uygulamanızdan 6 haneli kodu girin.';
+
+  @override
+  String get twoFaChallengeCodeHint => 'TOTP kodu (6 hane)';
+
+  @override
+  String get twoFaChallengeVerifyBtn => 'Doğrula';
+
+  @override
+  String get twoFaChallengeRecoveryToggle => 'Kurtarma kodu kullan';
+
+  @override
+  String get twoFaChallengeRecoveryHint => 'Kurtarma kodu';
+
+  @override
+  String get twoFaChallengeInvalidError =>
+      'Geçersiz veya süresi dolmuş kod. Tekrar deneyin.';
+
+  @override
+  String get shellHome => 'Ana Sayfa';
+
+  @override
+  String get shellAttendance => 'Devam';
+
+  @override
+  String get shellAbsences => 'İzinler';
+
+  @override
+  String get shellApprovals => 'Onaylar';
+
+  @override
+  String get contractsMobileTitle => 'Sözleşmem';
+
+  @override
+  String get contractsBackTooltip => 'Geri';
+
+  @override
+  String get contractsEmptyTitle => 'Sözleşme yok';
+
+  @override
+  String get contractsEmptyDescription =>
+      'Sözleşmeniz yapılandırıldıktan sonra burada görünecek.';
+
+  @override
+  String get contractsLabelType => 'Tür';
+
+  @override
+  String get contractsLabelStartDate => 'Başlangıç';
+
+  @override
+  String get contractsLabelEndDate => 'Bitiş';
+
+  @override
+  String get contractsLabelBaseSalary => 'Temel maaş';
+
+  @override
+  String get contractsLoading => 'Sözleşmeler yükleniyor...';
+
+  @override
+  String get contractsStatusActive => 'Aktif';
+
+  @override
+  String get contractsStatusExpired => 'Süresi dolmuş';
+
+  @override
+  String get contractsStatusDraft => 'Taslak';
+
+  @override
+  String get contractsStatusCdi => 'Belirsiz süreli (CDI)';
+
+  @override
   String get organigrammeTitle => 'Organizasyon Şeması';
 
   @override
@@ -7585,4 +7677,306 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsYes => 'Evet';
+
+  @override
+  String get commonBack => 'Geri';
+
+  @override
+  String get commonSave => 'Kaydet';
+
+  @override
+  String get companiesActiveImmediatelyHint => 'Değişiklik anında uygulanır.';
+
+  @override
+  String get companiesCompanyCreated => 'Şirket oluşturuldu';
+
+  @override
+  String get companiesCompanyEmail => 'Şirket e-postası';
+
+  @override
+  String get companiesCreateClient => 'Müşteri oluştur';
+
+  @override
+  String get companiesCreating => 'Oluşturuluyor…';
+
+  @override
+  String get companiesEmpty => 'Şirket yok';
+
+  @override
+  String get companiesNewClient => 'Yeni müşteri';
+
+  @override
+  String get companiesProvisioning => 'Sağlama';
+
+  @override
+  String get companiesRequiredField => 'Zorunlu alan';
+
+  @override
+  String get companiesTenantsPlatform => 'Kiracılık platformu';
+
+  @override
+  String get companiesTrialHint => 'Deneme süresi';
+
+  @override
+  String get companydetailActivateClient => 'Müşteriyi etkinleştir';
+
+  @override
+  String get companydetailActiveEmployees => 'Aktif çalışanlar';
+
+  @override
+  String get companydetailActiveModules => 'Aktif modüller';
+
+  @override
+  String get companydetailAnomaliesCritical => 'Kritik anormallikler';
+
+  @override
+  String get companydetailChoosePlan => 'Bir plan seçin';
+
+  @override
+  String get companydetailClientActivated => 'Müşteri etkinleştirildi';
+
+  @override
+  String get companydetailClientFile => 'Müşteri dosyası';
+
+  @override
+  String get companydetailClientReference => 'Müşteri referansı';
+
+  @override
+  String get companydetailCopyId => 'Kimliği kopyala';
+
+  @override
+  String get companydetailCoreModuleAlwaysActive =>
+      'Çekirdek modül her zaman aktif';
+
+  @override
+  String get companydetailEditModules => 'Modülleri düzenle';
+
+  @override
+  String get companydetailEditSubscription => 'Aboneliği düzenle';
+
+  @override
+  String get companydetailEmployeeLimit => 'Çalışan limiti';
+
+  @override
+  String get companydetailLoadingPlans => 'Planlar yükleniyor…';
+
+  @override
+  String get companydetailModulesUpdated => 'Modüller güncellendi';
+
+  @override
+  String get companydetailMonthlyPrice => 'Aylık fiyat';
+
+  @override
+  String get companydetailNextActions => 'Sonraki eylemler';
+
+  @override
+  String get companydetailNoUrgentActions => 'Acil eylem yok';
+
+  @override
+  String get companydetailOptionalInternalNote => 'İsteğe bağlı dahili not';
+
+  @override
+  String get companydetailPlan => 'Plan';
+
+  @override
+  String get companydetailPlanNotFound => 'Plan bulunamadı';
+
+  @override
+  String get companydetailProductAdoption => 'Ürün benimseme';
+
+  @override
+  String get companydetailRecommendedActionHint => 'Önerilen eylem';
+
+  @override
+  String get companydetailSaveModules => 'Modülleri kaydet';
+
+  @override
+  String get companydetailSaving => 'Kaydediliyor…';
+
+  @override
+  String get companydetailStatus => 'Durum';
+
+  @override
+  String get companydetailSubscription => 'Abonelik';
+
+  @override
+  String get companydetailSubscriptionEnd => 'Abonelik bitişi';
+
+  @override
+  String get companydetailSubscriptionUpdated => 'Abonelik güncellendi';
+
+  @override
+  String get companydetailTenantIdHint => 'Kiracılık kimliği';
+
+  @override
+  String get companydetailUndefined => 'Tanımsız';
+
+  @override
+  String get companydetailUnlimited => 'Sınırsız';
+
+  @override
+  String get companyrequestsApprovedToast => 'Talep onaylandı';
+
+  @override
+  String get companyrequestsRejectedToast => 'Talep reddedildi';
+
+  @override
+  String get companyrequestsValidationSuperadmin => 'Yalnızca süper yönetici';
+
+  @override
+  String get dashboardActiveLabel => 'Aktif';
+
+  @override
+  String get dashboardClientCompanies => 'Müşteri şirketler';
+
+  @override
+  String get dashboardClientCompaniesHint => 'Platformda aktif şirketler';
+
+  @override
+  String get dashboardClientRequestsHint => 'Bekleyen talepler';
+
+  @override
+  String get dashboardCreateCompany => 'Şirket oluştur';
+
+  @override
+  String get dashboardCreateCompanyHint => 'Yeni bir şirket sağla';
+
+  @override
+  String get dashboardEdgeNodes => 'Edge düğümleri';
+
+  @override
+  String get dashboardEdgeNodesHint => 'Ağda aktif düğümler';
+
+  @override
+  String get dashboardExecutiveView => 'Yönetici görünümü';
+
+  @override
+  String get dashboardLoadingCockpit => 'Kokpit yükleniyor…';
+
+  @override
+  String get dashboardPlatformActions => 'Platform eylemleri';
+
+  @override
+  String get dashboardPlatformAdministration => 'Platform yönetimi';
+
+  @override
+  String get dashboardSuperAdmin => 'Süper yönetici';
+
+  @override
+  String get dashboardSupportClient => 'Müşteri desteği';
+
+  @override
+  String get dashboardTicketsHint => 'Destek biletleri';
+
+  @override
+  String get dashboardTrials => 'Denemeler';
+
+  @override
+  String companydetailPlanWithPrice(Object name, Object price) {
+    return '$name — $price €/ay';
+  }
+
+  @override
+  String get twoFaTitle => '2FA Güvenliği';
+
+  @override
+  String get twoFaSubtitle => 'İki faktörlü kimlik doğrulama';
+
+  @override
+  String get twoFaLoading => 'Yükleniyor…';
+
+  @override
+  String get twoFaGenericError => 'Bir hata oluştu. Lütfen tekrar deneyin.';
+
+  @override
+  String get twoFaRequiredBanner =>
+      'Profiliniz için iki faktörlü kimlik doğrulama zorunludur. Şimdi etkinleştirin.';
+
+  @override
+  String get twoFaStatusEnabled => '2FA etkin';
+
+  @override
+  String get twoFaStatusDisabled => '2FA devre dışı';
+
+  @override
+  String get twoFaStatusEnabledHint => 'Her girişte bir kod istenir.';
+
+  @override
+  String get twoFaStatusDisabledHint => 'Hesabınızı bir TOTP koduyla koruyun.';
+
+  @override
+  String get twoFaActivate => '2FA\'yı etkinleştir';
+
+  @override
+  String get twoFaScanPrompt =>
+      'Bu QR kodunu Google Authenticator, Authy veya TOTP uyumlu herhangi bir uygulamayla tarayın.';
+
+  @override
+  String get twoFaCopySecret => 'Sırrı kopyala';
+
+  @override
+  String get twoFaConfirmHint =>
+      'İki faktörlü kimlik doğrulamayı etkinleştirmek için uygulamanızın ürettiği ilk kodu girin.';
+
+  @override
+  String get twoFaCodeLabel => '6 haneli kod';
+
+  @override
+  String get twoFaCodeHint => '000000';
+
+  @override
+  String get twoFaConfirm => 'Onayla ve etkinleştir';
+
+  @override
+  String get twoFaRecoveryTitle => 'Kurtarma kodları';
+
+  @override
+  String get twoFaRecoveryHint =>
+      'Bu kodları güvenli bir yerde saklayın. Her biri yalnızca bir kez kullanılabilir.';
+
+  @override
+  String get twoFaCopied => 'Kod kopyalandı.';
+
+  @override
+  String get twoFaAllCopied => 'Kodlar kopyalandı.';
+
+  @override
+  String get twoFaCopyAll => 'Tümünü kopyala';
+
+  @override
+  String get twoFaDoneHint =>
+      'İki faktörlü kimlik doğrulama etkinleştirildi. Her girişte bir kod istenecek.';
+
+  @override
+  String get twoFaRegenerate => 'Kodları yeniden oluştur';
+
+  @override
+  String get twoFaRegenerateConfirm =>
+      'Kurtarma kodları yeniden oluşturulsun mu? Eski kodlar geçersiz olur.';
+
+  @override
+  String get twoFaCancel => 'İptal';
+
+  @override
+  String get twoFaDisable => '2FA\'yı devre dışı bırak';
+
+  @override
+  String get twoFaDisableHint => 'TOTP veya kurtarma kodu';
+
+  @override
+  String get twoFaEnterCode => 'Kod';
+
+  @override
+  String get twoFaInvalidCode => 'Geçersiz kod. Kontrol edip tekrar deneyin.';
+
+  @override
+  String get twoFaSettingsTile => 'İki faktörlü kimlik doğrulama';
+
+  @override
+  String get twoFaSettingsTileSubtitle => 'Her girişte TOTP kodu istenir';
+
+  @override
+  String personalOnboardingSearchError(Object error) {
+    return 'Arama başarısız oldu: $error';
+  }
 }

@@ -199,29 +199,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get authTwoFactorRequired => 'رمز التحقق الثنائي مطلوب.';
 
   @override
-  String get twoFaChallengeTitle => 'التحقق بخطوتين';
-
-  @override
-  String get twoFaChallengeSubtitle =>
-      'أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة.';
-
-  @override
-  String get twoFaChallengeCodeHint => 'رمز TOTP (6 أرقام)';
-
-  @override
-  String get twoFaChallengeVerifyBtn => 'تحقق';
-
-  @override
-  String get twoFaChallengeRecoveryToggle => 'استخدام رمز الاسترداد';
-
-  @override
-  String get twoFaChallengeRecoveryHint => 'رمز الاسترداد';
-
-  @override
-  String get twoFaChallengeInvalidError =>
-      'رمز غير صالح أو منتهي الصلاحية. حاول مرة أخرى.';
-
-  @override
   String get authDemoAccess => 'وصول تجريبي';
 
   @override
@@ -3425,18 +3402,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get shellTeam => 'الفريق';
 
   @override
-  String get shellHome => 'الرئيسية';
-
-  @override
-  String get shellAttendance => 'الحضور';
-
-  @override
-  String get shellAbsences => 'الغيابات';
-
-  @override
-  String get shellApprovals => 'الموافقات';
-
-  @override
   String get exportsReportemployees => 'الموظفون';
 
   @override
@@ -4233,45 +4198,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get contractsAllstatuses => 'كل الحالات';
-
-  @override
-  String get contractsMobileTitle => 'عقدي';
-
-  @override
-  String get contractsBackTooltip => 'رجوع';
-
-  @override
-  String get contractsEmptyTitle => 'لا يوجد عقد';
-
-  @override
-  String get contractsEmptyDescription => 'سيظهر عقدك هنا بمجرد تكوينه.';
-
-  @override
-  String get contractsLabelType => 'النوع';
-
-  @override
-  String get contractsLabelStartDate => 'البداية';
-
-  @override
-  String get contractsLabelEndDate => 'النهاية';
-
-  @override
-  String get contractsLabelBaseSalary => 'الراتب الأساسي';
-
-  @override
-  String get contractsLoading => 'جارٍ تحميل العقود...';
-
-  @override
-  String get contractsStatusActive => 'نشط';
-
-  @override
-  String get contractsStatusExpired => 'منتهي الصلاحية';
-
-  @override
-  String get contractsStatusDraft => 'مسودة';
-
-  @override
-  String get contractsStatusCdi => 'دائم (CDI)';
 
   @override
   String get trainingTitleplaceholder => 'العنوان *';
@@ -7061,6 +6987,169 @@ class AppLocalizationsAr extends AppLocalizations {
   String get bankreconRetry => 'إعادة المحاولة';
 
   @override
+  String get personalOnboardingStatusTitle => 'وضعي الشخصي';
+
+  @override
+  String get personalOnboardingStatusSubtitle =>
+      'حدد جميع أوضاعك الحالية. يمكنك اختيار أكثر من وضع.';
+
+  @override
+  String get personalOnboardingStatusSave => 'حفظ';
+
+  @override
+  String get personalOnboardingStatusStudent => 'طالب';
+
+  @override
+  String get personalOnboardingStatusEmployee => 'موظف';
+
+  @override
+  String get personalOnboardingStatusEntrepreneur => 'رائد أعمال';
+
+  @override
+  String get personalOnboardingStatusSeeking => 'باحث عن عمل';
+
+  @override
+  String get personalOnboardingStatusSaved => 'تم تحديث الأوضاع.';
+
+  @override
+  String get personalOnboardingStatusError => 'خطأ: تعذر حفظ أوضاعك.';
+
+  @override
+  String get personalOnboardingSearchTitle => 'الانضمام إلى شركة';
+
+  @override
+  String get personalOnboardingSearchSubtitle => 'ابحث عن شركة للتقديم.';
+
+  @override
+  String get personalOnboardingSearchHint => 'اسم الشركة...';
+
+  @override
+  String personalOnboardingSearchEmpty(Object query) {
+    return 'لم يتم العثور على شركة لـ « $query ».';
+  }
+
+  @override
+  String get personalOnboardingSearchMinChars => 'أدخل حرفين على الأقل.';
+
+  @override
+  String get personalOnboardingRequestTitle => 'طلب الانضمام';
+
+  @override
+  String get personalOnboardingRequestCompany => 'الشركة المستهدفة';
+
+  @override
+  String get personalOnboardingRequestMessageLabel => 'رسالة للمدير (اختياري)';
+
+  @override
+  String get personalOnboardingRequestMessageHint => 'قدّم نفسك باختصار...';
+
+  @override
+  String get personalOnboardingRequestSend => 'إرسال الطلب';
+
+  @override
+  String personalOnboardingRequestSent(Object company) {
+    return 'تم إرسال الطلب إلى $company.';
+  }
+
+  @override
+  String personalOnboardingRequestError(Object error) {
+    return 'خطأ: $error';
+  }
+
+  @override
+  String get personalOnboardingRequestAlreadyPending =>
+      'لديك طلب معلق بالفعل لهذه الشركة.';
+
+  @override
+  String get personalOnboardingRequestsTitle => 'طلبات الانضمام';
+
+  @override
+  String get personalOnboardingRequestsEmpty => 'لا توجد طلبات معلقة.';
+
+  @override
+  String get personalOnboardingStatusPending => 'قيد الانتظار';
+
+  @override
+  String get personalOnboardingStatusApproved => 'مقبول';
+
+  @override
+  String get personalOnboardingStatusRejected => 'مرفوض';
+
+  @override
+  String get twoFaChallengeTitle => 'التحقق بخطوتين';
+
+  @override
+  String get twoFaChallengeSubtitle =>
+      'أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة.';
+
+  @override
+  String get twoFaChallengeCodeHint => 'رمز TOTP (6 أرقام)';
+
+  @override
+  String get twoFaChallengeVerifyBtn => 'تحقق';
+
+  @override
+  String get twoFaChallengeRecoveryToggle => 'استخدام رمز الاسترداد';
+
+  @override
+  String get twoFaChallengeRecoveryHint => 'رمز الاسترداد';
+
+  @override
+  String get twoFaChallengeInvalidError =>
+      'رمز غير صالح أو منتهي الصلاحية. حاول مرة أخرى.';
+
+  @override
+  String get shellHome => 'الرئيسية';
+
+  @override
+  String get shellAttendance => 'الحضور';
+
+  @override
+  String get shellAbsences => 'الغيابات';
+
+  @override
+  String get shellApprovals => 'الموافقات';
+
+  @override
+  String get contractsMobileTitle => 'عقدي';
+
+  @override
+  String get contractsBackTooltip => 'رجوع';
+
+  @override
+  String get contractsEmptyTitle => 'لا يوجد عقد';
+
+  @override
+  String get contractsEmptyDescription => 'سيظهر عقدك هنا بمجرد تكوينه.';
+
+  @override
+  String get contractsLabelType => 'النوع';
+
+  @override
+  String get contractsLabelStartDate => 'البداية';
+
+  @override
+  String get contractsLabelEndDate => 'النهاية';
+
+  @override
+  String get contractsLabelBaseSalary => 'الراتب الأساسي';
+
+  @override
+  String get contractsLoading => 'جارٍ تحميل العقود...';
+
+  @override
+  String get contractsStatusActive => 'نشط';
+
+  @override
+  String get contractsStatusExpired => 'منتهي الصلاحية';
+
+  @override
+  String get contractsStatusDraft => 'مسودة';
+
+  @override
+  String get contractsStatusCdi => 'دائم (CDI)';
+
+  @override
   String get organigrammeTitle => 'الهيكل التنظيمي';
 
   @override
@@ -7502,4 +7591,306 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsYes => 'نعم';
+
+  @override
+  String get commonBack => 'رجوع';
+
+  @override
+  String get commonSave => 'حفظ';
+
+  @override
+  String get companiesActiveImmediatelyHint => 'يتم تطبيق التغيير فورًا.';
+
+  @override
+  String get companiesCompanyCreated => 'تم إنشاء الشركة';
+
+  @override
+  String get companiesCompanyEmail => 'البريد الإلكتروني للشركة';
+
+  @override
+  String get companiesCreateClient => 'إنشاء عميل';
+
+  @override
+  String get companiesCreating => 'جارٍ الإنشاء…';
+
+  @override
+  String get companiesEmpty => 'لا توجد شركات';
+
+  @override
+  String get companiesNewClient => 'عميل جديد';
+
+  @override
+  String get companiesProvisioning => 'التجهيز';
+
+  @override
+  String get companiesRequiredField => 'حقل مطلوب';
+
+  @override
+  String get companiesTenantsPlatform => 'منصة الإيجار';
+
+  @override
+  String get companiesTrialHint => 'فترة تجريبية';
+
+  @override
+  String get companydetailActivateClient => 'تفعيل العميل';
+
+  @override
+  String get companydetailActiveEmployees => 'الموظفون النشطون';
+
+  @override
+  String get companydetailActiveModules => 'الوحدات النشطة';
+
+  @override
+  String get companydetailAnomaliesCritical => 'الحالات الشاذة الحرجة';
+
+  @override
+  String get companydetailChoosePlan => 'اختر خطة';
+
+  @override
+  String get companydetailClientActivated => 'تم تفعيل العميل';
+
+  @override
+  String get companydetailClientFile => 'ملف العميل';
+
+  @override
+  String get companydetailClientReference => 'مرجع العميل';
+
+  @override
+  String get companydetailCopyId => 'نسخ المعرف';
+
+  @override
+  String get companydetailCoreModuleAlwaysActive =>
+      'الوحدة الأساسية نشطة دائمًا';
+
+  @override
+  String get companydetailEditModules => 'تعديل الوحدات';
+
+  @override
+  String get companydetailEditSubscription => 'تعديل الاشتراك';
+
+  @override
+  String get companydetailEmployeeLimit => 'حد الموظفين';
+
+  @override
+  String get companydetailLoadingPlans => 'جارٍ تحميل الخطط…';
+
+  @override
+  String get companydetailModulesUpdated => 'تم تحديث الوحدات';
+
+  @override
+  String get companydetailMonthlyPrice => 'السعر الشهري';
+
+  @override
+  String get companydetailNextActions => 'الإجراءات التالية';
+
+  @override
+  String get companydetailNoUrgentActions => 'لا توجد إجراءات عاجلة';
+
+  @override
+  String get companydetailOptionalInternalNote => 'ملاحظة داخلية اختيارية';
+
+  @override
+  String get companydetailPlan => 'الخطة';
+
+  @override
+  String get companydetailPlanNotFound => 'الخطة غير موجودة';
+
+  @override
+  String get companydetailProductAdoption => 'تبني المنتج';
+
+  @override
+  String get companydetailRecommendedActionHint => 'الإجراء الموصى به';
+
+  @override
+  String get companydetailSaveModules => 'حفظ الوحدات';
+
+  @override
+  String get companydetailSaving => 'جارٍ الحفظ…';
+
+  @override
+  String get companydetailStatus => 'الحالة';
+
+  @override
+  String get companydetailSubscription => 'الاشتراك';
+
+  @override
+  String get companydetailSubscriptionEnd => 'نهاية الاشتراك';
+
+  @override
+  String get companydetailSubscriptionUpdated => 'تم تحديث الاشتراك';
+
+  @override
+  String get companydetailTenantIdHint => 'معرف الإيجار';
+
+  @override
+  String get companydetailUndefined => 'غير محدد';
+
+  @override
+  String get companydetailUnlimited => 'غير محدود';
+
+  @override
+  String get companyrequestsApprovedToast => 'تمت الموافقة على الطلب';
+
+  @override
+  String get companyrequestsRejectedToast => 'تم رفض الطلب';
+
+  @override
+  String get companyrequestsValidationSuperadmin => 'للمشرف الأعلى فقط';
+
+  @override
+  String get dashboardActiveLabel => 'نشط';
+
+  @override
+  String get dashboardClientCompanies => 'شركات العملاء';
+
+  @override
+  String get dashboardClientCompaniesHint => 'الشركات النشطة على المنصة';
+
+  @override
+  String get dashboardClientRequestsHint => 'الطلبات المعلقة';
+
+  @override
+  String get dashboardCreateCompany => 'إنشاء شركة';
+
+  @override
+  String get dashboardCreateCompanyHint => 'تجهيز شركة جديدة';
+
+  @override
+  String get dashboardEdgeNodes => 'عقد الحافة';
+
+  @override
+  String get dashboardEdgeNodesHint => 'العقد النشطة على الشبكة';
+
+  @override
+  String get dashboardExecutiveView => 'عرض الإدارة';
+
+  @override
+  String get dashboardLoadingCockpit => 'جارٍ تحميل لوحة التحكم…';
+
+  @override
+  String get dashboardPlatformActions => 'إجراءات المنصة';
+
+  @override
+  String get dashboardPlatformAdministration => 'إدارة المنصة';
+
+  @override
+  String get dashboardSuperAdmin => 'المشرف الأعلى';
+
+  @override
+  String get dashboardSupportClient => 'دعم العملاء';
+
+  @override
+  String get dashboardTicketsHint => 'تذاكر الدعم';
+
+  @override
+  String get dashboardTrials => 'التجارب';
+
+  @override
+  String companydetailPlanWithPrice(Object name, Object price) {
+    return '$name — $price €/شهر';
+  }
+
+  @override
+  String get twoFaTitle => 'أمان التحقق بخطوتين';
+
+  @override
+  String get twoFaSubtitle => 'المصادقة الثنائية';
+
+  @override
+  String get twoFaLoading => 'جارٍ التحميل…';
+
+  @override
+  String get twoFaGenericError => 'حدث خطأ. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get twoFaRequiredBanner =>
+      'المصادقة الثنائية إلزامية لملفك الشخصي. فعّلها الآن.';
+
+  @override
+  String get twoFaStatusEnabled => 'التحقق بخطوتين مفعّل';
+
+  @override
+  String get twoFaStatusDisabled => 'التحقق بخطوتين معطّل';
+
+  @override
+  String get twoFaStatusEnabledHint => 'يُطلب رمز عند كل تسجيل دخول.';
+
+  @override
+  String get twoFaStatusDisabledHint => 'احمِ حسابك برمز TOTP.';
+
+  @override
+  String get twoFaActivate => 'تفعيل التحقق بخطوتين';
+
+  @override
+  String get twoFaScanPrompt =>
+      'امسح رمز QR هذا باستخدام Google Authenticator أو Authy أو أي تطبيق متوافق مع TOTP.';
+
+  @override
+  String get twoFaCopySecret => 'نسخ السر';
+
+  @override
+  String get twoFaConfirmHint =>
+      'أدخل الرمز الأول الذي يولّده تطبيقك لتفعيل المصادقة الثنائية.';
+
+  @override
+  String get twoFaCodeLabel => 'رمز من 6 أرقام';
+
+  @override
+  String get twoFaCodeHint => '000000';
+
+  @override
+  String get twoFaConfirm => 'تأكيد وتفعيل';
+
+  @override
+  String get twoFaRecoveryTitle => 'رموز الاسترداد';
+
+  @override
+  String get twoFaRecoveryHint =>
+      'احتفظ بهذه الرموز في مكان آمن. يمكن استخدام كل رمز مرة واحدة فقط.';
+
+  @override
+  String get twoFaCopied => 'تم نسخ الرمز.';
+
+  @override
+  String get twoFaAllCopied => 'تم نسخ الرموز.';
+
+  @override
+  String get twoFaCopyAll => 'نسخ الكل';
+
+  @override
+  String get twoFaDoneHint =>
+      'تم تفعيل المصادقة الثنائية. سيُطلب رمز عند كل تسجيل دخول.';
+
+  @override
+  String get twoFaRegenerate => 'إعادة توليد الرموز';
+
+  @override
+  String get twoFaRegenerateConfirm =>
+      'إعادة توليد رموز الاسترداد؟ ستُلغى الرموز القديمة.';
+
+  @override
+  String get twoFaCancel => 'إلغاء';
+
+  @override
+  String get twoFaDisable => 'تعطيل التحقق بخطوتين';
+
+  @override
+  String get twoFaDisableHint => 'رمز TOTP أو رمز استرداد';
+
+  @override
+  String get twoFaEnterCode => 'الرمز';
+
+  @override
+  String get twoFaInvalidCode => 'رمز غير صالح. تحقق وأعد المحاولة.';
+
+  @override
+  String get twoFaSettingsTile => 'المصادقة الثنائية';
+
+  @override
+  String get twoFaSettingsTileSubtitle => 'يُطلب رمز TOTP عند كل تسجيل دخول';
+
+  @override
+  String personalOnboardingSearchError(Object error) {
+    return 'فشل البحث: $error';
+  }
 }
