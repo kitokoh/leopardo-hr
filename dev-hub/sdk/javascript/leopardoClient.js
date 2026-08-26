@@ -175,6 +175,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/accounting/bank-statements/{statement}", options);
     },
 
+    /** Export CSV de l'état de rapprochement bancaire */
+    getAccountingBankStatementsByStatementExport(options = {}) {
+      return request("GET", "/accounting/bank-statements/{statement}/export", options);
+    },
+
     /** Lancer le rapprochement automatique */
     postAccountingBankStatementsByStatementReconcile(options = {}) {
       return request("POST", "/accounting/bank-statements/{statement}/reconcile", options);

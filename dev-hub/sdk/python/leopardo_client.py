@@ -160,6 +160,10 @@ class LeopardoClient:
         """Détail d'un relevé (avec lignes)"""
         return self.request("GET", "/accounting/bank-statements/{statement}", **kwargs)
 
+    def get_accounting_bank_statements_by_statement_export(self, **kwargs):
+        """Export CSV de l'état de rapprochement bancaire"""
+        return self.request("GET", "/accounting/bank-statements/{statement}/export", **kwargs)
+
     def post_accounting_bank_statements_by_statement_reconcile(self, **kwargs):
         """Lancer le rapprochement automatique"""
         return self.request("POST", "/accounting/bank-statements/{statement}/reconcile", **kwargs)

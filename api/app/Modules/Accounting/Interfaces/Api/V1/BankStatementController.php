@@ -14,6 +14,7 @@ use App\Modules\Accounting\Interfaces\Api\V1\Requests\BankStatementImportRequest
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\MatchBankStatementLineRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -141,6 +142,65 @@ final class BankStatementController extends Controller
     }
 
     /**
+     * GET /api/v1/accounting/bank-statements/{statement}/export
+     *
+     * Export CSV de l'état de rapprochement (issue #5523) : lignes du relevé
+     * avec statut (pending/matched), paiement rapproché, score de confiance,
+     * totaux et écart. Format expert-comptable : UTF-8 BOM, séparateur « ; »,
+     * cellules texte neutralisées anti-injection CSV (#4169).
+     */
+    public function export(Request $request, BankStatement $statement): Response
+    {
+        $this->assertTenantScope($request, $statement);
+
+        $lines = $statement->lines()->orderBy('line_number')->get();
+        $status = $this->reconciliationService->status($statement);
+
+        $csv = "\xEF\xBB\xBF"; // UTF-8 BOM
+        $csv .= "Ligne;Date;Libelle;Montant;Statut;Paiement rapproche;Confiance\n";
+
+        foreach ($lines as $line) {
+            $matched = $line->matched_payment_id !== null;
+            $csv .= implode(';', [
+                $line->line_number,
+                $line->line_date?->toDateString() ?? '',
+                self::csvCell($line->label),
+                number_format((float) $line->amount, 2, ',', ''),
+                $line->status, // pending|matched
+                $matched ? (string) $line->matched_payment_id : '',
+                $line->confidence ?? '',
+            ])."\n";
+        }
+
+        // Totaux + écart (relevé vs comptabilité).
+        $csv .= ';'.';'.';TOTAL MATCHED;'.number_format((float) ($status['matched_amount'] ?? 0.0), 2, ',', '')."\n";
+        $csv .= ';'.';'.';TOTAL PENDING;'.number_format((float) ($status['pending_amount'] ?? 0.0), 2, ',', '')."\n";
+        if (isset($status['closing_gap'])) {
+            $csv .= ';'.';'.';ECART CLOTURE;'.number_format((float) $status['closing_gap'], 2, ',', '')."\n";
+        }
+
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="bank-statement-'.$statement->id.'.csv"',
+            'Referrer-Policy' => 'no-referrer', // #5521 : pas de fuite de données via Referer
+        ]);
+    }
+
+    /**
+     * Neutralisation anti-injection CSV (#4169) : préfixe « = » pour les
+     * cellules commençant par un caractère dangereux (formule Excel).
+     */
+    private static function csvCell(string $value): string
+    {
+        $clean = str_replace([';', "\r", "\n"], [' ', ' ', ' '], $value);
+        if (preg_match('/^[=+@\-]/', $clean)) {
+            return "'".$clean;
+        }
+
+        return $clean;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function serializeStatement(BankStatement $statement): array
@@ -166,6 +226,10 @@ final class BankStatementController extends Controller
                     'status' => $line->status,
                     'matched_payment_id' => $line->matched_payment_id,
                     'confidence' => $line->confidence,
+                    // Proposition du matching auto (issue #5435/#5523) : le
+                    // paiement candidat le plus probable, exposé pour l'UI de
+                    // matching manuel.
+                    'proposed_payment_id' => $line->metadata['proposed_payment_id'] ?? null,
                 ])->values(),
         ];
     }

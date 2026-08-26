@@ -148,6 +148,7 @@ Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:princ
     Route::get('accounting/bank-statements/{statement}', [BankStatementController::class, 'show']);
     Route::post('accounting/bank-statements/{statement}/reconcile', [BankStatementController::class, 'reconcile']);
     Route::get('accounting/bank-statements/{statement}/status', [BankStatementController::class, 'status']);
+    Route::get('accounting/bank-statements/{statement}/export', [BankStatementController::class, 'export']);
     Route::post('accounting/bank-statement-lines/{line}/match', [BankStatementController::class, 'match']);
 });
 
