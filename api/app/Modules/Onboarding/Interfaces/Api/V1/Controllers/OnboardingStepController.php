@@ -49,6 +49,18 @@ class OnboardingStepController extends Controller
         $completed = $steps->whereIn('status', ['completed', 'skipped'])->count();
         $percent = $total > 0 ? (int) round(($completed / $total) * 100) : 0;
 
+        // #R15 — go_live_ready : toutes les étapes REQUISES doivent être
+        // complétées (status = 'completed'). L'ancien seuil `total - 1` était
+        // trop permissif : une étape requise manquante n'empêchait pas le
+        // passage en production.
+        $allRequiredDone = $steps
+            ->where('required', true)
+            ->every(fn (OnboardingStep $s): bool => $s->status === 'completed');
+
+        // #R6 — exposer employees_count depuis ce endpoint (évite au wizard
+        // d'appeler le moteur calculé séparément pour le Quick Start).
+        $employeesCount = Employee::where('company_id', $companyId)->count();
+
         // #5151 — instrumentation légère (sans outil externe) : horodatage du
         // parcours pilote exposé au gestionnaire. Champs additifs — les
         // clients existants ignorent les clés inconnues (contrat canonique
@@ -62,7 +74,8 @@ class OnboardingStepController extends Controller
                 'total_steps' => $total,
                 'progress_percent' => $percent,
                 'progress' => $percent,
-                'go_live_ready' => $total > 0 && $completed >= $total - 1,
+                'go_live_ready' => $total > 0 && $allRequiredDone,
+                'employees_count' => $employeesCount,
                 'company_created_at' => $companyCreatedAt?->toIso8601String(),
                 'elapsed_since_company_creation_minutes' => $companyCreatedAt
                     ? (int) $companyCreatedAt->diffInMinutes(now())

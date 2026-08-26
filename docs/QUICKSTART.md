@@ -2,70 +2,113 @@
 
 Welcome to Leopardo RH! This guide will help you get your environment set up and make your first API call in minutes.
 
-## 🏃‍♂️ Fast Track (Docker)
+## Fast Track (Docker) — recommandé
 
-1.  **Clone the Repo**
-    ```bash
-    git clone https://github.com/kitokoh/leopardo-hr.git
-    cd leopardo-hr
-    ```
+**Prérequis** : Docker >= 24 + Docker Compose v2 (`docker compose`, pas `docker-compose`)
 
-2.  **Start Services**
-    ```bash
-    docker-compose up -d
-    ```
+```bash
+# 1. Cloner le dépôt
+git clone https://github.com/kitokoh/leopardo-hr.git
+cd leopardo-hr
 
-3.  **Seed Database**
-    ```bash
-    docker exec -it leopardo-api php artisan leopardo:migrate --seed
-    ```
+# 2. Copier l'environnement (comme documenté dans DEVELOPMENT.md)
+cp api/.env.example api/.env
 
-Your API is now live at `http://localhost:8000`.
+# 3. Démarrer les services
+docker compose up -d --build postgres redis api
 
-## 🛠 Manual Setup (PHP/Laravel)
+# 4. Installer les dépendances + générer la clé APP_KEY
+docker compose exec api composer install --no-interaction --prefer-dist
+docker compose exec api php artisan key:generate --force
 
-If you prefer running Laravel directly:
+# 5. Redémarrer l'API pour qu'elle prenne en compte la nouvelle APP_KEY
+#    (php artisan serve lit .env une seule fois au démarrage — cf. issue #1591)
+docker compose restart api
 
-1.  **Install Dependencies**
-    ```bash
-    cd api
-    composer install
-    ```
+# 6. Lancer les migrations (schema public + shared_tenants) et le seed de démo
+docker compose exec api php artisan leopardo:migrate --seed --demo
+```
 
-2.  **Environment Configuration**
-    ```bash
-    cp .env.example .env
-    php artisan key:generate
-    ```
+Votre API est maintenant disponible sur `http://localhost:8000/api/v1/health`.
 
-3.  **Run Migrations**
-    ```bash
-    php artisan leopardo:migrate
-    ```
-    > Leopardo RH uses a two-schema multi-tenant model (`public` + `shared_tenants`). Plain
-    > `artisan migrate` only creates the `public` schema tables — always use the custom
-    > `leopardo:migrate` command locally. See `docs/architecture/MULTITENANCY.md`.
-
-4.  **Serve**
-    ```bash
-    php artisan serve
-    ```
-
-## 📱 Mobile App (Flutter)
-
-> The legacy monolithic mobile app (`front/mobile/`) was removed from the repo (PR #754). Launch
-> mobile apps now live under `front/mobile_apps/*` (see `front/mobile_apps/README.md`):
-> `leopardo_core` (shared package), `leopardo_employee`, `leopardo_manager`, `leopardo_hr`,
-> `leopardo_platform_admin`.
-
-1.  Navigate to the app you want, e.g. `front/mobile_apps/leopardo_employee/`.
-2.  Run `flutter pub get`.
-3.  Launch with `flutter run`.
+> **Pourquoi `leopardo:migrate` et pas `artisan migrate` ?**
+> Leopardo RH utilise un modèle multi-tenant hybride à deux schemas PostgreSQL.
+> La commande custom `leopardo:migrate` bascule le `search_path` et joue les
+> migrations `database/migrations/public/` puis `database/migrations/tenant/`
+> dans le bon ordre. Voir `docs/architecture/MULTITENANCY.md`.
 
 ---
 
-## 📚 Next Steps
+## Frontend (optionnel)
 
-- Explore the **[API Reference](api/README.md)**.
-- Understand the **[System Architecture](architecture/ARCHITECTURE.md)**.
-- Check the **[Contribution Guidelines](contributing/GUIDELINES.md)**.
+### Admin Dashboard (Vue.js)
+
+```bash
+cd front/admin-dashboard
+cp .env.example .env        # ou configurer VITE_API_URL si nécessaire
+npm install
+npm run dev                 # http://localhost:5173
+```
+
+### Vitrine Web (Next.js)
+
+```bash
+cd front/web
+cp .env.local.example .env.local   # #R11 : NEXT_PUBLIC_API_URL doit pointer sur http://localhost:8000
+npm install
+npm run dev                        # http://localhost:3000
+```
+
+---
+
+## Installation manuelle (PHP/Laravel sans Docker)
+
+**Prérequis** : PHP >= 8.4.1, Composer >= 2.6, PostgreSQL.
+
+```bash
+cd api
+
+# 1. Dépendances
+composer install
+
+# 2. Environnement
+cp .env.example .env
+php artisan key:generate          # obligatoire avant la migration
+
+# 3. Migrations
+php artisan leopardo:migrate --seed
+
+# 4. Serveur de développement
+php artisan serve
+```
+
+---
+
+## App Mobile (Flutter)
+
+> Les apps mobiles sont dans `front/mobile_apps/` (`leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`).
+
+```bash
+cd front/mobile_apps/leopardo_employee
+flutter pub get
+flutter run
+```
+
+---
+
+## Comptes démo
+
+Après `--seed --demo`, les comptes suivants sont disponibles :
+
+| Rôle | Email | Mot de passe |
+|------|-------|-------------|
+| Manager principal | `ahmed.benali@techcorp-algerie.dz` | `password123` |
+
+---
+
+## Prochaines étapes
+
+- [Architecture du système](architecture/ARCHITECTURE.md)
+- [Guide de développement complet](../DEVELOPMENT.md)
+- [Directives de contribution](contributing/GUIDELINES.md)
+- [Référence API](api/README.md)

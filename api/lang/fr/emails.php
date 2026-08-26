@@ -154,6 +154,14 @@ return [
     'email_subscription_confirmed_invoice_button' => 'Télécharger la facture',
     'email_subscription_confirmed_footer' => 'Merci de faire confiance à Leopardo RH.',
 
+    // #R12 — Rappel d'onboarding J+1
+    'onboarding_reminder_subject' => 'Votre configuration Leopardo RH n\'est pas encore terminée',
+    'onboarding_reminder_heading' => 'Bonjour :name,',
+    'onboarding_reminder_intro'   => 'Vous avez créé votre entreprise :company hier mais votre configuration n\'est pas encore terminée.',
+    'onboarding_reminder_cta'     => 'Reprendre la configuration',
+    'onboarding_reminder_steps'   => 'Il vous reste quelques étapes clés : ajout des employés, premier pointage, configuration de la paie.',
+    'onboarding_reminder_support' => 'Notre équipe support est disponible pour vous aider à tout moment.',
+
     'email_password_reset_subject' => 'Réinitialisation de mot de passe',
     'email_password_reset_greeting' => 'Bonjour :name,',
     'email_password_reset_body' => 'Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous. Ce lien expire dans 60 minutes.',

@@ -26,7 +26,8 @@ declare -A EXPECTED=(
   [leopardo-queue-worker]=worker
   [leopardo-scheduler]=worker
 )
-EXPECTED_QUEUE_VARS=("QUEUE_CONNECTION=redis" "CACHE_STORE=redis" "SESSION_DRIVER=redis")
+# #5578 : source de vérité unique = database (garde CI check-queue-strategy-coherence.sh).
+EXPECTED_QUEUE_VARS=("QUEUE_CONNECTION=database" "CACHE_STORE=redis" "SESSION_DRIVER=redis")
 
 echo "== Récupération des services Render (pagination) =="
 services_json=""

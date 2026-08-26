@@ -164,6 +164,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           lfs: true
+          # Issue #5629 : le checkout par défaut (depth 1) ne contient pas le
+          # base_sha des PRs à base ancienne → les gardes de diff (cross-module
+          # imports, strict_types, accented messages, baseline PHPStan)
+          # échouent en exit 128 sur `git rev-parse` → check requis rouge
+          # systématique. Historique complet requis.
+          fetch-depth: 0
 
       - name: Check module structure
         run: |
