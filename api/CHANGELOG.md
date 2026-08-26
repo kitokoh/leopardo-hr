@@ -4,6 +4,27 @@ Toutes les modifications notables de ce projet sont documentées ici.
 Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
+
+### Webhooks Stripe/Chargily — URL canonique documentée (#5537)
+- `ChargilyPaymentGateway::webhookUrl()` confirmé : retourne `/api/v1/accounting/payment-webhooks/chargily` (nouvelle URL, PR #5525).
+- ADR-0017 mis à jour : diagramme d'architecture corrigé (ancienne URL → nouvelle), historique des changements ajouté.
+- `docs/accounting/RUNBOOK.md` : nouvelle section §10 « Paiement en ligne — webhooks » — URL canonique, procédures de configuration Stripe/Chargily, vérification HMAC, dépannage.
+- **Action manuelle requise** : reconfigurer les URLs dans les dashboards Stripe et Chargily vers `/api/v1/accounting/payment-webhooks/{gateway}`.
+
+### i18n — Parité errors.php ×4 vérifiée + garde consolidée (#5524)
+- `ALREADY_SEEDED` présent dans `lang/{ar,en,fr,tr}/errors.php` (introduit par #5525) — parité 236 clés ×4 vérifiée.
+- `check-accounting-i18n.py` : `ACCOUNTING_I18N_OK — 0 chaîne hardcodée, parité ×4`.
+- `LangCatalogParityTest` (`test_key_parity_across_locales_per_catalog`) couvre TOUS les catalogues `lang/**/*.php` ×4, dont `errors.php` — aucune régression possible sans signal rouge CI.
+### AuditLog unifié — accès portail client (#5520)
+- `PublicDocumentShareController::auditAccess()` refactoré pour utiliser `AuditLog::record()` (#5439) au lieu de `AuditLog::create()` direct.
+- `module: 'accounting'` + `request_id` (via `correlation_id()`) désormais renseignés sur chaque entrée portail : les accès sont chaînables via les logs de corrélation.
+- Actions renommées : `'accounting.share.info'` → `'share.info'`, `'accounting.share.download'` → `'share.download'` (module dédié).
+- `PortalJourneyE2ETest` adapté : assertions `module`, `request_id` non nul.
+
+### Portail client — E2E + routes restaurées (#5433/#5429)
+- Routes publiques `documents/shared/{token}` + `/download` restaurées (disparues dans les merges #5495/#5377) — throttle 60/min.
+- `PortalJourneyE2ETest` : parcours complet de bout en bout + couverture AuditLog (info/download) + RGPD (métadonnées limitées, cross-tenant 404).
+- Fix boot routes : double `use` `AttendanceDayClosureController` (geo.php, merge #5406).
 - **Webhook inbound idempotence (#5444)**: public `webhook_events` table (unique `source+event_id`, payload_hash, stored response) + `WebhookEventRegistry` (Platform) — atomic reservation on first delivery, replay of stored response on redelivery (zero double effect), 202 for concurrent in-flight, release+500 on processing failure (provider retries). Wired ×4: Stripe (`event.id`), Chargily (`data.id`/checkout — fixes double Payment on `checkout.paid` replay), EmailBounce (payload hash), MarketingLead (payload hash). Invalid signature → 400 before any effect. `Schema::hasTable` guard for partial test schemas. Tests: `WebhookIdempotenceTest` (replay ×4, hash key, fail-closed). Docs: `docs/security/WEBHOOKS.md`.
 - **Enterprise 2FA/TOTP (#5436)**: shared `TotpService` (secret/QR/verify, pure-PHP TOTP fallback), enrollment `POST /auth/2fa/enroll|confirm|disable|recovery-codes`, login challenge (`mfa_challenge` response, token revoked, single-use 5-min challenge), `POST /auth/2fa/verify` (TOTP or hashed single-use recovery code → Sanctum token with tenant abilities), remember-device signed cookie (30 d), tenant policy `mfa_required_roles` (403 `TWO_FACTOR_REQUIRED`), i18n ×4 (`TWO_FACTOR_*`, 219 keys/locale), OpenAPI 6 paths (806 ops, SDK regenerated). Non-breaking: accounts without 2FA keep direct login. Tests: `TwoFactorAuthTest` (7 scenarios). Docs: `docs/security/2FA_ENTREPRISE.md`.
 

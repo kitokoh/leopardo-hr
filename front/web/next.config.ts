@@ -149,6 +149,23 @@ const nextConfig: NextConfig = {
       ],
     },
     {
+      // #5429 — portail client : les URL tokenisées /documents/shared/*
+      // ne doivent JAMAIS fuiter le token via l'en-tête Referer (polices,
+      // analytics, images tiers). no-referrer strict, défini APRÈS la règle
+      // globale (les règles postérieures écrasent pour la même clé).
+      source: "/documents/shared/:path*",
+      headers: [
+        {
+          key: "Referrer-Policy",
+          value: "no-referrer",
+        },
+        {
+          key: "X-Content-Type-Options",
+          value: "nosniff",
+        },
+      ],
+    },
+    {
       source: "/sitemap.xml",
       headers: [
         {

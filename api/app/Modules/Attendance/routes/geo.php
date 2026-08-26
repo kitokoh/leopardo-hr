@@ -14,7 +14,6 @@ use App\Modules\Attendance\Interfaces\Api\V1\AttendanceDayClosureController;
 use App\Modules\Attendance\Interfaces\Api\V1\AttendanceModeController;
 use App\Modules\Attendance\Interfaces\Api\V1\GeoAttendanceController;
 use App\Modules\Attendance\Interfaces\Api\V1\GeoSessionController;
-use App\Modules\Attendance\Interfaces\Api\V1\AttendanceDayClosureController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('api/v1/attendance')

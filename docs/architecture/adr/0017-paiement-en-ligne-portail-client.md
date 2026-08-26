@@ -3,8 +3,16 @@
 ## Statut
 
 **Proposée** — issue #5272, décision fondateur requise (choix de la passerelle pilote).
+**Implémentée (partiel)** — issue #5525 a livré la couche backend (Chargily + Stripe, PR #5525).
 
 **Date** : 2026-08-24
+
+## Historique des changements
+
+| Date | Description |
+|------|-------------|
+| 2026-08-24 | ADR proposée (choix architecture dual-PSP) |
+| 2026-08-25 | PR #5525 — URL webhook renommée : `POST /api/v1/accounting/payments/webhook/{gateway}` → `POST /api/v1/accounting/payment-webhooks/{gateway}` (levée d'ambiguïté de path redocly). **Les dashboards Stripe/Chargily doivent pointer la nouvelle URL** (issue #5537). |
 
 ## Contexte
 
@@ -117,7 +125,7 @@ PaymentGatewayFactory (routing par devise/pays entreprise)
         ▼
 Retour client → passerelle → webhook
         ▼
-POST /accounting/payments/webhook/{gateway}   (signature HMAC, fail-closed — pattern ChargilyService)
+POST /accounting/payment-webhooks/{gateway}   (signature HMAC, fail-closed — pattern ChargilyService, URL renommée #5525)
         ▼
 Événement paiement (idempotent : Idempotency-Key #5277 + UNIQUE gateway_payment_id)
         ▼

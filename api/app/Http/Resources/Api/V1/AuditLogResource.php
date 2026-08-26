@@ -23,6 +23,7 @@ class AuditLogResource extends JsonResource
             'old_values' => $this->old_values,
             'new_values' => $this->new_values,
             'ip_address' => $this->ip_address,
+            'user_agent' => $this->user_agent,
             'metadata' => $this->metadata,
             'user' => $this->whenLoaded('user', fn () => [
                 'id' => $this->user->id,

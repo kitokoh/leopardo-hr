@@ -51,7 +51,7 @@ concurrency:
   # Issue #2131 : sur main, ne jamais annuler le run du commit précédent
   # (chaque merge relançait l'annulation en cascade des runs paie utiles).
   # Les runs PR gardent l'annulation (feedback rapide sur une même branche).
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: false  # #5536 : queuer au lieu d'annuler (les runs PR ne démarrent jamais sous congestion)
 
 jobs:
   golden:
