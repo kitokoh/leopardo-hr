@@ -153,6 +153,14 @@ return [
     'email_subscription_confirmed_invoice_button' => 'Faturayı indir',
     'email_subscription_confirmed_footer' => 'Leopardo RH\'ye güvendiğiniz için teşekkür ederiz.',
 
+    // #R12 — 1. gün kurulum hatırlatıcı
+    'onboarding_reminder_subject' => 'Leopardo RH kurulumunuz henüz tamamlanmadı',
+    'onboarding_reminder_heading' => 'Merhaba :name,',
+    'onboarding_reminder_intro'   => ':company şirketini dün oluşturdunuz ancak kurulum henüz tamamlanmadı.',
+    'onboarding_reminder_cta'     => 'Kuruluma devam et',
+    'onboarding_reminder_steps'   => 'Birkaç temel adım kaldı: çalışan ekleme, ilk giriş, bordro yapılandırması.',
+    'onboarding_reminder_support' => 'Destek ekibimiz her zaman yardımcı olmaya hazır.',
+
     'email_password_reset_subject' => 'Şifre Sıfırlama',
     'email_password_reset_greeting' => 'Merhaba :name,',
     'email_password_reset_body' => 'Şifre sıfırlama talebinde bulundunuz. Aşağıdaki düğmeye tıklayın. Bu bağlantı 60 dakika içinde sona erer.',

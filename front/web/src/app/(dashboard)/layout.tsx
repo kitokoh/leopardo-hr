@@ -132,6 +132,9 @@ export default function DashboardLayout({
   };
 
   const [showWizard, setShowWizard] = useState(false);
+  // #R8 — onboarding non complété mais wizard fermé → bouton "Reprendre".
+  const onboardingPending =
+    user?.role === 'manager' && user.company?.metadata?.onboarding_completed !== true;
 
   useEffect(() => {
     if (user && user.role === 'manager' && user.company?.metadata?.onboarding_completed !== true) {
@@ -256,6 +259,17 @@ export default function DashboardLayout({
           </div>
         </div>
 
+        {/* #R8 — bouton de reprise d'onboarding si wizard fermé mais non complété */}
+        {onboardingPending && !showWizard && (
+          <div className="mx-3 mb-2">
+            <button
+              onClick={() => setShowWizard(true)}
+              className="w-full rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-left text-[11px] font-bold text-emerald-700 transition hover:bg-emerald-100"
+            >
+              {labels.dashboard.resumeOnboarding}
+            </button>
+          </div>
+        )}
         <div className="border-t border-slate-200/50 p-4">
           <div className="flex items-center gap-3 rounded-2xl bg-transparent p-3 transition-colors hover:bg-slate-100">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-slate-200 to-slate-300 text-xs font-black text-slate-600">

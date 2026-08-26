@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, CheckCircle2, Eye, EyeOff, Loader2, LockKeyhole } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { Button } from '@/components/ui/Button';
-import { getCopy, normalizeLocale, type AppLocale } from '@/lib/i18n';
+import { getCopy, normalizeLocale, storeAuthSession, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -14,6 +15,7 @@ export function ActivateAccountForm({ token }: { token: string }) {
   const { locale } = useVitrineLocale();
   const appLocale: AppLocale = normalizeLocale(locale ?? 'fr');
   const labels = getCopy(appLocale).accountActivation;
+  const router = useRouter();
 
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
@@ -37,6 +39,9 @@ export function ActivateAccountForm({ token }: { token: string }) {
     setError(null);
     setSubmitting(true);
     try {
+      // #R3 — Passer par le proxy dédié qui pose le cookie httpOnly leopardo_token
+      // (même architecture que /api/v1/auth/login, cf. #1299).
+      // Le proxy extrait data.token et le stocke en cookie avant de répondre.
       await apiFetch(`/onboarding/invitation/${encodeURIComponent(token)}/activate`, {
         method: 'POST',
         body: JSON.stringify({
@@ -45,6 +50,21 @@ export function ActivateAccountForm({ token }: { token: string }) {
           password_confirmation: confirmation,
         }),
       });
+
+      // Cookie posé — récupérer le profil complet via /auth/me et démarrer la session.
+      try {
+        const meResponse = await apiFetch('/auth/me');
+        const mePayload = (await meResponse.json()) as { data?: StoredAuthUser };
+        if (mePayload.data) {
+          storeAuthSession(null, mePayload.data);
+          router.replace('/');
+          return;
+        }
+      } catch {
+        // /auth/me a échoué (env de test, cookie non posé, etc.) — fallback :
+        // afficher l'écran de succès avec un lien vers la connexion.
+      }
+
       setDone(true);
     } catch (e) {
       console.error(e);
