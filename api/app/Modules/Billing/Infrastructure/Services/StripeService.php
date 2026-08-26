@@ -118,7 +118,7 @@ class StripeService
     /**
      * Verify and parse a Stripe webhook event.
      *
-     * @return array{type: string, data: array<string, mixed>}|null
+     * @return array{id?: string, type: string, data: array<string, mixed>}|null
      */
     public function verifyWebhookSignature(string $payload, string $sigHeader): ?array
     {

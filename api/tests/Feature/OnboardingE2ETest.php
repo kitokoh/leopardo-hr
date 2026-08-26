@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Mail\UserInvitationMail;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Mail\UserInvitationMail;
 use App\Modules\HR\Domain\Models\UserInvitation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -315,7 +315,8 @@ class OnboardingE2ETest extends TestCase
         $this->resetAuth();
         Sanctum::actingAs($yacine, ['*']);
         $resend = $this->postJson('/api/v1/invitations/'.$ritaInvId.'/resend');
-        $this->assertContains($resend->status(), [200, 410]);
+        // #5585 : invitation active → relance acceptée 200 (410 = invitation expirée, cas dédié).
+        $resend->assertOk();
     }
 
     private function resetAuth(): void
@@ -366,4 +367,3 @@ class OnboardingE2ETest extends TestCase
         $this->assertSame(3, Employee::query()->where('role', 'manager')->where('manager_role', 'principal')->count());
     }
 }
-

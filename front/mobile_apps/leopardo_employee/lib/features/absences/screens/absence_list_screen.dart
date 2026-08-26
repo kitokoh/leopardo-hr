@@ -288,12 +288,40 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
     super.dispose();
   }
 
+  // PA2-MOB-006 / Issue #5618 : sélecteur source (camera ou galerie)
   Future<void> _pickProof() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(
-      source: ImageSource.camera,
-      imageQuality: 85,
+    if (!mounted) return;
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: MobileSurface.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt_outlined),
+                title: const Text('Prendre une photo'),
+                onTap: () => Navigator.of(context).pop(ImageSource.camera),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text('Choisir dans la galerie'),
+                onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
+    if (source == null || !mounted) return;
+
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: source, imageQuality: 85);
     if (picked == null || !mounted) return;
     setState(() => _proofFile = File(picked.path));
   }
@@ -413,19 +441,31 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                   labelText: context.l10n.absencesReason,
                   hintText: context.l10n.absencesReasonhint,
                 ),
-                validator: (value) => value == null || value.trim().length < 4
-                    ? context.l10n.absencesReasonrequired
-                    : null,
+                // Issue #5618 : le motif est optionnel (API accepte reason=null)
+                validator: null,
               ),
               const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: _pickProof,
-                icon: const Icon(Icons.attach_file_rounded, size: 18),
-                label: Text(
-                  _proofFile == null
-                      ? context.l10n.absencesAttachProof
-                      : context.l10n.absencesProofAttached,
-                ),
+              Row(
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: _pickProof,
+                    icon: const Icon(Icons.attach_file_rounded, size: 18),
+                    label: Text(
+                      _proofFile == null
+                          ? context.l10n.absencesAttachProof
+                          : context.l10n.absencesProofAttached,
+                    ),
+                  ),
+                  // Issue #5618 : bouton de suppression du justificatif joint
+                  if (_proofFile != null) ...[
+                    const SizedBox(width: 8),
+                    IconButton(
+                      tooltip: 'Supprimer le justificatif',
+                      icon: const Icon(Icons.close_rounded, size: 18),
+                      onPressed: () => setState(() => _proofFile = null),
+                    ),
+                  ],
+                ],
               ),
               const SizedBox(height: 12),
               ElevatedButton(

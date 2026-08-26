@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Training;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\HR\Domain\Models\TrainingSession;
 use Laravel\Sanctum\Sanctum;
@@ -17,19 +17,23 @@ class TrainingControllerTest extends TestCase
     use CreatesMvpSchema;
 
     protected Company $company;
+
     protected Company $otherCompany;
+
     protected Employee $manager;
+
     protected Employee $employee;
+
     protected Employee $otherManager;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->setUpMvpSchema();
-        $this->company      = Company::factory()->create();
+        $this->company = Company::factory()->create();
         $this->otherCompany = Company::factory()->create();
-        $this->manager      = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
-        $this->employee     = Employee::factory()->create(['company_id' => $this->company->id]);
+        $this->manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        $this->employee = Employee::factory()->create(['company_id' => $this->company->id]);
         $this->otherManager = Employee::factory()->manager()->create(['company_id' => $this->otherCompany->id]);
     }
 
@@ -81,9 +85,9 @@ class TrainingControllerTest extends TestCase
         Sanctum::actingAs($this->manager);
 
         $response = $this->postJson('/api/v1/training/courses', [
-            'title'          => 'Laravel Fundamentals',
-            'description'    => 'An introduction to Laravel framework.',
-            'type'           => 'internal',
+            'title' => 'Laravel Fundamentals',
+            'description' => 'An introduction to Laravel framework.',
+            'type' => 'internal',
             'duration_hours' => 2,
         ]);
 
@@ -96,9 +100,9 @@ class TrainingControllerTest extends TestCase
         Sanctum::actingAs($this->employee);
 
         $response = $this->postJson('/api/v1/training/courses', [
-            'title'          => 'Unauthorized Course',
-            'description'    => 'Should not be created.',
-            'type'           => 'internal',
+            'title' => 'Unauthorized Course',
+            'description' => 'Should not be created.',
+            'type' => 'internal',
             'duration_hours' => 1,
         ]);
 
@@ -123,9 +127,9 @@ class TrainingControllerTest extends TestCase
 
         // First create a course
         $createResponse = $this->postJson('/api/v1/training/courses', [
-            'title'          => 'Visible Course',
-            'description'    => 'A course owned by this company.',
-            'type'           => 'internal',
+            'title' => 'Visible Course',
+            'description' => 'A course owned by this company.',
+            'type' => 'internal',
             'duration_hours' => 1.5,
         ]);
 
@@ -146,9 +150,9 @@ class TrainingControllerTest extends TestCase
         Sanctum::actingAs($this->otherManager);
 
         $createResponse = $this->postJson('/api/v1/training/courses', [
-            'title'          => 'Other Company Course',
-            'description'    => 'Belongs to another tenant.',
-            'type'           => 'internal',
+            'title' => 'Other Company Course',
+            'description' => 'Belongs to another tenant.',
+            'type' => 'internal',
             'duration_hours' => 1,
         ]);
 
@@ -164,7 +168,8 @@ class TrainingControllerTest extends TestCase
             // Fallback: request a non-existent ID as this company's manager
             Sanctum::actingAs($this->manager);
             $response = $this->getJson('/api/v1/training/courses/99999999');
-            $this->assertContains($response->status(), [404, 400]);
+            // #5585 : id inexistant → 404 (pas 400).
+            $response->assertNotFound();
         }
     }
 
@@ -183,14 +188,14 @@ class TrainingControllerTest extends TestCase
 
         $course = TrainingCourse::create([
             'company_id' => $this->company->id,
-            'title'      => 'Formation PHP',
-            'type'       => 'internal',
+            'title' => 'Formation PHP',
+            'type' => 'internal',
         ]);
 
         $response = $this->postJson("/api/v1/training/courses/{$course->id}/sessions", [
-            'start_date'       => now()->addWeek()->toDateString(),
-            'end_date'         => now()->addWeeks(2)->toDateString(),
-            'location'         => 'Salle A',
+            'start_date' => now()->addWeek()->toDateString(),
+            'end_date' => now()->addWeeks(2)->toDateString(),
+            'location' => 'Salle A',
             'external_trainer' => 'Mohamed',
         ]);
 
@@ -203,16 +208,16 @@ class TrainingControllerTest extends TestCase
     {
         $course = TrainingCourse::create([
             'company_id' => $this->company->id,
-            'title'      => 'Formation',
-            'type'       => 'internal',
+            'title' => 'Formation',
+            'type' => 'internal',
         ]);
 
         $session = TrainingSession::create([
             'training_course_id' => $course->id,
-            'company_id'         => $this->company->id,
-            'start_date'         => now()->addWeek(),
-            'end_date'           => now()->addWeeks(2),
-            'status'             => 'planned',
+            'company_id' => $this->company->id,
+            'start_date' => now()->addWeek(),
+            'end_date' => now()->addWeeks(2),
+            'status' => 'planned',
         ]);
 
         Sanctum::actingAs($this->manager);
@@ -228,23 +233,23 @@ class TrainingControllerTest extends TestCase
     {
         $foreignCourse = TrainingCourse::create([
             'company_id' => $this->otherCompany->id,
-            'title'      => 'Foreign Course',
-            'type'       => 'internal',
+            'title' => 'Foreign Course',
+            'type' => 'internal',
         ]);
         $course = TrainingCourse::create([
             'company_id' => $this->company->id,
-            'title'      => 'Internal Course',
-            'type'       => 'internal',
+            'title' => 'Internal Course',
+            'type' => 'internal',
         ]);
         $session = TrainingSession::create([
             'training_course_id' => $course->id,
-            'company_id'         => $this->company->id,
-            'start_date'         => now()->addWeek(),
-            'end_date'           => now()->addWeeks(2),
-            'status'             => 'planned',
+            'company_id' => $this->company->id,
+            'start_date' => now()->addWeek(),
+            'end_date' => now()->addWeeks(2),
+            'status' => 'planned',
         ]);
 
-        /** @var \App\Core\Auth\Domain\Models\Employee $foreignEmployee */
+        /** @var Employee $foreignEmployee */
         $foreignEmployee = Employee::factory()->create(['company_id' => $this->otherCompany->id]);
 
         Sanctum::actingAs($this->manager);

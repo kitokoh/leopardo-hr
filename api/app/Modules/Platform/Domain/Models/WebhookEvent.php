@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Platform\Domain\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * #5444 — Registre d'idempotence des webhooks entrants (schéma public).
@@ -20,12 +21,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $payload_hash
  * @property int $response_code
  * @property string|null $response_body
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class WebhookEvent extends Model
 {
-    protected $table = 'webhook_events';
+    // Table PUBLIC (schéma `public`) : les webhooks sont publics par nature
+    // (fournisseurs tiers) et l'unicité est globale à la plateforme. La
+    // qualification évite que le search_path (shared_tenants,public) cache
+    // la table aux gardes/requêtes non qualifiées (F-17, #1933).
+    protected $table = 'public.webhook_events';
 
     protected $fillable = [
         'source',

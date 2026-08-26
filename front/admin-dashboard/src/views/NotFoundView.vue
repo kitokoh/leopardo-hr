@@ -43,8 +43,8 @@
               <div class="flex items-center">
                 <UsersIcon class="h-6 w-6 text-gray-400 group-hover:text-gray-500" />
                 <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900">Utilisateurs</p>
-                  <p class="text-sm text-gray-500">Gérer les comptes utilisateurs</p>
+                  <p class="text-sm font-medium text-gray-900">{{ t('notFound.users', 'Utilisateurs') }}</p>
+                  <p class="text-sm text-gray-500">{{ t('notFound.usersHint', 'Gérer les comptes utilisateurs') }}</p>
                 </div>
               </div>
             </div>
@@ -59,8 +59,8 @@
               <div class="flex items-center">
                 <BuildingOfficeIcon class="h-6 w-6 text-gray-400 group-hover:text-gray-500" />
                 <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900">Entreprises</p>
-                  <p class="text-sm text-gray-500">Gérer les entreprises</p>
+                  <p class="text-sm font-medium text-gray-900">{{ t('notFound.companies', 'Entreprises') }}</p>
+                  <p class="text-sm text-gray-500">{{ t('notFound.companiesHint', 'Gérer les entreprises') }}</p>
                 </div>
               </div>
             </div>
@@ -104,6 +104,10 @@
 </template>
 
 <script setup>
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale'
+const localeStore = useLocaleStore()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 import { useRouter } from 'vue-router'
 import {
   ArrowLeftIcon,

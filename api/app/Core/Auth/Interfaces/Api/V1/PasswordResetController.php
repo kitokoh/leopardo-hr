@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
@@ -74,7 +75,8 @@ class PasswordResetController
         $validated = $request->validate([
             'email' => ['required', 'email', 'max:255'],
             'token' => ['required', 'string', 'max:64'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            // Issue #5620 : min 8 caractères + au moins 1 chiffre.
+            'password' => ['required', 'string', Password::min(8)->numbers(), 'confirmed'],
         ]);
 
         $email = strtolower(trim($validated['email']));

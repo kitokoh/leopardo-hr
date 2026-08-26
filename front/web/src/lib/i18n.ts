@@ -68,6 +68,7 @@ export type CopyTree = {
       googleNetwork: string;
       googleAuthFailed: string;
       googleNoAccount: string;
+      googleNoAccountCta: string;
     };
   };
   dashboard: {
@@ -608,6 +609,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNetwork: 'Impossible de contacter Google. Vérifiez votre connexion et réessayez.',
         googleAuthFailed: 'Google a refusé la connexion. Veuillez réessayer.',
         googleNoAccount: 'Aucun compte Leopardo RH n’est associé à cet email Google. Demandez une invitation à votre administrateur.',
+        googleNoAccountCta: 'Démarrer un essai sans invitation',
       },
     },
     dashboard: {
@@ -1167,6 +1169,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNetwork: 'تعذر الوصول إلى Google. تحقق من اتصالك وحاول مرة أخرى.',
         googleAuthFailed: 'رفض Google تسجيل الدخول. حاول مرة أخرى.',
         googleNoAccount: 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
+        googleNoAccountCta: 'ابدأ تجربة دون دعوة',
       },
     },
     dashboard: {
@@ -1726,6 +1729,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNetwork: 'Google ile baglanti kurulamadi. Baglantinizi kontrol edip tekrar deneyin.',
         googleAuthFailed: 'Google girisini reddetti. Lutfen tekrar deneyin.',
         googleNoAccount: 'Bu Google e-postasiyla iliskili Leopardo RH hesabi yok. Yoneticinizden davet isteyin.',
+        googleNoAccountCta: 'Davet olmadan deneme başlat',
       },
     },
     dashboard: {
@@ -2285,6 +2289,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNetwork: 'Could not reach Google. Check your connection and try again.',
         googleAuthFailed: 'Google refused the sign-in. Please try again.',
         googleNoAccount: 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
+        googleNoAccountCta: 'Start a trial without an invitation',
       },
     },
     dashboard: {

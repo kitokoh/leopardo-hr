@@ -12,6 +12,8 @@ use App\Core\Tenant\Domain\Models\CompanySetting;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Testing\TestResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -26,9 +28,14 @@ class TwoFactorAuthTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    /**
+     * @return array{0: Company, 1: Employee}
+     */
     private function seedAccount(string $email, string $password = 'password123', string $role = 'employee', ?string $managerRole = null): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => $email,
@@ -49,7 +56,10 @@ class TwoFactorAuthTest extends TestCase
         return [$company, $employee];
     }
 
-    private function login(string $email, string $password = 'password123')
+    /**
+     * @return TestResponse<Response>
+     */
+    private function login(string $email, string $password = 'password123'): TestResponse
     {
         return $this->postJson('/api/v1/auth/login', [
             'email' => $email,
@@ -77,13 +87,14 @@ class TwoFactorAuthTest extends TestCase
             if (strlen($chunk) < 8) {
                 continue;
             }
-            $decoded .= chr(bindec($chunk));
+            $decoded .= chr((int) bindec($chunk));
         }
 
         $counter = intdiv(time(), 30);
         $hash = hash_hmac('sha1', pack('N2', 0, $counter), $decoded, true);
         $offset = ord(substr($hash, -1)) & 0x0F;
-        $value = unpack('N', substr($hash, $offset, 4))[1] & 0x7FFFFFFF;
+        $unpacked = unpack('N', substr($hash, $offset, 4));
+        $value = ($unpacked !== false ? $unpacked[1] : 0) & 0x7FFFFFFF;
 
         return str_pad((string) ($value % 1000000), 6, '0', STR_PAD_LEFT);
     }
@@ -203,6 +214,7 @@ class TwoFactorAuthTest extends TestCase
     {
         [$company, $employee] = $this->seedAccount('rh@example.com', role: 'manager', managerRole: 'rh');
 
+        // Réglage de schéma (clé globale — pas de colonne company_id).
         CompanySetting::query()->create([
             'key' => 'mfa_required_roles',
             'value' => 'rh,principal',
@@ -259,20 +271,14 @@ class TwoFactorAuthTest extends TestCase
 
         // En test, le middleware EncryptCookies est désactivé pour ce cookie :
         // on transmet la valeur HMAC attendue (le cookie réel est chiffré).
-        // NB #5579 : en Laravel 12 le pipeline résout son PROPRE instance de
-        // middleware — un `make()->disableFor()` jetable n'affecte pas la
-        // requête. On pré-lie l'instance configurée dans le conteneur.
-        $cookieMiddleware = $this->app->make(EncryptCookies::class);
-        $cookieMiddleware->disableFor('mfa_remember_'.$employee->id);
-        $this->app->instance(EncryptCookies::class, $cookieMiddleware);
+        $this->app->make(EncryptCookies::class)
+            ->disableFor('mfa_remember_'.$employee->id);
         $expected = app(TwoFactorAuthService::class)
             ->rememberCookieValue($employee);
 
         // Login suivant AVEC le cookie → token direct (pas de challenge).
-        // NB #5579 : withCredentials() est OBLIGATOIRE — sans lui, les
-        // requêtes JSON (postJson) n'emportent AUCUN cookie.
-        $this->withCredentials()
-            ->withUnencryptedCookie('mfa_remember_'.$employee->id, $expected)
+        $this->withUnencryptedCookie('mfa_remember_'.$employee->id, $expected)
+            ->withCredentials()
             ->postJson('/api/v1/auth/login', [
                 'email' => '2fa-remember@example.com',
                 'password' => 'password123',

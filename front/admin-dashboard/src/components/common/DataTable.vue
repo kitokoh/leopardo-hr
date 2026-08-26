@@ -9,7 +9,7 @@
             type="search"
             :placeholder="searchPlaceholder"
             :aria-label="searchPlaceholder"
-            class="w-64 rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-4 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:ring-brand-500 transition-all duration-200"
+            class="w-full sm:w-64 rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-4 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:ring-brand-500 transition-all duration-200"
           />
         </div>
         <slot name="filters" />

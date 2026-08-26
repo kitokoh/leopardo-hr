@@ -167,7 +167,6 @@ class BankReconciliationTest extends TestCase
         $this->assertSame('matched', $payment->status);
     }
 
-
     public function test_export_csv_contains_lines_statuses_and_totals(): void
     {
         $company = $this->company();

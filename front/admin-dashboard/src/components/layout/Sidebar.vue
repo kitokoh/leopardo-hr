@@ -3,7 +3,7 @@
   <transition name="fade">
     <div
       v-if="isOpen"
-      class="fixed inset-0 z-40 lg:hidden"
+      class="fixed inset-0 z-40 md:hidden"
       @click="$emit('close')"
     >
       <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
@@ -13,7 +13,7 @@
   <!-- Sidebar -->
   <div
     :class="[
-      'fixed inset-y-0 left-0 z-50 w-64 transform bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 shadow-premium transition-all duration-300 ease-in-out lg:static lg:translate-x-0',
+      'fixed inset-y-0 left-0 z-50 w-64 transform bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 shadow-premium transition-all duration-300 ease-in-out md:static md:translate-x-0',
       isOpen ? 'translate-x-0' : '-translate-x-full'
     ]"
   >

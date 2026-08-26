@@ -107,8 +107,6 @@ class FamilyPartsRicfTest extends TestCase
             'salary_base' => 300000,
             'contract_start' => '2026-01-01',
             'family_parts' => 3.0,
-            // #5321 : contract_start figé (voir test précédent).
-            'contract_start' => '2026-01-01',
         ]);
 
         (new PayrollCalculator)->calculateRun($run);
@@ -130,8 +128,6 @@ class FamilyPartsRicfTest extends TestCase
             'salary_base' => 300000,
             'contract_start' => '2026-01-01',
             'family_parts' => 5.0,
-            // #5321 : contract_start figé (voir test précédent).
-            'contract_start' => '2026-01-01',
         ]);
 
         (new PayrollCalculator)->calculateRun($run);
