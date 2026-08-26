@@ -60,10 +60,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/documents/next-number', [AccountingDocumentController::class, 'nextNumber']);
             Route::get('/documents/{document}', [AccountingDocumentController::class, 'show'])->whereNumber('document');
             Route::post('/documents/{document}/send', [AccountingDocumentController::class, 'send'])->whereNumber('document');
-            // NOTE: POST /documents/{document}/payments est géré par AccountingPaymentController::store
-            // (voir le groupe AccountingPaymentController ci-dessous). La route dupliquée ici (#5577)
-            // a été supprimée : Laravel ne servant que la première déclaration, AccountingPaymentController
-            // était silencieusement inatteignable.
+            // #5577 — POST /accounting/documents/{document}/payments est déclaré
+            // UNIQUEMENT par la trésorerie (#5229) : AccountingPaymentController::store
+            // (FormRequest + audit #5273 + réponse canonique). L'ancienne route du
+            // bloc documents (#5223) était enregistrée en premier et rendait la
+            // trésorerie silencieusement inatteignable — suppression (doublon).
             Route::post('/documents/{document}/cancel', [AccountingDocumentController::class, 'cancel'])->whereNumber('document');
             Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
             // #5272 — paiement en ligne : initiation d'une session de checkout
