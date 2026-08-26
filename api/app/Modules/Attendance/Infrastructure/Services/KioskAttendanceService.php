@@ -79,9 +79,9 @@ class KioskAttendanceService
      * @param  array<int, array<string, mixed>>  $events
      * @return array{processed: array<int, int>, skipped: array<int, array{external_event_id: string|null, identifier: string, reason: string}>}
      */
-    public function syncPunches(AttendanceKiosk $kiosk, array $events): array
+    public function syncPunches(AttendanceKiosk $kiosk, array $events, string $deviceCode): array
     {
-        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $events) {
+        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $events, $deviceCode) {
             $processed = [];
             $skipped = [];
 
@@ -89,14 +89,14 @@ class KioskAttendanceService
                 $identifier = trim((string) ($event['identifier'] ?? ''));
                 $externalEventId = isset($event['external_event_id']) ? (string) $event['external_event_id'] : null;
 
-                $skip = static function (string $reason) use (&$skipped, $externalEventId, $identifier, $kiosk): void {
+                $skip = static function (string $reason) use (&$skipped, $externalEventId, $identifier, $kiosk, $deviceCode): void {
                     $skipped[] = [
                         'external_event_id' => $externalEventId,
                         'identifier' => $identifier,
                         'reason' => $reason,
                     ];
                     Log::warning('kiosk.sync_event_skipped', [
-                        'device_code' => $kiosk->device_code,
+                        'device_code' => $deviceCode,
                         'company_id' => $kiosk->company_id,
                         'external_event_id' => $externalEventId,
                         'identifier' => $identifier,
@@ -142,7 +142,10 @@ class KioskAttendanceService
                         biometric_type: $event['biometric_type'] ?? $kiosk->biometric_mode,
                         synced_from_offline: true,
                         action: $event['action'] ?? 'check_in',
-                        source_device_code: $kiosk->device_code,
+                        // #5588 (follow-up) : device_code présenté par la borne
+                        // (en clair dans l'URL) — jamais la dérivation stockée
+                        // (64 hex, colonne source_device_code limitée à 40).
+                        source_device_code: $deviceCode,
                         // PA2-ATT-010: offline-synced kiosk events also carry the
                         // multi-event work_type, matching mobile's offline sync.
                         work_type: $event['work_type'] ?? 'normal',
