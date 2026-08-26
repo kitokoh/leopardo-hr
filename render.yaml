@@ -45,8 +45,15 @@ services:
           property: host
       - key: LOG_CHANNEL
         value: stderr
+      # Issue #5586 : LOG_LEVEL=info pour que StructuredLogging (canal
+      # `structured`, info) et les breadcrumbs Sentry soient effectifs en prod
+      # (error filtrait tout le logging structuré).
       - key: LOG_LEVEL
-        value: error
+        value: info
+      # Issue #5586 : Sentry DSN câblé — DSN à saisir dans le dashboard Render
+      # (sync: false). SENTRY_TRACES_SAMPLE_RATE peut être ajusté en dashboard.
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
       # Database
       - key: DB_CONNECTION
         value: pgsql
@@ -89,12 +96,22 @@ services:
       # App secrets
       - key: APP_KEY
         generateValue: true
+      # Issue #5578 : la queue est sur database (probe + drain GH #5204/#5205),
+      # pas sur Redis (quota Upstash, incident 2026-08-19).
       - key: QUEUE_CONNECTION
-        value: redis
+        value: database
       - key: CACHE_STORE
         value: redis
       - key: SESSION_DRIVER
         value: redis
+      # Issue #5586 : Sentry était inerte en prod (DSN absent → aucun
+      # événement). DSN optionnel : renseigner SENTRY_LARAVEL_DSN dans le
+      # dashboard Render (secret sync: false) pour activer le report d'erreurs
+      # + breadcrumbs (config/sentry.php valide l'URL ; vide = désactivé).
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
+      - key: SENTRY_TRACES_SAMPLE_RATE
+        value: "0.1"
       # Stripe
       - key: STRIPE_SECRET_KEY
         sync: false
@@ -170,9 +187,10 @@ services:
     region: frankfurt
     plan: starter
     autoDeploy: true
-    # Override default CMD to run queue:work instead of web server
+    # Issue #5578 : la queue est sur database — le worker consomme la
+    # connexion par défaut (aligné sur le probe et le drain GH Actions).
     dockerCommand: >-
-      php artisan queue:work redis
+      php artisan queue:work
       --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default
       --tries=3
       --timeout=300
@@ -197,8 +215,15 @@ services:
           property: host
       - key: LOG_CHANNEL
         value: stderr
+      # Issue #5586 : LOG_LEVEL=info (StructuredLogging + Sentry effectifs).
       - key: LOG_LEVEL
-        value: error
+        value: info
+      # Issue #5586 : Sentry DSN partagé depuis le web service (même clé).
+      - key: SENTRY_LARAVEL_DSN
+        fromService:
+          name: gestionemployerbackend
+          type: web
+          envVarKey: SENTRY_LARAVEL_DSN
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
@@ -242,9 +267,15 @@ services:
           type: web
           envVarKey: APP_KEY
       - key: QUEUE_CONNECTION
-        value: redis
+        value: database
       - key: CACHE_STORE
         value: redis
+      # Issue #5586 : Sentry sur le worker aussi (erreurs de jobs queue :
+      # PDF, paie, webhooks — cf. #4340).
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
+      - key: SENTRY_TRACES_SAMPLE_RATE
+        value: "0.1"
       - key: FIREBASE_PROJECT_ID
         sync: false
       - key: FIREBASE_SERVICE_ACCOUNT_JSON
@@ -306,6 +337,15 @@ services:
           property: host
       - key: LOG_CHANNEL
         value: stderr
+      # Issue #5586 : LOG_LEVEL=info (cohérence web/worker/scheduler).
+      - key: LOG_LEVEL
+        value: info
+      # Issue #5586 : Sentry DSN partagé depuis le web service.
+      - key: SENTRY_LARAVEL_DSN
+        fromService:
+          name: gestionemployerbackend
+          type: web
+          envVarKey: SENTRY_LARAVEL_DSN
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
@@ -345,8 +385,11 @@ services:
           name: gestionemployerbackend
           type: web
           envVarKey: APP_KEY
+      # Issue #5586 : Sentry sur le scheduler (échecs de tâches planifiées).
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
       - key: QUEUE_CONNECTION
-        value: redis
+        value: database
       # Mail (issue #3594) : le scheduler envoie des emails synchrones (rappels,
       # alertes, notifications planifiées). Sans MAIL_* il retombe sur
       # config/mail.php 'host' => 127.0.0.1:25 et tout envoi échoue en silence.

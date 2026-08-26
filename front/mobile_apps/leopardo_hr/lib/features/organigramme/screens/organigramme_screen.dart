@@ -27,12 +27,12 @@ class OrganigrammeScreen extends ConsumerWidget {
         backgroundColor: AppColors.bgDark,
         elevation: 0,
         title: Text(
-          'Organigramme',
+          context.l10n.organigrammeTitle,
           style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
-          tooltip: 'Retour',
+          tooltip: context.l10n.organigrammeBackTooltip,
           onPressed: () => context.pop(),
         ),
       ),
@@ -47,7 +47,7 @@ class OrganigrammeScreen extends ConsumerWidget {
                   const SizedBox(height: 80),
                   EmptyState(
                     icon: Icons.account_tree,
-                    title: 'Aucun organigramme',
+                    title: context.l10n.organigrammeEmptyTitle,
                     description: context.l10n.orgChartEmpty,
                   ),
                 ],
@@ -68,9 +68,9 @@ class OrganigrammeScreen extends ConsumerWidget {
               ),
             );
           },
-          loading: () => const Center(
+          loading: () => Center(
             child: CircularProgressIndicator(
-              semanticsLabel: 'Chargement de l\'organigramme...',
+              semanticsLabel: context.l10n.organigrammeLoading,
             ),
           ),
           error: (e, _) => Center(

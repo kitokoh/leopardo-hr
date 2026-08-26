@@ -13,7 +13,8 @@ export type ClientModuleKey =
   | 'partner'
   | 'billing'
   | 'integrations'
-  | 'marketing';
+  | 'marketing'
+  | 'accounting';
 
 export type FeatureState = 'available' | 'trial' | 'locked';
 
@@ -165,6 +166,18 @@ export const CLIENT_MODULES: ClientModule[] = [
     allowedRoles: ['manager'],
     upgradeLabel: 'Marketing & reseaux sociaux',
   },
+  // #5626 — Module Comptabilité (backend #5288/#5422 livré, front/web manquait
+  // d'une entrée sidebar). Rôles : comptable et principal uniquement.
+  {
+    key: 'accounting',
+    href: '/accounting',
+    label: 'Comptabilité',
+    group: 'finance',
+    capabilityKeys: ['accounting', 'can_view_accounting', 'can_manage_accounting'],
+    featureKeys: ['accounting', 'accounting_module'],
+    allowedRoles: ['manager'],
+    upgradeLabel: 'Module Comptabilité',
+  },
 ];
 
 const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
@@ -181,6 +194,7 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/settings/developer': 'integrations',
   '/social-marketing': 'marketing',
   '/social': 'marketing',
+  '/accounting': 'accounting',
 };
 
 function normalizedRole(user?: StoredAuthUser | null): string {

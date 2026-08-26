@@ -144,15 +144,18 @@ Verifier que toutes les notifications toast utilisent `role="alert"` et `aria-li
 
 ## Corrections W2-W8 (iteration 12+)
 
-### W1 — Skip-to-content ✓
-- `DashboardLayout.vue` : deja present
+### W1 — Skip-to-content ✓ (complété issue #5622, 2026-08-26)
+- `DashboardLayout.vue` : deja present (libellé passé sur la clé i18n `a11y.skip_to_content` ×4)
 - `web/src/app/layout.tsx` : deja present
+- `LoginView.vue` (admin, pré-auth) : lien skip-to-content ajouté + `<main id="main-content">` (manquait)
 - `zkteco-kiosk/index.html` : ajoute (lien sr-only vers #identifier)
 
-### W2 — Focus trap modals ✓
-- `composables/useFocusTrap.js` : composable focus trap reutilisable
-- `KeyboardShortcutsModal.vue` : Escape pour fermer, focus ring visible
-- Focus restored au composant precedent a la fermeture
+### W2 — Focus trap modals ✓ (implémentation réelle issue #5622, 2026-08-26)
+> L'audit précédent cochait W2 alors que `useFocusTrap.js` n'existait pas dans le dépôt (fantôme, même classe que #5589). Désormais réel :
+- `composables/useFocusTrap.js` : composable focus trap réutilisable (Tab/Shift+Tab cyclés, focus initial dans le dialogue, restauration du focus à la fermeture)
+- `ConfirmDialog.vue` : `role="dialog" aria-modal`, Escape ferme, focus piégé
+- `KeyboardShortcutsModal.vue` : Escape ferme, focus piégé
+- `EdgeNodeModal.vue`, `UserDetailModal.vue`, `VehicleDetailModal.vue` : focus piégé + Escape ferme
 
 ### W3 — Roles ARIA composants custom ✓
 - `Sidebar.vue` : `role="navigation" aria-label="Menu principal"` sur nav

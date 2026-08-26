@@ -13,11 +13,14 @@ return [
     |
     */
 
-    // Issue #3562 : en production, un QUEUE_CONNECTION absent ne doit JAMAIS
-    // retomber sur 'sync' (jobs lourds exécutés dans la requête web) — le
-    // worker redis est déployé (render.yaml leopardo-queue-worker). En
+    // Issue #5578 (réf. #4340/#4349) : la stratégie queue est UNIQUE et
+    // alignée partout — `database` en production (probe infra, render.yaml,
+    // worker dédié, drain GH Actions #5204/#5205). Un QUEUE_CONNECTION absent
+    // ne doit JAMAIS retomber sur 'sync' (jobs lourds exécutés dans la
+    // requête web) ni sur 'redis' (quota Upstash brûlé par le polling,
+    // incident 2026-08-19, worker inactif si rien ne dispatche). En
     // dev/test, le défaut reste 'sync' pour la simplicité locale.
-    'default' => env('QUEUE_CONNECTION', env('APP_ENV', 'production') === 'production' ? 'redis' : 'sync'),
+    'default' => env('QUEUE_CONNECTION', env('APP_ENV', 'production') === 'production' ? 'database' : 'sync'),
 
     /*
     |--------------------------------------------------------------------------

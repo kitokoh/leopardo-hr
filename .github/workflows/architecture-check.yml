@@ -21,7 +21,7 @@ concurrency:
   # Frontend ESLint+TS) — sur main, un push ne doit jamais annuler le run du
   # commit précédent (sinon le dernier commit de main reste pending 20+ min).
   # Les runs PR gardent l'annulation (feedback rapide sur une même branche).
-  cancel-in-progress: false  # #5536 : queuer au lieu d'annuler (les runs PR ne démarrent jamais sous congestion)
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}  # #5629 : annuler les runs PR obsolètes pour libérer les runners
 
 jobs:
   # Issue #3708 : les gardes dev-hub (bash pur) n'étaient appelées par aucun
@@ -74,8 +74,23 @@ jobs:
       - name: MVP schema parity guard — CreatesMvpSchema ↔ migrations tenant (issue #5443)
         run: bash dev-hub/tools/check-mvp-schema-parity.sh api
 
+      - name: Duplicate routes guard (issue #5577)
+        run: bash dev-hub/tools/check-duplicate-routes.sh api
+
+      - name: Module isolation guard — no new cross-module imports (issue #5584)
+        run: bash dev-hub/tools/check-module-isolation.sh api
+
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
+
+      - name: Queue strategy coherence guard — database partout (issue #5578)
+        run: bash dev-hub/tools/check-queue-strategy-coherence.sh
+
+      - name: Deterministic tests guard — no multi-status assertions (issue #5585)
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: bash dev-hub/tools/check-tests-deterministic.sh
 
 
   phpstan-modules:
@@ -207,8 +222,34 @@ jobs:
           fi
           echo "✅ All module structures valid ($(echo "$MODULES" | wc -l) modules checked)."
 
+      - name: Check module isolation (issue #5584)
+        # Garde archunit-style : bloque TOUT nouvel import croisé
+        # (`use App\Modules\<X>\` dans un autre module ou dans Core/) — la
+        # dette existante (16/18 modules, 57 paires) est actée dans
+        # dev-hub/tools/module-isolation-allowlist.txt.
+        run: dev-hub/tools/check-module-isolation.sh
+
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
+
+      - name: Architecture docs parity guard — modules réels ↔ docs (issue #5589)
+        run: bash dev-hub/tools/check-architecture-docs-parity.sh
+
+      - name: Cross-module import guard — no new inter-module imports (issue #5584)
+        env:
+          DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          base_sha="${DIFF_BASE_SHA:-}"
+          head_sha="${DIFF_HEAD_SHA:-}"
+          if [[ -z "${base_sha}" || "${base_sha}" == "0000000000000000000000000000000000000000" ]]; then
+            base_sha="$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)"
+          fi
+          if [[ -z "${head_sha}" ]]; then
+            head_sha="$(git rev-parse HEAD)"
+          fi
+          bash dev-hub/tools/check-cross-module-imports.sh "${base_sha}" "${head_sha}" api
 
       - name: Check migration basename collisions (issue #1962)
         run: dev-hub/tools/check-migration-basename-collisions.sh

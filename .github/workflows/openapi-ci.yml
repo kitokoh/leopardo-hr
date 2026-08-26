@@ -27,7 +27,7 @@ env:
 
 concurrency:
   group: openapi-ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false  # #5536 : queuer au lieu d'annuler (les runs PR ne démarrent jamais sous congestion)
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}  # #5629 : annuler les runs PR obsolètes pour libérer les runners
 
 jobs:
   lint-openapi:

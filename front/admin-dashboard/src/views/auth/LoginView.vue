@@ -1,5 +1,11 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans text-slate-200">
+    <!-- Skip to content (WCAG 2.4.1, issue #5622) -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded-xl focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-brand-600 focus:shadow-premium"
+    >{{ t('a11y.skip_to_content', 'Aller au contenu principal') }}</a>
+
     <!-- Animated Background -->
     <div class="absolute inset-0 z-0">
       <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-600/20 rounded-full blur-[120px]"></div>
@@ -10,7 +16,7 @@
     <!-- Grid Pattern overlay -->
     <div class="absolute inset-0 z-0 opacity-20" style="background-image: radial-gradient(#14b8a6 0.5px, transparent 0.5px); background-size: 24px 24px;"></div>
 
-    <div class="max-w-md w-full space-y-10 relative z-10">
+    <main id="main-content" class="max-w-md w-full space-y-10 relative z-10">
       <div class="text-center">
         <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-3xl bg-white/5 dark:bg-slate-900/5 backdrop-blur-2xl border border-white/20 shadow-glass overflow-hidden group">
           <div class="absolute inset-0 bg-gradient-to-br from-brand-500/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -174,7 +180,7 @@
           <span class="hover:text-slate-400 transition-colors cursor-not-allowed">Support</span>
         </div>
       </div>
-    </div>
+    </main>
 
   </div>
 </template>

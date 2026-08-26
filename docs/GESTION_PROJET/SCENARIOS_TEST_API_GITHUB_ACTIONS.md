@@ -2,6 +2,13 @@
   
 ## Objectif   
 
+Note 2026-08-26 (issue #5588, lot durcissements) : la surface API kiosque et recrutement public a change —
+- `POST /api/v1/kiosks` (register) : le `device_code` n'est plus stocke en clair (sha256 deterministe au repos, migration tenant `2026_08_26_000001_5588`) ; le code en clair n'est retourne qu'a la creation (provisioning), les lookups API/web hach entree (`AttendanceKiosk::hashDeviceCode`).
+- `GET/POST /api/v1/kiosks/{deviceCode}/roster|punch|announcements` : resolution par hash de l'entree (URL en clair inchangee pour les kiosques) ; les lignes legacy non backfillees sont hors contrat (404).
+- `POST /api/v1/public/careers/{companySlug}/jobs/{jobPosting}/apply` : `resume_url` porte la garde anti-SSRF `NotPrivateUrl` (https public uniquement ; IP privees/loopback/link-local/metadata cloud et hotes `.local/.internal/.lan` refuses → 422).
+- Documentation API web : `/docs`, `/api-explorer`, `/tester-guide`, `/docs/openapi.yaml` exigent l'authentification en production (403 anonyme, Gate `viewApiDocs`) ; restent publiques hors prod.
+- Web kiosk : `GET /kiosk/{deviceCode}` et `POST /kiosk/{deviceCode}/punch` resolvent par hash du device_code.
+
 Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur les roles reels de l'application, les domaines metier critiques et les risques multitenant.
 
 Note 2026-06-28 : Migration des modeles d'authentification (User/Employee) vers l'architecture DDD dans Core/Auth terminee.

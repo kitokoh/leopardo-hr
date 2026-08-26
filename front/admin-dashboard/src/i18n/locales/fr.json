@@ -138,7 +138,9 @@
       "TR": "Turquie",
       "US": "États-Unis"
     },
-    "required": "Requis"
+    "required": "Requis",
+    "delete": "Supprimer",
+    "confirm": "Confirmer"
   },
   "modules": {
     "attendance": "Pointage",
@@ -342,6 +344,12 @@
       "title": "Modifier l'utilisateur",
       "status": "Statut",
       "save": "Mettre à jour"
+    },
+    "table": {
+      "loading": "Chargement des utilisateurs...",
+      "empty": "Aucun utilisateur",
+      "emptyHint": "Aucun utilisateur ne correspond aux critères de recherche.",
+      "viewDetails": "Voir les détails"
     }
   },
   "dashboard": {
@@ -3205,5 +3213,117 @@
     "matchDone": "Ligne rapprochée.",
     "loading": "Chargement…",
     "retry": "Réessayer"
+  },
+  "adminShortcuts": {
+    "title": "Raccourcis Clavier",
+    "descToggleDark": "Basculer mode sombre",
+    "descSearch": "Rechercher",
+    "descDashboard": "Tableau de bord",
+    "descUsers": "Utilisateurs",
+    "descCompanies": "Entreprises",
+    "descSubscriptions": "Abonnements",
+    "descCloseModals": "Fermer les modales",
+    "descHelp": "Aide raccourcis",
+    "footerPress": "Appuyez sur",
+    "footerToShow": "pour afficher ce menu"
+  },
+  "edge": {
+    "statTotal": "Nodes total",
+    "statOnline": "En ligne",
+    "statOffline": "Hors ligne",
+    "statExpiredLicenses": "Licences expirées",
+    "loading": "Chargement des nodes…",
+    "empty": "Aucun node Edge enregistré",
+    "emptyHint": "Les nodes apparaissent ici une fois enregistrés via l'API Edge.",
+    "colNode": "Node",
+    "colStatus": "Statut",
+    "colLicense": "Licence",
+    "colLastSync": "Dernière sync",
+    "colActions": "Actions",
+    "sync": "Sync",
+    "syncing": "Sync…",
+    "details": "Détails",
+    "revoke": "Révoquer",
+    "revokeConfirm": "Confirmer la révocation ?",
+    "revoking": "Révoquer…",
+    "loadError": "Erreur lors du chargement des nodes Edge.",
+    "syncError": "Erreur lors du déclenchement de la synchronisation.",
+    "syncSuccess": "Synchronisation lancée pour {name}",
+    "revokeSuccess": "Licence révoquée pour {name}",
+    "revokeError": "Erreur lors de la révocation de la licence."
+  },
+  "fleet": {
+    "tabsMap": "Carte",
+    "tabsList": "Liste",
+    "tabsAlerts": "Alertes",
+    "statVehicles": "Véhicules",
+    "statInService": "En service",
+    "statMaintenanceDue": "Maintenance due",
+    "statAlerts": "Alertes",
+    "colPlate": "Immatriculation",
+    "colBrand": "Marque",
+    "colModel": "Modèle",
+    "colAssignedTo": "Assigné à",
+    "colKm": "Km",
+    "colStatus": "Statut",
+    "colVehicle": "Véhicule",
+    "colType": "Type",
+    "colSeverity": "Sévérité",
+    "colMessage": "Message",
+    "colDate": "Date",
+    "statusActive": "En service",
+    "statusMaintenance": "Maintenance",
+    "statusInactive": "Inactif",
+    "statusDecommissioned": "Réformé",
+    "severityLow": "Faible",
+    "severityMedium": "Moyen",
+    "severityHigh": "Élevé",
+    "severityCritical": "Critique",
+    "unassigned": "Non assigné",
+    "searchVehicle": "Rechercher un véhicule...",
+    "searchAlert": "Rechercher une alerte..."
+  },
+  "notFound": {
+    "users": "Utilisateurs",
+    "usersHint": "Gérer les comptes utilisateurs",
+    "companies": "Entreprises",
+    "companiesHint": "Gérer les entreprises"
+  },
+  "subscriptions": {
+    "title": "Abonnements",
+    "subtitle": "Plans, santé du portefeuille et risques de désabonnement des entreprises clientes.",
+    "refresh": "Actualiser",
+    "kpi": {
+      "portfolioMrr": "MRR portefeuille",
+      "activeSubscriptions": "Abonnements actifs",
+      "pastDue": "En retard",
+      "totalOverdue": "Impayés total",
+      "arr": "ARR",
+      "collected30d": "Encaissé 30 j",
+      "totalSubscribers": "Abonnés total",
+      "trials": "Essais"
+    },
+    "catalogTitle": "Catalogue des plans",
+    "catalogSub": "Offres commerciales et limites associées.",
+    "retry": "Réessayer",
+    "public": "Public",
+    "archived": "Archivé",
+    "perMonth": "/ mois",
+    "billedAnnually": "facturé annuellement",
+    "healthTitle": "Santé du portefeuille",
+    "retentionTitle": "Risques de désabonnement",
+    "noPlan": "Plan inconnu",
+    "manage": "Gérer",
+    "noRisk": "Aucun risque détecté",
+    "loadError": "Erreur lors du chargement des abonnements.",
+    "employees": "employés",
+    "unlimited": "Illimité",
+    "trialDays": "jours d'essai",
+    "trialUnit": "jours",
+    "risk": {
+      "high": "Risque élevé",
+      "medium": "Risque moyen",
+      "low": "Risque faible"
+    }
   }
 }

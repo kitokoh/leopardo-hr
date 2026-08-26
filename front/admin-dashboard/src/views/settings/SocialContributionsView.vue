@@ -181,7 +181,7 @@
     :open="deleteOpen"
     :title="t('social_contrib.delete_confirm_title', 'Supprimer cette cotisation ?')"
     :message="deleteTarget ? t('social_contrib.delete_confirm', { name: deleteTarget.name }) : ''"
-    confirm-label="Supprimer"
+    :confirm-label="t('common.delete', 'Supprimer')"
     @confirm="removeItem"
     @cancel="deleteOpen = false"
   />

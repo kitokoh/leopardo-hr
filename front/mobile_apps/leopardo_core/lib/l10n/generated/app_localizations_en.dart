@@ -199,6 +199,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authTwoFactorRequired => 'The 2FA code is required.';
+  @override
+  String get twoFaChallengeTitle => 'Two-factor verification';
+  @override
+  String get twoFaChallengeSubtitle => 'Enter the 6-digit code from your authenticator app.';
+  @override
+  String get twoFaChallengeCodeHint => 'TOTP code (6 digits)';
+  @override
+  String get twoFaChallengeVerifyBtn => 'Verify';
+  @override
+  String get twoFaChallengeRecoveryToggle => 'Use a recovery code';
+  @override
+  String get twoFaChallengeRecoveryHint => 'Recovery code';
+  @override
+  String get twoFaChallengeInvalidError => 'Invalid or expired code. Please try again.';
 
   @override
   String get authDemoAccess => 'Demo access';
@@ -6874,4 +6888,202 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsBiometricConfirmIdentity =>
       'Confirm your identity to submit your biometric request';
+
+  @override
+  String get shellHome => 'Home';
+
+  @override
+  String get shellAttendance => 'Attendance';
+
+  @override
+  String get shellAbsences => 'Absences';
+
+  @override
+  String get shellApprovals => 'Approvals';
+
+  @override
+  String get contractsMobileTitle => 'My Contract';
+
+  @override
+  String get contractsBackTooltip => 'Back';
+
+  @override
+  String get contractsEmptyTitle => 'No contract';
+
+  @override
+  String get contractsEmptyDescription =>
+      'Your contract will appear here once configured.';
+
+  @override
+  String get contractsLabelType => 'Type';
+
+  @override
+  String get contractsLabelStartDate => 'Start';
+
+  @override
+  String get contractsLabelEndDate => 'End';
+
+  @override
+  String get contractsLabelBaseSalary => 'Base salary';
+
+  @override
+  String get contractsLoading => 'Loading contracts...';
+
+  @override
+  String get contractsStatusActive => 'Active';
+
+  @override
+  String get contractsStatusExpired => 'Expired';
+
+  @override
+  String get contractsStatusDraft => 'Draft';
+
+  @override
+  String get contractsStatusCdi => 'Permanent (CDI)';
+
+  @override
+  String get organigrammeTitle => 'Org Chart';
+
+  @override
+  String get organigrammeBackTooltip => 'Back';
+
+  @override
+  String get organigrammeEmptyTitle => 'No org chart';
+
+  @override
+  String get organigrammeLoading => 'Loading org chart...';
+
+  @override
+  String get vehicleMapTitle => 'Vehicle Position';
+
+  @override
+  String get vehicleMapBackTooltip => 'Back';
+
+  @override
+  String get vehicleMapEmptyTitle => 'No vehicle';
+
+  @override
+  String get vehicleMapEmptyDescription =>
+      'Your assigned vehicles will appear here.';
+
+  @override
+  String get vehicleMapLoading => 'Loading vehicles...';
+
+  @override
+  String vehicleMapLastUpdate(Object time) {
+    return 'Last update: $time';
+  }
+
+  @override
+  String vehicleMapSpeedKmh(Object speed) {
+    return '$speed km/h';
+  }
+
+  @override
+  String get payrollValidated => 'Validated';
+
+  @override
+  String payrollDocumentUnavailable(Object error) {
+    return 'Document unavailable: $error';
+  }
+
+  @override
+  String payrollOvertimeHoursTeam(Object hours) {
+    return 'Overtime (${hours}h)';
+  }
+
+  @override
+  String payrollOvertimeHoursItem(Object hours) {
+    return '+${hours}h OT';
+  }
+
+  @override
+  String get platformAdminActivationNote =>
+      'Direct activation from Platform Admin mobile app.';
+
+  @override
+  String get platformAdminCompanyApprovedNote =>
+      'Approved from Leopardo Platform Admin mobile';
+
+  @override
+  String get platformAdminCompanyRejectedNote =>
+      'Rejected from Leopardo Platform Admin mobile';
+
+  @override
+  String get edgeNodesTitle => 'Edge Nodes';
+
+  @override
+  String get edgeNodesSubtitle => 'On-premise connected sites';
+
+  @override
+  String get edgeNodesRefreshTooltip => 'Refresh';
+
+  @override
+  String get edgeNodesEmpty => 'No Edge node registered.';
+
+  @override
+  String get edgeNodesOnline => 'Online';
+
+  @override
+  String get edgeNodesOffline => 'Offline';
+
+  @override
+  String get edgeNodesSectionLabel => 'Nodes';
+
+  @override
+  String get edgeNodesLoading => 'Loading nodes';
+
+  @override
+  String get edgeNodesForceSync => 'Force synchronization';
+
+  @override
+  String get edgeNodesSyncTriggered => 'Sync triggered.';
+
+  @override
+  String edgeNodesLastSync(Object date) {
+    return 'Last sync: $date';
+  }
+
+  @override
+  String edgeNodesNodeId(Object id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String edgeNodesVersionInfo(Object version, Object count) {
+    return 'v$version — $count employee(s)';
+  }
+
+  @override
+  String get supportTicketsTitle => 'Customer support';
+
+  @override
+  String get supportTicketsSubtitle => 'Tenant tickets';
+
+  @override
+  String get supportTicketsFilterAll => 'All';
+
+  @override
+  String get supportTicketsFilterOpen => 'Open';
+
+  @override
+  String get supportTicketsFilterInProgress => 'In progress';
+
+  @override
+  String get supportTicketsFilterResolved => 'Resolved';
+
+  @override
+  String get supportTicketsFilterClosed => 'Closed';
+
+  @override
+  String get supportTicketsEmpty => 'No ticket for this filter.';
+
+  @override
+  String get supportTicketsLoading => 'Loading tickets';
+
+  @override
+  String get supportTicketsReplySent => 'Reply sent.';
+
+  @override
+  String get supportTicketsLoadingTicket => 'Loading ticket';
 }

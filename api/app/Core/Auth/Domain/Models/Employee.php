@@ -195,7 +195,11 @@ class Employee extends Authenticatable implements HasApiTokensContract
     ];
 
     protected $hidden = [
+        // Issue #5588 : deux_fa_secret et les codes de récupération sont des
+        // secrets — toute sérialisation (Resource, toArray, log) les fuirait.
         'password_hash',
+        'two_fa_secret',
+        'two_fa_recovery_codes',
     ];
 
     protected $casts = [
@@ -215,6 +219,10 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'failed_login_attempts' => 'integer',
         'locked_until' => 'datetime',
         'family_parts' => 'float',
+        // #5579 : colonne json SANS cast → lecture en string brute →
+        // consumeRecoveryCode() ne voyait jamais un tableau (is_array false)
+        // → code de récupération TOUJOURS invalide (422).
+        'two_fa_recovery_codes' => 'array',
     ];
 
     protected static function booted(): void

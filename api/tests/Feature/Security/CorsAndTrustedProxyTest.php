@@ -66,13 +66,17 @@ class CorsAndTrustedProxyTest extends TestCase
             $this->assertNotSame('*', $pattern);
             // Chaque pattern doit être une regex complète utilisable par
             // preg_match() (fruitcake/php-cors) — un glob crashe en 500.
-            $this->assertNotSame(0, @preg_match($pattern, 'https://preview-123.pages.dev'));
+            // #5582 : échantillon du projet CONNU (leo-admin) ; un projet
+            // arbitraire `*.pages.dev` ne doit plus matcher.
+            $this->assertNotSame(0, @preg_match($pattern, 'https://preview-123.leo-admin.pages.dev'));
+            $this->assertSame(0, @preg_match($pattern, 'https://evil-arbitrary.pages.dev'));
         }
 
         foreach (array_merge($origins, $patterns) as $entry) {
             $this->assertNotSame('*', $entry);
         }
     }
+
     public function test_trusts_x_forwarded_for(): void
     {
         // Render is the single edge proxy in front of this app; the request's

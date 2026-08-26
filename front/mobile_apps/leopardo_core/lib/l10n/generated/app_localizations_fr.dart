@@ -201,6 +201,20 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get authTwoFactorRequired => 'Le code 2FA est requis.';
+  @override
+  String get twoFaChallengeTitle => 'Vérification à deux facteurs';
+  @override
+  String get twoFaChallengeSubtitle => "Entrez le code à 6 chiffres de votre application d'authentification.";
+  @override
+  String get twoFaChallengeCodeHint => 'Code TOTP (6 chiffres)';
+  @override
+  String get twoFaChallengeVerifyBtn => 'Vérifier';
+  @override
+  String get twoFaChallengeRecoveryToggle => 'Utiliser un code de récupération';
+  @override
+  String get twoFaChallengeRecoveryHint => 'Code de récupération';
+  @override
+  String get twoFaChallengeInvalidError => 'Code invalide ou expiré. Réessayez.';
 
   @override
   String get authDemoAccess => 'Acces Demo';
@@ -6958,4 +6972,202 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settingsBiometricConfirmIdentity =>
       'Confirmer votre identité pour soumettre votre demande biométrie';
+
+  @override
+  String get shellHome => 'Accueil';
+
+  @override
+  String get shellAttendance => 'Pointage';
+
+  @override
+  String get shellAbsences => 'Absences';
+
+  @override
+  String get shellApprovals => 'Validations';
+
+  @override
+  String get contractsMobileTitle => 'Mon Contrat';
+
+  @override
+  String get contractsBackTooltip => 'Retour';
+
+  @override
+  String get contractsEmptyTitle => 'Aucun contrat';
+
+  @override
+  String get contractsEmptyDescription =>
+      'Votre contrat apparaîtra ici une fois configuré.';
+
+  @override
+  String get contractsLabelType => 'Type';
+
+  @override
+  String get contractsLabelStartDate => 'Début';
+
+  @override
+  String get contractsLabelEndDate => 'Fin';
+
+  @override
+  String get contractsLabelBaseSalary => 'Salaire de base';
+
+  @override
+  String get contractsLoading => 'Chargement des contrats...';
+
+  @override
+  String get contractsStatusActive => 'Actif';
+
+  @override
+  String get contractsStatusExpired => 'Expiré';
+
+  @override
+  String get contractsStatusDraft => 'Brouillon';
+
+  @override
+  String get contractsStatusCdi => 'CDI';
+
+  @override
+  String get organigrammeTitle => 'Organigramme';
+
+  @override
+  String get organigrammeBackTooltip => 'Retour';
+
+  @override
+  String get organigrammeEmptyTitle => 'Aucun organigramme';
+
+  @override
+  String get organigrammeLoading => "Chargement de l'organigramme...";
+
+  @override
+  String get vehicleMapTitle => 'Position véhicule';
+
+  @override
+  String get vehicleMapBackTooltip => 'Retour';
+
+  @override
+  String get vehicleMapEmptyTitle => 'Aucun véhicule';
+
+  @override
+  String get vehicleMapEmptyDescription =>
+      'Vos véhicules assignés apparaîtront ici.';
+
+  @override
+  String get vehicleMapLoading => 'Chargement des véhicules...';
+
+  @override
+  String vehicleMapLastUpdate(Object time) {
+    return 'Dernière MAJ : $time';
+  }
+
+  @override
+  String vehicleMapSpeedKmh(Object speed) {
+    return '$speed km/h';
+  }
+
+  @override
+  String get payrollValidated => 'Validé';
+
+  @override
+  String payrollDocumentUnavailable(Object error) {
+    return 'Document indisponible : $error';
+  }
+
+  @override
+  String payrollOvertimeHoursTeam(Object hours) {
+    return 'Heures supp (${hours}h)';
+  }
+
+  @override
+  String payrollOvertimeHoursItem(Object hours) {
+    return '+${hours}h supp';
+  }
+
+  @override
+  String get platformAdminActivationNote =>
+      'Activation directe depuis app mobile platform admin.';
+
+  @override
+  String get platformAdminCompanyApprovedNote =>
+      'Approuvé depuis Leopardo Platform Admin mobile';
+
+  @override
+  String get platformAdminCompanyRejectedNote =>
+      'Refusé depuis Leopardo Platform Admin mobile';
+
+  @override
+  String get edgeNodesTitle => 'Nœuds Edge';
+
+  @override
+  String get edgeNodesSubtitle => 'Sites on-premise connectés';
+
+  @override
+  String get edgeNodesRefreshTooltip => 'Rafraîchir';
+
+  @override
+  String get edgeNodesEmpty => 'Aucun nœud Edge enregistré.';
+
+  @override
+  String get edgeNodesOnline => 'En ligne';
+
+  @override
+  String get edgeNodesOffline => 'Hors ligne';
+
+  @override
+  String get edgeNodesSectionLabel => 'Nœuds';
+
+  @override
+  String get edgeNodesLoading => 'Chargement nœuds';
+
+  @override
+  String get edgeNodesForceSync => 'Forcer la synchronisation';
+
+  @override
+  String get edgeNodesSyncTriggered => 'Sync déclenchée.';
+
+  @override
+  String edgeNodesLastSync(Object date) {
+    return 'Dernière sync : $date';
+  }
+
+  @override
+  String edgeNodesNodeId(Object id) {
+    return 'ID : $id';
+  }
+
+  @override
+  String edgeNodesVersionInfo(Object version, Object count) {
+    return 'v$version — $count employé(s)';
+  }
+
+  @override
+  String get supportTicketsTitle => 'Support client';
+
+  @override
+  String get supportTicketsSubtitle => 'Tickets tenant';
+
+  @override
+  String get supportTicketsFilterAll => 'Tous';
+
+  @override
+  String get supportTicketsFilterOpen => 'Ouverts';
+
+  @override
+  String get supportTicketsFilterInProgress => 'En cours';
+
+  @override
+  String get supportTicketsFilterResolved => 'Résolus';
+
+  @override
+  String get supportTicketsFilterClosed => 'Fermés';
+
+  @override
+  String get supportTicketsEmpty => 'Aucun ticket pour ce filtre.';
+
+  @override
+  String get supportTicketsLoading => 'Chargement tickets';
+
+  @override
+  String get supportTicketsReplySent => 'Réponse envoyée.';
+
+  @override
+  String get supportTicketsLoadingTicket => 'Chargement ticket';
 }

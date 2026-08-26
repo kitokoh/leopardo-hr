@@ -1,6 +1,11 @@
 <template>
   <Teleport to="body">
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" @click.self="$emit('close')">
+    <div ref="trapRef"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" @click.self="$emit('close')"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Modal"
+      @keydown.escape="$emit('close')">
       <div class="glass-card w-full max-w-lg mx-4">
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
@@ -71,6 +76,13 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { useFocusTrap } from '@/composables/useFocusTrap'
+
+// WCAG 2.1.1/2.1.2 (issue #5622) — piéger le focus dans le modal.
+const _trapActive = ref(true)
+const { containerRef: trapRef } = useFocusTrap(_trapActive)
+
 import { useLocaleStore } from '@/stores/locale';
 import { toIntlLocale } from '@/i18n/index.js';
 

@@ -29,33 +29,34 @@
 
     <!-- Stats row -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <EdgeStatCard label="Nodes total" :value="stats.total" icon="🖥️" color="indigo" />
-      <EdgeStatCard label="En ligne" :value="stats.online" icon="✅" color="green" />
-      <EdgeStatCard label="Hors ligne" :value="stats.offline" icon="⭕" color="gray" />
-      <EdgeStatCard label="Licences expirées" :value="stats.licenseExpired" icon="⚠️" color="red" />
+      <EdgeStatCard :label="t('edge.statTotal', 'Nodes total')" :value="stats.total" icon="🖥️" color="indigo" />
+      <EdgeStatCard :label="t('edge.statOnline', 'En ligne')" :value="stats.online" icon="✅" color="green" />
+      <EdgeStatCard :label="t('edge.statOffline', 'Hors ligne')" :value="stats.offline" icon="⭕" color="gray" />
+      <EdgeStatCard :label="t('edge.statExpiredLicenses', 'Licences expirées')" :value="stats.licenseExpired" icon="⚠️" color="red" />
     </div>
 
     <!-- Nodes table -->
     <div class="glass-card dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div v-if="loading && nodes.length === 0" class="p-12 text-center text-gray-400">
         <div class="text-4xl mb-3 animate-spin inline-block">↻</div>
-        <p>Chargement des nodes…</p>
+        <p>{{ t('edge.loading', 'Chargement des nodes…') }}</p>
       </div>
 
       <div v-else-if="!loading && nodes.length === 0" class="p-12 text-center text-gray-400">
         <div class="text-4xl mb-3 opacity-30">🖥️</div>
-        <p class="font-medium">Aucun node Edge enregistré</p>
-        <p class="text-sm mt-1">Les nodes apparaissent ici une fois enregistrés via l'API Edge.</p>
+        <p class="font-medium">{{ t('edge.empty', 'Aucun node Edge enregistré') }}</p>
+        <p class="text-sm mt-1">{{ t('edge.emptyHint', "Les nodes apparaissent ici une fois enregistrés via l'API Edge.") }}</p>
       </div>
 
-      <table v-else class="w-full text-sm">
+      <div v-else class="overflow-x-auto">
+      <table class="w-full text-sm">
         <thead>
           <tr class="glass-bg dark:bg-slate-800/50 text-left text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-            <th class="px-4 py-3 font-medium">Node</th>
-            <th class="px-4 py-3 font-medium">Statut</th>
-            <th class="px-4 py-3 font-medium">Licence</th>
-            <th class="px-4 py-3 font-medium">Dernière sync</th>
-            <th class="px-4 py-3 font-medium">Actions</th>
+            <th class="px-4 py-3 font-medium">{{ t('edge.colNode', 'Node') }}</th>
+            <th class="px-4 py-3 font-medium">{{ t('edge.colStatus', 'Statut') }}</th>
+            <th class="px-4 py-3 font-medium">{{ t('edge.colLicense', 'Licence') }}</th>
+            <th class="px-4 py-3 font-medium">{{ t('edge.colLastSync', 'Dernière sync') }}</th>
+            <th class="px-4 py-3 font-medium">{{ t('edge.colActions', 'Actions') }}</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -106,11 +107,11 @@
                   :disabled="!node.is_online || syncingNodeId === node.id"
                   class="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 font-medium disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  {{ syncingNodeId === node.id ? 'Sync…' : 'Sync' }}
+                  {{ syncingNodeId === node.id ? t('edge.syncing', 'Sync…') : t('edge.sync', 'Sync') }}
                 </button>
                 <span class="text-gray-300 dark:text-gray-600">|</span>
                 <button @click="viewNode(node)" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 font-medium">
-                  Détails
+                  {{ t('edge.details', 'Détails') }}
                 </button>
                 <!-- #4935 : bouton « Révoquer licence » branché sur le store
                      (endpoint POST /admin/edge-nodes/{id}/revoke existant) —
@@ -123,14 +124,14 @@
                     :disabled="revokingNodeId === node.id"
                     class="text-xs text-red-600 hover:text-red-800 dark:text-red-400 font-medium disabled:opacity-30"
                   >
-                    {{ revokingNodeId === node.id ? 'Révoquer…' : 'Confirmer la révocation ?' }}
+                    {{ revokingNodeId === node.id ? t('edge.revoking', 'Révoquer…') : t('edge.revokeConfirm', 'Confirmer la révocation ?') }}
                   </button>
                   <button
                     v-else
                     @click="confirmRevokeId = node.id"
                     class="text-xs text-red-500 hover:text-red-700 dark:text-red-400 font-medium"
                   >
-                    Révoquer
+                    {{ t('edge.revoke', 'Révoquer') }}
                   </button>
                 </template>
               </div>
@@ -138,6 +139,7 @@
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
 
     <!-- Node detail modal -->
@@ -191,7 +193,7 @@ async function refresh() {
   } catch (err) {
     loadError.value = err?.response?.data?.localized_message
       || err?.message
-      || 'Erreur lors du chargement des nodes Edge.';
+      || t('edge.loadError', 'Erreur lors du chargement des nodes Edge.');
     toast.error(loadError.value);
   } finally {
     loading.value = false;
@@ -204,11 +206,11 @@ async function triggerSync(node) {
   try {
     await store.triggerSync(node.id);
     await refresh();
-    toast.success(`Synchronisation lancée pour ${node.name || node.id}`);
+    toast.success(t('edge.syncSuccess', 'Synchronisation lancée pour {name}').replace('{name}', node.name || node.id));
   } catch (err) {
     loadError.value = err?.response?.data?.localized_message
       || err?.message
-      || 'Erreur lors du déclenchement de la synchronisation.';
+      || t('edge.syncError', 'Erreur lors du déclenchement de la synchronisation.');
     toast.error(loadError.value);
   } finally {
     syncingNodeId.value = null;
@@ -227,11 +229,11 @@ async function revokeLicense(node) {
     await store.revokeLicense(node.id);
     await refresh();
     confirmRevokeId.value = null;
-    toast.success(`Licence révoquée pour ${node.name || node.id}`);
+    toast.success(t('edge.revokeSuccess', 'Licence révoquée pour {name}').replace('{name}', node.name || node.id));
   } catch (err) {
     loadError.value = err?.response?.data?.localized_message
       || err?.message
-      || 'Erreur lors de la révocation de la licence.';
+      || t('edge.revokeError', 'Erreur lors de la révocation de la licence.');
     toast.error(loadError.value);
   } finally {
     revokingNodeId.value = null;

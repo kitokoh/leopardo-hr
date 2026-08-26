@@ -138,7 +138,9 @@
       "TR": "تركيا",
       "US": "الولايات المتحدة"
     },
-    "required": "مطلوب"
+    "required": "مطلوب",
+    "delete": "حذف",
+    "confirm": "تأكيد"
   },
   "modules": {
     "attendance": "الحضور",
@@ -342,6 +344,12 @@
       "title": "تعديل المستخدم",
       "status": "الحالة",
       "save": "تحديث"
+    },
+    "table": {
+      "loading": "جارٍ تحميل المستخدمين...",
+      "empty": "لا يوجد مستخدم",
+      "emptyHint": "لا يوجد مستخدم يطابق معايير البحث.",
+      "viewDetails": "عرض التفاصيل"
     }
   },
   "dashboard": {
@@ -3205,5 +3213,117 @@
     "matchDone": "تمت مطابقة البند.",
     "loading": "جارٍ التحميل…",
     "retry": "إعادة المحاولة"
+  },
+  "adminShortcuts": {
+    "title": "اختصارات لوحة المفاتيح",
+    "descToggleDark": "تبديل الوضع الداكن",
+    "descSearch": "بحث",
+    "descDashboard": "لوحة القيادة",
+    "descUsers": "المستخدمون",
+    "descCompanies": "الشركات",
+    "descSubscriptions": "الاشتراكات",
+    "descCloseModals": "إغلاق النوافذ المنبثقة",
+    "descHelp": "مساعدة الاختصارات",
+    "footerPress": "اضغط على",
+    "footerToShow": "لعرض هذه القائمة"
+  },
+  "edge": {
+    "statTotal": "إجمالي العقد",
+    "statOnline": "متصل",
+    "statOffline": "غير متصل",
+    "statExpiredLicenses": "تراخيص منتهية",
+    "loading": "جارٍ تحميل العقد…",
+    "empty": "لا توجد عقد Edge مسجلة",
+    "emptyHint": "تظهر العقد هنا بعد تسجيلها عبر واجهة Edge.",
+    "colNode": "العقدة",
+    "colStatus": "الحالة",
+    "colLicense": "الترخيص",
+    "colLastSync": "آخر مزامنة",
+    "colActions": "إجراءات",
+    "sync": "مزامنة",
+    "syncing": "مزامنة…",
+    "details": "تفاصيل",
+    "revoke": "إلغاء",
+    "revokeConfirm": "تأكيد الإلغاء؟",
+    "revoking": "جارٍ الإلغاء…",
+    "loadError": "خطأ في تحميل عقد Edge.",
+    "syncError": "خطأ في تشغيل المزامنة.",
+    "syncSuccess": "بدأت المزامنة لـ {name}",
+    "revokeSuccess": "تم إلغاء الترخيص لـ {name}",
+    "revokeError": "خطأ في إلغاء الترخيص."
+  },
+  "fleet": {
+    "tabsMap": "الخريطة",
+    "tabsList": "القائمة",
+    "tabsAlerts": "التنبيهات",
+    "statVehicles": "المركبات",
+    "statInService": "في الخدمة",
+    "statMaintenanceDue": "صيانة مستحقة",
+    "statAlerts": "التنبيهات",
+    "colPlate": "رقم اللوحة",
+    "colBrand": "العلامة",
+    "colModel": "الطراز",
+    "colAssignedTo": "مُسند إلى",
+    "colKm": "كم",
+    "colStatus": "الحالة",
+    "colVehicle": "المركبة",
+    "colType": "النوع",
+    "colSeverity": "الخطورة",
+    "colMessage": "الرسالة",
+    "colDate": "التاريخ",
+    "statusActive": "في الخدمة",
+    "statusMaintenance": "صيانة",
+    "statusInactive": "غير نشط",
+    "statusDecommissioned": "مُخرجة من الخدمة",
+    "severityLow": "منخفض",
+    "severityMedium": "متوسط",
+    "severityHigh": "مرتفع",
+    "severityCritical": "حرج",
+    "unassigned": "غير مُسند",
+    "searchVehicle": "ابحث عن مركبة...",
+    "searchAlert": "ابحث عن تنبيه..."
+  },
+  "notFound": {
+    "users": "المستخدمون",
+    "usersHint": "إدارة حسابات المستخدمين",
+    "companies": "الشركات",
+    "companiesHint": "إدارة الشركات"
+  },
+  "subscriptions": {
+    "title": "الاشتراكات",
+    "subtitle": "الخطط وصحة المحفظة ومخاطر إلغاء الاشتراك لشركات العملاء.",
+    "refresh": "تحديث",
+    "kpi": {
+      "portfolioMrr": "إيرادات المحفظة الشهرية",
+      "activeSubscriptions": "اشتراكات نشطة",
+      "pastDue": "متأخر",
+      "totalOverdue": "إجمالي المتأخرات",
+      "arr": "الإيرادات السنوية",
+      "collected30d": "محصّل 30 يومًا",
+      "totalSubscribers": "إجمالي المشتركين",
+      "trials": "تجارب"
+    },
+    "catalogTitle": "كتالوج الخطط",
+    "catalogSub": "العروض التجارية والحدود المرتبطة بها.",
+    "retry": "إعادة المحاولة",
+    "public": "عام",
+    "archived": "مؤرشف",
+    "perMonth": "/ شهريًا",
+    "billedAnnually": "تُفوتر سنويًا",
+    "healthTitle": "صحة المحفظة",
+    "retentionTitle": "مخاطر إلغاء الاشتراك",
+    "noPlan": "خطة غير معروفة",
+    "manage": "إدارة",
+    "noRisk": "لا توجد مخاطر",
+    "loadError": "خطأ في تحميل الاشتراكات.",
+    "employees": "موظف",
+    "unlimited": "غير محدود",
+    "trialDays": "أيام تجريبية",
+    "trialUnit": "يومًا",
+    "risk": {
+      "high": "مخاطر عالية",
+      "medium": "مخاطر متوسطة",
+      "low": "مخاطر منخفضة"
+    }
   }
 }

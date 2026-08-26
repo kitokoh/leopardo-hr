@@ -278,6 +278,7 @@ class TwoFactorAuthTest extends TestCase
 
         // Login suivant AVEC le cookie → token direct (pas de challenge).
         $this->withUnencryptedCookie('mfa_remember_'.$employee->id, $expected)
+            ->withCredentials()
             ->postJson('/api/v1/auth/login', [
                 'email' => '2fa-remember@example.com',
                 'password' => 'password123',

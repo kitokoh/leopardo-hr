@@ -102,12 +102,14 @@ class _CompanyRequestCard extends ConsumerWidget {
     WidgetRef ref,
     bool approved,
   ) async {
+    // Capture l10n before async gap (context may not be mounted afterwards).
+    final note = approved
+        ? context.l10n.platformAdminCompanyApprovedNote
+        : context.l10n.platformAdminCompanyRejectedNote;
     await ref.read(platformRepositoryProvider).reviewCompanyRequest(
           id: request.id,
           approved: approved,
-          adminNotes: approved
-              ? 'Approuve depuis Leopardo Platform Admin mobile'
-              : 'Refuse depuis Leopardo Platform Admin mobile',
+          adminNotes: note,
         );
     ref.invalidate(platformCompanyRequestsProvider);
     if (!context.mounted) return;

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Core\Auth\Domain\Models\Employee;
 use Tests\TestCase;
 
 class OpenApiDocsTest extends TestCase
@@ -77,4 +78,41 @@ class OpenApiDocsTest extends TestCase
                 ->assertSee('GuzzleHttp', false)
                 ->assertSee('Copier');
     }
+
+    /**
+     * Issue #5588 : en production, la documentation API n'est plus publique —
+     * la Gate `viewApiDocs` (utilisateur tenant authentifié) est exigée.
+     * Hors production (dev/staging/test), la doc reste ouverte.
+     */
+    public function test_docs_require_authentication_in_production(): void
+    {
+        config()->set('app.env', 'production');
+
+        $this->get('/docs')->assertForbidden();
+        $this->get('/docs/openapi.yaml')->assertForbidden();
+        $this->get('/tester-guide')->assertForbidden();
+        $this->get('/api-explorer')->assertForbidden();
+    }
+
+    public function test_authenticated_tenant_user_can_access_docs_in_production(): void
+    {
+        config()->set('app.env', 'production');
+
+        $employee = new Employee(['company_id' => '00000000-0000-0000-0000-000000000001']);
+
+        $this->actingAs($employee, 'web')
+            ->get('/docs')
+            ->assertOk();
+
+        $this->actingAs($employee, 'web')
+            ->get('/docs/openapi.yaml')
+            ->assertOk();
+    }
+
+    public function test_docs_remain_public_outside_production(): void
+    {
+        // Environnement de test par défaut : ouvert (comportement historique).
+        $this->get('/docs')->assertOk();
+    }
+
 }

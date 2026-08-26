@@ -97,8 +97,13 @@ def _build_base(prefixes: list[str]) -> str:
     return normalize_path("/" + "/".join(parts)) if parts else ""
 
 
+def route_params(raw_path: str) -> list[str]:
+    """Noms des paramètres de chemin d'une route brute ({name}, {name?}, {name:regex})."""
+    return [m.group(1) for m in PARAM_RE.finditer(raw_path)]
+
+
 def parse_routes() -> list[dict]:
-    """Retourne [{method, path, file}] pour chaque route trouvée.
+    """Retourne [{method, path, params, file}] pour chaque route trouvée.
 
     Corrections #2233 :
       - préfixes imbriqués joints avec '/' (plus de concaténation brute) ;
@@ -180,7 +185,9 @@ def parse_routes() -> list[dict]:
             if m:
                 verb, path = m.group(1).lower(), m.group(2)
                 full = normalize_path(base + path)
-                routes.append({"method": verb, "path": full, "file": rel})
+                routes.append(
+                    {"method": verb, "path": full, "params": route_params(path), "file": rel}
+                )
                 continue
 
             m = RESOURCE_RE.search(line)
@@ -203,7 +210,12 @@ def parse_routes() -> list[dict]:
                     else:
                         continue
                     routes.append(
-                        {"method": verb, "path": normalize_path(base + p), "file": rel}
+                        {
+                            "method": verb,
+                            "path": normalize_path(base + p),
+                            "params": [param],
+                            "file": rel,
+                        }
                     )
                 continue
 
@@ -319,6 +331,23 @@ def parse_openapi() -> set[tuple[str, str]]:
     return operations
 
 
+def parse_openapi_raw() -> dict[tuple[str, str], str]:
+    """{(method, normalized_path) -> raw_path} pour la comparaison des noms de paramètres."""
+    text = OPENAPI_FILE.read_text(encoding="utf-8", errors="replace")
+    raw: dict[tuple[str, str], str] = {}
+    current_path: str | None = None
+    for line in text.splitlines():
+        m = re.match(r"^  (/[^:]*):", line)
+        if m:
+            current_path = m.group(1)
+            continue
+        if current_path:
+            m = re.match(r"^    (get|post|put|patch|delete|options|head):", line)
+            if m:
+                raw[(m.group(1), normalize_path(current_path))] = current_path
+    return raw
+
+
 def load_allowlist() -> set[str]:
     if not ALLOWLIST_FILE.exists():
         return set()
@@ -373,6 +402,20 @@ def spec_form(path: str) -> str | None:
     return None
 
 
+PARAM_DRIFT_ALLOWLIST_FILE = Path(__file__).resolve().parent / "openapi-param-drift-allowlist.txt"
+
+
+def load_param_drift_allowlist() -> set[str]:
+    if not PARAM_DRIFT_ALLOWLIST_FILE.exists():
+        return set()
+    entries = set()
+    for line in PARAM_DRIFT_ALLOWLIST_FILE.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#"):
+            entries.add(line)
+    return entries
+
+
 def load_reverse_allowlist() -> set[str]:
     if not REVERSE_ALLOWLIST_FILE.exists():
         return set()
@@ -397,8 +440,10 @@ def main() -> int:
 
     routes = parse_routes()
     openapi_ops = parse_openapi()
+    openapi_raw = parse_openapi_raw()
     allowlist = load_allowlist()
     reverse_allowlist = load_reverse_allowlist()
+    param_drift_allowlist = load_param_drift_allowlist()
 
     # Staleness (issue #3596) : une entrée allowlistée désormais documentée
     # surestime les gaps réels et masque la progression de la remédiation
@@ -430,6 +475,42 @@ def main() -> int:
     # Passe inverse : parseur précis (préfixes composés avec '/') qui couvre
     # aussi les fichiers de routes DDD (EdgeSync, Attendance).
     route_ops |= parse_routes_accurate()
+
+    # ── Drift des NOMS de paramètres (issue #5583) ────────────────────────────
+    # L'ancienne normalisation {param} comparait les chemins mais pas les noms :
+    # une spec /org-chart/{employeeId} vs code /org-chart/{employee} passait la
+    # garde alors que le SDK généré envoyait un mauvais nom → erreur runtime.
+    # Pour chaque route couverte, on compare les noms de paramètres du chemin
+    # routé à ceux documentés dans openapi.yaml. Drift PRÉ-EXISTANT toléré via
+    # openapi-param-drift-allowlist.txt (mêmes règles que la passe inverse) ;
+    # tout NOUVEAU drift est bloquant.
+    param_drift: list[str] = []
+    param_drift_keys: list[str] = []
+    for r in routes:
+        if not r.get("params"):
+            continue
+        matched_spec: str | None = None
+        for candidate in (r["path"], canonical_spec_path(r["path"]), spec_form(r["path"])):
+            if candidate is None:
+                continue
+            spec_raw = openapi_raw.get((r["method"], candidate))
+            if spec_raw is not None:
+                matched_spec = spec_raw
+                break
+        if matched_spec is None:
+            continue
+        spec_params = route_params(matched_spec)
+        if spec_params != r["params"]:
+            key = f"{r['method'].upper()} {r['path']}"
+            param_drift_keys.append(key)
+            param_drift.append(
+                f"{key}  (code {{{','.join(r['params'])}}} vs spec {{{','.join(spec_params)}}})"
+            )
+    new_param_drift_keys = sorted(set(param_drift_keys) - param_drift_allowlist)
+    new_param_drift = [
+        d for d in param_drift if d.split("  (code ", 1)[0] in new_param_drift_keys
+    ]
+    stale_param_drift = sorted(param_drift_allowlist - set(param_drift_keys))
 
     # ── Passe inverse : opérations documentées mais non routées (issue #2181) ──
     reverse_drift: list[str] = []
@@ -484,6 +565,8 @@ def main() -> int:
         "new_uncovered": len(new_uncovered),
         "reverse_drift": len(reverse_drift),
         "new_reverse_drift": len(new_reverse),
+        "param_drift": len(param_drift),
+        "new_param_drift": len(new_param_drift),
         "allowlist_stale": len(stale_entries),
         "by_module": {k: v for k, v in sorted(by_module.items())},
     }
@@ -500,6 +583,8 @@ def main() -> int:
         print(f"  - NOUVELLES non couvertes (drift): {len(new_uncovered)}")
         print(f"  - drift inverse (documenté non routé): {len(reverse_drift)} "
               f"(dont {len(new_reverse)} nouveaux)")
+        print(f"  - drift noms de paramètres (spec↔code): {len(param_drift)} "
+              f"(dont {len(new_param_drift)} nouveaux)")
         for file, keys in sorted(by_module.items()):
             print(f"  {file}: {len(keys)} non couvertes")
 
@@ -514,6 +599,18 @@ def main() -> int:
         for key in new_reverse[:50]:
             print(f"::error::  {key}")
         return 1
+
+    if new_param_drift:
+        print("\n::error::Drift des noms de paramètres spec↔code (issue #5583) — le SDK généré envoie un mauvais nom :")
+        for key in new_param_drift[:50]:
+            print(f"::error::  {key}")
+        return 1
+
+    if stale_param_drift:
+        print(
+            f"\n  - entrées allowlist param-drift devenues alignées: {len(stale_param_drift)}"
+            " (à purger de openapi-param-drift-allowlist.txt)"
+        )
 
     if stale_entries:
         print(

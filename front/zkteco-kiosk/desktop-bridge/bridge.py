@@ -787,6 +787,11 @@ class BridgeHandler(BaseHTTPRequestHandler):
                 "window.__LOCAL_BRIDGE_TOKEN = "
                 + json.dumps(LOCAL_BRIDGE_TOKEN)
                 + ";\n"
+                # #5619 — demoMode : données démo uniquement en mode non-prod.
+                # false par défaut — le bouton démo reste masqué en production.
+                "window.__KIOSK_DEMO_MODE = "
+                + json.dumps(bool(CONFIG.get("demoMode", False)))
+                + ";\n"
                 "</script>"
             ).encode("utf-8")
             body = body.replace(b"</head>", injected + b"</head>", 1)

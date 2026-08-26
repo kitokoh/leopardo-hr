@@ -197,6 +197,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authTwoFactorRequired => 'رمز التحقق الثنائي مطلوب.';
+  @override
+  String get twoFaChallengeTitle => 'التحقق بخطوتين';
+  @override
+  String get twoFaChallengeSubtitle => 'أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة.';
+  @override
+  String get twoFaChallengeCodeHint => 'رمز TOTP (6 أرقام)';
+  @override
+  String get twoFaChallengeVerifyBtn => 'تحقق';
+  @override
+  String get twoFaChallengeRecoveryToggle => 'استخدام رمز الاسترداد';
+  @override
+  String get twoFaChallengeRecoveryHint => 'رمز الاسترداد';
+  @override
+  String get twoFaChallengeInvalidError => 'رمز غير صالح أو منتهي الصلاحية. حاول مرة أخرى.';
 
   @override
   String get authDemoAccess => 'وصول تجريبي';
@@ -6805,4 +6819,202 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get settingsBiometricConfirmIdentity =>
       'أكد هويتك لإرسال طلبك البيومتري';
+
+  @override
+  String get shellHome => 'الرئيسية';
+
+  @override
+  String get shellAttendance => 'الحضور';
+
+  @override
+  String get shellAbsences => 'الغيابات';
+
+  @override
+  String get shellApprovals => 'الموافقات';
+
+  @override
+  String get contractsMobileTitle => 'عقدي';
+
+  @override
+  String get contractsBackTooltip => 'رجوع';
+
+  @override
+  String get contractsEmptyTitle => 'لا يوجد عقد';
+
+  @override
+  String get contractsEmptyDescription =>
+      'سيظهر عقدك هنا بمجرد تكوينه.';
+
+  @override
+  String get contractsLabelType => 'النوع';
+
+  @override
+  String get contractsLabelStartDate => 'البداية';
+
+  @override
+  String get contractsLabelEndDate => 'النهاية';
+
+  @override
+  String get contractsLabelBaseSalary => 'الراتب الأساسي';
+
+  @override
+  String get contractsLoading => 'جارٍ تحميل العقود...';
+
+  @override
+  String get contractsStatusActive => 'نشط';
+
+  @override
+  String get contractsStatusExpired => 'منتهي الصلاحية';
+
+  @override
+  String get contractsStatusDraft => 'مسودة';
+
+  @override
+  String get contractsStatusCdi => 'دائم (CDI)';
+
+  @override
+  String get organigrammeTitle => 'الهيكل التنظيمي';
+
+  @override
+  String get organigrammeBackTooltip => 'رجوع';
+
+  @override
+  String get organigrammeEmptyTitle => 'لا يوجد هيكل تنظيمي';
+
+  @override
+  String get organigrammeLoading => 'جارٍ تحميل الهيكل التنظيمي...';
+
+  @override
+  String get vehicleMapTitle => 'موقع المركبة';
+
+  @override
+  String get vehicleMapBackTooltip => 'رجوع';
+
+  @override
+  String get vehicleMapEmptyTitle => 'لا توجد مركبة';
+
+  @override
+  String get vehicleMapEmptyDescription =>
+      'ستظهر مركباتك المخصصة هنا.';
+
+  @override
+  String get vehicleMapLoading => 'جارٍ تحميل المركبات...';
+
+  @override
+  String vehicleMapLastUpdate(Object time) {
+    return 'آخر تحديث: \$time';
+  }
+
+  @override
+  String vehicleMapSpeedKmh(Object speed) {
+    return '$speed كم/س';
+  }
+
+  @override
+  String get payrollValidated => 'تمت المصادقة';
+
+  @override
+  String payrollDocumentUnavailable(Object error) {
+    return 'الوثيقة غير متاحة: $error';
+  }
+
+  @override
+  String payrollOvertimeHoursTeam(Object hours) {
+    return 'ساعات إضافية (${hours}س)';
+  }
+
+  @override
+  String payrollOvertimeHoursItem(Object hours) {
+    return '+${hours}س إضافية';
+  }
+
+  @override
+  String get platformAdminActivationNote =>
+      'تفعيل مباشر من تطبيق Platform Admin الجوال.';
+
+  @override
+  String get platformAdminCompanyApprovedNote =>
+      'تمت الموافقة من تطبيق Leopardo Platform Admin الجوال';
+
+  @override
+  String get platformAdminCompanyRejectedNote =>
+      'تم الرفض من تطبيق Leopardo Platform Admin الجوال';
+
+  @override
+  String get edgeNodesTitle => 'عقد Edge';
+
+  @override
+  String get edgeNodesSubtitle => 'مواقع محلية متصلة';
+
+  @override
+  String get edgeNodesRefreshTooltip => 'تحديث';
+
+  @override
+  String get edgeNodesEmpty => 'لا توجد عقدة Edge مسجلة.';
+
+  @override
+  String get edgeNodesOnline => 'متصل';
+
+  @override
+  String get edgeNodesOffline => 'غير متصل';
+
+  @override
+  String get edgeNodesSectionLabel => 'العقد';
+
+  @override
+  String get edgeNodesLoading => 'تحميل العقد';
+
+  @override
+  String get edgeNodesForceSync => 'إجبار المزامنة';
+
+  @override
+  String get edgeNodesSyncTriggered => 'تم تشغيل المزامنة.';
+
+  @override
+  String edgeNodesLastSync(Object date) {
+    return 'آخر مزامنة: $date';
+  }
+
+  @override
+  String edgeNodesNodeId(Object id) {
+    return 'المعرف: $id';
+  }
+
+  @override
+  String edgeNodesVersionInfo(Object version, Object count) {
+    return 'v$version — $count موظف';
+  }
+
+  @override
+  String get supportTicketsTitle => 'دعم العملاء';
+
+  @override
+  String get supportTicketsSubtitle => 'تذاكر المستأجر';
+
+  @override
+  String get supportTicketsFilterAll => 'الكل';
+
+  @override
+  String get supportTicketsFilterOpen => 'مفتوح';
+
+  @override
+  String get supportTicketsFilterInProgress => 'قيد التنفيذ';
+
+  @override
+  String get supportTicketsFilterResolved => 'محلول';
+
+  @override
+  String get supportTicketsFilterClosed => 'مغلق';
+
+  @override
+  String get supportTicketsEmpty => 'لا توجد تذاكر لهذا الفلتر.';
+
+  @override
+  String get supportTicketsLoading => 'تحميل التذاكر';
+
+  @override
+  String get supportTicketsReplySent => 'تم إرسال الرد.';
+
+  @override
+  String get supportTicketsLoadingTicket => 'تحميل التذكرة';
 }

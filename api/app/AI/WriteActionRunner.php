@@ -12,6 +12,19 @@ use Illuminate\Support\Carbon;
 class WriteActionRunner
 {
     /**
+     * Issue #5625 : liste statique des write tools qui ont un handler PHP.
+     *
+     * @return list<string>
+     */
+    public static function supportedWriteToolNames(): array
+    {
+        return [
+            'create_absence',
+            'approve_absence',
+        ];
+    }
+
+    /**
      * @param  array<string, mixed>  $arguments
      * @return array<string, mixed>
      */
