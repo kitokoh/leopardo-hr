@@ -5,6 +5,7 @@ use App\Core\Auth\Interfaces\Api\V1\TwoFactorAuthController;
 use App\Core\Auth\Interfaces\Api\V1\PasswordResetController;
 use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
 use App\Core\Feature\Interfaces\Api\V1\FeatureManifestController;
+use App\Http\Controllers\AI\VoiceController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
 use App\Modules\Billing\Interfaces\Api\V1\CompanyRequestController;
@@ -76,6 +77,13 @@ Route::prefix('v1')->group(function (): void {
     // they must not be served anonymously. See issue #1466.
     Route::get('/metrics', MetricsController::class)
         ->middleware(['auth:super_admin_api', 'throttle:metrics']);
+
+    // Issue #5616 — Serve TTS audio via URL signée temporaire (sans auth Sanctum).
+    // La route est protégée par la signature Laravel (hasValidRelativeSignature),
+    // TTL = VoiceController::TTS_URL_TTL_SECONDS (60 s).
+    Route::get('/voice/tts/{filename}', [VoiceController::class, 'serveTts'])
+        ->name('tts.serve')
+        ->middleware('throttle:60,1');
 
     // Auth (core, hors module)
     Route::middleware(['throttle:auth-sensitive'])->group(function (): void {
