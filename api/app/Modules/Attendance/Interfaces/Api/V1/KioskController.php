@@ -54,21 +54,27 @@ class KioskController extends Controller
             'trusted_device_label' => ['nullable', 'string', 'max:120'],
         ]);
 
+        $plainDeviceCode = strtoupper(Str::random(10));
+
         $kiosk = AttendanceKiosk::query()->create([
             'company_id' => $company->id,
             'name' => $validated['name'],
             'location_label' => $validated['location_label'] ?? null,
             'biometric_mode' => $validated['biometric_mode'] ?? 'fingerprint',
             'trusted_device_label' => $validated['trusted_device_label'] ?? null,
-            'device_code' => strtoupper(Str::random(10)),
+            // Issue #5588 : le device_code n'est plus stocké en clair (hash
+            // déterministe sha256, lookup par égalité). Le code en clair
+            // n'est retourné qu'à la création (provisioning du kiosque).
+            'device_code' => AttendanceKiosk::hashDeviceCode($plainDeviceCode),
             'sync_token_hash' => Hash::make($plainToken = Str::random(48)),
             'status' => 'active',
         ]);
 
         return new JsonResponse([
-            'data' => $this->serializeKiosk($kiosk) + [
+            'data' => array_replace($this->serializeKiosk($kiosk), [
+                'device_code' => $plainDeviceCode,
                 'sync_token' => $plainToken,
-            ],
+            ]),
         ], 201);
     }
 
@@ -122,7 +128,7 @@ class KioskController extends Controller
 
         return $this->withTenantSearchPath(
             $company,
-            fn (): JsonResponse => $this->doRoster($company, $kiosk->device_code),
+            fn (): JsonResponse => $this->doRoster($company, $deviceCode),
         );
     }
 
@@ -295,7 +301,7 @@ class KioskController extends Controller
 
         return $this->withTenantSearchPath(
             $company,
-            fn (): JsonResponse => $this->doAnnouncements($kiosk, $company, $kiosk->device_code),
+            fn (): JsonResponse => $this->doAnnouncements($kiosk, $company, $deviceCode),
         );
     }
 
@@ -514,8 +520,10 @@ class KioskController extends Controller
         DB::statement('SET search_path TO shared_tenants,public');
 
         try {
+            // Issue #5588 : lookup par hash déterministe (le device_code
+            // n'est plus stocké en clair — AttendanceKiosk::hashDeviceCode).
             $kiosk = AttendanceKiosk::query()
-                ->where('device_code', strtoupper($deviceCode))
+                ->where('device_code', AttendanceKiosk::hashDeviceCode($deviceCode))
                 ->where('status', 'active')
                 ->firstOrFail();
 
