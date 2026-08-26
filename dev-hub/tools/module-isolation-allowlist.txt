@@ -84,6 +84,7 @@ Onboarding:HR:api/app/Modules/Onboarding/Interfaces/Api/V1/Controllers/Onboardin
 Payroll:Attendance:api/app/Modules/Payroll/Infrastructure/Services/PayrollAnomalyService.php
 Payroll:Attendance:api/app/Modules/Payroll/Infrastructure/Services/PayrollCalculator.php
 Payroll:Attendance:api/app/Modules/Payroll/Infrastructure/Services/PayrollCycleService.php
+Payroll:Attendance:api/app/Modules/Payroll/Infrastructure/Services/PayrollWorkInputs.php
 Payroll:Billing:api/app/Modules/Payroll/Domain/Models/Commission.php
 Payroll:Billing:api/app/Modules/Payroll/Domain/Models/Payment.php
 Payroll:Billing:api/app/Modules/Payroll/Infrastructure/Services/CommissionService.php
@@ -92,6 +93,7 @@ Payroll:Notification:api/app/Modules/Payroll/Infrastructure/Services/SalaryAdvan
 Payroll:Notification:api/app/Modules/Payroll/Interfaces/Api/V1/PaySlipController.php
 Payroll:Planning:api/app/Modules/Payroll/Infrastructure/Services/EndOfContractService.php
 Payroll:Planning:api/app/Modules/Payroll/Infrastructure/Services/PayrollCalculator.php
+Payroll:Planning:api/app/Modules/Payroll/Infrastructure/Services/PayrollWorkInputs.php
 Payroll:Planning:api/app/Modules/Payroll/Interfaces/Api/V1/EstimationController.php
 Payroll:Planning:api/app/Modules/Payroll/Interfaces/Api/V1/PaySlipController.php
 Planning:Attendance:api/app/Modules/Planning/Infrastructure/Services/EstimationService.php
