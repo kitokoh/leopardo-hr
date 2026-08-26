@@ -138,7 +138,9 @@
       "TR": "Türkiye",
       "US": "United States"
     },
-    "required": "Required"
+    "required": "Required",
+    "delete": "Delete",
+    "confirm": "Confirm"
   },
   "modules": {
     "attendance": "Attendance",
@@ -342,6 +344,12 @@
       "title": "Edit user",
       "status": "Status",
       "save": "Update"
+    },
+    "table": {
+      "loading": "Loading users...",
+      "empty": "No user",
+      "emptyHint": "No user matches the search criteria.",
+      "viewDetails": "View details"
     }
   },
   "dashboard": {
@@ -3205,5 +3213,117 @@
     "matchDone": "Line matched.",
     "loading": "Loading…",
     "retry": "Retry"
+  },
+  "adminShortcuts": {
+    "title": "Keyboard shortcuts",
+    "descToggleDark": "Toggle dark mode",
+    "descSearch": "Search",
+    "descDashboard": "Dashboard",
+    "descUsers": "Users",
+    "descCompanies": "Companies",
+    "descSubscriptions": "Subscriptions",
+    "descCloseModals": "Close modals",
+    "descHelp": "Shortcut help",
+    "footerPress": "Press",
+    "footerToShow": "to show this menu"
+  },
+  "edge": {
+    "statTotal": "Total nodes",
+    "statOnline": "Online",
+    "statOffline": "Offline",
+    "statExpiredLicenses": "Expired licenses",
+    "loading": "Loading nodes…",
+    "empty": "No Edge node registered",
+    "emptyHint": "Nodes appear here once registered via the Edge API.",
+    "colNode": "Node",
+    "colStatus": "Status",
+    "colLicense": "License",
+    "colLastSync": "Last sync",
+    "colActions": "Actions",
+    "sync": "Sync",
+    "syncing": "Sync…",
+    "details": "Details",
+    "revoke": "Revoke",
+    "revokeConfirm": "Confirm revocation?",
+    "revoking": "Revoking…",
+    "loadError": "Error loading Edge nodes.",
+    "syncError": "Error triggering the sync.",
+    "syncSuccess": "Sync started for {name}",
+    "revokeSuccess": "License revoked for {name}",
+    "revokeError": "Error revoking the license."
+  },
+  "fleet": {
+    "tabsMap": "Map",
+    "tabsList": "List",
+    "tabsAlerts": "Alerts",
+    "statVehicles": "Vehicles",
+    "statInService": "In service",
+    "statMaintenanceDue": "Maintenance due",
+    "statAlerts": "Alerts",
+    "colPlate": "Plate number",
+    "colBrand": "Brand",
+    "colModel": "Model",
+    "colAssignedTo": "Assigned to",
+    "colKm": "Km",
+    "colStatus": "Status",
+    "colVehicle": "Vehicle",
+    "colType": "Type",
+    "colSeverity": "Severity",
+    "colMessage": "Message",
+    "colDate": "Date",
+    "statusActive": "In service",
+    "statusMaintenance": "Maintenance",
+    "statusInactive": "Inactive",
+    "statusDecommissioned": "Decommissioned",
+    "severityLow": "Low",
+    "severityMedium": "Medium",
+    "severityHigh": "High",
+    "severityCritical": "Critical",
+    "unassigned": "Unassigned",
+    "searchVehicle": "Search a vehicle...",
+    "searchAlert": "Search an alert..."
+  },
+  "notFound": {
+    "users": "Users",
+    "usersHint": "Manage user accounts",
+    "companies": "Companies",
+    "companiesHint": "Manage companies"
+  },
+  "subscriptions": {
+    "title": "Subscriptions",
+    "subtitle": "Plans, portfolio health and churn risk for customer companies.",
+    "refresh": "Refresh",
+    "kpi": {
+      "portfolioMrr": "Portfolio MRR",
+      "activeSubscriptions": "Active subscriptions",
+      "pastDue": "Past due",
+      "totalOverdue": "Total overdue",
+      "arr": "ARR",
+      "collected30d": "Collected 30d",
+      "totalSubscribers": "Total subscribers",
+      "trials": "Trials"
+    },
+    "catalogTitle": "Plans catalog",
+    "catalogSub": "Commercial offers and associated limits.",
+    "retry": "Retry",
+    "public": "Public",
+    "archived": "Archived",
+    "perMonth": "/ month",
+    "billedAnnually": "billed annually",
+    "healthTitle": "Portfolio health",
+    "retentionTitle": "Churn risks",
+    "noPlan": "Unknown plan",
+    "manage": "Manage",
+    "noRisk": "No risk detected",
+    "loadError": "Error loading subscriptions.",
+    "employees": "employees",
+    "unlimited": "Unlimited",
+    "trialDays": "trial days",
+    "trialUnit": "days",
+    "risk": {
+      "high": "High risk",
+      "medium": "Medium risk",
+      "low": "Low risk"
+    }
   }
 }
