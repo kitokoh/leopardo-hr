@@ -102,8 +102,12 @@ class WebhookIdempotenceTest extends TestCase
     /**
      * @return array{0: Company, 1: Subscription, 2: Invoice}
      */
+    /**
+     * @return array{0: Company, 1: Subscription, 2: Invoice}
+     */
     private function billingFixture(string $invoiceNumber = 'LEO-IDEM-TEST', ?string $stripeInvoiceId = null): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
         $subscription = Subscription::create([
             'company_id' => $company->id,
@@ -150,11 +154,14 @@ class WebhookIdempotenceTest extends TestCase
 
         $this->postStripe($payload)->assertOk()->assertJsonPath('received', true);
         $this->assertSame(1, Payment::count());
-        $this->assertSame('paid', $invoice->fresh()->status);
+        $freshInvoice = $invoice->fresh();
+        $this->assertNotNull($freshInvoice);
+        $this->assertSame('paid', $freshInvoice->status);
 
         // Redelivrance du MÊME événement (même id) : rejoué, aucun effet double.
         $replay = $this->postStripe($payload);
-        $replay->assertOk()->assertJsonPath('replayed', true);
+        // Le rejeu renvoie la réponse MÉMORISÉE (idempotence fidèle) — pas de flag 'replayed' dans le corps stocké.
+        $replay->assertOk();
         $this->assertSame(1, Payment::count());
 
         $this->assertDatabaseHas('webhook_events', [
@@ -176,7 +183,7 @@ class WebhookIdempotenceTest extends TestCase
         ];
 
         $this->postStripe($payload)->assertOk();
-        $this->postStripe($payload)->assertOk()->assertJsonPath('replayed', true);
+        $this->postStripe($payload)->assertOk();
 
         $this->assertDatabaseHas('webhook_events', [
             'source' => 'stripe',
@@ -219,10 +226,12 @@ class WebhookIdempotenceTest extends TestCase
 
         $this->postChargily($payload)->assertOk()->assertJsonPath('received', true);
         $this->assertSame(1, Payment::count());
-        $this->assertSame('paid', $invoice->fresh()->status);
+        $freshInvoice = $invoice->fresh();
+        $this->assertNotNull($freshInvoice);
+        $this->assertSame('paid', $freshInvoice->status);
 
         // Redelivrance : rejoué, AUCUN second Payment (double encaissement).
-        $this->postChargily($payload)->assertOk()->assertJsonPath('replayed', true);
+        $this->postChargily($payload)->assertOk();
         $this->assertSame(1, Payment::count());
 
         $this->assertDatabaseHas('webhook_events', [
@@ -236,7 +245,9 @@ class WebhookIdempotenceTest extends TestCase
 
     public function test_email_bounce_replayed_payload_records_single_audit_event(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'bounce-idem@example.com',
@@ -244,11 +255,11 @@ class WebhookIdempotenceTest extends TestCase
 
         $this->app->instance(
             EmployeeEmailLookupService::class,
-            new class ($employee)
+            new class($employee) extends EmployeeEmailLookupService
             {
                 public function __construct(private readonly Employee $employee) {}
 
-                public function resolve(string $email): ?Employee
+                public function resolve(string $email): Employee
                 {
                     return $this->employee;
                 }
@@ -260,7 +271,7 @@ class WebhookIdempotenceTest extends TestCase
         $this->postBounce($payload)->assertOk()->assertJsonPath('received', true);
         $this->assertSame(1, CommunicationEvent::count());
 
-        $this->postBounce($payload)->assertOk()->assertJsonPath('replayed', true);
+        $this->postBounce($payload)->assertOk();
         $this->assertSame(1, CommunicationEvent::count());
 
         $this->assertDatabaseHas('webhook_events', [
@@ -280,6 +291,8 @@ class WebhookIdempotenceTest extends TestCase
             'first_name' => 'Idem',
             'last_name' => 'Test',
             'form_type' => 'demo',
+            // #5604 : la validation marketing exige désormais le type.
+            'type' => 'signup',
         ];
 
         $first = $this->postLead($payload);
@@ -288,7 +301,7 @@ class WebhookIdempotenceTest extends TestCase
 
         // Redelivrance identique : rejoué (201), toujours un seul lead.
         $replay = $this->postLead($payload);
-        $replay->assertStatus(201)->assertJsonPath('replayed', true);
+        $replay->assertStatus(201)->assertJsonPath('data.external_id', 'lead-idem-ext-1');
         $this->assertSame(1, MarketingLead::query()->count());
 
         $this->assertDatabaseHas('webhook_events', [

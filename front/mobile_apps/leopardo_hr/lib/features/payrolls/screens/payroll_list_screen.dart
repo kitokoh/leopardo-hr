@@ -51,7 +51,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur: ${e.toString()}'),
+          content: Text(context.l10n.payrollError(e.toString())),
           backgroundColor: AppColors.danger,
         ),
       );
@@ -85,7 +85,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Document indisponible: ${e.toString()}'),
+          content: Text(context.l10n.payrollDocumentUnavailable(e.toString())),
           backgroundColor: AppColors.danger,
         ),
       );
@@ -138,7 +138,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
         subtitle: context.l10n.payrollTeamSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
-          tooltip: 'Retour',
+          tooltip: context.l10n.back,
           onPressed: () => context.pop(),
         ),
       ),
@@ -202,10 +202,10 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                                 ),
                               ),
                               if (payroll.status == 'validated')
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 6),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 6),
                                   child: MobileStatusPill(
-                                    label: 'Valide',
+                                    label: context.l10n.payrollValidated,
                                     color: AppColors.success,
                                     icon: Icons.check_circle,
                                   ),
@@ -328,7 +328,7 @@ class _PayrollDocumentsSheet extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Actualiser',
+                  tooltip: context.l10n.refresh,
                   icon: const Icon(Icons.refresh),
                   color: MobileSurface.secondary,
                   onPressed: () {
@@ -429,7 +429,7 @@ class _PaymentDocumentTile extends StatelessWidget {
             )
           else
             IconButton(
-              tooltip: 'Telecharger',
+              tooltip: context.l10n.exportsDownload,
               icon: const Icon(Icons.download_outlined),
               color: document.isAvailable
                   ? AppColors.info
@@ -505,7 +505,7 @@ class _SummaryCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'Heures supp (${summary.overtimeHours.toStringAsFixed(1)}h)',
+                      context.l10n.payrollOvertimeHoursTeam(summary.overtimeHours.toStringAsFixed(1)),
                       style: AppTypography.caption.copyWith(
                         color: MobileSurface.secondary,
                       ),
@@ -539,7 +539,7 @@ class _SummaryCard extends StatelessWidget {
                               ),
                               if (item.overtimeHours > 0)
                                 Text(
-                                  '+${item.overtimeHours.toStringAsFixed(1)}h supp',
+                                  context.l10n.payrollOvertimeHoursItem(item.overtimeHours.toStringAsFixed(1)),
                                   style: AppTypography.caption.copyWith(
                                     color: AppColors.info,
                                     fontSize: 11,

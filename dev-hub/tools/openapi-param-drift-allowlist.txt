@@ -1,0 +1,13 @@
+# openapi-param-drift-allowlist.txt — drifts de noms de paramètres spec↔code
+# tolérés (issue #5583). Mêmes règles que la passe inverse #2181 : toute
+# entrée dont le drift disparaît doit être purgée (anti-régression #3596).
+#
+# Règle : le SDK généré expédie les noms documentés — un drift = mauvais nom
+# envoyé. Corriger le code OU la spec ; allowlister UNIQUEMENT avec
+# justification.
+PATCH /v1/notifications/{param}/read
+#   Duplicata déprécié (#4932) : routes/modules/dashboard.php:43
+#   `PATCH /notifications/{id}/read` (alias compat) — le contrat canonique
+#   est routes/modules/rh.php:202 `{notification}`, que la spec documente.
+#   L'URL est identique (le nom de placeholder n'impacte pas le routage) ;
+#   la spec suit le canonique. A supprimer quand l'alias sera retiré.

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 import '../../core/platform_providers.dart';
 import '../platform/platform_models.dart';
@@ -19,18 +20,19 @@ class EdgeNodesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nodes = ref.watch(platformEdgeNodesProvider);
+    final l10n = context.l10n;
 
     return MobilePage(
       appBar: MobileTopBar(
-        title: 'Nœuds Edge',
-        subtitle: 'Sites on-premise connectés',
+        title: l10n.edgeNodesTitle,
+        subtitle: l10n.edgeNodesSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
-            tooltip: 'Rafraîchir',
+            tooltip: l10n.edgeNodesRefreshTooltip,
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () => ref.invalidate(platformEdgeNodesProvider),
           ),
@@ -40,18 +42,18 @@ class EdgeNodesScreen extends ConsumerWidget {
         nodes.when(
           data: (items) {
             if (items.isEmpty) {
-              return const MobilePanel(
+              return MobilePanel(
                 child: Column(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.router_rounded,
                       size: 48,
                       color: MobileSurface.disabled,
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Text(
-                      'Aucun nœud Edge enregistré.',
-                      style: TextStyle(color: MobileSurface.secondary),
+                      l10n.edgeNodesEmpty,
+                      style: const TextStyle(color: MobileSurface.secondary),
                     ),
                   ],
                 ),
@@ -69,24 +71,24 @@ class EdgeNodesScreen extends ConsumerWidget {
                   children: [
                     MobileMetricTile(
                       value: '$online',
-                      label: 'En ligne',
+                      label: l10n.edgeNodesOnline,
                       color: AppColors.success,
                     ),
                     const SizedBox(width: 10),
                     MobileMetricTile(
                       value: '$offline',
-                      label: 'Hors ligne',
+                      label: l10n.edgeNodesOffline,
                       color: offline > 0 ? AppColors.danger : MobileSurface.disabled,
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                const MobileSectionLabel('Nœuds'),
+                MobileSectionLabel(l10n.edgeNodesSectionLabel),
                 ...items.map((node) => _EdgeNodeCard(node: node)),
               ],
             );
           },
-          loading: () => const MobileEmptyLoading(label: 'Chargement nœuds'),
+          loading: () => MobileEmptyLoading(label: l10n.edgeNodesLoading),
           error: (e, _) => MobileErrorPanel(
             message: e.toString(),
             onRetry: () => ref.invalidate(platformEdgeNodesProvider),
@@ -105,6 +107,11 @@ class _EdgeNodeCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final statusColor = node.isOnline ? AppColors.success : AppColors.danger;
+    final l10n = context.l10n;
+    // Format last sync date (trim to YYYY-MM-DD HH:MM if longer).
+    final lastSync = node.lastSyncAt.length > 16
+        ? node.lastSyncAt.substring(0, 16).replaceAll('T', ' ')
+        : node.lastSyncAt;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -134,7 +141,7 @@ class _EdgeNodeCard extends ConsumerWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'v${node.version} — ${node.employeesCount} employé(s)',
+                        l10n.edgeNodesVersionInfo(node.version, node.employeesCount),
                         style: const TextStyle(
                           color: MobileSurface.secondary,
                           fontSize: 12,
@@ -148,14 +155,14 @@ class _EdgeNodeCard extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Dernière sync : ${node.lastSyncAt.length > 16 ? node.lastSyncAt.substring(0, 16).replaceAll('T', ' ') : node.lastSyncAt}',
+              l10n.edgeNodesLastSync(lastSync),
               style: const TextStyle(
                 color: MobileSurface.secondary,
                 fontSize: 11,
               ),
             ),
             Text(
-              'ID : ${node.id}',
+              l10n.edgeNodesNodeId(node.id),
               style: const TextStyle(
                 color: MobileSurface.secondary,
                 fontSize: 11,
@@ -165,8 +172,10 @@ class _EdgeNodeCard extends ConsumerWidget {
             const SizedBox(height: 10),
             MobilePrimaryAction(
               icon: Icons.sync_rounded,
-              label: 'Forcer la synchronisation',
+              label: l10n.edgeNodesForceSync,
               onPressed: () async {
+                // Capture l10n before async gap.
+                final syncTriggeredMsg = l10n.edgeNodesSyncTriggered;
                 try {
                   await ref
                       .read(platformRepositoryProvider)
@@ -174,7 +183,7 @@ class _EdgeNodeCard extends ConsumerWidget {
                   ref.invalidate(platformEdgeNodesProvider);
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Sync déclenchée.')),
+                    SnackBar(content: Text(syncTriggeredMsg)),
                   );
                 } catch (e) {
                   if (!context.mounted) return;

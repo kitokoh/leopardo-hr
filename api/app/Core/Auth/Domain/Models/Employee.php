@@ -211,6 +211,9 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'biometric_face_enabled' => 'boolean',
         'biometric_fingerprint_enabled' => 'boolean',
         'biometric_consent_at' => 'datetime',
+        'two_fa_secret' => 'string',
+        'two_fa_enabled_at' => 'datetime',
+        'two_fa_recovery_codes' => 'array',
         'invitation_accepted_at' => 'datetime',
         'extra_data' => 'array',
         'iban' => 'encrypted',
@@ -219,6 +222,10 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'failed_login_attempts' => 'integer',
         'locked_until' => 'datetime',
         'family_parts' => 'float',
+        // #5579 : colonne json SANS cast → lecture en string brute →
+        // consumeRecoveryCode() ne voyait jamais un tableau (is_array false)
+        // → code de récupération TOUJOURS invalide (422).
+        'two_fa_recovery_codes' => 'array',
     ];
 
     protected static function booted(): void

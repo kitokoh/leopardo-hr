@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Infrastructure\Services\SSO\OidcFlowService;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOService;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOValidationNotImplementedException;
@@ -38,14 +39,15 @@ class SSOController extends Controller
 
         $sso = $this->ssoService->getCompanySSO($actor->company_id);
 
+        // Issue #5614 : validation_available vient maintenant du service
+        // (per-provider : OIDC = true, SAML = false). Le gate SAML_ENABLED
+        // ne s'applique qu'au callback SAML (samlCallback()), pas au status
+        // OIDC qui est pleinement opérationnel via OidcFlowService (#2231).
         return response()->json([
             'data' => [
                 'enabled' => $sso['enabled'],
                 'provider' => $sso['provider'],
-                // Audit #1694 + gate #3890 : la validation SAML/OIDC n'est
-                // disponible que si le moteur existe ET le flag SAML_ENABLED est posé.
-                'validation_available' => $sso['validation_available']
-                    && (bool) config('services.saml.enabled', false),
+                'validation_available' => $sso['validation_available'],
             ],
         ]);
     }
@@ -164,10 +166,19 @@ class SSOController extends Controller
         try {
             $result = $this->oidcFlowService->complete($companyId, $tokenData);
 
+            // Issue #5579 : le service peut retourner un challenge 2FA (mfa_challenge=true)
+            // si l'employé a la TOTP activée ; dans ce cas, on ne renvoie PAS de token.
+            if (! empty($result['mfa_challenge'])) {
+                return response()->json(['data' => $result]);
+            }
+
             return response()->json([
                 'data' => $result,
                 'message' => __('errors.OIDC_LOGIN_SUCCESS'),
             ]);
+        } catch (TwoFactorException $e) {
+            // Issue #5579 : laisser remonter au handler global (403 TWO_FACTOR_REQUIRED).
+            throw $e;
         } catch (\RuntimeException $e) {
             Log::error('sso.oidc_callback_failed', ['company_id' => $companyId, 'error' => $e->getMessage()]);
 

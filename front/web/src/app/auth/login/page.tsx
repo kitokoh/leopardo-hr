@@ -194,6 +194,7 @@ function LoginInner() {
     setSubmitting(true);
     setError(null);
     setUrlError(null);
+    setShowGoogleSignupCta(false);
     setRetryAttempt(0);
     const startedAt = performance.now();
 
@@ -224,7 +225,23 @@ function LoginInner() {
         },
       });
 
-      const loginPayload = await loginResponse.json() as { data?: StoredAuthUser | { token?: string }; token?: string };
+      const loginPayload = await loginResponse.json() as {
+        data?: StoredAuthUser | { token?: string };
+        token?: string;
+        // Issue #5612 — 2FA challenge (backend #5436)
+        mfa_challenge?: boolean;
+        mfa_challenge_token?: string;
+      };
+
+      // Issue #5612 : si le backend exige un challenge TOTP, rediriger vers
+      // la page /auth/2fa/challenge avant d'appeler /auth/me (pas de session
+      // encore — le cookie n'est posé qu'après la vérification du code).
+      if (loginPayload.mfa_challenge === true && loginPayload.mfa_challenge_token) {
+        router.push(
+          `/auth/2fa/challenge?token=${encodeURIComponent(loginPayload.mfa_challenge_token)}`,
+        );
+        return;
+      }
 
       // Audit #1699 : le token vit dans le cookie httpOnly `leopardo_token`
       // posé par le route handler /api/v1/auth/login — il n'est jamais
@@ -309,6 +326,9 @@ function LoginInner() {
   // arrivait sur le formulaire SANS explication : l'utilisateur croit à une
   // panne au lieu d'une action possible (ex. demander une invitation).
   const [urlError, setUrlError] = useState<string | null>(null);
+  // Issue #5617 (Option A) : le 401 UNKNOWN_ACCOUNT doit proposer un chemin
+  // d'action — lien vers /signup (demande d'essai) en complément du message.
+  const [showGoogleSignupCta, setShowGoogleSignupCta] = useState(false);
 
   useEffect(() => {
     if (!googleErrorCode) {
@@ -317,6 +337,7 @@ function LoginInner() {
     const message = resolveGoogleError(googleErrorCode, labels);
     if (message) {
       setUrlError(message);
+      setShowGoogleSignupCta(googleErrorCode === 'google_no_account');
     }
   }, [googleErrorCode, labels]);
 
@@ -417,7 +438,18 @@ function LoginInner() {
                   role="alert"
                   className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
                 >
-                  {error ?? urlError}
+                  <p>{error ?? urlError}</p>
+                  {showGoogleSignupCta && !error ? (
+                    <p className="mt-2">
+                      <Link
+                        href="/signup"
+                        className="font-black text-emerald-700 underline underline-offset-2 transition hover:text-emerald-900"
+                      >
+                        {labels.login.errors.googleNoAccountCta} <span aria-hidden="true">→</span>
+                        <span className="sr-only">/signup</span>
+                      </Link>
+                    </p>
+                  ) : null}
                 </div>
               ) : null}
 
@@ -434,7 +466,7 @@ function LoginInner() {
                   className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-transparent/50 dark:bg-slate-800/50 px-4 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-bold text-sm"
                   placeholder="manager@company.com"
                   value={email}
-                  onChange={(e) => { setEmail(e.target.value); setUrlError(null); }}
+                  onChange={(e) => { setEmail(e.target.value); setUrlError(null); setShowGoogleSignupCta(false); }}
                 />
               </div>
 
@@ -452,7 +484,7 @@ function LoginInner() {
                     className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-transparent/50 dark:bg-slate-800/50 px-4 pr-12 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-bold text-sm"
                     placeholder={labels.login.password}
                     value={password}
-                    onChange={(e) => { setPassword(e.target.value); setUrlError(null); }}
+                    onChange={(e) => { setPassword(e.target.value); setUrlError(null); setShowGoogleSignupCta(false); }}
                   />
                   <button
                     type="button"

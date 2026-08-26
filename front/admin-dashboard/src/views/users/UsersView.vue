@@ -201,7 +201,7 @@
     :open="deleteOpen"
     :title="t('users.confirm.title', 'Supprimer cet utilisateur ?')"
     :message="deleteTarget ? t('users.confirm.delete', 'Êtes-vous sûr de vouloir supprimer :name ?').replace(':name', deleteTarget.name) : ''"
-    confirm-label="Supprimer"
+    :confirm-label="t('common.delete', 'Supprimer')"
     @confirm="confirmDeleteUser"
     @cancel="deleteOpen = false"
   />

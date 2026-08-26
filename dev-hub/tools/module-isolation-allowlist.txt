@@ -1,0 +1,58 @@
+# Baseline des imports croisés acceptés (issue #5584, audit 2026-08-26).
+# Toute ligne ici représente une violation EXISTANTE et tolérée.
+# Ajouter de nouvelles violations ICI bloque la PR — corriger le code à la place.
+# Format : <source> -> <cible>
+
+Core/Auth -> Modules/Attendance
+Core/Auth -> Modules/Cabinet
+Core/Auth -> Modules/HR
+Core/Auth -> Modules/Notification
+Core/Auth -> Modules/Planning
+Core/Feature -> Modules/Billing
+Core/Tenant -> Modules/Attendance
+Modules/Absence -> Modules/Planning
+Modules/Accounting -> Modules/Marketing
+Modules/Accounting -> Modules/Notification
+Modules/Attendance -> Modules/Fleet
+Modules/Attendance -> Modules/HR
+Modules/Attendance -> Modules/Notification
+Modules/Attendance -> Modules/Planning
+Modules/Billing -> Modules/Payroll
+Modules/Billing -> Modules/Platform
+Modules/Cabinet -> Modules/HR
+Modules/Expense -> Modules/Planning
+Modules/Fleet -> Modules/Attendance
+Modules/Growth -> Modules/Billing
+Modules/Growth -> Modules/Payroll
+Modules/HR -> Modules/Attendance
+Modules/HR -> Modules/Cabinet
+Modules/HR -> Modules/Onboarding
+Modules/HR -> Modules/Payroll
+Modules/HR -> Modules/Planning
+Modules/HR -> Modules/Recruitment
+Modules/Marketing -> Modules/Accounting
+Modules/Marketing -> Modules/Platform
+Modules/Notification -> Modules/Attendance
+Modules/Notification -> Modules/HR
+Modules/Notification -> Modules/Payroll
+Modules/Notification -> Modules/Planning
+Modules/Notification -> Modules/Platform
+Modules/Onboarding -> Modules/Attendance
+Modules/Onboarding -> Modules/HR
+Modules/Payroll -> Modules/Attendance
+Modules/Payroll -> Modules/Billing
+Modules/Payroll -> Modules/Cabinet
+Modules/Payroll -> Modules/Notification
+Modules/Payroll -> Modules/Planning
+Modules/Planning -> Modules/Attendance
+Modules/Planning -> Modules/HR
+Modules/Planning -> Modules/Notification
+Modules/Planning -> Modules/Payroll
+Modules/Platform -> Modules/Attendance
+Modules/Platform -> Modules/Billing
+Modules/Platform -> Modules/HR
+Modules/Platform -> Modules/Notification
+Modules/Platform -> Modules/Onboarding
+Modules/Platform -> Modules/Payroll
+Modules/Platform -> Modules/Planning
+Modules/Recruitment -> Modules/HR

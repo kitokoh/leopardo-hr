@@ -158,6 +158,7 @@ return [
     'BILLING_PORTAL_ACCESS_FAILED' => 'Unable to access the billing portal.',
     'FLEET_ALERTS_LOAD_FAILED' => 'Unable to load fleet alerts.',
     'COMPANY_BRANDING_UPDATED' => 'Company identity updated.',
+    'PAYROLL_PLACEHOLDER_CONFIRM_REQUIRED' => 'Payroll brackets for this country are indicative (not legally validated). Confirm explicitly to validate the payroll run.',
     'PAYROLL_RUN_NOT_FOR_COUNTRY' => 'This payroll run does not concern :country.',
     'PAYROLL_ALREADY_VALIDATED' => 'This payroll run is already validated and can no longer be modified.',
     'PAYROLL_RUN_LOCKED' => 'This payroll run is locked (accounting close) and can no longer be modified.',
@@ -273,4 +274,5 @@ return [
     'LETTERING_ALREADY_USED' => 'One or more entries are already lettered with another code.',
     'LETTERING_UNBALANCED' => 'Lettering must be balanced: total debits must equal total credits.',
     'ALREADY_SEEDED' => 'Demo data has already been seeded for this company.',
+    'EMAIL_NOT_VERIFIED' => 'This Google email has not been verified by its provider. Use an account with a verified email.',
 ];

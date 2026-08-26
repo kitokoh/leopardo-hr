@@ -101,8 +101,87 @@
       </form>
     </div>
 
-    <!-- 2FA -->
+    <!-- Coordonnées bancaires SEPA (#5613) -->
     <div class="card animate-slide-up" style="animation-delay: 0.1s">
+      <div class="card-header flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ t('settingsPage.bankingTitle', 'Coordonnées Bancaires SEPA') }}</h2>
+          <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+            {{ t('settingsPage.bankingSubtitle', 'IBAN et BIC de votre entreprise requis pour l\'export SEPA des virements.') }}
+          </p>
+        </div>
+        <span
+          :class="[
+            'px-3 py-1 text-[11px] font-black uppercase tracking-widest rounded-lg border shrink-0',
+            bankingData.sepa_ready
+              ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800'
+              : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800'
+          ]"
+        >
+          {{ bankingData.sepa_ready ? t('settingsPage.sepaReady', 'SEPA prêt') : t('settingsPage.sepaNotReady', 'SEPA non configuré') }}
+        </span>
+      </div>
+
+      <div class="card-body space-y-5">
+        <!-- Alerte IBAN manquant -->
+        <div
+          v-if="!bankingData.sepa_ready && !isBankingLoading"
+          class="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-900/30 dark:bg-amber-950/20"
+        >
+          <ExclamationTriangleIcon class="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
+          <p class="text-sm font-medium text-amber-800 dark:text-amber-300">
+            {{ t('settingsPage.bankingWarning', 'L\'export SEPA retournera une erreur 422 tant que l\'IBAN de l\'entreprise n\'est pas configuré.') }}
+          </p>
+        </div>
+
+        <div v-if="isBankingLoading" class="flex h-16 items-center justify-center">
+          <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
+        </div>
+
+        <form v-else class="space-y-5" @submit.prevent="submitBanking">
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="company-iban">
+              {{ t('settingsPage.companyIban', 'IBAN de l\'entreprise') }}
+            </label>
+            <input
+              id="company-iban"
+              v-model="bankingForm.company_iban"
+              type="text"
+              class="form-input font-mono tracking-widest"
+              maxlength="50"
+              autocomplete="off"
+              :placeholder="bankingData.country === 'DZ' ? t('settingsPage.ibanPlaceholderDZ', 'IBAN ou RIB algérien (20 chiffres)') : 'FR76 3000 4000 0100 0000 0000 000'"
+            >
+            <p class="mt-1.5 text-xs font-medium text-slate-400">
+              {{ t('settingsPage.ibanHint', 'Format IBAN ISO 13616 (majuscules, sans espaces). Les espaces sont ignorés automatiquement.') }}
+            </p>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="company-bic">
+              {{ t('settingsPage.companyBic', 'BIC / SWIFT (optionnel)') }}
+            </label>
+            <input
+              id="company-bic"
+              v-model="bankingForm.company_bic"
+              type="text"
+              class="form-input font-mono tracking-widest uppercase"
+              maxlength="11"
+              autocomplete="off"
+              placeholder="BNPAFRPP"
+            >
+          </div>
+          <div class="flex justify-end">
+            <button type="submit" class="btn-primary" :disabled="isSavingBanking">
+              <ArrowPathIcon v-if="isSavingBanking" class="mr-2 h-4 w-4 animate-spin" />
+              {{ t('settingsPage.saveBanking', 'Enregistrer les coordonnées') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 2FA -->
+    <div class="card animate-slide-up" style="animation-delay: 0.15s">
       <div class="card-header flex items-center justify-between">
         <div>
           <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('settingsPage.twoFactorTitle') }}</h2>
@@ -194,12 +273,13 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useToast } from 'vue-toastification'
-import { ArrowPathIcon } from '@heroicons/vue/24/outline'
+import { ArrowPathIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useLocaleStore } from '@/stores/locale'
 import { translate } from '@/i18n/index.js'
+import api from '@/services/api.js'
 
 const authStore = useAuthStore()
 const toast = useToast()
@@ -229,6 +309,55 @@ const isGeneratingSecret = ref(false)
 const isEnabling2fa = ref(false)
 const isDisabling2fa = ref(false)
 const pendingSecret = ref(null)
+
+// ---- Coordonnées bancaires SEPA (#5613) ----
+const isBankingLoading = ref(true)
+const isSavingBanking = ref(false)
+const bankingData = reactive({ company_iban: null, company_bic: null, sepa_ready: false, country: null })
+const bankingForm = reactive({ company_iban: '', company_bic: '' })
+
+async function loadBanking() {
+  isBankingLoading.value = true
+  try {
+    const res = await api.get('/company/banking')
+    const data = res.data?.data || {}
+    bankingData.company_iban = data.company_iban ?? null
+    bankingData.company_bic = data.company_bic ?? null
+    bankingData.sepa_ready = !!data.sepa_ready
+    bankingData.country = data.country ?? null
+    bankingForm.company_iban = data.company_iban ?? ''
+    bankingForm.company_bic = data.company_bic ?? ''
+  } catch (err) {
+    // Endpoint optionnel — ne pas bloquer la page si indisponible
+    console.warn('[settings] banking load failed', err)
+  } finally {
+    isBankingLoading.value = false
+  }
+}
+
+async function submitBanking() {
+  isSavingBanking.value = true
+  try {
+    const res = await api.patch('/company/banking', {
+      company_iban: bankingForm.company_iban.trim().toUpperCase().replace(/\s/g, '') || null,
+      company_bic: bankingForm.company_bic.trim().toUpperCase() || null,
+    })
+    const data = res.data?.data || {}
+    bankingData.company_iban = data.company_iban ?? null
+    bankingData.company_bic = data.company_bic ?? null
+    bankingData.sepa_ready = !!data.sepa_ready
+    toast.success(t('settingsPage.bankingUpdated', 'Coordonnées bancaires enregistrées.'))
+  } catch (err) {
+    const msg = err?.response?.data?.message || err?.response?.data?.errors?.company_iban?.[0] || t('settingsPage.bankingError', 'Erreur lors de l\'enregistrement des coordonnées bancaires.')
+    toast.error(msg)
+  } finally {
+    isSavingBanking.value = false
+  }
+}
+
+onMounted(() => {
+  loadBanking()
+})
 
 async function submitProfile() {
   isSavingProfile.value = true

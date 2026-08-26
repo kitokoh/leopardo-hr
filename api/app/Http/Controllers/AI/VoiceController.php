@@ -12,9 +12,15 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class VoiceController extends Controller
 {
+    /** Durée de validité des URLs audio signées (en secondes). */
+    private const TTS_URL_TTL_SECONDS = 60;
+
     public function transcribe(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -45,7 +51,7 @@ class VoiceController extends Controller
             'voice' => ['nullable', 'string', 'max:80', 'regex:/^[A-Za-z0-9._-]+$/'],
         ]);
 
-        $provider = config('ai.voice.tts_provider', 'edge_tts');
+        $provider = $this->resolveEffectiveTtsProvider(config('ai.voice.tts_provider', 'edge_tts'));
         $audioUrl = $this->textToSpeech(
             $validated['text'],
             $validated['language'] ?? 'fr',
@@ -85,7 +91,7 @@ class VoiceController extends Controller
             conversationId: is_numeric($conversationId) ? (int) $conversationId : null,
         ));
 
-        $ttsProvider = config('ai.voice.tts_provider', 'edge_tts');
+        $ttsProvider = $this->resolveEffectiveTtsProvider(config('ai.voice.tts_provider', 'edge_tts'));
         $audioUrl = $this->textToSpeech(
             $aiResponse['response'] ?? $transcribedText,
             $language,
@@ -102,6 +108,60 @@ class VoiceController extends Controller
                 'language' => $language,
             ],
         ]);
+    }
+
+    /**
+     * Sert un fichier TTS via URL signée temporaire (#5616).
+     *
+     * Route nommée `tts.serve` — accessible sans authentification Sanctum mais
+     * protégée par une signature Laravel expirante (TTL = TTS_URL_TTL_SECONDS).
+     */
+    public function serveTts(Request $request, string $filename): StreamedResponse
+    {
+        // hasValidSignature() vérifie la signature absolue (schéma + domaine),
+        // cohérent avec URL::temporarySignedRoute() qui génère des URLs absolues.
+        abort_unless($request->hasValidSignature(), 403);
+
+        // Sanity check : accepter uniquement les noms générés par ce contrôleur.
+        if (! preg_match('/^tts_[a-f0-9]+\.mp3$/', $filename)) {
+            abort(404);
+        }
+
+        $path = 'tts/'.$filename;
+
+        if (! Storage::disk('local')->exists($path)) {
+            abort(404);
+        }
+
+        return response()->streamDownload(function () use ($path): void {
+            echo Storage::disk('local')->get($path);
+        }, $filename, [
+            'Content-Type' => 'audio/mpeg',
+            'Content-Length' => Storage::disk('local')->size($path),
+            'Cache-Control' => 'private, no-store',
+        ]);
+    }
+
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Résout le provider TTS effectif.
+     *
+     * Règle issue #5616 : si `edge_tts` est configuré mais qu'une clé
+     * ElevenLabs est disponible, on préfère le cloud (aucun exec()) pour éviter
+     * la dépendance au binaire Python en production.
+     */
+    private function resolveEffectiveTtsProvider(string $configured): string
+    {
+        if ($configured === 'edge_tts' && (bool) config('ai.voice.elevenlabs_key')) {
+            Log::info('TTS: edge_tts configuré mais ElevenLabs disponible — bascule automatique (#5616)');
+
+            return 'elevenlabs';
+        }
+
+        return $configured;
     }
 
     /**
@@ -190,6 +250,14 @@ class VoiceController extends Controller
         return null;
     }
 
+    /**
+     * Synthèse edge-tts (fallback sans clé cloud).
+     *
+     * Issue #5616 — correctifs sécurité :
+     *  - Les fichiers sont stockés dans le disk `local` (non public).
+     *  - L'URL renvoyée est une URL signée temporaire (TTL = TTS_URL_TTL_SECONDS)
+     *    via la route nommée `tts.serve` — plus aucun accès public permanent.
+     */
     private function edgeTtsSynthesize(string $text, string $language, ?string $voice): ?string
     {
         $voiceMap = [
@@ -200,7 +268,7 @@ class VoiceController extends Controller
         ];
 
         $selectedVoice = $voice ?? ($voiceMap[$language] ?? 'fr-FR-DeniseNeural');
-        $filename = 'tts_'.uniqid().'.mp3';
+        $filename = 'tts_'.bin2hex(random_bytes(8)).'.mp3';
         $storagePath = storage_path('app/tts/'.$filename);
 
         if (! is_dir(dirname($storagePath))) {
@@ -219,9 +287,20 @@ class VoiceController extends Controller
             return null;
         }
 
-        return url('storage/tts/'.$filename);
+        // Issue #5616 : URL signée expirant dans TTS_URL_TTL_SECONDS secondes
+        // (plus d'URL publique permanente).
+        return URL::temporarySignedRoute(
+            'tts.serve',
+            now()->addSeconds(self::TTS_URL_TTL_SECONDS),
+            ['filename' => $filename],
+        );
     }
 
+    /**
+     * Synthèse ElevenLabs (provider cloud préféré).
+     *
+     * Issue #5616 : URL signée temporaire, stockage privé (disk local).
+     */
     private function elevenLabsSynthesize(string $text, ?string $voiceId): ?string
     {
         $apiKey = config('ai.voice.elevenlabs_key');
@@ -241,14 +320,15 @@ class VoiceController extends Controller
             ]);
 
         if ($response->successful()) {
-            $filename = 'tts_'.uniqid().'.mp3';
-            $storagePath = storage_path('app/tts/'.$filename);
-            if (! is_dir(dirname($storagePath))) {
-                mkdir(dirname($storagePath), 0755, true);
-            }
-            file_put_contents($storagePath, $response->body());
+            $filename = 'tts_'.bin2hex(random_bytes(8)).'.mp3';
+            Storage::disk('local')->put('tts/'.$filename, $response->body());
 
-            return url('storage/tts/'.$filename);
+            // Issue #5616 : URL signée expirant dans TTS_URL_TTL_SECONDS secondes.
+            return URL::temporarySignedRoute(
+                'tts.serve',
+                now()->addSeconds(self::TTS_URL_TTL_SECONDS),
+                ['filename' => $filename],
+            );
         }
 
         Log::error('ElevenLabs TTS failed', ['status' => $response->status()]);
