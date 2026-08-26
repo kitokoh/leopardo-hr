@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/branding/tenant_theme.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_theme.dart';
+import 'package:leopardo_core/core/providers/theme_mode_provider.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_employee/features/auth/screens/login_screen.dart';
 import 'package:leopardo_employee/features/auth/screens/register_screen.dart';
@@ -329,7 +330,8 @@ class LeopardoApp extends ConsumerWidget {
       title: branding?.displayName ?? 'Leopardo RH',
       theme: TenantTheme.apply(AppTheme.lightTheme, branding),
       darkTheme: TenantTheme.apply(AppTheme.darkTheme, branding),
-      themeMode: ThemeMode.system,
+      // Issue #5624 — thème dynamique depuis le réglage in-app.
+      themeMode: ref.watch(themeModeProvider),
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: locale,

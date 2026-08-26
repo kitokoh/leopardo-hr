@@ -19,6 +19,7 @@ import 'package:leopardo_core/features/settings/data/settings_repository.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
+import 'package:leopardo_core/core/providers/theme_mode_provider.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -171,6 +172,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildCabinetSection(),
           const SizedBox(height: 20),
           _buildLanguageSection(context, authState),
+          const SizedBox(height: 20),
+          // Issue #5624 — réglage thème in-app
+          _buildThemeSection(context),
           const SizedBox(height: 20),
           _buildNotificationSection(context),
           const SizedBox(height: 20),
@@ -817,6 +821,63 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             onPressed: _languageSaving ? null : _saveLanguage,
             child: Text(
               _languageSaving ? 'Mise a jour...' : 'Mettre a jour la langue',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Issue #5624 — réglage thème in-app ──────────────────────────────────
+  Widget _buildThemeSection(BuildContext context) {
+    final currentMode = ref.watch(themeModeProvider);
+
+    final options = [
+      (ThemeMode.system, Icons.brightness_auto_outlined, 'Automatique (système)'),
+      (ThemeMode.light, Icons.light_mode_outlined, 'Clair'),
+      (ThemeMode.dark, Icons.dark_mode_outlined, 'Sombre'),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: MobileSurface.cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Thème de l\'application',
+            style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Choisissez le thème affiché quelle que soit la configuration système.',
+            style: AppTypography.bodySmall
+                .copyWith(color: MobileSurface.secondary),
+          ),
+          const SizedBox(height: 16),
+          ...options.map(
+            (opt) => RadioListTile<ThemeMode>(
+              contentPadding: EdgeInsets.zero,
+              value: opt.$1,
+              groupValue: currentMode,
+              title: Row(
+                children: [
+                  Icon(opt.$2, size: 20, color: MobileSurface.secondary),
+                  const SizedBox(width: 10),
+                  Text(
+                    opt.$3,
+                    style: AppTypography.body
+                        .copyWith(color: MobileSurface.text),
+                  ),
+                ],
+              ),
+              onChanged: (mode) async {
+                if (mode != null) {
+                  await ref
+                      .read(themeModeProvider.notifier)
+                      .setMode(mode);
+                }
+              },
             ),
           ),
         ],
