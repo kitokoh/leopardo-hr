@@ -159,7 +159,7 @@ class FecExportTest extends TestCase
 
         $associative = [];
         foreach ($rows as $row) {
-            $associative[] = array_combine(self::FEC_COLUMNS, $row) ?: [];
+            $associative[] = array_map('strval', array_combine(self::FEC_COLUMNS, $row));
         }
 
         return $associative;

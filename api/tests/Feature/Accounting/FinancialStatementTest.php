@@ -12,6 +12,7 @@ use App\Modules\Accounting\Domain\Models\AccountingJournalEntry;
 use App\Modules\Accounting\Infrastructure\Services\ChartOfAccountsService;
 use App\Modules\Accounting\Infrastructure\Services\FinancialStatementService;
 use App\Modules\Accounting\Infrastructure\Services\JournalPostingService;
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -173,14 +174,12 @@ class FinancialStatementTest extends TestCase
 
         // 411 dans la section Créances de l'actif.
         $creances = $this->section($data, 'actif', 'Créances');
-        $this->assertIsArray($creances);
         $this->assertEquals(1190.0, $creances['total']);
         $this->assertSame('411', $creances['accounts'][0]['code']);
         $this->assertEquals(1190.0, $creances['accounts'][0]['balance']);
 
         // TVA collectée au passif (dettes tiers), résultat dans les capitaux.
         $dettes = $this->section($data, 'passif', 'Dettes fournisseurs/tiers');
-        $this->assertIsArray($dettes);
         $this->assertEquals(190.0, $dettes['total']);
         $this->assertSame('4457', $dettes['accounts'][0]['code']);
 
@@ -231,23 +230,30 @@ class FinancialStatementTest extends TestCase
         $this->assertEquals(540.0, $data['resultat']);
 
         // Regroupement exploitation / financier / exceptionnel.
-        $produitsSections = collect($data['produits']['sections'])->keyBy('section');
-        $this->assertEquals(900.0, $produitsSections['Produits d\'exploitation']['total']);
-        $this->assertEquals(10.0, $produitsSections['Produits financiers']['total']);
-        $this->assertEquals(0.0, $produitsSections['Produits exceptionnels']['total']);
+        /** @var list<array{section: string, accounts: list<array{code: string, label: string, amount: float}>, total: float}> $produitsRaw */
+        $produitsRaw = $data['produits']['sections'] ?? [];
+        $produitsSections = collect($produitsRaw)->keyBy('section');
+        $this->assertEquals(900.0, ($produitsSections->get('Produits d\'exploitation') ?? ['total' => 0.0])['total']);
+        $this->assertEquals(10.0, ($produitsSections->get('Produits financiers') ?? ['total' => 0.0])['total']);
+        $this->assertEquals(0.0, ($produitsSections->get('Produits exceptionnels') ?? ['total' => 0.0])['total']);
 
-        $chargesSections = collect($data['charges']['sections'])->keyBy('section');
-        $this->assertEquals(350.0, $chargesSections['Charges d\'exploitation']['total']);
-        $this->assertEquals(20.0, $chargesSections['Charges financières']['total']);
-        $this->assertEquals(0.0, $chargesSections['Charges exceptionnelles']['total']);
+        /** @var list<array{section: string, accounts: list<array{code: string, label: string, amount: float}>, total: float}> $chargesRaw */
+        $chargesRaw = $data['charges']['sections'] ?? [];
+        $chargesSections = collect($chargesRaw)->keyBy('section');
+        $this->assertEquals(350.0, ($chargesSections->get('Charges d\'exploitation') ?? ['total' => 0.0])['total']);
+        $this->assertEquals(20.0, ($chargesSections->get('Charges financières') ?? ['total' => 0.0])['total']);
+        $this->assertEquals(0.0, ($chargesSections->get('Charges exceptionnelles') ?? ['total' => 0.0])['total']);
 
         // Montants par compte (le compte hors plan 6599 garde son intitulé de journal).
-        $exploitation = $chargesSections['Charges d\'exploitation']['accounts'];
+        /** @var list<array{code: string, label: string, amount: float}> $exploitation */
+        $exploitation = ($chargesSections->get('Charges d\'exploitation') ?? ['accounts' => [], 'total' => 0.0, 'section' => ''])['accounts'];
         $byCode = collect($exploitation)->keyBy('code');
-        $this->assertEquals(300.0, $byCode['641']['amount']);
-        $this->assertEquals(50.0, $byCode['6599']['amount']);
-        $this->assertSame('Charges diverses (hors plan)', $byCode['6599']['label']);
-        $this->assertEquals(-100.0, collect($produitsSections['Produits d\'exploitation']['accounts'])->keyBy('code')['709']['amount']);
+        $this->assertEquals(300.0, ($byCode->get('641') ?? ['amount' => 0.0])['amount']);
+        $this->assertEquals(50.0, ($byCode->get('6599') ?? ['amount' => 0.0])['amount']);
+        $this->assertSame('Charges diverses (hors plan)', ($byCode->get('6599') ?? ['label' => ''])['label']);
+        /** @var list<array{code: string, label: string, amount: float}> $produitsExploitationAccounts */
+        $produitsExploitationAccounts = ($produitsSections->get('Produits d\'exploitation') ?? ['accounts' => [], 'total' => 0.0, 'section' => ''])['accounts'];
+        $this->assertEquals(-100.0, collect($produitsExploitationAccounts)->keyBy('code')->get('709', ['amount' => 0.0])['amount']);
 
         // Cohérence : le bilan de la même année reste équilibré.
         $sheet = $this->getJson('/api/v1/accounting/statements/balance-sheet?year=2026');
@@ -260,16 +266,19 @@ class FinancialStatementTest extends TestCase
         $this->assertTrue($sheetData['balanced']);
 
         // Sections : créances 411 → 1071, trésorerie 512 → 10, emprunts 164 → 20.
+        /** @var Collection<string, array{section: string, accounts: list<array{code: string, label: string, balance: float}>, total: float}> $actifBySection */
         $actifBySection = collect($this->sections($sheetData, 'actif'))->keyBy('section');
-        $this->assertEquals(1071.0, $actifBySection['Créances']['total']);
-        $this->assertEquals(10.0, $actifBySection['Trésorerie']['total']);
+        $this->assertEquals(1071.0, ($actifBySection->get('Créances') ?? ['total' => 0.0])['total']);
+        $this->assertEquals(10.0, ($actifBySection->get('Trésorerie') ?? ['total' => 0.0])['total']);
+        /** @var Collection<string, array{section: string, accounts: list<array{code: string, label: string, balance: float}>, total: float}> $passifBySection */
         $passifBySection = collect($this->sections($sheetData, 'passif'))->keyBy('section');
-        $this->assertEquals(471.0, $passifBySection['Dettes fournisseurs/tiers']['total']);
-        $this->assertEquals(20.0, $passifBySection['Emprunts']['total']);
+        $this->assertEquals(471.0, ($passifBySection->get('Dettes fournisseurs/tiers') ?? ['total' => 0.0])['total']);
+        $this->assertEquals(20.0, ($passifBySection->get('Emprunts') ?? ['total' => 0.0])['total']);
         // Le compte hors plan 1651 (classe 1) est reclassé en capitaux propres.
+        /** @var Collection<string, array{section: string, accounts: list<array{code: string, label: string, balance: float}>, total: float}> $capitauxBySection */
         $capitauxBySection = collect($this->sections($sheetData, 'capitaux_propres'))->keyBy('section');
-        $this->assertEquals(50.0, $capitauxBySection['Capitaux propres']['total']);
-        $this->assertEquals(540.0, $capitauxBySection['Résultat de l\'exercice']['total']);
+        $this->assertEquals(50.0, ($capitauxBySection->get('Capitaux propres') ?? ['total' => 0.0])['total']);
+        $this->assertEquals(540.0, ($capitauxBySection->get('Résultat de l\'exercice') ?? ['total' => 0.0])['total']);
     }
 
     // ── (c) Année sans écritures ────────────────────────────────────────────
@@ -294,8 +303,8 @@ class FinancialStatementTest extends TestCase
         // Les sections canoniques sont présentes, vides, avec total 0.
         $actif = collect($this->sections($data, 'actif'))->keyBy('section');
         $this->assertSame(['Immobilisations', 'Stocks', 'Créances', 'Trésorerie'], $actif->keys()->all());
-        $this->assertSame([], $actif['Créances']['accounts']);
-        $this->assertEquals(0.0, $actif['Immobilisations']['total']);
+        $this->assertSame([], ($actif->get('Créances') ?? ['accounts' => []])['accounts']);
+        $this->assertEquals(0.0, ($actif->get('Immobilisations') ?? ['total' => 0.0])['total']);
 
         $statement = $this->getJson('/api/v1/accounting/statements/income-statement?period=2026-08');
         $statement->assertOk();
@@ -416,7 +425,7 @@ class FinancialStatementTest extends TestCase
         $sections = $this->sections($data, $area);
         $found = null;
         foreach ($sections as $section) {
-            if (is_array($section) && ($section['section'] ?? null) === $sectionName) {
+            if ($section['section'] === $sectionName) {
                 $found = $section;
                 break;
             }

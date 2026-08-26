@@ -54,6 +54,8 @@ class BridgeGlobalsInjectionTest(unittest.TestCase):
         self.assertIn("window.__KIOSK_API_BASE = \"https://example.test/api/v1\"", html)
         self.assertIn("window.__KIOSK_DEVICE_CODE = \"KIOSK-TEST-001\"", html)
         self.assertIn("window.__KIOSK_TOKEN = \"token-test-123\"", html)
+        # #5619 — demoMode absent de la config de test → false injecté par défaut.
+        self.assertIn("window.__KIOSK_DEMO_MODE = false", html)
         # Injection placée dans le <head> (avant le body)
         self.assertLess(html.index("window.__KIOSK_"), html.index("</head>"))
 

@@ -1,6 +1,6 @@
 # AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-08-14
+Derniere mise a jour : 2026-08-26
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -984,3 +984,28 @@ Référence : issue Spec Kit #4359.
   `git ls-files | grep claim-marker` et retirer le fichier (`git rm`) le cas échéant.
 - **Purge** : marqueurs retirés de main et des branches actives le 2026-08-25
   (PR dédiée issue #5447).
+
+## 🗄️ Protocole migrations — OBLIGATOIRE avant de créer une migration (issue #5634)
+
+Deux collisions de préfixe le même jour (2026-08-24) ont bloqué toutes les PR. Règle :
+
+1. **AVANT de créer un fichier de migration**, vérifier l'unicité du préfixe `YYYY_MM_DD_0000NN` :
+   ```bash
+   ls api/database/migrations/ | grep 2026_08_26_000001 || echo "préfixe libre"
+   ```
+2. Nommer la migration avec la **référence d'issue dans le nom** :
+   `2026_08_26_000123_<issue>_<slug>.php` (ex. `2026_08_26_000123_5634_add_merge_quota_log.php`).
+3. La CI vérifie tout : `check-migration-basename-collisions.sh` (basename + issue-ref) et
+   `check-migration-prefixes.mjs` (préfixes inter-PR) — une PR qui viole le protocole est rouge.
+4. Ne jamais renommer une migration mergée (les fichiers `*.php` du schéma tenant sont figés).
+
+## 🔒 Discipline merge (issue #5634 — rétro pilotes J6)
+
+- **Quota merges quotidien** : le gate `merge-quota-guard.yml` compte les merges de main sur 24 h
+  et devient rouge au-delà de `vars.MERGE_DAILY_QUOTA` (défaut 25). Ralentir le rythme : les
+  merges en rafale (132 en 6 jours) génèrent des rebasages constants et du re-travail.
+- **main cassé = alerte immédiate** : ne pas empiler un merge sur un main rouge ; signaler et
+  corriger d'abord (`fix/main-green-backend` est le lot dédié).
+- **Ticket créé = ticket assigné** : pas de création d'issue orpheline.
+- **Ratio fix/feat** : suivi hebdo dans `plan-action2-weekly-report.sh` (section 1bis, alerte > 3,
+  cible <= 2.5).

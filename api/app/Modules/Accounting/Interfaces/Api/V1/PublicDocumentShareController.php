@@ -35,7 +35,7 @@ final class PublicDocumentShareController
             abort(404, 'DOCUMENT_SHARE_NOT_FOUND');
         }
 
-        $this->auditAccess($share, 'share.info');
+        $this->auditAccess($share, 'accounting.share.info');
 
         /** @var AccountingDocument $document */
         $document = $share->document;
@@ -62,7 +62,7 @@ final class PublicDocumentShareController
             abort(404, 'DOCUMENT_SHARE_NOT_FOUND');
         }
 
-        $this->auditAccess($share, 'share.download');
+        $this->auditAccess($share, 'accounting.share.download');
 
         /** @var AccountingDocument $document */
         $document = $share->document;
@@ -138,7 +138,7 @@ final class PublicDocumentShareController
      * `module` et `request_id` (corrélation) sont toujours renseignés.
      * user_id = null : accès non authentifié (token de partage = credential).
      *
-     * @param  string  $action  Sous-action sans préfixe module : 'share.info' | 'share.download'
+     * @param  string  $action  Action complète préfixée module : 'accounting.share.info' | 'accounting.share.download'
      */
     private function auditAccess(AccountingDocumentShare $share, string $action): void
     {

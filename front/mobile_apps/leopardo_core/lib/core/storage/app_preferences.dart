@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -14,6 +15,8 @@ class AppPreferences {
   static const String _edgeNodeIdKey = 'edge_node_id';
   static const String _edgeTokenKey = 'edge_token';
   static const String _edgeBaseUrlKey = 'edge_base_url';
+  // Issue #5624 — réglage thème in-app (clair / sombre / automatique)
+  static const String _themeModeKey = 'settings_theme_mode';
 
   static final Map<String, Object?> _memory = <String, Object?>{};
 
@@ -49,6 +52,32 @@ class AppPreferences {
   String get preferredLanguage =>
       (_read(_preferredLanguageKey, '') as String).trim();
   bool get isRtl => _read(_isRtlKey, false) as bool;
+
+  /// Issue #5624 — réglage thème in-app persisté dans Hive.
+  /// Valeurs : 'system' (défaut) | 'light' | 'dark'.
+  String get themeModeSetting =>
+      (_read(_themeModeKey, 'system') as String).trim();
+
+  /// Convertit la valeur stockée en [ThemeMode] Flutter.
+  ThemeMode get themeMode {
+    switch (themeModeSetting) {
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      default:
+        return ThemeMode.system;
+    }
+  }
+
+  Future<void> saveThemeMode(ThemeMode mode) async {
+    final value = switch (mode) {
+      ThemeMode.light => 'light',
+      ThemeMode.dark => 'dark',
+      _ => 'system',
+    };
+    await _write(_themeModeKey, value);
+  }
 
   /// Cloud-issued UUID for this device's paired Edge node (see issue #1287 /
   /// docs/edge-sync/ARCHITECTURE.md). Empty when the device has never been

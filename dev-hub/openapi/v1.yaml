@@ -9,7 +9,7 @@
 # To update: change api/openapi.yaml, then run:
 #   node dev-hub/tools/generate-openapi-sdk.mjs
 # CI (openapi-ci.yml) fails the build if this file drifts from the source.
-openapi: 3.0.3
+openapi: "3.0.3"
 info:
   title: Leopardo RH API
   version: 4.24.0

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\HR;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -24,19 +24,23 @@ class HrControllerTest extends TestCase
     use RefreshTenantDatabase;
 
     protected Company $company;
+
     protected Company $otherCompany;
+
     protected Employee $manager;
+
     protected Employee $employee;
+
     protected Employee $otherManager;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->company      = Company::factory()->create();
+        $this->company = Company::factory()->create();
         $this->otherCompany = Company::factory()->create();
-        $this->manager      = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
-        $this->employee     = Employee::factory()->create(['company_id' => $this->company->id]);
+        $this->manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        $this->employee = Employee::factory()->create(['company_id' => $this->company->id]);
         $this->otherManager = Employee::factory()->manager()->create(['company_id' => $this->otherCompany->id]);
     }
 
@@ -72,8 +76,8 @@ class HrControllerTest extends TestCase
 
         $response = $this->getJson('/api/v1/employees');
 
-        // Regular employees should be forbidden or see only themselves
-        $this->assertContains($response->status(), [200, 403]);
+        // #5585 : la liste des employés est réservée aux managers → 403 pour un employé lambda.
+        $response->assertForbidden();
     }
 
     public function test_manager_can_show_own_company_employee(): void
@@ -133,7 +137,8 @@ class HrControllerTest extends TestCase
 
         $response = $this->getJson('/api/v1/training');
 
-        $this->assertContains($response->status(), [200, 404], 'Unexpected status for training list');
+        // #5585 : le module Training n'existe plus (supprimé) → route absente → 404.
+        $response->assertNotFound();
     }
 
     public function test_unauthenticated_user_cannot_access_employees(): void
@@ -143,4 +148,3 @@ class HrControllerTest extends TestCase
         $response->assertUnauthorized();
     }
 }
-

@@ -111,6 +111,7 @@ class OrganigrammeTest extends TestCase
         // Policy DepartmentPolicy::view — isolation garantie).
         $response = $this->actingAs($managerA, 'sanctum')
             ->getJson("/api/v1/departments/{$departmentB->id}/hierarchy");
-        $this->assertContains($response->status(), [403, 404]);
+        // #5585 : département cross-tenant → 404 (isolation tenant, pas 403).
+        $response->assertNotFound();
     }
 }
