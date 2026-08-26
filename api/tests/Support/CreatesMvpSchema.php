@@ -390,7 +390,7 @@ trait CreatesMvpSchema
             $table->uuid('company_id')->index();
             $table->string('name', 100);
             $table->string('location_label', 120)->nullable();
-            $table->string('device_code', 40)->unique();
+            $table->string('device_code', 64)->unique();
             $table->string('sync_token_hash', 255)->nullable();
             $table->string('status', 20)->default('active');
             $table->string('biometric_mode', 30)->default('fingerprint');

@@ -442,7 +442,7 @@ CREATE TABLE shared_tenants.attendance_kiosks (
     company_id uuid NOT NULL,
     name varchar(100) NOT NULL,
     location_label varchar(120) NULL,
-    device_code varchar(40) NOT NULL,
+    device_code varchar(64) NOT NULL,
     sync_token_hash varchar(255) NULL,
     status varchar(20) NOT NULL DEFAULT 'active',
     biometric_mode varchar(30) NOT NULL DEFAULT 'fingerprint',
