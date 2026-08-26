@@ -89,6 +89,13 @@ final class WebhookEventRegistry
      */
     public function complete(string $source, string $eventId, int $code, ?string $body = null): void
     {
+        // Même garde de schéma partiel que begin() : sans la table (état
+        // d'infra de test après migrate:fresh), complete() est un no-op —
+        // jamais de SQLSTATE 42P01/25P02 sur les webhooks.
+        if (! Schema::hasTable('public.webhook_events')) {
+            return;
+        }
+
         WebhookEvent::query()
             ->where('source', $source)
             ->where('event_id', $eventId)
@@ -105,6 +112,11 @@ final class WebhookEventRegistry
      */
     public function release(string $source, string $eventId): void
     {
+        // Même garde de schéma partiel que begin() : no-op sans la table.
+        if (! Schema::hasTable('public.webhook_events')) {
+            return;
+        }
+
         WebhookEvent::query()
             ->where('source', $source)
             ->where('event_id', $eventId)
