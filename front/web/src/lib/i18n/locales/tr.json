@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-25T00:00:00Z",
+  "_updated_at": "2026-08-26T00:00:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -138,7 +138,8 @@
       "TR": "Türkiye",
       "US": "Amerika Birleşik Devletleri"
     },
-    "required": "Gerekli"
+    "required": "Gerekli",
+    "dismiss": "Kapat"
   },
   "modules": {
     "attendance": "Puantaj",
@@ -1510,7 +1511,11 @@
     "fallbackPollingTitle": "Yedek polling ile bildirimler (push kullanilamiyor)",
     "tenantOnly": "Kurumsal ozellik — musteri alanlarina ayrilmistir",
     "settings": "Ayarlar",
-    "team": "Ekip"
+    "team": "Ekip",
+    "home": "Ana Sayfa",
+    "attendance": "Devam",
+    "absences": "İzinler",
+    "approvals": "Onaylar"
   },
   "exports": {
     "reportEmployees": "Calisanlar",
@@ -1811,7 +1816,20 @@
   "contracts": {
     "list_subtitle": "Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API'sine bağlı.",
     "searchPlaceholder": "Çalışan veya sözleşme türü ara...",
-    "allStatuses": "Tüm durumlar"
+    "allStatuses": "Tüm durumlar",
+    "mobile_title": "Sözleşmem",
+    "back_tooltip": "Geri",
+    "empty_title": "Sözleşme yok",
+    "empty_description": "Sözleşmeniz yapılandırıldıktan sonra burada görünecek.",
+    "label_type": "Tür",
+    "label_start_date": "Başlangıç",
+    "label_end_date": "Bitiş",
+    "label_base_salary": "Temel maaş",
+    "loading": "Sözleşmeler yükleniyor...",
+    "status_active": "Aktif",
+    "status_expired": "Süresi dolmuş",
+    "status_draft": "Taslak",
+    "status_cdi": "Belirsiz süreli (CDI)"
   },
   "training": {
     "titlePlaceholder": "Başlık *",
@@ -2999,49 +3017,9 @@
     "completeError": "Etkinleştirme başarısız oldu. Tekrar deneyin.",
     "retry": "Yeniden dene",
     "loading": "Yükleniyor…",
-    "wizardStepsAria": "Aktivasyon sihirbazı adımları",
-    "wizardStepIndicator": "Adım {current} / {total}",
-    "wizardStep1Title": "Kimlik ve belge dili",
-    "wizardStep1Subtitle": "Belge dilini ve para birimini seçin — boş bırakılırsa para birimi şirket ülkesini izler.",
-    "wizardStep2Title": "KDV ve numaralandırma serileri",
-    "wizardStep2Subtitle": "Belge türüne göre KDV oranlarınızı ve numaralandırma öneklerini tanımlayın.",
-    "wizardStep3Title": "PDF şablonu ve yasal bilgiler",
-    "wizardStep3Subtitle": "Belge şablonunu, ödeme koşullarını ve yasal bilgileri özelleştirin.",
-    "wizardStep4Title": "Aktivasyonu tamamla",
-    "wizardStep4Subtitle": "Özeti inceleyin ve aktivasyonu başlatın: ayarlar, test kişisi ve örnek fatura.",
-    "wizardStep4Body": "Aktivasyon muhasebe ayarlarını, bir test kişisini ve örnek faturayı oluşturur. Tekrarlanabilir (mükerrersiz).",
-    "wizardBack": "Geri",
-    "wizardNext": "Devam",
-    "wizardFinish": "Muhasebeyi Etkinleştir",
-    "fieldDocumentLanguage": "Belge dili",
-    "fieldCurrency": "Para birimi",
-    "fieldCurrencyHint": "Boş: para birimi şirket ülkesinden türetilir.",
-    "fieldDefaultDerived": "Varsayılan (ülkeden türetilir)",
-    "fieldTvaRates": "KDV oranları",
-    "tvaRateLabel": "Oran etiketi",
-    "tvaRateLabelPlaceholder": "Ör. Standart KDV",
-    "tvaRateValue": "Oran (%)",
-    "tvaRateValuePlaceholder": "Ör. 19",
-    "addTvaRate": "Oran ekle",
-    "removeTvaRate": "Bu oranı kaldır",
-    "fieldNumberSeries": "Numaralandırma serileri",
-    "fieldNumberSeriesHint": "Belge türü başına önek (en fazla 20 karakter, alfasayısal + tire). Boş = varsayılan seri.",
-    "seriesPlaceholder": "Ör. FAT-",
-    "series_invoice": "Fatura",
-    "series_proforma": "Proforma fatura",
-    "series_quote": "Teklif",
-    "series_credit_note": "Alacak dekontu",
-    "series_delivery_note": "Teslimat notu",
-    "series_receipt": "Makbuz",
-    "fieldTemplateStyle": "PDF şablonu",
-    "fieldTemplateStylePlaceholder": "Ör. modern",
-    "fieldPaymentTerms": "Ödeme koşulları",
-    "fieldPaymentTermsPlaceholder": "Ör. 30 gün içinde ödeme",
-    "fieldLegalMentions": "Yasal bilgiler",
-    "fieldLegalMentionsPlaceholder": "Ör. kayıt no, sermaye, vergi no…",
-    "hubCtaTitle": "Muhasebeye Başlayın",
-    "hubCtaBody": "Modülü 4 adımda etkinleştirin: dil, KDV, PDF şablonu ve örnek fatura.",
-    "hubCtaButton": "Kurulum"
+    "bannerTitle": "Muhasebe modülünü etkinleştirin",
+    "bannerBody": "İlk faturalarınızı düzenleyebilmek için birkaç adım gereklidir.",
+    "bannerCta": "Etkinleştirmeyi başlat"
   },
   "accountingModule": {
     "homeTitle": "Muhasebe",
@@ -3248,5 +3226,57 @@
     "matchDone": "Satır mutabık kılındı.",
     "loading": "Yükleniyor…",
     "retry": "Yeniden dene"
+  },
+  "organigramme": {
+    "title": "Organizasyon Şeması",
+    "back_tooltip": "Geri",
+    "empty_title": "Organizasyon şeması yok",
+    "loading": "Organizasyon şeması yükleniyor..."
+  },
+  "vehicle_map": {
+    "title": "Araç Konumu",
+    "back_tooltip": "Geri",
+    "empty_title": "Araç yok",
+    "empty_description": "Atanan araçlarınız burada görünecek.",
+    "loading": "Araçlar yükleniyor...",
+    "last_update": "Son güncelleme: {time}",
+    "speed_kmh": "{speed} km/s"
+  },
+  "payrollValidated": "Onaylandı",
+  "payrollDocumentUnavailable": "Belge kullanılamıyor: {error}",
+  "payrollOvertimeHoursTeam": "Fazla mesai ({hours}s)",
+  "payrollOvertimeHoursItem": "+{hours}s fazla",
+  "platform_admin": {
+    "activation_note": "Platform Admin mobil uygulamasından doğrudan aktivasyon.",
+    "company_approved_note": "Leopardo Platform Admin mobil uygulamasından onaylandı",
+    "company_rejected_note": "Leopardo Platform Admin mobil uygulamasından reddedildi"
+  },
+  "edge_nodes": {
+    "title": "Edge Düğümleri",
+    "subtitle": "Yerinde bağlı siteler",
+    "refresh_tooltip": "Yenile",
+    "empty": "Kayıtlı Edge düğümü yok.",
+    "online": "Çevrimiçi",
+    "offline": "Çevrimdışı",
+    "section_label": "Düğümler",
+    "loading": "Düğümler yükleniyor",
+    "force_sync": "Senkronizasyonu zorla",
+    "sync_triggered": "Senkronizasyon tetiklendi.",
+    "last_sync": "Son sync: {date}",
+    "node_id": "ID: {id}",
+    "version_info": "v{version} — {count} çalışan"
+  },
+  "support_tickets": {
+    "title": "Müşteri desteği",
+    "subtitle": "Tenant biletleri",
+    "filter_all": "Tümü",
+    "filter_open": "Açık",
+    "filter_in_progress": "Devam ediyor",
+    "filter_resolved": "Çözüldü",
+    "filter_closed": "Kapatıldı",
+    "empty": "Bu filtre için bilet yok.",
+    "loading": "Biletler yükleniyor",
+    "reply_sent": "Yanıt gönderildi.",
+    "loading_ticket": "Bilet yükleniyor"
   }
 }
