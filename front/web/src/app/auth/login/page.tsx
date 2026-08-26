@@ -224,7 +224,23 @@ function LoginInner() {
         },
       });
 
-      const loginPayload = await loginResponse.json() as { data?: StoredAuthUser | { token?: string }; token?: string };
+      const loginPayload = await loginResponse.json() as {
+        data?: StoredAuthUser | { token?: string };
+        token?: string;
+        // Issue #5612 — 2FA challenge (backend #5436)
+        mfa_challenge?: boolean;
+        mfa_challenge_token?: string;
+      };
+
+      // Issue #5612 : si le backend exige un challenge TOTP, rediriger vers
+      // la page /auth/2fa/challenge avant d'appeler /auth/me (pas de session
+      // encore — le cookie n'est posé qu'après la vérification du code).
+      if (loginPayload.mfa_challenge === true && loginPayload.mfa_challenge_token) {
+        router.push(
+          `/auth/2fa/challenge?token=${encodeURIComponent(loginPayload.mfa_challenge_token)}`,
+        );
+        return;
+      }
 
       // Audit #1699 : le token vit dans le cookie httpOnly `leopardo_token`
       // posé par le route handler /api/v1/auth/login — il n'est jamais
