@@ -14,10 +14,10 @@
         "laravel/framework": "^12.60",
         "laravel/sanctum": "^4.3",
         "laravel/socialite": "^5.27",
-        "laravel/tinker": "^2.9",
-        "predis/predis": "^2.3",
+        "laravel/tinker": "^3.0",
+        "predis/predis": "^3.6",
         "sentry/sentry-laravel": "^4.0",
-        "dedoc/scramble": "^0.12.0",
+        "dedoc/scramble": "^0.13.42",
         "symfony/mailgun-mailer": "^8.1",
         "symfony/http-client": "^8.1"
     },
