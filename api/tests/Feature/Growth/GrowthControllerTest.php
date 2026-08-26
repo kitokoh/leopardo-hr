@@ -43,11 +43,26 @@ class GrowthControllerTest extends TestCase
     {
         parent::setUp();
         $this->setUpMvpSchema();
-        $this->company      = Company::factory()->create();
-        $this->otherCompany = Company::factory()->create();
-        $this->manager      = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
-        $this->employee     = Employee::factory()->create(['company_id' => $this->company->id]);
-        $this->otherManager = Employee::factory()->manager()->create(['company_id' => $this->otherCompany->id]);
+
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        $this->company = $company;
+
+        /** @var Company $otherCompany */
+        $otherCompany = Company::factory()->create();
+        $this->otherCompany = $otherCompany;
+
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        $this->manager = $manager;
+
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $this->company->id]);
+        $this->employee = $employee;
+
+        /** @var Employee $otherManager */
+        $otherManager = Employee::factory()->manager()->create(['company_id' => $this->otherCompany->id]);
+        $this->otherManager = $otherManager;
     }
 
     protected function tearDown(): void
