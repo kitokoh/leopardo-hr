@@ -51,7 +51,7 @@ Route::prefix('api/v1/attendance')
 
             // Préférence d'un employé (lecture manager)
             Route::get('/employees/{employeeId}/preference', [AttendanceModeController::class, 'employeePreference'])->whereNumber('employeeId');
-            // Note #5577 : le bloc day-closures était copié-collé ici — doublon supprimé.
+            // NOTE: le bloc day-closures copié-collé (#5577) a été supprimé ici.
         });
 
         // ── Config mode entreprise (modification — principal uniquement) ──────

@@ -51,21 +51,19 @@ return [
     ]),
 
     'allowed_origins_patterns' => [
-        // Issue #2333 / Fix #5582 : previews Cloudflare Pages du dashboard admin.
+        // Issue #2333 : previews Cloudflare Pages du dashboard admin.
+        // Chaque preview reçoit un sous-domaine de la forme
+        // `<hash-ou-branch>.leo-admin.pages.dev`.
         //
-        // Chaque preview deploy a son propre sous-domaine : <hash>.leo-admin.pages.dev
-        // (nom du projet Cloudflare Pages = "leo-admin", voir PILOTAGE.md).
+        // SÉCURITÉ (#5582) : le pattern précédent (`*.pages.dev`) était trop
+        // large — tout attaquant peut créer un projet Cloudflare Pages avec un
+        // nom arbitraire et obtenir un sous-domaine *.pages.dev valide.
+        // On restreint désormais au projet connu (`leo-admin`).
         //
-        // SÉCURITÉ : le pattern précédent (`([a-z0-9-]+\.)*pages\.dev`) autorisait
-        // n'importe quel projet pages.dev avec credentials=true — un attaquant pouvait
-        // créer `evil.pages.dev` et passer le CORS. Restreint au projet "leo-admin"
-        // uniquement (audit 2026-08-26, issue #5582).
-        //
-        // Pattern : https://<preview-hash>.leo-admin.pages.dev
-        // L'origine de production https://leo-admin.pages.dev est dans allowed_origins.
-        //
-        // ATTENTION : fruitcake/php-cors passe ces entrées directement à preg_match()
-        // — ce doit être une EXPRESSION RÉGULIÈRE COMPLÈTE, pas un glob.
+        // [a-z0-9][a-z0-9-]* : sous-domaine commençant par alphanumérique (tiret initial invalide DNS).
+        // ATTENTION : fruitcake/php-cors passe ces entrées directement à
+        // preg_match() — ce doit être une EXPRESSION RÉGULIÈRE COMPLÈTE,
+        // pas un glob. Un glob crashe en 500 (preg_match delimiter).
         '#^https://[a-z0-9][a-z0-9-]*\.leo-admin\.pages\.dev$#i',
     ],
 
