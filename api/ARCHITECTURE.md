@@ -166,7 +166,7 @@ _Issue #1413, complétant le suivi de la ligne ci-dessus._
 
 | Config | Portée | Niveau actuel | Statut CI | Cible |
 |---|---|---|---|---|
-| `phpstan.neon` | tout `app/` | `max` | non branché à un job CI dédié (voir `phpstan-modules`/`phpstan-strict` ci-dessous) | n/a |
+| `phpstan.neon` | `app/AI`, `app/Http/Middleware`, `routes` | `max` | **bloquant sur fichiers modifiés** (tests.yml `backend-quality`, via `phpstan.ci.neon`) — périmètre aligné sur le réel (#5590) | rester sur ce périmètre ; l'étendre à tout `app/` exigerait une baseline que la ratchet `check-phpstan-baseline-debt.sh` interdit d'augmenter |
 | `phpstan-modules.neon` | `app/Core`, `app/Modules`, `app/Shared` | `5` | **bloquant** (`architecture-check.yml`, job `phpstan-modules`) | rester à 5 pour l'instant ; réévaluer une montée à 6/7 une fois `phpstan-strict` stabilisé (voir ci-dessous) |
 | `phpstan-strict.neon` | `app/Core`, `app/Modules`, `app/Shared` | `8` | **bloquant sur delta uniquement** depuis #1413 (`phpstan-strict-baseline.neon`, 2950 erreurs pré-existantes gelées ; `continue-on-error` retiré du job `phpstan-strict`) | réduire progressivement la baseline module par module (voir répartition ci-dessous), jamais l'augmenter |
 

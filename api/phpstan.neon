@@ -1,3 +1,18 @@
+# PHPStan « max » — config alignée sur le périmètre RÉELLEMENT enforce en CI.
+#
+# #5590 (audit 2026-08-26) : la config déclarait `level: max` sur tout `app/`
+# + `routes` + `tests`, mais aucun job ne l'exécutait sur ce périmètre — la
+# CI (tests.yml, job backend-quality) ne lance `phpstan.neon` (via
+# `phpstan.ci.neon`) que sur les fichiers modifiés de `app/AI`,
+# `app/Http/Middleware` et `routes`. Le reste du backend est couvert par :
+#   - `phpstan-modules.neon` (niveau 5, bloquant) — app/Core|Modules|Shared
+#   - `phpstan-strict.neon`  (niveau 8, bloquant sur delta, baseline #1413)
+# La ratchet check-phpstan-baseline-debt.sh interdit d'étendre
+# `phpstan-baseline.neon` (8795 erreurs max sur le scope déclaré à l'audit) :
+# le niveau max ne peut donc pas devenir un gate plein-app sans régresser.
+#
+# → `paths` réduit au périmètre réellement enforce au niveau max en CI.
+#   Les chemins passés en argument CLI (gate tests.yml) priment sur `paths`.
 includes:
     - phpstan-baseline.neon
     - vendor/larastan/larastan/extension.neon
@@ -7,9 +22,9 @@ parameters:
         - phpstan-bootstrap.php
     level: max
     paths:
-        - app
+        - app/AI
+        - app/Http/Middleware
         - routes
-        - tests
     tmpDir: storage/phpstan
     excludePaths:
         - bootstrap/cache

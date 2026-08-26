@@ -222,8 +222,13 @@ jobs:
           coverage: none
 
       - name: Run Composer audit
+        # #5590 : le job audit existait (CodeQL + TruffleHog ne couvrent pas
+        # les dépendances PHP). composer audit échoue dès qu'une advisory
+        # existe (fail-on-any, strict par défaut) ; on ajoute le rapport des
+        # paquets abandonnés (non bloquant) pour la visibilité.
         working-directory: ./api
-        run: composer audit --locked --no-dev
+        run: |
+          composer audit --locked --no-dev --abandoned=report
 
   backend-quality:
     # This job may push an explicitly generated Pint formatting commit on
