@@ -187,7 +187,7 @@ class RouteCollisionGuardTest extends TestCase
     }
 
     /**
-     * @return list<string>  chemins requis par `require __DIR__.'/...'`
+     * @return list<string> chemins requis par `require __DIR__.'/...'`
      */
     private function extractRequires(string $line): array
     {
