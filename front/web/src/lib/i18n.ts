@@ -70,6 +70,45 @@ export type CopyTree = {
       googleNoAccount: string;
     };
   };
+  twoFactor: {
+    challengeTitle: string;
+    challengeSubtitle: string;
+    codeLabel: string;
+    codePlaceholder: string;
+    recoveryToggle: string;
+    recoveryCodeLabel: string;
+    recoveryCodePlaceholder: string;
+    rememberDevice: string;
+    submit: string;
+    submitting: string;
+    backToLogin: string;
+    missingToken: string;
+    invalidCode: string;
+    genericError: string;
+    settingsTitle: string;
+    settingsSubtitle: string;
+    statusActive: string;
+    statusInactive: string;
+    enable: string;
+    enableStepQr: string;
+    enableStepCode: string;
+    confirmCodeLabel: string;
+    confirmCodePlaceholder: string;
+    confirm: string;
+    confirming: string;
+    recoveryCodesTitle: string;
+    recoveryCodesBody: string;
+    recoveryCodesCopy: string;
+    recoveryCodesCopied: string;
+    recoveryCodesDone: string;
+    disableTitle: string;
+    disableCodeLabel: string;
+    disableCodePlaceholder: string;
+    disable: string;
+    disabling: string;
+    regenerateCodes: string;
+    regenerating: string;
+  };
   dashboard: {
     heading: string;
     employees: string;
@@ -605,6 +644,45 @@ const copy: Record<AppLocale, CopyTree> = {
         googleAuthFailed: 'Google a refusé la connexion. Veuillez réessayer.',
         googleNoAccount: 'Aucun compte Leopardo RH n’est associé à cet email Google. Demandez une invitation à votre administrateur.',
       },
+    },
+    twoFactor: {
+      challengeTitle: 'Double authentification requise',
+      challengeSubtitle: 'Votre compte est protégé par la double authentification. Saisissez le code à 6 chiffres de votre application d\'authentification, ou un code de récupération.',
+      codeLabel: 'Code à 6 chiffres',
+      codePlaceholder: '000000',
+      recoveryToggle: 'Utiliser un code de récupération',
+      recoveryCodeLabel: 'Code de récupération',
+      recoveryCodePlaceholder: 'XXXX-XXXX-XXXX',
+      rememberDevice: 'Se souvenir de cet appareil pendant 30 jours',
+      submit: 'Vérifier',
+      submitting: 'Vérification...',
+      backToLogin: 'Retour à la connexion',
+      missingToken: 'La session de vérification a expiré. Reconnectez-vous.',
+      invalidCode: 'Code invalide ou expiré. Réessayez.',
+      genericError: 'Une erreur est survenue lors de la vérification.',
+      settingsTitle: 'Sécurité — Double authentification',
+      settingsSubtitle: 'Protégez votre compte avec un code TOTP à chaque connexion.',
+      statusActive: 'Double authentification active',
+      statusInactive: 'Double authentification inactive',
+      enable: 'Activer',
+      enableStepQr: '1. Scannez ce QR code avec votre application (Google Authenticator, Authy, 1Password...)',
+      enableStepCode: '2. Saisissez le code à 6 chiffres affiché par l\'application pour confirmer',
+      confirmCodeLabel: 'Code de confirmation',
+      confirmCodePlaceholder: '000000',
+      confirm: 'Confirmer et activer',
+      confirming: 'Activation...',
+      recoveryCodesTitle: 'Codes de récupération',
+      recoveryCodesBody: 'Conservez ces codes dans un endroit sûr. Chaque code ne peut être utilisé qu\'une seule fois pour récupérer l\'accès à votre compte.',
+      recoveryCodesCopy: 'Copier les codes',
+      recoveryCodesCopied: 'Codes copiés !',
+      recoveryCodesDone: 'J\'ai noté mes codes',
+      disableTitle: 'Désactiver la double authentification',
+      disableCodeLabel: 'Code actuel pour confirmer',
+      disableCodePlaceholder: '000000',
+      disable: 'Désactiver',
+      disabling: 'Désactivation...',
+      regenerateCodes: 'Régénérer les codes de récupération',
+      regenerating: 'Régénération...',
     },
     dashboard: {
       heading: 'Tableau de bord',
@@ -1161,6 +1239,45 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNoAccount: 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
       },
     },
+    twoFactor: {
+      challengeTitle: 'مطلوب التحقق بخطوتين',
+      challengeSubtitle: 'حسابك محمي بالتحقق بخطوتين. أدخل الرمز المكوّن من 6 أرقام من تطبيق المصادقة، أو رمز الاسترداد.',
+      codeLabel: 'الرمز المكوّن من 6 أرقام',
+      codePlaceholder: '000000',
+      recoveryToggle: 'استخدام رمز استرداد بدلاً من ذلك',
+      recoveryCodeLabel: 'رمز الاسترداد',
+      recoveryCodePlaceholder: 'XXXX-XXXX-XXXX',
+      rememberDevice: 'تذكر هذا الجهاز لمدة 30 يوماً',
+      submit: 'تحقق',
+      submitting: 'جارٍ التحقق...',
+      backToLogin: 'العودة إلى تسجيل الدخول',
+      missingToken: 'انتهت جلسة التحقق. يرجى تسجيل الدخول مرة أخرى.',
+      invalidCode: 'رمز غير صالح أو منتهي الصلاحية. حاول مرة أخرى.',
+      genericError: 'حدث خطأ أثناء التحقق.',
+      settingsTitle: 'الأمان — التحقق بخطوتين',
+      settingsSubtitle: 'احمِ حسابك برمز TOTP عند كل تسجيل دخول.',
+      statusActive: 'التحقق بخطوتين مفعّل',
+      statusInactive: 'التحقق بخطوتين غير مفعّل',
+      enable: 'تفعيل',
+      enableStepQr: '1. امسح رمز QR هذا بتطبيق المصادقة (Google Authenticator أو Authy أو 1Password...)',
+      enableStepCode: '2. أدخل الرمز المكوّن من 6 أرقام الذي يعرضه التطبيق للتأكيد',
+      confirmCodeLabel: 'رمز التأكيد',
+      confirmCodePlaceholder: '000000',
+      confirm: 'تأكيد وتفعيل',
+      confirming: 'جارٍ التفعيل...',
+      recoveryCodesTitle: 'رموز الاسترداد',
+      recoveryCodesBody: 'احتفظ بهذه الرموز في مكان آمن. يمكن استخدام كل رمز مرة واحدة فقط لاستعادة الوصول إلى حسابك.',
+      recoveryCodesCopy: 'نسخ الرموز',
+      recoveryCodesCopied: 'تم نسخ الرموز!',
+      recoveryCodesDone: 'لقد حفظت رموزي',
+      disableTitle: 'تعطيل التحقق بخطوتين',
+      disableCodeLabel: 'الرمز الحالي للتأكيد',
+      disableCodePlaceholder: '000000',
+      disable: 'تعطيل',
+      disabling: 'جارٍ التعطيل...',
+      regenerateCodes: 'إعادة إنشاء رموز الاسترداد',
+      regenerating: 'جارٍ إعادة الإنشاء...',
+    },
     dashboard: {
       heading: 'لوحة التحكم',
       employees: 'الموظفون النشطون',
@@ -1716,6 +1833,45 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNoAccount: 'Bu Google e-postasiyla iliskili Leopardo RH hesabi yok. Yoneticinizden davet isteyin.',
       },
     },
+    twoFactor: {
+      challengeTitle: 'İki adımlı doğrulama gerekli',
+      challengeSubtitle: 'Hesabınız iki adımlı doğrulama ile korunuyor. Kimlik doğrulama uygulamanızdaki 6 haneli kodu veya bir kurtarma kodunu girin.',
+      codeLabel: '6 haneli kod',
+      codePlaceholder: '000000',
+      recoveryToggle: 'Bunun yerine kurtarma kodu kullan',
+      recoveryCodeLabel: 'Kurtarma kodu',
+      recoveryCodePlaceholder: 'XXXX-XXXX-XXXX',
+      rememberDevice: 'Bu cihazı 30 gün hatırla',
+      submit: 'Doğrula',
+      submitting: 'Doğrulanıyor...',
+      backToLogin: 'Girişe dön',
+      missingToken: 'Doğrulama oturumu sona erdi. Lütfen tekrar giriş yapın.',
+      invalidCode: 'Geçersiz veya süresi dolmuş kod. Lütfen tekrar deneyin.',
+      genericError: 'Doğrulama sırasında bir hata oluştu.',
+      settingsTitle: 'Güvenlik — İki adımlı doğrulama',
+      settingsSubtitle: 'Hesabınızı her girişte bir TOTP koduyla koruyun.',
+      statusActive: 'İki adımlı doğrulama etkin',
+      statusInactive: 'İki adımlı doğrulama etkin değil',
+      enable: 'Etkinleştir',
+      enableStepQr: '1. Bu QR kodunu kimlik doğrulama uygulamanızla tarayın (Google Authenticator, Authy, 1Password...)',
+      enableStepCode: '2. Onaylamak için uygulamanın gösterdiği 6 haneli kodu girin',
+      confirmCodeLabel: 'Onay kodu',
+      confirmCodePlaceholder: '000000',
+      confirm: 'Onayla ve etkinleştir',
+      confirming: 'Etkinleştiriliyor...',
+      recoveryCodesTitle: 'Kurtarma kodları',
+      recoveryCodesBody: 'Bu kodları güvenli bir yerde saklayın. Her kod, hesabınıza erişimi geri kazanmak için yalnızca bir kez kullanılabilir.',
+      recoveryCodesCopy: 'Kodları kopyala',
+      recoveryCodesCopied: 'Kodlar kopyalandı!',
+      recoveryCodesDone: 'Kodlarımı kaydettim',
+      disableTitle: 'İki adımlı doğrulamayı kapat',
+      disableCodeLabel: 'Onaylamak için mevcut kod',
+      disableCodePlaceholder: '000000',
+      disable: 'Kapat',
+      disabling: 'Kapatılıyor...',
+      regenerateCodes: 'Kurtarma kodlarını yeniden oluştur',
+      regenerating: 'Yeniden oluşturuluyor...',
+    },
     dashboard: {
       heading: 'Kontrol paneli',
       employees: 'Aktif calisanlar',
@@ -2270,6 +2426,45 @@ const copy: Record<AppLocale, CopyTree> = {
         googleAuthFailed: 'Google refused the sign-in. Please try again.',
         googleNoAccount: 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
       },
+    },
+    twoFactor: {
+      challengeTitle: 'Two-factor authentication required',
+      challengeSubtitle: 'Your account is protected by two-factor authentication. Enter the 6-digit code from your authenticator app, or a recovery code.',
+      codeLabel: '6-digit code',
+      codePlaceholder: '000000',
+      recoveryToggle: 'Use a recovery code instead',
+      recoveryCodeLabel: 'Recovery code',
+      recoveryCodePlaceholder: 'XXXX-XXXX-XXXX',
+      rememberDevice: 'Trust this device for 30 days',
+      submit: 'Verify',
+      submitting: 'Verifying...',
+      backToLogin: 'Back to sign in',
+      missingToken: 'The verification session has expired. Please sign in again.',
+      invalidCode: 'Invalid or expired code. Please try again.',
+      genericError: 'An error occurred during verification.',
+      settingsTitle: 'Security — Two-factor authentication',
+      settingsSubtitle: 'Protect your account with a TOTP code at every sign-in.',
+      statusActive: 'Two-factor authentication is active',
+      statusInactive: 'Two-factor authentication is inactive',
+      enable: 'Enable',
+      enableStepQr: '1. Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password...)',
+      enableStepCode: '2. Enter the 6-digit code shown by the app to confirm',
+      confirmCodeLabel: 'Confirmation code',
+      confirmCodePlaceholder: '000000',
+      confirm: 'Confirm and enable',
+      confirming: 'Enabling...',
+      recoveryCodesTitle: 'Recovery codes',
+      recoveryCodesBody: 'Keep these codes somewhere safe. Each code can be used only once to regain access to your account.',
+      recoveryCodesCopy: 'Copy codes',
+      recoveryCodesCopied: 'Codes copied!',
+      recoveryCodesDone: 'I have saved my codes',
+      disableTitle: 'Disable two-factor authentication',
+      disableCodeLabel: 'Current code to confirm',
+      disableCodePlaceholder: '000000',
+      disable: 'Disable',
+      disabling: 'Disabling...',
+      regenerateCodes: 'Regenerate recovery codes',
+      regenerating: 'Regenerating...',
     },
     dashboard: {
       heading: 'Dashboard',

@@ -224,12 +224,31 @@ function LoginInner() {
         },
       });
 
-      const loginPayload = await loginResponse.json() as { data?: StoredAuthUser | { token?: string }; token?: string };
+      const loginPayload = await loginResponse.json() as {
+        data?: StoredAuthUser | { token?: string };
+        token?: string;
+        mfa_challenge?: boolean;
+        mfa_challenge_token?: string;
+        mfa_challenge_expires_in?: number;
+      };
 
       // Audit #1699 : le token vit dans le cookie httpOnly `leopardo_token`
       // posé par le route handler /api/v1/auth/login — il n'est jamais
       // renvoyé au navigateur et ne doit pas être stocké en localStorage.
       void loginPayload;
+
+      // Issue #5612 : 2FA exigée — le backend répond 202 avec un challenge
+      // token à usage unique. On le conserve en sessionStorage (jeton court,
+      // non réutilisable, PAS le token de session) et on redirige vers la
+      // page de challenge TOTP / code de récupération.
+      if (loginPayload?.mfa_challenge === true && typeof loginPayload.mfa_challenge_token === 'string') {
+        sessionStorage.setItem('mfa_challenge_token', loginPayload.mfa_challenge_token);
+        if (typeof loginPayload.mfa_challenge_expires_in === 'number') {
+          sessionStorage.setItem('mfa_challenge_expires_in', String(loginPayload.mfa_challenge_expires_in));
+        }
+        router.push('/auth/2fa/challenge');
+        return;
+      }
 
       const meResponse = await apiFetch('/auth/me');
       const mePayload = await meResponse.json() as { data?: StoredAuthUser };
