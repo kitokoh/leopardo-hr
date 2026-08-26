@@ -98,6 +98,8 @@ export type CopyTree = {
     recent_activity: string;
     noNotifications: string;
     managePreferences: string;
+    /** #R8 — lien de reprise d'onboarding dans la sidebar */
+    resumeOnboarding: string;
   };
   passwordReset: {
     title: string;
@@ -166,6 +168,12 @@ export type CopyTree = {
     qrHint: string;
     qrError: string;
     qrLoading: string;
+    /** #R5 — feedback file d'attente pour invite_manager */
+    inviteManagerHint: string;
+    /** #R10 — estimation du temps par étape (template : {n} = minutes) */
+    estimatedMinutes: string;
+    /** #R13 — aide CSV pour first_employee */
+    csvColumnsHint: string;
     steps: Record<string, { title: string; desc: string }>;
   };
   absences: {
@@ -639,6 +647,7 @@ const copy: Record<AppLocale, CopyTree> = {
       recent_activity: 'Activité récente',
       noNotifications: 'Aucune notification récente.',
       managePreferences: 'Gérer mes préférences',
+      resumeOnboarding: '▶ Reprendre la configuration',
     },
     passwordReset: {
       title: 'Mot de passe oublié',
@@ -707,30 +716,53 @@ const copy: Record<AppLocale, CopyTree> = {
       qrHint: "Scannez ce QR avec l'app mobile Leopardo pour rejoindre l'entreprise.",
       qrError: 'Impossible de charger le QR.',
       qrLoading: 'Chargement du QR...',
+      // #R5 — feedback queue pour l'étape invite_manager.
+      inviteManagerHint: "Un email d'invitation est envoyé en file d'attente. Si votre invité ne reçoit rien sous 5 min, vérifiez que les workers de queue sont actifs (Render).",
+      // #R10 — estimation du temps par étape.
+      estimatedMinutes: '~{n} min',
+      // #R13 — aide contextuelle CSV pour first_employee.
+      csvColumnsHint: "Colonnes CSV requises : prénom, nom, email, salaire_base. Exportez depuis Excel en CSV UTF-8.",
+      // #R1 — clés alignées sur DEFAULT_STEPS (SeedDefaultSteps.php), 10 étapes.
       steps: {
-        add_employees: {
-          title: 'Ajoutez vos équipes',
-          desc: 'Créez ou importez vos employés (CSV) pour commencer à pointer.',
+        company_info: {
+          title: 'Informations entreprise',
+          desc: 'Renseignez le nom, pays, devise et fuseau horaire de votre société.',
         },
-        configure_payroll: {
-          title: 'Configurez la paie',
-          desc: 'Renseignez la structure salariale et les paramètres de paie de votre entreprise.',
+        first_department: {
+          title: 'Premier département',
+          desc: 'Créez votre premier département (ex. Production, RH).',
         },
-        setup_schedules: {
-          title: 'Définissez les horaires',
+        first_employee: {
+          title: 'Premier employé',
+          desc: 'Ajoutez vos employés. Import CSV recommandé pour plus de 3 personnes.',
+        },
+        first_attendance: {
+          title: 'Premier pointage',
+          desc: "Effectuez un premier pointage depuis l'app mobile ou le kiosque.",
+        },
+        invite_manager: {
+          title: 'Inviter un gestionnaire',
+          desc: 'Invitez un collègue comme co-gestionnaire (optionnel).',
+        },
+        configure_schedules: {
+          title: 'Configurer les horaires',
           desc: 'Créez vos plannings et règles de présence.',
         },
-        setup_geofence: {
-          title: 'Configurez la géolocalisation',
+        first_report: {
+          title: 'Premier rapport',
+          desc: 'Générez votre premier rapport mensuel de présences (optionnel).',
+        },
+        configure_payroll: {
+          title: 'Configurer la paie',
+          desc: 'Renseignez la structure salariale et les paramètres de paie.',
+        },
+        install_kiosk: {
+          title: 'Installer un kiosque',
+          desc: 'Connectez votre borne ZKTeco pour le pointage sur site (optionnel).',
+        },
+        activate_geofence: {
+          title: 'Activer la géolocalisation',
           desc: 'Délimitez les zones de pointage autorisées (optionnel).',
-        },
-        setup_kiosk: {
-          title: 'Activez le kiosque biométrique',
-          desc: 'Branchez votre kiosque ZKTeco pour le pointage sur site (optionnel).',
-        },
-        first_checkin: {
-          title: 'Premier pointage',
-          desc: "Effectuez un premier pointage de test pour valider le dispositif.",
         },
       },
     },
@@ -1199,6 +1231,7 @@ const copy: Record<AppLocale, CopyTree> = {
       recent_activity: 'النشاط الأخير',
       noNotifications: 'لا توجد إشعارات حديثة.',
       managePreferences: 'إدارة تفضيلاتي',
+      resumeOnboarding: '▶ استئناف الإعداد',
     },
     passwordReset: {
       title: 'نسيت كلمة المرور؟',
@@ -1267,30 +1300,49 @@ const copy: Record<AppLocale, CopyTree> = {
       qrHint: 'امسح رمز QR هذا بتطبيق Leopardo للجوال للانضمام إلى الشركة.',
       qrError: 'تعذر تحميل رمز QR.',
       qrLoading: 'جارٍ تحميل رمز QR...',
+      inviteManagerHint: 'سيتم إرسال بريد الدعوة عبر قائمة الانتظار. إذا لم يصل الإشعار خلال 5 دقائق، تأكد من تشغيل عمال قائمة الانتظار (Render).',
+      estimatedMinutes: '~{n} دقيقة',
+      csvColumnsHint: 'أعمدة CSV المطلوبة: الاسم الأول، اسم العائلة، البريد الإلكتروني، الراتب الأساسي. صدّر من Excel بتنسيق CSV UTF-8.',
       steps: {
-        add_employees: {
-          title: 'أضف فرقك',
-          desc: 'أنشئ موظفيك أو استوردهم (CSV) لبدء تسجيل الحضور.',
+        company_info: {
+          title: 'معلومات الشركة',
+          desc: 'أدخل الاسم والبلد والعملة والمنطقة الزمنية لشركتك.',
         },
-        configure_payroll: {
-          title: 'اضبط إعدادات الرواتب',
-          desc: 'أدخل هيكل الرواتب وإعدادات الدفع لشركتك.',
+        first_department: {
+          title: 'أول قسم',
+          desc: 'أنشئ قسمك الأول (مثل: الإنتاج، الموارد البشرية).',
         },
-        setup_schedules: {
-          title: 'حدد الجداول الزمنية',
+        first_employee: {
+          title: 'أول موظف',
+          desc: 'أضف موظفيك. يُنصح باستيراد CSV لأكثر من 3 أشخاص.',
+        },
+        first_attendance: {
+          title: 'أول تسجيل حضور',
+          desc: 'قم بتسجيل حضور من التطبيق المحمول أو الكشك.',
+        },
+        invite_manager: {
+          title: 'دعوة مدير',
+          desc: 'ادعُ زميلاً كمدير مشارك (اختياري).',
+        },
+        configure_schedules: {
+          title: 'ضبط الجداول الزمنية',
           desc: 'أنشئ جداولك وقواعد الحضور.',
         },
-        setup_geofence: {
-          title: 'اضبط تحديد المواقع',
-          desc: 'حدد مناطق تسجيل الحضور المسموحة (اختياري).',
+        first_report: {
+          title: 'أول تقرير',
+          desc: 'أنشئ أول تقرير حضور شهري (اختياري).',
         },
-        setup_kiosk: {
-          title: 'فعّل كشك القياسات الحيوية',
+        configure_payroll: {
+          title: 'ضبط الرواتب',
+          desc: 'أدخل هيكل الرواتب وإعدادات الدفع لشركتك.',
+        },
+        install_kiosk: {
+          title: 'تركيب الكشك',
           desc: 'اربط كشك ZKTeco لتسجيل الحضور في الموقع (اختياري).',
         },
-        first_checkin: {
-          title: 'أول تسجيل حضور',
-          desc: 'قم بتسجيل حضور تجريبي للتحقق من الإعداد.',
+        activate_geofence: {
+          title: 'تفعيل الحدود الجغرافية',
+          desc: 'حدد مناطق تسجيل الحضور المسموحة (اختياري).',
         },
       },
     },
@@ -1759,6 +1811,7 @@ const copy: Record<AppLocale, CopyTree> = {
       recent_activity: 'Son etkinlik',
       noNotifications: 'Yeni bildirim yok.',
       managePreferences: 'Tercihlerimi yönet',
+      resumeOnboarding: '▶ Yapılandırmaya devam et',
     },
     passwordReset: {
       title: 'Şifrenizi mi unuttunuz?',
@@ -1827,30 +1880,49 @@ const copy: Record<AppLocale, CopyTree> = {
       qrHint: "Şirkete katılmak için bu QR kodunu Leopardo mobil uygulamasıyla tarayın.",
       qrError: 'QR kodu yüklenemedi.',
       qrLoading: 'QR kodu yükleniyor...',
+      inviteManagerHint: 'Davet e-postası kuyruk aracılığıyla gönderilecek. 5 dakika içinde gelmezse Render üzerindeki kuyruk işçilerinin çalıştığından emin olun.',
+      estimatedMinutes: '~{n} dak',
+      csvColumnsHint: 'Gerekli CSV sütunları: ad, soyad, e-posta, temel_maaş. Excel\'den CSV UTF-8 olarak dışa aktarın.',
       steps: {
-        add_employees: {
-          title: 'Ekiplerinizi ekleyin',
-          desc: 'Puantaja başlamak için çalışanlarınızı oluşturun veya içe aktarın (CSV).',
+        company_info: {
+          title: 'Şirket bilgileri',
+          desc: 'Şirketinizin adını, ülkesini, para birimini ve saat dilimini girin.',
         },
-        configure_payroll: {
-          title: 'Maaş yapısını kurun',
-          desc: 'Maaş yapınızı ve bordro ayarlarınızı doldurun.',
+        first_department: {
+          title: 'İlk departman',
+          desc: 'İlk departmanınızı oluşturun (örn. Üretim, İK).',
         },
-        setup_schedules: {
-          title: 'Çalışma saatlerini tanımlayın',
+        first_employee: {
+          title: 'İlk çalışan',
+          desc: 'Çalışanlarınızı ekleyin. 3\'ten fazlası için CSV içe aktarma önerilir.',
+        },
+        first_attendance: {
+          title: 'İlk giriş',
+          desc: 'Mobil uygulama veya kiosktan ilk girişi yapın.',
+        },
+        invite_manager: {
+          title: 'Yönetici davet et',
+          desc: 'Bir meslektaşı ortak yönetici olarak davet edin (isteğe bağlı).',
+        },
+        configure_schedules: {
+          title: 'Çalışma saatlerini kurun',
           desc: 'Programlarınızı ve devam kurallarınızı oluşturun.',
         },
-        setup_geofence: {
-          title: 'Coğrafi sınırları kurun',
-          desc: 'İzin verilen giriş alanlarını belirleyin (isteğe bağlı).',
+        first_report: {
+          title: 'İlk rapor',
+          desc: 'İlk aylık devam raporunuzu oluşturun (isteğe bağlı).',
         },
-        setup_kiosk: {
-          title: 'Biyometrik kiosku etkinleştirin',
+        configure_payroll: {
+          title: 'Bordroyu kurun',
+          desc: 'Maaş yapınızı ve bordro ayarlarınızı doldurun.',
+        },
+        install_kiosk: {
+          title: 'Kiosk kur',
           desc: 'Sahada giriş için ZKTeco kioskunuzu bağlayın (isteğe bağlı).',
         },
-        first_checkin: {
-          title: 'İlk giriş',
-          desc: 'Kurulumu doğrulamak için bir test girişi yapın.',
+        activate_geofence: {
+          title: 'Coğrafi sınırları etkinleştir',
+          desc: 'İzin verilen giriş alanlarını belirleyin (isteğe bağlı).',
         },
       },
     },
@@ -2319,6 +2391,7 @@ const copy: Record<AppLocale, CopyTree> = {
       recent_activity: 'Recent activity',
       noNotifications: 'No recent notifications.',
       managePreferences: 'Manage my preferences',
+      resumeOnboarding: '▶ Resume setup',
     },
     passwordReset: {
       title: 'Forgot your password?',
@@ -2387,30 +2460,49 @@ const copy: Record<AppLocale, CopyTree> = {
       qrHint: "Scan this QR code with the Leopardo mobile app to join the company.",
       qrError: 'Unable to load the QR code.',
       qrLoading: 'Loading QR code...',
+      inviteManagerHint: 'An invitation email will be sent via the job queue. If it does not arrive within 5 minutes, make sure the queue workers are running on Render.',
+      estimatedMinutes: '~{n} min',
+      csvColumnsHint: 'Required CSV columns: first_name, last_name, email, base_salary. Export from Excel as CSV UTF-8.',
       steps: {
-        add_employees: {
-          title: 'Add your teams',
-          desc: 'Create or import your employees (CSV) to start clocking in.',
+        company_info: {
+          title: 'Company information',
+          desc: 'Enter your company name, country, currency and time zone.',
+        },
+        first_department: {
+          title: 'First department',
+          desc: 'Create your first department (e.g. Production, HR).',
+        },
+        first_employee: {
+          title: 'First employee',
+          desc: 'Add your employees. CSV import recommended for more than 3 people.',
+        },
+        first_attendance: {
+          title: 'First check-in',
+          desc: 'Run a check-in from the mobile app or kiosk.',
+        },
+        invite_manager: {
+          title: 'Invite a manager',
+          desc: 'Invite a colleague as co-manager (optional).',
+        },
+        configure_schedules: {
+          title: 'Configure schedules',
+          desc: 'Create your schedules and attendance rules.',
+        },
+        first_report: {
+          title: 'First report',
+          desc: 'Generate your first monthly attendance report (optional).',
         },
         configure_payroll: {
           title: 'Set up payroll',
           desc: 'Fill in your salary structure and payroll settings.',
         },
-        setup_schedules: {
-          title: 'Define schedules',
-          desc: 'Create your schedules and attendance rules.',
-        },
-        setup_geofence: {
-          title: 'Set up geolocation',
-          desc: 'Define authorized check-in areas (optional).',
-        },
-        setup_kiosk: {
-          title: 'Enable the biometric kiosk',
+        install_kiosk: {
+          title: 'Install a kiosk',
           desc: 'Connect your ZKTeco kiosk for on-site clock-in (optional).',
         },
-        first_checkin: {
-          title: 'First check-in',
-          desc: 'Run a test check-in to validate the setup.',
+        activate_geofence: {
+          title: 'Activate geolocation',
+          desc: 'Define authorized check-in areas (optional).',
         },
       },
     },

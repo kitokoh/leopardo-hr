@@ -28,19 +28,24 @@ use Illuminate\Support\Facades\DB;
 final class SeedDefaultSteps
 {
     /**
-     * @var array<int, array{key: string, title: string, order: int, required: bool}>
+     * #R9 — titres avec accentuation correcte (les anciens étaient sans accent car
+     * écrits en ASCII pur, ce qui dégradait l'expérience pour les locales non-FR).
+     * #R10 backend — `estimated_minutes` dans metadata (sourcé ONBOARDING_PILOTE.md)
+     * : exposé dans OnboardingStepResource pour le frontend et les intégrations.
+     *
+     * @var array<int, array{key: string, title: string, order: int, required: bool, estimated_minutes: int}>
      */
     private const DEFAULT_STEPS = [
-        ['key' => 'company_info',        'title' => 'Renseigner les informations entreprise', 'order' => 1, 'required' => true],
-        ['key' => 'first_department',    'title' => 'Creer le premier departement',            'order' => 2, 'required' => true],
-        ['key' => 'first_employee',      'title' => 'Ajouter le premier employe',              'order' => 3, 'required' => true],
-        ['key' => 'first_attendance',    'title' => 'Effectuer le premier pointage',           'order' => 4, 'required' => true],
-        ['key' => 'invite_manager',      'title' => 'Inviter un manager',                      'order' => 5, 'required' => false],
-        ['key' => 'configure_schedules', 'title' => 'Configurer les horaires',                 'order' => 6, 'required' => true],
-        ['key' => 'first_report',        'title' => 'Generer le premier rapport mensuel',      'order' => 7, 'required' => false],
-        ['key' => 'configure_payroll',   'title' => 'Configurer la paie',                      'order' => 8, 'required' => false],
-        ['key' => 'install_kiosk',       'title' => 'Installer un kiosk',                      'order' => 9, 'required' => false],
-        ['key' => 'activate_geofence',   'title' => 'Activer le geofence',                     'order' => 10, 'required' => false],
+        ['key' => 'company_info',        'title' => 'Renseigner les informations entreprise', 'order' => 1,  'required' => true,  'estimated_minutes' => 3],
+        ['key' => 'first_department',    'title' => 'Créer le premier département',            'order' => 2,  'required' => true,  'estimated_minutes' => 2],
+        ['key' => 'first_employee',      'title' => 'Ajouter le premier employé',              'order' => 3,  'required' => true,  'estimated_minutes' => 6],
+        ['key' => 'first_attendance',    'title' => 'Effectuer le premier pointage',           'order' => 4,  'required' => true,  'estimated_minutes' => 3],
+        ['key' => 'invite_manager',      'title' => 'Inviter un gestionnaire',                 'order' => 5,  'required' => false, 'estimated_minutes' => 3],
+        ['key' => 'configure_schedules', 'title' => 'Configurer les horaires',                 'order' => 6,  'required' => true,  'estimated_minutes' => 3],
+        ['key' => 'first_report',        'title' => 'Générer le premier rapport mensuel',      'order' => 7,  'required' => false, 'estimated_minutes' => 2],
+        ['key' => 'configure_payroll',   'title' => 'Configurer la paie',                      'order' => 8,  'required' => false, 'estimated_minutes' => 4],
+        ['key' => 'install_kiosk',       'title' => 'Installer un kiosque',                    'order' => 9,  'required' => false, 'estimated_minutes' => 5],
+        ['key' => 'activate_geofence',   'title' => 'Activer le géofence',                     'order' => 10, 'required' => false, 'estimated_minutes' => 2],
     ];
 
     public function execute(string $companyId): void
@@ -57,11 +62,14 @@ final class SeedDefaultSteps
                     // chaque étape est insérée avec step_key/title NULL.
                     OnboardingStep::create([
                         'company_id' => $companyId,
-                        'step_key' => $step['key'],
-                        'title' => $step['title'],
-                        'order' => $step['order'],
-                        'required' => $step['required'],
-                        'status' => 'pending',
+                        'step_key'   => $step['key'],
+                        'title'      => $step['title'],
+                        'order'      => $step['order'],
+                        'required'   => $step['required'],
+                        'status'     => 'pending',
+                        // #R10 backend — stockage de l'estimation de durée pour
+                        // le frontend et les intégrations OpenAPI.
+                        'metadata'   => ['estimated_minutes' => $step['estimated_minutes']],
                     ]);
                 }
             }
