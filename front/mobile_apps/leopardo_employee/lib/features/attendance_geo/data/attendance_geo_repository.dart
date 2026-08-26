@@ -39,10 +39,8 @@ class AttendanceGeoRepository {
     required double longitude,
     required int accuracy,
   }) async {
-    assert(
-      eventType == 'zone_enter' || eventType == 'zone_exit',
-      'eventType doit être "zone_enter" ou "zone_exit"',
-    );
+    // dev: eventType must be zone_enter|zone_exit (#5510)
+    assert(eventType == 'zone_enter' || eventType == 'zone_exit');
 
     // RTMX (#5407) : une clé d'idempotence par événement géo — un rejeu
     // réseau (timeout après commit serveur) ne crée pas de doublon (le

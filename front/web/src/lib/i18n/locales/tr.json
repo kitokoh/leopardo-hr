@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-26T00:00:00Z",
+  "_updated_at": "2026-08-25T00:00:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -3226,6 +3226,35 @@
     "matchDone": "Satır mutabık kılındı.",
     "loading": "Yükleniyor…",
     "retry": "Yeniden dene"
+  },
+  "personal_onboarding": {
+    "status_title": "Kişisel durumum",
+    "status_subtitle": "Mevcut tüm statülerinizi seçin. Birden fazla seçebilirsiniz.",
+    "status_save": "Kaydet",
+    "status_student": "Öğrenci",
+    "status_employee": "Çalışan",
+    "status_entrepreneur": "Girişimci",
+    "status_seeking": "İş arıyor",
+    "status_saved": "Statüler güncellendi.",
+    "status_error": "Hata: statüler kaydedilemedi.",
+    "search_title": "Bir şirkete katıl",
+    "search_subtitle": "Başvurmak için bir şirket arayın.",
+    "search_hint": "Şirket adı...",
+    "search_empty": "« {query} » için şirket bulunamadı.",
+    "search_min_chars": "En az 2 karakter girin.",
+    "request_title": "Entegrasyon talebi",
+    "request_company": "Hedef şirket",
+    "request_message_label": "Yöneticiye mesaj (isteğe bağlı)",
+    "request_message_hint": "Kendinizi kısaca tanıtın...",
+    "request_send": "Talep gönder",
+    "request_sent": "{company} şirketine talep gönderildi.",
+    "request_error": "Hata: {error}",
+    "request_already_pending": "Bu şirket için zaten bekleyen bir talebiniz var.",
+    "requests_title": "Entegrasyon taleplerim",
+    "requests_empty": "Bekleyen talep yok.",
+    "status_pending": "Beklemede",
+    "status_approved": "Kabul edildi",
+    "status_rejected": "Reddedildi"
   },
   "organigramme": {
     "title": "Organizasyon Şeması",
