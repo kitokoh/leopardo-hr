@@ -237,6 +237,7 @@ class WebhookIdempotenceTest extends TestCase
     public function test_email_bounce_replayed_payload_records_single_audit_event(): void
     {
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'bounce-idem@example.com',
@@ -244,11 +245,11 @@ class WebhookIdempotenceTest extends TestCase
 
         $this->app->instance(
             EmployeeEmailLookupService::class,
-            new class ($employee)
+            new class ($employee) extends EmployeeEmailLookupService
             {
                 public function __construct(private readonly Employee $employee) {}
 
-                public function resolve(string $email): ?Employee
+                public function resolve(string $email): Employee
                 {
                     return $this->employee;
                 }
