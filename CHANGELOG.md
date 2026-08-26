@@ -21,6 +21,10 @@
 - Valeurs : fallbacks français du code conservés comme référence `fr`, traductions `en/tr/ar` ajoutées ; placeholders `{count}`/`{current}` préservés.
 - Sync `shared/i18n` : checksums `versions.json` + locales `front/web` régénérés (validation + sync CI verts localement).
 - Vérifié : `validate.js` OK ×2, `sync-web` OK, eslint 0 erreur, build Vite OK, **0 clé manquante** restante.
+### Admin-dashboard — responsive < 768px : sidebar, tableaux, tablette (#5632)
+- Sidebar en overlay sous `md` (768px) : hamburger mobile, cache hors-écran, ouverture en overlay avec backdrop ; **statique dès 768px** (tablette) au lieu de 1024px (`lg` → `md` dans DashboardLayout/Sidebar/Header, contenu `md:pl-64`).
+- Tableaux : `UserTable` (`overflow-hidden` → `overflow-x-auto`), `EdgeNodesView` (wrapper ajouté), `GrowthDashboardView` (×2) — scroll horizontal dans la carte, plus de débordement de page à 375px.
+- Vérifié : build Vite OK, eslint 0 erreur, rendu navigateur à 375px (table scrollable 782px, sidebar overlay) et 800px (sidebar statique 256px).
 
 
 - **docs(process): gouvernance dev — protocole migrations, quota merges quotidien, ratio fix/feat (Closes #5634).** Rétro pilotes J6 (ratio fix/feat 5.24 vs cible 2.5) : (1) protocole migrations documenté dans AGENTS.md (vérification de préfixe AVANT création + issue-ref dans le nom — les gardes check-migration-basename-collisions.sh / check-migration-prefixes.mjs sont déjà câblées en CI) ; (2) nouveau gate `merge-quota-guard.yml` — quota de merges quotidiens sur main piloté par `vars.MERGE_DAILY_QUOTA` (défaut 25, signal rouge au-delà) ; (3) `BRANCH_PROTECTION_REQUIRED.md` actualisé : état réel vérifié (enforce_admins=false sur main, liste des checks requis réelle) + recommandation de lactiver une fois main vert ; (4) KPI ratio fix/feat ajouté au rapport hebdo `plan-action2-weekly-report.sh` (section 1bis, alerte > 3).

@@ -49,7 +49,8 @@
       </div>
 
       <div v-else class="overflow-x-auto">
-      <table class="w-full text-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
         <thead>
           <tr class="glass-bg dark:bg-slate-800/50 text-left text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
             <th class="px-4 py-3 font-medium">{{ t('edge.colNode', 'Node') }}</th>
@@ -138,7 +139,8 @@
             </td>
           </tr>
         </tbody>
-      </table>
+        </table>
+      </div>
       </div>
     </div>
 
