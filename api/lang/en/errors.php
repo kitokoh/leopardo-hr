@@ -274,12 +274,9 @@ return [
     'LETTERING_ALREADY_USED' => 'One or more entries are already lettered with another code.',
     'LETTERING_UNBALANCED' => 'Lettering must be balanced: total debits must equal total credits.',
     'ALREADY_SEEDED' => 'Demo data has already been seeded for this company.',
-<<<<<<< HEAD
     'EMAIL_NOT_VERIFIED' => 'This Google email has not been verified by its provider. Use an account with a verified email.',
-=======
     // #5540 — Onboarding multi-statuts
     'MANAGER_ONLY_ACTION' => 'This action is reserved for managers.',
     'INTEGRATION_REQUEST_ALREADY_PENDING' => 'You already have a pending request for this company.',
     'INTEGRATION_REQUEST_NOT_FOUND' => 'Integration request not found.',
->>>>>>> c37d50563 (feat(onboarding): backend multi-statuts personnels + demandes d'intégration (#5540))
 ];
