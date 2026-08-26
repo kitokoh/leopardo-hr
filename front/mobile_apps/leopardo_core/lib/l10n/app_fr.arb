@@ -2453,5 +2453,6 @@
   "twoFaEnterCode": "Code",
   "twoFaInvalidCode": "Code invalide. Vérifiez et réessayez.",
   "twoFaSettingsTile": "Double authentification",
-  "twoFaSettingsTileSubtitle": "Code TOTP demandé à chaque connexion"
+  "twoFaSettingsTileSubtitle": "Code TOTP demandé à chaque connexion",
+  "personalOnboardingSearchError": "La recherche a échoué : {error}"
 }

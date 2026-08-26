@@ -42,12 +42,31 @@ return new class extends Migration
             ->orWhere('type', '')
             ->update(['type' => 'creation']);
 
-        // Contrainte CHECK sur PostgreSQL pour limiter les valeurs acceptées
+        // sector : NOT NULL historique — non pertinent pour les demandes
+        // d'intégration (rejoindre une entreprise existante, pas de secteur
+        // à déclarer). Le flux de création le valide déjà nullable (#5540).
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE public.company_requests ALTER COLUMN sector DROP NOT NULL');
+        } else {
+            DB::statement('ALTER TABLE company_requests MODIFY sector VARCHAR(100) NULL');
+        }
+
+        // Contrainte CHECK sur PostgreSQL pour limiter les valeurs acceptées.
+        // NB : PostgreSQL ne supporte pas `ADD CONSTRAINT IF NOT EXISTS`
+        // (syntaxe MySQL) → garde via pg_constraint (idempotent, CI sur PG16).
         if (DB::getDriverName() === 'pgsql') {
             DB::statement(
-                "ALTER TABLE public.company_requests
-                 ADD CONSTRAINT IF NOT EXISTS company_requests_type_check
-                 CHECK (type IN ('creation', 'integration'))"
+                "DO \$\$
+                 BEGIN
+                   IF NOT EXISTS (
+                     SELECT 1 FROM pg_constraint
+                     WHERE conname = 'company_requests_type_check'
+                   ) THEN
+                     ALTER TABLE public.company_requests
+                       ADD CONSTRAINT company_requests_type_check
+                       CHECK (type IN ('creation', 'integration'));
+                   END IF;
+                 END \$\$;"
             );
         }
     }

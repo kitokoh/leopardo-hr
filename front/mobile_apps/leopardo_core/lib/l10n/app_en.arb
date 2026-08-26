@@ -2453,5 +2453,6 @@
   "twoFaEnterCode": "Code",
   "twoFaInvalidCode": "Invalid code. Check and try again.",
   "twoFaSettingsTile": "Two-factor authentication",
-  "twoFaSettingsTileSubtitle": "TOTP code required at each sign-in"
+  "twoFaSettingsTileSubtitle": "TOTP code required at each sign-in",
+  "personalOnboardingSearchError": "Search failed: {error}"
 }

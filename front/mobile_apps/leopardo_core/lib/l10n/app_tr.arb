@@ -2453,5 +2453,6 @@
   "twoFaEnterCode": "Kod",
   "twoFaInvalidCode": "Geçersiz kod. Kontrol edip tekrar deneyin.",
   "twoFaSettingsTile": "İki faktörlü kimlik doğrulama",
-  "twoFaSettingsTileSubtitle": "Her girişte TOTP kodu istenir"
+  "twoFaSettingsTileSubtitle": "Her girişte TOTP kodu istenir",
+  "personalOnboardingSearchError": "Arama başarısız oldu: {error}"
 }

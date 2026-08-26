@@ -8064,4 +8064,9 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get twoFaSettingsTileSubtitle =>
       'Code TOTP demandé à chaque connexion';
+
+  @override
+  String personalOnboardingSearchError(Object error) {
+    return 'La recherche a échoué : $error';
+  }
 }

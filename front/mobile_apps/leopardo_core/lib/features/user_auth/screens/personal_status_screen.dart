@@ -187,7 +187,6 @@ class _StatusTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = AppColors.backgroundFor(context);
     final text = AppColors.textPrimaryFor(context);
 
     return InkWell(

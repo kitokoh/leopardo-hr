@@ -2453,5 +2453,6 @@
   "twoFaEnterCode": "الرمز",
   "twoFaInvalidCode": "رمز غير صالح. تحقق وأعد المحاولة.",
   "twoFaSettingsTile": "المصادقة الثنائية",
-  "twoFaSettingsTileSubtitle": "يُطلب رمز TOTP عند كل تسجيل دخول"
+  "twoFaSettingsTileSubtitle": "يُطلب رمز TOTP عند كل تسجيل دخول",
+  "personalOnboardingSearchError": "فشل البحث: {error}"
 }

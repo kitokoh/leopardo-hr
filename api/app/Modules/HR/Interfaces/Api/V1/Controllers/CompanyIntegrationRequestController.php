@@ -6,6 +6,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Domain\Models\UserEmployeeLink;
@@ -45,13 +46,23 @@ class CompanyIntegrationRequestController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'target_company_id'   => ['required', 'string', 'uuid'],
+            'target_company_id' => ['required', 'string', 'uuid'],
             'target_company_name' => ['required', 'string', 'max:200'],
-            'message'             => ['nullable', 'string', 'max:1000'],
+            'message' => ['nullable', 'string', 'max:1000'],
         ]);
 
         /** @var User $user */
         $user = $request->user('user_api');
+
+        // L'entreprise cible doit exister (l'UUID seul ne suffit pas)
+        $targetCompany = Company::query()->find($validated['target_company_id']);
+
+        if (! $targetCompany) {
+            return new JsonResponse([
+                'error' => 'COMPANY_NOT_FOUND',
+                'message' => __('errors.COMPANY_NOT_FOUND'),
+            ], 404);
+        }
 
         // Anti-doublon : empêche plusieurs demandes en attente pour la même entreprise
         $existing = $user->companyRequests()
@@ -62,7 +73,7 @@ class CompanyIntegrationRequestController extends Controller
 
         if ($existing) {
             return new JsonResponse([
-                'error'   => 'INTEGRATION_REQUEST_ALREADY_PENDING',
+                'error' => 'INTEGRATION_REQUEST_ALREADY_PENDING',
                 'message' => __('errors.INTEGRATION_REQUEST_ALREADY_PENDING'),
             ], 409);
         }
@@ -75,17 +86,20 @@ class CompanyIntegrationRequestController extends Controller
 
         if ($pending >= 5) {
             return new JsonResponse([
-                'error'   => 'TOO_MANY_PENDING_REQUESTS',
+                'error' => 'TOO_MANY_PENDING_REQUESTS',
                 'message' => __('errors.TOO_MANY_PENDING_REQUESTS'),
             ], 422);
         }
 
         $payload = [
-            'type'              => 'integration',
+            'type' => 'integration',
             'target_company_id' => $validated['target_company_id'],
-            'company_name'      => $validated['target_company_name'],
-            'email'             => $user->email,
-            'status'            => 'pending',
+            'company_name' => $validated['target_company_name'],
+            'email' => $user->email,
+            'status' => 'pending',
+            // Colonnes NOT NULL historiques : reprise du pays/ville de l'entreprise cible
+            'country' => substr((string) ($targetCompany->country ?? 'NA'), 0, 2),
+            'city' => (string) ($targetCompany->city ?? ''),
         ];
 
         if (Schema::hasColumn('company_requests', 'notes') && ! empty($validated['message'])) {
@@ -96,12 +110,12 @@ class CompanyIntegrationRequestController extends Controller
 
         return new JsonResponse([
             'data' => [
-                'id'                  => $companyRequest->id,
-                'type'                => 'integration',
-                'target_company_id'   => $validated['target_company_id'],
+                'id' => $companyRequest->id,
+                'type' => 'integration',
+                'target_company_id' => $validated['target_company_id'],
                 'target_company_name' => $validated['target_company_name'],
-                'status'              => $companyRequest->status,
-                'created_at'          => $companyRequest->created_at?->toIso8601String(),
+                'status' => $companyRequest->status,
+                'created_at' => $companyRequest->created_at?->toIso8601String(),
             ],
         ], 201);
     }
@@ -119,13 +133,13 @@ class CompanyIntegrationRequestController extends Controller
             ->latest()
             ->get()
             ->map(fn (CompanyRequest $r) => [
-                'id'                  => $r->id,
-                'target_company_id'   => $r->target_company_id,
+                'id' => $r->id,
+                'target_company_id' => $r->target_company_id,
                 'target_company_name' => $r->company_name,
-                'status'              => $r->status,
-                'admin_notes'         => $r->admin_notes,
-                'reviewed_at'         => $r->reviewed_at?->toIso8601String(),
-                'created_at'          => $r->created_at?->toIso8601String(),
+                'status' => $r->status,
+                'admin_notes' => $r->admin_notes,
+                'reviewed_at' => $r->reviewed_at?->toIso8601String(),
+                'created_at' => $r->created_at?->toIso8601String(),
             ]);
 
         return new JsonResponse(['data' => $requests]);
@@ -143,7 +157,7 @@ class CompanyIntegrationRequestController extends Controller
 
         if (! $manager->isManager()) {
             return new JsonResponse([
-                'error'   => 'FORBIDDEN',
+                'error' => 'FORBIDDEN',
                 'message' => __('errors.MANAGER_ONLY_ACTION'),
             ], 403);
         }
@@ -156,15 +170,15 @@ class CompanyIntegrationRequestController extends Controller
             ->latest()
             ->get()
             ->map(fn (CompanyRequest $r) => [
-                'id'         => $r->id,
-                'status'     => $r->status,
-                'message'    => $r->notes ?? null,
+                'id' => $r->id,
+                'status' => $r->status,
+                'message' => $r->notes ?? null,
                 'created_at' => $r->created_at?->toIso8601String(),
-                'user'       => $r->user ? [
-                    'id'               => $r->user->id,
-                    'full_name'        => $r->user->fullName(),
-                    'email'            => $r->user->email,
-                    'avatar_url'       => $r->user->avatar_url,
+                'user' => $r->user ? [
+                    'id' => $r->user->id,
+                    'full_name' => $r->user->fullName(),
+                    'email' => $r->user->email,
+                    'avatar_url' => $r->user->avatar_url,
                     'personal_statuses' => $r->user->personal_statuses ?? [],
                 ] : null,
             ]);
@@ -187,7 +201,7 @@ class CompanyIntegrationRequestController extends Controller
 
         if (! $manager->isManager()) {
             return new JsonResponse([
-                'error'   => 'FORBIDDEN',
+                'error' => 'FORBIDDEN',
                 'message' => __('errors.MANAGER_ONLY_ACTION'),
             ], 403);
         }
@@ -208,12 +222,12 @@ class CompanyIntegrationRequestController extends Controller
 
         if (! $companyRequest || ! $companyRequest->user) {
             return new JsonResponse([
-                'error'   => 'NOT_FOUND',
+                'error' => 'NOT_FOUND',
                 'message' => __('errors.INTEGRATION_REQUEST_NOT_FOUND'),
             ], 404);
         }
 
-        $user      = $companyRequest->user;
+        $user = $companyRequest->user;
         $companyId = $manager->company_id;
 
         // Vérifier que l'employé appartient bien au tenant courant
@@ -224,7 +238,7 @@ class CompanyIntegrationRequestController extends Controller
 
         if (! $employee) {
             return new JsonResponse([
-                'error'   => 'EMPLOYEE_NOT_FOUND',
+                'error' => 'EMPLOYEE_NOT_FOUND',
                 'message' => __('errors.EMPLOYEE_NOT_FOUND_IN_COMPANY'),
             ], 404);
         }
@@ -237,9 +251,9 @@ class CompanyIntegrationRequestController extends Controller
         if ($existingLink) {
             // Idempotent : clôt la demande si le lien est déjà établi
             $companyRequest->update([
-                'status'              => 'approved',
-                'admin_notes'         => $validated['admin_notes'] ?? 'Lien déjà existant.',
-                'reviewed_at'         => now(),
+                'status' => 'approved',
+                'admin_notes' => $validated['admin_notes'] ?? 'Lien déjà existant.',
+                'reviewed_at' => now(),
                 'approved_company_id' => $companyId,
             ]);
 
@@ -251,18 +265,18 @@ class CompanyIntegrationRequestController extends Controller
         DB::transaction(function () use ($user, $employee, $companyId, $companyRequest, $validated): void {
             // Créer le lien user ↔ employé
             UserEmployeeLink::create([
-                'user_id'     => $user->id,
+                'user_id' => $user->id,
                 'employee_id' => $employee->id,
-                'company_id'  => $companyId,
-                'status'      => 'active',
-                'linked_at'   => now(),
+                'company_id' => $companyId,
+                'status' => 'active',
+                'linked_at' => now(),
             ]);
 
             // Clôturer la demande
             $companyRequest->update([
-                'status'              => 'approved',
-                'admin_notes'         => $validated['admin_notes'] ?? null,
-                'reviewed_at'         => now(),
+                'status' => 'approved',
+                'admin_notes' => $validated['admin_notes'] ?? null,
+                'reviewed_at' => now(),
                 'approved_company_id' => $companyId,
             ]);
         });
@@ -271,7 +285,7 @@ class CompanyIntegrationRequestController extends Controller
 
         return new JsonResponse([
             'data' => [
-                'status'      => 'accepted',
+                'status' => 'accepted',
                 'employee_id' => $employee->id,
             ],
         ]);
@@ -287,7 +301,7 @@ class CompanyIntegrationRequestController extends Controller
 
         if (! $manager->isManager()) {
             return new JsonResponse([
-                'error'   => 'FORBIDDEN',
+                'error' => 'FORBIDDEN',
                 'message' => __('errors.MANAGER_ONLY_ACTION'),
             ], 403);
         }
@@ -306,13 +320,13 @@ class CompanyIntegrationRequestController extends Controller
 
         if (! $companyRequest) {
             return new JsonResponse([
-                'error'   => 'NOT_FOUND',
+                'error' => 'NOT_FOUND',
                 'message' => __('errors.INTEGRATION_REQUEST_NOT_FOUND'),
             ], 404);
         }
 
         $companyRequest->update([
-            'status'      => 'rejected',
+            'status' => 'rejected',
             'admin_notes' => $validated['admin_notes'] ?? null,
             'reviewed_at' => now(),
         ]);

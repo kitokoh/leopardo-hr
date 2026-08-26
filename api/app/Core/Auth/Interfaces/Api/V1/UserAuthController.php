@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\User;
 use App\Core\Auth\Infrastructure\Services\UserAuthService;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
@@ -133,8 +133,8 @@ class UserAuthController extends Controller
     public function updatePersonalStatuses(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'statuses' => ['required', 'array', 'max:4'],
-            'statuses.*' => ['string', 'in:' . implode(',', self::VALID_STATUSES)],
+            'statuses' => ['present', 'array', 'max:4'], // present : autorise le reset à vide (#5540)
+            'statuses.*' => ['string', 'in:'.implode(',', self::VALID_STATUSES)],
         ]);
 
         /** @var User $user */
@@ -179,10 +179,10 @@ class UserAuthController extends Controller
 
         return new JsonResponse([
             'data' => $companies->map(fn (Company $c) => [
-                'id'      => (string) $c->id,
-                'name'    => $c->name,
+                'id' => (string) $c->id,
+                'name' => $c->name,
                 'country' => $c->country,
-                'city'    => $c->city,
+                'city' => $c->city,
             ])->values(),
         ]);
     }

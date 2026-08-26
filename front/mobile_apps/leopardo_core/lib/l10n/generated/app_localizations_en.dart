@@ -7969,4 +7969,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get twoFaSettingsTileSubtitle => 'TOTP code required at each sign-in';
+
+  @override
+  String personalOnboardingSearchError(Object error) {
+    return 'Search failed: $error';
+  }
 }

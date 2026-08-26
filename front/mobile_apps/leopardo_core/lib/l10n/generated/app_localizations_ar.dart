@@ -7888,4 +7888,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get twoFaSettingsTileSubtitle => 'يُطلب رمز TOTP عند كل تسجيل دخول';
+
+  @override
+  String personalOnboardingSearchError(Object error) {
+    return 'فشل البحث: $error';
+  }
 }

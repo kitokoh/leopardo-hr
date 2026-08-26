@@ -7974,4 +7974,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get twoFaSettingsTileSubtitle => 'Her girişte TOTP kodu istenir';
+
+  @override
+  String personalOnboardingSearchError(Object error) {
+    return 'Arama başarısız oldu: $error';
+  }
 }

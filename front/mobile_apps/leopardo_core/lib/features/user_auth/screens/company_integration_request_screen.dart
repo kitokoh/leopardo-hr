@@ -205,9 +205,21 @@ class _CompanyIntegrationRequestScreenState
             // ── Results list ─────────────────────────────────────────────────
             if (_selectedCompany == null)
               Expanded(
-                child: _results.isEmpty &&
-                        !_searching &&
-                        _searchController.text.trim().length >= 2
+                child: _searchError != null
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Text(
+                            l10n.personalOnboardingSearchError(_searchError!),
+                            style: AppTypography.body
+                                .copyWith(color: AppColors.danger),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      )
+                    : _results.isEmpty &&
+                            !_searching &&
+                            _searchController.text.trim().length >= 2
                     ? Center(
                         child: Padding(
                           padding: const EdgeInsets.all(20),

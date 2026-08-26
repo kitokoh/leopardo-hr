@@ -14826,6 +14826,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Code TOTP demandé à chaque connexion'**
   String get twoFaSettingsTileSubtitle;
+
+  /// No description provided for @personalOnboardingSearchError.
+  ///
+  /// In fr, this message translates to:
+  /// **'La recherche a échoué : {error}'**
+  String personalOnboardingSearchError(Object error);
 }
 
 class _AppLocalizationsDelegate
