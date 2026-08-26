@@ -219,6 +219,13 @@ jobs:
           fi
           echo "✅ All module structures valid ($(echo "$MODULES" | wc -l) modules checked)."
 
+      - name: Check module isolation (issue #5584)
+        # Garde archunit-style : bloque TOUT nouvel import croisé
+        # (`use App\Modules\<X>\` dans un autre module ou dans Core/) — la
+        # dette existante (16/18 modules, 57 paires) est actée dans
+        # dev-hub/tools/module-isolation-allowlist.txt.
+        run: dev-hub/tools/check-module-isolation.sh
+
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
 
