@@ -10,32 +10,33 @@ the counts below only reflect strings a real user could actually see on screen.
 
 ## Summary
 
-- Total user-visible signals: 10987
-- P1 (priority screens: login/attendance/account/...): 1474
-- P2 (other screens): 9513
-- Developer/log-only signals (informational, not counted above): 78
+- Total user-visible signals: 10997
+- P1 (priority screens: login/attendance/account/...): 1492
+- P2 (other screens): 9505
+- Developer/log-only signals (informational, not counted above): 80
 
 ## By surface
 
 ### mobile_employee
 
-- Signals: 61
-- P1: 5
-- P2: 56
-- Dev/log-only (informational): 4
+- Signals: 62
+- P1: 0
+- P2: 62
+- Dev/log-only (informational): 5
 
-- [P1] `front/mobile_apps/leopardo_employee/lib/features/attendance_geo/data/attendance_geo_repository.dart:44` eventType doit être "zone_enter" ou "zone_exit"
-- [P1] `front/mobile_apps/leopardo_employee/lib/features/attendance_geo/data/models/attendance_geo_config.dart:57` AttendanceGeoConfig(forcedMode: $forcedMode, gpsEnabled: $gpsEnabled,
-- [P1] `front/mobile_apps/leopardo_employee/lib/features/attendance_geo/data/models/attendance_geo_config.dart:58` lat: $latitude, lng: $longitude, radius: $radius)
-- [P1] `front/mobile_apps/leopardo_employee/lib/features/attendance_geo/services/background_location_service.dart:230` [BackgroundLocationService] sendGeoEvent($eventType) failed —
-- [P1] `front/mobile_apps/leopardo_employee/lib/features/attendance_geo/services/background_location_service.dart:231` événement mis en file pour réenvoi : $error
-- [P2] `front/mobile_apps/leopardo_employee/lib/app.dart:312` Leopardo RH
+- [P2] `front/mobile_apps/leopardo_employee/lib/app.dart:336` Leopardo RH
+- [P2] `front/mobile_apps/leopardo_employee/lib/features/absences/screens/absence_list_screen.dart:308` Prendre une photo
+- [P2] `front/mobile_apps/leopardo_employee/lib/features/absences/screens/absence_list_screen.dart:313` Choisir dans la galerie
+- [P2] `front/mobile_apps/leopardo_employee/lib/features/absences/screens/absence_list_screen.dart:463` Supprimer le justificatif
 - [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:27` Mobile App
-- [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:73` Impossible de récupérer le token Google
-- [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:83` Mobile App
-- [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:116` Mobile App
-- [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:262` Invalid auth payload: missing employee data
-- [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:279` Invalid auth payload: missing token
+- [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:39` mfa_challenge_token manquant dans la réponse
+- [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:97` Mobile App
+- [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:129` Impossible de récupérer le profil après vérification 2FA
+- [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:141` Impossible de récupérer le token Google
+- [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:151` Mobile App
+- [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:184` Mobile App
+- [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:330` Invalid auth payload: missing employee data
+- [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart:347` Invalid auth payload: missing token
 - [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/screens/register_screen.dart:138` Email obligatoire
 - [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/screens/register_screen.dart:140` Email invalide
 - [P2] `front/mobile_apps/leopardo_employee/lib/features/auth/screens/register_screen.dart:183` J\'ai deja un compte, me connecter
@@ -48,8 +49,7 @@ the counts below only reflect strings a real user could actually see on screen.
 - [P2] `front/mobile_apps/leopardo_employee/lib/features/home/screens/home_screen.dart:86` Vos trois gestes RH du jour.
 - [P2] `front/mobile_apps/leopardo_employee/lib/features/home/screens/home_screen.dart:92` Modules actifs
 - [P2] `front/mobile_apps/leopardo_employee/lib/features/home/screens/home_screen.dart:94` Uniquement les espaces ouverts pour votre profil.
-- [P2] `front/mobile_apps/leopardo_employee/lib/features/home/screens/home_screen.dart:198` Nouveau parcours
-- ... 36 more signals
+- ... 37 more signals
 
 ### mobile_manager
 
@@ -58,7 +58,7 @@ the counts below only reflect strings a real user could actually see on screen.
 - P2: 4
 - Dev/log-only (informational): 3
 
-- [P2] `front/mobile_apps/leopardo_manager/lib/app.dart:352` Leopardo RH
+- [P2] `front/mobile_apps/leopardo_manager/lib/app.dart:375` Leopardo RH
 - [P2] `front/mobile_apps/leopardo_manager/lib/main.dart:31` Leopardo Manager
 - [P2] `front/mobile_apps/leopardo_manager/lib/main.dart:43` Hive offline cache
 - [P2] `front/mobile_apps/leopardo_manager/lib/main.dart:44` Locale formatting
@@ -77,12 +77,11 @@ the counts below only reflect strings a real user could actually see on screen.
 
 ### mobile_platform_admin
 
-- Signals: 14
-- P1: 1
+- Signals: 13
+- P1: 0
 - P2: 13
 - Dev/log-only (informational): 4
 
-- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/auth/platform_login_screen.dart:31` admin@leopardo-rh.com
 - [P2] `front/mobile_apps/leopardo_platform_admin/lib/main.dart:40` Leopardo Platform Admin
 - [P2] `front/mobile_apps/leopardo_platform_admin/lib/main.dart:55` Hive offline cache
 - [P2] `front/mobile_apps/leopardo_platform_admin/lib/main.dart:56` Locale formatting
@@ -99,44 +98,44 @@ the counts below only reflect strings a real user could actually see on screen.
 
 ### web_client
 
-- Signals: 9869
-- P1: 433
-- P2: 9436
+- Signals: 9858
+- P1: 436
+- P2: 9422
 - Dev/log-only (informational): 2
 
 - [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:6` @/lib/api-client
 - [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:33` Client Test
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:46` AccountingActivationPage (#5539)
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:47` affiche la check-list avec les états fait/à faire
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:52` Paramétrage comptable
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:54` À faire
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:58` termine l\'activation via POST /accounting/activation/complete puis affiche l\'état com...
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:65` Paramétrage comptable
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:72` Comptabilité activée
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:76` affiche directement l\'état complet si le module est déjà activé
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:81` Comptabilité activée
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:85` affiche une erreur si le chargement échoue, avec bouton réessayer
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:92` état d
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:95` Paramétrage comptable
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:98` affiche une erreur si l\'activation échoue
-- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:105` Paramétrage comptable
-- [P1] `front/web/src/app/(dashboard)/accounting/chart/__tests__/chart-page.test.tsx:6` @/lib/api-client
-- [P1] `front/web/src/app/(dashboard)/accounting/chart/__tests__/chart-page.test.tsx:15` Capital social
-- [P1] `front/web/src/app/(dashboard)/accounting/chart/__tests__/chart-page.test.tsx:29` ChartPage (#5534)
-- [P1] `front/web/src/app/(dashboard)/accounting/chart/__tests__/chart-page.test.tsx:30` affiche le plan comptable avec les statuts et la note système
-- [P1] `front/web/src/app/(dashboard)/accounting/chart/__tests__/chart-page.test.tsx:35` Capital social
-- [P1] `front/web/src/app/(dashboard)/accounting/chart/__tests__/chart-page.test.tsx:42` crée un compte via POST /accounting/chart puis recharge
-- [P1] `front/web/src/app/(dashboard)/accounting/chart/__tests__/chart-page.test.tsx:50` Capital social
-- [P1] `front/web/src/app/(dashboard)/accounting/chart/__tests__/chart-page.test.tsx:54` Libellé
-- [P1] `front/web/src/app/(dashboard)/accounting/chart/__tests__/chart-page.test.tsx:68` désactive/active un compte via PUT /accounting/chart/{code}
-- ... 9844 more signals
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:46` AccountingActivationPage (#5626 wizard)
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:47` affiche l'étape 1 du wizard (langue + devise) quand le module n'est pas activé
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:53` Langue des documents
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:60` parcourt les 4 étapes, collecte le paramétrage et active via POST /accounting/activatio...
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:69` Langue des documents
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:75` Libellé du taux 1
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:75` TVA standard
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:76` Taux (%) 1
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:82` Modèle PDF
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:88` TVA standard (19%)
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:107` TVA standard
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:112` Comptabilité activée
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:116` permet d\'ajouter et supprimer une ligne de taux TVA
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:125` Libellé du taux 2
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:128` Libellé du taux 2
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:131` affiche directement l'état complet si le module est déjà activé
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:136` Comptabilité activée
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:141` affiche une erreur si le chargement échoue, avec bouton réessayer
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:148` état d
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/__tests__/accounting-activation-page.test.tsx:154` affiche une erreur si l'activation échoue
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/page.tsx:56` Français
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/page.tsx:58` العربية
+- [P1] `front/web/src/app/(dashboard)/accounting/activation/page.tsx:59` Türkçe
+- ... 9833 more signals
 
 ### admin_dashboard
 
-- Signals: 499
-- P1: 499
+- Signals: 517
+- P1: 517
 - P2: 0
-- Dev/log-only (informational): 62
+- Dev/log-only (informational): 63
 
 - [P1] `front/admin-dashboard/src/App.vue:80` Segoe UI
 - [P1] `front/admin-dashboard/src/components/common/CommandPalette.vue:9` glass-card max-w-lg w-full mx-4 overflow-hidden animate-fade-in !rounded-3xl border-whi...
@@ -146,7 +145,7 @@ the counts below only reflect strings a real user could actually see on screen.
 - [P1] `front/admin-dashboard/src/components/common/CommandPalette.vue:115` Alt+C
 - [P1] `front/admin-dashboard/src/components/common/CommandPalette.vue:116` Alt+S
 - [P1] `front/admin-dashboard/src/components/common/CommandPalette.vue:127` Ctrl+D
-- [P1] `front/admin-dashboard/src/components/common/ConfirmDialog.vue:14` En cours…
+- [P1] `front/admin-dashboard/src/components/common/ConfirmDialog.vue:19` En cours…
 - [P1] `front/admin-dashboard/src/components/common/DataTable.vue:24` Export CSV
 - [P1] `front/admin-dashboard/src/components/common/DataTable.vue:32` Chargement des données...
 - [P1] `front/admin-dashboard/src/components/common/DataTable.vue:36` Aucun résultat trouvé.
@@ -155,49 +154,49 @@ the counts below only reflect strings a real user could actually see on screen.
 - [P1] `front/admin-dashboard/src/components/common/DataTable.vue:79` filteredRows.length > 0
 - [P1] `front/admin-dashboard/src/components/common/DataTable.vue:85` currentPage = $event
 - [P1] `front/admin-dashboard/src/components/common/DataTable.vue:86` perPage = $event; currentPage = 1
-- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:6` visible = false
-- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:7` visible = false
-- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:13` visible = false
-- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:48` Ctrl + D
-- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:48` Basculer mode sombre
-- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:49` Ctrl + K
-- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:50` Alt + H
-- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:50` Tableau de bord
-- ... 474 more signals
+- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:10` visible = false
+- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:11` visible = false
+- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:15` Raccourcis Clavier
+- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:17` visible = false
+- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:39` Appuyez sur
+- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:39` pour afficher ce menu
+- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:63` Ctrl + D
+- [P1] `front/admin-dashboard/src/components/common/KeyboardShortcutsModal.vue:64` Ctrl + K
+- ... 492 more signals
 
 ### kiosk
 
-- Signals: 536
-- P1: 536
+- Signals: 539
+- P1: 539
 - P2: 0
 - Dev/log-only (informational): 0
 
 - [P1] `front/zkteco-kiosk/admin.html:5` width=device-width, initial-scale=1
 - [P1] `front/zkteco-kiosk/admin.html:40` Langue / Language
-- [P1] `front/zkteco-kiosk/app.js:814` TechCorp Algerie SARL
-- [P1] `front/zkteco-kiosk/app.js:816` Ahmed Benali
-- [P1] `front/zkteco-kiosk/app.js:816` ahmed.benali@techcorp-algerie.dz
-- [P1] `front/zkteco-kiosk/app.js:817` Fatima Meziane
-- [P1] `front/zkteco-kiosk/app.js:817` fatima.meziane@techcorp-algerie.dz
-- [P1] `front/zkteco-kiosk/app.js:818` Karim Aouad
-- [P1] `front/zkteco-kiosk/app.js:818` karim.aouad@techcorp-algerie.dz
-- [P1] `front/zkteco-kiosk/app.js:822` PharmaPlus Casablanca
-- [P1] `front/zkteco-kiosk/app.js:824` Amina Tahiri
-- [P1] `front/zkteco-kiosk/app.js:824` amina.tahiri@pharmaplus.ma
-- [P1] `front/zkteco-kiosk/app.js:825` Sara Mansouri
-- [P1] `front/zkteco-kiosk/app.js:825` sara.mansouri@pharmaplus.ma
-- [P1] `front/zkteco-kiosk/app.js:826` Youssef Bennani
-- [P1] `front/zkteco-kiosk/app.js:826` youssef.bennani@pharmaplus.ma
-- [P1] `front/zkteco-kiosk/app.js:830` DigitalFlow Tunis
-- [P1] `front/zkteco-kiosk/app.js:832` Sofiane Mrad
-- [P1] `front/zkteco-kiosk/app.js:832` sofiane.mrad@digitalflow.tn
-- [P1] `front/zkteco-kiosk/app.js:833` Olfa Trabelsi
-- [P1] `front/zkteco-kiosk/app.js:833` olfa.trabelsi@digitalflow.tn
-- [P1] `front/zkteco-kiosk/app.js:834` Aziz Khelifi
-- [P1] `front/zkteco-kiosk/app.js:834` aziz.khelifi@digitalflow.tn
-- [P1] `front/zkteco-kiosk/i18n.js:24` Leopardo RH - Kiosk biometrie
-- [P1] `front/zkteco-kiosk/i18n.js:25` Aller au formulaire de pointage
-- ... 511 more signals
+- [P1] `front/zkteco-kiosk/app.js:818` #demoAccessBtn\
+- [P1] `front/zkteco-kiosk/app.js:823` hidden\
+- [P1] `front/zkteco-kiosk/app.js:824` aria-hidden\', \'true\
+- [P1] `front/zkteco-kiosk/app.js:832` TechCorp Algerie SARL\', country: \'DZ\
+- [P1] `front/zkteco-kiosk/app.js:834` DZ-EMP-001\', name: \'Ahmed Benali\', email: \'ahmed.benali@techcorp-algerie.dz\', role...
+- [P1] `front/zkteco-kiosk/app.js:835` DZ-EMP-002\', name: \'Fatima Meziane\', email: \'fatima.meziane@techcorp-algerie.dz\', ...
+- [P1] `front/zkteco-kiosk/app.js:836` DZ-EMP-003\', name: \'Karim Aouad\', email: \'karim.aouad@techcorp-algerie.dz\', role: ...
+- [P1] `front/zkteco-kiosk/app.js:840` PharmaPlus Casablanca\', country: \'MA\
+- [P1] `front/zkteco-kiosk/app.js:842` MA-EMP-001\', name: \'Amina Tahiri\', email: \'amina.tahiri@pharmaplus.ma\', role: \'pr...
+- [P1] `front/zkteco-kiosk/app.js:843` MA-EMP-002\', name: \'Sara Mansouri\', email: \'sara.mansouri@pharmaplus.ma\', role: \'rh\
+- [P1] `front/zkteco-kiosk/app.js:844` MA-EMP-003\', name: \'Youssef Bennani\', email: \'youssef.bennani@pharmaplus.ma\', role...
+- [P1] `front/zkteco-kiosk/app.js:848` DigitalFlow Tunis\', country: \'TN\
+- [P1] `front/zkteco-kiosk/app.js:850` TN-EMP-001\', name: \'Sofiane Mrad\', email: \'sofiane.mrad@digitalflow.tn\', role: \'p...
+- [P1] `front/zkteco-kiosk/app.js:851` TN-EMP-002\', name: \'Olfa Trabelsi\', email: \'olfa.trabelsi@digitalflow.tn\', role: \...
+- [P1] `front/zkteco-kiosk/app.js:852` TN-EMP-003\', name: \'Aziz Khelifi\', email: \'aziz.khelifi@digitalflow.tn\', role: \'e...
+- [P1] `front/zkteco-kiosk/app.js:857` #demoOverlay\
+- [P1] `front/zkteco-kiosk/app.js:858` #demoUsersList\
+- [P1] `front/zkteco-kiosk/app.js:859` #demoCloseBtn\
+- [P1] `front/zkteco-kiosk/app.js:880` click\
+- [P1] `front/zkteco-kiosk/app.js:881` .demo-user-btn\
+- [P1] `front/zkteco-kiosk/app.js:885` #infoIdentifier\
+- [P1] `front/zkteco-kiosk/app.js:887` #leaveIdentifier\
+- [P1] `front/zkteco-kiosk/app.js:889` hidden\
+- ... 514 more signals
 
 ## Execution rule
 

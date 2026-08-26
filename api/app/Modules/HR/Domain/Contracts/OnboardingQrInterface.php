@@ -12,8 +12,8 @@ use App\Core\Tenant\Domain\Models\Company;
  * flow (employee self-profile QR, company invite QR). Owned by HR so
  * OnboardingQrController depends on this interface instead of importing
  * App\Modules\Onboarding\Infrastructure\Services\OnboardingQrService
- * directly (PA2-ARCH-003). Bound to the existing Onboarding implementation
- * in HRServiceProvider.
+ * directly (PA2-ARCH-003). Bound to the existing Onboarding implementation by
+ * OnboardingServiceProvider (composition root décentralisée).
  */
 interface OnboardingQrInterface
 {

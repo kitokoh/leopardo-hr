@@ -226,6 +226,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 20),
           _buildPasswordSection(context, authState),
           const SizedBox(height: 20),
+          _buildTwoFactorSection(context),
+          const SizedBox(height: 20),
           _buildBiometricSection(context),
           const SizedBox(height: 20),
           _buildEdgeSection(context),
@@ -862,9 +864,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final currentMode = ref.watch(themeModeProvider);
 
     final options = [
-      (ThemeMode.system, Icons.brightness_auto_outlined, 'Automatique (système)'),
-      (ThemeMode.light, Icons.light_mode_outlined, 'Clair'),
-      (ThemeMode.dark, Icons.dark_mode_outlined, 'Sombre'),
+      (ThemeMode.system, Icons.brightness_auto_outlined, context.l10n.settingsThemeSystem),
+      (ThemeMode.light, Icons.light_mode_outlined, context.l10n.settingsThemeLight),
+      (ThemeMode.dark, Icons.dark_mode_outlined, context.l10n.settingsThemeDark),
     ];
 
     return Container(
@@ -874,12 +876,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thème de l\'application',
+            context.l10n.settingsThemeTitle,
             style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
           ),
           const SizedBox(height: 8),
           Text(
-            'Choisissez le thème affiché quelle que soit la configuration système.',
+            context.l10n.settingsThemeHint,
             style: AppTypography.bodySmall
                 .copyWith(color: MobileSurface.secondary),
           ),
@@ -1265,6 +1267,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         ],
       ),
+    );
+  }
+
+
+  /// Issue #5683 — accès à l'écran de gestion 2FA (enrôlement, codes de
+  /// récupération, désactivation). Écran partagé leopardo_core.
+  Widget _buildTwoFactorSection(BuildContext context) {
+    return MobileListGlassCard(
+      icon: Icons.verified_user_rounded,
+      iconColor: AppColors.rh,
+      title: context.l10n.twoFaSettingsTile,
+      subtitle: context.l10n.twoFaSettingsTileSubtitle,
+      trailing: const Icon(Icons.chevron_right_rounded),
+      onTap: () => context.push('/settings/2fa'),
     );
   }
 

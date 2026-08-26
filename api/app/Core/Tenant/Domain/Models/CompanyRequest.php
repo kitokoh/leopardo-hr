@@ -24,6 +24,8 @@ use Illuminate\Support\Carbon;
  * @property string $email
  * @property string|null $phone
  * @property string $description
+ * @property string $type 'creation' | 'integration' (#5540)
+ * @property string|null $target_company_id UUID de l'entreprise cible pour type='integration'
  * @property string $status
  * @property int|null $approved_company_id
  * @property string|null $admin_notes
@@ -40,6 +42,8 @@ class CompanyRequest extends Model
     protected $table = 'company_requests';
 
     protected $fillable = [
+        'type',             // #5540 — 'creation' | 'integration'
+        'target_company_id', // #5540 — UUID entreprise cible (pour type='integration')
         'employee_id',
         'user_id',
         'company_name',
