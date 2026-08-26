@@ -45,8 +45,11 @@ services:
           property: host
       - key: LOG_CHANNEL
         value: stderr
+      # Issue #5586 : LOG_LEVEL=info pour que StructuredLogging (canal
+      # `structured`, info) et les breadcrumbs Sentry soient effectifs en prod
+      # (error filtrait tout le logging structuré).
       - key: LOG_LEVEL
-        value: error
+        value: info
       # Database
       - key: DB_CONNECTION
         value: pgsql
@@ -97,6 +100,14 @@ services:
         value: redis
       - key: SESSION_DRIVER
         value: redis
+      # Issue #5586 : Sentry était inerte en prod (DSN absent → aucun
+      # événement). DSN optionnel : renseigner SENTRY_LARAVEL_DSN dans le
+      # dashboard Render (secret sync: false) pour activer le report d'erreurs
+      # + breadcrumbs (config/sentry.php valide l'URL ; vide = désactivé).
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
+      - key: SENTRY_TRACES_SAMPLE_RATE
+        value: "0.1"
       # Stripe
       - key: STRIPE_SECRET_KEY
         sync: false
@@ -200,8 +211,9 @@ services:
           property: host
       - key: LOG_CHANNEL
         value: stderr
+      # Issue #5586 : LOG_LEVEL=info (StructuredLogging + Sentry effectifs).
       - key: LOG_LEVEL
-        value: error
+        value: info
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
@@ -248,6 +260,12 @@ services:
         value: database
       - key: CACHE_STORE
         value: redis
+      # Issue #5586 : Sentry sur le worker aussi (erreurs de jobs queue :
+      # PDF, paie, webhooks — cf. #4340).
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
+      - key: SENTRY_TRACES_SAMPLE_RATE
+        value: "0.1"
       - key: FIREBASE_PROJECT_ID
         sync: false
       - key: FIREBASE_SERVICE_ACCOUNT_JSON
@@ -309,6 +327,9 @@ services:
           property: host
       - key: LOG_CHANNEL
         value: stderr
+      # Issue #5586 : LOG_LEVEL=info (cohérence web/worker/scheduler).
+      - key: LOG_LEVEL
+        value: info
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
@@ -348,6 +369,9 @@ services:
           name: gestionemployerbackend
           type: web
           envVarKey: APP_KEY
+      # Issue #5586 : Sentry sur le scheduler (échecs de tâches planifiées).
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
       - key: QUEUE_CONNECTION
         value: database
       # Mail (issue #3594) : le scheduler envoie des emails synchrones (rappels,
