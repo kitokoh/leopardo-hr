@@ -19,10 +19,12 @@ import { ModulePageShell } from '@/components/module-page-shell';
 import { apiFetch } from '@/lib/api-client';
 import { t } from '@/lib/i18n/locale-catalog';
 import { getPreferredLocale } from '@/lib/i18n';
+import { AccountingActivationBanner } from './AccountingActivationBanner';
 
 /**
  * #5534 — Module Comptabilité : accueil du rôle comptable/principal.
  * Hub de navigation vers les 7 écrans du module (backend #5422 livré).
+ * #5626 — Bandeau d'activation visible si le module n'est pas encore configuré.
  */
 export default function AccountingHomePage() {
   const locale = getPreferredLocale();
@@ -44,6 +46,8 @@ export default function AccountingHomePage() {
       subtitle={t(locale, 'accountingModule.homeSubtitle')}
       accentClassName="bg-gradient-to-br from-amber-100 via-white to-white"
     >
+      {/* #5626 : bandeau d'activation si le module n'est pas encore configuré */}
+      <AccountingActivationBanner />
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {tiles.map((tile, i) => (
           <motion.div key={tile.href} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
