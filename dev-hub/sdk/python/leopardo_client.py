@@ -720,10 +720,6 @@ class LeopardoClient:
         """DEPRECIE — alias de /attendance/attendance-logs/{attendanceLog}/punch-photo (issue #5538)"""
         return self.request("GET", "/attendance/{attendanceLog}/punch-photo", **kwargs)
 
-    def get_attendance_by_attendancelog_punch_photo_2(self, **kwargs):
-        """Photo du pointage (ALIAS DÉPRÉCIÉ — utiliser /attendance/attendance-logs/{attendanceLog}/punch-photo)"""
-        return self.request("GET", "/attendance/{attendanceLog}/punch-photo", **kwargs)
-
     def get_attendance_anomalies(self, **kwargs):
         """Anomalies de pointage"""
         return self.request("GET", "/attendance/anomalies", **kwargs)

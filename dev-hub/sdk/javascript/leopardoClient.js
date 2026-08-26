@@ -875,11 +875,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/attendance/{attendanceLog}/punch-photo", options);
     },
 
-    /** Photo du pointage (ALIAS DÉPRÉCIÉ — utiliser /attendance/attendance-logs/{attendanceLog}/punch-photo) */
-    getAttendanceByAttendanceLogPunchPhoto2(options = {}) {
-      return request("GET", "/attendance/{attendanceLog}/punch-photo", options);
-    },
-
     /** Anomalies de pointage */
     getAttendanceAnomalies(options = {}) {
       return request("GET", "/attendance/anomalies", options);
