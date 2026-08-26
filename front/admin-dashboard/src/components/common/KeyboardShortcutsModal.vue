@@ -44,6 +44,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useFocusTrap } from '@/composables/useFocusTrap'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 
 const visible = ref(false)

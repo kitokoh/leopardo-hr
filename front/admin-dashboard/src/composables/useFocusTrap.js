@@ -1,4 +1,4 @@
-import { onBeforeUnmount, ref, watch, type Ref } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 
 /**
  * useFocusTrap — WCAG 2.1.1/2.1.2 (audit WCAG 2026-05, issue #5622).
@@ -15,9 +15,9 @@ import { onBeforeUnmount, ref, watch, type Ref } from 'vue'
  *
  * @param isActive Ref<boolean> — état d'ouverture du dialogue.
  */
-export function useFocusTrap(isActive: Ref<boolean>) {
-  const containerRef = ref<HTMLElement | null>(null)
-  let previouslyFocused: HTMLElement | null = null
+export function useFocusTrap(isActive) {
+  const containerRef = ref(null)
+  let previouslyFocused = null
 
   const FOCUSABLE_SELECTOR = [
     'a[href]',
@@ -28,15 +28,15 @@ export function useFocusTrap(isActive: Ref<boolean>) {
     '[tabindex]:not([tabindex="-1"])',
   ].join(', ')
 
-  function getFocusable(): HTMLElement[] {
+  function getFocusable() {
     const el = containerRef.value
     if (!el) return []
-    return Array.from(el.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+    return Array.from(el.querySelectorAll(FOCUSABLE_SELECTOR)).filter(
       (node) => node.offsetParent !== null || node === document.activeElement,
     )
   }
 
-  function onKeydown(e: KeyboardEvent) {
+  function onKeydown(e) {
     if (e.key !== 'Tab') return
 
     const items = getFocusable()
