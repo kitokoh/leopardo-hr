@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-6">
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      <StatsCard title="Vehicules" :value="stats.total" icon="ChartBarIcon" color="blue" />
-      <StatsCard title="En service" :value="stats.in_service" icon="ChartBarIcon" color="green" />
-      <StatsCard title="Maintenance due" :value="stats.maintenance_due" icon="ChartBarIcon" color="yellow" />
-      <StatsCard title="Alertes" :value="stats.alerts" icon="ChartBarIcon" color="red" />
+      <StatsCard :title="t('fleet.statVehicles', 'Vehicules')" :value="stats.total" icon="ChartBarIcon" color="blue" />
+      <StatsCard :title="t('fleet.statInService', 'En service')" :value="stats.in_service" icon="ChartBarIcon" color="green" />
+      <StatsCard :title="t('fleet.statMaintenanceDue', 'Maintenance due')" :value="stats.maintenance_due" icon="ChartBarIcon" color="yellow" />
+      <StatsCard :title="t('fleet.statAlerts', 'Alertes')" :value="stats.alerts" icon="ChartBarIcon" color="red" />
     </div>
 
     <div v-if="alertsError" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
@@ -40,7 +40,7 @@
       :loading="loading"
       :error="error"
       :search-keys="['plate_number', 'brand', 'model', 'assigned_to']"
-      search-placeholder="Rechercher un vehicule..."
+      :search-placeholder="t('fleet.searchVehicle', 'Rechercher un vehicule...')"
       default-sort="plate_number"
       exportable
       @export="exportVehicles"
@@ -67,7 +67,7 @@
       :loading="loading"
       :error="alertsError"
       :search-keys="['vehicle_plate', 'type', 'message']"
-      search-placeholder="Rechercher une alerte..."
+      :search-placeholder="t('fleet.searchAlert', 'Rechercher une alerte...')"
       default-sort="created_at"
       default-sort-dir="desc"
     >
@@ -91,6 +91,11 @@ import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import VehicleDetailModal from '@/components/fleet/VehicleDetailModal.vue'
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale'
+
+const localeStore = useLocaleStore()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const loading = ref(false)
 const error = ref('')
@@ -105,40 +110,40 @@ let leafletMap = null
 const stats = ref({ total: 0, in_service: 0, maintenance_due: 0, alerts: 0 })
 
 const tabs = [
-  { key: 'map', label: 'Carte' },
-  { key: 'list', label: 'Liste' },
-  { key: 'alerts', label: 'Alertes' },
+  { key: 'map', label: t('fleet.tabsMap', 'Carte') },
+  { key: 'list', label: t('fleet.tabsList', 'Liste') },
+  { key: 'alerts', label: t('fleet.tabsAlerts', 'Alertes') },
 ]
 
 const vehicleColumns = [
-  { key: 'plate_number', label: 'Immatriculation', sortable: true },
-  { key: 'brand', label: 'Marque', sortable: true },
-  { key: 'model', label: 'Modele', sortable: true },
-  { key: 'assigned_to', label: 'Assigne a', sortable: true },
-  { key: 'km_current', label: 'Km', sortable: true },
-  { key: 'status', label: 'Statut', sortable: true },
+  { key: 'plate_number', label: t('fleet.colPlate', 'Immatriculation'), sortable: true },
+  { key: 'brand', label: t('fleet.colBrand', 'Marque'), sortable: true },
+  { key: 'model', label: t('fleet.colModel', 'Modele'), sortable: true },
+  { key: 'assigned_to', label: t('fleet.colAssignedTo', 'Assigne a'), sortable: true },
+  { key: 'km_current', label: t('fleet.colKm', 'Km'), sortable: true },
+  { key: 'status', label: t('fleet.colStatus', 'Statut'), sortable: true },
 ]
 
 const alertColumns = [
-  { key: 'vehicle_plate', label: 'Vehicule', sortable: true },
-  { key: 'type', label: 'Type', sortable: true },
-  { key: 'severity', label: 'Severite', sortable: true },
-  { key: 'message', label: 'Message' },
-  { key: 'created_at', label: 'Date', sortable: true },
+  { key: 'vehicle_plate', label: t('fleet.colVehicle', 'Vehicule'), sortable: true },
+  { key: 'type', label: t('fleet.colType', 'Type'), sortable: true },
+  { key: 'severity', label: t('fleet.colSeverity', 'Severite'), sortable: true },
+  { key: 'message', label: t('fleet.colMessage', 'Message') },
+  { key: 'created_at', label: t('fleet.colDate', 'Date'), sortable: true },
 ]
 
 const vehicleStatusMap = {
-  active: { label: 'En service', color: 'green' },
-  maintenance: { label: 'Maintenance', color: 'yellow' },
-  inactive: { label: 'Inactif', color: 'gray' },
-  decommissioned: { label: 'Reforme', color: 'red' },
+  active: { label: t('fleet.statusActive', 'En service'), color: 'green' },
+  maintenance: { label: t('fleet.statusMaintenance', 'Maintenance'), color: 'yellow' },
+  inactive: { label: t('fleet.statusInactive', 'Inactif'), color: 'gray' },
+  decommissioned: { label: t('fleet.statusDecommissioned', 'Reforme'), color: 'red' },
 }
 
 const severityMap = {
-  low: { label: 'Faible', color: 'blue' },
-  medium: { label: 'Moyen', color: 'yellow' },
-  high: { label: 'Eleve', color: 'red' },
-  critical: { label: 'Critique', color: 'red' },
+  low: { label: t('fleet.severityLow', 'Faible'), color: 'blue' },
+  medium: { label: t('fleet.severityMedium', 'Moyen'), color: 'yellow' },
+  high: { label: t('fleet.severityHigh', 'Eleve'), color: 'red' },
+  critical: { label: t('fleet.severityCritical', 'Critique'), color: 'red' },
 }
 
 async function initMap() {
@@ -168,7 +173,7 @@ function plotVehicles(L) {
   vehicles.value.forEach(v => {
     if (v.latitude && v.longitude) {
       L.marker([v.latitude, v.longitude])
-        .bindPopup(`<b>${escapeHtml(v.plate_number)}</b><br>${escapeHtml(v.brand)} ${escapeHtml(v.model)}<br>${escapeHtml(v.assigned_to || 'Non assigne')}`)
+        .bindPopup(`<b>${escapeHtml(v.plate_number)}</b><br>${escapeHtml(v.brand)} ${escapeHtml(v.model)}<br>${escapeHtml(v.assigned_to || t('fleet.unassigned', 'Non assigne'))}`)
         .addTo(leafletMap)
     }
   })

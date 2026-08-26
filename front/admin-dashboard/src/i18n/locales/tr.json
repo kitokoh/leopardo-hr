@@ -138,7 +138,9 @@
       "TR": "Türkiye",
       "US": "Amerika Birleşik Devletleri"
     },
-    "required": "Gerekli"
+    "required": "Gerekli",
+    "delete": "Sil",
+    "confirm": "Onayla"
   },
   "modules": {
     "attendance": "Puantaj",
@@ -342,6 +344,12 @@
       "title": "Kullanıcıyı düzenle",
       "status": "Durum",
       "save": "Güncelle"
+    },
+    "table": {
+      "loading": "Kullanıcılar yükleniyor...",
+      "empty": "Kullanıcı yok",
+      "emptyHint": "Arama kriterlerine uyan kullanıcı yok.",
+      "viewDetails": "Detayları gör"
     }
   },
   "dashboard": {
@@ -3205,5 +3213,117 @@
     "matchDone": "Satır mutabık kılındı.",
     "loading": "Yükleniyor…",
     "retry": "Yeniden dene"
+  },
+  "adminShortcuts": {
+    "title": "Klavye Kısayolları",
+    "descToggleDark": "Karanlık modu değiştir",
+    "descSearch": "Ara",
+    "descDashboard": "Panel",
+    "descUsers": "Kullanıcılar",
+    "descCompanies": "Şirketler",
+    "descSubscriptions": "Abonelikler",
+    "descCloseModals": "Pencereleri kapat",
+    "descHelp": "Kısayol yardımı",
+    "footerPress": "Basın",
+    "footerToShow": "bu menüyü göstermek için"
+  },
+  "edge": {
+    "statTotal": "Toplam düğüm",
+    "statOnline": "Çevrimiçi",
+    "statOffline": "Çevrimdışı",
+    "statExpiredLicenses": "Süresi dolan lisanslar",
+    "loading": "Düğümler yükleniyor…",
+    "empty": "Kayıtlı Edge düğümü yok",
+    "emptyHint": "Düğümler Edge API üzerinden kaydedildikten sonra burada görünür.",
+    "colNode": "Düğüm",
+    "colStatus": "Durum",
+    "colLicense": "Lisans",
+    "colLastSync": "Son senkronizasyon",
+    "colActions": "İşlemler",
+    "sync": "Senkronize",
+    "syncing": "Senkronize ediliyor…",
+    "details": "Detaylar",
+    "revoke": "İptal et",
+    "revokeConfirm": "İptal onaylansın mı?",
+    "revoking": "İptal ediliyor…",
+    "loadError": "Edge düğümleri yüklenirken hata.",
+    "syncError": "Senkronizasyon başlatılırken hata.",
+    "syncSuccess": "{name} için senkronizasyon başladı",
+    "revokeSuccess": "{name} için lisans iptal edildi",
+    "revokeError": "Lisans iptal edilirken hata."
+  },
+  "fleet": {
+    "tabsMap": "Harita",
+    "tabsList": "Liste",
+    "tabsAlerts": "Uyarılar",
+    "statVehicles": "Araçlar",
+    "statInService": "Hizmette",
+    "statMaintenanceDue": "Bakım gerekli",
+    "statAlerts": "Uyarılar",
+    "colPlate": "Plaka",
+    "colBrand": "Marka",
+    "colModel": "Model",
+    "colAssignedTo": "Atanan",
+    "colKm": "Km",
+    "colStatus": "Durum",
+    "colVehicle": "Araç",
+    "colType": "Tür",
+    "colSeverity": "Önem",
+    "colMessage": "Mesaj",
+    "colDate": "Tarih",
+    "statusActive": "Hizmette",
+    "statusMaintenance": "Bakım",
+    "statusInactive": "Pasif",
+    "statusDecommissioned": "Hurda",
+    "severityLow": "Düşük",
+    "severityMedium": "Orta",
+    "severityHigh": "Yüksek",
+    "severityCritical": "Kritik",
+    "unassigned": "Atanmamış",
+    "searchVehicle": "Araç ara...",
+    "searchAlert": "Uyarı ara..."
+  },
+  "notFound": {
+    "users": "Kullanıcılar",
+    "usersHint": "Kullanıcı hesaplarını yönet",
+    "companies": "Şirketler",
+    "companiesHint": "Şirketleri yönet"
+  },
+  "subscriptions": {
+    "title": "Abonelikler",
+    "subtitle": "Müşteri şirketlerin planları, portföy sağlığı ve abonelik iptal riskleri.",
+    "refresh": "Yenile",
+    "kpi": {
+      "portfolioMrr": "Portföy MRR",
+      "activeSubscriptions": "Aktif abonelikler",
+      "pastDue": "Gecikmiş",
+      "totalOverdue": "Toplam gecikme",
+      "arr": "Yıllık gelir",
+      "collected30d": "30 günlük tahsilat",
+      "totalSubscribers": "Toplam abone",
+      "trials": "Denemeler"
+    },
+    "catalogTitle": "Plan kataloğu",
+    "catalogSub": "Ticari teklifler ve ilgili limitler.",
+    "retry": "Tekrar dene",
+    "public": "Genel",
+    "archived": "Arşivlendi",
+    "perMonth": "/ ay",
+    "billedAnnually": "yıllık faturalandırılır",
+    "healthTitle": "Portföy sağlığı",
+    "retentionTitle": "İptal riskleri",
+    "noPlan": "Bilinmeyen plan",
+    "manage": "Yönet",
+    "noRisk": "Risk tespit edilmedi",
+    "loadError": "Abonelikler yüklenirken hata.",
+    "employees": "çalışan",
+    "unlimited": "Sınırsız",
+    "trialDays": "deneme günü",
+    "trialUnit": "gün",
+    "risk": {
+      "high": "Yüksek risk",
+      "medium": "Orta risk",
+      "low": "Düşük risk"
+    }
   }
 }

@@ -51,7 +51,7 @@
           <td colspan="5" class="px-6 py-16 text-center">
             <div class="flex flex-col items-center justify-center">
               <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-600 mb-4"></div>
-              <span class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Chargement des utilisateurs...</span>
+              <span class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ t('users.table.loading', 'Chargement des utilisateurs...') }}</span>
             </div>
           </td>
         </tr>
@@ -60,9 +60,9 @@
         <tr v-else-if="users.length === 0">
           <td colspan="5" class="px-6 py-12 text-center">
             <UsersIcon class="mx-auto h-12 w-12 text-gray-400" />
-            <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun utilisateur</h3>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ t('users.table.empty', 'Aucun utilisateur') }}</h3>
             <p class="mt-1 text-sm text-gray-500">
-              Aucun utilisateur ne correspond aux critères de recherche.
+              {{ t('users.table.emptyHint', 'Aucun utilisateur ne correspond aux critères de recherche.') }}
             </p>
           </td>
         </tr>
@@ -127,16 +127,16 @@
               <button
                 @click="$emit('view', user)"
                 class="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-all duration-200"
-                title="Voir les détails"
-                aria-label="Voir les détails"
+                :title="t('users.table.viewDetails', 'Voir les détails')"
+                :aria-label="t('users.table.viewDetails', 'Voir les détails')"
               >
                 <EyeIcon class="h-4 w-4" />
               </button>
               <button
                 @click="$emit('delete', user)"
                 class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-all duration-200"
-                title="Supprimer"
-                aria-label="Supprimer"
+                :title="t('common.delete', 'Supprimer')"
+                :aria-label="t('common.delete', 'Supprimer')"
               >
                 <TrashIcon class="h-4 w-4" />
               </button>
@@ -158,9 +158,10 @@ import {
   UsersIcon
 } from '@heroicons/vue/24/outline'
 import { useLocaleStore } from '@/stores/locale'
-import { toIntlLocale } from '@/i18n/index.js'
+import { toIntlLocale, translate } from '@/i18n/index.js'
 
 const localeStore = useLocaleStore()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const props = defineProps({
   users: {
