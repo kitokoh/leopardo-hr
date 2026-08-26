@@ -23,12 +23,12 @@
 | **Planning**    | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Platform** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 | **Recruitment** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **SmartAttendance** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
+| **Accounting**  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 > ⚠️ = Module créé dans Phase 3–4 ou ajouté depuis, tests Feature à completer/verifier en Phase 5.
 > — = Non applicable (module `EdgeSync` suit une structure specialisee synchro/offline, pas le squelette DDD standard Contracts/Exceptions/DTOs).
 > Corrige lors de l'audit doc du 2026-07-19 : ce tableau omettait `EdgeSync` et `Marketing` (19 au total, pas 16).
-> Corrige le 2026-08-18 (#4936) : le module `Training` listé ici n'a jamais eu de dossier sous `api/app/Modules/` (supprimé lors du nettoyage legacy) → 18 modules actifs réels.
+> Corrige le 2026-08-26 (#5589) : `SmartAttendance` (supprimé #5356) et `Training` (jamais créé, #4936) sont retirés du tableau ; le module `Accounting` (129 fichiers PHP, 2ᵉ module du backend, routes `modules/accounting.php`, provider #55 de `bootstrap/providers.php`) est ajouté → 18 modules actifs réels.
 
 ---
 

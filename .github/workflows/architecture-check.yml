@@ -213,6 +213,9 @@ jobs:
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
 
+      - name: Architecture docs parity guard — modules réels ↔ docs (issue #5589)
+        run: bash dev-hub/tools/check-architecture-docs-parity.sh
+
       - name: Check migration basename collisions (issue #1962)
         run: dev-hub/tools/check-migration-basename-collisions.sh
 

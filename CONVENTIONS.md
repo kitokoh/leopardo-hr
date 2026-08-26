@@ -52,18 +52,21 @@ leopardo-hr/
 
 ```
 app/
-├── Http/
-│   ├── Controllers/Api/V1/     # Controllers API versionnés
-│   ├── Requests/Api/           # FormRequest validation
-│   └── Resources/Api/          # API Resources (transformation JSON)
-├── Models/                     # Eloquent models + traits
-├── Services/                   # Business logic
-├── Policies/                   # Authorization RBAC
-├── Events/                     # Domain events
-├── Listeners/                  # Event handlers
-├── Traits/                     # BelongsToCompany, Approvable, etc.
-└── AI/                         # Couche IA (Orchestrator, Providers, Tools)
+├── Modules/<Nom>/              # Monolithe modulaire DDD (18 modules actifs)
+│   ├── Application/            # Actions, DTOs, Queries (orchestration)
+│   ├── Domain/                 # Models, Contracts, Exceptions (règles métier)
+│   ├── Infrastructure/         # Services, Repositories (implémentation)
+│   ├── Interfaces/Api/V1/      # Controllers + Requests (HTTP)
+│   └── Providers/              # ServiceProvider du module
+├── Core/                       # Socle transversal : Auth, Tenant, Feature
+├── Shared/                     # Code partagé (traits, enums, helpers)
+└── Http/
+    ├── Middleware/             # Middlewares HTTP
+    └── Resources/Api/V1/       # JsonResource centralisées (dérogation PA2-ARCH-010)
 ```
+
+Modules actifs : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `EdgeSync`, `Expense`, `Fleet`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` — état couche-par-couche dans `docs/ARCHITECTURE_STATUS.md`.
+> `app/Http/Controllers/Api/V1/`, `app/Models/` et `app/Services/` ont été **supprimés** (PR #824, phase 2, #1728) — tout nouveau code va dans `Modules/<Nom>/` (`App\Modules\<Nom>\*`).
 
 ### 2.4 Multi-tenant
 

@@ -57,13 +57,13 @@ Modules/<Name>/
 └── Providers/          # ServiceProvider du module
 ```
 
-Modules actifs (18, sous `api/app/Modules/`) : `Absence`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `EdgeSync`, `Expense`, `Fleet`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `SmartAttendance` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
+Modules actifs (18, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `EdgeSync`, `Expense`, `Fleet`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
 
 > Décompte vérifié via `ls api/app/Modules | wc -l`. Voir `docs/ARCHITECTURE_STATUS.md` pour l'état couche-par-couche (Domain/Application/Infrastructure/Interfaces/Providers/Tests) de chaque module.
 
 ### Règle de contribution backend
 > **Tout nouveau code métier va dans `api/app/Modules/`.**
-> `api/app/Http/Controllers/Api/V1/` a été intégralement supprimé (90 controllers legacy, PR #824, 2026-07-01). `api/app/Services/` a perdu ses 26 doublons legacy mais **n'est pas vide** : il reste des services spécialisés non-DDD (`Cache/`, `Communication/`, `Payroll/`, `SSO/`, `Security/`, `Tracking/`, etc.) + le shim `TenantManager.php`. Voir `api/ARCHITECTURE.md` pour le détail exact.
+> `api/app/Http/Controllers/Api/V1/` a été intégralement supprimé (90 controllers legacy, PR #824, 2026-07-01). `api/app/Services/` a été **intégralement supprimé** (2026-08-11, #1728) : les 17 derniers shims backward-compat ont été retirés, tous les consommateurs référencent les canoniques (`App\Core\…` / `App\Modules\…`). Voir `api/ARCHITECTURE.md` pour le détail exact.
 > `api/app/Models/` a été supprimé (migration DDD terminée) — tout nouveau modèle va dans le module DDD concerné sous `api/app/Modules/<Name>/Domain/Models/`.
 > Voir `api/ARCHITECTURE.md` pour la liste complète et les TODOs restants.
 
