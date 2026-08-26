@@ -3,9 +3,10 @@ import userEvent from '@testing-library/user-event';
 import { apiFetch } from '@/lib/api-client';
 import { ChallengeForm } from '../ChallengeForm';
 
-jest.mock('@/lib/api-client', () => ({
-  apiFetch: jest.fn(),
-}));
+jest.mock('@/lib/api-client', () => {
+  const actual = jest.requireActual('@/lib/api-client') as typeof import('@/lib/api-client');
+  return { apiFetch: jest.fn(), ApiError: actual.ApiError };
+});
 
 const mockedApiFetch = apiFetch as jest.MockedFunction<typeof apiFetch>;
 
@@ -23,7 +24,13 @@ beforeEach(() => {
   window.sessionStorage.clear();
 });
 
-function mockMeUser() {
+function mockVerifyThenMe() {
+  // 1. POST /auth/2fa/verify → succès (le route handler pose le cookie).
+  mockedApiFetch.mockResolvedValueOnce({
+    ok: true,
+    json: async () => ({ data: { id: 42, email: 'manager@company.test' } }),
+  } as unknown as Response);
+  // 2. GET /auth/me → profil utilisateur (hydration post-challenge).
   mockedApiFetch.mockResolvedValueOnce({
     ok: true,
     json: async () => ({ data: { id: 42, email: 'manager@company.test', language: 'fr', is_rtl: false, role: 'manager' } }),
@@ -40,7 +47,7 @@ describe('ChallengeForm (issue #5612)', () => {
 
   it('submits the TOTP code with the challenge token and redirects to the dashboard', async () => {
     window.sessionStorage.setItem('mfa_challenge_token', 'ch-abc');
-    mockMeUser();
+    mockVerifyThenMe();
 
     render(<ChallengeForm />);
 
@@ -63,7 +70,7 @@ describe('ChallengeForm (issue #5612)', () => {
 
   it('submits a recovery code when the toggle is used', async () => {
     window.sessionStorage.setItem('mfa_challenge_token', 'ch-rec');
-    mockMeUser();
+    mockVerifyThenMe();
 
     render(<ChallengeForm />);
 
@@ -83,11 +90,9 @@ describe('ChallengeForm (issue #5612)', () => {
 
   it('surfaces the API error message on an invalid code', async () => {
     window.sessionStorage.setItem('mfa_challenge_token', 'ch-bad');
+    const { ApiError } = jest.requireActual('@/lib/api-client') as typeof import('@/lib/api-client');
     mockedApiFetch.mockRejectedValueOnce(
-      new (class extends Error {
-        status = 422;
-        code = 'TWO_FA_INVALID';
-      })('Code invalide ou expiré. Réessayez.'),
+      new ApiError('Code invalide ou expiré. Réessayez.', 422, 'TWO_FA_INVALID'),
     );
 
     render(<ChallengeForm />);
