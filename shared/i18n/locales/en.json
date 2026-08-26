@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-25T00:00:00Z",
+  "_updated_at": "2026-08-26T00:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -1510,7 +1510,11 @@
     "fallbackPollingTitle": "Notifications via fallback polling (push unavailable)",
     "tenantOnly": "Enterprise feature — reserved for client workspaces",
     "settings": "Settings",
-    "team": "Team"
+    "team": "Team",
+    "home": "Home",
+    "attendance": "Attendance",
+    "absences": "Absences",
+    "approvals": "Approvals"
   },
   "exports": {
     "reportEmployees": "Employees",
@@ -1811,7 +1815,20 @@
   "contracts": {
     "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
     "searchPlaceholder": "Search for an employee or contract type...",
-    "allStatuses": "All statuses"
+    "allStatuses": "All statuses",
+    "mobile_title": "My Contract",
+    "back_tooltip": "Back",
+    "empty_title": "No contract",
+    "empty_description": "Your contract will appear here once configured.",
+    "label_type": "Type",
+    "label_start_date": "Start",
+    "label_end_date": "End",
+    "label_base_salary": "Base salary",
+    "loading": "Loading contracts...",
+    "status_active": "Active",
+    "status_expired": "Expired",
+    "status_draft": "Draft",
+    "status_cdi": "Permanent (CDI)"
   },
   "training": {
     "titlePlaceholder": "Title *",
@@ -3205,5 +3222,57 @@
     "matchDone": "Line matched.",
     "loading": "Loading…",
     "retry": "Retry"
+  },
+  "organigramme": {
+    "title": "Org Chart",
+    "back_tooltip": "Back",
+    "empty_title": "No org chart",
+    "loading": "Loading org chart..."
+  },
+  "vehicle_map": {
+    "title": "Vehicle Position",
+    "back_tooltip": "Back",
+    "empty_title": "No vehicle",
+    "empty_description": "Your assigned vehicles will appear here.",
+    "loading": "Loading vehicles...",
+    "last_update": "Last update: {time}",
+    "speed_kmh": "{speed} km/h"
+  },
+  "payrollValidated": "Validated",
+  "payrollDocumentUnavailable": "Document unavailable: {error}",
+  "payrollOvertimeHoursTeam": "Overtime ({hours}h)",
+  "payrollOvertimeHoursItem": "+{hours}h OT",
+  "platform_admin": {
+    "activation_note": "Direct activation from Platform Admin mobile app.",
+    "company_approved_note": "Approved from Leopardo Platform Admin mobile",
+    "company_rejected_note": "Rejected from Leopardo Platform Admin mobile"
+  },
+  "edge_nodes": {
+    "title": "Edge Nodes",
+    "subtitle": "On-premise connected sites",
+    "refresh_tooltip": "Refresh",
+    "empty": "No Edge node registered.",
+    "online": "Online",
+    "offline": "Offline",
+    "section_label": "Nodes",
+    "loading": "Loading nodes",
+    "force_sync": "Force synchronization",
+    "sync_triggered": "Sync triggered.",
+    "last_sync": "Last sync: {date}",
+    "node_id": "ID: {id}",
+    "version_info": "v{version} — {count} employee(s)"
+  },
+  "support_tickets": {
+    "title": "Customer support",
+    "subtitle": "Tenant tickets",
+    "filter_all": "All",
+    "filter_open": "Open",
+    "filter_in_progress": "In progress",
+    "filter_resolved": "Resolved",
+    "filter_closed": "Closed",
+    "empty": "No ticket for this filter.",
+    "loading": "Loading tickets",
+    "reply_sent": "Reply sent.",
+    "loading_ticket": "Loading ticket"
   }
 }
