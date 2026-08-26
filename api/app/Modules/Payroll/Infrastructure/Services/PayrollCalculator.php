@@ -76,6 +76,11 @@ class PayrollCalculator
      * extraite du god-object). Les appelants externes (tests, services)
      * continuent d'appeler PayrollCalculator::collectWorkInputs().
      */
+    /**
+     * @param  array{overtime_hours?: float}|null                          $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null $leaveAgg
+     * @return array{overtime_hours: float, paid_leave_days: float, unpaid_leave_days: float}
+     */
     public function collectWorkInputs(
         PayrollRun $run,
         Employee $employee,
@@ -438,6 +443,10 @@ class PayrollCalculator
      * (implémentation extraite du god-object). Les appelants externes (tests
      * golden, simulateurs, services) continuent d'appeler PayrollCalculator.
      */
+    /**
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null $attendanceAgg
+     * @return array{working_days: float, actual_days_worked: float, overtime_hours: float, has_attendance_data: bool}
+     */
     public function computeWorkedDays(PayrollRun $run, Employee $employee, ?array $attendanceAgg = null): array
     {
         return $this->slipValues->computeWorkedDays($run, $employee, $attendanceAgg);
@@ -472,6 +481,18 @@ class PayrollCalculator
         return $this->slipValues->computeLeaveIndemnity($monthlyBase, $leaveDays, $workingDays, $referenceGross12Months, $accruedDaysTotal);
     }
 
+    /**
+     * @return array{
+     *     social: array{employee: float, employer: float},
+     *     taxable_gross: float,
+     *     non_taxable_earnings: float,
+     *     income_tax: float,
+     *     bracket_tax: float,
+     *     base_deductions: float,
+     *     net_salary: float,
+     *     total_cost: float,
+     * }
+     */
     public function computeNetBreakdown(
         float $grossEarnings,
         CountryRulesContract $rules,
@@ -481,6 +502,9 @@ class PayrollCalculator
         return $this->slipValues->computeNetBreakdown($grossEarnings, $rules, $familyParts, $nonTaxableEarnings);
     }
 
+    /**
+     * @return array<int, array{min: float, max: float|null, rate: float, taxable_amount: float, tax: float}>
+     */
     public function slabTaxBreakdown(CountryRulesContract $rules, float $gross, float $taxBase, float $expectedTax): array
     {
         return $this->slipValues->slabTaxBreakdown($rules, $gross, $taxBase, $expectedTax);
