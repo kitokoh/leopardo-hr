@@ -463,24 +463,45 @@ abstract class AppLocalizations {
   String get authTwoFactorRequired;
 
   /// No description provided for @twoFaChallengeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification à deux facteurs'**
   String get twoFaChallengeTitle;
 
   /// No description provided for @twoFaChallengeSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez le code à 6 chiffres de votre application d\'authentification.'**
   String get twoFaChallengeSubtitle;
 
   /// No description provided for @twoFaChallengeCodeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code TOTP (6 chiffres)'**
   String get twoFaChallengeCodeHint;
 
   /// No description provided for @twoFaChallengeVerifyBtn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifier'**
   String get twoFaChallengeVerifyBtn;
 
   /// No description provided for @twoFaChallengeRecoveryToggle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utiliser un code de récupération'**
   String get twoFaChallengeRecoveryToggle;
 
   /// No description provided for @twoFaChallengeRecoveryHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code de récupération'**
   String get twoFaChallengeRecoveryHint;
 
   /// No description provided for @twoFaChallengeInvalidError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code invalide ou expiré. Réessayez.'**
   String get twoFaChallengeInvalidError;
 
   /// No description provided for @authDemoAccess.
@@ -6526,6 +6547,30 @@ abstract class AppLocalizations {
   /// **'Équipe'**
   String get shellTeam;
 
+  /// No description provided for @shellHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accueil'**
+  String get shellHome;
+
+  /// No description provided for @shellAttendance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointage'**
+  String get shellAttendance;
+
+  /// No description provided for @shellAbsences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absences'**
+  String get shellAbsences;
+
+  /// No description provided for @shellApprovals.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validations'**
+  String get shellApprovals;
+
   /// No description provided for @exportsReportemployees.
   ///
   /// In fr, this message translates to:
@@ -8019,6 +8064,84 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Tous les statuts'**
   String get contractsAllstatuses;
+
+  /// No description provided for @contractsMobileTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon Contrat'**
+  String get contractsMobileTitle;
+
+  /// No description provided for @contractsBackTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get contractsBackTooltip;
+
+  /// No description provided for @contractsEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun contrat'**
+  String get contractsEmptyTitle;
+
+  /// No description provided for @contractsEmptyDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre contrat apparaîtra ici une fois configuré.'**
+  String get contractsEmptyDescription;
+
+  /// No description provided for @contractsLabelType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get contractsLabelType;
+
+  /// No description provided for @contractsLabelStartDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Début'**
+  String get contractsLabelStartDate;
+
+  /// No description provided for @contractsLabelEndDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fin'**
+  String get contractsLabelEndDate;
+
+  /// No description provided for @contractsLabelBaseSalary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salaire de base'**
+  String get contractsLabelBaseSalary;
+
+  /// No description provided for @contractsLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des contrats...'**
+  String get contractsLoading;
+
+  /// No description provided for @contractsStatusActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actif'**
+  String get contractsStatusActive;
+
+  /// No description provided for @contractsStatusExpired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expiré'**
+  String get contractsStatusExpired;
+
+  /// No description provided for @contractsStatusDraft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brouillon'**
+  String get contractsStatusDraft;
+
+  /// No description provided for @contractsStatusCdi.
+  ///
+  /// In fr, this message translates to:
+  /// **'CDI'**
+  String get contractsStatusCdi;
 
   /// No description provided for @trainingTitleplaceholder.
   ///
@@ -11233,7 +11356,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsRecoveryEmailLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Email de récupération'**
+  /// **'Email de recuperation'**
   String get settingsRecoveryEmailLabel;
 
   /// No description provided for @settingsPersonalEmailLabel.
@@ -11713,7 +11836,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPersonalPhoneLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Téléphone personnel'**
+  /// **'Telephone personnel'**
   String get settingsPersonalPhoneLabel;
 
   /// No description provided for @notifMarkAllAsRead.
@@ -11848,527 +11971,1811 @@ abstract class AppLocalizations {
   /// **'Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.'**
   String get settingsBiometryPendingHint;
 
-  /// No description provided for @companiesRequiredField.
+  /// No description provided for @accountingactivationTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Champ requis'**
-  String get companiesRequiredField;
+  /// **'Activer la Comptabilité'**
+  String get accountingactivationTitle;
 
-  /// No description provided for @companiesCompanyCreated.
+  /// No description provided for @accountingactivationSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Entreprise créée'**
-  String get companiesCompanyCreated;
+  /// **'Paramétrez le module en quelques étapes : la check-list vérifie le paramétrage, le contact de test et la facture d\'exemple.'**
+  String get accountingactivationSubtitle;
 
-  /// No description provided for @companiesNewClient.
+  /// No description provided for @accountingactivationStepstitle.
   ///
   /// In fr, this message translates to:
-  /// **'Nouveau client'**
-  String get companiesNewClient;
+  /// **'Check-list d\'activation'**
+  String get accountingactivationStepstitle;
 
-  /// No description provided for @companiesProvisioning.
+  /// No description provided for @accountingactivationStepsettings.
   ///
   /// In fr, this message translates to:
-  /// **'Provisionnement plateforme'**
-  String get companiesProvisioning;
+  /// **'Paramétrage comptable'**
+  String get accountingactivationStepsettings;
 
-  /// No description provided for @companiesCompanyEmail.
+  /// No description provided for @accountingactivationStepsettingsdone.
   ///
   /// In fr, this message translates to:
-  /// **'Email entreprise'**
-  String get companiesCompanyEmail;
+  /// **'Paramétrage comptable — fait'**
+  String get accountingactivationStepsettingsdone;
 
-  /// No description provided for @companiesCreateClient.
+  /// No description provided for @accountingactivationStepsettingstodo.
   ///
   /// In fr, this message translates to:
-  /// **'Créer le client'**
-  String get companiesCreateClient;
+  /// **'Paramétrage comptable — à faire'**
+  String get accountingactivationStepsettingstodo;
 
-  /// No description provided for @companiesCreating.
+  /// No description provided for @accountingactivationStepcontact.
   ///
   /// In fr, this message translates to:
-  /// **'Création...'**
-  String get companiesCreating;
+  /// **'Contact de test'**
+  String get accountingactivationStepcontact;
 
-  /// No description provided for @companiesActiveImmediatelyHint.
+  /// No description provided for @accountingactivationStepcontactdone.
   ///
   /// In fr, this message translates to:
-  /// **'Le client sera créé en statut actif.'**
-  String get companiesActiveImmediatelyHint;
+  /// **'Contact de test — créé'**
+  String get accountingactivationStepcontactdone;
 
-  /// No description provided for @companiesTrialHint.
+  /// No description provided for @accountingactivationStepcontacttodo.
   ///
   /// In fr, this message translates to:
-  /// **'Le client démarre en essai, puis peut être activé depuis sa fiche.'**
-  String get companiesTrialHint;
+  /// **'Contact de test — à créer'**
+  String get accountingactivationStepcontacttodo;
 
-  /// No description provided for @companydetailClientFile.
+  /// No description provided for @accountingactivationStepexampleinvoice.
   ///
   /// In fr, this message translates to:
-  /// **'Fiche client'**
-  String get companydetailClientFile;
+  /// **'Facture d\'exemple'**
+  String get accountingactivationStepexampleinvoice;
 
-  /// No description provided for @companydetailProductAdoption.
+  /// No description provided for @accountingactivationStepexampleinvoicedone.
   ///
   /// In fr, this message translates to:
-  /// **'Adoption produit'**
-  String get companydetailProductAdoption;
+  /// **'Facture d\'exemple — créée'**
+  String get accountingactivationStepexampleinvoicedone;
 
-  /// No description provided for @companydetailActiveEmployees.
+  /// No description provided for @accountingactivationStepexampleinvoicetodo.
   ///
   /// In fr, this message translates to:
-  /// **'Employés actifs'**
-  String get companydetailActiveEmployees;
+  /// **'Facture d\'exemple — à créer'**
+  String get accountingactivationStepexampleinvoicetodo;
 
-  /// No description provided for @companydetailAnomaliesCritical.
+  /// No description provided for @accountingactivationDone.
   ///
   /// In fr, this message translates to:
-  /// **'Anomalies critiques'**
-  String get companydetailAnomaliesCritical;
+  /// **'Fait'**
+  String get accountingactivationDone;
 
-  /// No description provided for @commonBack.
+  /// No description provided for @accountingactivationTodo.
   ///
   /// In fr, this message translates to:
-  /// **'Retour'**
-  String get commonBack;
+  /// **'À faire'**
+  String get accountingactivationTodo;
 
-  /// No description provided for @companydetailClientReference.
+  /// No description provided for @accountingactivationActivatebutton.
   ///
   /// In fr, this message translates to:
-  /// **'Reference client'**
-  String get companydetailClientReference;
+  /// **'Terminer l\'activation'**
+  String get accountingactivationActivatebutton;
 
-  /// No description provided for @companydetailTenantIdHint.
+  /// No description provided for @accountingactivationActivating.
   ///
   /// In fr, this message translates to:
-  /// **'Identifiant tenant a presenter au support ou scanner sur site pour retrouver ce client instantanement.'**
-  String get companydetailTenantIdHint;
+  /// **'Activation en cours…'**
+  String get accountingactivationActivating;
 
-  /// No description provided for @companydetailCopyId.
+  /// No description provided for @accountingactivationCompletedtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Copier l\'identifiant'**
-  String get companydetailCopyId;
+  /// **'Comptabilité activée'**
+  String get accountingactivationCompletedtitle;
 
-  /// No description provided for @companydetailSubscription.
+  /// No description provided for @accountingactivationCompletedbody.
   ///
   /// In fr, this message translates to:
-  /// **'Abonnement'**
-  String get companydetailSubscription;
+  /// **'Le module Comptabilité est prêt : paramétrage, contact et facture d\'exemple en place.'**
+  String get accountingactivationCompletedbody;
 
-  /// No description provided for @companydetailPlan.
+  /// No description provided for @accountingactivationGotomodule.
   ///
   /// In fr, this message translates to:
-  /// **'Plan'**
-  String get companydetailPlan;
+  /// **'Accéder au module Comptabilité'**
+  String get accountingactivationGotomodule;
 
-  /// No description provided for @companydetailStatus.
+  /// No description provided for @accountingactivationLoaderror.
   ///
   /// In fr, this message translates to:
-  /// **'Statut'**
-  String get companydetailStatus;
+  /// **'Impossible de charger l\'état d\'activation. Réessayez.'**
+  String get accountingactivationLoaderror;
 
-  /// No description provided for @companydetailMonthlyPrice.
+  /// No description provided for @accountingactivationCompleteerror.
   ///
   /// In fr, this message translates to:
-  /// **'Prix mensuel'**
-  String get companydetailMonthlyPrice;
+  /// **'L\'activation a échoué. Réessayez.'**
+  String get accountingactivationCompleteerror;
 
-  /// No description provided for @companydetailEmployeeLimit.
+  /// No description provided for @accountingactivationRetry.
   ///
   /// In fr, this message translates to:
-  /// **'Limite employes'**
-  String get companydetailEmployeeLimit;
+  /// **'Réessayer'**
+  String get accountingactivationRetry;
 
-  /// No description provided for @companydetailUnlimited.
+  /// No description provided for @accountingactivationLoading.
   ///
   /// In fr, this message translates to:
-  /// **'Illimite'**
-  String get companydetailUnlimited;
+  /// **'Chargement…'**
+  String get accountingactivationLoading;
 
-  /// No description provided for @companydetailSubscriptionEnd.
+  /// No description provided for @accountingmoduleHometitle.
   ///
   /// In fr, this message translates to:
-  /// **'Fin abonnement'**
-  String get companydetailSubscriptionEnd;
+  /// **'Comptabilité'**
+  String get accountingmoduleHometitle;
 
-  /// No description provided for @companydetailUndefined.
+  /// No description provided for @accountingmoduleHomesubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Non definie'**
-  String get companydetailUndefined;
+  /// **'Module comptable : plan comptable, grand livre, balance, états financiers, FEC, exercices et lettrage.'**
+  String get accountingmoduleHomesubtitle;
 
-  /// No description provided for @companydetailActivateClient.
+  /// No description provided for @accountingmoduleNavchart.
   ///
   /// In fr, this message translates to:
-  /// **'Activer client'**
-  String get companydetailActivateClient;
+  /// **'Plan comptable'**
+  String get accountingmoduleNavchart;
 
-  /// No description provided for @companydetailEditSubscription.
+  /// No description provided for @accountingmoduleNavledger.
   ///
   /// In fr, this message translates to:
-  /// **'Modifier abonnement'**
-  String get companydetailEditSubscription;
+  /// **'Grand livre'**
+  String get accountingmoduleNavledger;
 
-  /// No description provided for @companydetailActiveModules.
+  /// No description provided for @accountingmoduleNavbalance.
   ///
   /// In fr, this message translates to:
-  /// **'Modules actifs'**
-  String get companydetailActiveModules;
+  /// **'Balance'**
+  String get accountingmoduleNavbalance;
 
-  /// No description provided for @companydetailEditModules.
+  /// No description provided for @accountingmoduleNavstatements.
   ///
   /// In fr, this message translates to:
-  /// **'Modifier modules'**
-  String get companydetailEditModules;
+  /// **'États financiers'**
+  String get accountingmoduleNavstatements;
 
-  /// No description provided for @companydetailNextActions.
+  /// No description provided for @accountingmoduleNavfiscalyears.
   ///
   /// In fr, this message translates to:
-  /// **'Prochaines actions'**
-  String get companydetailNextActions;
+  /// **'Exercices'**
+  String get accountingmoduleNavfiscalyears;
 
-  /// No description provided for @companydetailNoUrgentActions.
+  /// No description provided for @accountingmoduleNavlettering.
   ///
   /// In fr, this message translates to:
-  /// **'Aucune action urgente detectee pour ce client.'**
-  String get companydetailNoUrgentActions;
+  /// **'Lettrage'**
+  String get accountingmoduleNavlettering;
 
-  /// No description provided for @companydetailRecommendedActionHint.
+  /// No description provided for @accountingmoduleNavfec.
   ///
   /// In fr, this message translates to:
-  /// **'Action recommandee par le cockpit plateforme.'**
-  String get companydetailRecommendedActionHint;
+  /// **'Export FEC'**
+  String get accountingmoduleNavfec;
 
-  /// No description provided for @companydetailPlanNotFound.
+  /// No description provided for @accountingmoduleCharttitle.
   ///
   /// In fr, this message translates to:
-  /// **'Plan actuel introuvable'**
-  String get companydetailPlanNotFound;
+  /// **'Plan comptable'**
+  String get accountingmoduleCharttitle;
 
-  /// No description provided for @companydetailClientActivated.
+  /// No description provided for @accountingmoduleChartsubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Client active'**
-  String get companydetailClientActivated;
+  /// **'Comptes des classes PCG/SCF 1 à 8. Les comptes système ne peuvent pas être supprimés (désactivation seule).'**
+  String get accountingmoduleChartsubtitle;
 
-  /// No description provided for @companydetailChoosePlan.
+  /// No description provided for @accountingmoduleChartcode.
   ///
   /// In fr, this message translates to:
-  /// **'Choisir un plan'**
-  String get companydetailChoosePlan;
+  /// **'Code'**
+  String get accountingmoduleChartcode;
 
-  /// No description provided for @companydetailSubscriptionUpdated.
+  /// No description provided for @accountingmoduleChartlabel.
   ///
   /// In fr, this message translates to:
-  /// **'Abonnement mis a jour'**
-  String get companydetailSubscriptionUpdated;
+  /// **'Libellé'**
+  String get accountingmoduleChartlabel;
 
-  /// No description provided for @companydetailOptionalInternalNote.
+  /// No description provided for @accountingmoduleCharttype.
   ///
   /// In fr, this message translates to:
-  /// **'Note interne optionnelle'**
-  String get companydetailOptionalInternalNote;
+  /// **'Type'**
+  String get accountingmoduleCharttype;
 
-  /// No description provided for @companydetailSaving.
+  /// No description provided for @accountingmoduleChartclass.
   ///
   /// In fr, this message translates to:
-  /// **'Enregistrement...'**
-  String get companydetailSaving;
+  /// **'Classe'**
+  String get accountingmoduleChartclass;
 
-  /// No description provided for @commonSave.
+  /// No description provided for @accountingmoduleChartstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'État'**
+  String get accountingmoduleChartstatus;
+
+  /// No description provided for @accountingmoduleChartactive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actif'**
+  String get accountingmoduleChartactive;
+
+  /// No description provided for @accountingmoduleChartinactive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactivé'**
+  String get accountingmoduleChartinactive;
+
+  /// No description provided for @accountingmoduleChartadd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un compte'**
+  String get accountingmoduleChartadd;
+
+  /// No description provided for @accountingmoduleChartaddtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau compte'**
+  String get accountingmoduleChartaddtitle;
+
+  /// No description provided for @accountingmoduleChartsave.
   ///
   /// In fr, this message translates to:
   /// **'Enregistrer'**
-  String get commonSave;
+  String get accountingmoduleChartsave;
 
-  /// No description provided for @companydetailLoadingPlans.
+  /// No description provided for @accountingmoduleChartcancel.
   ///
   /// In fr, this message translates to:
-  /// **'Chargement plans'**
-  String get companydetailLoadingPlans;
+  /// **'Annuler'**
+  String get accountingmoduleChartcancel;
 
-  /// Dropdown item for a plan with its monthly price.
+  /// No description provided for @accountingmoduleChartdelete.
   ///
   /// In fr, this message translates to:
-  /// **'{planName} - {price}/mois'**
-  String companydetailPlanWithPrice(String planName, String price);
+  /// **'Supprimer'**
+  String get accountingmoduleChartdelete;
 
-  /// No description provided for @companydetailSaveModules.
+  /// No description provided for @accountingmoduleCharttoggle.
   ///
   /// In fr, this message translates to:
-  /// **'Enregistrer modules'**
-  String get companydetailSaveModules;
+  /// **'Activer/Désactiver'**
+  String get accountingmoduleCharttoggle;
 
-  /// No description provided for @companydetailCoreModuleAlwaysActive.
+  /// No description provided for @accountingmoduleChartsystemnote.
   ///
   /// In fr, this message translates to:
-  /// **'Module socle toujours actif'**
-  String get companydetailCoreModuleAlwaysActive;
+  /// **'Compte système — suppression interdite'**
+  String get accountingmoduleChartsystemnote;
 
-  /// No description provided for @companydetailModulesUpdated.
+  /// No description provided for @accountingmoduleCharttypeasset.
   ///
   /// In fr, this message translates to:
-  /// **'Modules mis a jour'**
-  String get companydetailModulesUpdated;
+  /// **'Actif'**
+  String get accountingmoduleCharttypeasset;
 
-  /// No description provided for @companiesTenantsPlatform.
+  /// No description provided for @accountingmoduleCharttypeliability.
   ///
   /// In fr, this message translates to:
-  /// **'Tenants plateforme'**
-  String get companiesTenantsPlatform;
+  /// **'Passif'**
+  String get accountingmoduleCharttypeliability;
 
-  /// No description provided for @companiesEmpty.
+  /// No description provided for @accountingmoduleCharttypeequity.
   ///
   /// In fr, this message translates to:
-  /// **'Aucune entreprise à afficher.'**
-  String get companiesEmpty;
+  /// **'Capitaux'**
+  String get accountingmoduleCharttypeequity;
 
-  /// No description provided for @companyrequestsValidationSuperadmin.
+  /// No description provided for @accountingmoduleCharttyperevenue.
   ///
   /// In fr, this message translates to:
-  /// **'Validation super-admin'**
-  String get companyrequestsValidationSuperadmin;
+  /// **'Produit'**
+  String get accountingmoduleCharttyperevenue;
 
-  /// No description provided for @companyrequestsApprovedToast.
+  /// No description provided for @accountingmoduleCharttypeexpense.
   ///
   /// In fr, this message translates to:
-  /// **'Demande approuvée'**
-  String get companyrequestsApprovedToast;
+  /// **'Charge'**
+  String get accountingmoduleCharttypeexpense;
 
-  /// No description provided for @companyrequestsRejectedToast.
+  /// No description provided for @accountingmoduleChartempty.
   ///
   /// In fr, this message translates to:
-  /// **'Demande refusée'**
-  String get companyrequestsRejectedToast;
+  /// **'Aucun compte.'**
+  String get accountingmoduleChartempty;
 
-  /// No description provided for @dashboardPlatformAdministration.
+  /// No description provided for @accountingmoduleCharterror.
   ///
   /// In fr, this message translates to:
-  /// **'Administration plateforme'**
-  String get dashboardPlatformAdministration;
+  /// **'Impossible de charger le plan comptable.'**
+  String get accountingmoduleCharterror;
 
-  /// No description provided for @dashboardSuperAdmin.
+  /// No description provided for @accountingmodulePeriodlabel.
   ///
   /// In fr, this message translates to:
-  /// **'Super-admin'**
-  String get dashboardSuperAdmin;
+  /// **'Période'**
+  String get accountingmodulePeriodlabel;
 
-  /// No description provided for @dashboardExecutiveView.
+  /// No description provided for @accountingmoduleYearlabel.
   ///
   /// In fr, this message translates to:
-  /// **'Vue executive'**
-  String get dashboardExecutiveView;
+  /// **'Exercice'**
+  String get accountingmoduleYearlabel;
 
-  /// No description provided for @dashboardActiveLabel.
+  /// No description provided for @accountingmoduleAlltypes.
   ///
   /// In fr, this message translates to:
-  /// **'Actives'**
-  String get dashboardActiveLabel;
+  /// **'Tous les types'**
+  String get accountingmoduleAlltypes;
 
-  /// No description provided for @dashboardTrials.
+  /// No description provided for @accountingmoduleLedgertitle.
   ///
   /// In fr, this message translates to:
-  /// **'Essais'**
-  String get dashboardTrials;
+  /// **'Grand livre'**
+  String get accountingmoduleLedgertitle;
 
-  /// No description provided for @dashboardLoadingCockpit.
+  /// No description provided for @accountingmoduleLedgersubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Chargement cockpit'**
-  String get dashboardLoadingCockpit;
+  /// **'Écritures par période, solde courant continu.'**
+  String get accountingmoduleLedgersubtitle;
 
-  /// No description provided for @dashboardPlatformActions.
+  /// No description provided for @accountingmoduleLedgeropening.
   ///
   /// In fr, this message translates to:
-  /// **'Actions plateforme'**
-  String get dashboardPlatformActions;
+  /// **'Solde d\'ouverture'**
+  String get accountingmoduleLedgeropening;
 
-  /// No description provided for @dashboardClientCompanies.
+  /// No description provided for @accountingmoduleLedgerdebit.
   ///
   /// In fr, this message translates to:
-  /// **'Entreprises clientes'**
-  String get dashboardClientCompanies;
+  /// **'Débit'**
+  String get accountingmoduleLedgerdebit;
 
-  /// No description provided for @dashboardClientCompaniesHint.
+  /// No description provided for @accountingmoduleLedgercredit.
   ///
   /// In fr, this message translates to:
-  /// **'Suivre les tenants, leur statut et leur plan.'**
-  String get dashboardClientCompaniesHint;
+  /// **'Crédit'**
+  String get accountingmoduleLedgercredit;
 
-  /// No description provided for @dashboardCreateCompany.
+  /// No description provided for @accountingmoduleLedgerbalance.
   ///
   /// In fr, this message translates to:
-  /// **'Créer une entreprise'**
-  String get dashboardCreateCompany;
+  /// **'Solde'**
+  String get accountingmoduleLedgerbalance;
 
-  /// No description provided for @dashboardCreateCompanyHint.
+  /// No description provided for @accountingmoduleLedgerdate.
   ///
   /// In fr, this message translates to:
-  /// **'Provisionner un nouveau client et son manager principal.'**
-  String get dashboardCreateCompanyHint;
+  /// **'Date'**
+  String get accountingmoduleLedgerdate;
 
-  /// No description provided for @dashboardClientRequestsHint.
+  /// No description provided for @accountingmoduleLedgerpiece.
   ///
   /// In fr, this message translates to:
-  /// **'Approuver ou refuser les demandes de création.'**
-  String get dashboardClientRequestsHint;
+  /// **'Pièce'**
+  String get accountingmoduleLedgerpiece;
 
-  /// No description provided for @dashboardSupportClient.
+  /// No description provided for @accountingmoduleLedgerdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libellé'**
+  String get accountingmoduleLedgerdesc;
+
+  /// No description provided for @accountingmoduleLedgeraccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte'**
+  String get accountingmoduleLedgeraccount;
+
+  /// No description provided for @accountingmoduleLedgerempty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune écriture sur la période.'**
+  String get accountingmoduleLedgerempty;
+
+  /// No description provided for @accountingmoduleLedgeraccountfilter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Filtrer par compte'**
+  String get accountingmoduleLedgeraccountfilter;
+
+  /// No description provided for @accountingmoduleLedgerexportfec.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exporter FEC'**
+  String get accountingmoduleLedgerexportfec;
+
+  /// No description provided for @accountingmoduleBalancetitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Balance de vérification'**
+  String get accountingmoduleBalancetitle;
+
+  /// No description provided for @accountingmoduleBalancesubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Totaux débit/crédit et solde par compte sur la période.'**
+  String get accountingmoduleBalancesubtitle;
+
+  /// No description provided for @accountingmoduleBalancetotals.
+  ///
+  /// In fr, this message translates to:
+  /// **'Totaux généraux'**
+  String get accountingmoduleBalancetotals;
+
+  /// No description provided for @accountingmoduleBalancedifference.
+  ///
+  /// In fr, this message translates to:
+  /// **'Différence'**
+  String get accountingmoduleBalancedifference;
+
+  /// No description provided for @accountingmoduleBalancebalanced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Balance équilibrée'**
+  String get accountingmoduleBalancebalanced;
+
+  /// No description provided for @accountingmoduleBalanceunbalanced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Balance déséquilibrée'**
+  String get accountingmoduleBalanceunbalanced;
+
+  /// No description provided for @accountingmoduleBalanceempty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun mouvement sur la période.'**
+  String get accountingmoduleBalanceempty;
+
+  /// No description provided for @accountingmoduleStatementstitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'États financiers'**
+  String get accountingmoduleStatementstitle;
+
+  /// No description provided for @accountingmoduleStatementssubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bilan et compte de résultat par période.'**
+  String get accountingmoduleStatementssubtitle;
+
+  /// No description provided for @accountingmoduleTabbalancesheet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bilan'**
+  String get accountingmoduleTabbalancesheet;
+
+  /// No description provided for @accountingmoduleTabincomestatement.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte de résultat'**
+  String get accountingmoduleTabincomestatement;
+
+  /// No description provided for @accountingmoduleStatementactif.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actif'**
+  String get accountingmoduleStatementactif;
+
+  /// No description provided for @accountingmoduleStatementpassif.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passif'**
+  String get accountingmoduleStatementpassif;
+
+  /// No description provided for @accountingmoduleStatementcapitaux.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capitaux propres'**
+  String get accountingmoduleStatementcapitaux;
+
+  /// No description provided for @accountingmoduleStatementtotalactif.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total actif'**
+  String get accountingmoduleStatementtotalactif;
+
+  /// No description provided for @accountingmoduleStatementtotalpassif.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total passif'**
+  String get accountingmoduleStatementtotalpassif;
+
+  /// No description provided for @accountingmoduleStatementtotalcapitaux.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total capitaux'**
+  String get accountingmoduleStatementtotalcapitaux;
+
+  /// No description provided for @accountingmoduleStatementresultat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résultat net'**
+  String get accountingmoduleStatementresultat;
+
+  /// No description provided for @accountingmoduleStatementbalanced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invariant vérifié : actif = passif + capitaux'**
+  String get accountingmoduleStatementbalanced;
+
+  /// No description provided for @accountingmoduleStatementunbalanced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invariant non vérifié !'**
+  String get accountingmoduleStatementunbalanced;
+
+  /// No description provided for @accountingmoduleStatementempty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnée pour cette période.'**
+  String get accountingmoduleStatementempty;
+
+  /// No description provided for @accountingmoduleFytitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exercices comptables'**
+  String get accountingmoduleFytitle;
+
+  /// No description provided for @accountingmoduleFysubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouverture et clôture des exercices (report à nouveau automatique).'**
+  String get accountingmoduleFysubtitle;
+
+  /// No description provided for @accountingmoduleFyyear.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exercice'**
+  String get accountingmoduleFyyear;
+
+  /// No description provided for @accountingmoduleFystatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get accountingmoduleFystatus;
+
+  /// No description provided for @accountingmoduleFyopen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir'**
+  String get accountingmoduleFyopen;
+
+  /// No description provided for @accountingmoduleFyopentitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir un exercice'**
+  String get accountingmoduleFyopentitle;
+
+  /// No description provided for @accountingmoduleFyclose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clôturer'**
+  String get accountingmoduleFyclose;
+
+  /// No description provided for @accountingmoduleFystatusopen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvert'**
+  String get accountingmoduleFystatusopen;
+
+  /// No description provided for @accountingmoduleFystatusclosed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clôturé'**
+  String get accountingmoduleFystatusclosed;
+
+  /// No description provided for @accountingmoduleFyclosedat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clôturé le'**
+  String get accountingmoduleFyclosedat;
+
+  /// No description provided for @accountingmoduleFycloseconfirmtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clôturer l\'exercice {year} ?'**
+  String accountingmoduleFycloseconfirmtitle(Object year);
+
+  /// No description provided for @accountingmoduleFycloseconfirmbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'La clôture fige l\'exercice et reporte le résultat. Cette action est irréversible.'**
+  String get accountingmoduleFycloseconfirmbody;
+
+  /// No description provided for @accountingmoduleFyconfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer la clôture'**
+  String get accountingmoduleFyconfirm;
+
+  /// No description provided for @accountingmoduleFyempty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun exercice ouvert.'**
+  String get accountingmoduleFyempty;
+
+  /// No description provided for @accountingmoduleFyerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les exercices.'**
+  String get accountingmoduleFyerror;
+
+  /// No description provided for @accountingmoduleFyopenerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'ouvrir l\'exercice.'**
+  String get accountingmoduleFyopenerror;
+
+  /// No description provided for @accountingmoduleFycloseerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de clôturer l\'exercice.'**
+  String get accountingmoduleFycloseerror;
+
+  /// No description provided for @accountingmoduleLgtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lettrage'**
+  String get accountingmoduleLgtitle;
+
+  /// No description provided for @accountingmoduleLgsubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez 2+ écritures d\'un même compte et attribuez une lettre pour les rapprocher.'**
+  String get accountingmoduleLgsubtitle;
+
+  /// No description provided for @accountingmoduleLgselect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner'**
+  String get accountingmoduleLgselect;
+
+  /// No description provided for @accountingmoduleLgletter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lettre'**
+  String get accountingmoduleLgletter;
+
+  /// No description provided for @accountingmoduleLgapply.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lettrer'**
+  String get accountingmoduleLgapply;
+
+  /// No description provided for @accountingmoduleLgunletter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Délettrer'**
+  String get accountingmoduleLgunletter;
+
+  /// No description provided for @accountingmoduleLgunletterplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lettre à délettrer'**
+  String get accountingmoduleLgunletterplaceholder;
+
+  /// No description provided for @accountingmoduleLgneedselection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez au moins 2 écritures.'**
+  String get accountingmoduleLgneedselection;
+
+  /// No description provided for @accountingmoduleLgneedletter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez une lettre (max 32 caractères).'**
+  String get accountingmoduleLgneedletter;
+
+  /// No description provided for @accountingmoduleLgdone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écritures lettrées.'**
+  String get accountingmoduleLgdone;
+
+  /// No description provided for @accountingmoduleLgunlettered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écritures délettrées.'**
+  String get accountingmoduleLgunlettered;
+
+  /// No description provided for @accountingmoduleLgerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec du lettrage : {message}'**
+  String accountingmoduleLgerror(Object message);
+
+  /// No description provided for @accountingmoduleLgempty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune écriture sur la période.'**
+  String get accountingmoduleLgempty;
+
+  /// No description provided for @accountingmoduleLgbalanced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Journal équilibré'**
+  String get accountingmoduleLgbalanced;
+
+  /// No description provided for @accountingmoduleLgunbalanced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Journal déséquilibré'**
+  String get accountingmoduleLgunbalanced;
+
+  /// No description provided for @accountingmoduleLgclosed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période clôturée'**
+  String get accountingmoduleLgclosed;
+
+  /// No description provided for @accountingmoduleLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement…'**
+  String get accountingmoduleLoading;
+
+  /// No description provided for @accountingmoduleRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get accountingmoduleRetry;
+
+  /// No description provided for @accountingmoduleErrorgeneric.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue.'**
+  String get accountingmoduleErrorgeneric;
+
+  /// No description provided for @accountingmoduleFecerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export FEC impossible.'**
+  String get accountingmoduleFecerror;
+
+  /// No description provided for @shareaccessesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique des accès'**
+  String get shareaccessesTitle;
+
+  /// No description provided for @shareaccessesSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consultation RGPD : qui a consulté ou téléchargé un document partagé sur le portail client, quand et depuis quelle adresse IP.'**
+  String get shareaccessesSubtitle;
+
+  /// No description provided for @shareaccessesDocumentlabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Document'**
+  String get shareaccessesDocumentlabel;
+
+  /// No description provided for @shareaccessesSelectdocument.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner un document…'**
+  String get shareaccessesSelectdocument;
+
+  /// No description provided for @shareaccessesNodocumentselected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez un document pour afficher son historique d\'accès.'**
+  String get shareaccessesNodocumentselected;
+
+  /// No description provided for @shareaccessesActionheader.
+  ///
+  /// In fr, this message translates to:
+  /// **'Action'**
+  String get shareaccessesActionheader;
+
+  /// No description provided for @shareaccessesDateheader.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date'**
+  String get shareaccessesDateheader;
+
+  /// No description provided for @shareaccessesIpheader.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse IP'**
+  String get shareaccessesIpheader;
+
+  /// No description provided for @shareaccessesUseragentheader.
+  ///
+  /// In fr, this message translates to:
+  /// **'Navigateur'**
+  String get shareaccessesUseragentheader;
+
+  /// No description provided for @shareaccessesRequestidheader.
+  ///
+  /// In fr, this message translates to:
+  /// **'ID de corrélation'**
+  String get shareaccessesRequestidheader;
+
+  /// No description provided for @shareaccessesActioninfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consultation'**
+  String get shareaccessesActioninfo;
+
+  /// No description provided for @shareaccessesActiondownload.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléchargement'**
+  String get shareaccessesActiondownload;
+
+  /// No description provided for @shareaccessesEmptytitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun accès enregistré'**
+  String get shareaccessesEmptytitle;
+
+  /// No description provided for @shareaccessesEmptybody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce document n\'a encore jamais été consulté ni téléchargé via le portail client.'**
+  String get shareaccessesEmptybody;
+
+  /// No description provided for @shareaccessesLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les accès. Réessayez dans un instant.'**
+  String get shareaccessesLoaderror;
+
+  /// No description provided for @shareaccessesLoaddocumentserror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les documents. Réessayez dans un instant.'**
+  String get shareaccessesLoaddocumentserror;
+
+  /// No description provided for @shareaccessesLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement…'**
+  String get shareaccessesLoading;
+
+  /// No description provided for @shareaccessesPreviouspage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Page précédente'**
+  String get shareaccessesPreviouspage;
+
+  /// No description provided for @shareaccessesNextpage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Page suivante'**
+  String get shareaccessesNextpage;
+
+  /// No description provided for @shareaccessesPageof.
+  ///
+  /// In fr, this message translates to:
+  /// **'Page {current} sur {total}'**
+  String shareaccessesPageof(Object current, Object total);
+
+  /// No description provided for @shareaccessesTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} accès'**
+  String shareaccessesTotal(Object count);
+
+  /// No description provided for @shareaccessesRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get shareaccessesRetry;
+
+  /// No description provided for @adminpaletteApploading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement de l\'administration…'**
+  String get adminpaletteApploading;
+
+  /// No description provided for @adminpaletteSearchplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher pages, actions…'**
+  String get adminpaletteSearchplaceholder;
+
+  /// No description provided for @adminpaletteNoresults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun résultat pour « {query} »'**
+  String adminpaletteNoresults(Object query);
+
+  /// No description provided for @adminpaletteNavnavigate.
+  ///
+  /// In fr, this message translates to:
+  /// **'naviguer'**
+  String get adminpaletteNavnavigate;
+
+  /// No description provided for @adminpaletteNavselect.
+  ///
+  /// In fr, this message translates to:
+  /// **'sélectionner'**
+  String get adminpaletteNavselect;
+
+  /// No description provided for @adminpaletteNavclose.
+  ///
+  /// In fr, this message translates to:
+  /// **'fermer'**
+  String get adminpaletteNavclose;
+
+  /// No description provided for @adminpaletteItemdashboard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tableau de bord'**
+  String get adminpaletteItemdashboard;
+
+  /// No description provided for @adminpaletteItemdashboarddesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vue principale'**
+  String get adminpaletteItemdashboarddesc;
+
+  /// No description provided for @adminpaletteItemanalytics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analytics'**
+  String get adminpaletteItemanalytics;
+
+  /// No description provided for @adminpaletteItemanalyticsdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statistiques et rapports'**
+  String get adminpaletteItemanalyticsdesc;
+
+  /// No description provided for @adminpaletteItemusers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utilisateurs'**
+  String get adminpaletteItemusers;
+
+  /// No description provided for @adminpaletteItemusersdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gestion des utilisateurs'**
+  String get adminpaletteItemusersdesc;
+
+  /// No description provided for @adminpaletteItemcompanies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entreprises'**
+  String get adminpaletteItemcompanies;
+
+  /// No description provided for @adminpaletteItemcompaniesdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gestion des entreprises'**
+  String get adminpaletteItemcompaniesdesc;
+
+  /// No description provided for @adminpaletteItemsubscriptions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Abonnements'**
+  String get adminpaletteItemsubscriptions;
+
+  /// No description provided for @adminpaletteItemsubscriptionsdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plans et facturation'**
+  String get adminpaletteItemsubscriptionsdesc;
+
+  /// No description provided for @adminpaletteItemsettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paramètres'**
+  String get adminpaletteItemsettings;
+
+  /// No description provided for @adminpaletteItemsettingsdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte et préférences'**
+  String get adminpaletteItemsettingsdesc;
+
+  /// No description provided for @adminpaletteItemgrowth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Growth'**
+  String get adminpaletteItemgrowth;
+
+  /// No description provided for @adminpaletteItemgrowthdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partenaires et croissance'**
+  String get adminpaletteItemgrowthdesc;
+
+  /// No description provided for @adminpaletteItemedge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Edge Nodes'**
+  String get adminpaletteItemedge;
+
+  /// No description provided for @adminpaletteItemedgedesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nœuds edge synchronisés'**
+  String get adminpaletteItemedgedesc;
+
+  /// No description provided for @adminpaletteItemglobe.
+  ///
+  /// In fr, this message translates to:
+  /// **'Globe'**
+  String get adminpaletteItemglobe;
+
+  /// No description provided for @adminpaletteItemglobedesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présence mondiale en temps réel'**
+  String get adminpaletteItemglobedesc;
+
+  /// No description provided for @adminpaletteItemfleet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Flotte'**
+  String get adminpaletteItemfleet;
+
+  /// No description provided for @adminpaletteItemfleetdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alertes flotte véhicules'**
+  String get adminpaletteItemfleetdesc;
+
+  /// No description provided for @adminpaletteItemmarketing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marketing OAuth'**
+  String get adminpaletteItemmarketing;
+
+  /// No description provided for @adminpaletteItemmarketingdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Configuration OAuth marketing'**
+  String get adminpaletteItemmarketingdesc;
+
+  /// No description provided for @adminpaletteItemsupport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Support'**
+  String get adminpaletteItemsupport;
+
+  /// No description provided for @adminpaletteItemsupportdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tickets support clients'**
+  String get adminpaletteItemsupportdesc;
+
+  /// No description provided for @adminpaletteItemcrm.
+  ///
+  /// In fr, this message translates to:
+  /// **'CRM'**
+  String get adminpaletteItemcrm;
+
+  /// No description provided for @adminpaletteItemcrmdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pipeline CRM'**
+  String get adminpaletteItemcrmdesc;
+
+  /// No description provided for @adminpaletteItemtoggledark.
+  ///
+  /// In fr, this message translates to:
+  /// **'Basculer mode sombre'**
+  String get adminpaletteItemtoggledark;
+
+  /// No description provided for @adminpaletteItemtoggledarkdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer le thème'**
+  String get adminpaletteItemtoggledarkdesc;
+
+  /// No description provided for @bankreconTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapprochement bancaire'**
+  String get bankreconTitle;
+
+  /// No description provided for @bankreconSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'File de matching manuel : rapprochez les lignes du relevé avec les paiements enregistrés (score de confiance du matching auto).'**
+  String get bankreconSubtitle;
+
+  /// No description provided for @bankreconStatementstitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relevés'**
+  String get bankreconStatementstitle;
+
+  /// No description provided for @bankreconNostatements.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun relevé importé.'**
+  String get bankreconNostatements;
+
+  /// No description provided for @bankreconSelectstatement.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner un relevé…'**
+  String get bankreconSelectstatement;
+
+  /// No description provided for @bankreconPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période'**
+  String get bankreconPeriod;
+
+  /// No description provided for @bankreconReference.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référence'**
+  String get bankreconReference;
+
+  /// No description provided for @bankreconStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get bankreconStatus;
+
+  /// No description provided for @bankreconStatusimported.
+  ///
+  /// In fr, this message translates to:
+  /// **'Importé'**
+  String get bankreconStatusimported;
+
+  /// No description provided for @bankreconStatusreconciled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapproché'**
+  String get bankreconStatusreconciled;
+
+  /// No description provided for @bankreconOpening.
+  ///
+  /// In fr, this message translates to:
+  /// **'Solde d\'ouverture'**
+  String get bankreconOpening;
+
+  /// No description provided for @bankreconClosingexpected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clôture attendue'**
+  String get bankreconClosingexpected;
+
+  /// No description provided for @bankreconClosingreported.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clôture relevée'**
+  String get bankreconClosingreported;
+
+  /// No description provided for @bankreconGap.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écart'**
+  String get bankreconGap;
+
+  /// No description provided for @bankreconTotallines.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lignes'**
+  String get bankreconTotallines;
+
+  /// No description provided for @bankreconMatchedlines.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapprochées'**
+  String get bankreconMatchedlines;
+
+  /// No description provided for @bankreconPendinglines.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente'**
+  String get bankreconPendinglines;
+
+  /// No description provided for @bankreconMatchedamount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant rapproché'**
+  String get bankreconMatchedamount;
+
+  /// No description provided for @bankreconPendingamount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant en attente'**
+  String get bankreconPendingamount;
+
+  /// No description provided for @bankreconLinedate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date'**
+  String get bankreconLinedate;
+
+  /// No description provided for @bankreconLinelabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libellé'**
+  String get bankreconLinelabel;
+
+  /// No description provided for @bankreconLineamount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant'**
+  String get bankreconLineamount;
+
+  /// No description provided for @bankreconLinestatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'État'**
+  String get bankreconLinestatus;
+
+  /// No description provided for @bankreconStatuspending.
+  ///
+  /// In fr, this message translates to:
+  /// **'À rapprocher'**
+  String get bankreconStatuspending;
+
+  /// No description provided for @bankreconStatusmatched.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapprochée'**
+  String get bankreconStatusmatched;
+
+  /// No description provided for @bankreconConfidence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confiance'**
+  String get bankreconConfidence;
+
+  /// No description provided for @bankreconProposed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Proposé'**
+  String get bankreconProposed;
+
+  /// No description provided for @bankreconMatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Matcher'**
+  String get bankreconMatch;
+
+  /// No description provided for @bankreconMatchpayment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiement'**
+  String get bankreconMatchpayment;
+
+  /// No description provided for @bankreconNopayments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun paiement disponible pour cette période.'**
+  String get bankreconNopayments;
+
+  /// No description provided for @bankreconExportcsv.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exporter CSV'**
+  String get bankreconExportcsv;
+
+  /// No description provided for @bankreconLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger le rapprochement.'**
+  String get bankreconLoaderror;
+
+  /// No description provided for @bankreconMatcherror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le rapprochement a échoué.'**
+  String get bankreconMatcherror;
+
+  /// No description provided for @bankreconMatchdone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ligne rapprochée.'**
+  String get bankreconMatchdone;
+
+  /// No description provided for @bankreconLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement…'**
+  String get bankreconLoading;
+
+  /// No description provided for @bankreconRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get bankreconRetry;
+
+  /// No description provided for @organigrammeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Organigramme'**
+  String get organigrammeTitle;
+
+  /// No description provided for @organigrammeBackTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get organigrammeBackTooltip;
+
+  /// No description provided for @organigrammeEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun organigramme'**
+  String get organigrammeEmptyTitle;
+
+  /// No description provided for @organigrammeLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement de l\'organigramme...'**
+  String get organigrammeLoading;
+
+  /// No description provided for @vehicleMapTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Position véhicule'**
+  String get vehicleMapTitle;
+
+  /// No description provided for @vehicleMapBackTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get vehicleMapBackTooltip;
+
+  /// No description provided for @vehicleMapEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun véhicule'**
+  String get vehicleMapEmptyTitle;
+
+  /// No description provided for @vehicleMapEmptyDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos véhicules assignés apparaîtront ici.'**
+  String get vehicleMapEmptyDescription;
+
+  /// No description provided for @vehicleMapLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des véhicules...'**
+  String get vehicleMapLoading;
+
+  /// No description provided for @vehicleMapLastUpdate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernière MAJ : {time}'**
+  String vehicleMapLastUpdate(Object time);
+
+  /// No description provided for @vehicleMapSpeedKmh.
+  ///
+  /// In fr, this message translates to:
+  /// **'{speed} km/h'**
+  String vehicleMapSpeedKmh(Object speed);
+
+  /// No description provided for @payrollValidated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validé'**
+  String get payrollValidated;
+
+  /// No description provided for @payrollDocumentUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Document indisponible : {error}'**
+  String payrollDocumentUnavailable(Object error);
+
+  /// No description provided for @payrollOvertimeHoursTeam.
+  ///
+  /// In fr, this message translates to:
+  /// **'Heures supp ({hours}h)'**
+  String payrollOvertimeHoursTeam(Object hours);
+
+  /// No description provided for @payrollOvertimeHoursItem.
+  ///
+  /// In fr, this message translates to:
+  /// **'+{hours}h supp'**
+  String payrollOvertimeHoursItem(Object hours);
+
+  /// No description provided for @platformAdminActivationNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activation directe depuis app mobile platform admin.'**
+  String get platformAdminActivationNote;
+
+  /// No description provided for @platformAdminCompanyApprovedNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Approuvé depuis Leopardo Platform Admin mobile'**
+  String get platformAdminCompanyApprovedNote;
+
+  /// No description provided for @platformAdminCompanyRejectedNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refusé depuis Leopardo Platform Admin mobile'**
+  String get platformAdminCompanyRejectedNote;
+
+  /// No description provided for @edgeNodesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nœuds Edge'**
+  String get edgeNodesTitle;
+
+  /// No description provided for @edgeNodesSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sites on-premise connectés'**
+  String get edgeNodesSubtitle;
+
+  /// No description provided for @edgeNodesRefreshTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rafraîchir'**
+  String get edgeNodesRefreshTooltip;
+
+  /// No description provided for @edgeNodesEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun nœud Edge enregistré.'**
+  String get edgeNodesEmpty;
+
+  /// No description provided for @edgeNodesOnline.
+  ///
+  /// In fr, this message translates to:
+  /// **'En ligne'**
+  String get edgeNodesOnline;
+
+  /// No description provided for @edgeNodesOffline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hors ligne'**
+  String get edgeNodesOffline;
+
+  /// No description provided for @edgeNodesSectionLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nœuds'**
+  String get edgeNodesSectionLabel;
+
+  /// No description provided for @edgeNodesLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement nœuds'**
+  String get edgeNodesLoading;
+
+  /// No description provided for @edgeNodesForceSync.
+  ///
+  /// In fr, this message translates to:
+  /// **'Forcer la synchronisation'**
+  String get edgeNodesForceSync;
+
+  /// No description provided for @edgeNodesSyncTriggered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sync déclenchée.'**
+  String get edgeNodesSyncTriggered;
+
+  /// No description provided for @edgeNodesLastSync.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernière sync : {date}'**
+  String edgeNodesLastSync(Object date);
+
+  /// No description provided for @edgeNodesNodeId.
+  ///
+  /// In fr, this message translates to:
+  /// **'ID : {id}'**
+  String edgeNodesNodeId(Object id);
+
+  /// No description provided for @edgeNodesVersionInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'v{version} — {count} employé(s)'**
+  String edgeNodesVersionInfo(Object count, Object version);
+
+  /// No description provided for @supportTicketsTitle.
   ///
   /// In fr, this message translates to:
   /// **'Support client'**
-  String get dashboardSupportClient;
+  String get supportTicketsTitle;
 
-  /// No description provided for @dashboardTicketsHint.
+  /// No description provided for @supportTicketsSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Tickets tenant — repondre et trier.'**
-  String get dashboardTicketsHint;
+  /// **'Tickets tenant'**
+  String get supportTicketsSubtitle;
 
-  /// No description provided for @dashboardEdgeNodes.
+  /// No description provided for @supportTicketsFilterAll.
   ///
   /// In fr, this message translates to:
-  /// **'Noeuds Edge'**
-  String get dashboardEdgeNodes;
+  /// **'Tous'**
+  String get supportTicketsFilterAll;
 
-  /// No description provided for @dashboardEdgeNodesHint.
+  /// No description provided for @supportTicketsFilterOpen.
   ///
   /// In fr, this message translates to:
-  /// **'Sites on-premise — statut et synchronisation.'**
-  String get dashboardEdgeNodesHint;
+  /// **'Ouverts'**
+  String get supportTicketsFilterOpen;
 
-  /// No description provided for @settingsEdgeRemoved.
+  /// No description provided for @supportTicketsFilterInProgress.
   ///
   /// In fr, this message translates to:
-  /// **'Appairage Edge supprimé.'**
-  String get settingsEdgeRemoved;
+  /// **'En cours'**
+  String get supportTicketsFilterInProgress;
 
-  /// No description provided for @settingsViewProfile.
+  /// No description provided for @supportTicketsFilterResolved.
   ///
   /// In fr, this message translates to:
-  /// **'Voir mon profil'**
-  String get settingsViewProfile;
+  /// **'Résolus'**
+  String get supportTicketsFilterResolved;
 
-  /// No description provided for @settingsRecoveryEmailHint.
+  /// No description provided for @supportTicketsFilterClosed.
   ///
   /// In fr, this message translates to:
-  /// **'Optionnel pour récupérer l\'accès'**
-  String get settingsRecoveryEmailHint;
+  /// **'Fermés'**
+  String get supportTicketsFilterClosed;
 
-  /// No description provided for @settingsPersonalPhoneHint.
+  /// No description provided for @supportTicketsEmpty.
   ///
   /// In fr, this message translates to:
-  /// **'Optionnel, visible selon vos choix futurs'**
-  String get settingsPersonalPhoneHint;
+  /// **'Aucun ticket pour ce filtre.'**
+  String get supportTicketsEmpty;
 
-  /// No description provided for @settingsPortableIdentityTitle.
+  /// No description provided for @supportTicketsLoading.
   ///
   /// In fr, this message translates to:
-  /// **'Identité portable'**
-  String get settingsPortableIdentityTitle;
+  /// **'Chargement tickets'**
+  String get supportTicketsLoading;
 
-  /// No description provided for @settingsPortableIdentitySubtitle.
+  /// No description provided for @supportTicketsReplySent.
   ///
   /// In fr, this message translates to:
-  /// **'Historique entreprise, poste, statut et disponibilité.'**
-  String get settingsPortableIdentitySubtitle;
+  /// **'Réponse envoyée.'**
+  String get supportTicketsReplySent;
 
-  /// No description provided for @settingsPortableIdentityHint.
+  /// No description provided for @supportTicketsLoadingTicket.
   ///
   /// In fr, this message translates to:
-  /// **'Email personnel, récupération et téléphone restent attachés au compte.'**
-  String get settingsPortableIdentityHint;
+  /// **'Chargement ticket'**
+  String get supportTicketsLoadingTicket;
 
-  /// No description provided for @settingsDigitalLockerTitle.
+  /// No description provided for @settingsThemeTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Placard numérique'**
-  String get settingsDigitalLockerTitle;
+  /// **'Thème de l\'application'**
+  String get settingsThemeTitle;
 
-  /// No description provided for @settingsDigitalLockerSubtitle.
+  /// No description provided for @settingsThemeHint.
   ///
   /// In fr, this message translates to:
-  /// **'CV, contrats, diplômes et documents avec visibilité contrôlée.'**
-  String get settingsDigitalLockerSubtitle;
+  /// **'Choisissez le thème affiché quelle que soit la configuration système.'**
+  String get settingsThemeHint;
 
-  /// No description provided for @settingsHistoryCompanyPeriod.
+  /// No description provided for @settingsThemeSystem.
   ///
   /// In fr, this message translates to:
-  /// **'{companyName} - {period}'**
-  String settingsHistoryCompanyPeriod(String companyName, String period);
+  /// **'Automatique (système)'**
+  String get settingsThemeSystem;
 
-  /// No description provided for @settingsStatusCurrent.
+  /// No description provided for @settingsThemeLight.
   ///
   /// In fr, this message translates to:
-  /// **'Statut actuel : {label}'**
-  String settingsStatusCurrent(String label);
+  /// **'Clair'**
+  String get settingsThemeLight;
 
-  /// No description provided for @settingsUpdateFailed.
+  /// No description provided for @settingsThemeDark.
   ///
   /// In fr, this message translates to:
-  /// **'Mise à jour impossible : {error}'**
-  String settingsUpdateFailed(String error);
+  /// **'Sombre'**
+  String get settingsThemeDark;
 
-  /// No description provided for @settingsQrRejected.
+  /// No description provided for @settingsBiometricCaptureFace.
   ///
   /// In fr, this message translates to:
-  /// **'QR refusé : {error}'**
-  String settingsQrRejected(String error);
+  /// **'Capturer le visage'**
+  String get settingsBiometricCaptureFace;
 
-  /// No description provided for @settingsSubmitFailed.
+  /// No description provided for @settingsBiometricConfirmIdentity.
   ///
   /// In fr, this message translates to:
-  /// **'Échec de soumission : {error}'**
-  String settingsSubmitFailed(String error);
+  /// **'Vérifiez votre identité pour continuer.'**
+  String get settingsBiometricConfirmIdentity;
 
-  /// No description provided for @settingsQrOnboardingTitle.
+  /// No description provided for @settingsBiometricConsentRequired.
   ///
   /// In fr, this message translates to:
-  /// **'QR onboarding'**
-  String get settingsQrOnboardingTitle;
+  /// **'Votre consentement est requis avant d\'activer la biométrie.'**
+  String get settingsBiometricConsentRequired;
 
-  /// No description provided for @settingsQrOnboardingSubtitle.
+  /// No description provided for @settingsBiometricEnableFirst.
   ///
   /// In fr, this message translates to:
-  /// **'Partager votre profil ou scanner une entreprise.'**
-  String get settingsQrOnboardingSubtitle;
+  /// **'Activez d\'abord la biométrie dans les réglages.'**
+  String get settingsBiometricEnableFirst;
 
-  /// No description provided for @settingsJourneyAvailable.
+  /// No description provided for @settingsBiometricEnablePreparation.
   ///
   /// In fr, this message translates to:
-  /// **'Disponible pour une nouvelle entreprise'**
-  String get settingsJourneyAvailable;
+  /// **'Préparation de l\'activation biométrique'**
+  String get settingsBiometricEnablePreparation;
 
-  /// No description provided for @settingsJourneyAttachedTo.
+  /// No description provided for @settingsBiometricExplanation.
   ///
   /// In fr, this message translates to:
-  /// **'Rattaché à {company}'**
-  String settingsJourneyAttachedTo(String company);
+  /// **'Utilisez votre empreinte ou votre visage pour vous connecter plus rapidement et sécuriser vos accès.'**
+  String get settingsBiometricExplanation;
 
-  /// No description provided for @settingsJourneyYourCompany.
+  /// No description provided for @settingsBiometricFaceRequired.
   ///
   /// In fr, this message translates to:
-  /// **'votre entreprise'**
-  String get settingsJourneyYourCompany;
+  /// **'L\'autorisation caméra est requise pour la reconnaissance faciale.'**
+  String get settingsBiometricFaceRequired;
 
-  /// No description provided for @settingsProfessionalQr.
+  /// No description provided for @settingsBiometricFaceSelected.
   ///
   /// In fr, this message translates to:
-  /// **'QR professionnel'**
-  String get settingsProfessionalQr;
+  /// **'Visage sélectionné'**
+  String get settingsBiometricFaceSelected;
 
-  /// No description provided for @settingsQrEmployeeHint.
+  /// No description provided for @settingsBiometricFaceWanted.
   ///
   /// In fr, this message translates to:
-  /// **'Le manager le scanne pour pré-remplir une invitation.'**
-  String get settingsQrEmployeeHint;
+  /// **'Voulez-vous activer la reconnaissance faciale ?'**
+  String get settingsBiometricFaceWanted;
 
-  /// No description provided for @settingsPasteQrButton.
+  /// No description provided for @settingsBiometricFingerprintWanted.
   ///
   /// In fr, this message translates to:
-  /// **'Coller le QR entreprise'**
-  String get settingsPasteQrButton;
+  /// **'Voulez-vous activer l\'empreinte digitale ?'**
+  String get settingsBiometricFingerprintWanted;
+
+  /// No description provided for @settingsBiometricFutureConsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consentement pour les prochaines activations'**
+  String get settingsBiometricFutureConsent;
+
+  /// No description provided for @settingsBiometricLocalVerifyCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification biométrique annulée.'**
+  String get settingsBiometricLocalVerifyCancel;
+
+  /// No description provided for @settingsBiometricNotesHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes internes (optionnel)'**
+  String get settingsBiometricNotesHint;
+
+  /// No description provided for @settingsBiometricNotesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes de l\'enrôlement'**
+  String get settingsBiometricNotesTitle;
+
+  /// No description provided for @settingsBiometricPendingExplanation.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente de confirmation de votre appareil…'**
+  String get settingsBiometricPendingExplanation;
+
+  /// No description provided for @settingsBiometricPreparationTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préparation de l\'enrôlement biométrique'**
+  String get settingsBiometricPreparationTitle;
+
+  /// No description provided for @settingsBiometricSavedLocal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réglages biométriques enregistrés sur cet appareil.'**
+  String get settingsBiometricSavedLocal;
+
+  /// No description provided for @settingsBiometricSensorHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Placez votre doigt sur le capteur…'**
+  String get settingsBiometricSensorHint;
+
+  /// No description provided for @settingsBiometricSensorLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capteur'**
+  String get settingsBiometricSensorLabel;
+
+  /// No description provided for @settingsBiometricSubmitFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de la soumission biométrique : {error}'**
+  String settingsBiometricSubmitFailed(Object error);
+
+  /// No description provided for @settingsBiometricSubmitted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enrôlement biométrique soumis pour validation.'**
+  String get settingsBiometricSubmitted;
+
+  /// No description provided for @settingsBiometricTodayStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Visage : {face} · Empreinte : {fingerprint}'**
+  String settingsBiometricTodayStatus(Object face, Object fingerprint);
+
+  /// No description provided for @settingsCabinetDocuments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Documents'**
+  String get settingsCabinetDocuments;
+
+  /// No description provided for @settingsCabinetPublic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Public'**
+  String get settingsCabinetPublic;
+
+  /// No description provided for @settingsCabinetShared.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partagés'**
+  String get settingsCabinetShared;
+
+  /// No description provided for @settingsCabinetSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos justificatifs et pièces partagées.'**
+  String get settingsCabinetSubtitle;
+
+  /// No description provided for @settingsChannelEmailHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recevez les alertes importantes par email.'**
+  String get settingsChannelEmailHint;
+
+  /// No description provided for @settingsChannelInApp.
+  ///
+  /// In fr, this message translates to:
+  /// **'In-app'**
+  String get settingsChannelInApp;
+
+  /// No description provided for @settingsChannelInAppHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notifications affichées dans l\'application.'**
+  String get settingsChannelInAppHint;
+
+  /// No description provided for @settingsChannelPush.
+  ///
+  /// In fr, this message translates to:
+  /// **'Push'**
+  String get settingsChannelPush;
+
+  /// No description provided for @settingsChannelPushHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notifications push sur cet appareil.'**
+  String get settingsChannelPushHint;
+
+  /// No description provided for @settingsChannelSmsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'SMS pour les codes et alertes critiques.'**
+  String get settingsChannelSmsHint;
+
+  /// No description provided for @settingsChannelWhatsappHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'WhatsApp si configuré par l\'entreprise.'**
+  String get settingsChannelWhatsappHint;
 
   /// No description provided for @settingsCompanyQrLabel.
   ///
@@ -12376,227 +13783,17 @@ abstract class AppLocalizations {
   /// **'QR entreprise'**
   String get settingsCompanyQrLabel;
 
-  /// No description provided for @settingsRequestIntegration.
+  /// No description provided for @settingsDigitalLockerSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Demander l\'intégration'**
-  String get settingsRequestIntegration;
+  /// **'Stockez vos justificatifs en toute sécurité.'**
+  String get settingsDigitalLockerSubtitle;
 
-  /// No description provided for @settingsCabinetSubtitle.
+  /// No description provided for @settingsDigitalLockerTitle.
   ///
   /// In fr, this message translates to:
-  /// **'CV, contrats, diplômes et documents administratifs.'**
-  String get settingsCabinetSubtitle;
-
-  /// No description provided for @settingsCabinetDocuments.
-  ///
-  /// In fr, this message translates to:
-  /// **'documents'**
-  String get settingsCabinetDocuments;
-
-  /// No description provided for @settingsCabinetShared.
-  ///
-  /// In fr, this message translates to:
-  /// **'partagés'**
-  String get settingsCabinetShared;
-
-  /// No description provided for @settingsCabinetPublic.
-  ///
-  /// In fr, this message translates to:
-  /// **'publics'**
-  String get settingsCabinetPublic;
-
-  /// No description provided for @settingsOpenLocker.
-  ///
-  /// In fr, this message translates to:
-  /// **'Ouvrir mon placard'**
-  String get settingsOpenLocker;
-
-  /// No description provided for @settingsLanguageSyncHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Cette préférence est synchronisée avec votre compte et pilote aussi le mode RTL.'**
-  String get settingsLanguageSyncHint;
-
-  /// No description provided for @settingsUpdating.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mise à jour...'**
-  String get settingsUpdating;
-
-  /// No description provided for @settingsUpdateLanguage.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mettre à jour la langue'**
-  String get settingsUpdateLanguage;
-
-  /// No description provided for @settingsJourneyCompanyPeriod.
-  ///
-  /// In fr, this message translates to:
-  /// **'{company} - {period}'**
-  String settingsJourneyCompanyPeriod(String company, String period);
-
-  /// No description provided for @settingsPasswordModernizationHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Changez votre mot de passe avant les prochaines étapes de modernisation.'**
-  String get settingsPasswordModernizationHint;
-
-  /// No description provided for @settingsUpdatePassword.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mettre à jour le mot de passe'**
-  String get settingsUpdatePassword;
-
-  /// No description provided for @settingsBiometricPreparationTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Préparation biométrie'**
-  String get settingsBiometricPreparationTitle;
-
-  /// No description provided for @settingsBiometricExplanation.
-  ///
-  /// In fr, this message translates to:
-  /// **'Le visage peut être capturé depuis le mobile puis soumis à validation manager / RH. Pour l\'empreinte, Android/iOS permettent de vérifier localement que vous utilisez bien un doigt enregistré, mais ne donnent pas accès au gabarit brut ; l\'activation effective côté pointage restera donc approuvée puis exploitée par la borne entreprise.'**
-  String get settingsBiometricExplanation;
-
-  /// No description provided for @settingsBiometricTodayStatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Actif aujourd\'hui - visage: {face} | empreinte: {fingerprint}'**
-  String settingsBiometricTodayStatus(String face, String fingerprint);
-
-  /// No description provided for @settingsYes.
-  ///
-  /// In fr, this message translates to:
-  /// **'oui'**
-  String get settingsYes;
-
-  /// No description provided for @settingsNo.
-  ///
-  /// In fr, this message translates to:
-  /// **'non'**
-  String get settingsNo;
-
-  /// No description provided for @settingsBiometricEnablePreparation.
-  ///
-  /// In fr, this message translates to:
-  /// **'Activer la préparation biométrie'**
-  String get settingsBiometricEnablePreparation;
-
-  /// No description provided for @settingsBiometricFingerprintWanted.
-  ///
-  /// In fr, this message translates to:
-  /// **'Empreinte digitale souhaitée'**
-  String get settingsBiometricFingerprintWanted;
-
-  /// No description provided for @settingsBiometricFaceWanted.
-  ///
-  /// In fr, this message translates to:
-  /// **'Reconnaissance faciale souhaitée'**
-  String get settingsBiometricFaceWanted;
-
-  /// No description provided for @settingsBiometricFutureConsent.
-  ///
-  /// In fr, this message translates to:
-  /// **'Consentement au futur pointage biométrie'**
-  String get settingsBiometricFutureConsent;
-
-  /// No description provided for @settingsBiometricSensorLabel.
-  ///
-  /// In fr, this message translates to:
-  /// **'Identifiant capteur empreinte / borne'**
-  String get settingsBiometricSensorLabel;
-
-  /// No description provided for @settingsBiometricSensorHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Exemple : FP-ENTREE-01 ou matricule biométrie'**
-  String get settingsBiometricSensorHint;
-
-  /// No description provided for @settingsBiometricNotesTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Notes et consentement'**
-  String get settingsBiometricNotesTitle;
-
-  /// No description provided for @settingsBiometricNotesHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Exemple : selfie autorisé, préfère borne entrée principale, accord photo visage...'**
-  String get settingsBiometricNotesHint;
-
-  /// No description provided for @settingsBiometricCaptureFace.
-  ///
-  /// In fr, this message translates to:
-  /// **'Capturer / choisir mon visage'**
-  String get settingsBiometricCaptureFace;
-
-  /// No description provided for @settingsBiometricFaceSelected.
-  ///
-  /// In fr, this message translates to:
-  /// **'Image visage sélectionnée'**
-  String get settingsBiometricFaceSelected;
-
-  /// No description provided for @settingsSavingShort.
-  ///
-  /// In fr, this message translates to:
-  /// **'Enregistrement...'**
-  String get settingsSavingShort;
-
-  /// No description provided for @settingsSubmitBiometric.
-  ///
-  /// In fr, this message translates to:
-  /// **'Soumettre au manager / RH'**
-  String get settingsSubmitBiometric;
-
-  /// No description provided for @settingsSubmitting.
-  ///
-  /// In fr, this message translates to:
-  /// **'Soumission...'**
-  String get settingsSubmitting;
-
-  /// No description provided for @settingsBiometricPendingExplanation.
-  ///
-  /// In fr, this message translates to:
-  /// **'Une fois soumises, vos données biométrie restent en attente. Toute première activation ou modification nécessite une approbation manager/RH.'**
-  String get settingsBiometricPendingExplanation;
-
-  /// No description provided for @settingsEdgeNodeTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Nœud Edge (réseau local)'**
-  String get settingsEdgeNodeTitle;
-
-  /// No description provided for @settingsEdgeNodeHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Optionnel : pointer vers un serveur Edge installé sur site pour pointer sans Internet.'**
-  String get settingsEdgeNodeHint;
-
-  /// No description provided for @settingsEdgeCloudStatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Connecté au Cloud'**
-  String get settingsEdgeCloudStatus;
-
-  /// No description provided for @settingsEdgeLocalStatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Connecté au nœud Edge local'**
-  String get settingsEdgeLocalStatus;
-
-  /// No description provided for @settingsEdgeOfflineStatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Hors ligne'**
-  String get settingsEdgeOfflineStatus;
-
-  /// No description provided for @settingsEdgeCurrentStatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Statut actuel : {label}'**
-  String settingsEdgeCurrentStatus(String label);
+  /// **'Casier numérique'**
+  String get settingsDigitalLockerTitle;
 
   /// No description provided for @settingsEdgeAddressLabel.
   ///
@@ -12604,11 +13801,53 @@ abstract class AppLocalizations {
   /// **'Adresse du nœud Edge'**
   String get settingsEdgeAddressLabel;
 
-  /// No description provided for @settingsEdgeUuidLabel.
+  /// No description provided for @settingsEdgeCloudStatus.
   ///
   /// In fr, this message translates to:
-  /// **'Identifiant du nœud (UUID)'**
-  String get settingsEdgeUuidLabel;
+  /// **'Cloud'**
+  String get settingsEdgeCloudStatus;
+
+  /// No description provided for @settingsEdgeCurrentStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut actuel : {label}'**
+  String settingsEdgeCurrentStatus(Object label);
+
+  /// No description provided for @settingsEdgeLocalStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Edge local'**
+  String get settingsEdgeLocalStatus;
+
+  /// No description provided for @settingsEdgeNodeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connectez l\'application à un nœud Edge local pour le mode hors-ligne.'**
+  String get settingsEdgeNodeHint;
+
+  /// No description provided for @settingsEdgeNodeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nœud Edge'**
+  String get settingsEdgeNodeTitle;
+
+  /// No description provided for @settingsEdgeOfflineStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hors-ligne'**
+  String get settingsEdgeOfflineStatus;
+
+  /// No description provided for @settingsEdgeRemoved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nœud Edge déconnecté.'**
+  String get settingsEdgeRemoved;
+
+  /// No description provided for @settingsEdgeTokenHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Secret généré lors de l\'appairage.'**
+  String get settingsEdgeTokenHint;
 
   /// No description provided for @settingsEdgeTokenLabel.
   ///
@@ -12619,92 +13858,62 @@ abstract class AppLocalizations {
   /// No description provided for @settingsEdgeUuidHint.
   ///
   /// In fr, this message translates to:
-  /// **'Fourni par votre administrateur'**
+  /// **'Identifiant unique du nœud.'**
   String get settingsEdgeUuidHint;
 
-  /// No description provided for @settingsEdgeTokenHint.
+  /// No description provided for @settingsEdgeUuidLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Fourni une seule fois à l\'enregistrement'**
-  String get settingsEdgeTokenHint;
+  /// **'UUID du nœud'**
+  String get settingsEdgeUuidLabel;
 
-  /// No description provided for @settingsRemove.
+  /// No description provided for @settingsJourneyAttachedTo.
   ///
   /// In fr, this message translates to:
-  /// **'Retirer'**
-  String get settingsRemove;
+  /// **'Actuellement chez {company}'**
+  String settingsJourneyAttachedTo(Object company);
 
-  /// No description provided for @settingsSessionLogoutHint.
+  /// No description provided for @settingsJourneyAvailable.
   ///
   /// In fr, this message translates to:
-  /// **'Quitter proprement cet espace sur ce téléphone.'**
-  String get settingsSessionLogoutHint;
+  /// **'Disponible pour une nouvelle entreprise'**
+  String get settingsJourneyAvailable;
 
-  /// No description provided for @settingsNotificationsUnavailable.
+  /// No description provided for @settingsJourneyCompanyPeriod.
   ///
   /// In fr, this message translates to:
-  /// **'Préférences indisponibles pour le moment. Tirez pour recharger plus tard.'**
-  String get settingsNotificationsUnavailable;
+  /// **'{company} · {period}'**
+  String settingsJourneyCompanyPeriod(Object company, Object period);
 
-  /// No description provided for @settingsNotificationsSaved.
+  /// No description provided for @settingsJourneyYourCompany.
   ///
   /// In fr, this message translates to:
-  /// **'Préférences notifications mises à jour.'**
-  String get settingsNotificationsSaved;
+  /// **'votre entreprise'**
+  String get settingsJourneyYourCompany;
 
-  /// No description provided for @settingsNotificationsSaveFailed.
+  /// No description provided for @settingsLanguageSyncHint.
   ///
   /// In fr, this message translates to:
-  /// **'Mise à jour impossible : {error}'**
-  String settingsNotificationsSaveFailed(String error);
+  /// **'La langue choisie pilote aussi les notifications et les emails.'**
+  String get settingsLanguageSyncHint;
+
+  /// No description provided for @settingsLanguageUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue enregistrée.'**
+  String get settingsLanguageUpdated;
+
+  /// No description provided for @settingsNo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non'**
+  String get settingsNo;
 
   /// No description provided for @settingsNotificationsIntro.
   ///
   /// In fr, this message translates to:
-  /// **'Choisissez les canaux utiles sans perdre les alertes RH importantes.'**
+  /// **'Choisissez les canaux par lesquels vous recevez vos alertes.'**
   String get settingsNotificationsIntro;
-
-  /// No description provided for @settingsChannelInApp.
-  ///
-  /// In fr, this message translates to:
-  /// **'Alertes dans l\'application'**
-  String get settingsChannelInApp;
-
-  /// No description provided for @settingsChannelInAppHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Tâches, décisions RH, pointage et rappels.'**
-  String get settingsChannelInAppHint;
-
-  /// No description provided for @settingsChannelPush.
-  ///
-  /// In fr, this message translates to:
-  /// **'Push mobile'**
-  String get settingsChannelPush;
-
-  /// No description provided for @settingsChannelPushHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Notifications immédiates sur ce téléphone.'**
-  String get settingsChannelPushHint;
-
-  /// No description provided for @settingsChannelEmailHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Résumé et confirmations importantes.'**
-  String get settingsChannelEmailHint;
-
-  /// No description provided for @settingsChannelSmsHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Canal court réservé aux urgences, actif après opt-in.'**
-  String get settingsChannelSmsHint;
-
-  /// No description provided for @settingsChannelWhatsappHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Canal conversationnel, nécessite votre opt-in explicite.'**
-  String get settingsChannelWhatsappHint;
 
   /// No description provided for @settingsNotificationsLanguage.
   ///
@@ -12712,242 +13921,173 @@ abstract class AppLocalizations {
   /// **'Langue des notifications'**
   String get settingsNotificationsLanguage;
 
+  /// No description provided for @settingsNotificationsSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préférences de notification enregistrées.'**
+  String get settingsNotificationsSaved;
+
+  /// No description provided for @settingsNotificationsSaveFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de l\'enregistrement : {error}'**
+  String settingsNotificationsSaveFailed(Object error);
+
+  /// No description provided for @settingsNotificationsUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notifications indisponibles sur cet appareil.'**
+  String get settingsNotificationsUnavailable;
+
+  /// No description provided for @settingsOpenLocker.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir le casier'**
+  String get settingsOpenLocker;
+
+  /// No description provided for @settingsPasswordModernizationHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activez un mot de passe plus robuste pour sécuriser votre compte.'**
+  String get settingsPasswordModernizationHint;
+
+  /// No description provided for @settingsPasteQrButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coller le QR'**
+  String get settingsPasteQrButton;
+
+  /// No description provided for @settingsPersonalPhoneHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Numéro personnel (optionnel).'**
+  String get settingsPersonalPhoneHint;
+
+  /// No description provided for @settingsPortableIdentityHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre identité professionnelle portable.'**
+  String get settingsPortableIdentityHint;
+
+  /// No description provided for @settingsPortableIdentitySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'QR code et pièces d\'identité de l\'entreprise.'**
+  String get settingsPortableIdentitySubtitle;
+
+  /// No description provided for @settingsPortableIdentityTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identité portable'**
+  String get settingsPortableIdentityTitle;
+
+  /// No description provided for @settingsProfessionalQr.
+  ///
+  /// In fr, this message translates to:
+  /// **'QR professionnel'**
+  String get settingsProfessionalQr;
+
+  /// No description provided for @settingsQrEmployeeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présentez ce QR à votre employeur.'**
+  String get settingsQrEmployeeHint;
+
+  /// No description provided for @settingsQrOnboardingSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Intégrez rapidement un nouveau poste.'**
+  String get settingsQrOnboardingSubtitle;
+
+  /// No description provided for @settingsQrOnboardingTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Onboarding par QR'**
+  String get settingsQrOnboardingTitle;
+
   /// No description provided for @settingsQrPasted.
   ///
   /// In fr, this message translates to:
-  /// **'Collez le QR entreprise.'**
+  /// **'QR code collé.'**
   String get settingsQrPasted;
 
-  /// No description provided for @settingsLanguageUpdated.
+  /// No description provided for @settingsQrRejected.
   ///
   /// In fr, this message translates to:
-  /// **'Langue mise à jour.'**
-  String get settingsLanguageUpdated;
+  /// **'QR rejeté : {error}'**
+  String settingsQrRejected(Object error);
 
-  /// No description provided for @settingsBiometricSavedLocal.
+  /// No description provided for @settingsRecoveryEmailHint.
   ///
   /// In fr, this message translates to:
-  /// **'Préparation biométrie enregistrée localement.'**
-  String get settingsBiometricSavedLocal;
+  /// **'Email de secours (optionnel).'**
+  String get settingsRecoveryEmailHint;
 
-  /// No description provided for @settingsBiometricEnableFirst.
+  /// No description provided for @settingsRemove.
   ///
   /// In fr, this message translates to:
-  /// **'Active d\'abord la préparation biométrie.'**
-  String get settingsBiometricEnableFirst;
+  /// **'Retirer'**
+  String get settingsRemove;
 
-  /// No description provided for @settingsBiometricConsentRequired.
+  /// No description provided for @settingsRequestIntegration.
   ///
   /// In fr, this message translates to:
-  /// **'Le consentement est requis avant toute soumission.'**
-  String get settingsBiometricConsentRequired;
+  /// **'Demander l\'intégration'**
+  String get settingsRequestIntegration;
 
-  /// No description provided for @settingsBiometricFaceRequired.
+  /// No description provided for @settingsSavingShort.
   ///
   /// In fr, this message translates to:
-  /// **'Ajoute une capture visage avant soumission.'**
-  String get settingsBiometricFaceRequired;
+  /// **'Enregistrement…'**
+  String get settingsSavingShort;
 
-  /// No description provided for @settingsBiometricLocalVerifyCancel.
+  /// No description provided for @settingsSessionLogoutHint.
   ///
   /// In fr, this message translates to:
-  /// **'Vérification biométrie locale annulée.'**
-  String get settingsBiometricLocalVerifyCancel;
+  /// **'Ferme la session sur cet appareil.'**
+  String get settingsSessionLogoutHint;
 
-  /// No description provided for @settingsBiometricSubmitted.
+  /// No description provided for @settingsSubmitBiometric.
   ///
   /// In fr, this message translates to:
-  /// **'Demande envoyée au manager / RH pour validation.'**
-  String get settingsBiometricSubmitted;
+  /// **'Soumettre l\'enrôlement'**
+  String get settingsSubmitBiometric;
 
-  /// No description provided for @settingsBiometricSubmitFailed.
+  /// No description provided for @settingsSubmitting.
   ///
   /// In fr, this message translates to:
-  /// **'Échec de soumission : {error}'**
-  String settingsBiometricSubmitFailed(String error);
+  /// **'Envoi…'**
+  String get settingsSubmitting;
 
-  /// No description provided for @settingsBiometricConfirmIdentity.
+  /// No description provided for @settingsUpdateLanguage.
   ///
   /// In fr, this message translates to:
-  /// **'Confirmer votre identité pour soumettre votre demande biométrie'**
-  String get settingsBiometricConfirmIdentity;
+  /// **'Mettre à jour la langue'**
+  String get settingsUpdateLanguage;
 
-  /// No description provided for @shellHome.
-  String get shellHome;
+  /// No description provided for @settingsUpdatePassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre à jour le mot de passe'**
+  String get settingsUpdatePassword;
 
-  /// No description provided for @shellAttendance.
-  String get shellAttendance;
+  /// No description provided for @settingsUpdating.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mise à jour…'**
+  String get settingsUpdating;
 
-  /// No description provided for @shellAbsences.
-  String get shellAbsences;
+  /// No description provided for @settingsViewProfile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir le profil'**
+  String get settingsViewProfile;
 
-  /// No description provided for @shellApprovals.
-  String get shellApprovals;
-
-  /// No description provided for @contractsMobileTitle.
-  String get contractsMobileTitle;
-
-  /// No description provided for @contractsBackTooltip.
-  String get contractsBackTooltip;
-
-  /// No description provided for @contractsEmptyTitle.
-  String get contractsEmptyTitle;
-
-  /// No description provided for @contractsEmptyDescription.
-  String get contractsEmptyDescription;
-
-  /// No description provided for @contractsLabelType.
-  String get contractsLabelType;
-
-  /// No description provided for @contractsLabelStartDate.
-  String get contractsLabelStartDate;
-
-  /// No description provided for @contractsLabelEndDate.
-  String get contractsLabelEndDate;
-
-  /// No description provided for @contractsLabelBaseSalary.
-  String get contractsLabelBaseSalary;
-
-  /// No description provided for @contractsLoading.
-  String get contractsLoading;
-
-  /// No description provided for @contractsStatusActive.
-  String get contractsStatusActive;
-
-  /// No description provided for @contractsStatusExpired.
-  String get contractsStatusExpired;
-
-  /// No description provided for @contractsStatusDraft.
-  String get contractsStatusDraft;
-
-  /// No description provided for @contractsStatusCdi.
-  String get contractsStatusCdi;
-
-  /// No description provided for @organigrammeTitle.
-  String get organigrammeTitle;
-
-  /// No description provided for @organigrammeBackTooltip.
-  String get organigrammeBackTooltip;
-
-  /// No description provided for @organigrammeEmptyTitle.
-  String get organigrammeEmptyTitle;
-
-  /// No description provided for @organigrammeLoading.
-  String get organigrammeLoading;
-
-  /// No description provided for @vehicleMapTitle.
-  String get vehicleMapTitle;
-
-  /// No description provided for @vehicleMapBackTooltip.
-  String get vehicleMapBackTooltip;
-
-  /// No description provided for @vehicleMapEmptyTitle.
-  String get vehicleMapEmptyTitle;
-
-  /// No description provided for @vehicleMapEmptyDescription.
-  String get vehicleMapEmptyDescription;
-
-  /// No description provided for @vehicleMapLoading.
-  String get vehicleMapLoading;
-
-  /// No description provided for @vehicleMapLastUpdate.
-  String vehicleMapLastUpdate(Object time);
-
-  /// No description provided for @vehicleMapSpeedKmh.
-  String vehicleMapSpeedKmh(Object speed);
-
-  /// No description provided for @payrollValidated.
-  String get payrollValidated;
-
-  /// No description provided for @payrollDocumentUnavailable.
-  String payrollDocumentUnavailable(Object error);
-
-  /// No description provided for @payrollOvertimeHoursTeam.
-  String payrollOvertimeHoursTeam(Object hours);
-
-  /// No description provided for @payrollOvertimeHoursItem.
-  String payrollOvertimeHoursItem(Object hours);
-
-  /// No description provided for @platformAdminActivationNote.
-  String get platformAdminActivationNote;
-
-  /// No description provided for @platformAdminCompanyApprovedNote.
-  String get platformAdminCompanyApprovedNote;
-
-  /// No description provided for @platformAdminCompanyRejectedNote.
-  String get platformAdminCompanyRejectedNote;
-
-  /// No description provided for @edgeNodesTitle.
-  String get edgeNodesTitle;
-
-  /// No description provided for @edgeNodesSubtitle.
-  String get edgeNodesSubtitle;
-
-  /// No description provided for @edgeNodesRefreshTooltip.
-  String get edgeNodesRefreshTooltip;
-
-  /// No description provided for @edgeNodesEmpty.
-  String get edgeNodesEmpty;
-
-  /// No description provided for @edgeNodesOnline.
-  String get edgeNodesOnline;
-
-  /// No description provided for @edgeNodesOffline.
-  String get edgeNodesOffline;
-
-  /// No description provided for @edgeNodesSectionLabel.
-  String get edgeNodesSectionLabel;
-
-  /// No description provided for @edgeNodesLoading.
-  String get edgeNodesLoading;
-
-  /// No description provided for @edgeNodesForceSync.
-  String get edgeNodesForceSync;
-
-  /// No description provided for @edgeNodesSyncTriggered.
-  String get edgeNodesSyncTriggered;
-
-  /// No description provided for @edgeNodesLastSync.
-  String edgeNodesLastSync(Object date);
-
-  /// No description provided for @edgeNodesNodeId.
-  String edgeNodesNodeId(Object id);
-
-  /// No description provided for @edgeNodesVersionInfo.
-  String edgeNodesVersionInfo(Object version, Object count);
-
-  /// No description provided for @supportTicketsTitle.
-  String get supportTicketsTitle;
-
-  /// No description provided for @supportTicketsSubtitle.
-  String get supportTicketsSubtitle;
-
-  /// No description provided for @supportTicketsFilterAll.
-  String get supportTicketsFilterAll;
-
-  /// No description provided for @supportTicketsFilterOpen.
-  String get supportTicketsFilterOpen;
-
-  /// No description provided for @supportTicketsFilterInProgress.
-  String get supportTicketsFilterInProgress;
-
-  /// No description provided for @supportTicketsFilterResolved.
-  String get supportTicketsFilterResolved;
-
-  /// No description provided for @supportTicketsFilterClosed.
-  String get supportTicketsFilterClosed;
-
-  /// No description provided for @supportTicketsEmpty.
-  String get supportTicketsEmpty;
-
-  /// No description provided for @supportTicketsLoading.
-  String get supportTicketsLoading;
-
-  /// No description provided for @supportTicketsReplySent.
-  String get supportTicketsReplySent;
-
-  /// No description provided for @supportTicketsLoadingTicket.
-  String get supportTicketsLoadingTicket;
+  /// No description provided for @settingsYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui'**
+  String get settingsYes;
 }
 
 class _AppLocalizationsDelegate

@@ -197,20 +197,29 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authTwoFactorRequired => 'رمز التحقق الثنائي مطلوب.';
+
   @override
   String get twoFaChallengeTitle => 'التحقق بخطوتين';
+
   @override
-  String get twoFaChallengeSubtitle => 'أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة.';
+  String get twoFaChallengeSubtitle =>
+      'أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة.';
+
   @override
   String get twoFaChallengeCodeHint => 'رمز TOTP (6 أرقام)';
+
   @override
   String get twoFaChallengeVerifyBtn => 'تحقق';
+
   @override
   String get twoFaChallengeRecoveryToggle => 'استخدام رمز الاسترداد';
+
   @override
   String get twoFaChallengeRecoveryHint => 'رمز الاسترداد';
+
   @override
-  String get twoFaChallengeInvalidError => 'رمز غير صالح أو منتهي الصلاحية. حاول مرة أخرى.';
+  String get twoFaChallengeInvalidError =>
+      'رمز غير صالح أو منتهي الصلاحية. حاول مرة أخرى.';
 
   @override
   String get authDemoAccess => 'وصول تجريبي';
@@ -3416,6 +3425,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get shellTeam => 'الفريق';
 
   @override
+  String get shellHome => 'الرئيسية';
+
+  @override
+  String get shellAttendance => 'الحضور';
+
+  @override
+  String get shellAbsences => 'الغيابات';
+
+  @override
+  String get shellApprovals => 'الموافقات';
+
+  @override
   String get exportsReportemployees => 'الموظفون';
 
   @override
@@ -4212,6 +4233,45 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get contractsAllstatuses => 'كل الحالات';
+
+  @override
+  String get contractsMobileTitle => 'عقدي';
+
+  @override
+  String get contractsBackTooltip => 'رجوع';
+
+  @override
+  String get contractsEmptyTitle => 'لا يوجد عقد';
+
+  @override
+  String get contractsEmptyDescription => 'سيظهر عقدك هنا بمجرد تكوينه.';
+
+  @override
+  String get contractsLabelType => 'النوع';
+
+  @override
+  String get contractsLabelStartDate => 'البداية';
+
+  @override
+  String get contractsLabelEndDate => 'النهاية';
+
+  @override
+  String get contractsLabelBaseSalary => 'الراتب الأساسي';
+
+  @override
+  String get contractsLoading => 'جارٍ تحميل العقود...';
+
+  @override
+  String get contractsStatusActive => 'نشط';
+
+  @override
+  String get contractsStatusExpired => 'منتهي الصلاحية';
+
+  @override
+  String get contractsStatusDraft => 'مسودة';
+
+  @override
+  String get contractsStatusCdi => 'دائم (CDI)';
 
   @override
   String get trainingTitleplaceholder => 'العنوان *';
@@ -6305,572 +6365,700 @@ class AppLocalizationsAr extends AppLocalizations {
       'بعد الإرسال، تبقى بياناتك الحيوية قيد الانتظار. أي تفعيل أول أو تعديل يتطلب موافقة المدير/الموارد البشرية.';
 
   @override
-  String get companiesRequiredField => 'حقل مطلوب';
+  String get accountingactivationTitle => 'تفعيل المحاسبة';
 
   @override
-  String get companiesCompanyCreated => 'تم إنشاء الشركة';
+  String get accountingactivationSubtitle =>
+      'اضبط الوحدة في خطوات قليلة: تتحقق القائمة من الإعدادات وجهة الاتصال التجريبية والفاتورة النموذجية.';
 
   @override
-  String get companiesNewClient => 'عميل جديد';
+  String get accountingactivationStepstitle => 'قائمة التحقق من التفعيل';
 
   @override
-  String get companiesProvisioning => 'إعداد المنصة';
+  String get accountingactivationStepsettings => 'إعدادات المحاسبة';
 
   @override
-  String get companiesCompanyEmail => 'البريد الإلكتروني للشركة';
+  String get accountingactivationStepsettingsdone => 'إعدادات المحاسبة — تم';
 
   @override
-  String get companiesCreateClient => 'إنشاء العميل';
+  String get accountingactivationStepsettingstodo =>
+      'إعدادات المحاسبة — قيد الانتظار';
 
   @override
-  String get companiesCreating => 'جارٍ الإنشاء...';
+  String get accountingactivationStepcontact => 'جهة اتصال تجريبية';
 
   @override
-  String get companiesActiveImmediatelyHint => 'سيتم إنشاء العميل بحالة نشطة.';
+  String get accountingactivationStepcontactdone =>
+      'جهة الاتصال التجريبية — أُنشئت';
 
   @override
-  String get companiesTrialHint =>
-      'يبدأ العميل بنسخة تجريبية، ثم يمكن تفعيله من ملفه.';
+  String get accountingactivationStepcontacttodo =>
+      'جهة الاتصال التجريبية — ستُنشأ';
 
   @override
-  String get companydetailClientFile => 'ملف العميل';
+  String get accountingactivationStepexampleinvoice => 'فاتورة نموذجية';
 
   @override
-  String get companydetailProductAdoption => 'تبنّي المنتج';
+  String get accountingactivationStepexampleinvoicedone =>
+      'الفاتورة النموذجية — أُنشئت';
 
   @override
-  String get companydetailActiveEmployees => 'الموظفون النشطون';
+  String get accountingactivationStepexampleinvoicetodo =>
+      'الفاتورة النموذجية — ستُنشأ';
 
   @override
-  String get companydetailAnomaliesCritical => 'الحالات الشاذة الحرجة';
+  String get accountingactivationDone => 'تم';
 
   @override
-  String get commonBack => 'رجوع';
+  String get accountingactivationTodo => 'قيد الانتظار';
 
   @override
-  String get companydetailClientReference => 'مرجع العميل';
+  String get accountingactivationActivatebutton => 'إنهاء التفعيل';
 
   @override
-  String get companydetailTenantIdHint =>
-      'معرّف المستأجر لتقديمه للدعم أو مسحه ضوئياً في الموقع للعثور على هذا العميل فوراً.';
+  String get accountingactivationActivating => 'جارٍ التفعيل…';
 
   @override
-  String get companydetailCopyId => 'نسخ المعرّف';
+  String get accountingactivationCompletedtitle => 'تم تفعيل المحاسبة';
 
   @override
-  String get companydetailSubscription => 'الاشتراك';
+  String get accountingactivationCompletedbody =>
+      'وحدة المحاسبة جاهزة: الإعدادات وجهة الاتصال والفاتورة النموذجية في مكانها.';
 
   @override
-  String get companydetailPlan => 'الخطة';
+  String get accountingactivationGotomodule => 'افتح وحدة المحاسبة';
 
   @override
-  String get companydetailStatus => 'الحالة';
+  String get accountingactivationLoaderror =>
+      'تعذّر تحميل حالة التفعيل. حاول مجددًا.';
 
   @override
-  String get companydetailMonthlyPrice => 'السعر الشهري';
+  String get accountingactivationCompleteerror => 'فشل التفعيل. حاول مجددًا.';
 
   @override
-  String get companydetailEmployeeLimit => 'حد الموظفين';
+  String get accountingactivationRetry => 'إعادة المحاولة';
 
   @override
-  String get companydetailUnlimited => 'غير محدود';
+  String get accountingactivationLoading => 'جارٍ التحميل…';
 
   @override
-  String get companydetailSubscriptionEnd => 'نهاية الاشتراك';
+  String get accountingmoduleHometitle => 'المحاسبة';
 
   @override
-  String get companydetailUndefined => 'غير محدد';
+  String get accountingmoduleHomesubtitle =>
+      'وحدة المحاسبة: مخطط الحسابات، دفتر الأستاذ، ميزان المراجعة، القوائم المالية، FEC، السنوات المالية والتسوية.';
 
   @override
-  String get companydetailActivateClient => 'تفعيل العميل';
+  String get accountingmoduleNavchart => 'مخطط الحسابات';
 
   @override
-  String get companydetailEditSubscription => 'تعديل الاشتراك';
+  String get accountingmoduleNavledger => 'دفتر الأستاذ';
 
   @override
-  String get companydetailActiveModules => 'الوحدات النشطة';
+  String get accountingmoduleNavbalance => 'ميزان المراجعة';
 
   @override
-  String get companydetailEditModules => 'تعديل الوحدات';
+  String get accountingmoduleNavstatements => 'القوائم المالية';
 
   @override
-  String get companydetailNextActions => 'الإجراءات التالية';
+  String get accountingmoduleNavfiscalyears => 'السنوات المالية';
 
   @override
-  String get companydetailNoUrgentActions =>
-      'لم يتم رصد أي إجراء عاجل لهذا العميل.';
+  String get accountingmoduleNavlettering => 'التسوية';
 
   @override
-  String get companydetailRecommendedActionHint =>
-      'إجراء موصى به من منصة القيادة.';
+  String get accountingmoduleNavfec => 'تصدير FEC';
 
   @override
-  String get companydetailPlanNotFound => 'الخطة الحالية غير موجودة';
+  String get accountingmoduleCharttitle => 'مخطط الحسابات';
 
   @override
-  String get companydetailClientActivated => 'تم تفعيل العميل';
+  String get accountingmoduleChartsubtitle =>
+      'حسابات الفئات 1 إلى 8 (PCG/SCF). لا يمكن حذف حسابات النظام (التعطيل فقط).';
 
   @override
-  String get companydetailChoosePlan => 'اختر خطة';
+  String get accountingmoduleChartcode => 'الرمز';
 
   @override
-  String get companydetailSubscriptionUpdated => 'تم تحديث الاشتراك';
+  String get accountingmoduleChartlabel => 'التسمية';
 
   @override
-  String get companydetailOptionalInternalNote => 'ملاحظة داخلية اختيارية';
+  String get accountingmoduleCharttype => 'النوع';
 
   @override
-  String get companydetailSaving => 'جارٍ الحفظ...';
+  String get accountingmoduleChartclass => 'الفئة';
 
   @override
-  String get commonSave => 'حفظ';
+  String get accountingmoduleChartstatus => 'الحالة';
 
   @override
-  String get companydetailLoadingPlans => 'جارٍ تحميل الخطط';
+  String get accountingmoduleChartactive => 'نشط';
 
   @override
-  String companydetailPlanWithPrice(String planName, String price) {
-    return '$planName - $price/شهرياً';
+  String get accountingmoduleChartinactive => 'معطّل';
+
+  @override
+  String get accountingmoduleChartadd => 'إضافة حساب';
+
+  @override
+  String get accountingmoduleChartaddtitle => 'حساب جديد';
+
+  @override
+  String get accountingmoduleChartsave => 'حفظ';
+
+  @override
+  String get accountingmoduleChartcancel => 'إلغاء';
+
+  @override
+  String get accountingmoduleChartdelete => 'حذف';
+
+  @override
+  String get accountingmoduleCharttoggle => 'تفعيل/تعطيل';
+
+  @override
+  String get accountingmoduleChartsystemnote => 'حساب نظام — الحذف ممنوع';
+
+  @override
+  String get accountingmoduleCharttypeasset => 'أصل';
+
+  @override
+  String get accountingmoduleCharttypeliability => 'مطلوب';
+
+  @override
+  String get accountingmoduleCharttypeequity => 'حقوق ملكية';
+
+  @override
+  String get accountingmoduleCharttyperevenue => 'إيراد';
+
+  @override
+  String get accountingmoduleCharttypeexpense => 'مصروف';
+
+  @override
+  String get accountingmoduleChartempty => 'لا توجد حسابات.';
+
+  @override
+  String get accountingmoduleCharterror => 'تعذّر تحميل مخطط الحسابات.';
+
+  @override
+  String get accountingmodulePeriodlabel => 'الفترة';
+
+  @override
+  String get accountingmoduleYearlabel => 'السنة المالية';
+
+  @override
+  String get accountingmoduleAlltypes => 'كل الأنواع';
+
+  @override
+  String get accountingmoduleLedgertitle => 'دفتر الأستاذ';
+
+  @override
+  String get accountingmoduleLedgersubtitle => 'قيد الفترة مع رصيد جارٍ مستمر.';
+
+  @override
+  String get accountingmoduleLedgeropening => 'رصيد افتتاحي';
+
+  @override
+  String get accountingmoduleLedgerdebit => 'مدين';
+
+  @override
+  String get accountingmoduleLedgercredit => 'دائن';
+
+  @override
+  String get accountingmoduleLedgerbalance => 'الرصيد';
+
+  @override
+  String get accountingmoduleLedgerdate => 'التاريخ';
+
+  @override
+  String get accountingmoduleLedgerpiece => 'السند';
+
+  @override
+  String get accountingmoduleLedgerdesc => 'البيان';
+
+  @override
+  String get accountingmoduleLedgeraccount => 'الحساب';
+
+  @override
+  String get accountingmoduleLedgerempty => 'لا توجد قيود لهذه الفترة.';
+
+  @override
+  String get accountingmoduleLedgeraccountfilter => 'تصفية حسب الحساب';
+
+  @override
+  String get accountingmoduleLedgerexportfec => 'تصدير FEC';
+
+  @override
+  String get accountingmoduleBalancetitle => 'ميزان المراجعة';
+
+  @override
+  String get accountingmoduleBalancesubtitle =>
+      'إجماليات مدين/دائن والرصيد لكل حساب في الفترة.';
+
+  @override
+  String get accountingmoduleBalancetotals => 'الإجماليات العامة';
+
+  @override
+  String get accountingmoduleBalancedifference => 'الفرق';
+
+  @override
+  String get accountingmoduleBalancebalanced => 'الميزان متوازن';
+
+  @override
+  String get accountingmoduleBalanceunbalanced => 'الميزان غير متوازن';
+
+  @override
+  String get accountingmoduleBalanceempty => 'لا توجد حركة في هذه الفترة.';
+
+  @override
+  String get accountingmoduleStatementstitle => 'القوائم المالية';
+
+  @override
+  String get accountingmoduleStatementssubtitle =>
+      'الميزانية وقائمة الدخل حسب الفترة.';
+
+  @override
+  String get accountingmoduleTabbalancesheet => 'الميزانية';
+
+  @override
+  String get accountingmoduleTabincomestatement => 'قائمة الدخل';
+
+  @override
+  String get accountingmoduleStatementactif => 'الأصول';
+
+  @override
+  String get accountingmoduleStatementpassif => 'الخصوم';
+
+  @override
+  String get accountingmoduleStatementcapitaux => 'حقوق الملكية';
+
+  @override
+  String get accountingmoduleStatementtotalactif => 'إجمالي الأصول';
+
+  @override
+  String get accountingmoduleStatementtotalpassif => 'إجمالي الخصوم';
+
+  @override
+  String get accountingmoduleStatementtotalcapitaux => 'إجمالي حقوق الملكية';
+
+  @override
+  String get accountingmoduleStatementresultat => 'صافي النتيجة';
+
+  @override
+  String get accountingmoduleStatementbalanced =>
+      'التحقق سليم: الأصول = الخصوم + حقوق الملكية';
+
+  @override
+  String get accountingmoduleStatementunbalanced => 'التحقق غير سليم!';
+
+  @override
+  String get accountingmoduleStatementempty => 'لا توجد بيانات لهذه الفترة.';
+
+  @override
+  String get accountingmoduleFytitle => 'السنوات المالية';
+
+  @override
+  String get accountingmoduleFysubtitle =>
+      'فتح وإغلاق السنوات المالية (ترحيل تلقائي للنتيجة).';
+
+  @override
+  String get accountingmoduleFyyear => 'السنة المالية';
+
+  @override
+  String get accountingmoduleFystatus => 'الحالة';
+
+  @override
+  String get accountingmoduleFyopen => 'فتح';
+
+  @override
+  String get accountingmoduleFyopentitle => 'فتح سنة مالية';
+
+  @override
+  String get accountingmoduleFyclose => 'إغلاق';
+
+  @override
+  String get accountingmoduleFystatusopen => 'مفتوحة';
+
+  @override
+  String get accountingmoduleFystatusclosed => 'مغلقة';
+
+  @override
+  String get accountingmoduleFyclosedat => 'أُغلقت في';
+
+  @override
+  String accountingmoduleFycloseconfirmtitle(Object year) {
+    return 'إغلاق السنة المالية $year؟';
   }
 
   @override
-  String get companydetailSaveModules => 'حفظ الوحدات';
+  String get accountingmoduleFycloseconfirmbody =>
+      'الإغلاق يجمد السنة ويرحّل النتيجة. هذا الإجراء لا رجعة فيه.';
 
   @override
-  String get companydetailCoreModuleAlwaysActive =>
-      'الوحدة الأساسية نشطة دائماً';
+  String get accountingmoduleFyconfirm => 'تأكيد الإغلاق';
 
   @override
-  String get companydetailModulesUpdated => 'تم تحديث الوحدات';
+  String get accountingmoduleFyempty => 'لا توجد سنة مالية مفتوحة.';
 
   @override
-  String get companiesTenantsPlatform => 'مستأجرو المنصة';
+  String get accountingmoduleFyerror => 'تعذّر تحميل السنوات المالية.';
 
   @override
-  String get companiesEmpty => 'لا توجد شركة لعرضها.';
+  String get accountingmoduleFyopenerror => 'تعذّر فتح السنة المالية.';
 
   @override
-  String get companyrequestsValidationSuperadmin => 'تحقق المشرف الأعلى';
+  String get accountingmoduleFycloseerror => 'تعذّر إغلاق السنة المالية.';
 
   @override
-  String get companyrequestsApprovedToast => 'تمت الموافقة على الطلب';
+  String get accountingmoduleLgtitle => 'التسوية';
 
   @override
-  String get companyrequestsRejectedToast => 'تم رفض الطلب';
+  String get accountingmoduleLgsubtitle =>
+      'اختر قيدين أو أكثر من نفس الحساب وحدد حرفًا لمطابقتها.';
 
   @override
-  String get dashboardPlatformAdministration => 'إدارة المنصة';
+  String get accountingmoduleLgselect => 'تحديد';
 
   @override
-  String get dashboardSuperAdmin => 'مشرف أعلى';
+  String get accountingmoduleLgletter => 'الحرف';
 
   @override
-  String get dashboardExecutiveView => 'عرض تنفيذي';
+  String get accountingmoduleLgapply => 'تسوية';
 
   @override
-  String get dashboardActiveLabel => 'نشطة';
+  String get accountingmoduleLgunletter => 'إلغاء التسوية';
 
   @override
-  String get dashboardTrials => 'تجارب';
+  String get accountingmoduleLgunletterplaceholder =>
+      'الحرف المطلوب إلغاء تسويته';
 
   @override
-  String get dashboardLoadingCockpit => 'جارٍ تحميل لوحة القيادة';
+  String get accountingmoduleLgneedselection => 'اختر قيدين على الأقل.';
 
   @override
-  String get dashboardPlatformActions => 'إجراءات المنصة';
+  String get accountingmoduleLgneedletter => 'أدخل حرفًا (32 حرفًا كحد أقصى).';
 
   @override
-  String get dashboardClientCompanies => 'الشركات العملاء';
+  String get accountingmoduleLgdone => 'تمت تسوية القيود.';
 
   @override
-  String get dashboardClientCompaniesHint => 'تابع المستأجرين وحالتهم وخططهم.';
+  String get accountingmoduleLgunlettered => 'أُلغيت التسوية.';
 
   @override
-  String get dashboardCreateCompany => 'إنشاء شركة';
-
-  @override
-  String get dashboardCreateCompanyHint => 'تجهيز عميل جديد ومديره الرئيسي.';
-
-  @override
-  String get dashboardClientRequestsHint =>
-      'الموافقة على طلبات الإنشاء أو رفضها.';
-
-  @override
-  String get dashboardSupportClient => 'دعم العملاء';
-
-  @override
-  String get dashboardTicketsHint => 'تذاكر المستأجر — الرد والفرز.';
-
-  @override
-  String get dashboardEdgeNodes => 'عقد الحافة';
-
-  @override
-  String get dashboardEdgeNodesHint => 'مواقع محلية — الحالة والمزامنة.';
-
-  @override
-  String get settingsEdgeRemoved => 'تمت إزالة اقتران Edge.';
-
-  @override
-  String get settingsViewProfile => 'عرض ملفي الشخصي';
-
-  @override
-  String get settingsRecoveryEmailHint => 'اختياري لاستعادة الوصول';
-
-  @override
-  String get settingsPersonalPhoneHint =>
-      'اختياري، مرئي حسب اختياراتك المستقبلية';
-
-  @override
-  String get settingsPortableIdentityTitle => 'هوية محمولة';
-
-  @override
-  String get settingsPortableIdentitySubtitle =>
-      'سجل الشركة والمنصب والحالة والتوفر.';
-
-  @override
-  String get settingsPortableIdentityHint =>
-      'يبقى البريد الشخصي والاسترداد والهاتف مرتبطين بالحساب.';
-
-  @override
-  String get settingsDigitalLockerTitle => 'خزانة رقمية';
-
-  @override
-  String get settingsDigitalLockerSubtitle =>
-      'السيرة الذاتية والعقود والشهادات والمستندات برؤية خاضعة للتحكم.';
-
-  @override
-  String settingsHistoryCompanyPeriod(String companyName, String period) {
-    return '$companyName - $period';
+  String accountingmoduleLgerror(Object message) {
+    return 'فشلت التسوية: $message';
   }
 
   @override
-  String settingsStatusCurrent(String label) {
-    return 'الحالة الحالية: $label';
+  String get accountingmoduleLgempty => 'لا توجد قيود لهذه الفترة.';
+
+  @override
+  String get accountingmoduleLgbalanced => 'اليومية متوازنة';
+
+  @override
+  String get accountingmoduleLgunbalanced => 'اليومية غير متوازنة';
+
+  @override
+  String get accountingmoduleLgclosed => 'الفترة مغلقة';
+
+  @override
+  String get accountingmoduleLoading => 'جارٍ التحميل…';
+
+  @override
+  String get accountingmoduleRetry => 'إعادة المحاولة';
+
+  @override
+  String get accountingmoduleErrorgeneric => 'حدث خطأ.';
+
+  @override
+  String get accountingmoduleFecerror => 'تعذّر تصدير FEC.';
+
+  @override
+  String get shareaccessesTitle => 'سجل الوصول';
+
+  @override
+  String get shareaccessesSubtitle =>
+      'تدقيق RGPD: من اطّلع أو حمّل مستندًا مشاركًا على بوابة العملاء، ومتى، ومن أي عنوان IP.';
+
+  @override
+  String get shareaccessesDocumentlabel => 'المستند';
+
+  @override
+  String get shareaccessesSelectdocument => 'اختر مستندًا…';
+
+  @override
+  String get shareaccessesNodocumentselected =>
+      'اختر مستندًا لعرض سجل الوصول الخاص به.';
+
+  @override
+  String get shareaccessesActionheader => 'الإجراء';
+
+  @override
+  String get shareaccessesDateheader => 'التاريخ';
+
+  @override
+  String get shareaccessesIpheader => 'عنوان IP';
+
+  @override
+  String get shareaccessesUseragentheader => 'المتصفح';
+
+  @override
+  String get shareaccessesRequestidheader => 'معرّف الارتباط';
+
+  @override
+  String get shareaccessesActioninfo => 'اطّلاع';
+
+  @override
+  String get shareaccessesActiondownload => 'تحميل';
+
+  @override
+  String get shareaccessesEmptytitle => 'لا يوجد وصول مسجّل';
+
+  @override
+  String get shareaccessesEmptybody =>
+      'لم تتم مشاهدة هذا المستند أو تحميله عبر بوابة العملاء بعد.';
+
+  @override
+  String get shareaccessesLoaderror =>
+      'تعذّر تحميل سجل الوصول. حاول مجددًا بعد قليل.';
+
+  @override
+  String get shareaccessesLoaddocumentserror =>
+      'تعذّر تحميل المستندات. حاول مجددًا بعد قليل.';
+
+  @override
+  String get shareaccessesLoading => 'جارٍ التحميل…';
+
+  @override
+  String get shareaccessesPreviouspage => 'الصفحة السابقة';
+
+  @override
+  String get shareaccessesNextpage => 'الصفحة التالية';
+
+  @override
+  String shareaccessesPageof(Object current, Object total) {
+    return 'الصفحة $current من $total';
   }
 
   @override
-  String settingsUpdateFailed(String error) {
-    return 'فشل التحديث: $error';
+  String shareaccessesTotal(Object count) {
+    return '$count وصول';
   }
 
   @override
-  String settingsQrRejected(String error) {
-    return 'تم رفض رمز QR: $error';
+  String get shareaccessesRetry => 'إعادة المحاولة';
+
+  @override
+  String get adminpaletteApploading => 'جارٍ تحميل لوحة الإدارة…';
+
+  @override
+  String get adminpaletteSearchplaceholder => 'ابحث عن الصفحات والإجراءات…';
+
+  @override
+  String adminpaletteNoresults(Object query) {
+    return 'لا توجد نتائج لـ «$query»';
   }
 
   @override
-  String settingsSubmitFailed(String error) {
-    return 'فشل الإرسال: $error';
-  }
+  String get adminpaletteNavnavigate => 'تنقّل';
 
   @override
-  String get settingsQrOnboardingTitle => 'إعداد QR';
+  String get adminpaletteNavselect => 'اختر';
 
   @override
-  String get settingsQrOnboardingSubtitle =>
-      'شارك ملفك الشخصي أو امسح شركة ضوئيًا.';
+  String get adminpaletteNavclose => 'إغلاق';
 
   @override
-  String get settingsJourneyAvailable => 'متاح لشركة جديدة';
+  String get adminpaletteItemdashboard => 'لوحة التحكم';
 
   @override
-  String settingsJourneyAttachedTo(String company) {
-    return 'مرتبط بـ $company';
-  }
+  String get adminpaletteItemdashboarddesc => 'العرض الرئيسي';
 
   @override
-  String get settingsJourneyYourCompany => 'شركتك';
+  String get adminpaletteItemanalytics => 'التحليلات';
 
   @override
-  String get settingsProfessionalQr => 'رمز QR المهني';
+  String get adminpaletteItemanalyticsdesc => 'الإحصائيات والتقارير';
 
   @override
-  String get settingsQrEmployeeHint =>
-      'يقوم المدير بمسحه ضوئيًا لملء دعوة مسبقًا.';
+  String get adminpaletteItemusers => 'المستخدمون';
 
   @override
-  String get settingsPasteQrButton => 'لصق رمز QR الخاص بالشركة';
+  String get adminpaletteItemusersdesc => 'إدارة المستخدمين';
 
   @override
-  String get settingsCompanyQrLabel => 'رمز QR للشركة';
+  String get adminpaletteItemcompanies => 'الشركات';
 
   @override
-  String get settingsRequestIntegration => 'طلب الاندماج';
+  String get adminpaletteItemcompaniesdesc => 'إدارة الشركات';
 
   @override
-  String get settingsCabinetSubtitle =>
-      'السيرة الذاتية والعقود والشهادات والمستندات الإدارية.';
+  String get adminpaletteItemsubscriptions => 'الاشتراكات';
 
   @override
-  String get settingsCabinetDocuments => 'مستندات';
+  String get adminpaletteItemsubscriptionsdesc => 'الباقات والفوترة';
 
   @override
-  String get settingsCabinetShared => 'مشاركة';
+  String get adminpaletteItemsettings => 'الإعدادات';
 
   @override
-  String get settingsCabinetPublic => 'عامة';
+  String get adminpaletteItemsettingsdesc => 'الحساب والتفضيلات';
 
   @override
-  String get settingsOpenLocker => 'افتح خزانتي';
+  String get adminpaletteItemgrowth => 'النمو';
 
   @override
-  String get settingsLanguageSyncHint =>
-      'يتم مزامنة هذا التفضيل مع حسابك ويتحكم أيضًا في وضع RTL.';
+  String get adminpaletteItemgrowthdesc => 'الشركاء والنمو';
 
   @override
-  String get settingsUpdating => 'جارٍ التحديث...';
+  String get adminpaletteItemedge => 'عقد Edge';
 
   @override
-  String get settingsUpdateLanguage => 'تحديث اللغة';
+  String get adminpaletteItemedgedesc => 'عقد الحافة المتزامنة';
 
   @override
-  String settingsJourneyCompanyPeriod(String company, String period) {
-    return '$company - $period';
-  }
+  String get adminpaletteItemglobe => 'العالم';
 
   @override
-  String get settingsPasswordModernizationHint =>
-      'غيّر كلمة المرور قبل خطوات التحديث القادمة.';
+  String get adminpaletteItemglobedesc => 'الحضور العالمي في الوقت الفعلي';
 
   @override
-  String get settingsUpdatePassword => 'تحديث كلمة المرور';
+  String get adminpaletteItemfleet => 'الأسطول';
 
   @override
-  String get settingsBiometricPreparationTitle => 'التحضير البيومتري';
+  String get adminpaletteItemfleetdesc => 'تنبيهات أسطول المركبات';
 
   @override
-  String get settingsBiometricExplanation =>
-      'يمكن التقاط الوجه من الجوال ثم إرساله لموافقة المدير/الموارد البشرية. بالنسبة لبصمة الإصبع، يمكن لنظامي Android/iOS التحقق محليًا من أنك تستخدم إصبعًا مسجلاً، لكنهما لا يوفران الوصول إلى القالب الخام؛ لذا يبقى التفعيل الفعلي في جهاز الحضور معتمدًا ثم تستخدمه محطة الشركة.';
+  String get adminpaletteItemmarketing => 'تسويق OAuth';
 
   @override
-  String settingsBiometricTodayStatus(String face, String fingerprint) {
-    return 'نشط اليوم - الوجه: $face | بصمة الإصبع: $fingerprint';
-  }
+  String get adminpaletteItemmarketingdesc => 'إعدادات OAuth للتسويق';
 
   @override
-  String get settingsYes => 'نعم';
+  String get adminpaletteItemsupport => 'الدعم';
 
   @override
-  String get settingsNo => 'لا';
+  String get adminpaletteItemsupportdesc => 'تذاكر دعم العملاء';
 
   @override
-  String get settingsBiometricEnablePreparation => 'تفعيل التحضير البيومتري';
+  String get adminpaletteItemcrm => 'إدارة علاقات العملاء (CRM)';
 
   @override
-  String get settingsBiometricFingerprintWanted => 'بصمة الإصبع مرغوبة';
+  String get adminpaletteItemcrmdesc => 'مسار CRM';
 
   @override
-  String get settingsBiometricFaceWanted => 'التعرف على الوجه مرغوب';
+  String get adminpaletteItemtoggledark => 'التبديل إلى الوضع الداكن';
 
   @override
-  String get settingsBiometricFutureConsent =>
-      'الموافقة على الحضور البيومتري المستقبلي';
+  String get adminpaletteItemtoggledarkdesc => 'تغيير المظهر';
 
   @override
-  String get settingsBiometricSensorLabel => 'معرف مستشعر البصمة / المحطة';
+  String get bankreconTitle => 'التسوية المصرفية';
 
   @override
-  String get settingsBiometricSensorHint => 'مثال: FP-ENTREE-01 أو رقم بيومتري';
+  String get bankreconSubtitle =>
+      'قائمة المطابقة اليدوية: طابق بنود كشف الحساب مع المدفوعات المسجلة (درجة ثقة المطابقة التلقائية).';
 
   @override
-  String get settingsBiometricNotesTitle => 'ملاحظات وموافقة';
+  String get bankreconStatementstitle => 'كشوف الحساب';
 
   @override
-  String get settingsBiometricNotesHint =>
-      'مثال: السيلفي مسموح، يفضل محطة المدخل الرئيسي، موافقة على صورة الوجه...';
+  String get bankreconNostatements => 'لا يوجد كشف مستورد.';
 
   @override
-  String get settingsBiometricCaptureFace => 'التقاط / اختيار وجهي';
+  String get bankreconSelectstatement => 'اختر كشفًا…';
 
   @override
-  String get settingsBiometricFaceSelected => 'تم تحديد صورة الوجه';
+  String get bankreconPeriod => 'الفترة';
 
   @override
-  String get settingsSavingShort => 'جارٍ الحفظ...';
+  String get bankreconReference => 'المرجع';
 
   @override
-  String get settingsSubmitBiometric => 'إرسال إلى المدير / الموارد البشرية';
+  String get bankreconStatus => 'الحالة';
 
   @override
-  String get settingsSubmitting => 'جارٍ الإرسال...';
+  String get bankreconStatusimported => 'مستورد';
 
   @override
-  String get settingsBiometricPendingExplanation =>
-      'بعد الإرسال، تظل بياناتك البيومترية معلقة. أي تفعيل أول أو تعديل يتطلب موافقة المدير/الموارد البشرية.';
+  String get bankreconStatusreconciled => 'مسوّى';
 
   @override
-  String get settingsEdgeNodeTitle => 'عقدة Edge (شبكة محلية)';
+  String get bankreconOpening => 'رصيد افتتاحي';
 
   @override
-  String get settingsEdgeNodeHint =>
-      'اختياري: وجّه إلى خادم Edge مثبت في الموقع للتحقق من الحضور دون إنترنت.';
+  String get bankreconClosingexpected => 'الإغلاق المتوقع';
 
   @override
-  String get settingsEdgeCloudStatus => 'متصل بالسحابة';
+  String get bankreconClosingreported => 'الإغلاق المعلن';
 
   @override
-  String get settingsEdgeLocalStatus => 'متصل بعقدة Edge المحلية';
+  String get bankreconGap => 'الفرق';
 
   @override
-  String get settingsEdgeOfflineStatus => 'غير متصل';
+  String get bankreconTotallines => 'البنود';
 
   @override
-  String settingsEdgeCurrentStatus(String label) {
-    return 'الحالة الحالية: $label';
-  }
+  String get bankreconMatchedlines => 'مسوّاة';
 
   @override
-  String get settingsEdgeAddressLabel => 'عنوان عقدة Edge';
+  String get bankreconPendinglines => 'قيد الانتظار';
 
   @override
-  String get settingsEdgeUuidLabel => 'معرف العقدة (UUID)';
+  String get bankreconMatchedamount => 'المبلغ المسوّى';
 
   @override
-  String get settingsEdgeTokenLabel => 'رمز Edge';
+  String get bankreconPendingamount => 'المبلغ المنتظر';
 
   @override
-  String get settingsEdgeUuidHint => 'يوفره المسؤول';
+  String get bankreconLinedate => 'التاريخ';
 
   @override
-  String get settingsEdgeTokenHint => 'يُقدم مرة واحدة عند التسجيل';
+  String get bankreconLinelabel => 'البيان';
 
   @override
-  String get settingsRemove => 'إزالة';
+  String get bankreconLineamount => 'المبلغ';
 
   @override
-  String get settingsSessionLogoutHint =>
-      'اخرج من هذا الفضاء على هذا الهاتف بشكل نظيف.';
+  String get bankreconLinestatus => 'الحالة';
 
   @override
-  String get settingsNotificationsUnavailable =>
-      'التفضيلات غير متاحة حاليًا. اسحب لإعادة التحميل لاحقًا.';
+  String get bankreconStatuspending => 'للمطابقة';
 
   @override
-  String get settingsNotificationsSaved => 'تم تحديث تفضيلات الإشعارات.';
+  String get bankreconStatusmatched => 'مسوّى';
 
   @override
-  String settingsNotificationsSaveFailed(String error) {
-    return 'فشل التحديث: $error';
-  }
+  String get bankreconConfidence => 'الثقة';
 
   @override
-  String get settingsNotificationsIntro =>
-      'اختر القنوات المفيدة دون فقدان تنبيهات الموارد البشرية المهمة.';
+  String get bankreconProposed => 'مقترح';
 
   @override
-  String get settingsChannelInApp => 'تنبيهات داخل التطبيق';
+  String get bankreconMatch => 'طابق';
 
   @override
-  String get settingsChannelInAppHint =>
-      'المهام وقرارات الموارد البشرية والحضور والتذكيرات.';
+  String get bankreconMatchpayment => 'الدفعة';
 
   @override
-  String get settingsChannelPush => 'إشعار الجوال';
+  String get bankreconNopayments => 'لا توجد دفعة متاحة لهذه الفترة.';
 
   @override
-  String get settingsChannelPushHint => 'إشعارات فورية على هذا الهاتف.';
+  String get bankreconExportcsv => 'تصدير CSV';
 
   @override
-  String get settingsChannelEmailHint => 'ملخص وتأكيدات مهمة.';
+  String get bankreconLoaderror => 'تعذّر تحميل التسوية.';
 
   @override
-  String get settingsChannelSmsHint =>
-      'قناة قصيرة مخصصة للطوارئ، نشطة بعد الاشتراك.';
+  String get bankreconMatcherror => 'فشلت المطابقة.';
 
   @override
-  String get settingsChannelWhatsappHint =>
-      'قناة محادثة، تتطلب اشتراكك الصريح.';
+  String get bankreconMatchdone => 'تمت مطابقة البند.';
 
   @override
-  String get settingsNotificationsLanguage => 'لغة الإشعارات';
+  String get bankreconLoading => 'جارٍ التحميل…';
 
   @override
-  String get settingsQrPasted => 'تم لصق رمز QR الخاص بالشركة.';
-
-  @override
-  String get settingsLanguageUpdated => 'تم تحديث اللغة.';
-
-  @override
-  String get settingsBiometricSavedLocal => 'تم حفظ التحضير البيومتري محليًا.';
-
-  @override
-  String get settingsBiometricEnableFirst => 'فعّل التحضير البيومتري أولاً.';
-
-  @override
-  String get settingsBiometricConsentRequired =>
-      'الموافقة مطلوبة قبل أي إرسال.';
-
-  @override
-  String get settingsBiometricFaceRequired => 'أضف التقاط وجه قبل الإرسال.';
-
-  @override
-  String get settingsBiometricLocalVerifyCancel =>
-      'تم إلغاء التحقق البيومتري المحلي.';
-
-  @override
-  String get settingsBiometricSubmitted =>
-      'أُرسل الطلب إلى المدير / الموارد البشرية للتحقق.';
-
-  @override
-  String settingsBiometricSubmitFailed(String error) {
-    return 'فشل الإرسال: $error';
-  }
-
-  @override
-  String get settingsBiometricConfirmIdentity =>
-      'أكد هويتك لإرسال طلبك البيومتري';
-
-  @override
-  String get shellHome => 'الرئيسية';
-
-  @override
-  String get shellAttendance => 'الحضور';
-
-  @override
-  String get shellAbsences => 'الغيابات';
-
-  @override
-  String get shellApprovals => 'الموافقات';
-
-  @override
-  String get contractsMobileTitle => 'عقدي';
-
-  @override
-  String get contractsBackTooltip => 'رجوع';
-
-  @override
-  String get contractsEmptyTitle => 'لا يوجد عقد';
-
-  @override
-  String get contractsEmptyDescription =>
-      'سيظهر عقدك هنا بمجرد تكوينه.';
-
-  @override
-  String get contractsLabelType => 'النوع';
-
-  @override
-  String get contractsLabelStartDate => 'البداية';
-
-  @override
-  String get contractsLabelEndDate => 'النهاية';
-
-  @override
-  String get contractsLabelBaseSalary => 'الراتب الأساسي';
-
-  @override
-  String get contractsLoading => 'جارٍ تحميل العقود...';
-
-  @override
-  String get contractsStatusActive => 'نشط';
-
-  @override
-  String get contractsStatusExpired => 'منتهي الصلاحية';
-
-  @override
-  String get contractsStatusDraft => 'مسودة';
-
-  @override
-  String get contractsStatusCdi => 'دائم (CDI)';
+  String get bankreconRetry => 'إعادة المحاولة';
 
   @override
   String get organigrammeTitle => 'الهيكل التنظيمي';
@@ -6894,15 +7082,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get vehicleMapEmptyTitle => 'لا توجد مركبة';
 
   @override
-  String get vehicleMapEmptyDescription =>
-      'ستظهر مركباتك المخصصة هنا.';
+  String get vehicleMapEmptyDescription => 'ستظهر مركباتك المخصصة هنا.';
 
   @override
   String get vehicleMapLoading => 'جارٍ تحميل المركبات...';
 
   @override
   String vehicleMapLastUpdate(Object time) {
-    return 'آخر تحديث: \$time';
+    return 'آخر تحديث: $time';
   }
 
   @override
@@ -6920,12 +7107,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String payrollOvertimeHoursTeam(Object hours) {
-    return 'ساعات إضافية (${hours}س)';
+    return 'ساعات إضافية ($hoursس)';
   }
 
   @override
   String payrollOvertimeHoursItem(Object hours) {
-    return '+${hours}س إضافية';
+    return '+$hoursس إضافية';
   }
 
   @override
@@ -6981,7 +7168,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String edgeNodesVersionInfo(Object version, Object count) {
+  String edgeNodesVersionInfo(Object count, Object version) {
     return 'v$version — $count موظف';
   }
 
@@ -7017,4 +7204,302 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get supportTicketsLoadingTicket => 'تحميل التذكرة';
+
+  @override
+  String get settingsThemeTitle => 'مظهر التطبيق';
+
+  @override
+  String get settingsThemeHint =>
+      'اختر المظهر المعروض بغض النظر عن إعدادات النظام.';
+
+  @override
+  String get settingsThemeSystem => 'تلقائي (النظام)';
+
+  @override
+  String get settingsThemeLight => 'فاتح';
+
+  @override
+  String get settingsThemeDark => 'داكن';
+
+  @override
+  String get settingsBiometricCaptureFace => 'التقاط الوجه';
+
+  @override
+  String get settingsBiometricConfirmIdentity => 'تحقق من هويتك للمتابعة.';
+
+  @override
+  String get settingsBiometricConsentRequired =>
+      'مطلوب موافقتك قبل تفعيل القياسات الحيوية.';
+
+  @override
+  String get settingsBiometricEnableFirst =>
+      'فعّل القياسات الحيوية أولاً في الإعدادات.';
+
+  @override
+  String get settingsBiometricEnablePreparation =>
+      'التحضير لتفعيل القياسات الحيوية';
+
+  @override
+  String get settingsBiometricExplanation =>
+      'استخدم بصمة إصبعك أو وجهك لتسجيل الدخول بشكل أسرع وتأمين وصولك.';
+
+  @override
+  String get settingsBiometricFaceRequired =>
+      'إذن الكاميرا مطلوب للتعرف على الوجه.';
+
+  @override
+  String get settingsBiometricFaceSelected => 'تم اختيار الوجه';
+
+  @override
+  String get settingsBiometricFaceWanted => 'هل تريد تفعيل التعرف على الوجه؟';
+
+  @override
+  String get settingsBiometricFingerprintWanted => 'هل تريد تفعيل بصمة الإصبع؟';
+
+  @override
+  String get settingsBiometricFutureConsent =>
+      'الموافقة على عمليات التفعيل المستقبلية';
+
+  @override
+  String get settingsBiometricLocalVerifyCancel => 'تم إلغاء التحقق الحيوي.';
+
+  @override
+  String get settingsBiometricNotesHint => 'ملاحظات داخلية (اختياري)';
+
+  @override
+  String get settingsBiometricNotesTitle => 'ملاحظات التسجيل';
+
+  @override
+  String get settingsBiometricPendingExplanation => 'بانتظار تأكيد جهازك…';
+
+  @override
+  String get settingsBiometricPreparationTitle => 'جارٍ تحضير التسجيل الحيوي';
+
+  @override
+  String get settingsBiometricSavedLocal =>
+      'تم حفظ الإعدادات الحيوية على هذا الجهاز.';
+
+  @override
+  String get settingsBiometricSensorHint => 'ضع إصبعك على المستشعر…';
+
+  @override
+  String get settingsBiometricSensorLabel => 'المستشعر';
+
+  @override
+  String settingsBiometricSubmitFailed(Object error) {
+    return 'فشل إرسال البيانات الحيوية: $error';
+  }
+
+  @override
+  String get settingsBiometricSubmitted => 'تم إرسال التسجيل الحيوي للتحقق.';
+
+  @override
+  String settingsBiometricTodayStatus(Object face, Object fingerprint) {
+    return 'الوجه: $face · بصمة الإصبع: $fingerprint';
+  }
+
+  @override
+  String get settingsCabinetDocuments => 'المستندات';
+
+  @override
+  String get settingsCabinetPublic => 'عام';
+
+  @override
+  String get settingsCabinetShared => 'مشاركة';
+
+  @override
+  String get settingsCabinetSubtitle => 'مستنداتك وملفاتك المشتركة.';
+
+  @override
+  String get settingsChannelEmailHint =>
+      'استلم التنبيهات المهمة عبر البريد الإلكتروني.';
+
+  @override
+  String get settingsChannelInApp => 'داخل التطبيق';
+
+  @override
+  String get settingsChannelInAppHint => 'الإشعارات المعروضة داخل التطبيق.';
+
+  @override
+  String get settingsChannelPush => 'الإشعارات الفورية';
+
+  @override
+  String get settingsChannelPushHint => 'إشعارات فورية على هذا الجهاز.';
+
+  @override
+  String get settingsChannelSmsHint => 'رسائل SMS للرموز والتنبيهات الحرجة.';
+
+  @override
+  String get settingsChannelWhatsappHint => 'واتساب إذا قامت الشركة بتكوينه.';
+
+  @override
+  String get settingsCompanyQrLabel => 'رمز الشركة';
+
+  @override
+  String get settingsDigitalLockerSubtitle => 'خزّن مستنداتك بأمان.';
+
+  @override
+  String get settingsDigitalLockerTitle => 'الخزنة الرقمية';
+
+  @override
+  String get settingsEdgeAddressLabel => 'عنوان عقدة Edge';
+
+  @override
+  String get settingsEdgeCloudStatus => 'السحابة';
+
+  @override
+  String settingsEdgeCurrentStatus(Object label) {
+    return 'الحالة الحالية: $label';
+  }
+
+  @override
+  String get settingsEdgeLocalStatus => 'Edge محلي';
+
+  @override
+  String get settingsEdgeNodeHint =>
+      'اربط التطبيق بعقدة Edge محلية للوضع دون اتصال.';
+
+  @override
+  String get settingsEdgeNodeTitle => 'عقدة Edge';
+
+  @override
+  String get settingsEdgeOfflineStatus => 'غير متصل';
+
+  @override
+  String get settingsEdgeRemoved => 'تم فصل عقدة Edge.';
+
+  @override
+  String get settingsEdgeTokenHint => 'السر المُنشأ أثناء الاقتران.';
+
+  @override
+  String get settingsEdgeTokenLabel => 'رمز Edge';
+
+  @override
+  String get settingsEdgeUuidHint => 'معرّف العقدة الفريد.';
+
+  @override
+  String get settingsEdgeUuidLabel => 'UUID العقدة';
+
+  @override
+  String settingsJourneyAttachedTo(Object company) {
+    return 'حاليًا في $company';
+  }
+
+  @override
+  String get settingsJourneyAvailable => 'متاح لشركة جديدة';
+
+  @override
+  String settingsJourneyCompanyPeriod(Object company, Object period) {
+    return '$company · $period';
+  }
+
+  @override
+  String get settingsJourneyYourCompany => 'شركتك';
+
+  @override
+  String get settingsLanguageSyncHint =>
+      'اللغة المختارة تتحكم أيضًا في الإشعارات والبريد الإلكتروني.';
+
+  @override
+  String get settingsLanguageUpdated => 'تم حفظ اللغة.';
+
+  @override
+  String get settingsNo => 'لا';
+
+  @override
+  String get settingsNotificationsIntro =>
+      'اختر القنوات التي تستلم عبرها تنبيهاتك.';
+
+  @override
+  String get settingsNotificationsLanguage => 'لغة الإشعارات';
+
+  @override
+  String get settingsNotificationsSaved => 'تم حفظ تفضيلات الإشعارات.';
+
+  @override
+  String settingsNotificationsSaveFailed(Object error) {
+    return 'فشل الحفظ: $error';
+  }
+
+  @override
+  String get settingsNotificationsUnavailable =>
+      'الإشعارات غير متاحة على هذا الجهاز.';
+
+  @override
+  String get settingsOpenLocker => 'فتح الخزنة';
+
+  @override
+  String get settingsPasswordModernizationHint =>
+      'فعّل كلمة مرور أقوى لتأمين حسابك.';
+
+  @override
+  String get settingsPasteQrButton => 'لصق رمز QR';
+
+  @override
+  String get settingsPersonalPhoneHint => 'الرقم الشخصي (اختياري).';
+
+  @override
+  String get settingsPortableIdentityHint => 'هويتك المهنية القابلة للنقل.';
+
+  @override
+  String get settingsPortableIdentitySubtitle => 'رمز QR ومستندات هوية الشركة.';
+
+  @override
+  String get settingsPortableIdentityTitle => 'الهوية القابلة للنقل';
+
+  @override
+  String get settingsProfessionalQr => 'رمز QR المهني';
+
+  @override
+  String get settingsQrEmployeeHint => 'اعرض رمز QR هذا على صاحب العمل.';
+
+  @override
+  String get settingsQrOnboardingSubtitle => 'الانضمام بسرعة إلى منصب جديد.';
+
+  @override
+  String get settingsQrOnboardingTitle => 'الانضمام عبر رمز QR';
+
+  @override
+  String get settingsQrPasted => 'تم لصق رمز QR.';
+
+  @override
+  String settingsQrRejected(Object error) {
+    return 'تم رفض رمز QR: $error';
+  }
+
+  @override
+  String get settingsRecoveryEmailHint => 'البريد الاحتياطي (اختياري).';
+
+  @override
+  String get settingsRemove => 'إزالة';
+
+  @override
+  String get settingsRequestIntegration => 'طلب التكامل';
+
+  @override
+  String get settingsSavingShort => 'جارٍ الحفظ…';
+
+  @override
+  String get settingsSessionLogoutHint => 'يسجل الخروج على هذا الجهاز.';
+
+  @override
+  String get settingsSubmitBiometric => 'إرسال التسجيل';
+
+  @override
+  String get settingsSubmitting => 'جارٍ الإرسال…';
+
+  @override
+  String get settingsUpdateLanguage => 'تحديث اللغة';
+
+  @override
+  String get settingsUpdatePassword => 'تحديث كلمة المرور';
+
+  @override
+  String get settingsUpdating => 'جارٍ التحديث…';
+
+  @override
+  String get settingsViewProfile => 'عرض الملف الشخصي';
+
+  @override
+  String get settingsYes => 'نعم';
 }
