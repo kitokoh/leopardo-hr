@@ -120,24 +120,28 @@ class GrowthControllerTest extends TestCase
     /** @test */
     public function cross_tenant_isolation_on_partner_data(): void
     {
-        $codeA = $this->createPartnerFor($this->manager);
-        $codeB = $this->createPartnerFor($this->otherManager);
+        $partnerA = $this->createPartnerFor($this->manager);
+        $codeB    = $this->createPartnerFor($this->otherManager)->referral_code;
+
+        // Tenant A a une entreprise référencée → total_conversions=1 ; B n'en a
+        // aucune. Si l'isolation fuitait, B verrait les conversions de A.
+        Company::factory()->create(['referrer_partner_id' => $partnerA->id]);
 
         // otherManager (tenant B) ne doit voir QUE ses propres données.
         Sanctum::actingAs($this->otherManager);
         $otherResponse = $this->getJson('/api/v1/growth/partner/dashboard');
         $otherResponse->assertOk();
         $otherResponse->assertJsonPath('referral_code', $codeB);
-        $this->assertNotSame($codeA, $otherResponse->json('referral_code'));
+        $this->assertNotSame($partnerA->referral_code, $otherResponse->json('referral_code'));
+        $this->assertSame(0, $otherResponse->json('stats.total_conversions'));
 
         // manager (tenant A) voit ses données, pas celles de B.
         Sanctum::actingAs($this->manager);
         $thisResponse = $this->getJson('/api/v1/growth/partner/dashboard');
         $thisResponse->assertOk();
-        $thisResponse->assertJsonPath('referral_code', $codeA);
+        $thisResponse->assertJsonPath('referral_code', $partnerA->referral_code);
         $this->assertNotSame($codeB, $thisResponse->json('referral_code'));
-
-        $this->assertNotEquals($otherResponse->json('stats'), $thisResponse->json('stats'));
+        $this->assertSame(1, $thisResponse->json('stats.total_conversions'));
     }
 
     /** @test */
@@ -198,18 +202,15 @@ class GrowthControllerTest extends TestCase
 
     /**
      * Crée le User global + le partenaire lié à l'email de l'employé
-     * (même chemin que resolveGlobalUser()). Retourne le referral_code.
+     * (même chemin que resolveGlobalUser()). Retourne le partenaire.
      */
-    private function createPartnerFor(Employee $employee): string
+    private function createPartnerFor(Employee $employee): Partner
     {
         $user = User::factory()->create(['email' => $employee->email]);
 
-        $code = 'P-'.uniqid();
-        Partner::create([
-            'user_id'      => $user->id,
-            'referral_code' => $code,
+        return Partner::create([
+            'user_id'       => $user->id,
+            'referral_code' => 'P-'.uniqid(),
         ]);
-
-        return $code;
     }
 }
