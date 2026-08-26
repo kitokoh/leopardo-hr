@@ -112,11 +112,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/dashboard/export', [AccountingDashboardController::class, 'export']);
 
             // Wizard d'activation Comptabilité (issue #5288).
-            // #R14 — le frontend appelle POST /accounting/activation (sans /complete).
-            // Le contrat API (spec #5288) et AccountingActivationView.vue utilisent
-            // tous deux /activation comme endpoint POST.
+            // #R14 — le frontend Next.js appelle POST /accounting/activation (sans /complete).
+            // L'ANCIEN contrat POST /accounting/activation/complete reste servi (alias
+            // déprécié) : AccountingActivationTest + clients existants l'utilisent —
+            // un renommage sec a cassé 8 tests sur main (audit 2026-08-26).
             Route::get('/activation', [AccountingActivationController::class, 'show']);
             Route::post('/activation', [AccountingActivationController::class, 'complete']);
+            Route::post('/activation/complete', [AccountingActivationController::class, 'complete']); // déprécié #5626
 
             // Lettrage des comptes de tiers (équilibre Σ débits = Σ crédits).
             Route::post('/journal/lettering', [AccountingLetteringController::class, 'store']);
