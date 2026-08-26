@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\TotpService;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\CompanySetting;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -153,6 +157,68 @@ class SSOOidcFlowTest extends TestCase
         $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
             ->assertOk()
             ->assertJsonPath('data.employee.email', 'sso.employee@example.com');
+    }
+
+    public function test_callback_with_2fa_enrolled_employee_issues_challenge_and_no_token(): void
+    {
+        // #5579 : compte enrôlé 2FA → challenge TOTP, jamais de token Sanctum.
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $employee = $this->seedEmployeeForSso(with2fa: true);
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $idToken = $this->signIdToken($privateKey, $nonce);
+
+        $response = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken));
+
+        $response->assertOk()
+            ->assertJsonPath('mfa_challenge', true)
+            ->assertJsonStructure(['mfa_challenge_token', 'mfa_challenge_expires_in']);
+        $this->assertArrayNotHasKey('data', $response->json());
+        $this->assertSame(0, $employee->tokens()->count(), 'aucun token Sanctum ne doit être émis');
+    }
+
+    public function test_callback_with_mfa_policy_blocks_and_no_token(): void
+    {
+        // #5579 : politique tenant mfa_required_roles + 2FA non activée →
+        // 403 TWO_FACTOR_REQUIRED (le handler global, pas le 422 générique).
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $employee = $this->seedEmployeeForSso(role: 'manager', managerRole: 'rh');
+
+        CompanySetting::query()->create([
+            'key' => 'mfa_required_roles',
+            'company_id' => $this->company->id,
+            'value' => 'rh,principal',
+            'value_type' => 'string',
+        ]);
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $idToken = $this->signIdToken($privateKey, $nonce);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
+            ->assertStatus(403)
+            ->assertJsonPath('error', 'TWO_FACTOR_REQUIRED');
+
+        $this->assertSame(0, $employee->tokens()->count());
     }
 
     public function test_callback_rejects_unknown_state(): void
@@ -302,14 +368,34 @@ class SSOOidcFlowTest extends TestCase
             ->assertStatus(422);
     }
 
-    private function seedEmployeeForSso(): Employee
+    private function seedEmployeeForSso(string $role = 'employee', ?string $managerRole = null, bool $with2fa = false): Employee
     {
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
             'email' => 'sso.employee@example.com',
             'status' => 'active',
+            'role' => $role,
+            'manager_role' => $managerRole,
         ]);
+
+        if ($with2fa) {
+            // Le fixture MVP (CreatesMvpSchema) n'inclut pas les colonnes
+            // 2FA de la migration tenant #5436 — on les ajoute pour ce test.
+            if (! Schema::hasColumn('employees', 'two_fa_secret')) {
+                Schema::table('employees', function (Blueprint $table): void {
+                    $table->string('two_fa_secret')->nullable();
+                    $table->timestamp('two_fa_enabled_at')->nullable();
+                    $table->json('two_fa_recovery_codes')->nullable();
+                });
+            }
+            $secret = (new TotpService)->generateSecret();
+            $employee->forceFill([
+                'two_fa_secret' => $secret,
+                'two_fa_enabled_at' => now(),
+                'two_fa_recovery_codes' => [],
+            ])->save();
+        }
 
         $this->syncLookup($employee, $this->company);
 

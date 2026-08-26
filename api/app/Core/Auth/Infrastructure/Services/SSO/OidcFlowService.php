@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services\SSO;
 
+use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Infrastructure\Services\AuthService;
+use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
+use App\Exceptions\InvalidCredentialsException;
 use App\Rules\NotPrivateUrl;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -30,6 +33,7 @@ final class OidcFlowService
         private readonly SSOService $ssoService,
         private readonly OidcIdTokenValidator $idTokenValidator,
         private readonly AuthService $authService,
+        private readonly TwoFactorAuthService $twoFactorService,
     ) {}
 
     /**
@@ -67,6 +71,7 @@ final class OidcFlowService
     /**
      * @param  array<string, mixed>  $callbackData  code + state (+ id_token direct optionnel)
      * @return array{employee: array<string, mixed>, token: string, token_type: string, token_expires_at: ?string}
+     *                                                                                                             | array{mfa_challenge: true, mfa_challenge_token: string, mfa_challenge_expires_in: int}
      */
     public function complete(string $companyId, array $callbackData): array
     {
@@ -101,13 +106,40 @@ final class OidcFlowService
 
         try {
             $result = $this->authService->loginViaEmail($email, 'sso-oidc');
-        } catch (\App\Exceptions\InvalidCredentialsException $e) {
+        } catch (InvalidCredentialsException $e) {
             throw new \RuntimeException('SSO_USER_NOT_FOUND: aucun employé actif avec cet email ('.$email.').');
         }
 
         $employee = $result['employee'];
         if ((string) $employee->company_id !== $companyId) {
             throw new \RuntimeException('SSO_TENANT_MISMATCH: l\'email SSO appartient à une autre entreprise.');
+        }
+
+        // #5579 : garde 2FA — miroir de login(). loginViaEmail vient de créer
+        // un token ; s'il ne doit pas être délivré, on le révoque et on
+        // exige un challenge TOTP (ou on bloque pour la politique tenant).
+        if ($employee->two_fa_enabled_at !== null) {
+            $employee->tokens()->latest('id')->first()?->delete();
+
+            $challenge = $this->twoFactorService->issueChallenge([
+                'employee_id' => $employee->id,
+                'company_id' => (string) $employee->company_id,
+                'tenant_schema' => $result['tenant_schema'] ?? null,
+                'email' => (string) $employee->email,
+                'device_name' => 'sso-oidc',
+            ]);
+
+            return [
+                'mfa_challenge' => true,
+                'mfa_challenge_token' => $challenge['token'],
+                'mfa_challenge_expires_in' => $challenge['expires_in'],
+            ];
+        }
+
+        if ($this->twoFactorService->requiresMfa($employee)) {
+            $employee->tokens()->latest('id')->first()?->delete();
+
+            throw TwoFactorException::required();
         }
 
         return [

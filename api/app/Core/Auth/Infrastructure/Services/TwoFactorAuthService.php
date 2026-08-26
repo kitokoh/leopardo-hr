@@ -130,9 +130,13 @@ final class TwoFactorAuthService
      */
     public function requiresMfa(Employee $employee): bool
     {
+        // NB #5579 : `company_settings` est scopé PAR SCHÉMA TENANT (chaque
+        // tenant a sa table — voir 07_SCHEMA_SQL_COMPLET.sql) : il n'existe
+        // pas de colonne company_id. Le filtre `where('company_id', ...)`
+        // présent au merge #5436 levait SQLSTATE 42703 sur TOUT login →
+        // CI rouge. La résolution search_path (tenant courant) suffit.
         $setting = CompanySetting::query()
             ->where('key', 'mfa_required_roles')
-            ->where('company_id', $employee->company_id)
             ->first();
 
         if ($setting === null || ! is_string($setting->value) || $setting->value === '') {
@@ -182,13 +186,25 @@ final class TwoFactorAuthService
             throw TwoFactorException::challengeExpired();
         }
 
-        Cache::forget('mfa:challenge:'.$challengeToken);
+        // NB #5579 : ne PAS oublier le challenge ici — un code TOTP erroné
+        // (422 TWO_FACTOR_INVALID) doit laisser à l'utilisateur la possibilité
+        // de resaisir (le test miroir l'exige). Le challenge n'est consommé
+        // qu'au succès de la vérification, ci-dessous.
 
         $previousSearchPath = null;
         if (DB::getDriverName() === 'pgsql' && is_string($context['tenant_schema'] ?? null) && $context['tenant_schema'] !== '') {
             $searchPathResult = DB::selectOne('SHOW search_path');
             $previousSearchPath = is_object($searchPathResult) ? (string) $searchPathResult->search_path : null;
-            DB::statement('SET search_path TO '.$context['tenant_schema']);
+            // NB #5579 : SET search_path TO <schéma> SEUL (merge #5436)
+            // rendait `companies` et `personal_access_tokens` (schéma public)
+            // introuvables → challenge « expiré » (401) ou 500 à la création
+            // du token. On positionne schéma tenant + public, comme
+            // AuthService::setTenantSearchPath.
+            $tenantSchema = $context['tenant_schema'];
+            if (preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $tenantSchema) !== 1) {
+                throw TwoFactorException::challengeExpired();
+            }
+            DB::statement('SET search_path TO '.sprintf('"%s","public"', $tenantSchema));
         }
 
         try {
@@ -218,6 +234,9 @@ final class TwoFactorAuthService
             if ($company === null || in_array($company->status, ['suspended', 'expired'], true)) {
                 throw TwoFactorException::challengeExpired();
             }
+
+            // Vérification réussie → le challenge est consommé (usage unique).
+            Cache::forget('mfa:challenge:'.$challengeToken);
 
             $employee->forceFill(['last_login_at' => now()])->saveQuietly();
 

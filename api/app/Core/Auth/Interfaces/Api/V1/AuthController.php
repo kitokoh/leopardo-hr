@@ -71,21 +71,12 @@ class AuthController extends Controller
 
             $employee->tokens()->latest('id')->first()?->delete();
 
-            $deviceName = $request->validated('device_name');
-
-            $challenge = $this->twoFactorService->issueChallenge([
-                'employee_id' => $employee->id,
-                'company_id' => (string) $employee->company_id,
-                'tenant_schema' => $result['tenant_schema'],
-                'email' => (string) $employee->email,
-                'device_name' => is_string($deviceName) ? $deviceName : null,
-            ]);
-
-            return new JsonResponse([
-                'mfa_challenge' => true,
-                'mfa_challenge_token' => $challenge['token'],
-                'mfa_challenge_expires_in' => $challenge['expires_in'],
-            ]);
+            return $this->mfaChallengeResponse(
+                $employee,
+                is_string($result['tenant_schema'] ?? null) ? $result['tenant_schema'] : null,
+                $request->validated('device_name'),
+                (string) $employee->email,
+            );
         }
 
         // Politique tenant : rôle sensible + 2FA non activée → blocage.
@@ -324,6 +315,13 @@ class AuthController extends Controller
             }
         }
 
+        // #5579 : la garde 2FA s'applique ici aussi (miroir de login()) — un
+        // compte enrôlé 2FA reçoit un challenge TOTP, jamais un token Google.
+        $mfaGuard = $this->assertTwoFactorPolicy($employee, null, null, $googleUser->getEmail());
+        if ($mfaGuard !== null) {
+            return $mfaGuard;
+        }
+
         $token = $employee->createToken('google-auth');
 
         return (new EmployeeResource($employee))
@@ -371,6 +369,17 @@ class AuthController extends Controller
             }
         }
 
+        // #5579 : garde 2FA — challenge TOTP avant tout token (mobile compris).
+        $mfaGuard = $this->assertTwoFactorPolicy(
+            $employee,
+            $validated['device_name'] ?? null,
+            null,
+            $googleUser->getEmail(),
+        );
+        if ($mfaGuard !== null) {
+            return $mfaGuard;
+        }
+
         $tokenName = $validated['device_name'] ?? 'google-mobile';
         $token = $employee->createToken($tokenName);
 
@@ -380,5 +389,69 @@ class AuthController extends Controller
                 'token_type' => 'Bearer',
             ])
             ->response();
+    }
+
+    /**
+     * #5579 : garde 2FA commune à tous les chemins d'authentification hors
+     * login() (Google callback, Google token, OIDC via OidcFlowService).
+     *
+     * Miroir strict de la logique de login() :
+     * - compte enrôlé 2FA → retourne une réponse challenge TOTP (aucun token
+     *   émis) ;
+     * - politique tenant `mfa_required_roles` + 2FA non activée → blocage
+     *   (TwoFactorException::required, 403) ;
+     * - sinon → null : le token peut être délivré.
+     *
+     * @param  string|null  $deviceName  nom de device pour le challenge
+     * @param  string|null  $tenantSchema  schéma tenant résolu (OIDC), null sinon
+     * @param  string|null  $email  email IdP (peut différer de l'email employé)
+     */
+    private function assertTwoFactorPolicy(
+        Employee $employee,
+        ?string $deviceName = null,
+        ?string $tenantSchema = null,
+        ?string $email = null
+    ): ?JsonResponse {
+        if ($employee->two_fa_enabled_at !== null) {
+            return $this->mfaChallengeResponse(
+                $employee,
+                $tenantSchema,
+                $deviceName,
+                $email ?? (string) $employee->email,
+            );
+        }
+
+        if ($this->twoFactorService->requiresMfa($employee)) {
+            throw TwoFactorException::required();
+        }
+
+        return null;
+    }
+
+    /**
+     * Construit la réponse challenge 2FA (même contrat que login() : le
+     * client rappelle ensuite POST /auth/2fa/verify avec un code TOTP).
+     *
+     * @return JsonResponse{mfa_challenge: true, mfa_challenge_token: string, mfa_challenge_expires_in: int}
+     */
+    private function mfaChallengeResponse(
+        Employee $employee,
+        ?string $tenantSchema,
+        ?string $deviceName,
+        string $email
+    ): JsonResponse {
+        $challenge = $this->twoFactorService->issueChallenge([
+            'employee_id' => $employee->id,
+            'company_id' => (string) $employee->company_id,
+            'tenant_schema' => $tenantSchema,
+            'email' => $email,
+            'device_name' => $deviceName,
+        ]);
+
+        return new JsonResponse([
+            'mfa_challenge' => true,
+            'mfa_challenge_token' => $challenge['token'],
+            'mfa_challenge_expires_in' => $challenge['expires_in'],
+        ]);
     }
 }

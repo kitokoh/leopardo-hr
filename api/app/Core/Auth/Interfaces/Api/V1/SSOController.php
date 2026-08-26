@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\SSO\OidcFlowService;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOService;
@@ -164,10 +165,20 @@ class SSOController extends Controller
         try {
             $result = $this->oidcFlowService->complete($companyId, $tokenData);
 
+            // #5579 : challenge 2FA — même contrat que POST /auth/login
+            // (le client rappelle ensuite POST /auth/2fa/verify).
+            if (($result['mfa_challenge'] ?? false) === true) {
+                return response()->json($result);
+            }
+
             return response()->json([
                 'data' => $result,
                 'message' => __('errors.OIDC_LOGIN_SUCCESS'),
             ]);
+        } catch (TwoFactorException $e) {
+            // #5579 : garde 2FA (TWO_FACTOR_REQUIRED 403) — ne pas avaler dans
+            // le 422 générique du callback OIDC ; le handler global la rend.
+            throw $e;
         } catch (\RuntimeException $e) {
             Log::error('sso.oidc_callback_failed', ['company_id' => $companyId, 'error' => $e->getMessage()]);
 
