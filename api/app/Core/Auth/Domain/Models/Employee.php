@@ -213,6 +213,11 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'biometric_consent_at' => 'datetime',
         'invitation_accepted_at' => 'datetime',
         'extra_data' => 'array',
+        // #5588 (follow-up) : cast JSON manquant — le service 2FA écrit un
+        // tableau de codes hachés (colonne json) ; sans cast, INSERT/UPDATE
+        // crashent (« invalid input syntax for type json ») et la lecture
+        // (consumeRecoveryCode) reçoit une string au lieu d'un tableau.
+        'two_fa_recovery_codes' => 'array',
         'iban' => 'encrypted',
         'bank_account' => 'encrypted',
         'national_id' => 'encrypted',

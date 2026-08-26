@@ -191,19 +191,21 @@ class KioskController extends Controller
 
         return $this->withTenantSearchPath(
             $kiosk->company,
-            fn (): JsonResponse => $this->doSync($kiosk, $validated),
+            // #5588 (follow-up) : transmettre le device_code EN CLAIR (celui de
+            // l'URL) — le modèle ne porte plus que la dérivation (64 hex).
+            fn (): JsonResponse => $this->doSync($kiosk, $validated, $deviceCode),
         );
     }
 
 /**
      * @param  array<string, mixed>  $validated
      */
-    private function doSync(AttendanceKiosk $kiosk, array $validated): JsonResponse
+    private function doSync(AttendanceKiosk $kiosk, array $validated, string $deviceCode): JsonResponse
     {
         $this->setTenantSearchPath($kiosk->company);
 
 
-        $result = $this->kioskAttendanceService->syncPunches($kiosk, $validated['events']);
+        $result = $this->kioskAttendanceService->syncPunches($kiosk, $validated['events'], $deviceCode);
 
         // #3587 — le bridge isole les événements refusés en dead-letter au
         // lieu de les marquer synced : la réponse détaille désormais chaque
