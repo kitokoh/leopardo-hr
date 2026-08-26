@@ -45,8 +45,15 @@ services:
           property: host
       - key: LOG_CHANNEL
         value: stderr
+      # Issue #5586 : LOG_LEVEL=info requis pour que le canal `structured`
+      # (StructuredLogging middleware, config/logging.php) soit effectif en
+      # prod — `error` filtrait tous les logs info structurés.
       - key: LOG_LEVEL
-        value: error
+        value: info
+      # Issue #5586 : DSN Sentry posé à la main dans le dashboard Render
+      # (sync: false = jamais écrasé par le déploiement). Vide = SDK no-op.
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
       # Database
       - key: DB_CONNECTION
         value: pgsql
@@ -197,8 +204,11 @@ services:
           property: host
       - key: LOG_CHANNEL
         value: stderr
+      # Issue #5586 : LOG_LEVEL=info (canal structured effectif, cf. web).
       - key: LOG_LEVEL
-        value: error
+        value: info
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
@@ -306,6 +316,11 @@ services:
           property: host
       - key: LOG_CHANNEL
         value: stderr
+      # Issue #5586 : LOG_LEVEL aligné sur web/worker (canal structured).
+      - key: LOG_LEVEL
+        value: info
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
