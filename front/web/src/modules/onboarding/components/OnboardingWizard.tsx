@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
+  BarChart2,
   Building2,
   CalendarClock,
   CheckCircle2,
@@ -12,6 +13,7 @@ import {
   MapPin,
   QrCode,
   ScanLine,
+  Send,
   SkipForward,
   Users,
   Wallet,
@@ -54,16 +56,53 @@ type ChecklistData = {
   total_steps?: number;
   progress_percent?: number;
   go_live_ready?: boolean;
+  // #R6 — employees_count exposé par OnboardingStepController pour le Quick Start.
+  employees_count?: number;
   steps?: ChecklistStep[];
 };
 
+// #R1 — aligné sur les clés réelles de DEFAULT_STEPS (SeedDefaultSteps.php).
+// Les anciens step_key (add_employees, setup_schedules, first_checkin…) étaient
+// ceux d'une version précédente du wizard : aucun ne matchait, toutes les étapes
+// affichaient Building2 par défaut et le QR de l'étape first_attendance n'était
+// jamais rendu.
 const STEP_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  add_employees: Users,
+  company_info: Building2,
+  first_department: Building2,
+  first_employee: Users,
+  first_attendance: Fingerprint,
+  invite_manager: Send,
+  configure_schedules: CalendarClock,
+  first_report: BarChart2,
   configure_payroll: Wallet,
-  setup_schedules: CalendarClock,
-  setup_geofence: MapPin,
-  setup_kiosk: ScanLine,
-  first_checkin: Fingerprint,
+  install_kiosk: ScanLine,
+  activate_geofence: MapPin,
+};
+
+// #R7 — Correspondance clé du moteur calculé (OnboardingChecklistController)
+// → clé de la table onboarding_steps (DEFAULT_STEPS). Permet l'auto-complétion
+// contextuelle : si la condition réelle est remplie, l'étape est marquée
+// complétée sans action manuelle de l'utilisateur.
+const CALCULATED_TO_SETUP_MAPPING: Record<string, string> = {
+  employees_added: 'first_employee',
+  payroll_ready: 'configure_payroll',
+  geofence_configured: 'activate_geofence',
+  kiosk_connected: 'install_kiosk',
+};
+
+// #R10 — estimations de durée par étape (sourcées ONBOARDING_PILOTE.md).
+// Non bloquantes : si une clé est absente, aucune estimation n'est affichée.
+const STEP_ESTIMATED_MINUTES: Record<string, number> = {
+  company_info: 3,
+  first_department: 2,
+  first_employee: 6,
+  first_attendance: 3,
+  invite_manager: 3,
+  configure_schedules: 3,
+  first_report: 2,
+  configure_payroll: 4,
+  install_kiosk: 5,
+  activate_geofence: 2,
 };
 
 export function OnboardingWizard({
@@ -88,6 +127,8 @@ export function OnboardingWizard({
   const [qrLoading, setQrLoading] = useState(false);
   const [qrError, setQrError] = useState<string | null>(null);
   const qrCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  // #R7 — guard : l'auto-complétion ne tourne qu'une seule fois par session.
+  const autoCompletedRef = useRef(false);
 
   const loadChecklist = useCallback(async () => {
     setError(null);
@@ -97,6 +138,10 @@ export function OnboardingWizard({
       const payload = (await response.json()) as { data?: ChecklistData };
       const list = Array.isArray(payload.data?.steps) ? payload.data.steps : [];
       setSteps(list.sort((a, b) => a.order - b.order));
+      // #R6 — employees_count désormais exposé par le setup checklist.
+      if (typeof payload.data?.employees_count === 'number') {
+        setEmployeesCount(payload.data.employees_count);
+      }
     } catch (e) {
       console.error(e);
       setError(onboarding.errorGeneric);
@@ -105,18 +150,46 @@ export function OnboardingWizard({
     }
   }, [onboarding.errorGeneric]);
 
-  // Quick Start (#4939) : taille de l'entreprise lue depuis le moteur calculé
-  // (GET /onboarding/checklist → data.steps[].metrics.employees_count). Signal
-  // non bloquant : si l'endpoint échoue, le wizard reste complet et fonctionnel.
-  const loadCompanySize = useCallback(async () => {
+  // Quick Start (#4939) + #R7 (auto-complétion contextuelle) :
+  // charge le moteur calculé (GET /onboarding/checklist) pour :
+  //   1. Obtenir employees_count → badge Quick Start.
+  //   2. Détecter les étapes déjà remplies en réalité → les marquer complétées
+  //      automatiquement (sans action manuelle) — non bloquant dans les deux cas.
+  const loadCalculatedAndAutoComplete = useCallback(async (currentSteps: ChecklistStep[]) => {
     try {
       const response = await apiFetch('/onboarding/checklist');
       const payload = (await response.json()) as {
-        data?: { steps?: Array<{ key?: string; metrics?: { employees_count?: number } }> };
+        data?: { steps?: Array<{ key?: string; completed?: boolean; metrics?: { employees_count?: number } }> };
       };
-      const step = payload.data?.steps?.find((s) => s.key === 'employees_added');
-      if (typeof step?.metrics?.employees_count === 'number') {
-        setEmployeesCount(step.metrics.employees_count);
+      const calculatedSteps = payload.data?.steps ?? [];
+
+      // Quick Start : taille de l'entreprise.
+      const empStep = calculatedSteps.find((s) => s.key === 'employees_added');
+      if (typeof empStep?.metrics?.employees_count === 'number') {
+        setEmployeesCount(empStep.metrics.employees_count);
+      }
+
+      // #R7 — auto-complétion : pour chaque étape pending du setup checklist
+      // dont la condition réelle est confirmée par le moteur calculé, envoyer
+      // PATCH complete et mettre à jour l'état local.
+      const autoCompletable = currentSteps.filter((setupStep) => {
+        if (setupStep.status !== 'pending') return false;
+        const calcKey = Object.entries(CALCULATED_TO_SETUP_MAPPING).find(
+          ([, setupKey]) => setupKey === setupStep.step_key,
+        )?.[0];
+        if (!calcKey) return false;
+        return calculatedSteps.find((s) => s.key === calcKey)?.completed === true;
+      });
+
+      for (const step of autoCompletable) {
+        try {
+          await apiFetch(`/onboarding-setup/${step.step_key}/complete`, { method: 'PATCH' });
+          setSteps((prev) =>
+            prev?.map((s) => (s.step_key === step.step_key ? { ...s, status: 'completed' } : s)) ?? null,
+          );
+        } catch {
+          // Non-bloquant : si le PATCH échoue, le wizard reste fonctionnel.
+        }
       }
     } catch (e) {
       console.error(e);
@@ -125,8 +198,14 @@ export function OnboardingWizard({
 
   useEffect(() => {
     void loadChecklist();
-    void loadCompanySize();
-  }, [loadChecklist, loadCompanySize]);
+  }, [loadChecklist]);
+
+  // #R7 — déclencher l'auto-complétion une seule fois après le premier chargement.
+  useEffect(() => {
+    if (steps === null || autoCompletedRef.current) return;
+    autoCompletedRef.current = true;
+    void loadCalculatedAndAutoComplete(steps);
+  }, [steps, loadCalculatedAndAutoComplete]);
 
   useEffect(() => {
     if (qrData && qrCanvasRef.current) {
@@ -249,7 +328,12 @@ export function OnboardingWizard({
 
   // Quick Start (#4939) : < 15 employés → expérience raccourcie (badge + skip renforcé).
   const quickStart = employeesCount !== null && employeesCount < 15;
-  const isFirstCheckin = currentStep?.step_key === 'first_checkin';
+  // #R1 — clé corrigée : DEFAULT_STEPS utilise 'first_attendance', pas 'first_checkin'.
+  const isFirstAttendance = currentStep?.step_key === 'first_attendance';
+  // #R5 — feedback queue à l'étape invite_manager.
+  const isInviteManager = currentStep?.step_key === 'invite_manager';
+  // #R13 — aide CSV à l'étape first_employee.
+  const isFirstEmployee = currentStep?.step_key === 'first_employee';
 
   if (!isOpen) return null;
 
@@ -361,6 +445,12 @@ export function OnboardingWizard({
                         {onboarding.later}
                       </span>
                     )}
+                    {/* #R10 — estimation de temps pour les étapes non terminées */}
+                    {!isCompleted && !isSkipped && STEP_ESTIMATED_MINUTES[s.step_key] && (
+                      <span className="shrink-0 text-[10px] font-semibold text-slate-400">
+                        {onboarding.estimatedMinutes.replace('{n}', String(STEP_ESTIMATED_MINUTES[s.step_key]))}
+                      </span>
+                    )}
                   </div>
                 );
               })}
@@ -391,7 +481,19 @@ export function OnboardingWizard({
               </div>
             ) : (
               <div className="mt-8 flex flex-col items-end gap-2">
-                {isFirstCheckin && (
+                {/* #R13 — aide CSV à l'étape first_employee */}
+                {isFirstEmployee && (
+                  <div className="w-full rounded-2xl border border-blue-100 bg-blue-50 p-4">
+                    <p className="text-xs font-medium text-blue-700">{onboarding.csvColumnsHint}</p>
+                  </div>
+                )}
+                {/* #R5 — feedback queue à l'étape invite_manager */}
+                {isInviteManager && (
+                  <div className="w-full rounded-2xl border border-amber-100 bg-amber-50 p-4">
+                    <p className="text-xs font-medium text-amber-700">{onboarding.inviteManagerHint}</p>
+                  </div>
+                )}
+                {isFirstAttendance && (
                   <div className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-4">
                     <p className="text-xs font-medium text-slate-600">{onboarding.firstCheckinHint}</p>
                     <button

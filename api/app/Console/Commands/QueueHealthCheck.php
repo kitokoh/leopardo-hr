@@ -131,7 +131,9 @@ class QueueHealthCheck extends Command
             'redis_ok' => $redisOk,
             'redis_latency_ms' => $latencyMs,
             'queue_connection' => config('queue.default'),
-            'worker_command' => 'php artisan queue:work redis --queue=documents,pdf,payroll,notifications,webhooks,default',
+            // #5578 : source de vérité UNIQUE = database (garde CI :
+            // dev-hub/tools/check-queue-strategy-coherence.sh).
+            'worker_command' => 'php artisan queue:work database --queue=documents,pdf,payroll,notifications,webhooks,default',
             'failed_jobs' => $failedJobs,
             'queues' => $queueStats,
         ];
