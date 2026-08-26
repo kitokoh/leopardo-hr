@@ -41,7 +41,7 @@ dependencies:
 
   # Module Smart Attendance — Géofencing + Background Location
   geolocator: ^14.0.3
-  workmanager: ^0.10.7
+  workmanager: ^0.10.9
   permission_handler: ^13.0.1
 
 dev_dependencies:

@@ -654,7 +654,7 @@
 </head>
 <body>
   <a href="#identifier" class="sr-only" data-i18n="skip.punch">Aller au formulaire de pointage</a>
-  <div class="shell" role="main" aria-label="Borne de pointage Leopardo RH">
+  <div class="shell" role="main" data-i18n-aria-label="app.landmark" aria-label="Borne de pointage Leopardo RH">
     <header class="topbar">
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">L</div>
@@ -671,12 +671,12 @@
         </div>
         <button id="syncRetryBtn" class="info hidden" style="min-height:44px; padding:0 16px; border-radius:999px;" data-i18n-aria-label="sync.retry.aria" aria-label="Relancer la synchronisation"><span data-i18n="sync.retry.label">Reessayer</span></button>
         <label for="langSelect" class="sr-only" data-i18n="lang.label">Langue</label>
-        <select id="langSelect" class="lang-select" aria-label="Langue / Language"></select>
+        <select id="langSelect" class="lang-select" data-i18n-aria-label="lang.aria" aria-label="Langue / Language"></select>
       </div>
     </header>
 
     <div class="layout">
-      <nav class="tabs" role="tablist" aria-label="Sections du kiosk">
+      <nav class="tabs" role="tablist" data-i18n-aria-label="nav.sections" aria-label="Sections du kiosk">
         <button class="tab active" role="tab" aria-selected="true" data-tab="punch" aria-controls="panel-punch"><span data-i18n="tab.punch">Pointage</span> <span data-i18n="tab.punch.sub">doigt / visage</span></button>
         <button class="tab" role="tab" aria-selected="false" data-tab="info" aria-controls="panel-info"><span data-i18n="tab.info">Employe</span> <span data-i18n="tab.info.sub">infos jour</span></button>
         <button class="tab" role="tab" aria-selected="false" data-tab="announcements" aria-controls="panel-announcements"><span data-i18n="tab.announcements">Annonces</span> <span data-i18n="tab.announcements.sub">entreprise</span></button>
@@ -824,7 +824,7 @@
     </div>
   </div>
 
-  <div id="demoOverlay" class="demo-overlay hidden" aria-modal="true" role="dialog" aria-label="Choisir un employe demo">
+  <div id="demoOverlay" class="demo-overlay hidden" aria-modal="true" role="dialog" data-i18n-aria-label="demoAccess.label" aria-label="Choisir un employe demo">
     <div class="demo-modal">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;">
         <h2 style="margin:0;" data-i18n="demo.title">Choisir un employe demo</h2>
