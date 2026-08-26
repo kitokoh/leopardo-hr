@@ -266,4 +266,5 @@ return [
     'LETTERING_ALREADY_USED' => 'Bir veya daha fazla kayıt başka bir kodla mutabık kılınmış.',
     'LETTERING_UNBALANCED' => 'Mutabakat dengeli olmalıdır: toplam borçlar toplam alacaklara eşit olmalıdır.',
     'ALREADY_SEEDED' => 'Bu şirket için demo veriler zaten oluşturuldu.',
+    'EMAIL_NOT_VERIFIED' => 'Bu Google e-postası sağlayıcısı tarafından doğrulanmamış. Doğrulanmış bir e-posta hesabı kullanın.',
 ];
