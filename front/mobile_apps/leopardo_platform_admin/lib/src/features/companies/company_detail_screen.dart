@@ -371,12 +371,14 @@ class _CompanyDetailContent extends ConsumerWidget {
       return;
     }
 
+    // Capture l10n note before async gap (context may not be mounted after await).
+    final activationNote = context.l10n.platformAdminActivationNote;
     try {
       await ref.read(platformRepositoryProvider).updateCompanySubscription(
             companyId: companyId,
             planId: subscription.planId,
             status: 'active',
-            notes: 'Activation directe depuis app mobile platform admin.',
+            notes: activationNote,
           );
       ref.invalidate(platformCompanyDetailProvider(companyId));
       ref.invalidate(platformCompaniesProvider);

@@ -6,8 +6,9 @@ namespace App\Modules\Platform\Infrastructure\Services;
 
 use App\Modules\Platform\Domain\Models\WebhookEvent;
 use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * #5444 — Registre d'idempotence persistée des webhooks entrants.
@@ -43,7 +44,10 @@ final class WebhookEventRegistry
         // Garde de schéma partiel (pattern `ensurePunchPhotoProvided` #5265) :
         // en environnement de test sans la table (CreatesMvpSchema), on
         // traite sans déduplication — en production la migration existe.
-        if (! Schema::hasTable('webhook_events')) {
+        // #5576 : le garde doit voir la table PLATEFORME (schéma public) même
+        // quand la session pointe sur un autre schéma (search_path tenant) —
+        // `Schema::hasTable()` suit `current_schema()` et ratait la table.
+        if (! $this->webhookEventsTableExists()) {
             return null;
         }
 
@@ -113,6 +117,27 @@ final class WebhookEventRegistry
         }
 
         return hash('sha256', $payload);
+    }
+
+    /**
+     * La table `webhook_events` existe-t-elle (schéma plateforme `public`) ?
+     *
+     * Postgres : `Schema::hasTable()` interroge `current_schema()` (premier
+     * schéma du search_path de session, ex. `shared_tenants` en test) et
+     * ratait la table publique — on vérifie donc explicitement
+     * `public.webhook_events` (avec repli sur le search_path).
+     */
+    private function webhookEventsTableExists(): bool
+    {
+        if (DB::getDriverName() === 'pgsql') {
+            $qualified = DB::selectOne("select to_regclass('public.webhook_events') as table_name");
+
+            if ($qualified !== null && $qualified->table_name !== null) {
+                return true;
+            }
+        }
+
+        return Schema::hasTable('webhook_events');
     }
 
     /**

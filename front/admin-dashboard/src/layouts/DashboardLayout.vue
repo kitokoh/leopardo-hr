@@ -90,7 +90,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 // #3935 : résolution du parent via router.getRoutes() (records aplatis)
 // au lieu du tableau routes de premier niveau (qui ne contient que login/
@@ -114,6 +114,17 @@ const realtimeStore = useRealtimeStore()
 const dashboardStore = useDashboardStore()
 
 const sidebarOpen = ref(false)
+
+// Issue #5632 : verrouiller le scroll du body quand la sidebar est ouverte
+// sur mobile (< lg) pour éviter le double-scroll derrière l'overlay.
+watch(sidebarOpen, (open) => {
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = open ? 'hidden' : ''
+  }
+})
+
+// Close sidebar on route change (navigation on mobile).
+watch(route, () => { sidebarOpen.value = false })
 
 // Initialize keyboard shortcuts
 useKeyboardShortcuts()

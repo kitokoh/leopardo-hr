@@ -21,6 +21,7 @@ import { ModulePageShell } from '@/components/module-page-shell';
 import { apiFetch } from '@/lib/api-client';
 import { t } from '@/lib/i18n/locale-catalog';
 import { getPreferredLocale } from '@/lib/i18n';
+import { AccountingActivationBanner } from './AccountingActivationBanner';
 
 interface ActivationStatus {
   completed: boolean;
@@ -141,6 +142,59 @@ export default function AccountingHomePage() {
           </motion.div>
         ))}
       </section>
+
+      <ActivationCta />
     </ModulePageShell>
+  );
+}
+
+/**
+ * #5626 — Carte « Démarrer la comptabilité » visible tant que le module
+ * n'est pas activé (GET /accounting/activation). Disparaît quand
+ * `completed=true` ; silencieuse si l'état est injoignable.
+ */
+function ActivationCta() {
+  const locale = getPreferredLocale();
+  const [notActivated, setNotActivated] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    apiFetch('/accounting/activation')
+      .then(async (res) => {
+        if (cancelled) return;
+        const body = await res.json();
+        setNotActivated(body?.data?.completed === false);
+      })
+      .catch(() => {
+        if (!cancelled) setNotActivated(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (!notActivated) return null;
+
+  return (
+    <motion.aside
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mt-6 flex flex-col gap-4 rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-white p-5 sm:flex-row sm:items-center"
+    >
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
+        <Rocket className="h-5 w-5" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <h3 className="text-sm font-black text-slate-950">{t(locale, 'accountingActivation.hubCtaTitle')}</h3>
+        <p className="mt-0.5 text-sm text-slate-500">{t(locale, 'accountingActivation.hubCtaBody')}</p>
+      </div>
+      <Link
+        href="/accounting/activation"
+        className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-amber-600"
+      >
+        {t(locale, 'accountingActivation.hubCtaButton')}
+        <ArrowRight className="h-4 w-4" />
+      </Link>
+    </motion.aside>
   );
 }

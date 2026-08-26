@@ -222,11 +222,34 @@ jobs:
           fi
           echo "✅ All module structures valid ($(echo "$MODULES" | wc -l) modules checked)."
 
+      - name: Check module isolation (issue #5584)
+        # Garde archunit-style : bloque TOUT nouvel import croisé
+        # (`use App\Modules\<X>\` dans un autre module ou dans Core/) — la
+        # dette existante (16/18 modules, 57 paires) est actée dans
+        # dev-hub/tools/module-isolation-allowlist.txt.
+        run: dev-hub/tools/check-module-isolation.sh
+
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
 
       - name: Architecture docs parity guard — modules réels ↔ docs (issue #5589)
         run: bash dev-hub/tools/check-architecture-docs-parity.sh
+
+      - name: Cross-module import guard — no new inter-module imports (issue #5584)
+        env:
+          DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          base_sha="${DIFF_BASE_SHA:-}"
+          head_sha="${DIFF_HEAD_SHA:-}"
+          if [[ -z "${base_sha}" || "${base_sha}" == "0000000000000000000000000000000000000000" ]]; then
+            base_sha="$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)"
+          fi
+          if [[ -z "${head_sha}" ]]; then
+            head_sha="$(git rev-parse HEAD)"
+          fi
+          bash dev-hub/tools/check-cross-module-imports.sh "${base_sha}" "${head_sha}" api
 
       - name: Check migration basename collisions (issue #1962)
         run: dev-hub/tools/check-migration-basename-collisions.sh
