@@ -165,27 +165,55 @@ class IntentEngine
     }
 
     /**
+     * Issue #5625 : une SEULE source de vérité pour les read-tools — la map
+     * ci-dessous sert à la fois au dispatch et au test de couverture
+     * (ToolRegistryCoverageTest). Tout outil du registre (ai_tool_registry)
+     * SANS entrée ici échoue en CI : plus de promesse « je peux X » sans
+     * handler.
+     *
+     * @return array<string, callable(array<string, mixed>): array<string, mixed>>
+     */
+    private function readToolHandlers(string $companyId, int $userId): array
+    {
+        return [
+            'get_employees' => fn (array $arguments): array => $this->getEmployees($companyId, $arguments),
+            'get_employee_details' => fn (array $arguments): array => $this->getEmployeeDetails($companyId, $arguments),
+            'get_departments' => fn (array $arguments): array => $this->getDepartments($companyId),
+            'get_headcount' => fn (array $arguments): array => $this->getHeadcount($companyId),
+            'search_employees' => fn (array $arguments): array => $this->searchEmployees($companyId, $arguments),
+            'get_attendance_today' => fn (array $arguments): array => $this->getAttendanceToday($companyId, $userId),
+            'get_attendance_anomalies' => fn (array $arguments): array => $this->getAttendanceAnomalies($companyId, $arguments),
+            'get_monthly_report' => fn (array $arguments): array => $this->getMonthlyReport($companyId),
+            'get_absences' => fn (array $arguments): array => $this->getAbsences($companyId, $userId, $arguments),
+            'get_daily_summary' => fn (array $arguments): array => $this->getDailySummary($companyId),
+            'get_notifications' => fn (array $arguments): array => $this->getNotifications($companyId, $userId, $arguments),
+            'get_leave_balances' => fn (array $arguments): array => $this->getLeaveBalances($companyId, $userId),
+            'get_payroll_summary' => fn (array $arguments): array => $this->getPayrollSummary($companyId, $userId),
+        ];
+    }
+
+    /**
+     * Noms des read-tools effectivement dispatchables (issue #5625).
+     *
+     * @return list<string>
+     */
+    public function supportedReadTools(): array
+    {
+        return array_keys($this->readToolHandlers('', 0));
+    }
+
+    /**
      * @param  array<string, mixed>  $arguments
      * @return array<string, mixed>
      */
     private function dispatchToolAction(string $toolName, array $arguments, string $companyId, int $userId): array
     {
-        return match ($toolName) {
-            'get_employees' => $this->getEmployees($companyId, $arguments),
-            'get_employee_details' => $this->getEmployeeDetails($companyId, $arguments),
-            'get_departments' => $this->getDepartments($companyId),
-            'get_headcount' => $this->getHeadcount($companyId),
-            'search_employees' => $this->searchEmployees($companyId, $arguments),
-            'get_attendance_today' => $this->getAttendanceToday($companyId, $userId),
-            'get_attendance_anomalies' => $this->getAttendanceAnomalies($companyId, $arguments),
-            'get_monthly_report' => $this->getMonthlyReport($companyId),
-            'get_absences' => $this->getAbsences($companyId, $userId, $arguments),
-            'get_daily_summary' => $this->getDailySummary($companyId),
-            'get_notifications' => $this->getNotifications($companyId, $userId, $arguments),
-            'get_leave_balances' => $this->getLeaveBalances($companyId, $userId),
-            'get_payroll_summary' => $this->getPayrollSummary($companyId, $userId),
-            default => ['message' => "Tool '{$toolName}' is registered but not yet implemented."],
-        };
+        $handler = $this->readToolHandlers($companyId, $userId)[$toolName] ?? null;
+        if ($handler === null) {
+            return ['message' => "Tool '{$toolName}' is registered but not yet implemented."];
+        }
+
+        return $handler($arguments);
     }
 
     /**

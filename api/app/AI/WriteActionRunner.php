@@ -17,11 +17,37 @@ class WriteActionRunner
      */
     public function run(string $toolName, array $arguments, string $companyId, int $userId): array
     {
-        return match ($toolName) {
-            'create_absence' => $this->createAbsence($companyId, $userId, $arguments),
-            'approve_absence' => $this->approveAbsence($companyId, $userId, $arguments),
-            default => ['error' => "Write tool '{$toolName}' is not implemented."],
-        };
+        $handler = $this->writeToolHandlers($companyId, $userId)[$toolName] ?? null;
+        if ($handler === null) {
+            return ['error' => "Write tool '{$toolName}' is not implemented."];
+        }
+
+        return $handler($arguments);
+    }
+
+    /**
+     * Issue #5625 : source de vérité des write-tools — couplée au test de
+     * couverture ToolRegistryCoverageTest (config ai.write_tools ⊆ ici, et
+     * chaque outil ici doit être exposé dans ai_tool_registry).
+     *
+     * @return array<string, callable(array<string, mixed>): array<string, mixed>>
+     */
+    private function writeToolHandlers(string $companyId, int $userId): array
+    {
+        return [
+            'create_absence' => fn (array $arguments): array => $this->createAbsence($companyId, $userId, $arguments),
+            'approve_absence' => fn (array $arguments): array => $this->approveAbsence($companyId, $userId, $arguments),
+        ];
+    }
+
+    /**
+     * Noms des write-tools effectivement exécutables (issue #5625).
+     *
+     * @return list<string>
+     */
+    public function supportedWriteTools(): array
+    {
+        return array_keys($this->writeToolHandlers('', 0));
     }
 
     /**

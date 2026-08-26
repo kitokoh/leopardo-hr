@@ -46,13 +46,15 @@ return [
     'pending_action_ttl_minutes' => (int) env('AI_PENDING_ACTION_TTL_MINUTES', 15),
 
     // Tools that mutate data and require explicit user confirmation before execution.
+    // Issue #5625 : ne lister QUE les outils réellement implémentés
+    // (WriteActionRunner::supportedWriteTools) ET exposés dans ai_tool_registry
+    // — un outil configuré sans handler faisait « promettre » l'action par le
+    // LLM sans pouvoir l'exécuter. create_employee / update_employee /
+    // check_in_employee / check_out_employee / create_salary_advance sont
+    // retirés (jamais implémentés ni exposés) ; à réintroduire avec leur
+    // handler + entrée registre.
     'write_tools' => [
         'create_absence',
         'approve_absence',
-        'create_employee',
-        'update_employee',
-        'check_in_employee',
-        'check_out_employee',
-        'create_salary_advance',
     ],
 ];
