@@ -203,12 +203,42 @@ final class OidcFlowService
     }
 
     /**
+     * #5580 — fail-closed : seuls les emails vérifiés par l'IdP peuvent
+     * matcher un compte employé (parité portail client, GoogleIdentityVerifier).
+     *
+     * Preuve de vérification acceptée :
+     * - claim `email_verified === true` (standard OIDC, Google) ;
+     * - ou `email_verified_at` (horodatage non vide et valide) pour les IdP
+     *   qui ne publient pas le booléen.
+     *
+     * Sans preuve de vérification, un id_token ne peut pas être utilisé pour
+     * s'authentifier (SSO_EMAIL_NOT_VERIFIED) — y compris quand seul
+     * `preferred_username`/`upn` est présent.
+     *
+     * @param  array<string, mixed>  $claims
+     */
+    private function emailIsVerified(array $claims): bool
+    {
+        if (($claims['email_verified'] ?? false) === true) {
+            return true;
+        }
+
+        $verifiedAt = $claims['email_verified_at'] ?? null;
+
+        return is_string($verifiedAt) && $verifiedAt !== '' && strtotime($verifiedAt) !== false;
+    }
+
+    /**
      * @param  array<string, mixed>  $claims
      */
     private function extractEmail(array $claims): string
     {
         foreach (['email', 'preferred_username', 'upn'] as $field) {
             if (isset($claims[$field]) && is_string($claims[$field]) && $claims[$field] !== '') {
+                if (! $this->emailIsVerified($claims)) {
+                    throw new \RuntimeException('SSO_EMAIL_NOT_VERIFIED: l\'id_token ne prouve pas la vérification de l\'email (email_verified/email_verified_at requis).');
+                }
+
                 return strtolower(trim($claims[$field]));
             }
         }

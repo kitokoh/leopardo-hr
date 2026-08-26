@@ -112,6 +112,7 @@ return [
     'GOOGLE_AUTH_FAILED' => 'Google kimlik doğrulaması kullanılamıyor.',
     'GOOGLE_TOKEN_INVALID' => 'Google jetonu geçersiz veya süresi dolmuş.',
     'GOOGLE_ACCOUNT_NOT_FOUND' => 'Bu Google hesabıyla eşleşen hesap bulunamadı.',
+    'GOOGLE_EMAIL_NOT_VERIFIED' => 'Google e-postası doğrulanmamış. Doğrulanmış bir Google hesabıyla oturum açın.',
     'GOOGLE_INVITATION_REQUIRED' => 'Bu Google e-postası için hesap yok. Yöneticinizden davet isteyin.',
     'GOOGLE_OAUTH_NOT_CONFIGURED' => 'Google ile giriş henüz yapılandırılmadı. Lütfen daha sonra tekrar deneyin.',
     'NO_ACTIVE_SUBSCRIPTION' => 'Aktif abonelik yok.',

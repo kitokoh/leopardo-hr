@@ -24,6 +24,8 @@ class AuthGoogleSignInTest extends TestCase
         $abstractUser->shouldReceive('getName')->andReturn($name);
         $abstractUser->shouldReceive('offsetGet')->with('given_name')->andReturn('Google');
         $abstractUser->shouldReceive('offsetGet')->with('family_name')->andReturn('User');
+        // #5580 : les comptes Google vérifiés portent email_verified=true.
+        $abstractUser->shouldReceive('offsetGet')->with('email_verified')->andReturn(true);
 
         Socialite::shouldReceive('driver')->with('google')->andReturn($provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider'));
         $provider->shouldReceive('stateless')->andReturn($provider);
@@ -118,6 +120,35 @@ class AuthGoogleSignInTest extends TestCase
             ->getJson('/api/v1/auth/google/callback?state=valid-state');
 
         $response->assertStatus(403);
+    }
+
+    public function test_google_callback_unverified_email_is_rejected(): void
+    {
+        // #5580 — fail-closed : un email Google NON vérifié (email_verified
+        // absent ou false) ne peut ni matcher un compte existant, ni être
+        // auto-provisionné — 401 GOOGLE_EMAIL_NOT_VERIFIED, aucun token.
+        config(['app.demo_mode_enabled' => true]);
+
+        $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
+        $abstractUser->shouldReceive('getEmail')->andReturn('unverified@example.com');
+        $abstractUser->shouldReceive('getName')->andReturn('Unverified User');
+        $abstractUser->shouldReceive('offsetGet')->with('given_name')->andReturn('Unverified');
+        $abstractUser->shouldReceive('offsetGet')->with('family_name')->andReturn('User');
+        $abstractUser->shouldReceive('offsetGet')->with('email_verified')->andReturn(false);
+
+        Socialite::shouldReceive('driver')->with('google')->andReturn($provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider'));
+        $provider->shouldReceive('stateless')->andReturn($provider);
+        $provider->shouldReceive('user')->andReturn($abstractUser);
+
+        $response = $this->withSession(['google_oauth_state' => 'valid-state'])
+            ->getJson('/api/v1/auth/google/callback?state=valid-state');
+
+        $response->assertStatus(401)
+            ->assertJson(['error' => 'GOOGLE_EMAIL_NOT_VERIFIED'])
+            ->assertJsonPath('message', __('errors.GOOGLE_EMAIL_NOT_VERIFIED'));
+
+        // Même en demo mode, aucune création de compte avec un email non vérifié.
+        $this->assertDatabaseMissing('employees', ['email' => 'unverified@example.com']);
     }
 
     public function test_google_redirect_returns_503_when_oauth_not_configured(): void

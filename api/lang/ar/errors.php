@@ -112,6 +112,7 @@ return [
     'GOOGLE_AUTH_FAILED' => 'مصادقة Google غير متاحة.',
     'GOOGLE_TOKEN_INVALID' => 'رمز Google غير صالح أو منتهي الصلاحية.',
     'GOOGLE_ACCOUNT_NOT_FOUND' => 'لا يوجد حساب مرتبط بحساب Google هذا.',
+    'GOOGLE_EMAIL_NOT_VERIFIED' => 'بريد Google الإلكتروني غير موثق. سجّل الدخول بحساب Google موثق.',
     'GOOGLE_INVITATION_REQUIRED' => 'لا يوجد حساب لهذا البريد الإلكتروني الخاص بـ Google. اطلب دعوة من المسؤول.',
     'GOOGLE_OAUTH_NOT_CONFIGURED' => 'تسجيل الدخول عبر Google غير مهيأ بعد. يرجى المحاولة لاحقًا.',
     'NO_ACTIVE_SUBSCRIPTION' => 'لا يوجد اشتراك نشط.',

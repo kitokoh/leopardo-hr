@@ -170,6 +170,84 @@ class SSOOidcFlowTest extends TestCase
         $this->assertSame('OIDC_CALLBACK_FAILED', $response->json('error'));
     }
 
+    public function test_callback_rejects_unverified_email(): void
+    {
+        // #5580 — fail-closed : un id_token avec email_verified=false ne peut
+        // pas matcher un employé (parité portail client, GoogleIdentityVerifier).
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $idToken = $this->signIdToken($privateKey, $nonce, emailVerified: false);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'OIDC_CALLBACK_FAILED');
+
+        // Aucun token émis.
+        $this->assertSame(0, $this->company->employees()->first()?->tokens()->count() ?? 0);
+    }
+
+    public function test_callback_rejects_token_without_email_verification_proof(): void
+    {
+        // #5580 — aucun claim email_verified/email_verified_at dans l'id_token
+        // → rejet (fail-closed), y compris quand seul preferred_username existe.
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $idToken = $this->signIdToken($privateKey, $nonce, emailVerifiedAt: 'not-a-date');
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'OIDC_CALLBACK_FAILED');
+    }
+
+    public function test_callback_accepts_email_verified_at_claim(): void
+    {
+        // #5580 — certains IdP publient email_verified_at (horodatage valide)
+        // au lieu du booléen : la preuve est acceptée, le flux aboutit.
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $idToken = $this->signIdToken($privateKey, $nonce, emailVerifiedAt: date('c', time() - 86400));
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
+            ->assertOk()
+            ->assertJsonPath('data.employee.email', 'sso.employee@example.com');
+    }
+
     public function test_callback_rejects_bad_signature(): void
     {
         $this->configureOidc();
@@ -364,7 +442,7 @@ class SSOOidcFlowTest extends TestCase
         return [$res, $jwks];
     }
 
-    private function signIdToken(\OpenSSLAsymmetricKey $privateKey, string $nonce, ?int $exp = null, ?string $issuer = null, ?string $email = null): string
+    private function signIdToken(\OpenSSLAsymmetricKey $privateKey, string $nonce, ?int $exp = null, ?string $issuer = null, ?string $email = null, ?bool $emailVerified = null, ?string $emailVerifiedAt = null): string
     {
         $header = $this->base64UrlEncode((string) json_encode([
             'alg' => 'RS256',
@@ -380,8 +458,14 @@ class SSOOidcFlowTest extends TestCase
             'iat' => time() - 10,
             'nonce' => $nonce,
             'email' => $email ?? 'sso.employee@example.com',
-            'email_verified' => true,
+            'email_verified' => $emailVerified ?? true,
         ];
+
+        // #5580 : certains IdP publient email_verified_at au lieu du booléen.
+        if ($emailVerifiedAt !== null) {
+            unset($claims['email_verified']);
+            $claims['email_verified_at'] = $emailVerifiedAt;
+        }
 
         $payload = $this->base64UrlEncode((string) json_encode($claims));
         $signingInput = $header.'.'.$payload;

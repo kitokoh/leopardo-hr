@@ -113,6 +113,7 @@ return [
     'GOOGLE_AUTH_FAILED' => 'Google authentication is unavailable.',
     'GOOGLE_TOKEN_INVALID' => 'The Google token is invalid or has expired.',
     'GOOGLE_ACCOUNT_NOT_FOUND' => 'No account found for this Google account.',
+    'GOOGLE_EMAIL_NOT_VERIFIED' => 'The Google email is not verified. Sign in with a verified Google account.',
     'GOOGLE_INVITATION_REQUIRED' => 'No account exists for this Google email. Ask your administrator for an invitation.',
     'GOOGLE_OAUTH_NOT_CONFIGURED' => 'Google sign-in is not configured yet. Please try again later.',
     'NO_ACTIVE_SUBSCRIPTION' => 'No active subscription.',

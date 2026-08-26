@@ -256,6 +256,36 @@ class AuthController extends Controller
             && filled(config('services.google.redirect'));
     }
 
+    /**
+     * #5580 — fail-closed : l'id_token/userinfo Google doit porter
+     * `email_verified === true` pour matcher un compte employé par email
+     * (parité portail client, GoogleIdentityVerifier). Un email non vérifié
+     * (ou sans claim) → 401 GOOGLE_EMAIL_NOT_VERIFIED, aucun token émis.
+     *
+     * Retourne `null` quand l'email est vérifié, sinon la réponse 401.
+     *
+     * @param  mixed  $googleUser  utilisateur Socialite (AbstractUser)
+     */
+    private function assertGoogleEmailVerified(mixed $googleUser): ?JsonResponse
+    {
+        $verified = $googleUser->offsetGet('email_verified');
+
+        if (! is_bool($verified)) {
+            $verified = (bool) ($googleUser->user['email_verified'] ?? false);
+        }
+
+        if ($verified === true) {
+            return null;
+        }
+
+        Log::warning('auth.google.email_not_verified', ['email' => $googleUser->getEmail()]);
+
+        return new JsonResponse([
+            'error' => 'GOOGLE_EMAIL_NOT_VERIFIED',
+            'message' => __('errors.GOOGLE_EMAIL_NOT_VERIFIED'),
+        ], 401);
+    }
+
     public function handleGoogleCallback(Request $request): JsonResponse
     {
         // Issue #2619 : validation du state — callback sans state ou avec un
@@ -276,6 +306,13 @@ class AuthController extends Controller
                 'error' => 'GOOGLE_AUTH_FAILED',
                 'message' => __('errors.GOOGLE_AUTH_FAILED'),
             ], 422);
+        }
+
+        // #5580 : fail-closed — un email Google non vérifié ne peut pas matcher
+        // un compte employé (parité portail client, GoogleIdentityVerifier).
+        $notVerified = $this->assertGoogleEmailVerified($googleUser);
+        if ($notVerified !== null) {
+            return $notVerified;
         }
 
         /** @var Employee|null $employee */
@@ -351,6 +388,12 @@ class AuthController extends Controller
                 'error' => 'GOOGLE_TOKEN_INVALID',
                 'message' => __('errors.GOOGLE_TOKEN_INVALID'),
             ], 422);
+        }
+
+        // #5580 : fail-closed — même garde email_verified que le callback.
+        $notVerified = $this->assertGoogleEmailVerified($googleUser);
+        if ($notVerified !== null) {
+            return $notVerified;
         }
 
         /** @var Employee|null $employee */

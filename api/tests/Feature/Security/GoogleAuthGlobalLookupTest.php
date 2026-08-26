@@ -46,6 +46,8 @@ class GoogleAuthGlobalLookupTest extends TestCase
         $abstractUser->shouldReceive('getName')->andReturn('Existing User');
         $abstractUser->shouldReceive('offsetGet')->with('given_name')->andReturn('Existing');
         $abstractUser->shouldReceive('offsetGet')->with('family_name')->andReturn('User');
+        // #5580 : les comptes Google vérifiés portent email_verified=true.
+        $abstractUser->shouldReceive('offsetGet')->with('email_verified')->andReturn(true);
 
         Socialite::shouldReceive('driver')->with('google')->andReturn($provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider'));
         $provider->shouldReceive('stateless')->andReturn($provider);
@@ -88,6 +90,8 @@ class GoogleAuthGlobalLookupTest extends TestCase
         $abstractUser->shouldReceive('getName')->andReturn('Existing User');
         $abstractUser->shouldReceive('offsetGet')->with('given_name')->andReturn('Existing');
         $abstractUser->shouldReceive('offsetGet')->with('family_name')->andReturn('User');
+        // #5580 : les comptes Google vérifiés portent email_verified=true.
+        $abstractUser->shouldReceive('offsetGet')->with('email_verified')->andReturn(true);
 
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         // stateless() returns $this so method chaining works
@@ -135,5 +139,42 @@ class GoogleAuthGlobalLookupTest extends TestCase
 
         // Verify no employee was silently created
         $this->assertEquals(0, Employee::withoutGlobalScopes()->where('email', 'nobody@unknown.example')->count());
+    }
+
+    public function test_google_token_login_rejects_unverified_email_with_401(): void
+    {
+        // #5580 — fail-closed : userFromToken avec un email NON vérifié → 401
+        // GOOGLE_EMAIL_NOT_VERIFIED, même si un employé existe avec cet email.
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        Employee::factory()->create([
+            'company_id' => $company->id,
+            'email' => 'unverified-token@example.com',
+            'status' => 'active',
+        ]);
+
+        $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
+        $abstractUser->shouldReceive('getEmail')->andReturn('unverified-token@example.com');
+        $abstractUser->shouldReceive('getName')->andReturn('Unverified User');
+        // Pas de claim email_verified (ni true ni false) : le flux doit rejeter.
+
+        $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
+        $provider->shouldReceive('stateless')->once()->andReturn($provider);
+        $provider->shouldReceive('userFromToken')->once()->with('unverified-token')->andReturn($abstractUser);
+
+        Socialite::shouldReceive('driver')->with('google')->once()->andReturn($provider);
+
+        $response = $this->postJson('/api/v1/auth/google/token', [
+            'access_token' => 'unverified-token',
+        ]);
+
+        $response->assertStatus(401);
+        $response->assertJsonPath('error', 'GOOGLE_EMAIL_NOT_VERIFIED');
+
+        // Aucun token émis pour l'employé existant.
+        $this->assertSame(
+            0,
+            $company->employees()->first()?->tokens()->count() ?? 0,
+        );
     }
 }
