@@ -175,6 +175,11 @@ class BankReconciliationTest extends TestCase
             "date;label;amount;reference\n2026-08-03;Facture client 1;1190.00;FAC-2026-001\n2026-08-10;Virement fournisseur;-450.00;VIR-001\n",
         );
 
+        // L'écart de clôture n'est calculé que si les soldes sont renseignés
+        // (BankReconciliationService::status) : ouverture 100 + lignes 740 =
+        // clôture attendue 840 vs 800 reportée → écart 40.
+        $statement->forceFill(['opening_balance' => 100.0, 'closing_balance' => 800.0])->save();
+
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Sanctum::actingAs($manager);
@@ -182,7 +187,9 @@ class BankReconciliationTest extends TestCase
         $response = $this->getJson('/api/v1/accounting/bank-statements/'.$statement->id.'/export')
             ->assertOk();
 
-        $csv = $response->streamedContent();
+        // L'export renvoie une Response classique (petit CSV en mémoire, pas de
+        // streaming nécessaire — parité #5573) : getContent(), pas streamedContent().
+        $csv = $response->getContent();
         // BOM UTF-8 + en-tête.
         $this->assertStringStartsWith("\xEF\xBB\xBF", $csv);
         $this->assertStringContainsString('Ligne;Date;Libelle;Montant;Statut', $csv);
@@ -193,7 +200,7 @@ class BankReconciliationTest extends TestCase
         // Totaux + écart de clôture.
         $this->assertStringContainsString('TOTAL MATCHED', $csv);
         $this->assertStringContainsString('TOTAL PENDING', $csv);
-        $this->assertStringContainsString('ECART CLOTURE', $csv);
+        $this->assertStringContainsString('ECART CLOTURE;40,00', $csv);
         // Header Referrer-Policy no-referrer (#5521).
         $this->assertSame('no-referrer', $response->headers->get('Referrer-Policy'));
     }
