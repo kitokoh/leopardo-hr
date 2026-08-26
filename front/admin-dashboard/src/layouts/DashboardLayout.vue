@@ -17,11 +17,11 @@
     <Sidebar
       :is-open="sidebarOpen"
       @close="sidebarOpen = false"
-      class="fixed inset-y-0 left-0 z-50 lg:static lg:inset-0"
+      class="fixed inset-y-0 left-0 z-50 md:static md:inset-0"
     />
 
     <!-- Main content -->
-    <div class="relative z-10 lg:pl-64">
+    <div class="relative z-10 md:pl-64">
       <!-- Header -->
       <Header
         @toggle-sidebar="sidebarOpen = !sidebarOpen"
