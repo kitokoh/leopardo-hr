@@ -138,7 +138,8 @@
       "TR": "Türkiye",
       "US": "United States"
     },
-    "required": "Required"
+    "required": "Required",
+    "dismiss": "Dismiss"
   },
   "modules": {
     "attendance": "Attendance",
@@ -3015,7 +3016,10 @@
     "loadError": "Unable to load the activation status. Please try again.",
     "completeError": "Activation failed. Please try again.",
     "retry": "Retry",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "bannerTitle": "Activate the Accounting module",
+    "bannerBody": "A few steps are required before you can issue your first invoices.",
+    "bannerCta": "Start activation"
   },
   "accountingModule": {
     "homeTitle": "Accounting",

@@ -138,7 +138,8 @@
       "TR": "Turquie",
       "US": "États-Unis"
     },
-    "required": "Requis"
+    "required": "Requis",
+    "dismiss": "Fermer"
   },
   "modules": {
     "attendance": "Pointage",
@@ -3015,7 +3016,10 @@
     "loadError": "Impossible de charger l'état d'activation. Réessayez.",
     "completeError": "L'activation a échoué. Réessayez.",
     "retry": "Réessayer",
-    "loading": "Chargement…"
+    "loading": "Chargement…",
+    "bannerTitle": "Activez le module Comptabilité",
+    "bannerBody": "Quelques étapes sont nécessaires avant de pouvoir émettre vos premières factures.",
+    "bannerCta": "Démarrer l'activation"
   },
   "accountingModule": {
     "homeTitle": "Comptabilité",

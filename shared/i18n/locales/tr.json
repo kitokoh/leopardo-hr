@@ -138,7 +138,8 @@
       "TR": "Türkiye",
       "US": "Amerika Birleşik Devletleri"
     },
-    "required": "Gerekli"
+    "required": "Gerekli",
+    "dismiss": "Kapat"
   },
   "modules": {
     "attendance": "Puantaj",
@@ -3015,7 +3016,10 @@
     "loadError": "Etkinleştirme durumu yüklenemedi. Tekrar deneyin.",
     "completeError": "Etkinleştirme başarısız oldu. Tekrar deneyin.",
     "retry": "Yeniden dene",
-    "loading": "Yükleniyor…"
+    "loading": "Yükleniyor…",
+    "bannerTitle": "Muhasebe modülünü etkinleştirin",
+    "bannerBody": "İlk faturalarınızı düzenleyebilmek için birkaç adım gereklidir.",
+    "bannerCta": "Etkinleştirmeyi başlat"
   },
   "accountingModule": {
     "homeTitle": "Muhasebe",
