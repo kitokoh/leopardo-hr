@@ -224,6 +224,10 @@ jobs:
       - name: Run Composer audit
         working-directory: ./api
         run: composer audit --locked --no-dev
+      - name: Composer outdated (direct) - non bloquant (issue #5590)
+        working-directory: ./api
+        run: composer outdated --direct --no-interaction || true
+        continue-on-error: true
 
   backend-quality:
     # This job may push an explicitly generated Pint formatting commit on
@@ -372,7 +376,7 @@ jobs:
             php -l "$file" >/dev/null
           done
 
-      - name: Run PHPStan + Larastan
+      - name: Run PHPStan + Larastan (diff-gate level max, issue #5590)
         id: phpstan
         working-directory: ./api
         shell: bash
@@ -381,6 +385,11 @@ jobs:
           DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
+          # #5590 : le diff-gate execute phpstan.neon (level max + baseline
+          # phpstan-baseline.neon) sur TOUS les fichiers backend modifies du
+          # PR (app/** + routes/**) — plus seulement app/AI, Middleware et
+          # routes. Le baseline gele la dette pre-existante : seule une
+          # NOUVELLE erreur level max sur un fichier modifie fait echouer.
           cat > phpstan.ci.neon <<EOF
           includes:
               - phpstan.neon
@@ -403,7 +412,7 @@ jobs:
 
           mapfile -t changed_php_files < <(
             git diff --name-only "${base_sha}" "${head_sha}" \
-              | grep -E '^api/(app/AI|app/Http/Middleware|routes)/.*\.php$' \
+              | grep -E '^api/(app|routes)/.*\.php$' \
               | sort -u || true
           )
 

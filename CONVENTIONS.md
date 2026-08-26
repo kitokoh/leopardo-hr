@@ -28,10 +28,12 @@ leopardo-hr/
 - **`declare(strict_types=1);`** en haut de chaque fichier PHP (sauf config)
 - **Namespace PSR-4** — `App\Modules\<NomModule>\*`, `App\Core\*`, `App\Shared\*`
   _(Les anciens espaces `App\Http\Controllers\Api\V1\*` et `App\Services\*` sont supprimés — voir `api/ARCHITECTURE.md`)_
-- **PHPStan** — `phpstan.neon` declare `level: max` pour l'ensemble de `app/`, mais aucun job CI ne l'execute directement aujourd'hui. Ce que la CI verifie reellement, de facon bloquante :
-  - `phpstan-modules.neon` (niveau 5, `app/Core`/`app/Modules`/`app/Shared`) — job `phpstan-modules` (bloquant).
-  - `phpstan-strict.neon` (niveau 8, meme perimetre) — job `phpstan-strict`, bloquant sur le **delta** uniquement depuis #1413 : `phpstan-strict-baseline.neon` gele les ~2950 erreurs pre-existantes (voir `api/ARCHITECTURE.md` section "Trajectoire PHPStan" pour la repartition par module et la trajectoire de reduction), toute nouvelle erreur hors baseline fait echouer la CI.
-  - "level max" n'est donc pas un standard verifie en CI aujourd'hui ; le niveau 8 bloquant-sur-delta est l'etat reel le plus proche.
+- **PHPStan** — `phpstan.neon` declare `level: max` pour l'ensemble de `app/`. État CI réel (bloquant) :
+  - **`phpstan.neon` (level max) — diff-gate sur fichiers modifiés** : le job `Backend Quality` de `tests.yml` exécute `phpstan.neon` (avec `phpstan-baseline.neon`, dette gelée ~historique) sur **tous les fichiers backend modifiés du PR** (`app/**` + `routes/**`, issue #5590). Toute NOUVELLE erreur level max sur un fichier modifié fait échouer le PR ; les erreurs pré-existantes sont ignorées via le baseline.
+  - `phpstan-modules.neon` (niveau 5, `app/Core`/`app/Modules`/`app/Shared`) — job `phpstan-modules` (`architecture-check.yml`), périmètre complet.
+  - `phpstan-strict.neon` (niveau 8, meme perimetre) — job `phpstan-strict`, bloquant sur le **delta** uniquement depuis #1413 : `phpstan-strict-baseline.neon` gele les ~2950 erreurs pre-existantes (voir `api/ARCHITECTURE.md` section "Trajectoire PHPStan").
+  - **`composer audit --locked --no-dev`** — job `backend-security` de `tests.yml` (vulnérabilités des dépendances PHP de production, bloquant) + `composer outdated --direct` informatif non bloquant.
+  - "level max" est donc bien vérifié en CI sur le périmètre des fichiers modifiés ; le niveau 8 bloquant-sur-delta reste l'état réel le plus proche d'un full-scan strict.
 - **Pas de `Any`, `mixed` sauf absolument necessaire** — typer tous les parametres et retours
 
 ### 2.2 Nommage
