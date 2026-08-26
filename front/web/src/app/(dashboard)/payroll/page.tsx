@@ -38,10 +38,16 @@ interface PayrollRun {
   id: number;
   period: string;
   status: string;
+  country_code?: string | null;
   total_gross: number;
   total_net: number;
   employee_count: number;
   created_at: string;
+}
+
+interface CountryCompliance {
+  level: string;
+  warning?: string | null;
 }
 
 export default function PayrollPage() {
@@ -59,13 +65,18 @@ export default function PayrollPage() {
   // valider RH → verrouiller (comptable).
   const [actingRun, setActingRun] = useState<number | null>(null);
   const [runFeedback, setRunFeedback] = useState<{ kind: 'success' | 'error'; text: string } | null>(null);
-  const [confirmAction, setConfirmAction] = useState<{ run: PayrollRun; action: 'lock' | 'unlock' } | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{ run: PayrollRun; action: 'lock' | 'unlock' | 'validate' } | null>(null);
+  const [countryCompliance, setCountryCompliance] = useState<Record<string, CountryCompliance>>({});
 
   const runAction = async (run: PayrollRun, action: 'calculate' | 'validate' | 'lock' | 'unlock') => {
     setActingRun(run.id);
     setRunFeedback(null);
     try {
-      await apiFetch(`/payroll-runs/${run.id}/${action}`, { method: 'POST' });
+      const body = action === 'validate' ? JSON.stringify({ confirm_placeholder: true }) : undefined;
+      await apiFetch(`/payroll-runs/${run.id}/${action}`, {
+        method: 'POST',
+        ...(body ? { body } : {}),
+      });
       setConfirmAction(null);
       const res = await apiFetch('/payroll-runs').then(r => r.json()).catch(() => ({ data: [] }));
       setRuns(res.data || []);
@@ -107,15 +118,39 @@ export default function PayrollPage() {
     return 'bg-amber-50 text-amber-700';
   };
 
+  const runCompliance = (run: PayrollRun): CountryCompliance | null =>
+    run.country_code ? (countryCompliance[run.country_code] ?? null) : null;
+
+  const isPlaceholderRun = (run: PayrollRun): boolean =>
+    runCompliance(run)?.level === 'placeholder';
+
+  const handleValidateClick = (run: PayrollRun) => {
+    if (isPlaceholderRun(run)) {
+      // Issue #5623 — barèmes placeholder : confirmation explicite requise.
+      setConfirmAction({ run, action: 'validate' });
+      return;
+    }
+    void runAction(run, 'validate');
+  };
+
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [slipsRes, runsRes] = await Promise.all([
+      const [slipsRes, runsRes, countriesRes] = await Promise.all([
         apiFetch('/pay-slips').then(r => r.json()).catch(() => ({ data: [] })),
         apiFetch('/payroll-runs').then(r => r.json()).catch(() => ({ data: [] })),
+        apiFetch('/supported-countries').then(r => r.json()).catch(() => ({ data: [] })),
       ]);
       setPayslips(slipsRes.data || []);
       setRuns(runsRes.data || []);
+      // Issue #5623 — carte pays → niveau de confiance des barèmes (placeholder/pilot/...).
+      const complianceMap: Record<string, CountryCompliance> = {};
+      for (const c of (countriesRes.data || []) as Array<{ country?: string; compliance?: CountryCompliance }>) {
+        if (c.country && c.compliance?.level) {
+          complianceMap[c.country] = c.compliance;
+        }
+      }
+      setCountryCompliance(complianceMap);
     } catch {
       // silently handle
     } finally {
@@ -352,6 +387,14 @@ export default function PayrollPage() {
                       <td className="px-4 py-4 text-right tabular-nums text-slate-900">{formatCurrency(run.total_gross)}</td>
                       <td className="px-4 py-4 text-right tabular-nums font-bold text-emerald-600">{formatCurrency(run.total_net)}</td>
                       <td className="px-6 py-4 text-center">
+                        {isPlaceholderRun(run) && (
+                          <span
+                            className="mb-1 inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-red-700 ring-1 ring-red-200 dark:bg-red-950/30 dark:text-red-400 dark:ring-red-900/40"
+                            title={runCompliance(run)?.warning ?? undefined}
+                          >
+                            ⚠ {labels.runPlaceholderBadge}
+                          </span>
+                        )}
                         <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${runStatusTone(run.status)}`}>
                           {runStatusLabel(run.status)}
                         </span>
@@ -364,7 +407,7 @@ export default function PayrollPage() {
                             </Button>
                           )}
                           {run.status === 'calculated' && (
-                            <Button variant="outline" size="sm" disabled={actingRun === run.id} onClick={() => void runAction(run, 'validate')}>
+                            <Button variant="outline" size="sm" disabled={actingRun === run.id} onClick={() => handleValidateClick(run)}>
                               {labels.runValidate}
                             </Button>
                           )}
@@ -393,10 +436,19 @@ export default function PayrollPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
           <div className="w-full max-w-sm rounded-3xl border border-app-border bg-white p-6 shadow-xl">
             <h3 className="text-base font-bold text-slate-950">
-              {confirmAction.action === 'lock' ? labels.runConfirmLock : labels.runConfirmUnlock}
+              {confirmAction.action === 'lock'
+                ? labels.runConfirmLock
+                : confirmAction.action === 'unlock'
+                  ? labels.runConfirmUnlock
+                  : labels.runConfirmValidate}
             </h3>
             <p className="mt-1 text-sm text-slate-500">
               {labels.columnPeriod} : {confirmAction.run.period}
+              {confirmAction.action === 'validate' && isPlaceholderRun(confirmAction.run) && (
+                <span className="mt-2 block rounded-xl bg-red-50 px-3 py-2 text-xs font-medium text-red-700 dark:bg-red-950/30 dark:text-red-300">
+                  {runCompliance(confirmAction.run)?.warning ?? labels.runPlaceholderWarning}
+                </span>
+              )}
             </p>
             <div className="mt-5 flex justify-end gap-2">
               <button
@@ -414,7 +466,11 @@ export default function PayrollPage() {
                   confirmAction.action === 'lock' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-slate-700 hover:bg-slate-800'
                 }`}
               >
-                {confirmAction.action === 'lock' ? labels.runLock : labels.runUnlock}
+                {confirmAction.action === 'lock'
+                  ? labels.runLock
+                  : confirmAction.action === 'unlock'
+                    ? labels.runUnlock
+                    : labels.runConfirmValidateCta}
               </button>
             </div>
           </div>

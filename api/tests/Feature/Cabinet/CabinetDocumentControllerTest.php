@@ -95,7 +95,8 @@ class CabinetDocumentControllerTest extends TestCase
             'notes' => 'Contrat de travail signé',
         ]);
 
-        $this->assertContains($response->status(), [200, 201, 422], 'Unexpected status on upload');
+        // #5585 : upload valide → 201 (le 422 est couvert par test_upload_without_file_returns_422).
+        $response->assertStatus(201);
     }
 
     public function test_upload_without_file_returns_422(): void

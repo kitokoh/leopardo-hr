@@ -13,6 +13,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PayrollAccountingEntryResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [
@@ -20,7 +23,7 @@ class PayrollAccountingEntryResource extends JsonResource
             'payroll_run_id' => $this->payroll_run_id,
             'pay_slip_id' => $this->pay_slip_id,
             'employee_id' => $this->employee_id,
-            'date' => $this->date?->toDateString(),
+            'date' => $this->date->toDateString(),
             'account_code' => $this->account_code,
             'account_label' => $this->account_label,
             'debit' => $this->debit,

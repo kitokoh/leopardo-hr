@@ -157,6 +157,7 @@ return [
     'BILLING_PORTAL_ACCESS_FAILED' => 'تعذّر الوصول إلى بوابة الفوترة.',
     'FLEET_ALERTS_LOAD_FAILED' => 'تعذّر تحميل تنبيهات الأسطول.',
     'COMPANY_BRANDING_UPDATED' => 'تم تحديث هوية الشركة.',
+    'PAYROLL_PLACEHOLDER_CONFIRM_REQUIRED' => 'شرائح الرواتب لهذا البلد استرشادية (غير معتمدة قانونياً). أكّد صراحةً للتحقق من كشف الرواتب.',
     'PAYROLL_RUN_NOT_FOR_COUNTRY' => 'هذه الدفعة لا تتعلق بـ :country.',
     'PAYROLL_ALREADY_VALIDATED' => 'تم التحقق من هذه دفعة الأجور بالفعل ولا يمكن تعديلها.',
     'PAYROLL_RUN_LOCKED' => 'دفعة الأجور هذه مقفلة (إقفال محاسبي) ولا يمكن تعديلها.',
@@ -266,4 +267,5 @@ return [
     'LETTERING_UNBALANCED' => 'يجب أن تكون التسوية متوازنة: مجموع المدين يجب أن يساوي مجموع الدائن.',
     'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.',
     'ALREADY_SEEDED' => 'تم بالفعل إنشاء البيانات التجريبية لهذه الشركة.',
+    'EMAIL_NOT_VERIFIED' => 'لم يتم التحقق من هذا البريد الإلكتروني من قبل المزود. استخدم حسابًا ببريد إلكتروني موثق.',
 ];

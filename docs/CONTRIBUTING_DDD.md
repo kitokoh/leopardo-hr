@@ -12,7 +12,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 
 | Dossier legacy | Remplacé par |
 |---|---|
-| `api/app/Services/` (reste TenantManager.php shim + Cache/Communication/Payroll/SSO/Security/Tracking) | `Modules/<Name>/Infrastructure/Services/` |
+| ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
 ## Modules existants (18 modules)
@@ -36,7 +36,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Planning` | Planning, congés approbation side-manager |
 | `Platform` | Super-admin plateforme, gestion tenants |
 | `Recruitment` | Offres, candidats, entretiens |
-| `SmartAttendance` | Pointage intelligent / variantes avancées d'Attendance |
+| `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
 
 > Liste vivante — voir `docs/ARCHITECTURE_STATUS.md` section 1 pour l'état de complétude
 > (Domain/Contracts/Application/Infra/Interfaces/Tests) de chaque module.
@@ -100,9 +100,9 @@ Après `php artisan make:module`, vérifier :
 Les controllers (`app/Http/Controllers/Api/V1/`) et modèles (`app/Models/`) legacy ont déjà été
 entièrement supprimés (PR #824 + phase 2) — toutes les routes pointent vers les modules DDD.
 Ce qui reste en coexistence partielle aujourd'hui :
-- `app/Services/` (shim `TenantManager.php` + services spécialisés non encore migrés)
+- ~~`app/Services/`~~ supprimé (2026-08-11, #1728) — aucun nouveau code dans ce répertoire
 - `app/Exceptions/` (base `DomainException` partagée, encore étendue par certains modules)
 
 Pour une nouvelle feature sur un domaine déjà migré : étendre le module DDD correspondant. Pour un
-service encore dans `app/Services/` : vérifier s'il doit être migré vers
+service historique encore référencé : vérifier s'il doit être migré vers
 `Modules/<Name>/Infrastructure/Services/` avant d'y ajouter de la logique.

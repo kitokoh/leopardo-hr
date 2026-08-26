@@ -57,6 +57,23 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 
 ---
 
+**Garde CI (issue #5584, audit architecture 2026-08-26) :**
+`dev-hub/tools/check-module-isolation.sh` (branché dans `architecture-check.yml`,
+job Module Structure Validator) bloque TOUT nouvel import croisé :
+- `use App\Modules\<X>\...` dans un module ≠ X ;
+- `use App\Modules\<X>\...` dans `Core/`.
+
+La dette héritée (16/18 modules — seuls `Cameras` et `EdgeSync` s'abstiennent ;
+57 paires source→cible) est **actée** dans
+`dev-hub/tools/module-isolation-allowlist.txt` et doit **diminuer** : toute
+ligne ajoutée exige une justification (issue de refactor), aucune n'est
+rajoutée « pour passer ». Dérogations structurelles déjà documentées :
+`Modules/Absence` et `Modules/Expense` sont des façades sur `Planning`
+(PA2-ARCH-002 / PA2-ARCH-011). Refactors de résorption en cours : #5591
+(PayrollCalculator → extraire `Planning`) ; déplacement de l'`Employee`
+canonique hors de `Core/Auth` (#5584 item 3, chantier à part — 361
+consommateurs).
+
 ## Modules existants
 
 | Module | Statut routes | Statut code | ServiceProvider |
@@ -82,7 +99,7 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 > **Derogation documentee — API Resources centralisees (PA2-ARCH-010)** : contrairement au schema DDD par module (`Modules/<Nom>/Interfaces/Api/V1/Resources/`) documente en §2.7 de `CONVENTIONS.md` et repris par le stub `stubs/module-template/`, les **60 classes `JsonResource`** de l'API vivent toutes dans `app/Http/Resources/Api/V1/` (namespace legacy centralise) et sont importees a la piece par ~50 controllers de modules differents. C'est un choix delibere, pas une migration inachevee : plusieurs Resources sont **partagees entre modules** (ex. `LoanResource` par `HR` et `Payroll`, `AttendanceTodayResource` par `Attendance` et `HR`, `PayrollRunResource`, `VehicleAlertResource`/`VehicleMaintenanceResource`/`VehicleTripResource` par `Fleet` depuis plusieurs controllers, `InterviewResource`/`JobPostingResource`/`ApplicantResource` par `Recruitment` depuis plusieurs controllers). Deplacer chaque Resource dans le module qui l'a cree obligerait les autres modules consommateurs a l'importer inter-module — ce qui viole l'interdiction stricte ci-dessus (« un module n'importe jamais directement les classes d'un autre module »). Garder les Resources centralisees dans `app/Http/Resources/Api/V1/` evite ce couplage inter-module et reste coherent avec `App\Shared\*` (namespace commun consomme par tout le monde, ne dependant de rien). Le template `stubs/module-template/Interfaces/Api/V1/Resources/` et `docs/architecture/module-creation-guide.md` ont ete corriges pour ne plus induire les nouveaux modules en erreur (voir PA2-ARCH-010) : les Resources d'un nouveau module vont dans `app/Http/Resources/Api/V1/` sauf si elles sont strictement internes et jamais partagees, auquel cas elles peuvent rester dans `Interfaces/Api/V1/Resources/` du module.
 | `Modules/Onboarding` | ✅ routes/api.php | ✅ complet | `OnboardingServiceProvider` |
 | `Modules/Platform` | ✅ routes/api.php | ✅ complet | `PlatformServiceProvider` |
-| `Modules/Training` | ✅ routes/modules/* | ✅ complet | `TrainingServiceProvider` |
+| `Modules/Accounting` | ✅ routes/modules/accounting.php | ✅ complet | `AccountingServiceProvider` |
 
 **Légende :** ✅ complet | 🔄 migration partielle en cours
 
@@ -122,7 +139,7 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
   `EdgeController`/`EdgeDownloadController` vivent désormais sous `Modules/EdgeSync/Interfaces/Api/V1/`.
 - **`app/Services/` — 26 services doublons supprimés**, leurs imports redirigés
   vers `app/Modules/*/Infrastructure/Services/` dans tous les fichiers consommateurs.
-- **`app/Modules/{Growth,Platform,Onboarding,Training}/Infrastructure/`** créé —
+- **`app/Modules/{Growth,Platform,Onboarding}/Infrastructure/`** créé —
   couches manquantes ajoutées pour corriger le CI Module Structure Validator.
 - Tests + Console Commands pointent sur les bons namespaces modules.
 
@@ -157,7 +174,7 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 
 - [x] PHPStan modules : monté le niveau de 3 → 5 (objectif réaliste). CI job
   `phpstan-modules` (bloquant) tourne sur `phpstan-modules.neon`.
-- [ ] Application layer : enrichir les Actions dans Growth, Platform, Onboarding, Training
+- [ ] Application layer : enrichir les Actions dans Growth, Platform, Onboarding, Accounting
   (trop peu d'Actions, controllers trop épais)
 
 ### Trajectoire PHPStan (niveau actuel → cible)
@@ -189,7 +206,7 @@ _Issue #1413, complétant le suivi de la ligne ci-dessus._
 | Expense / Fleet | 12 chacun |
 | Cameras | 10 |
 | Growth | 9 |
-| Recruitment / Training | 8 chacun |
+| Recruitment | 8 |
 | Onboarding | 7 |
 | Marketing | 6 |
 | Core/Tenant | 5 |

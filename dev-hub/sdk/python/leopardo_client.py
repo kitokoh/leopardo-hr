@@ -160,6 +160,10 @@ class LeopardoClient:
         """Détail d'un relevé (avec lignes)"""
         return self.request("GET", "/accounting/bank-statements/{statement}", **kwargs)
 
+    def get_accounting_bank_statements_by_statement_export(self, **kwargs):
+        """Export CSV de l'état de rapprochement bancaire"""
+        return self.request("GET", "/accounting/bank-statements/{statement}/export", **kwargs)
+
     def post_accounting_bank_statements_by_statement_reconcile(self, **kwargs):
         """Lancer le rapprochement automatique"""
         return self.request("POST", "/accounting/bank-statements/{statement}/reconcile", **kwargs)
@@ -2048,9 +2052,9 @@ class LeopardoClient:
         """Mes prets"""
         return self.request("GET", "/me/loans", **kwargs)
 
-    def get_me_loans_by_loan_repayments(self, **kwargs):
+    def get_me_loans_by_loanid_repayments(self, **kwargs):
         """Mes remboursements de pret"""
-        return self.request("GET", "/me/loans/{loan}/repayments", **kwargs)
+        return self.request("GET", "/me/loans/{loanId}/repayments", **kwargs)
 
     def get_me_monthly_summary(self, **kwargs):
         """Resume mensuel utilisateur courant"""
@@ -2096,9 +2100,9 @@ class LeopardoClient:
         """Mes formations"""
         return self.request("GET", "/me/trainings", **kwargs)
 
-    def post_me_trainings_by_session_enroll(self, **kwargs):
+    def post_me_trainings_by_sessionid_enroll(self, **kwargs):
         """Auto-inscription a une formation"""
-        return self.request("POST", "/me/trainings/{session}/enroll", **kwargs)
+        return self.request("POST", "/me/trainings/{sessionId}/enroll", **kwargs)
 
     def get_me_vehicles(self, **kwargs):
         """Vehicules assignes a l'employe connecte (mobile)"""
@@ -2188,13 +2192,13 @@ class LeopardoClient:
         """Organigramme complet"""
         return self.request("GET", "/org-chart", **kwargs)
 
-    def get_org_chart_by_employeeid_manager_chain(self, **kwargs):
+    def get_org_chart_by_employee_manager_chain(self, **kwargs):
         """Chaine hierarchique"""
-        return self.request("GET", "/org-chart/{employeeId}/manager-chain", **kwargs)
+        return self.request("GET", "/org-chart/{employee}/manager-chain", **kwargs)
 
-    def get_org_chart_by_employeeid_subordinates(self, **kwargs):
+    def get_org_chart_by_employee_subordinates(self, **kwargs):
         """Subordonnes d'un employe"""
-        return self.request("GET", "/org-chart/{employeeId}/subordinates", **kwargs)
+        return self.request("GET", "/org-chart/{employee}/subordinates", **kwargs)
 
     def get_pay_slips(self, **kwargs):
         """Lister les bulletins du tenant (manager)"""
@@ -2784,9 +2788,9 @@ class LeopardoClient:
         """Planifier un entretien"""
         return self.request("POST", "/recruitment/applicants/{applicant}/interviews", **kwargs)
 
-    def patch_recruitment_applicants_by_id_status(self, **kwargs):
+    def patch_recruitment_applicants_by_applicant_status(self, **kwargs):
         """Changer le statut d'une candidature (principal/rh)"""
-        return self.request("PATCH", "/recruitment/applicants/{id}/status", **kwargs)
+        return self.request("PATCH", "/recruitment/applicants/{applicant}/status", **kwargs)
 
     def delete_recruitment_interviews_by_interview(self, **kwargs):
         """Supprimer un entretien (manager)"""
@@ -3396,29 +3400,29 @@ class LeopardoClient:
         """Creer un webhook"""
         return self.request("POST", "/webhooks", **kwargs)
 
-    def delete_webhooks_by_webhook(self, **kwargs):
+    def delete_webhooks_by_webhookendpoint(self, **kwargs):
         """Supprimer un webhook"""
-        return self.request("DELETE", "/webhooks/{webhook}", **kwargs)
+        return self.request("DELETE", "/webhooks/{webhookEndpoint}", **kwargs)
 
-    def get_webhooks_by_webhook(self, **kwargs):
+    def get_webhooks_by_webhookendpoint(self, **kwargs):
         """Voir un webhook et ses dernieres livraisons"""
-        return self.request("GET", "/webhooks/{webhook}", **kwargs)
+        return self.request("GET", "/webhooks/{webhookEndpoint}", **kwargs)
 
-    def put_webhooks_by_webhook(self, **kwargs):
+    def put_webhooks_by_webhookendpoint(self, **kwargs):
         """Modifier un webhook"""
-        return self.request("PUT", "/webhooks/{webhook}", **kwargs)
+        return self.request("PUT", "/webhooks/{webhookEndpoint}", **kwargs)
 
-    def get_webhooks_by_webhook_dead_letters(self, **kwargs):
+    def get_webhooks_by_webhookendpoint_dead_letters(self, **kwargs):
         """Lister les livraisons webhook dead-letter (retries epuises)"""
-        return self.request("GET", "/webhooks/{webhook}/dead-letters", **kwargs)
+        return self.request("GET", "/webhooks/{webhookEndpoint}/dead-letters", **kwargs)
 
-    def post_webhooks_by_webhook_dead_letters_by_delivery_replay(self, **kwargs):
+    def post_webhooks_by_webhookendpoint_dead_letters_by_delivery_replay(self, **kwargs):
         """Rejouer une livraison webhook dead-letter"""
-        return self.request("POST", "/webhooks/{webhook}/dead-letters/{delivery}/replay", **kwargs)
+        return self.request("POST", "/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay", **kwargs)
 
-    def post_webhooks_by_webhook_test(self, **kwargs):
+    def post_webhooks_by_webhookendpoint_test(self, **kwargs):
         """Tester un endpoint webhook"""
-        return self.request("POST", "/webhooks/{webhook}/test", **kwargs)
+        return self.request("POST", "/webhooks/{webhookEndpoint}/test", **kwargs)
 
     def post_webhooks_chargily(self, **kwargs):
         """Webhook Chargily Pay (paiements CEMAC)"""

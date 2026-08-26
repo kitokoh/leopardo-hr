@@ -36,28 +36,32 @@ Route::get('/p/{code}', function () {
 Route::middleware('throttle:auth-sensitive')->get('/demo-login/{token}', DemoLoginController::class);
 Route::middleware('throttle:auth-sensitive')->post('/demo-login/{token}', DemoLoginController::class);
 
-Route::get('/docs', function () {
-    return view('docs.openapi');
-})->name('docs.openapi');
+// Issue #5588 : la doc API reste publique hors production (QA/démo/tests)
+// mais requiert l'authentification en production (Gate viewApiDocs).
+Route::middleware(\App\Http\Middleware\EnsureApiDocsAuthorized::class)->group(function (): void {
+    Route::get('/docs', function () {
+        return view('docs.openapi');
+    })->name('docs.openapi');
 
-Route::get('/tester-guide', function () {
-    return view('docs.tester-guide');
-})->name('docs.tester-guide');
+    Route::get('/tester-guide', function () {
+        return view('docs.tester-guide');
+    })->name('docs.tester-guide');
 
-Route::get('/api-explorer', function () {
-    return view('docs.api-explorer');
-})->name('docs.api-explorer');
+    Route::get('/api-explorer', function () {
+        return view('docs.api-explorer');
+    })->name('docs.api-explorer');
 
-Route::get('/docs/openapi.yaml', function () {
-    $path = base_path('openapi.yaml');
+    Route::get('/docs/openapi.yaml', function () {
+        $path = base_path('openapi.yaml');
 
-    abort_unless(is_file($path), 404);
+        abort_unless(is_file($path), 404);
 
-    return response((string) file_get_contents($path), 200, [
-        'Cache-Control' => 'public, max-age=300',
-        'Content-Type' => 'application/yaml; charset=UTF-8',
-    ]);
-})->name('docs.openapi.spec');
+        return response((string) file_get_contents($path), 200, [
+            'Cache-Control' => 'public, max-age=300',
+            'Content-Type' => 'application/yaml; charset=UTF-8',
+        ]);
+    })->name('docs.openapi.spec');
+});
 
 Route::middleware('guest:super_admin_web')->group(function (): void {
     Route::get('/platform/login', [PlatformAuthController::class, 'showLogin'])->name('platform.login');

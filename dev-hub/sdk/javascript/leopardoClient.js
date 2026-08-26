@@ -175,6 +175,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/accounting/bank-statements/{statement}", options);
     },
 
+    /** Export CSV de l'état de rapprochement bancaire */
+    getAccountingBankStatementsByStatementExport(options = {}) {
+      return request("GET", "/accounting/bank-statements/{statement}/export", options);
+    },
+
     /** Lancer le rapprochement automatique */
     postAccountingBankStatementsByStatementReconcile(options = {}) {
       return request("POST", "/accounting/bank-statements/{statement}/reconcile", options);
@@ -2536,8 +2541,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Mes remboursements de pret */
-    getMeLoansByLoanRepayments(options = {}) {
-      return request("GET", "/me/loans/{loan}/repayments", options);
+    getMeLoansByLoanIdRepayments(options = {}) {
+      return request("GET", "/me/loans/{loanId}/repayments", options);
     },
 
     /** Resume mensuel utilisateur courant */
@@ -2596,8 +2601,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Auto-inscription a une formation */
-    postMeTrainingsBySessionEnroll(options = {}) {
-      return request("POST", "/me/trainings/{session}/enroll", options);
+    postMeTrainingsBySessionIdEnroll(options = {}) {
+      return request("POST", "/me/trainings/{sessionId}/enroll", options);
     },
 
     /** Vehicules assignes a l'employe connecte (mobile) */
@@ -2711,13 +2716,13 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Chaine hierarchique */
-    getOrgChartByEmployeeIdManagerChain(options = {}) {
-      return request("GET", "/org-chart/{employeeId}/manager-chain", options);
+    getOrgChartByEmployeeManagerChain(options = {}) {
+      return request("GET", "/org-chart/{employee}/manager-chain", options);
     },
 
     /** Subordonnes d'un employe */
-    getOrgChartByEmployeeIdSubordinates(options = {}) {
-      return request("GET", "/org-chart/{employeeId}/subordinates", options);
+    getOrgChartByEmployeeSubordinates(options = {}) {
+      return request("GET", "/org-chart/{employee}/subordinates", options);
     },
 
     /** Lister les bulletins du tenant (manager) */
@@ -3456,8 +3461,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Changer le statut d'une candidature (principal/rh) */
-    patchRecruitmentApplicantsByIdStatus(options = {}) {
-      return request("PATCH", "/recruitment/applicants/{id}/status", options);
+    patchRecruitmentApplicantsByApplicantStatus(options = {}) {
+      return request("PATCH", "/recruitment/applicants/{applicant}/status", options);
     },
 
     /** Supprimer un entretien (manager) */
@@ -4221,33 +4226,33 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Supprimer un webhook */
-    deleteWebhooksByWebhook(options = {}) {
-      return request("DELETE", "/webhooks/{webhook}", options);
+    deleteWebhooksByWebhookEndpoint(options = {}) {
+      return request("DELETE", "/webhooks/{webhookEndpoint}", options);
     },
 
     /** Voir un webhook et ses dernieres livraisons */
-    getWebhooksByWebhook(options = {}) {
-      return request("GET", "/webhooks/{webhook}", options);
+    getWebhooksByWebhookEndpoint(options = {}) {
+      return request("GET", "/webhooks/{webhookEndpoint}", options);
     },
 
     /** Modifier un webhook */
-    putWebhooksByWebhook(options = {}) {
-      return request("PUT", "/webhooks/{webhook}", options);
+    putWebhooksByWebhookEndpoint(options = {}) {
+      return request("PUT", "/webhooks/{webhookEndpoint}", options);
     },
 
     /** Lister les livraisons webhook dead-letter (retries epuises) */
-    getWebhooksByWebhookDeadLetters(options = {}) {
-      return request("GET", "/webhooks/{webhook}/dead-letters", options);
+    getWebhooksByWebhookEndpointDeadLetters(options = {}) {
+      return request("GET", "/webhooks/{webhookEndpoint}/dead-letters", options);
     },
 
     /** Rejouer une livraison webhook dead-letter */
-    postWebhooksByWebhookDeadLettersByDeliveryReplay(options = {}) {
-      return request("POST", "/webhooks/{webhook}/dead-letters/{delivery}/replay", options);
+    postWebhooksByWebhookEndpointDeadLettersByDeliveryReplay(options = {}) {
+      return request("POST", "/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay", options);
     },
 
     /** Tester un endpoint webhook */
-    postWebhooksByWebhookTest(options = {}) {
-      return request("POST", "/webhooks/{webhook}/test", options);
+    postWebhooksByWebhookEndpointTest(options = {}) {
+      return request("POST", "/webhooks/{webhookEndpoint}/test", options);
     },
 
     /** Webhook Chargily Pay (paiements CEMAC) */

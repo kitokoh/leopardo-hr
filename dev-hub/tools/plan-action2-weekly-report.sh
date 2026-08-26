@@ -126,6 +126,59 @@ else
 fi
 append ""
 
+# --- 1bis. Ratio fix/feat (KPI gouvernance, issue #5634) -------------------
+# Retro pilotes J6 : ratio 5.24 mesure (1724 fix / 329 feat), cible <= 2.5.
+# Compte les PR mergees (toutes, pas seulement PA2-*) par type conventional
+# commit, alerte si le ratio depasse 3 (configurable via RATIO_FIX_FEAT_ALERT).
+append "## 1bis. Ratio fix/feat (KPI hebdo — cible <= 2.5, alerte > ${RATIO_FIX_FEAT_ALERT:-3})"
+append ""
+
+RATIO_JSON=$(printf '%s' "$ALL_MERGED_PRS_JSON" | python3 -c "
+import json, re, sys
+since = '${SINCE_ISO}'
+prs = json.load(sys.stdin)
+prs = [pr for pr in prs if pr.get('merged_at') and pr['merged_at'] >= since]
+fix_types = {'fix', 'hotfix', 'revert', 'security'}
+feat_types = {'feat', 'feature', 'refactor'}
+fix = feat = other = 0
+for pr in prs:
+    title = (pr.get('title') or '').strip().lower()
+    m = re.match(r'^([a-z0-9_-]+)(\([^)]*\))?:', title)
+    t = m.group(1) if m else ''
+    if t in fix_types:
+        fix += 1
+    elif t in feat_types:
+        feat += 1
+    else:
+        other += 1
+ratio = (fix / feat) if feat > 0 else None
+print(json.dumps({'total': len(prs), 'fix': fix, 'feat': feat, 'other': other, 'ratio': ratio}))
+")
+
+RATIO_LINE=$(echo "$RATIO_JSON" | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+if d['total'] == 0:
+    print('Aucun merge dans la fenetre.')
+elif d['feat'] == 0:
+    print(f\"{d['total']} merges — {d['fix']} fix / 0 feat (ratio infini — aucun merge feat)\")
+else:
+    print(f\"{d['total']} merges — {d['fix']} fix / {d['feat']} feat = ratio {d['ratio']:.2f}\")
+")
+append "$RATIO_LINE"
+
+RATIO_WARN=$(echo "$RATIO_JSON" | python3 -c "
+import json, sys, os
+d = json.load(sys.stdin)
+alert = float(os.environ.get('RATIO_FIX_FEAT_ALERT', '3'))
+if d['feat'] > 0 and d['ratio'] is not None and d['ratio'] > alert:
+    print(f\"⚠️ RATIO fix/feat {d['ratio']:.2f} > {alert:.1f} — cible <= 2.5 (issue #5634) : prioriser les features.\")
+")
+if [[ -n "$RATIO_WARN" ]]; then
+  append "$RATIO_WARN"
+fi
+append ""
+
 # --- 2. BLOQUES (PR ouvertes stale ou CI en echec) -------------------------
 append "## 2. PR bloquees ou stale (ouvertes depuis plus de ${STALE_DAYS}j, ou CI en echec)"
 append ""

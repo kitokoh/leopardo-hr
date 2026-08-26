@@ -9,7 +9,7 @@
 # To update: change api/openapi.yaml, then run:
 #   node dev-hub/tools/generate-openapi-sdk.mjs
 # CI (openapi-ci.yml) fails the build if this file drifts from the source.
-openapi: 3.0.3
+openapi: "3.0.3"
 info:
   title: Leopardo RH API
   version: 4.24.0
@@ -12725,13 +12725,13 @@ paths:
           description: Liste de mes inscriptions formation
         '401':
           $ref: '#/components/responses/Error401'
-  /me/trainings/{session}/enroll:
+  /me/trainings/{sessionId}/enroll:
     post:
       tags:
       - Me
       summary: Auto-inscription a une formation
       parameters:
-      - name: session
+      - name: sessionId
         in: path
         required: true
         schema:
@@ -12760,13 +12760,13 @@ paths:
                       $ref: '#/components/schemas/Loan'
         '401':
           $ref: '#/components/responses/Error401'
-  /me/loans/{loan}/repayments:
+  /me/loans/{loanId}/repayments:
     get:
       tags:
       - Me
       summary: Mes remboursements de pret
       parameters:
-      - name: loan
+      - name: loanId
         in: path
         required: true
         schema:
@@ -13108,12 +13108,23 @@ paths:
       tags:
       - Payroll
       summary: Valider la session de paie
+      description: Issue #5623 — un pays a baremes 'placeholder' (BF/ML/TG, non valides legalement) exige confirm_placeholder=true, sinon 422 PAYROLL_PLACEHOLDER_CONFIRM_REQUIRED.
       parameters:
       - name: payrollRun
         in: path
         required: true
         schema:
           type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                confirm_placeholder:
+                  type: boolean
+                  description: Confirmation explicite pour valider une paie dont les baremes pays sont 'placeholder' (indicatifs)
       responses:
         '200':
           description: Session validee
@@ -17957,13 +17968,13 @@ paths:
           description: Arbre hierarchique
         '401':
           $ref: '#/components/responses/Error401'
-  /org-chart/{employeeId}/subordinates:
+  /org-chart/{employee}/subordinates:
     get:
       tags:
       - Organization
       summary: Subordonnes d'un employe
       parameters:
-      - name: employeeId
+      - name: employee
         in: path
         required: true
         schema:
@@ -17973,13 +17984,13 @@ paths:
           description: Liste des subordonnes
         '401':
           $ref: '#/components/responses/Error401'
-  /org-chart/{employeeId}/manager-chain:
+  /org-chart/{employee}/manager-chain:
     get:
       tags:
       - Organization
       summary: Chaine hierarchique
       parameters:
-      - name: employeeId
+      - name: employee
         in: path
         required: true
         schema:
@@ -18994,7 +19005,7 @@ paths:
                 - expense.approved
         '401':
           $ref: '#/components/responses/Error401'
-  /webhooks/{webhook}:
+  /webhooks/{webhookEndpoint}:
     get:
       tags:
       - Webhooks
@@ -19009,7 +19020,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: webhook
+      - name: webhookEndpoint
         in: path
         required: true
         description: Identifiant numerique du webhook (route model binding sur `webhookEndpoint`)
@@ -19065,7 +19076,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: webhook
+      - name: webhookEndpoint
         in: path
         required: true
         schema:
@@ -19102,7 +19113,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: webhook
+      - name: webhookEndpoint
         in: path
         required: true
         schema:
@@ -19120,7 +19131,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
           $ref: '#/components/responses/Error404'
-  /webhooks/{webhook}/dead-letters:
+  /webhooks/{webhookEndpoint}/dead-letters:
     get:
       tags:
       - Webhooks
@@ -19135,7 +19146,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: webhook
+      - name: webhookEndpoint
         in: path
         required: true
         schema:
@@ -19174,7 +19185,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /webhooks/{webhook}/dead-letters/{delivery}/replay:
+  /webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay:
     post:
       tags:
       - Webhooks
@@ -19193,7 +19204,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: webhook
+      - name: webhookEndpoint
         in: path
         required: true
         schema:
@@ -19229,7 +19240,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /webhooks/{webhook}/test:
+  /webhooks/{webhookEndpoint}/test:
     post:
       tags:
       - Webhooks
@@ -19238,7 +19249,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: webhook
+      - name: webhookEndpoint
         in: path
         required: true
         schema:
@@ -20766,13 +20777,13 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: Aucun contrat actif
-  /recruitment/applicants/{id}/status:
+  /recruitment/applicants/{applicant}/status:
     patch:
       tags:
       - Recruitment
       summary: Changer le statut d'une candidature (principal/rh)
       parameters:
-      - name: id
+      - name: applicant
         in: path
         required: true
         schema:
@@ -23796,6 +23807,32 @@ paths:
           description: "Relevé introuvable (ou autre tenant)"
           $ref: "#/components/responses/Error404"
 
+  /accounting/bank-statements/{statement}/export:
+    get:
+      tags:
+      - Accounting
+      summary: Export CSV de l'état de rapprochement bancaire
+      description: "Lignes du relevé (statut, paiement rapproché, confiance) + totaux et écart de clôture. Format expert-comptable (UTF-8 BOM, ';', anti-injection #4169). RBAC principal/comptable."
+      parameters:
+      - name: statement
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Fichier CSV
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /accounting/bank-statements/{statement}/reconcile:
     post:
       tags: ["Accounting"]
@@ -31459,3 +31496,10 @@ components:
         matched_payment_id:
           type: integer
           nullable: true
+        confidence:
+          type: number
+          nullable: true
+        proposed_payment_id:
+          type: integer
+          nullable: true
+          description: Paiement candidat proposé par le matching auto (issue #5523)

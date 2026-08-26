@@ -37,7 +37,7 @@
 
     <div class="section">
         <div class="section-title">{{ __('pdf.contract_article1_title') }}</div>
-        <p>{!! __('pdf.contract_article1_body', ['start_date' => '<strong>'.\Carbon\Carbon::parse($contract->start_date)->format('d/m/Y').'</strong>', 'job_title' => '<strong>'.$contract->job_title.'</strong>']) !!}</p>
+        <p>{!! __('pdf.contract_article1_body', ['start_date' => '<strong>'.\Carbon\Carbon::parse($contract->start_date)->format('d/m/Y').'</strong>', 'job_title' => '<strong>'.e($contract->job_title).'</strong>']) !!}</p>
         @if($contract->end_date)
             <p>{!! __('pdf.contract_article1_fixed_term', ['end_date' => '<strong>'.\Carbon\Carbon::parse($contract->end_date)->format('d/m/Y').'</strong>']) !!}</p>
         @endif

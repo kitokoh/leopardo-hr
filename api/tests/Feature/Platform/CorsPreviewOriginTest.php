@@ -15,12 +15,25 @@ class CorsPreviewOriginTest extends TestCase
 {
     public function test_pages_dev_preview_origin_gets_cors_headers_not_500(): void
     {
+        // #5582 : le pattern est restreint au projet CONNU (leo-admin) — la
+        // preview d'un projet arbitraire ne reçoit plus d'en-têtes CORS.
         $response = $this->getJson('/api/v1/health', [
-            'Origin' => 'https://preview-abc123.leopardo.pages.dev',
+            'Origin' => 'https://preview-abc123.leo-admin.pages.dev',
         ]);
 
         $response->assertStatus(200);
-        $response->assertHeader('Access-Control-Allow-Origin', 'https://preview-abc123.leopardo.pages.dev');
+        $response->assertHeader('Access-Control-Allow-Origin', 'https://preview-abc123.leo-admin.pages.dev');
+    }
+
+    public function test_arbitrary_pages_dev_project_gets_no_cors_headers(): void
+    {
+        // Un attaquant peut créer `quelconque.pages.dev` — aucun ACAO (#5582).
+        $response = $this->getJson('/api/v1/health', [
+            'Origin' => 'https://evil-arbitrary.pages.dev',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertHeaderMissing('Access-Control-Allow-Origin');
     }
 
     public function test_exact_whitelisted_origin_still_works(): void

@@ -23,6 +23,18 @@ Apply these settings in GitHub repository rules for `main` and `develop`.
 - Block force pushes
 - Block deletions
 
+## État réel vérifié le 2026-08-26 (issue #5634)
+- **`Include administrators` n'est PAS actif sur main** (API : `enforce_admins: false`) alors que
+  ce document le recommande — les admins (dont les agents agissant avec le token owner) peuvent
+  merger avec des checks rouges. C'est la cause racine des « main cassé 2× en 6 jours »
+  (rétro pilotes J6). **Recommandation : activer `enforce_admins=true` une fois les checks
+  requis verts sur main** (le flipper maintenant bloquerait tout merge tant que main est rouge).
+- Checks requis ACTUELS sur main (vérifiés API) : `Backend Coverage (PHP 8.4 + PostgreSQL 16)`,
+  `PHPStan — Strict (Core/Modules/Shared, level 8)`, `Module Structure Validator`,
+  `Frontend — ESLint + TypeScript`, `actionlint (+ shellcheck)`. La liste ci-dessus (historique)
+  contient des noms obsolètes (`Backend Coverage Gate`, `Mobile Flutter (Stable Channel)`…) —
+  ne pas les exiger tels quels (cf. note ci-dessous).
+
 ## Critical note (avoid "Expected" checks)
 - Do NOT require old/deleted check names like `Mobile Flutter (stable)`.
 - Required check names MUST match the actual GitHub check names emitted by the workflows.

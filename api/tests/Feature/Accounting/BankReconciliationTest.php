@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Accounting;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
@@ -12,6 +13,7 @@ use App\Modules\Accounting\Infrastructure\Services\BankReconciliationService;
 use App\Modules\Accounting\Infrastructure\Services\BankStatementImportService;
 use App\Modules\Accounting\Infrastructure\Services\PaymentRegistrationService;
 use Illuminate\Support\Carbon;
+use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -163,5 +165,53 @@ class BankReconciliationTest extends TestCase
         $this->assertSame(1, $statement->refresh()->matchedLines()->count());
         $payment->refresh();
         $this->assertSame('matched', $payment->status);
+    }
+
+    public function test_export_csv_contains_lines_statuses_and_totals(): void
+    {
+        $company = $this->company();
+        $statement = $this->importCsv(
+            $company,
+            "date;label;amount;reference\n2026-08-03;Facture client 1;1190.00;FAC-2026-001\n2026-08-10;Virement fournisseur;-450.00;VIR-001\n",
+        );
+
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        Sanctum::actingAs($manager);
+
+        $response = $this->getJson('/api/v1/accounting/bank-statements/'.$statement->id.'/export')
+            ->assertOk();
+
+        $csv = $response->streamedContent();
+        // BOM UTF-8 + en-tête.
+        $this->assertStringStartsWith("\xEF\xBB\xBF", $csv);
+        $this->assertStringContainsString('Ligne;Date;Libelle;Montant;Statut', $csv);
+        // Lignes du relevé présentes avec leur statut.
+        $this->assertStringContainsString('Facture client 1', $csv);
+        $this->assertStringContainsString('Virement fournisseur', $csv);
+        $this->assertStringContainsString('pending', $csv);
+        // Totaux + écart de clôture.
+        $this->assertStringContainsString('TOTAL MATCHED', $csv);
+        $this->assertStringContainsString('TOTAL PENDING', $csv);
+        $this->assertStringContainsString('ECART CLOTURE', $csv);
+        // Header Referrer-Policy no-referrer (#5521).
+        $this->assertSame('no-referrer', $response->headers->get('Referrer-Policy'));
+    }
+
+    public function test_export_csv_isolation_tenant(): void
+    {
+        $company = $this->company();
+        $otherCompany = $this->company();
+        $statement = $this->importCsv(
+            $company,
+            "date;label;amount;reference\n2026-08-03;Facture client 1;1190.00;FAC-2026-001\n",
+        );
+
+        /** @var Employee $otherManager */
+        $otherManager = Employee::factory()->manager()->create(['company_id' => $otherCompany->id]);
+        Sanctum::actingAs($otherManager);
+
+        $this->getJson('/api/v1/accounting/bank-statements/'.$statement->id.'/export')
+            ->assertNotFound();
     }
 }

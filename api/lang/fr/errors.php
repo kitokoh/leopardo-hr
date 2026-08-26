@@ -158,6 +158,7 @@ return [
     'BILLING_PORTAL_ACCESS_FAILED' => "Impossible d'accéder au portail de facturation.",
     'FLEET_ALERTS_LOAD_FAILED' => 'Impossible de charger les alertes de flotte.',
     'COMPANY_BRANDING_UPDATED' => 'Identité entreprise mise à jour.',
+    'PAYROLL_PLACEHOLDER_CONFIRM_REQUIRED' => 'Les barèmes de paie de ce pays sont indicatifs (non validés légalement). Confirmez explicitement pour valider la paie.',
     'PAYROLL_RUN_NOT_FOR_COUNTRY' => 'Ce run de paie ne concerne pas :country.',
     'PAYROLL_ALREADY_VALIDATED' => 'Cette fiche de paie est déjà validée et ne peut plus être modifiée.',
     'PAYROLL_RUN_LOCKED' => 'Ce run de paie est verrouillé (clôture comptable) et ne peut plus être modifié.',
@@ -267,4 +268,5 @@ return [
     'LETTERING_ALREADY_USED' => 'Une ou plusieurs écritures sont déjà lettrées avec une autre lettre.',
     'LETTERING_UNBALANCED' => 'Le lettrage doit être équilibré : la somme des débits doit égaler la somme des crédits.',
     'ALREADY_SEEDED' => 'Les données de démonstration ont déjà été créées pour cette entreprise.',
+    'EMAIL_NOT_VERIFIED' => 'Cet email Google n\'a pas été vérifié par son fournisseur. Utilisez un compte avec un email vérifié.',
 ];

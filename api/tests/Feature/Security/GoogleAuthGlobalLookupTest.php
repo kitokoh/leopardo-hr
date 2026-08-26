@@ -46,6 +46,8 @@ class GoogleAuthGlobalLookupTest extends TestCase
         $abstractUser->shouldReceive('getName')->andReturn('Existing User');
         $abstractUser->shouldReceive('offsetGet')->with('given_name')->andReturn('Existing');
         $abstractUser->shouldReceive('offsetGet')->with('family_name')->andReturn('User');
+        // #5580 : la garde SSO mergée lit getRaw()['email_verified'].
+        $abstractUser->shouldReceive('getRaw')->andReturn(['email' => 'shared@example.com', 'email_verified' => true]);
 
         Socialite::shouldReceive('driver')->with('google')->andReturn($provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider'));
         $provider->shouldReceive('stateless')->andReturn($provider);
@@ -88,6 +90,8 @@ class GoogleAuthGlobalLookupTest extends TestCase
         $abstractUser->shouldReceive('getName')->andReturn('Existing User');
         $abstractUser->shouldReceive('offsetGet')->with('given_name')->andReturn('Existing');
         $abstractUser->shouldReceive('offsetGet')->with('family_name')->andReturn('User');
+        // #5580 : la garde SSO mergée lit getRaw()['email_verified'].
+        $abstractUser->shouldReceive('getRaw')->andReturn(['email' => 'token-shared@example.com', 'email_verified' => true]);
 
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         // stateless() returns $this so method chaining works
@@ -115,6 +119,8 @@ class GoogleAuthGlobalLookupTest extends TestCase
         // Arrange: no employee exists for the Google email being presented
         $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
         $abstractUser->shouldReceive('getEmail')->andReturn('nobody@unknown.example');
+        // #5580 : email vérifié — le rejet attendu reste EMPLOYEE_NOT_FOUND.
+        $abstractUser->shouldReceive('getRaw')->andReturn(['email' => 'nobody@unknown.example', 'email_verified' => true]);
 
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         $provider->shouldReceive('stateless')->once()->andReturn($provider);
