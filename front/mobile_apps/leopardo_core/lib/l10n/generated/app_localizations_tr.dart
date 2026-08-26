@@ -199,6 +199,20 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get authTwoFactorRequired => '2FA kodu gereklidir.';
+  @override
+  String get twoFaChallengeTitle => 'İki faktörlü doğrulama';
+  @override
+  String get twoFaChallengeSubtitle => 'Kimlik doğrulama uygulamanızdan 6 haneli kodu girin.';
+  @override
+  String get twoFaChallengeCodeHint => 'TOTP kodu (6 hane)';
+  @override
+  String get twoFaChallengeVerifyBtn => 'Doğrula';
+  @override
+  String get twoFaChallengeRecoveryToggle => 'Kurtarma kodu kullan';
+  @override
+  String get twoFaChallengeRecoveryHint => 'Kurtarma kodu';
+  @override
+  String get twoFaChallengeInvalidError => 'Geçersiz veya süresi dolmuş kod. Tekrar deneyin.';
 
   @override
   String get authDemoAccess => 'Demo erisimi';

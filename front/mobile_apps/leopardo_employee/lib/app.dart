@@ -37,6 +37,7 @@ import 'package:leopardo_employee/features/attendance_geo/screens/attendance_mod
 import 'package:leopardo_employee/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_employee/offline_wrapper.dart';
+import 'package:leopardo_core/features/auth/screens/two_factor_challenge_screen.dart';
 
 import 'package:leopardo_employee/features/home/screens/employee_main_shell.dart';
 
@@ -89,11 +90,21 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final authState = authListenable.value;
       final isAuth = authState.employee != null;
+      final hasMfaChallenge = authState.mfaChallengeToken != null;
       final location = state.matchedLocation;
 
       // Pendant l'hydratation auth, garder l'ecran courant visible.
       if (authState.isLoading) {
         return null;
+      }
+
+      // #5627 — Challenge 2FA en attente : rediriger vers l'écran de vérification.
+      if (hasMfaChallenge && location != '/2fa-challenge') {
+        return '/2fa-challenge';
+      }
+      // Si le challenge est résolu (employee défini), quitter l'écran 2FA.
+      if (isAuth && location == '/2fa-challenge') {
+        return '/';
       }
 
       const publicRoutes = {
@@ -104,10 +115,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/user-login',
         '/user-home',
         '/company-request',
+        '/2fa-challenge',
       };
       final onPublic = publicRoutes.contains(location);
 
-      if (!isAuth && !onPublic) return '/welcome';
+      if (!isAuth && !hasMfaChallenge && !onPublic) return '/welcome';
       if (isAuth && onPublic) return '/';
       return null;
     },
@@ -121,6 +133,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
+      ),
+      // #5627 — Écran de vérification 2FA post-login.
+      GoRoute(
+        path: '/2fa-challenge',
+        builder: (context, state) => const TwoFactorChallengeScreen(),
       ),
       GoRoute(
         path: '/user-register',

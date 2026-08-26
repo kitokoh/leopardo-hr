@@ -201,6 +201,20 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get authTwoFactorRequired => 'Le code 2FA est requis.';
+  @override
+  String get twoFaChallengeTitle => 'Vérification à deux facteurs';
+  @override
+  String get twoFaChallengeSubtitle => "Entrez le code à 6 chiffres de votre application d'authentification.";
+  @override
+  String get twoFaChallengeCodeHint => 'Code TOTP (6 chiffres)';
+  @override
+  String get twoFaChallengeVerifyBtn => 'Vérifier';
+  @override
+  String get twoFaChallengeRecoveryToggle => 'Utiliser un code de récupération';
+  @override
+  String get twoFaChallengeRecoveryHint => 'Code de récupération';
+  @override
+  String get twoFaChallengeInvalidError => 'Code invalide ou expiré. Réessayez.';
 
   @override
   String get authDemoAccess => 'Acces Demo';

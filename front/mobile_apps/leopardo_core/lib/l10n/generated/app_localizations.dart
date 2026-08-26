@@ -462,6 +462,27 @@ abstract class AppLocalizations {
   /// **'Le code 2FA est requis.'**
   String get authTwoFactorRequired;
 
+  /// No description provided for @twoFaChallengeTitle.
+  String get twoFaChallengeTitle;
+
+  /// No description provided for @twoFaChallengeSubtitle.
+  String get twoFaChallengeSubtitle;
+
+  /// No description provided for @twoFaChallengeCodeHint.
+  String get twoFaChallengeCodeHint;
+
+  /// No description provided for @twoFaChallengeVerifyBtn.
+  String get twoFaChallengeVerifyBtn;
+
+  /// No description provided for @twoFaChallengeRecoveryToggle.
+  String get twoFaChallengeRecoveryToggle;
+
+  /// No description provided for @twoFaChallengeRecoveryHint.
+  String get twoFaChallengeRecoveryHint;
+
+  /// No description provided for @twoFaChallengeInvalidError.
+  String get twoFaChallengeInvalidError;
+
   /// No description provided for @authDemoAccess.
   ///
   /// In fr, this message translates to:
