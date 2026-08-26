@@ -13,8 +13,8 @@ use App\Modules\Accounting\Infrastructure\Services\BankStatementImportService;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\BankStatementImportRequest;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\MatchBankStatementLineRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -192,10 +192,11 @@ final class BankStatementController extends Controller
      */
     private static function csvCell(string $value): string
     {
-        $clean = str_replace([";", "\r", "\n"], [' ', ' ', ' '], $value);
+        $clean = str_replace([';', "\r", "\n"], [' ', ' ', ' '], $value);
         if (preg_match('/^[=+@\-]/', $clean)) {
             return "'".$clean;
         }
+
         return $clean;
     }
 
@@ -225,6 +226,10 @@ final class BankStatementController extends Controller
                     'status' => $line->status,
                     'matched_payment_id' => $line->matched_payment_id,
                     'confidence' => $line->confidence,
+                    // Proposition du matching auto (issue #5435/#5523) : le
+                    // paiement candidat le plus probable, exposé pour l'UI de
+                    // matching manuel.
+                    'proposed_payment_id' => $line->metadata['proposed_payment_id'] ?? null,
                 ])->values(),
         ];
     }

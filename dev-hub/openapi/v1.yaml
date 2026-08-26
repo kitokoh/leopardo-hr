@@ -31509,3 +31509,10 @@ components:
         matched_payment_id:
           type: integer
           nullable: true
+        confidence:
+          type: number
+          nullable: true
+        proposed_payment_id:
+          type: integer
+          nullable: true
+          description: Paiement candidat proposé par le matching auto (issue #5523)

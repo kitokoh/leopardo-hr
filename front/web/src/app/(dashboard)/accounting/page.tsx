@@ -11,6 +11,7 @@ import {
   Link2,
   FileDown,
   ArrowRight,
+  Landmark,
 } from 'lucide-react';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { t } from '@/lib/i18n/locale-catalog';
@@ -30,6 +31,7 @@ export default function AccountingHomePage() {
     { href: '/accounting/statements', icon: FileBarChart2, label: t(locale, 'accountingModule.navStatements'), accent: 'bg-violet-50 text-violet-600' },
     { href: '/accounting/fiscal-years', icon: CalendarRange, label: t(locale, 'accountingModule.navFiscalYears'), accent: 'bg-rose-50 text-rose-600' },
     { href: '/accounting/lettering', icon: Link2, label: t(locale, 'accountingModule.navLettering'), accent: 'bg-cyan-50 text-cyan-600' },
+    { href: '/accounting/reconciliation', icon: Landmark, label: t(locale, 'bankRecon.title'), accent: 'bg-teal-50 text-teal-600' },
     { href: '/accounting/fec', icon: FileDown, label: t(locale, 'accountingModule.navFec'), accent: 'bg-indigo-50 text-indigo-600' },
   ];
 
