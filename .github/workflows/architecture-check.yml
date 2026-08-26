@@ -77,6 +77,15 @@ jobs:
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
+      - name: Queue strategy coherence guard — database partout (issue #5578)
+        run: bash dev-hub/tools/check-queue-strategy-coherence.sh
+
+      - name: Deterministic tests guard — no multi-status assertions (issue #5585)
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: bash dev-hub/tools/check-tests-deterministic.sh
+
 
   phpstan-modules:
     timeout-minutes: 45
@@ -209,6 +218,9 @@ jobs:
 
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
+
+      - name: Architecture docs parity guard — modules réels ↔ docs (issue #5589)
+        run: bash dev-hub/tools/check-architecture-docs-parity.sh
 
       - name: Check migration basename collisions (issue #1962)
         run: dev-hub/tools/check-migration-basename-collisions.sh

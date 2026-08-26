@@ -195,7 +195,11 @@ class Employee extends Authenticatable implements HasApiTokensContract
     ];
 
     protected $hidden = [
+        // Issue #5588 : deux_fa_secret et les codes de récupération sont des
+        // secrets — toute sérialisation (Resource, toArray, log) les fuirait.
         'password_hash',
+        'two_fa_secret',
+        'two_fa_recovery_codes',
     ];
 
     protected $casts = [

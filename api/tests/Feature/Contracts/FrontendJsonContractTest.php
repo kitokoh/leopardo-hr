@@ -347,15 +347,21 @@ class FrontendJsonContractTest extends TestCase
     private function kiosk(Company $company): array
     {
         $plainToken = 'kiosk-token-contract';
+        $plainCode = 'KIOSKCONTRACT';
         $kiosk = AttendanceKiosk::query()->create([
             'company_id' => $company->id,
             'name' => 'Hall principal',
             'location_label' => 'Accueil',
-            'device_code' => 'KIOSKCONTRACT',
+            // Issue #5588 : stocké haché (sha256 déterministe), lookup par
+            // hachage de l'entrée.
+            'device_code' => AttendanceKiosk::hashDeviceCode($plainCode),
             'sync_token_hash' => Hash::make($plainToken),
             'status' => 'active',
             'biometric_mode' => 'fingerprint',
         ]);
+        // L'attribut en mémoire garde le code en clair pour construire les
+        // URLs de test (le serveur hache l'entrée pour résoudre le kiosque).
+        $kiosk->device_code = $plainCode;
 
         return [$kiosk, $plainToken];
     }
