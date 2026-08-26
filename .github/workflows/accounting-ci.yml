@@ -44,7 +44,7 @@ env:
 
 concurrency:
   group: accounting-ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: false  # #5536 : queuer au lieu d'annuler (les runs PR ne démarrent jamais sous congestion)
 
 jobs:
   accounting-tests:

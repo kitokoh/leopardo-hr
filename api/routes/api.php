@@ -140,7 +140,7 @@ Route::prefix('v1')->group(function (): void {
         // Public (signature HMAC fail-closed), tenant résolu par metadata.
         // Pas de contrainte whereIn : la passerelle inconnue est rejetée par le
         // service (401 WEBHOOK_SIGNATURE_INVALID, fail-closed).
-        Route::post('/accounting/payments/webhook/{gateway}', AccountingPaymentWebhookController::class);
+        Route::post('/accounting/payment-webhooks/{gateway}', AccountingPaymentWebhookController::class);
         // PA2-COMM-007 - Email provider bounce/complaint notifications
         // (Postmark, SES, Mailgun, ...), protected by a shared secret header
         // instead of Sanctum since the caller is a third-party mail provider.

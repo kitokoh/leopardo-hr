@@ -2,7 +2,7 @@
 
 return [
     // Auth
-        'UNKNOWN_ACCOUNT' => 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
+    'UNKNOWN_ACCOUNT' => 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
     'INVALID_CREDENTIALS' => 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
     'ACCOUNT_SUSPENDED' => 'تم تعليق حسابك. تواصل مع المسؤول.',
     'ACCOUNT_ARCHIVED' => 'هذا الحساب مؤرشف.',
@@ -112,7 +112,6 @@ return [
     'GOOGLE_AUTH_FAILED' => 'مصادقة Google غير متاحة.',
     'GOOGLE_TOKEN_INVALID' => 'رمز Google غير صالح أو منتهي الصلاحية.',
     'GOOGLE_ACCOUNT_NOT_FOUND' => 'لا يوجد حساب مرتبط بحساب Google هذا.',
-    'GOOGLE_OAUTH_NOT_CONFIGURED' => 'تسجيل الدخول عبر Google غير متاح مؤقتًا (نقص في الإعدادات). يرجى التواصل مع المسؤول.',
     'GOOGLE_INVITATION_REQUIRED' => 'لا يوجد حساب لهذا البريد الإلكتروني الخاص بـ Google. اطلب دعوة من المسؤول.',
     'GOOGLE_OAUTH_NOT_CONFIGURED' => 'تسجيل الدخول عبر Google غير مهيأ بعد. يرجى المحاولة لاحقًا.',
     'NO_ACTIVE_SUBSCRIPTION' => 'لا يوجد اشتراك نشط.',
@@ -260,4 +259,11 @@ return [
     'DOCUMENT_PDF_NOT_READY' => 'ملف PDF للمستند غير متوفر بعد.',
     'BANK_STATEMENT_DUPLICATE_IMPORT' => 'تم استيراد هذا الكشف البنكي بالفعل لهذه الفترة.',
     'BANK_STATEMENT_LINE_ALREADY_MATCHED' => 'هذا السطر أو الدفعة مطابق بالفعل.',
-    'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.',];
+    // Profondeur comptable (issue #5422)
+    'FISCAL_YEAR_ALREADY_CLOSED' => 'هذه السنة المالية مغلقة بالفعل أو غير موجودة.',
+    'LETTERING_INVALID' => 'تسوية غير صالحة: يجب أن تستهدف القيود نفس الحساب.',
+    'LETTERING_ALREADY_USED' => 'قيد واحد أو أكثر مسوّى بالفعل برمز آخر.',
+    'LETTERING_UNBALANCED' => 'يجب أن تكون التسوية متوازنة: مجموع المدين يجب أن يساوي مجموع الدائن.',
+    'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.',
+    'ALREADY_SEEDED' => 'تم بالفعل إنشاء البيانات التجريبية لهذه الشركة.',
+];

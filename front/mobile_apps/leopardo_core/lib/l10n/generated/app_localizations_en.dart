@@ -6612,4 +6612,266 @@ class AppLocalizationsEn extends AppLocalizations {
   String settingsSubmitFailed(String error) {
     return 'Submission failed: $error';
   }
+
+  @override
+  String get settingsQrOnboardingTitle => 'QR onboarding';
+
+  @override
+  String get settingsQrOnboardingSubtitle =>
+      'Share your profile or scan a company.';
+
+  @override
+  String get settingsJourneyAvailable => 'Available for a new company';
+
+  @override
+  String settingsJourneyAttachedTo(String company) {
+    return 'Attached to $company';
+  }
+
+  @override
+  String get settingsJourneyYourCompany => 'your company';
+
+  @override
+  String get settingsProfessionalQr => 'Professional QR';
+
+  @override
+  String get settingsQrEmployeeHint =>
+      'The manager scans it to pre-fill an invitation.';
+
+  @override
+  String get settingsPasteQrButton => 'Paste the company QR';
+
+  @override
+  String get settingsCompanyQrLabel => 'Company QR';
+
+  @override
+  String get settingsRequestIntegration => 'Request integration';
+
+  @override
+  String get settingsCabinetSubtitle =>
+      'CV, contracts, diplomas and administrative documents.';
+
+  @override
+  String get settingsCabinetDocuments => 'documents';
+
+  @override
+  String get settingsCabinetShared => 'shared';
+
+  @override
+  String get settingsCabinetPublic => 'public';
+
+  @override
+  String get settingsOpenLocker => 'Open my locker';
+
+  @override
+  String get settingsLanguageSyncHint =>
+      'This preference is synced with your account and also drives RTL mode.';
+
+  @override
+  String get settingsUpdating => 'Updating...';
+
+  @override
+  String get settingsUpdateLanguage => 'Update language';
+
+  @override
+  String settingsJourneyCompanyPeriod(String company, String period) {
+    return '$company - $period';
+  }
+
+  @override
+  String get settingsPasswordModernizationHint =>
+      'Change your password before the upcoming modernization steps.';
+
+  @override
+  String get settingsUpdatePassword => 'Update password';
+
+  @override
+  String get settingsBiometricPreparationTitle => 'Biometric preparation';
+
+  @override
+  String get settingsBiometricExplanation =>
+      'The face can be captured from the mobile then submitted for manager/HR validation. For the fingerprint, Android/iOS can verify locally that you are using a registered finger, but do not expose the raw template; effective activation on the attendance side therefore remains approved then used by the company terminal.';
+
+  @override
+  String settingsBiometricTodayStatus(String face, String fingerprint) {
+    return 'Active today - face: $face | fingerprint: $fingerprint';
+  }
+
+  @override
+  String get settingsYes => 'yes';
+
+  @override
+  String get settingsNo => 'no';
+
+  @override
+  String get settingsBiometricEnablePreparation =>
+      'Enable biometric preparation';
+
+  @override
+  String get settingsBiometricFingerprintWanted => 'Fingerprint desired';
+
+  @override
+  String get settingsBiometricFaceWanted => 'Face recognition desired';
+
+  @override
+  String get settingsBiometricFutureConsent =>
+      'Consent to future biometric attendance';
+
+  @override
+  String get settingsBiometricSensorLabel => 'Fingerprint sensor / terminal ID';
+
+  @override
+  String get settingsBiometricSensorHint =>
+      'Example: FP-ENTREE-01 or biometric ID';
+
+  @override
+  String get settingsBiometricNotesTitle => 'Notes and consent';
+
+  @override
+  String get settingsBiometricNotesHint =>
+      'Example: selfie allowed, prefer main entrance terminal, face photo consent...';
+
+  @override
+  String get settingsBiometricCaptureFace => 'Capture / choose my face';
+
+  @override
+  String get settingsBiometricFaceSelected => 'Face image selected';
+
+  @override
+  String get settingsSavingShort => 'Saving...';
+
+  @override
+  String get settingsSubmitBiometric => 'Submit to manager / HR';
+
+  @override
+  String get settingsSubmitting => 'Submitting...';
+
+  @override
+  String get settingsBiometricPendingExplanation =>
+      'Once submitted, your biometric data stays pending. Any first activation or change requires manager/HR approval.';
+
+  @override
+  String get settingsEdgeNodeTitle => 'Edge node (local network)';
+
+  @override
+  String get settingsEdgeNodeHint =>
+      'Optional: point to an on-site Edge server to punch without Internet.';
+
+  @override
+  String get settingsEdgeCloudStatus => 'Connected to Cloud';
+
+  @override
+  String get settingsEdgeLocalStatus => 'Connected to local Edge node';
+
+  @override
+  String get settingsEdgeOfflineStatus => 'Offline';
+
+  @override
+  String settingsEdgeCurrentStatus(String label) {
+    return 'Current status: $label';
+  }
+
+  @override
+  String get settingsEdgeAddressLabel => 'Edge node address';
+
+  @override
+  String get settingsEdgeUuidLabel => 'Node ID (UUID)';
+
+  @override
+  String get settingsEdgeTokenLabel => 'Edge token';
+
+  @override
+  String get settingsEdgeUuidHint => 'Provided by your administrator';
+
+  @override
+  String get settingsEdgeTokenHint => 'Provided once at registration';
+
+  @override
+  String get settingsRemove => 'Remove';
+
+  @override
+  String get settingsSessionLogoutHint =>
+      'Cleanly leave this space on this phone.';
+
+  @override
+  String get settingsNotificationsUnavailable =>
+      'Preferences unavailable for now. Pull to reload later.';
+
+  @override
+  String get settingsNotificationsSaved => 'Notification preferences updated.';
+
+  @override
+  String settingsNotificationsSaveFailed(String error) {
+    return 'Update failed: $error';
+  }
+
+  @override
+  String get settingsNotificationsIntro =>
+      'Choose useful channels without missing important HR alerts.';
+
+  @override
+  String get settingsChannelInApp => 'In-app alerts';
+
+  @override
+  String get settingsChannelInAppHint =>
+      'Tasks, HR decisions, attendance and reminders.';
+
+  @override
+  String get settingsChannelPush => 'Mobile push';
+
+  @override
+  String get settingsChannelPushHint => 'Instant notifications on this phone.';
+
+  @override
+  String get settingsChannelEmailHint => 'Summary and important confirmations.';
+
+  @override
+  String get settingsChannelSmsHint =>
+      'Short channel reserved for emergencies, active after opt-in.';
+
+  @override
+  String get settingsChannelWhatsappHint =>
+      'Conversational channel, requires your explicit opt-in.';
+
+  @override
+  String get settingsNotificationsLanguage => 'Notification language';
+
+  @override
+  String get settingsQrPasted => 'Company QR pasted.';
+
+  @override
+  String get settingsLanguageUpdated => 'Language updated.';
+
+  @override
+  String get settingsBiometricSavedLocal =>
+      'Biometric preparation saved locally.';
+
+  @override
+  String get settingsBiometricEnableFirst =>
+      'Enable biometric preparation first.';
+
+  @override
+  String get settingsBiometricConsentRequired =>
+      'Consent is required before any submission.';
+
+  @override
+  String get settingsBiometricFaceRequired =>
+      'Add a face capture before submitting.';
+
+  @override
+  String get settingsBiometricLocalVerifyCancel =>
+      'Local biometric verification cancelled.';
+
+  @override
+  String get settingsBiometricSubmitted =>
+      'Request sent to manager / HR for validation.';
+
+  @override
+  String settingsBiometricSubmitFailed(String error) {
+    return 'Submission failed: $error';
+  }
+
+  @override
+  String get settingsBiometricConfirmIdentity =>
+      'Confirm your identity to submit your biometric request';
 }

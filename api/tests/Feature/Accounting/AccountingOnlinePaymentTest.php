@@ -295,7 +295,7 @@ class AccountingOnlinePaymentTest extends TestCase
         $invoice = $this->document($company, 'sent', 1190.0, 'DZD');
         $this->forgetCompany();
 
-        $response = $this->postChargilyWebhook('/api/v1/accounting/payments/webhook/chargily', [
+        $response = $this->postChargilyWebhook('/api/v1/accounting/payment-webhooks/chargily', [
             'type' => 'checkout.paid',
             'data' => [
                 'id' => 'ch_chargily_001',
@@ -336,7 +336,7 @@ class AccountingOnlinePaymentTest extends TestCase
         $invoice = $this->document($company, 'sent', 1190.0, 'DZD');
         $this->forgetCompany();
 
-        $url = '/api/v1/accounting/payments/webhook/chargily';
+        $url = '/api/v1/accounting/payment-webhooks/chargily';
         $data = [
             'type' => 'checkout.paid',
             'data' => [
@@ -375,7 +375,7 @@ class AccountingOnlinePaymentTest extends TestCase
         ];
 
         $response = $this->postJson(
-            '/api/v1/accounting/payments/webhook/chargily',
+            '/api/v1/accounting/payment-webhooks/chargily',
             $data,
             ['X-Chargily-Signature' => 'sha256=invalide']
         );
@@ -396,7 +396,7 @@ class AccountingOnlinePaymentTest extends TestCase
 
         // Montant notifié : 1 200 DZD pour un solde de 1 190 → dépasse le solde
         // (anti-fraude US2.4).
-        $response = $this->postChargilyWebhook('/api/v1/accounting/payments/webhook/chargily', [
+        $response = $this->postChargilyWebhook('/api/v1/accounting/payment-webhooks/chargily', [
             'type' => 'checkout.paid',
             'data' => [
                 'id' => 'ch_chargily_001',
@@ -421,7 +421,7 @@ class AccountingOnlinePaymentTest extends TestCase
         $invoice = $this->document($company, 'sent', 1190.0, 'DZD');
         $this->forgetCompany();
 
-        $url = '/api/v1/accounting/payments/webhook/chargily';
+        $url = '/api/v1/accounting/payment-webhooks/chargily';
         $partial = fn (string $id, int $amount): array => [
             'type' => 'checkout.paid',
             'data' => [
@@ -451,7 +451,7 @@ class AccountingOnlinePaymentTest extends TestCase
     public function test_webhook_unknown_gateway_is_rejected(): void
     {
         $response = $this->postJson(
-            '/api/v1/accounting/payments/webhook/paypal',
+            '/api/v1/accounting/payment-webhooks/paypal',
             ['type' => 'checkout.paid'],
             ['X-Chargily-Signature' => 'sha256=abc']
         );
@@ -471,7 +471,7 @@ class AccountingOnlinePaymentTest extends TestCase
         $invoice = $this->document($company, 'sent', 1190.0, 'EUR');
         $this->forgetCompany();
 
-        $response = $this->postStripeWebhook('/api/v1/accounting/payments/webhook/stripe', [
+        $response = $this->postStripeWebhook('/api/v1/accounting/payment-webhooks/stripe', [
             'type' => 'checkout.session.completed',
             'data' => [
                 'object' => [
@@ -505,7 +505,7 @@ class AccountingOnlinePaymentTest extends TestCase
         $invoice = $this->document($company, 'sent', 1190.0, 'DZD');
         $this->forgetCompany();
 
-        $response = $this->postChargilyWebhook('/api/v1/accounting/payments/webhook/chargily', [
+        $response = $this->postChargilyWebhook('/api/v1/accounting/payment-webhooks/chargily', [
             'type' => 'checkout.canceled',
             'data' => [
                 'id' => 'ch_chargily_001',
@@ -539,7 +539,7 @@ class AccountingOnlinePaymentTest extends TestCase
 
         // Webhook signé avec les metadata du tenant A mais l'id de document du
         // tenant B : le scope BelongsToCompany doit empêcher le rapprochement.
-        $response = $this->postChargilyWebhook('/api/v1/accounting/payments/webhook/chargily', [
+        $response = $this->postChargilyWebhook('/api/v1/accounting/payment-webhooks/chargily', [
             'type' => 'checkout.paid',
             'data' => [
                 'id' => 'ch_cross_tenant',

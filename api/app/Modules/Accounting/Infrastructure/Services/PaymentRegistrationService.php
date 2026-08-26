@@ -58,6 +58,9 @@ final class PaymentRegistrationService
         return DB::transaction(function () use ($document, $amount, $method, $reference, $receivedAt, $gatewayPaymentId): AccountingPayment {
             /** @var AccountingPayment $payment */
             $payment = AccountingPayment::create([
+                // company_id dérivé du document — indépendant du contexte
+                // tenant (API, console, tests) : jamais null (NOT NULL).
+                'company_id' => $document->company_id,
                 'document_id' => $document->id,
                 'amount' => $amount,
                 'method' => $method,

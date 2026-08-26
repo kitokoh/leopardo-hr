@@ -250,10 +250,16 @@ final class BankReconciliationService
     {
         $total = $statement->lines()->count();
         $matched = $statement->matchedLines()->count();
+        // Les propositions (matching approximatif) passent aussi le relevé en
+        // `reconciling` : une action manuelle est attendue (#5435).
+        $proposed = $statement->pendingLines()
+            ->get()
+            ->filter(static fn (BankStatementLine $line): bool => isset(((array) $line->metadata)['proposed_payment_id']))
+            ->count();
 
         $status = $total > 0 && $matched === $total
             ? BankStatementStatus::Reconciled
-            : ($matched > 0 ? BankStatementStatus::Reconciling : BankStatementStatus::Imported);
+            : ($matched > 0 || $proposed > 0 ? BankStatementStatus::Reconciling : BankStatementStatus::Imported);
 
         $statement->forceFill(['status' => $status->value])->save();
     }

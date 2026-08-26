@@ -186,6 +186,6 @@ final class ChargilyPaymentGateway implements PaymentGatewayInterface
 
     private function webhookUrl(): string
     {
-        return rtrim((string) config('app.url'), '/').'/api/v1/accounting/payments/webhook/chargily';
+        return rtrim((string) config('app.url'), '/').'/api/v1/accounting/payment-webhooks/chargily';
     }
 }
