@@ -6885,4 +6885,202 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get settingsBiometricConfirmIdentity =>
       'Biyometrik talebinizi göndermek için kimliğinizi doğrulayın';
+
+  @override
+  String get shellHome => 'Ana Sayfa';
+
+  @override
+  String get shellAttendance => 'Devam';
+
+  @override
+  String get shellAbsences => 'İzinler';
+
+  @override
+  String get shellApprovals => 'Onaylar';
+
+  @override
+  String get contractsMobileTitle => 'Sözleşmem';
+
+  @override
+  String get contractsBackTooltip => 'Geri';
+
+  @override
+  String get contractsEmptyTitle => 'Sözleşme yok';
+
+  @override
+  String get contractsEmptyDescription =>
+      'Sözleşmeniz yapılandırıldıktan sonra burada görünecek.';
+
+  @override
+  String get contractsLabelType => 'Tür';
+
+  @override
+  String get contractsLabelStartDate => 'Başlangıç';
+
+  @override
+  String get contractsLabelEndDate => 'Bitiş';
+
+  @override
+  String get contractsLabelBaseSalary => 'Temel maaş';
+
+  @override
+  String get contractsLoading => 'Sözleşmeler yükleniyor...';
+
+  @override
+  String get contractsStatusActive => 'Aktif';
+
+  @override
+  String get contractsStatusExpired => 'Süresi dolmuş';
+
+  @override
+  String get contractsStatusDraft => 'Taslak';
+
+  @override
+  String get contractsStatusCdi => 'Belirsiz süreli (CDI)';
+
+  @override
+  String get organigrammeTitle => 'Organizasyon Şeması';
+
+  @override
+  String get organigrammeBackTooltip => 'Geri';
+
+  @override
+  String get organigrammeEmptyTitle => 'Organizasyon şeması yok';
+
+  @override
+  String get organigrammeLoading => 'Organizasyon şeması yükleniyor...';
+
+  @override
+  String get vehicleMapTitle => 'Araç Konumu';
+
+  @override
+  String get vehicleMapBackTooltip => 'Geri';
+
+  @override
+  String get vehicleMapEmptyTitle => 'Araç yok';
+
+  @override
+  String get vehicleMapEmptyDescription =>
+      'Atanan araçlarınız burada görünecek.';
+
+  @override
+  String get vehicleMapLoading => 'Araçlar yükleniyor...';
+
+  @override
+  String vehicleMapLastUpdate(Object time) {
+    return 'Son güncelleme: $time';
+  }
+
+  @override
+  String vehicleMapSpeedKmh(Object speed) {
+    return '$speed km/s';
+  }
+
+  @override
+  String get payrollValidated => 'Onaylandı';
+
+  @override
+  String payrollDocumentUnavailable(Object error) {
+    return 'Belge kullanılamıyor: $error';
+  }
+
+  @override
+  String payrollOvertimeHoursTeam(Object hours) {
+    return 'Fazla mesai (${hours}s)';
+  }
+
+  @override
+  String payrollOvertimeHoursItem(Object hours) {
+    return '+${hours}s fazla';
+  }
+
+  @override
+  String get platformAdminActivationNote =>
+      'Platform Admin mobil uygulamasından doğrudan aktivasyon.';
+
+  @override
+  String get platformAdminCompanyApprovedNote =>
+      'Leopardo Platform Admin mobil uygulamasından onaylandı';
+
+  @override
+  String get platformAdminCompanyRejectedNote =>
+      'Leopardo Platform Admin mobil uygulamasından reddedildi';
+
+  @override
+  String get edgeNodesTitle => 'Edge Düğümleri';
+
+  @override
+  String get edgeNodesSubtitle => 'Yerinde bağlı siteler';
+
+  @override
+  String get edgeNodesRefreshTooltip => 'Yenile';
+
+  @override
+  String get edgeNodesEmpty => 'Kayıtlı Edge düğümü yok.';
+
+  @override
+  String get edgeNodesOnline => 'Çevrimiçi';
+
+  @override
+  String get edgeNodesOffline => 'Çevrimdışı';
+
+  @override
+  String get edgeNodesSectionLabel => 'Düğümler';
+
+  @override
+  String get edgeNodesLoading => 'Düğümler yükleniyor';
+
+  @override
+  String get edgeNodesForceSync => 'Senkronizasyonu zorla';
+
+  @override
+  String get edgeNodesSyncTriggered => 'Senkronizasyon tetiklendi.';
+
+  @override
+  String edgeNodesLastSync(Object date) {
+    return 'Son sync: $date';
+  }
+
+  @override
+  String edgeNodesNodeId(Object id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String edgeNodesVersionInfo(Object version, Object count) {
+    return 'v$version — $count çalışan';
+  }
+
+  @override
+  String get supportTicketsTitle => 'Müşteri desteği';
+
+  @override
+  String get supportTicketsSubtitle => 'Tenant biletleri';
+
+  @override
+  String get supportTicketsFilterAll => 'Tümü';
+
+  @override
+  String get supportTicketsFilterOpen => 'Açık';
+
+  @override
+  String get supportTicketsFilterInProgress => 'Devam ediyor';
+
+  @override
+  String get supportTicketsFilterResolved => 'Çözüldü';
+
+  @override
+  String get supportTicketsFilterClosed => 'Kapatıldı';
+
+  @override
+  String get supportTicketsEmpty => 'Bu filtre için bilet yok.';
+
+  @override
+  String get supportTicketsLoading => 'Biletler yükleniyor';
+
+  @override
+  String get supportTicketsReplySent => 'Yanıt gönderildi.';
+
+  @override
+  String get supportTicketsLoadingTicket => 'Bilet yükleniyor';
 }
