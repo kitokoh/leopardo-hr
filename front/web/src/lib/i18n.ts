@@ -221,6 +221,10 @@ export type CopyTree = {
     runUnlock: string;
     runConfirmLock: string;
     runConfirmUnlock: string;
+    runConfirmValidate: string;
+    runConfirmValidateCta: string;
+    runPlaceholderBadge: string;
+    runPlaceholderWarning: string;
     runActionError: string;
     runCancel: string;
     downloadPdf: string;
@@ -782,6 +786,10 @@ const copy: Record<AppLocale, CopyTree> = {
       runUnlock: 'Déverrouiller',
       runConfirmLock: 'Verrouiller la clôture de ce cycle ?',
       runConfirmUnlock: 'Déverrouiller la clôture de ce cycle ?',
+      runConfirmValidate: 'Valider une paie aux barèmes indicatifs ?',
+      runConfirmValidateCta: 'Valider quand même',
+      runPlaceholderBadge: 'Barèmes indicatifs',
+      runPlaceholderWarning: 'Les barèmes de paie de ce pays ne sont pas validés légalement : les bulletins peuvent contenir des montants incorrects. Vérifiez avec un expert-comptable local.',
       runActionError: "Impossible d'exécuter l'action sur ce cycle de paie.",
       runCancel: 'Annuler',
       downloadPdf: 'Télécharger PDF',
@@ -1337,6 +1345,10 @@ const copy: Record<AppLocale, CopyTree> = {
       runUnlock: 'فتح القفل',
       runConfirmLock: 'قفل إقفال دورة الرواتب هذه؟',
       runConfirmUnlock: 'فتح إقفال دورة الرواتب هذه؟',
+      runConfirmValidate: 'التحقق من رواتب بشرائح استرشادية؟',
+      runConfirmValidateCta: 'تحقق على أي حال',
+      runPlaceholderBadge: 'شرائح استرشادية',
+      runPlaceholderWarning: 'شرائح الرواتب لهذا البلد غير معتمدة قانونياً: قد تحتوي كشوف الرواتب على مبالغ غير صحيحة. تحقق مع محاسب قانوني محلي.',
       runActionError: 'تعذر تنفيذ الإجراء على دورة الرواتب.',
       runCancel: 'إلغاء',
       downloadPdf: 'تحميل PDF',
@@ -1892,6 +1904,10 @@ const copy: Record<AppLocale, CopyTree> = {
       runUnlock: 'Kilidi aç',
       runConfirmLock: 'Bu maaş döneminin kapanışı kilitlensin mi?',
       runConfirmUnlock: 'Bu maaş döneminin kapanış kilidi açılsın mı?',
+      runConfirmValidate: 'Gösterge niteliğindeki maaş dilimleriyle onaylansın mı?',
+      runConfirmValidateCta: 'Yine de onayla',
+      runPlaceholderBadge: 'Gösterge dilimler',
+      runPlaceholderWarning: 'Bu ülkenin maaş dilimleri yasal olarak doğrulanmamıştır: maaş bordroları hatalı tutarlar içerebilir. Yerel bir mali müşavire danışın.',
       runActionError: 'Maaş döneminde işlem gerçekleştirilemedi.',
       runCancel: 'İptal',
       downloadPdf: 'PDF indir',
@@ -2447,6 +2463,10 @@ const copy: Record<AppLocale, CopyTree> = {
       runUnlock: 'Unlock',
       runConfirmLock: 'Lock this payroll run closure?',
       runConfirmUnlock: 'Unlock this payroll run closure?',
+      runConfirmValidate: 'Validate a payroll with indicative brackets?',
+      runConfirmValidateCta: 'Validate anyway',
+      runPlaceholderBadge: 'Indicative brackets',
+      runPlaceholderWarning: 'Payroll brackets for this country are not legally validated: payslips may contain incorrect amounts. Check with a local certified accountant.',
       runActionError: 'Unable to perform this action on the payroll run.',
       runCancel: 'Cancel',
       downloadPdf: 'Download PDF',
