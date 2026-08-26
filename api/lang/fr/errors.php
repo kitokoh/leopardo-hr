@@ -254,6 +254,7 @@ return [
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Période invalide. Utilisez le format AAAA-MM.',
     'TWO_FACTOR_INVALID' => 'Code de double authentification invalide ou expiré.',
     'TWO_FACTOR_REQUIRED' => 'La double authentification est obligatoire pour ce compte. Activez-la avant de vous connecter.',
+    'TOKEN_ALREADY_ROTATED' => 'Le jeton d\'accès a déjà été renouvelé par une requête concurrente.',
     'TWO_FACTOR_ALREADY_ENABLED' => 'La double authentification est déjà activée sur ce compte.',
     'TWO_FACTOR_CHALLENGE_EXPIRED' => 'Session de double authentification expirée. Reconnectez-vous.',
     'DOCUMENT_SHARE_NOT_FOUND' => 'Lien de partage introuvable ou expiré.',

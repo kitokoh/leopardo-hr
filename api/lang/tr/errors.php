@@ -253,6 +253,7 @@ return [
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'Geçersiz dönem. AAAA-AA biçimini kullanın.',
     'TWO_FACTOR_INVALID' => 'Geçersiz veya süresi dolmuş iki faktörlü doğrulama kodu.',
     'TWO_FACTOR_REQUIRED' => 'Bu hesap için iki faktörlü doğrulama zorunludur. Giriş yapmadan önce etkinleştirin.',
+    'TOKEN_ALREADY_ROTATED' => 'Erişim anahtarı eşzamanlı bir istek tarafından zaten yenilenmiş.',
     'TWO_FACTOR_ALREADY_ENABLED' => 'Bu hesapta iki faktörlü doğrulama zaten etkin.',
     'TWO_FACTOR_CHALLENGE_EXPIRED' => 'İki faktörlü doğrulama oturumunun süresi doldu. Lütfen tekrar giriş yapın.',
     'DOCUMENT_SHARE_NOT_FOUND' => 'Paylaşım bağlantısı bulunamadı veya süresi doldu.',

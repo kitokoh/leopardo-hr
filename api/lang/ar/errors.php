@@ -253,6 +253,7 @@ return [
     'ACCOUNTING_VAT_PERIOD_INVALID' => 'الفترة غير صالحة. استخدم الصيغة YYYY-MM.',
     'TWO_FACTOR_INVALID' => 'رمز التحقق المزدوج غير صالح أو منتهي الصلاحية.',
     'TWO_FACTOR_REQUIRED' => 'التحقق المزدوج إلزامي لهذا الحساب. فعّله قبل تسجيل الدخول.',
+    'TOKEN_ALREADY_ROTATED' => 'تم بالفعل تجديد رمز الوصول بواسطة طلب متزامن.',
     'TWO_FACTOR_ALREADY_ENABLED' => 'التحقق المزدوج مفعّل بالفعل على هذا الحساب.',
     'TWO_FACTOR_CHALLENGE_EXPIRED' => 'انتهت جلسة التحقق المزدوج. سجّل الدخول مجددًا.',
     'DOCUMENT_SHARE_NOT_FOUND' => 'رابط المشاركة غير موجود أو منتهي الصلاحية.',
