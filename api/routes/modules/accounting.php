@@ -60,7 +60,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/documents/next-number', [AccountingDocumentController::class, 'nextNumber']);
             Route::get('/documents/{document}', [AccountingDocumentController::class, 'show'])->whereNumber('document');
             Route::post('/documents/{document}/send', [AccountingDocumentController::class, 'send'])->whereNumber('document');
-            Route::post('/documents/{document}/payments', [AccountingDocumentController::class, 'payments'])->whereNumber('document');
+            // #5577 — POST /documents/{document}/payments N'EST PAS déclaré ici :
+            // l'implémentation canonique vit dans le groupe Trésorerie (#5229),
+            // `AccountingPaymentController::store` (voir plus bas). Le doublon
+            // (AccountingDocumentController::payments) rendait silencieusement
+            // inatteignable le contrôleur canonique (premier enregistré = premier
+            // servi en Laravel). Supprimé — garde CI check-duplicate-routes.sh.
             Route::post('/documents/{document}/cancel', [AccountingDocumentController::class, 'cancel'])->whereNumber('document');
             Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
             // #5272 — paiement en ligne : initiation d'une session de checkout

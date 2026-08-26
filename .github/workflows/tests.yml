@@ -274,6 +274,9 @@ jobs:
         working-directory: ./api
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
+      - name: Duplicate routes guard (issue #5577)
+        run: bash dev-hub/tools/check-duplicate-routes.sh
+
       - name: Run Pint
         id: pint
         working-directory: ./api
