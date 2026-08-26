@@ -7585,4 +7585,103 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsYes => 'Evet';
+
+  @override
+  String get twoFaTitle => '2FA Güvenliği';
+
+  @override
+  String get twoFaSubtitle => 'İki faktörlü kimlik doğrulama';
+
+  @override
+  String get twoFaLoading => 'Yükleniyor…';
+
+  @override
+  String get twoFaGenericError => 'Bir hata oluştu. Lütfen tekrar deneyin.';
+
+  @override
+  String get twoFaRequiredBanner =>
+      'Profiliniz için iki faktörlü kimlik doğrulama zorunludur. Şimdi etkinleştirin.';
+
+  @override
+  String get twoFaStatusEnabled => '2FA etkin';
+
+  @override
+  String get twoFaStatusDisabled => '2FA devre dışı';
+
+  @override
+  String get twoFaStatusEnabledHint => 'Her girişte bir kod istenir.';
+
+  @override
+  String get twoFaStatusDisabledHint => 'Hesabınızı bir TOTP koduyla koruyun.';
+
+  @override
+  String get twoFaActivate => '2FA\'yı etkinleştir';
+
+  @override
+  String get twoFaScanPrompt =>
+      'Bu QR kodunu Google Authenticator, Authy veya TOTP uyumlu herhangi bir uygulamayla tarayın.';
+
+  @override
+  String get twoFaCopySecret => 'Sırrı kopyala';
+
+  @override
+  String get twoFaConfirmHint =>
+      'İki faktörlü kimlik doğrulamayı etkinleştirmek için uygulamanızın ürettiği ilk kodu girin.';
+
+  @override
+  String get twoFaCodeLabel => '6 haneli kod';
+
+  @override
+  String get twoFaCodeHint => '000000';
+
+  @override
+  String get twoFaConfirm => 'Onayla ve etkinleştir';
+
+  @override
+  String get twoFaRecoveryTitle => 'Kurtarma kodları';
+
+  @override
+  String get twoFaRecoveryHint =>
+      'Bu kodları güvenli bir yerde saklayın. Her biri yalnızca bir kez kullanılabilir.';
+
+  @override
+  String get twoFaCopied => 'Kod kopyalandı.';
+
+  @override
+  String get twoFaAllCopied => 'Kodlar kopyalandı.';
+
+  @override
+  String get twoFaCopyAll => 'Tümünü kopyala';
+
+  @override
+  String get twoFaDoneHint =>
+      'İki faktörlü kimlik doğrulama etkinleştirildi. Her girişte bir kod istenecek.';
+
+  @override
+  String get twoFaRegenerate => 'Kodları yeniden oluştur';
+
+  @override
+  String get twoFaRegenerateConfirm =>
+      'Kurtarma kodları yeniden oluşturulsun mu? Eski kodlar geçersiz olur.';
+
+  @override
+  String get twoFaCancel => 'İptal';
+
+  @override
+  String get twoFaDisable => '2FA\'yı devre dışı bırak';
+
+  @override
+  String get twoFaDisableHint => 'TOTP veya kurtarma kodu';
+
+  @override
+  String get twoFaEnterCode => 'Kod';
+
+  @override
+  String get twoFaInvalidCode => 'Geçersiz kod. Kontrol edip tekrar deneyin.';
+
+  @override
+  String get twoFaSettingsTile => 'İki faktörlü kimlik doğrulama';
+
+  @override
+  String get twoFaSettingsTileSubtitle => 'Her girişte TOTP kodu istenir';
 }

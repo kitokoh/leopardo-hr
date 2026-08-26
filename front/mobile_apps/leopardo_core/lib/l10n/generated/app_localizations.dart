@@ -14088,6 +14088,192 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Oui'**
   String get settingsYes;
+
+  /// No description provided for @twoFaTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sécurité 2FA'**
+  String get twoFaTitle;
+
+  /// No description provided for @twoFaSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Authentification à double facteur'**
+  String get twoFaSubtitle;
+
+  /// No description provided for @twoFaLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement…'**
+  String get twoFaLoading;
+
+  /// No description provided for @twoFaGenericError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue. Merci de réessayer.'**
+  String get twoFaGenericError;
+
+  /// No description provided for @twoFaRequiredBanner.
+  ///
+  /// In fr, this message translates to:
+  /// **'La double authentification est obligatoire pour votre profil. Activez-la dès maintenant.'**
+  String get twoFaRequiredBanner;
+
+  /// No description provided for @twoFaStatusEnabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'2FA active'**
+  String get twoFaStatusEnabled;
+
+  /// No description provided for @twoFaStatusDisabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'2FA désactivée'**
+  String get twoFaStatusDisabled;
+
+  /// No description provided for @twoFaStatusEnabledHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un code est demandé à chaque connexion.'**
+  String get twoFaStatusEnabledHint;
+
+  /// No description provided for @twoFaStatusDisabledHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Protégez votre compte avec un code TOTP.'**
+  String get twoFaStatusDisabledHint;
+
+  /// No description provided for @twoFaActivate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer la 2FA'**
+  String get twoFaActivate;
+
+  /// No description provided for @twoFaScanPrompt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Scannez ce QR code avec Google Authenticator, Authy ou toute application compatible TOTP.'**
+  String get twoFaScanPrompt;
+
+  /// No description provided for @twoFaCopySecret.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier le secret'**
+  String get twoFaCopySecret;
+
+  /// No description provided for @twoFaConfirmHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez le premier code généré par votre application pour activer la double authentification.'**
+  String get twoFaConfirmHint;
+
+  /// No description provided for @twoFaCodeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code à 6 chiffres'**
+  String get twoFaCodeLabel;
+
+  /// No description provided for @twoFaCodeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'000000'**
+  String get twoFaCodeHint;
+
+  /// No description provided for @twoFaConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer et activer'**
+  String get twoFaConfirm;
+
+  /// No description provided for @twoFaRecoveryTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Codes de récupération'**
+  String get twoFaRecoveryTitle;
+
+  /// No description provided for @twoFaRecoveryHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conservez ces codes en lieu sûr. Chacun ne peut être utilisé qu\'une seule fois.'**
+  String get twoFaRecoveryHint;
+
+  /// No description provided for @twoFaCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code copié.'**
+  String get twoFaCopied;
+
+  /// No description provided for @twoFaAllCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Codes copiés.'**
+  String get twoFaAllCopied;
+
+  /// No description provided for @twoFaCopyAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout copier'**
+  String get twoFaCopyAll;
+
+  /// No description provided for @twoFaDoneHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Double authentification activée. À chaque connexion, un code vous sera demandé.'**
+  String get twoFaDoneHint;
+
+  /// No description provided for @twoFaRegenerate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Régénérer les codes'**
+  String get twoFaRegenerate;
+
+  /// No description provided for @twoFaRegenerateConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Régénérer les codes de récupération ? Les anciens codes seront invalidés.'**
+  String get twoFaRegenerateConfirm;
+
+  /// No description provided for @twoFaCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get twoFaCancel;
+
+  /// No description provided for @twoFaDisable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactiver la 2FA'**
+  String get twoFaDisable;
+
+  /// No description provided for @twoFaDisableHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code TOTP ou code de récupération'**
+  String get twoFaDisableHint;
+
+  /// No description provided for @twoFaEnterCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code'**
+  String get twoFaEnterCode;
+
+  /// No description provided for @twoFaInvalidCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code invalide. Vérifiez et réessayez.'**
+  String get twoFaInvalidCode;
+
+  /// No description provided for @twoFaSettingsTile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Double authentification'**
+  String get twoFaSettingsTile;
+
+  /// No description provided for @twoFaSettingsTileSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code TOTP demandé à chaque connexion'**
+  String get twoFaSettingsTileSubtitle;
 }
 
 class _AppLocalizationsDelegate

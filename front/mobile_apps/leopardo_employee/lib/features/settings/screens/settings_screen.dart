@@ -226,6 +226,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 20),
           _buildPasswordSection(context, authState),
           const SizedBox(height: 20),
+          _buildTwoFactorSection(context),
+          const SizedBox(height: 20),
           _buildBiometricSection(context),
           const SizedBox(height: 20),
           _buildEdgeSection(context),
@@ -1265,6 +1267,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         ],
       ),
+    );
+  }
+
+
+  /// Issue #5683 — accès à l'écran de gestion 2FA (enrôlement, codes de
+  /// récupération, désactivation). Écran partagé leopardo_core.
+  Widget _buildTwoFactorSection(BuildContext context) {
+    return MobileListGlassCard(
+      icon: Icons.verified_user_rounded,
+      iconColor: AppColors.rh,
+      title: context.l10n.twoFaSettingsTile,
+      subtitle: context.l10n.twoFaSettingsTileSubtitle,
+      trailing: const Icon(Icons.chevron_right_rounded),
+      onTap: () => context.push('/settings/2fa'),
     );
   }
 

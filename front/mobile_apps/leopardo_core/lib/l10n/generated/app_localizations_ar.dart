@@ -7502,4 +7502,103 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsYes => 'نعم';
+
+  @override
+  String get twoFaTitle => 'أمان التحقق بخطوتين';
+
+  @override
+  String get twoFaSubtitle => 'المصادقة الثنائية';
+
+  @override
+  String get twoFaLoading => 'جارٍ التحميل…';
+
+  @override
+  String get twoFaGenericError => 'حدث خطأ. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get twoFaRequiredBanner =>
+      'المصادقة الثنائية إلزامية لملفك الشخصي. فعّلها الآن.';
+
+  @override
+  String get twoFaStatusEnabled => 'التحقق بخطوتين مفعّل';
+
+  @override
+  String get twoFaStatusDisabled => 'التحقق بخطوتين معطّل';
+
+  @override
+  String get twoFaStatusEnabledHint => 'يُطلب رمز عند كل تسجيل دخول.';
+
+  @override
+  String get twoFaStatusDisabledHint => 'احمِ حسابك برمز TOTP.';
+
+  @override
+  String get twoFaActivate => 'تفعيل التحقق بخطوتين';
+
+  @override
+  String get twoFaScanPrompt =>
+      'امسح رمز QR هذا باستخدام Google Authenticator أو Authy أو أي تطبيق متوافق مع TOTP.';
+
+  @override
+  String get twoFaCopySecret => 'نسخ السر';
+
+  @override
+  String get twoFaConfirmHint =>
+      'أدخل الرمز الأول الذي يولّده تطبيقك لتفعيل المصادقة الثنائية.';
+
+  @override
+  String get twoFaCodeLabel => 'رمز من 6 أرقام';
+
+  @override
+  String get twoFaCodeHint => '000000';
+
+  @override
+  String get twoFaConfirm => 'تأكيد وتفعيل';
+
+  @override
+  String get twoFaRecoveryTitle => 'رموز الاسترداد';
+
+  @override
+  String get twoFaRecoveryHint =>
+      'احتفظ بهذه الرموز في مكان آمن. يمكن استخدام كل رمز مرة واحدة فقط.';
+
+  @override
+  String get twoFaCopied => 'تم نسخ الرمز.';
+
+  @override
+  String get twoFaAllCopied => 'تم نسخ الرموز.';
+
+  @override
+  String get twoFaCopyAll => 'نسخ الكل';
+
+  @override
+  String get twoFaDoneHint =>
+      'تم تفعيل المصادقة الثنائية. سيُطلب رمز عند كل تسجيل دخول.';
+
+  @override
+  String get twoFaRegenerate => 'إعادة توليد الرموز';
+
+  @override
+  String get twoFaRegenerateConfirm =>
+      'إعادة توليد رموز الاسترداد؟ ستُلغى الرموز القديمة.';
+
+  @override
+  String get twoFaCancel => 'إلغاء';
+
+  @override
+  String get twoFaDisable => 'تعطيل التحقق بخطوتين';
+
+  @override
+  String get twoFaDisableHint => 'رمز TOTP أو رمز استرداد';
+
+  @override
+  String get twoFaEnterCode => 'الرمز';
+
+  @override
+  String get twoFaInvalidCode => 'رمز غير صالح. تحقق وأعد المحاولة.';
+
+  @override
+  String get twoFaSettingsTile => 'المصادقة الثنائية';
+
+  @override
+  String get twoFaSettingsTileSubtitle => 'يُطلب رمز TOTP عند كل تسجيل دخول';
 }

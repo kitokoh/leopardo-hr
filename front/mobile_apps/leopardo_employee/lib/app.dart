@@ -27,6 +27,7 @@ import 'package:leopardo_employee/features/notifications/screens/notification_li
 import 'package:leopardo_employee/features/evaluations/screens/evaluation_list_screen.dart';
 import 'package:leopardo_employee/features/cabinet/screens/cabinet_screen.dart';
 import 'package:leopardo_employee/features/settings/screens/settings_screen.dart';
+import 'package:leopardo_core/features/settings/screens/two_factor_settings_screen.dart';
 import 'package:leopardo_employee/features/profile/screens/profile_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/user_register_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/user_login_screen.dart';
@@ -220,6 +221,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/settings',
             builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: '/settings/2fa',
+            builder: (context, state) =>
+                const TwoFactorSettingsScreen(),
           ),
           GoRoute(
             path: '/profile',

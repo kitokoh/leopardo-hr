@@ -7667,4 +7667,107 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsYes => 'Oui';
+
+  @override
+  String get twoFaTitle => 'Sécurité 2FA';
+
+  @override
+  String get twoFaSubtitle => 'Authentification à double facteur';
+
+  @override
+  String get twoFaLoading => 'Chargement…';
+
+  @override
+  String get twoFaGenericError =>
+      'Une erreur est survenue. Merci de réessayer.';
+
+  @override
+  String get twoFaRequiredBanner =>
+      'La double authentification est obligatoire pour votre profil. Activez-la dès maintenant.';
+
+  @override
+  String get twoFaStatusEnabled => '2FA active';
+
+  @override
+  String get twoFaStatusDisabled => '2FA désactivée';
+
+  @override
+  String get twoFaStatusEnabledHint =>
+      'Un code est demandé à chaque connexion.';
+
+  @override
+  String get twoFaStatusDisabledHint =>
+      'Protégez votre compte avec un code TOTP.';
+
+  @override
+  String get twoFaActivate => 'Activer la 2FA';
+
+  @override
+  String get twoFaScanPrompt =>
+      'Scannez ce QR code avec Google Authenticator, Authy ou toute application compatible TOTP.';
+
+  @override
+  String get twoFaCopySecret => 'Copier le secret';
+
+  @override
+  String get twoFaConfirmHint =>
+      'Saisissez le premier code généré par votre application pour activer la double authentification.';
+
+  @override
+  String get twoFaCodeLabel => 'Code à 6 chiffres';
+
+  @override
+  String get twoFaCodeHint => '000000';
+
+  @override
+  String get twoFaConfirm => 'Confirmer et activer';
+
+  @override
+  String get twoFaRecoveryTitle => 'Codes de récupération';
+
+  @override
+  String get twoFaRecoveryHint =>
+      'Conservez ces codes en lieu sûr. Chacun ne peut être utilisé qu\'une seule fois.';
+
+  @override
+  String get twoFaCopied => 'Code copié.';
+
+  @override
+  String get twoFaAllCopied => 'Codes copiés.';
+
+  @override
+  String get twoFaCopyAll => 'Tout copier';
+
+  @override
+  String get twoFaDoneHint =>
+      'Double authentification activée. À chaque connexion, un code vous sera demandé.';
+
+  @override
+  String get twoFaRegenerate => 'Régénérer les codes';
+
+  @override
+  String get twoFaRegenerateConfirm =>
+      'Régénérer les codes de récupération ? Les anciens codes seront invalidés.';
+
+  @override
+  String get twoFaCancel => 'Annuler';
+
+  @override
+  String get twoFaDisable => 'Désactiver la 2FA';
+
+  @override
+  String get twoFaDisableHint => 'Code TOTP ou code de récupération';
+
+  @override
+  String get twoFaEnterCode => 'Code';
+
+  @override
+  String get twoFaInvalidCode => 'Code invalide. Vérifiez et réessayez.';
+
+  @override
+  String get twoFaSettingsTile => 'Double authentification';
+
+  @override
+  String get twoFaSettingsTileSubtitle =>
+      'Code TOTP demandé à chaque connexion';
 }
