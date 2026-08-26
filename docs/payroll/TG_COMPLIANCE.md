@@ -136,3 +136,10 @@ main avec référence aux sections ci-dessus (issue #1938) : SMIG (net 0 IR),
 cadre moyen 300 000 (IRPP tranche 3 %), haut salaire 800 000 (tranches
 3 %/10 %/15 %), plafond abattement (brut 1 000 000 → déduction plafonnée
 233 333,33), CNSS non plafonnée (brut élevé), palier HS +15 %.
+
+> **Statut code (2026-08-26, issue #5623)** : `confidenceLevel()` de
+> `CedeaoPayrollRules` retourne **pilot** pour ce pays (barèmes implémentés,
+> non validés par un expert-comptable local). L'UI paie affiche désormais un
+> badge/avertissement pour tout pays au niveau **placeholder** (ex. membres
+> CEDEAO hors CI/BF/ML/TG, membres CEMAC hors CM/GA/CG) et exige une
+> confirmation explicite avant validation d'un run placeholder.

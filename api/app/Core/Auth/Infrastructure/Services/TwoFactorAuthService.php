@@ -130,9 +130,13 @@ final class TwoFactorAuthService
      */
     public function requiresMfa(Employee $employee): bool
     {
+        // NB #5579 : `company_settings` est scopé PAR SCHÉMA TENANT (chaque
+        // tenant a sa table — voir 07_SCHEMA_SQL_COMPLET.sql) : il n'existe
+        // pas de colonne company_id. Le filtre `where('company_id', ...)`
+        // du merge #5436 levait SQLSTATE 42703 sur TOUT login (CI rouge).
+        // La résolution search_path (tenant courant) suffit.
         $setting = CompanySetting::query()
             ->where('key', 'mfa_required_roles')
-            ->where('company_id', $employee->company_id)
             ->first();
 
         if ($setting === null || ! is_string($setting->value) || $setting->value === '') {
@@ -175,20 +179,33 @@ final class TwoFactorAuthService
      */
     public function verifyChallenge(string $challengeToken, ?string $code, ?string $recoveryCode, ?string $deviceName = null): array
     {
-        /** @var array{employee_id: int, company_id: string, tenant_schema: string|null, email: string, device_name: string|null}|null $context */
+        /** @var array{employee_id?: int, company_id?: string, tenant_schema?: string|null, email?: string, device_name?: string|null}|null $context */
         $context = Cache::get('mfa:challenge:'.$challengeToken);
 
         if (! is_array($context) || ! isset($context['employee_id'])) {
             throw TwoFactorException::challengeExpired();
         }
 
-        Cache::forget('mfa:challenge:'.$challengeToken);
+        // NB #5579 : ne PAS oublier le challenge ici — un code TOTP erroné
+        // (422 TWO_FACTOR_INVALID) doit laisser la possibilité de resaisir.
+        // Le challenge n'est consommé qu'au succès de la vérification.
 
         $previousSearchPath = null;
         if (DB::getDriverName() === 'pgsql' && is_string($context['tenant_schema'] ?? null) && $context['tenant_schema'] !== '') {
             $searchPathResult = DB::selectOne('SHOW search_path');
-            $previousSearchPath = is_object($searchPathResult) ? (string) $searchPathResult->search_path : null;
-            DB::statement('SET search_path TO '.$context['tenant_schema']);
+            $previousSearchPath = is_object($searchPathResult) && property_exists($searchPathResult, 'search_path')
+                ? (string) $searchPathResult->search_path
+                : null;
+            // NB #5579 : SET search_path TO <schéma> SEUL (merge #5436)
+            // rendait `companies` et `personal_access_tokens` (schéma public)
+            // introuvables → challenge « expiré » (401) ou 500 à la création
+            // du token. On positionne schéma tenant + public, comme
+            // AuthService::setTenantSearchPath.
+            $tenantSchema = $context['tenant_schema'];
+            if (preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $tenantSchema) !== 1) {
+                throw TwoFactorException::challengeExpired();
+            }
+            DB::statement('SET search_path TO '.sprintf('"%s","public"', $tenantSchema));
         }
 
         try {
@@ -213,11 +230,14 @@ final class TwoFactorAuthService
             }
 
             /** @var Company|null $company */
-            $company = Company::query()->find($context['company_id']);
+            $company = Company::query()->find((string) ($context['company_id'] ?? ''));
 
             if ($company === null || in_array($company->status, ['suspended', 'expired'], true)) {
                 throw TwoFactorException::challengeExpired();
             }
+
+            // Vérification réussie → le challenge est consommé (usage unique).
+            Cache::forget('mfa:challenge:'.$challengeToken);
 
             $employee->forceFill(['last_login_at' => now()])->saveQuietly();
 
@@ -284,7 +304,7 @@ final class TwoFactorAuthService
         $candidate = hash('sha256', strtoupper($code));
 
         foreach ($hashed as $index => $entry) {
-            if (is_string($entry) && hash_equals($entry, $candidate)) {
+            if (hash_equals($entry, $candidate)) {
                 unset($hashed[$index]);
                 $employee->forceFill(['two_fa_recovery_codes' => array_values($hashed)])->save();
 

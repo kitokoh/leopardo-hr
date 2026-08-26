@@ -21,7 +21,7 @@ concurrency:
   # Frontend ESLint+TS) — sur main, un push ne doit jamais annuler le run du
   # commit précédent (sinon le dernier commit de main reste pending 20+ min).
   # Les runs PR gardent l'annulation (feedback rapide sur une même branche).
-  cancel-in-progress: false  # #5536 : queuer au lieu d'annuler (les runs PR ne démarrent jamais sous congestion)
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}  # #5629 : annuler les runs PR obsolètes pour libérer les runners
 
 jobs:
   # Issue #3708 : les gardes dev-hub (bash pur) n'étaient appelées par aucun

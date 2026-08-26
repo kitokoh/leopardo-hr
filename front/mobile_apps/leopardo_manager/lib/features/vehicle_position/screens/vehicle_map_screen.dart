@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_manager/features/vehicle_position/providers/vehicle_position_provider.dart';
 
 class VehicleMapScreen extends ConsumerWidget {
@@ -13,6 +14,7 @@ class VehicleMapScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final vehiclesAsync = ref.watch(myVehiclesProvider);
+    final l10n = context.l10n;
 
     return Scaffold(
       backgroundColor: AppColors.bgDark,
@@ -20,12 +22,12 @@ class VehicleMapScreen extends ConsumerWidget {
         backgroundColor: AppColors.bgDark,
         elevation: 0,
         title: Text(
-          'Position Vehicule',
+          l10n.vehicleMapTitle,
           style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
-          tooltip: 'Retour',
+          tooltip: l10n.vehicleMapBackTooltip,
           onPressed: () => context.pop(),
         ),
       ),
@@ -35,12 +37,12 @@ class VehicleMapScreen extends ConsumerWidget {
           data: (vehicles) => vehicles.isEmpty
               ? ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  children: const [
-                    SizedBox(height: 80),
+                  children: [
+                    const SizedBox(height: 80),
                     EmptyState(
                       icon: Icons.directions_car_outlined,
-                      title: 'Aucun vehicule',
-                      description: 'Vos vehicules assignes apparaitront ici.',
+                      title: l10n.vehicleMapEmptyTitle,
+                      description: l10n.vehicleMapEmptyDescription,
                     ),
                   ],
                 )
@@ -107,7 +109,8 @@ class VehicleMapScreen extends ConsumerWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    '${v.speed!.toStringAsFixed(0)} km/h',
+                                    context.l10n.vehicleMapSpeedKmh(
+                                        v.speed!.toStringAsFixed(0)),
                                     style: AppTypography.bodySmall.copyWith(
                                       color: AppColors.textMutedDark,
                                     ),
@@ -118,8 +121,8 @@ class VehicleMapScreen extends ConsumerWidget {
                             if (v.updatedAt != null) ...[
                               const SizedBox(height: 4),
                               Text(
-                                'Derniere MAJ: ${v.updatedAt}',
-                                style: TextStyle(
+                                context.l10n.vehicleMapLastUpdate(v.updatedAt!),
+                                style: const TextStyle(
                                   color: AppColors.textMutedDark,
                                   fontSize: 10,
                                 ),
@@ -131,13 +134,13 @@ class VehicleMapScreen extends ConsumerWidget {
                     );
                   },
                 ),
-          loading: () => const SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
+          loading: () => SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             child: SizedBox(
               height: 400,
               child: Center(
                 child: CircularProgressIndicator(
-                  semanticsLabel: 'Chargement des vehicules...',
+                  semanticsLabel: l10n.vehicleMapLoading,
                 ),
               ),
             ),

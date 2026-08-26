@@ -219,6 +219,10 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'failed_login_attempts' => 'integer',
         'locked_until' => 'datetime',
         'family_parts' => 'float',
+        // #5579 : colonne json SANS cast → lecture en string brute →
+        // consumeRecoveryCode() ne voyait jamais un tableau (is_array false)
+        // → code de récupération TOUJOURS invalide (422).
+        'two_fa_recovery_codes' => 'array',
     ];
 
     protected static function booted(): void
