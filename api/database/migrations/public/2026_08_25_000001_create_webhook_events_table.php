@@ -20,6 +20,13 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // #1933/#1613 : garde idempotente (même pattern que les migrations
+        // public existantes) — le runner `artisan migrate` est rejoué par
+        // MigrationSchemaPlacementTest et les déploiements.
+        if (Schema::hasTable('webhook_events')) {
+            return;
+        }
+
         Schema::create('webhook_events', function (Blueprint $table): void {
             $table->id();
             $table->string('source', 32);

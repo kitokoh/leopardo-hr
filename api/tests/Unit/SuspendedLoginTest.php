@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\Core\Auth\Domain\Models\User;
 use App\Core\Auth\Infrastructure\Services\UserAuthService;
 use App\Exceptions\AccountSuspendedException;
-use App\Exceptions\InvalidCredentialsException;
-use App\Core\Auth\Domain\Models\User;
-use Tests\RefreshTenantDatabase;
 use Illuminate\Support\Facades\Hash;
+use Tests\RefreshTenantDatabase;
 use Tests\Support\SignsGoogleIdTokens;
 use Tests\TestCase;
 

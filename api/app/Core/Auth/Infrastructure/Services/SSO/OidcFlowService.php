@@ -7,6 +7,7 @@ namespace App\Core\Auth\Infrastructure\Services\SSO;
 use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Infrastructure\Services\AuthService;
 use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
+use App\Exceptions\InvalidCredentialsException;
 use App\Rules\NotPrivateUrl;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -70,7 +71,7 @@ final class OidcFlowService
 
     /**
      * @param  array<string, mixed>  $callbackData  code + state (+ id_token direct optionnel)
-     * @return array{employee: array<string, mixed>, token: string, token_type: string, token_expires_at: ?string}
+     * @return array{employee: array<string, mixed>, token: string, token_type: string, token_expires_at: ?string}|array{mfa_challenge: true, mfa_challenge_token: string, mfa_challenge_expires_in: int}
      */
     public function complete(string $companyId, array $callbackData): array
     {
@@ -118,7 +119,7 @@ final class OidcFlowService
 
         try {
             $result = $this->authService->loginViaEmail($email, 'sso-oidc');
-        } catch (\App\Exceptions\InvalidCredentialsException $e) {
+        } catch (InvalidCredentialsException $e) {
             throw new \RuntimeException('SSO_USER_NOT_FOUND: aucun employé actif avec cet email ('.$email.').');
         }
 

@@ -58,7 +58,12 @@ final readonly class UpdateEmployeeDTO
         // par le FormRequest traverse le DTO. Un `Request` brut passerait
         // role/status/manager_role sans validation ni policy (réactivation
         // silencieuse du mass-assignment #3677/#4496).
-        return new self(...$request->validated());
+        $validated = $request->validated();
+        // #5587 : current_password n'est qu'une garde de sécurité (vérifiée
+        // dans le after() du FormRequest) — jamais un attribut du DTO.
+        unset($validated['current_password']);
+
+        return new self(...$validated);
     }
 
     /** @return array<string, mixed> */

@@ -197,7 +197,7 @@ class RouteCollisionGuardTest extends TestCase
             $matches,
         );
 
-        return $matches[1] ?? [];
+        return $matches[1];
     }
 
     /**
@@ -211,7 +211,7 @@ class RouteCollisionGuardTest extends TestCase
             $matches,
         );
 
-        return $matches[1] ?? [];
+        return $matches[1];
     }
 
     /**
@@ -232,7 +232,7 @@ class RouteCollisionGuardTest extends TestCase
                     continue;
                 }
                 preg_match_all("/['\"]([^'\"]+)['\"]/", $methodMatch[1], $names);
-                $methods = array_map('strtoupper', $names[1] ?? []);
+                $methods = array_map('strtoupper', $names[1]);
             } else {
                 $methods = [$verb === 'any' ? 'ANY' : strtoupper($verb)];
             }

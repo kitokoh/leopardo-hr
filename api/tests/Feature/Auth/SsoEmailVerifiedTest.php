@@ -30,6 +30,7 @@ class SsoEmailVerifiedTest extends TestCase
      */
     private function seedEmployee(string $email): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
         /** @var Employee $employee */
         $employee = Employee::factory()->create([

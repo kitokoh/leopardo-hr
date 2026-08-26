@@ -6,8 +6,8 @@ namespace Tests\Unit\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Notification\Domain\Models\DeviceToken;
 use App\Modules\Notification\Domain\Models\AppNotification;
+use App\Modules\Notification\Domain\Models\DeviceToken;
 use App\Modules\Notification\Infrastructure\Services\NotificationDispatcher;
 use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use Illuminate\Http\Client\Request;
@@ -52,7 +52,7 @@ class NotificationDispatcherTest extends TestCase
     {
         $employee = $this->makeEmployee();
 
-        $dispatcher = new NotificationDispatcher(new PushNotificationService());
+        $dispatcher = new NotificationDispatcher(new PushNotificationService);
 
         $notification = $dispatcher->dispatch(
             $employee->id,
@@ -89,7 +89,7 @@ class NotificationDispatcherTest extends TestCase
             'https://fcm.googleapis.com/v1/projects/test-project-id/messages:send' => Http::response(['name' => 'messages/1'], 200),
         ]);
 
-        $dispatcher = new NotificationDispatcher(new PushNotificationService());
+        $dispatcher = new NotificationDispatcher(new PushNotificationService);
         $dispatcher->dispatch($employee->id, 'payroll_ready', 'Bulletin disponible', 'Votre bulletin est prêt.');
 
         Http::assertSent(function (Request $request): bool {
@@ -103,7 +103,7 @@ class NotificationDispatcherTest extends TestCase
     {
         $employee = $this->makeEmployee();
 
-        $dispatcher = new NotificationDispatcher(new PushNotificationService());
+        $dispatcher = new NotificationDispatcher(new PushNotificationService);
 
         $notification = $dispatcher->dispatch($employee->id, 'test_type', 'Titre', 'Corps');
 
@@ -125,7 +125,8 @@ class NotificationDispatcherTest extends TestCase
         Config::set('logging.channels.structured.driver', 'single');
         Config::set('logging.channels.structured.path', $logPath);
 
-        $failingPush = new class extends PushNotificationService {
+        $failingPush = new class extends PushNotificationService
+        {
             /** @param array<string, mixed> $data */
             public function sendToUser(int $userId, string $title, string $body, array $data = []): int
             {
@@ -164,7 +165,7 @@ class NotificationDispatcherTest extends TestCase
         Config::set('logging.channels.structured.path', $logPath);
 
         try {
-            $dispatcher = new NotificationDispatcher(new PushNotificationService());
+            $dispatcher = new NotificationDispatcher(new PushNotificationService);
 
             // Sous-transaction (savepoint) : l'INSERT en échec AVORTE la
             // transaction PG courante (25P02). Le rollback au savepoint

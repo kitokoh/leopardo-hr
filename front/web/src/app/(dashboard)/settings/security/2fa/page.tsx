@@ -47,7 +47,7 @@ type EnrollData = {
 };
 
 export default function TwoFactorSettingsPage() {
-  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => &apos;fr&apos;);
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
 
   const [status, setStatus] = useState<TwoFaStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +56,7 @@ export default function TwoFactorSettingsPage() {
   // Enrôlement
   const [enrollData, setEnrollData] = useState<EnrollData | null>(null);
   const [enrolling, setEnrolling] = useState(false);
-  const [confirmCode, setConfirmCode] = useState(&apos;&apos;);
+  const [confirmCode, setConfirmCode] = useState('');
   const [confirming, setConfirming] = useState(false);
   const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);

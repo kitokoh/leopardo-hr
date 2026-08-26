@@ -175,6 +175,10 @@ class BankReconciliationTest extends TestCase
             "date;label;amount;reference\n2026-08-03;Facture client 1;1190.00;FAC-2026-001\n2026-08-10;Virement fournisseur;-450.00;VIR-001\n",
         );
 
+        // Soldes d'ouverture/clôture requis pour l'écart (l'import CSV ne
+        // les parse pas) — sinon ECART CLOTURE est absent du CSV.
+        $statement->forceFill(['opening_balance' => 1000.0, 'closing_balance' => 1500.0])->save();
+
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Sanctum::actingAs($manager);
@@ -182,7 +186,8 @@ class BankReconciliationTest extends TestCase
         $response = $this->getJson('/api/v1/accounting/bank-statements/'.$statement->id.'/export')
             ->assertOk();
 
-        $csv = $response->streamedContent();
+        // Le contrôleur renvoie une Response simple (pas un stream).
+        $csv = (string) $response->getContent();
         // BOM UTF-8 + en-tête.
         $this->assertStringStartsWith("\xEF\xBB\xBF", $csv);
         $this->assertStringContainsString('Ligne;Date;Libelle;Montant;Statut', $csv);

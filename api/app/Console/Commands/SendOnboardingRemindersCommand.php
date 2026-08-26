@@ -37,7 +37,7 @@ final class SendOnboardingRemindersCommand extends Command
     {
         $isDryRun = (bool) $this->option('dry-run');
         $windowStart = now()->subHours(28);
-        $windowEnd   = now()->subHours(20);
+        $windowEnd = now()->subHours(20);
 
         // Sociétés créées dans la fenêtre J+1.
         $companies = Company::query()
@@ -67,16 +67,17 @@ final class SendOnboardingRemindersCommand extends Command
                 ->where('status', 'active')
                 ->first();
 
-            if ($manager === null || $manager->email === null) {
+            if ($manager === null) {
                 continue;
             }
 
-            $managerName = trim(($manager->first_name ?? '') . ' ' . ($manager->last_name ?? ''))
+            $managerName = trim(($manager->first_name ?? '').' '.($manager->last_name ?? ''))
                 ?: $manager->email;
 
             if ($isDryRun) {
                 $this->line("[dry-run] Would send reminder to {$manager->email} (company: {$company->name})");
                 $sent++;
+
                 continue;
             }
 
@@ -90,7 +91,7 @@ final class SendOnboardingRemindersCommand extends Command
             }
         }
 
-        $this->info("Done. {$sent} reminder(s) " . ($isDryRun ? 'would be' : '') . ' sent.');
+        $this->info("Done. {$sent} reminder(s) ".($isDryRun ? 'would be' : '').' sent.');
 
         return self::SUCCESS;
     }

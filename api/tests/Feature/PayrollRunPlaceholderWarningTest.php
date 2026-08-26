@@ -10,7 +10,6 @@ use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
-use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
 use Mockery\MockInterface;
@@ -58,7 +57,9 @@ class PayrollRunPlaceholderWarningTest extends TestCase
     public function test_store_returns_warning_for_placeholder_country(): void
     {
         $this->bindFakeCalculator('placeholder');
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'BF']);
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
@@ -78,7 +79,9 @@ class PayrollRunPlaceholderWarningTest extends TestCase
     {
         foreach (['pilot', 'production'] as $level) {
             $this->bindFakeCalculator($level);
+            /** @var Company $company */
             $company = Company::factory()->create(['country' => 'CM']);
+            /** @var Employee $manager */
             $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
             Sanctum::actingAs($manager);
@@ -97,7 +100,9 @@ class PayrollRunPlaceholderWarningTest extends TestCase
     {
         $this->bindFakeCalculator('placeholder');
         $this->bindFakeClosingService();
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create([
             'company_id' => $company->id,
             'manager_role' => 'principal',
@@ -127,7 +132,9 @@ class PayrollRunPlaceholderWarningTest extends TestCase
     {
         $this->bindFakeCalculator('pilot');
         $this->bindFakeClosingService();
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create([
             'company_id' => $company->id,
             'manager_role' => 'principal',

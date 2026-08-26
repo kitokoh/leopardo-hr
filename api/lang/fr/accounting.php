@@ -116,7 +116,6 @@ return [
     'tva_label_gst' => 'TPS',
     'tva_label_reduced' => 'TVA réduite',
 
-
     // Profondeur comptable (issue #5422)
     'chart_system_account_not_deletable' => 'Les comptes système (provisionnés) ne peuvent pas être supprimés — désactivez-les si nécessaire.',
     'chart_account_has_entries' => 'Ce compte porte des écritures au journal et ne peut pas être supprimé.',
@@ -125,7 +124,11 @@ return [
     'lettering_unbalanced' => 'Le lettrage doit être équilibré : la somme des débits doit égaler la somme des crédits.',
     'lettering_invalid' => 'Lettrage invalide : les écritures doivent porter sur le même compte.',
     'lettering_already_used' => 'Une ou plusieurs écritures sont déjà lettrées avec une autre lettre.',
+    'bank_file_required' => 'Le fichier CSV est requis.',
+    'bank_file_mimes' => 'Le fichier doit être au format CSV.',
+    'bank_period_required' => 'La période du relevé est requise (AAAA-MM).',
+    'bank_period_format' => 'La période doit utiliser le format AAAA-MM.',
+    'bank_reference_required' => 'La référence d\'import est requise.',
+    'bank_payment_required' => 'Le paiement à rapprocher est requis.',
+    'bank_payment_exists' => 'Le paiement sélectionné n\'existe pas.',
 ];
-
-
-

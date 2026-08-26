@@ -213,24 +213,18 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'biometric_consent_at' => 'datetime',
         'two_fa_secret' => 'string',
         'two_fa_enabled_at' => 'datetime',
+        // #5588 : cast JSON requis pour le tableau de codes hachés (colonne
+        // json) — sans cast, INSERT/UPDATE crashent et la lecture
+        // (consumeRecoveryCode) reçoit une string au lieu d'un tableau.
         'two_fa_recovery_codes' => 'array',
         'invitation_accepted_at' => 'datetime',
         'extra_data' => 'array',
-        // #5588 (follow-up) : cast JSON manquant — le service 2FA écrit un
-        // tableau de codes hachés (colonne json) ; sans cast, INSERT/UPDATE
-        // crashent (« invalid input syntax for type json ») et la lecture
-        // (consumeRecoveryCode) reçoit une string au lieu d'un tableau.
-        'two_fa_recovery_codes' => 'array',
         'iban' => 'encrypted',
         'bank_account' => 'encrypted',
         'national_id' => 'encrypted',
         'failed_login_attempts' => 'integer',
         'locked_until' => 'datetime',
         'family_parts' => 'float',
-        // #5579 : colonne json SANS cast → lecture en string brute →
-        // consumeRecoveryCode() ne voyait jamais un tableau (is_array false)
-        // → code de récupération TOUJOURS invalide (422).
-        'two_fa_recovery_codes' => 'array',
     ];
 
     protected static function booted(): void

@@ -60,23 +60,23 @@ class OpenApiDocsTest extends TestCase
      */
     public function test_api_explorer_exposes_curl_javascript_and_php_sandbox_snippets(): void
     {
-            $this->get('/api-explorer')
-                ->assertOk()
-                ->assertSee('Exemples de code (sandbox)')
-                ->assertSee('curl', false)
-                ->assertSee('JavaScript (fetch)')
-                ->assertSee('PHP', false)
-                ->assertSee('snippetOutput', false)
-                ->assertSee('buildCurlSnippet', false)
-                ->assertSee('buildJavaScriptSnippet', false)
-                ->assertSee('buildPhpSnippet', false)
-                // Non-régression #2265 : le littéral `<?php` du snippet builder est
-                // échappé dans la vue (tag court PHP ouvert puis fermé) ; le HTML
-                // rendu doit contenir la séquence brute (assertSee(..., false) car
-                // le défaut chercherait la forme échappée `&lt;?php`).
-                ->assertSee('<?php', false)
-                ->assertSee('GuzzleHttp', false)
-                ->assertSee('Copier');
+        $this->get('/api-explorer')
+            ->assertOk()
+            ->assertSee('Exemples de code (sandbox)')
+            ->assertSee('curl', false)
+            ->assertSee('JavaScript (fetch)')
+            ->assertSee('PHP', false)
+            ->assertSee('snippetOutput', false)
+            ->assertSee('buildCurlSnippet', false)
+            ->assertSee('buildJavaScriptSnippet', false)
+            ->assertSee('buildPhpSnippet', false)
+            // Non-régression #2265 : le littéral `<?php` du snippet builder est
+            // échappé dans la vue (tag court PHP ouvert puis fermé) ; le HTML
+            // rendu doit contenir la séquence brute (assertSee(..., false) car
+            // le défaut chercherait la forme échappée `&lt;?php`).
+            ->assertSee('<?php', false)
+            ->assertSee('GuzzleHttp', false)
+            ->assertSee('Copier');
     }
 
     /**
@@ -86,7 +86,9 @@ class OpenApiDocsTest extends TestCase
      */
     public function test_docs_require_authentication_in_production(): void
     {
-        config()->set('app.env', 'production');
+        // #5588 : config()->set n'affecte pas app()->environment() — il faut
+        // détecter l'environnement pour que la gate prod s'applique.
+        app()->detectEnvironment(fn () => 'production');
 
         $this->get('/docs')->assertForbidden();
         $this->get('/docs/openapi.yaml')->assertForbidden();
@@ -96,7 +98,9 @@ class OpenApiDocsTest extends TestCase
 
     public function test_authenticated_tenant_user_can_access_docs_in_production(): void
     {
-        config()->set('app.env', 'production');
+        // #5588 : config()->set n'affecte pas app()->environment() — il faut
+        // détecter l'environnement pour que la gate prod s'applique.
+        app()->detectEnvironment(fn () => 'production');
 
         $employee = new Employee(['company_id' => '00000000-0000-0000-0000-000000000001']);
 
@@ -115,4 +119,10 @@ class OpenApiDocsTest extends TestCase
         $this->get('/docs')->assertOk();
     }
 
+    protected function tearDown(): void
+    {
+        // Restaurer l'environnement de test pour les classes suivantes.
+        app()->detectEnvironment(fn () => 'testing');
+        parent::tearDown();
+    }
 }

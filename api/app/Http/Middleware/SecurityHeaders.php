@@ -37,7 +37,11 @@ class SecurityHeaders
 
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
-        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        // #5521 : un contrôleur peut poser une politique plus stricte (ex.
+        // `no-referrer` sur l'export CSV comptable) — ne pas l'écraser.
+        if (! $response->headers->has('Referrer-Policy')) {
+            $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        }
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
         if ($request->isSecure()) {
