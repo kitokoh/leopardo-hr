@@ -126,7 +126,7 @@ class EmailBounceWebhookController extends Controller
         } catch (\Throwable $e) {
             $this->registry->release('email-bounce', $eventId);
             Log::error('Email bounce webhook: error handling event', [
-                'event' => $event ?? null,
+                'event' => $event,
                 'error' => $e->getMessage(),
             ]);
 
