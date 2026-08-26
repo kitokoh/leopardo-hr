@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_hr/features/contracts/providers/contract_provider.dart';
 
 class ContractScreen extends ConsumerWidget {
@@ -12,6 +13,7 @@ class ContractScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final contractsAsync = ref.watch(contractsProvider);
+    final l10n = context.l10n;
 
     return Scaffold(
       backgroundColor: AppColors.bgDark,
@@ -19,12 +21,12 @@ class ContractScreen extends ConsumerWidget {
         backgroundColor: AppColors.bgDark,
         elevation: 0,
         title: Text(
-          'Mon Contrat',
+          l10n.contractsMobileTitle,
           style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
-          tooltip: 'Retour',
+          tooltip: l10n.contractsBackTooltip,
           onPressed: () => context.pop(),
         ),
       ),
@@ -34,13 +36,12 @@ class ContractScreen extends ConsumerWidget {
           data: (contracts) => contracts.isEmpty
               ? ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  children: const [
-                    SizedBox(height: 80),
+                  children: [
+                    const SizedBox(height: 80),
                     EmptyState(
                       icon: Icons.description_outlined,
-                      title: 'Aucun contrat',
-                      description:
-                          'Votre contrat apparaitra ici une fois configure.',
+                      title: l10n.contractsEmptyTitle,
+                      description: l10n.contractsEmptyDescription,
                     ),
                   ],
                 )
@@ -72,19 +73,19 @@ class ContractScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: 8),
                             _InfoRow(
-                              label: 'Type',
+                              label: l10n.contractsLabelType,
                               value: contract.type.toUpperCase(),
                             ),
                             _InfoRow(
-                              label: 'Debut',
+                              label: l10n.contractsLabelStartDate,
                               value: contract.startDate,
                             ),
                             _InfoRow(
-                              label: 'Fin',
-                              value: contract.endDate ?? 'CDI',
+                              label: l10n.contractsLabelEndDate,
+                              value: contract.endDate ?? l10n.contractsStatusCdi,
                             ),
                             _InfoRow(
-                              label: 'Salaire base',
+                              label: l10n.contractsLabelBaseSalary,
                               value:
                                   '${contract.baseSalary.toStringAsFixed(2)} ${contract.currency}',
                             ),
@@ -94,13 +95,13 @@ class ContractScreen extends ConsumerWidget {
                     );
                   },
                 ),
-          loading: () => const SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
+          loading: () => SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             child: SizedBox(
               height: 400,
               child: Center(
                 child: CircularProgressIndicator(
-                  semanticsLabel: 'Chargement des contrats...',
+                  semanticsLabel: l10n.contractsLoading,
                 ),
               ),
             ),
@@ -129,11 +130,18 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final color = switch (status) {
       'active' => AppColors.success,
       'expired' => AppColors.danger,
       'draft' => AppColors.textMuted,
       _ => AppColors.warning,
+    };
+    final label = switch (status) {
+      'active' => l10n.contractsStatusActive,
+      'expired' => l10n.contractsStatusExpired,
+      'draft' => l10n.contractsStatusDraft,
+      _ => status.toUpperCase(),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -142,7 +150,7 @@ class _StatusChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        status.toUpperCase(),
+        label,
         style: TextStyle(
           color: color,
           fontSize: 10,

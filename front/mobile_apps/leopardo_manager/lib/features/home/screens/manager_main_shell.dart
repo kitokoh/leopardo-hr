@@ -20,7 +20,7 @@ class ManagerMainShell extends StatelessWidget {
         LeopardoNavItem(
           icon: Icons.dashboard_outlined,
           activeIcon: Icons.dashboard_rounded,
-          label: 'Accueil',
+          label: context.l10n.shellHome,
           route: '/',
         ),
         LeopardoNavItem(
@@ -32,13 +32,13 @@ class ManagerMainShell extends StatelessWidget {
         LeopardoNavItem(
           icon: Icons.fingerprint_outlined,
           activeIcon: Icons.fingerprint,
-          label: 'Pointage',
+          label: context.l10n.shellAttendance,
           route: '/attendance/geo',
         ),
         LeopardoNavItem(
           icon: Icons.checklist_outlined,
           activeIcon: Icons.checklist,
-          label: 'Validations',
+          label: context.l10n.shellApprovals,
           route: '/approvals',
         ),
         LeopardoNavItem(

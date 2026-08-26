@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 import '../../core/platform_providers.dart';
 import '../platform/platform_models.dart';
@@ -28,23 +29,30 @@ class SupportTicketsScreen extends ConsumerWidget {
   const SupportTicketsScreen({super.key});
 
   static const _statuses = [null, 'open', 'in_progress', 'resolved', 'closed'];
-  static const _statusLabels = {
-    null: 'Tous',
-    'open': 'Ouverts',
-    'in_progress': 'En cours',
-    'resolved': 'Résolus',
-    'closed': 'Fermés',
-  };
+
+  /// Builds the status → localized label map from the current context.
+  Map<String?, String> _statusLabels(BuildContext context) {
+    final l10n = context.l10n;
+    return {
+      null: l10n.supportTicketsFilterAll,
+      'open': l10n.supportTicketsFilterOpen,
+      'in_progress': l10n.supportTicketsFilterInProgress,
+      'resolved': l10n.supportTicketsFilterResolved,
+      'closed': l10n.supportTicketsFilterClosed,
+    };
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final status = ref.watch(_statusFilterProvider);
     final tickets = ref.watch(platformSupportTicketsProvider(status));
+    final l10n = context.l10n;
+    final statusLabels = _statusLabels(context);
 
     return MobilePage(
       appBar: MobileTopBar(
-        title: 'Support client',
-        subtitle: 'Tickets tenant',
+        title: l10n.supportTicketsTitle,
+        subtitle: l10n.supportTicketsSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
@@ -60,7 +68,7 @@ class SupportTicketsScreen extends ConsumerWidget {
               return Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: FilterChip(
-                  label: Text(_statusLabels[s] ?? s ?? 'Tous'),
+                  label: Text(statusLabels[s] ?? s ?? l10n.supportTicketsFilterAll),
                   selected: selected,
                   selectedColor: AppColors.rh.withValues(alpha: 0.25),
                   labelStyle: TextStyle(
@@ -78,10 +86,10 @@ class SupportTicketsScreen extends ConsumerWidget {
         tickets.when(
           data: (items) {
             if (items.isEmpty) {
-              return const MobilePanel(
+              return MobilePanel(
                 child: Text(
-                  'Aucun ticket pour ce filtre.',
-                  style: TextStyle(color: MobileSurface.secondary),
+                  l10n.supportTicketsEmpty,
+                  style: const TextStyle(color: MobileSurface.secondary),
                 ),
               );
             }
@@ -89,7 +97,7 @@ class SupportTicketsScreen extends ConsumerWidget {
               children: items.map((t) => _TicketCard(ticket: t)).toList(),
             );
           },
-          loading: () => const MobileEmptyLoading(label: 'Chargement tickets'),
+          loading: () => MobileEmptyLoading(label: l10n.supportTicketsLoading),
           error: (e, _) => MobileErrorPanel(
             message: e.toString(),
             onRetry: () =>
@@ -249,6 +257,9 @@ class _SupportTicketDetailScreenState
     final message = _replyController.text.trim();
     if (message.isEmpty) return;
 
+    // Capture l10n before async gap.
+    final replySentMsg = context.l10n.supportTicketsReplySent;
+
     setState(() => _submitting = true);
     try {
       await ref.read(platformRepositoryProvider).replySupportTicket(
@@ -259,7 +270,7 @@ class _SupportTicketDetailScreenState
       ref.invalidate(platformTicketDetailProvider(widget.ticketId));
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Réponse envoyée.')),
+        SnackBar(content: Text(replySentMsg)),
       );
     } catch (e) {
       if (!mounted) return;
@@ -290,6 +301,7 @@ class _SupportTicketDetailScreenState
   @override
   Widget build(BuildContext context) {
     final detail = ref.watch(platformTicketDetailProvider(widget.ticketId));
+    final l10n = context.l10n;
 
     return MobilePage(
       appBar: MobileTopBar(
@@ -308,7 +320,7 @@ class _SupportTicketDetailScreenState
             onReply: _sendReply,
             onTriage: _triage,
           ),
-          loading: () => const MobileEmptyLoading(label: 'Chargement ticket'),
+          loading: () => MobileEmptyLoading(label: l10n.supportTicketsLoadingTicket),
           error: (e, _) => MobileErrorPanel(
             message: e.toString(),
             onRetry: () =>

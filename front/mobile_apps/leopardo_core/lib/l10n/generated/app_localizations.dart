@@ -12750,6 +12750,183 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Confirmer votre identité pour soumettre votre demande biométrie'**
   String get settingsBiometricConfirmIdentity;
+
+  /// No description provided for @shellHome.
+  String get shellHome;
+
+  /// No description provided for @shellAttendance.
+  String get shellAttendance;
+
+  /// No description provided for @shellAbsences.
+  String get shellAbsences;
+
+  /// No description provided for @shellApprovals.
+  String get shellApprovals;
+
+  /// No description provided for @contractsMobileTitle.
+  String get contractsMobileTitle;
+
+  /// No description provided for @contractsBackTooltip.
+  String get contractsBackTooltip;
+
+  /// No description provided for @contractsEmptyTitle.
+  String get contractsEmptyTitle;
+
+  /// No description provided for @contractsEmptyDescription.
+  String get contractsEmptyDescription;
+
+  /// No description provided for @contractsLabelType.
+  String get contractsLabelType;
+
+  /// No description provided for @contractsLabelStartDate.
+  String get contractsLabelStartDate;
+
+  /// No description provided for @contractsLabelEndDate.
+  String get contractsLabelEndDate;
+
+  /// No description provided for @contractsLabelBaseSalary.
+  String get contractsLabelBaseSalary;
+
+  /// No description provided for @contractsLoading.
+  String get contractsLoading;
+
+  /// No description provided for @contractsStatusActive.
+  String get contractsStatusActive;
+
+  /// No description provided for @contractsStatusExpired.
+  String get contractsStatusExpired;
+
+  /// No description provided for @contractsStatusDraft.
+  String get contractsStatusDraft;
+
+  /// No description provided for @contractsStatusCdi.
+  String get contractsStatusCdi;
+
+  /// No description provided for @organigrammeTitle.
+  String get organigrammeTitle;
+
+  /// No description provided for @organigrammeBackTooltip.
+  String get organigrammeBackTooltip;
+
+  /// No description provided for @organigrammeEmptyTitle.
+  String get organigrammeEmptyTitle;
+
+  /// No description provided for @organigrammeLoading.
+  String get organigrammeLoading;
+
+  /// No description provided for @vehicleMapTitle.
+  String get vehicleMapTitle;
+
+  /// No description provided for @vehicleMapBackTooltip.
+  String get vehicleMapBackTooltip;
+
+  /// No description provided for @vehicleMapEmptyTitle.
+  String get vehicleMapEmptyTitle;
+
+  /// No description provided for @vehicleMapEmptyDescription.
+  String get vehicleMapEmptyDescription;
+
+  /// No description provided for @vehicleMapLoading.
+  String get vehicleMapLoading;
+
+  /// No description provided for @vehicleMapLastUpdate.
+  String vehicleMapLastUpdate(Object time);
+
+  /// No description provided for @vehicleMapSpeedKmh.
+  String vehicleMapSpeedKmh(Object speed);
+
+  /// No description provided for @payrollValidated.
+  String get payrollValidated;
+
+  /// No description provided for @payrollDocumentUnavailable.
+  String payrollDocumentUnavailable(Object error);
+
+  /// No description provided for @payrollOvertimeHoursTeam.
+  String payrollOvertimeHoursTeam(Object hours);
+
+  /// No description provided for @payrollOvertimeHoursItem.
+  String payrollOvertimeHoursItem(Object hours);
+
+  /// No description provided for @platformAdminActivationNote.
+  String get platformAdminActivationNote;
+
+  /// No description provided for @platformAdminCompanyApprovedNote.
+  String get platformAdminCompanyApprovedNote;
+
+  /// No description provided for @platformAdminCompanyRejectedNote.
+  String get platformAdminCompanyRejectedNote;
+
+  /// No description provided for @edgeNodesTitle.
+  String get edgeNodesTitle;
+
+  /// No description provided for @edgeNodesSubtitle.
+  String get edgeNodesSubtitle;
+
+  /// No description provided for @edgeNodesRefreshTooltip.
+  String get edgeNodesRefreshTooltip;
+
+  /// No description provided for @edgeNodesEmpty.
+  String get edgeNodesEmpty;
+
+  /// No description provided for @edgeNodesOnline.
+  String get edgeNodesOnline;
+
+  /// No description provided for @edgeNodesOffline.
+  String get edgeNodesOffline;
+
+  /// No description provided for @edgeNodesSectionLabel.
+  String get edgeNodesSectionLabel;
+
+  /// No description provided for @edgeNodesLoading.
+  String get edgeNodesLoading;
+
+  /// No description provided for @edgeNodesForceSync.
+  String get edgeNodesForceSync;
+
+  /// No description provided for @edgeNodesSyncTriggered.
+  String get edgeNodesSyncTriggered;
+
+  /// No description provided for @edgeNodesLastSync.
+  String edgeNodesLastSync(Object date);
+
+  /// No description provided for @edgeNodesNodeId.
+  String edgeNodesNodeId(Object id);
+
+  /// No description provided for @edgeNodesVersionInfo.
+  String edgeNodesVersionInfo(Object version, Object count);
+
+  /// No description provided for @supportTicketsTitle.
+  String get supportTicketsTitle;
+
+  /// No description provided for @supportTicketsSubtitle.
+  String get supportTicketsSubtitle;
+
+  /// No description provided for @supportTicketsFilterAll.
+  String get supportTicketsFilterAll;
+
+  /// No description provided for @supportTicketsFilterOpen.
+  String get supportTicketsFilterOpen;
+
+  /// No description provided for @supportTicketsFilterInProgress.
+  String get supportTicketsFilterInProgress;
+
+  /// No description provided for @supportTicketsFilterResolved.
+  String get supportTicketsFilterResolved;
+
+  /// No description provided for @supportTicketsFilterClosed.
+  String get supportTicketsFilterClosed;
+
+  /// No description provided for @supportTicketsEmpty.
+  String get supportTicketsEmpty;
+
+  /// No description provided for @supportTicketsLoading.
+  String get supportTicketsLoading;
+
+  /// No description provided for @supportTicketsReplySent.
+  String get supportTicketsReplySent;
+
+  /// No description provided for @supportTicketsLoadingTicket.
+  String get supportTicketsLoadingTicket;
 }
 
 class _AppLocalizationsDelegate

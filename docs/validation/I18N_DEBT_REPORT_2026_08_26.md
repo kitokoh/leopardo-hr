@@ -10,9 +10,9 @@ the counts below only reflect strings a real user could actually see on screen.
 
 ## Summary
 
-- Total user-visible signals: 10999
-- P1 (priority screens: login/attendance/account/...): 1457
-- P2 (other screens): 9542
+- Total user-visible signals: 10987
+- P1 (priority screens: login/attendance/account/...): 1474
+- P2 (other screens): 9513
 - Developer/log-only signals (informational, not counted above): 78
 
 ## By surface
@@ -53,76 +53,54 @@ the counts below only reflect strings a real user could actually see on screen.
 
 ### mobile_manager
 
-- Signals: 8
+- Signals: 4
 - P1: 0
-- P2: 8
+- P2: 4
 - Dev/log-only (informational): 3
 
 - [P2] `front/mobile_apps/leopardo_manager/lib/app.dart:352` Leopardo RH
-- [P2] `front/mobile_apps/leopardo_manager/lib/features/vehicle_position/screens/vehicle_map_screen.dart:23` Position Vehicule
-- [P2] `front/mobile_apps/leopardo_manager/lib/features/vehicle_position/screens/vehicle_map_screen.dart:42` Aucun vehicule
-- [P2] `front/mobile_apps/leopardo_manager/lib/features/vehicle_position/screens/vehicle_map_screen.dart:43` Vos vehicules assignes apparaitront ici.
-- [P2] `front/mobile_apps/leopardo_manager/lib/features/vehicle_position/screens/vehicle_map_screen.dart:140` Chargement des vehicules...
 - [P2] `front/mobile_apps/leopardo_manager/lib/main.dart:31` Leopardo Manager
 - [P2] `front/mobile_apps/leopardo_manager/lib/main.dart:43` Hive offline cache
 - [P2] `front/mobile_apps/leopardo_manager/lib/main.dart:44` Locale formatting
 
 ### mobile_hr
 
-- Signals: 10
+- Signals: 4
 - P1: 0
-- P2: 10
+- P2: 4
 - Dev/log-only (informational): 3
 
 - [P2] `front/mobile_apps/leopardo_hr/lib/app.dart:329` Leopardo RH
-- [P2] `front/mobile_apps/leopardo_hr/lib/features/contracts/screens/contract_screen.dart:41` Aucun contrat
-- [P2] `front/mobile_apps/leopardo_hr/lib/features/contracts/screens/contract_screen.dart:43` Votre contrat apparaitra ici une fois configure.
-- [P2] `front/mobile_apps/leopardo_hr/lib/features/contracts/screens/contract_screen.dart:87` Salaire base
-- [P2] `front/mobile_apps/leopardo_hr/lib/features/contracts/screens/contract_screen.dart:103` Chargement des contrats...
-- [P2] `front/mobile_apps/leopardo_hr/lib/features/organigramme/screens/organigramme_screen.dart:50` Aucun organigramme
-- [P2] `front/mobile_apps/leopardo_hr/lib/features/organigramme/screens/organigramme_screen.dart:73` Chargement de l\'organigramme...
 - [P2] `front/mobile_apps/leopardo_hr/lib/main.dart:33` Leopardo RH
 - [P2] `front/mobile_apps/leopardo_hr/lib/main.dart:45` Hive offline cache
 - [P2] `front/mobile_apps/leopardo_hr/lib/main.dart:46` Locale formatting
 
 ### mobile_platform_admin
 
-- Signals: 36
-- P1: 4
-- P2: 32
+- Signals: 14
+- P1: 1
+- P2: 13
 - Dev/log-only (informational): 4
 
 - [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/auth/platform_login_screen.dart:31` admin@leopardo-rh.com
-- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart:379` Activation directe depuis app mobile platform admin.
-- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_requests_screen.dart:109` Approuve depuis Leopardo Platform Admin mobile
-- [P1] `front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_requests_screen.dart:110` Refuse depuis Leopardo Platform Admin mobile
 - [P2] `front/mobile_apps/leopardo_platform_admin/lib/main.dart:40` Leopardo Platform Admin
 - [P2] `front/mobile_apps/leopardo_platform_admin/lib/main.dart:55` Hive offline cache
 - [P2] `front/mobile_apps/leopardo_platform_admin/lib/main.dart:56` Locale formatting
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:25` Nœuds Edge
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:26` Sites on-premise connectés
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:33` Rafraîchir
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:53` Aucun nœud Edge enregistré.
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:72` En ligne
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:78` Hors ligne
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:84` Nœuds
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:89` Chargement nœuds
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:168` Forcer la synchronisation
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/edge/edge_nodes_screen.dart:177` Sync déclenchée.
 - [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_models.dart:17` Super admin
 - [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_repository.dart:41` Code 2FA requis pour ce compte super-admin.
 - [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_repository.dart:49` Token plateforme manquant
 - [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_repository.dart:59` Session plateforme absente
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:34` En cours
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:35` Résolus
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:36` Fermés
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:46` Support client
-- ... 11 more signals
+- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:293` Ticket → $status
+- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:399` En cours
+- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:407` Résoudre
+- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:421` Répondre
+- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:430` Votre réponse...
+- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/platform_admin_app.dart:111` Leopardo Platform Admin
 
 ### web_client
 
-- Signals: 9859
-- P1: 423
+- Signals: 9869
+- P1: 433
 - P2: 9436
 - Dev/log-only (informational): 2
 
@@ -151,7 +129,7 @@ the counts below only reflect strings a real user could actually see on screen.
 - [P1] `front/web/src/app/(dashboard)/accounting/chart/__tests__/chart-page.test.tsx:50` Capital social
 - [P1] `front/web/src/app/(dashboard)/accounting/chart/__tests__/chart-page.test.tsx:54` Libellé
 - [P1] `front/web/src/app/(dashboard)/accounting/chart/__tests__/chart-page.test.tsx:68` désactive/active un compte via PUT /accounting/chart/{code}
-- ... 9834 more signals
+- ... 9844 more signals
 
 ### admin_dashboard
 
@@ -189,8 +167,8 @@ the counts below only reflect strings a real user could actually see on screen.
 
 ### kiosk
 
-- Signals: 526
-- P1: 526
+- Signals: 536
+- P1: 536
 - P2: 0
 - Dev/log-only (informational): 0
 
@@ -219,7 +197,7 @@ the counts below only reflect strings a real user could actually see on screen.
 - [P1] `front/zkteco-kiosk/app.js:834` aziz.khelifi@digitalflow.tn
 - [P1] `front/zkteco-kiosk/i18n.js:24` Leopardo RH - Kiosk biometrie
 - [P1] `front/zkteco-kiosk/i18n.js:25` Aller au formulaire de pointage
-- ... 501 more signals
+- ... 511 more signals
 
 ## Execution rule
 
