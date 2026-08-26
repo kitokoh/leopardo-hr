@@ -164,7 +164,8 @@ class TrainingControllerTest extends TestCase
             // Fallback: request a non-existent ID as this company's manager
             Sanctum::actingAs($this->manager);
             $response = $this->getJson('/api/v1/training/courses/99999999');
-            $this->assertContains($response->status(), [404, 400]);
+            // #5585 : id inexistant → 404 (pas 400).
+            $response->assertNotFound();
         }
     }
 

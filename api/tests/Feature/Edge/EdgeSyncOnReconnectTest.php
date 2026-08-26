@@ -294,7 +294,8 @@ class EdgeSyncOnReconnectTest extends TestCase
         ]);
 
         // Le middleware throttle peut bloquer en test — on accepte 200 ou 429
-        $this->assertContains($response->status(), [200, 422, 429, 500]);
+        // #5585 : payload valide → accepté 200 (les erreurs sont couvertes par des cas dédiés).
+        $response->assertOk();
     }
 }
 

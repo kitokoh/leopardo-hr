@@ -66,7 +66,8 @@ class OnboardingControllerTest extends TestCase
 
         $response = $this->postJson("/api/v1/onboarding/invitation/{$token}/activate", []);
 
-        $this->assertContains($response->status(), [422, 404]);
+        // #5585 : activation avec payload vide → 422 (validation).
+        $response->assertStatus(422);
 
         if ($response->status() === 422) {
             $response->assertJsonValidationErrors(['password']);

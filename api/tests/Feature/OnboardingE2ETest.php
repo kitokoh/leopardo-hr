@@ -315,7 +315,8 @@ class OnboardingE2ETest extends TestCase
         $this->resetAuth();
         Sanctum::actingAs($yacine, ['*']);
         $resend = $this->postJson('/api/v1/invitations/'.$ritaInvId.'/resend');
-        $this->assertContains($resend->status(), [200, 410]);
+        // #5585 : invitation active → relance acceptée 200 (410 = invitation expirée, cas dédié).
+        $resend->assertOk();
     }
 
     private function resetAuth(): void

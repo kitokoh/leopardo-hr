@@ -72,8 +72,8 @@ class HrControllerTest extends TestCase
 
         $response = $this->getJson('/api/v1/employees');
 
-        // Regular employees should be forbidden or see only themselves
-        $this->assertContains($response->status(), [200, 403]);
+        // #5585 : la liste des employés est réservée aux managers → 403 pour un employé lambda.
+        $response->assertForbidden();
     }
 
     public function test_manager_can_show_own_company_employee(): void
@@ -133,7 +133,8 @@ class HrControllerTest extends TestCase
 
         $response = $this->getJson('/api/v1/training');
 
-        $this->assertContains($response->status(), [200, 404], 'Unexpected status for training list');
+        // #5585 : le module Training n'existe plus (supprimé) → route absente → 404.
+        $response->assertNotFound();
     }
 
     public function test_unauthenticated_user_cannot_access_employees(): void

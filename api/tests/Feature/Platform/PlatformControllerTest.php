@@ -59,7 +59,8 @@ class PlatformControllerTest extends TestCase
         $response = $this->getJson('/api/v1/health/ready');
 
         // 200 when all dependencies are healthy; 503 when one or more are degraded
-        $this->assertContains($response->status(), [200, 503]);
+        // #5585 : en environnement de test la base est disponible → ready = 200.
+        $response->assertOk();
     }
 
     /** @test */
@@ -122,10 +123,10 @@ class PlatformControllerTest extends TestCase
     /** @test */
     public function metrics_endpoint_returns_200_or_requires_auth(): void
     {
-        // The metrics endpoint may be public (Prometheus scrape) or auth-protected
+        // #5585 : /metrics est protégé par auth:super_admin_api → 401 sans token.
         $response = $this->getJson('/api/v1/metrics');
 
-        $this->assertContains($response->status(), [200, 401, 403, 404]);
+        $response->assertUnauthorized();
     }
 }
 
