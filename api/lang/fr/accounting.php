@@ -126,6 +126,3 @@ return [
     'lettering_invalid' => 'Lettrage invalide : les écritures doivent porter sur le même compte.',
     'lettering_already_used' => 'Une ou plusieurs écritures sont déjà lettrées avec une autre lettre.',
 ];
-
-
-

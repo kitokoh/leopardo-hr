@@ -6,6 +6,7 @@ namespace App\Modules\Platform\Infrastructure\Services;
 
 use App\Modules\Platform\Domain\Models\WebhookEvent;
 use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
@@ -48,12 +49,20 @@ final class WebhookEventRegistry
         }
 
         try {
-            WebhookEvent::query()->create([
-                'source' => $source,
-                'event_id' => $eventId,
-                'payload_hash' => $payloadHash,
-                'response_code' => 0,
-            ]);
+            // #5629 : la violation d'unicité ABORTE la transaction courante en
+            // PostgreSQL (SQLSTATE 25P02 sur toute redelivrance). L'INSERT est
+            // isolé dans une sous-transaction (savepoint en test — les suites
+            // RefreshTenantDatabase vivent dans une transaction globale ;
+            // transaction réelle en prod) : sur conflit, seul le savepoint est
+            // annulé et la relecture ci-dessous reste exécutable.
+            DB::transaction(function () use ($source, $eventId, $payloadHash): void {
+                WebhookEvent::query()->create([
+                    'source' => $source,
+                    'event_id' => $eventId,
+                    'payload_hash' => $payloadHash,
+                    'response_code' => 0,
+                ]);
+            });
 
             return null;
         } catch (UniqueConstraintViolationException $e) {

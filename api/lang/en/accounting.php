@@ -125,6 +125,3 @@ return [
     'lettering_invalid' => 'Invalid lettering: entries must target the same account.',
     'lettering_already_used' => 'One or more entries are already lettered with another code.',
 ];
-
-
-
