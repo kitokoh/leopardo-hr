@@ -94,7 +94,7 @@ class EmailBounceWebhookController extends Controller
             if ($employee === null) {
                 Log::info('Email bounce webhook: no matching employee for address', ['event' => $event]);
 
-                $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]));
+                $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]) ?: null);
 
                 return new JsonResponse(['received' => true]);
             }
@@ -120,13 +120,13 @@ class EmailBounceWebhookController extends Controller
                 'occurred_at' => now(),
             ]);
 
-            $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]));
+            $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]) ?: null);
 
             return new JsonResponse(['received' => true]);
         } catch (\Throwable $e) {
             $this->registry->release('email-bounce', $eventId);
             Log::error('Email bounce webhook: error handling event', [
-                'event' => $event ?? null,
+                'event' => $event,
                 'error' => $e->getMessage(),
             ]);
 
