@@ -104,15 +104,15 @@ class EmailBounceWebhookController extends Controller
             }
 
             CommunicationEvent::query()->create([
-                'company_id'   => (string) $employee->company_id,
-                'employee_id'  => $employee->id,
-                'event_name'   => 'email_provider_webhook',
-                'channel'      => 'email',
-                'status'       => $isBounceOrComplaint ? 'bounced' : 'recorded',
-                'provider'     => (string) config('communication.providers.email', 'mail'),
-                'metadata'     => ['event' => $event],
+                'company_id'    => (string) $employee->company_id,
+                'employee_id'   => $employee->id,
+                'event_name'    => 'email_provider_webhook',
+                'channel'       => 'email',
+                'status'        => $isBounceOrComplaint ? 'bounced' : 'recorded',
+                'provider'      => (string) config('communication.providers.email', 'mail'),
+                'metadata'      => ['event' => $event],
                 'error_message' => $reason,
-                'occurred_at'  => now(),
+                'occurred_at'   => now(),
             ]);
 
             $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]));
