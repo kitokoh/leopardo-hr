@@ -14,7 +14,7 @@
 
 - **`render.yaml` est déjà correct** : il déclare 3 services — le web
   `gestionemployerbackend`, le worker `leopardo-queue-worker`
-  (`php artisan queue:work redis --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default …`),
+  (`php artisan queue:work --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default …` — #5578 : connexion par défaut = database),
   le worker `leopardo-scheduler` (`schedule:run` toutes les minutes) — plus les
   instances `leopardo-db` (PostgreSQL) et `leopardo-redis` (Redis interne, #3774).
 - **Constat prod (2026-08-20)** : le compte Render `africanovatech` ne contient
@@ -22,7 +22,7 @@
   **pas** → aucun job n'est consommé : `ProvisionDemoTenantJob` (trial guided),
   emails d'invitation, notifications, PDF, payroll restent en file → les prospects
   restent bloqués en `pending` / `provisioning_sandbox` indéfiniment.
-- **Dérive d'env du web service** : `QUEUE_CONNECTION=database`,
+- **#5578 (2026-08-26)** : stratégie unique — `QUEUE_CONNECTION=database` partout (render.yaml, config/queue.php, probe, worker, drain GH ; garde CI `check-queue-strategy-coherence.sh`). Les références `queue:work redis` ci-dessous sont historiques ; ne pas les rétablir.
   `SESSION_DRIVER=file`, `CACHE_STORE=file` (render.yaml prévoit `redis` pour les
   trois). Une file `database` n'est consommée par aucun worker et laisse les jobs
   s'accumuler dans la table `jobs`.
@@ -42,7 +42,7 @@
 | Service | Type | Commande | Plan |
 |---|---|---|---|
 | `gestionemployerbackend` | web | serveur HTTP (Dockerfile.prod) | starter |
-| `leopardo-queue-worker` | worker | `queue:work redis` (7 queues + default) | starter |
+| `leopardo-queue-worker` | worker | `queue:work` (7 queues + default, connexion database) — #5578 | starter |
 | `leopardo-scheduler` | worker | `schedule:run` toutes les 60 s | starter |
 | `leopardo-db` | database | PostgreSQL | starter |
 | `leopardo-redis` | database (redis) | cache/queue/session | free |
@@ -112,7 +112,7 @@ psql "$DATABASE_URL" -c "SELECT id, email, status, updated_at FROM public.trial_
      workers gratuits sont suspendus après 15 min d'inactivité → jobs en attente).
    - `Start Command` (worker queue) :
      ```
-     php artisan queue:work redis --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default --tries=3 --timeout=300 --sleep=3 --max-jobs=500 --max-time=3600
+     php artisan queue:work --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default --tries=3 --timeout=300 --sleep=3 --max-jobs=500 --max-time=3600
      ```
    - `Start Command` (scheduler) :
      ```

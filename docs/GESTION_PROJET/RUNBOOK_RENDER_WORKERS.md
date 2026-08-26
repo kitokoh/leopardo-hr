@@ -14,7 +14,7 @@ Les workers définis dans `render.yaml` sont **absents** :
 - `leopardo-scheduler` (schedule:run) — **n'existe pas**
 
 En complément, l'env live dévie de `render.yaml` :
-`QUEUE_CONNECTION=database`, `SESSION_DRIVER=file`, `CACHE_STORE=file` (render.yaml prévoit `redis`).
+`QUEUE_CONNECTION=database` (source de vérité unique #5578, alignée render.yaml), `SESSION_DRIVER=file`, `CACHE_STORE=file`.
 
 ## 2. Impact
 
@@ -46,7 +46,7 @@ Pour chaque worker manquant, reproduire la définition `render.yaml` :
 
 | Service | Type | Dockerfile | DockerCommand |
 |---|---|---|---|
-| `leopardo-queue-worker` | Background Worker | `api/Dockerfile.prod` | `php artisan queue:work redis --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default --tries=3 --timeout=300 --sleep=3 --max-jobs=500 --max-time=3600` |
+| `leopardo-queue-worker` | Background Worker | `api/Dockerfile.prod` | `php artisan queue:work --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default --tries=3 --timeout=300 --sleep=3 --max-jobs=500 --max-time=3600` (#5578 : connexion par défaut = database) |
 | `leopardo-scheduler` | Background Worker | `api/Dockerfile.prod` | `sh -c "while true; do php artisan schedule:run --no-interaction; sleep 60; done"` |
 
 Copier le bloc envVars du web service (DB, REDIS, APP_KEY via `fromService`, MAIL_*).
@@ -68,7 +68,7 @@ Dashboard Render → service `gestionemployerbackend` → **Environment** :
 
 | Variable | Valeur | Note |
 |---|---|---|
-| `QUEUE_CONNECTION` | `redis` | (constat : `database` en live) |
+| `QUEUE_CONNECTION` | `database` | #5578 : source de vérité unique (plus de dérive) |
 | `CACHE_STORE` | `redis` | (constat : `file` en live) |
 | `SESSION_DRIVER` | `redis` | (constat : `file` en live) |
 | `REDIS_URL` / `REDIS_PASSWORD` | instance `leopardo-redis` | `fromDatabase` dans render.yaml |
