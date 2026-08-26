@@ -50,6 +50,10 @@ services:
       # (error filtrait tout le logging structuré).
       - key: LOG_LEVEL
         value: info
+      # Issue #5586 : Sentry DSN câblé — DSN à saisir dans le dashboard Render
+      # (sync: false). SENTRY_TRACES_SAMPLE_RATE peut être ajusté en dashboard.
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
       # Database
       - key: DB_CONNECTION
         value: pgsql
@@ -214,6 +218,12 @@ services:
       # Issue #5586 : LOG_LEVEL=info (StructuredLogging + Sentry effectifs).
       - key: LOG_LEVEL
         value: info
+      # Issue #5586 : Sentry DSN partagé depuis le web service (même clé).
+      - key: SENTRY_LARAVEL_DSN
+        fromService:
+          name: gestionemployerbackend
+          type: web
+          envVarKey: SENTRY_LARAVEL_DSN
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
@@ -330,6 +340,12 @@ services:
       # Issue #5586 : LOG_LEVEL=info (cohérence web/worker/scheduler).
       - key: LOG_LEVEL
         value: info
+      # Issue #5586 : Sentry DSN partagé depuis le web service.
+      - key: SENTRY_LARAVEL_DSN
+        fromService:
+          name: gestionemployerbackend
+          type: web
+          envVarKey: SENTRY_LARAVEL_DSN
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
