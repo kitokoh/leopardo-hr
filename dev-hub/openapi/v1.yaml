@@ -13108,12 +13108,23 @@ paths:
       tags:
       - Payroll
       summary: Valider la session de paie
+      description: Issue #5623 — un pays a baremes 'placeholder' (BF/ML/TG, non valides legalement) exige confirm_placeholder=true, sinon 422 PAYROLL_PLACEHOLDER_CONFIRM_REQUIRED.
       parameters:
       - name: payrollRun
         in: path
         required: true
         schema:
           type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                confirm_placeholder:
+                  type: boolean
+                  description: Confirmation explicite pour valider une paie dont les baremes pays sont 'placeholder' (indicatifs)
       responses:
         '200':
           description: Session validee
