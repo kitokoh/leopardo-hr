@@ -267,6 +267,23 @@ class VoiceController extends Controller
             'en' => 'en-US-JennyNeural',
         ];
 
+        // Issue #5616 (P0-SEC) : fail-closed — sans binaire edge-tts, on ne
+        // tente PAS d'exec() (échec silencieux historique) ; on logge et on
+        // renvoie null. Le provider cloud (elevenlabs) est préféré par défaut
+        // dès qu'une clé est configurée (config/ai.php).
+        if (! function_exists('exec')) {
+            Log::error('TTS edge_tts indisponible : exec() est désactivé (AI_TTS_PROVIDER=edge_tts)');
+
+            return null;
+        }
+
+        $binary = trim((string) shell_exec('command -v '.(string) config('ai.voice.edge_tts_binary', 'edge-tts').' 2>/dev/null'));
+        if ($binary === '') {
+            Log::error('TTS edge_tts indisponible : binaire introuvable (pip install edge-tts, cf. Dockerfile.prod — issue #5616)');
+
+            return null;
+        }
+
         $selectedVoice = $voice ?? ($voiceMap[$language] ?? 'fr-FR-DeniseNeural');
         $filename = 'tts_'.bin2hex(random_bytes(8)).'.mp3';
         $storagePath = storage_path('app/tts/'.$filename);
@@ -279,7 +296,7 @@ class VoiceController extends Controller
         $escaped = escapeshellarg($selectedVoice);
         $escapedPath = escapeshellarg($storagePath);
 
-        exec("edge-tts --voice={$escaped} --text={$escapedText} --write-media={$escapedPath} 2>&1", $output, $code);
+        exec(escapeshellarg($binary)." --voice={$escaped} --text={$escapedText} --write-media={$escapedPath} 2>&1", $output, $code);
 
         if ($code !== 0) {
             Log::warning('Edge TTS failed, returning null', ['code' => $code, 'output' => implode("\n", $output)]);
