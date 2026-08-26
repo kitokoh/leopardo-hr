@@ -7580,6 +7580,204 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsYes => 'Yes';
 
   @override
+  String get commonBack => 'Back';
+
+  @override
+  String get commonSave => 'Save';
+
+  @override
+  String get companiesActiveImmediatelyHint =>
+      'The change is applied immediately.';
+
+  @override
+  String get companiesCompanyCreated => 'Company created';
+
+  @override
+  String get companiesCompanyEmail => 'Company email';
+
+  @override
+  String get companiesCreateClient => 'Create client';
+
+  @override
+  String get companiesCreating => 'Creating…';
+
+  @override
+  String get companiesEmpty => 'No companies';
+
+  @override
+  String get companiesNewClient => 'New client';
+
+  @override
+  String get companiesProvisioning => 'Provisioning';
+
+  @override
+  String get companiesRequiredField => 'Required field';
+
+  @override
+  String get companiesTenantsPlatform => 'Tenancy platform';
+
+  @override
+  String get companiesTrialHint => 'Trial period';
+
+  @override
+  String get companydetailActivateClient => 'Activate client';
+
+  @override
+  String get companydetailActiveEmployees => 'Active employees';
+
+  @override
+  String get companydetailActiveModules => 'Active modules';
+
+  @override
+  String get companydetailAnomaliesCritical => 'Critical anomalies';
+
+  @override
+  String get companydetailChoosePlan => 'Choose a plan';
+
+  @override
+  String get companydetailClientActivated => 'Client activated';
+
+  @override
+  String get companydetailClientFile => 'Client file';
+
+  @override
+  String get companydetailClientReference => 'Client reference';
+
+  @override
+  String get companydetailCopyId => 'Copy ID';
+
+  @override
+  String get companydetailCoreModuleAlwaysActive => 'Core module always active';
+
+  @override
+  String get companydetailEditModules => 'Edit modules';
+
+  @override
+  String get companydetailEditSubscription => 'Edit subscription';
+
+  @override
+  String get companydetailEmployeeLimit => 'Employee limit';
+
+  @override
+  String get companydetailLoadingPlans => 'Loading plans…';
+
+  @override
+  String get companydetailModulesUpdated => 'Modules updated';
+
+  @override
+  String get companydetailMonthlyPrice => 'Monthly price';
+
+  @override
+  String get companydetailNextActions => 'Next actions';
+
+  @override
+  String get companydetailNoUrgentActions => 'No urgent actions';
+
+  @override
+  String get companydetailOptionalInternalNote => 'Optional internal note';
+
+  @override
+  String get companydetailPlan => 'Plan';
+
+  @override
+  String get companydetailPlanNotFound => 'Plan not found';
+
+  @override
+  String get companydetailProductAdoption => 'Product adoption';
+
+  @override
+  String get companydetailRecommendedActionHint => 'Recommended action';
+
+  @override
+  String get companydetailSaveModules => 'Save modules';
+
+  @override
+  String get companydetailSaving => 'Saving…';
+
+  @override
+  String get companydetailStatus => 'Status';
+
+  @override
+  String get companydetailSubscription => 'Subscription';
+
+  @override
+  String get companydetailSubscriptionEnd => 'Subscription end';
+
+  @override
+  String get companydetailSubscriptionUpdated => 'Subscription updated';
+
+  @override
+  String get companydetailTenantIdHint => 'Tenancy ID';
+
+  @override
+  String get companydetailUndefined => 'Undefined';
+
+  @override
+  String get companydetailUnlimited => 'Unlimited';
+
+  @override
+  String get companyrequestsApprovedToast => 'Request approved';
+
+  @override
+  String get companyrequestsRejectedToast => 'Request rejected';
+
+  @override
+  String get companyrequestsValidationSuperadmin => 'Super-admin only';
+
+  @override
+  String get dashboardActiveLabel => 'Active';
+
+  @override
+  String get dashboardClientCompanies => 'Client companies';
+
+  @override
+  String get dashboardClientCompaniesHint => 'Companies active on the platform';
+
+  @override
+  String get dashboardClientRequestsHint => 'Pending requests';
+
+  @override
+  String get dashboardCreateCompany => 'Create company';
+
+  @override
+  String get dashboardCreateCompanyHint => 'Provision a new company';
+
+  @override
+  String get dashboardEdgeNodes => 'Edge nodes';
+
+  @override
+  String get dashboardEdgeNodesHint => 'Nodes active on the network';
+
+  @override
+  String get dashboardExecutiveView => 'Executive view';
+
+  @override
+  String get dashboardLoadingCockpit => 'Loading cockpit…';
+
+  @override
+  String get dashboardPlatformActions => 'Platform actions';
+
+  @override
+  String get dashboardPlatformAdministration => 'Platform administration';
+
+  @override
+  String get dashboardSuperAdmin => 'Super-admin';
+
+  @override
+  String get dashboardSupportClient => 'Client support';
+
+  @override
+  String get dashboardTicketsHint => 'Support tickets';
+
+  @override
+  String get dashboardTrials => 'Trials';
+
+  @override
+  String companydetailPlanWithPrice(Object name, Object price) {
+    return '$name — $price €/month';
+  }
+
+  @override
   String get twoFaTitle => '2FA Security';
 
   @override

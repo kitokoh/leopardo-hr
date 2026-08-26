@@ -7504,6 +7504,204 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsYes => 'نعم';
 
   @override
+  String get commonBack => 'رجوع';
+
+  @override
+  String get commonSave => 'حفظ';
+
+  @override
+  String get companiesActiveImmediatelyHint => 'يتم تطبيق التغيير فورًا.';
+
+  @override
+  String get companiesCompanyCreated => 'تم إنشاء الشركة';
+
+  @override
+  String get companiesCompanyEmail => 'البريد الإلكتروني للشركة';
+
+  @override
+  String get companiesCreateClient => 'إنشاء عميل';
+
+  @override
+  String get companiesCreating => 'جارٍ الإنشاء…';
+
+  @override
+  String get companiesEmpty => 'لا توجد شركات';
+
+  @override
+  String get companiesNewClient => 'عميل جديد';
+
+  @override
+  String get companiesProvisioning => 'التجهيز';
+
+  @override
+  String get companiesRequiredField => 'حقل مطلوب';
+
+  @override
+  String get companiesTenantsPlatform => 'منصة الإيجار';
+
+  @override
+  String get companiesTrialHint => 'فترة تجريبية';
+
+  @override
+  String get companydetailActivateClient => 'تفعيل العميل';
+
+  @override
+  String get companydetailActiveEmployees => 'الموظفون النشطون';
+
+  @override
+  String get companydetailActiveModules => 'الوحدات النشطة';
+
+  @override
+  String get companydetailAnomaliesCritical => 'الحالات الشاذة الحرجة';
+
+  @override
+  String get companydetailChoosePlan => 'اختر خطة';
+
+  @override
+  String get companydetailClientActivated => 'تم تفعيل العميل';
+
+  @override
+  String get companydetailClientFile => 'ملف العميل';
+
+  @override
+  String get companydetailClientReference => 'مرجع العميل';
+
+  @override
+  String get companydetailCopyId => 'نسخ المعرف';
+
+  @override
+  String get companydetailCoreModuleAlwaysActive =>
+      'الوحدة الأساسية نشطة دائمًا';
+
+  @override
+  String get companydetailEditModules => 'تعديل الوحدات';
+
+  @override
+  String get companydetailEditSubscription => 'تعديل الاشتراك';
+
+  @override
+  String get companydetailEmployeeLimit => 'حد الموظفين';
+
+  @override
+  String get companydetailLoadingPlans => 'جارٍ تحميل الخطط…';
+
+  @override
+  String get companydetailModulesUpdated => 'تم تحديث الوحدات';
+
+  @override
+  String get companydetailMonthlyPrice => 'السعر الشهري';
+
+  @override
+  String get companydetailNextActions => 'الإجراءات التالية';
+
+  @override
+  String get companydetailNoUrgentActions => 'لا توجد إجراءات عاجلة';
+
+  @override
+  String get companydetailOptionalInternalNote => 'ملاحظة داخلية اختيارية';
+
+  @override
+  String get companydetailPlan => 'الخطة';
+
+  @override
+  String get companydetailPlanNotFound => 'الخطة غير موجودة';
+
+  @override
+  String get companydetailProductAdoption => 'تبني المنتج';
+
+  @override
+  String get companydetailRecommendedActionHint => 'الإجراء الموصى به';
+
+  @override
+  String get companydetailSaveModules => 'حفظ الوحدات';
+
+  @override
+  String get companydetailSaving => 'جارٍ الحفظ…';
+
+  @override
+  String get companydetailStatus => 'الحالة';
+
+  @override
+  String get companydetailSubscription => 'الاشتراك';
+
+  @override
+  String get companydetailSubscriptionEnd => 'نهاية الاشتراك';
+
+  @override
+  String get companydetailSubscriptionUpdated => 'تم تحديث الاشتراك';
+
+  @override
+  String get companydetailTenantIdHint => 'معرف الإيجار';
+
+  @override
+  String get companydetailUndefined => 'غير محدد';
+
+  @override
+  String get companydetailUnlimited => 'غير محدود';
+
+  @override
+  String get companyrequestsApprovedToast => 'تمت الموافقة على الطلب';
+
+  @override
+  String get companyrequestsRejectedToast => 'تم رفض الطلب';
+
+  @override
+  String get companyrequestsValidationSuperadmin => 'للمشرف الأعلى فقط';
+
+  @override
+  String get dashboardActiveLabel => 'نشط';
+
+  @override
+  String get dashboardClientCompanies => 'شركات العملاء';
+
+  @override
+  String get dashboardClientCompaniesHint => 'الشركات النشطة على المنصة';
+
+  @override
+  String get dashboardClientRequestsHint => 'الطلبات المعلقة';
+
+  @override
+  String get dashboardCreateCompany => 'إنشاء شركة';
+
+  @override
+  String get dashboardCreateCompanyHint => 'تجهيز شركة جديدة';
+
+  @override
+  String get dashboardEdgeNodes => 'عقد الحافة';
+
+  @override
+  String get dashboardEdgeNodesHint => 'العقد النشطة على الشبكة';
+
+  @override
+  String get dashboardExecutiveView => 'عرض الإدارة';
+
+  @override
+  String get dashboardLoadingCockpit => 'جارٍ تحميل لوحة التحكم…';
+
+  @override
+  String get dashboardPlatformActions => 'إجراءات المنصة';
+
+  @override
+  String get dashboardPlatformAdministration => 'إدارة المنصة';
+
+  @override
+  String get dashboardSuperAdmin => 'المشرف الأعلى';
+
+  @override
+  String get dashboardSupportClient => 'دعم العملاء';
+
+  @override
+  String get dashboardTicketsHint => 'تذاكر الدعم';
+
+  @override
+  String get dashboardTrials => 'التجارب';
+
+  @override
+  String companydetailPlanWithPrice(Object name, Object price) {
+    return '$name — $price €/شهر';
+  }
+
+  @override
   String get twoFaTitle => 'أمان التحقق بخطوتين';
 
   @override

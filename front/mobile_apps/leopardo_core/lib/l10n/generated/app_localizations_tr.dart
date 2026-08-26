@@ -7587,6 +7587,204 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settingsYes => 'Evet';
 
   @override
+  String get commonBack => 'Geri';
+
+  @override
+  String get commonSave => 'Kaydet';
+
+  @override
+  String get companiesActiveImmediatelyHint => 'Değişiklik anında uygulanır.';
+
+  @override
+  String get companiesCompanyCreated => 'Şirket oluşturuldu';
+
+  @override
+  String get companiesCompanyEmail => 'Şirket e-postası';
+
+  @override
+  String get companiesCreateClient => 'Müşteri oluştur';
+
+  @override
+  String get companiesCreating => 'Oluşturuluyor…';
+
+  @override
+  String get companiesEmpty => 'Şirket yok';
+
+  @override
+  String get companiesNewClient => 'Yeni müşteri';
+
+  @override
+  String get companiesProvisioning => 'Sağlama';
+
+  @override
+  String get companiesRequiredField => 'Zorunlu alan';
+
+  @override
+  String get companiesTenantsPlatform => 'Kiracılık platformu';
+
+  @override
+  String get companiesTrialHint => 'Deneme süresi';
+
+  @override
+  String get companydetailActivateClient => 'Müşteriyi etkinleştir';
+
+  @override
+  String get companydetailActiveEmployees => 'Aktif çalışanlar';
+
+  @override
+  String get companydetailActiveModules => 'Aktif modüller';
+
+  @override
+  String get companydetailAnomaliesCritical => 'Kritik anormallikler';
+
+  @override
+  String get companydetailChoosePlan => 'Bir plan seçin';
+
+  @override
+  String get companydetailClientActivated => 'Müşteri etkinleştirildi';
+
+  @override
+  String get companydetailClientFile => 'Müşteri dosyası';
+
+  @override
+  String get companydetailClientReference => 'Müşteri referansı';
+
+  @override
+  String get companydetailCopyId => 'Kimliği kopyala';
+
+  @override
+  String get companydetailCoreModuleAlwaysActive =>
+      'Çekirdek modül her zaman aktif';
+
+  @override
+  String get companydetailEditModules => 'Modülleri düzenle';
+
+  @override
+  String get companydetailEditSubscription => 'Aboneliği düzenle';
+
+  @override
+  String get companydetailEmployeeLimit => 'Çalışan limiti';
+
+  @override
+  String get companydetailLoadingPlans => 'Planlar yükleniyor…';
+
+  @override
+  String get companydetailModulesUpdated => 'Modüller güncellendi';
+
+  @override
+  String get companydetailMonthlyPrice => 'Aylık fiyat';
+
+  @override
+  String get companydetailNextActions => 'Sonraki eylemler';
+
+  @override
+  String get companydetailNoUrgentActions => 'Acil eylem yok';
+
+  @override
+  String get companydetailOptionalInternalNote => 'İsteğe bağlı dahili not';
+
+  @override
+  String get companydetailPlan => 'Plan';
+
+  @override
+  String get companydetailPlanNotFound => 'Plan bulunamadı';
+
+  @override
+  String get companydetailProductAdoption => 'Ürün benimseme';
+
+  @override
+  String get companydetailRecommendedActionHint => 'Önerilen eylem';
+
+  @override
+  String get companydetailSaveModules => 'Modülleri kaydet';
+
+  @override
+  String get companydetailSaving => 'Kaydediliyor…';
+
+  @override
+  String get companydetailStatus => 'Durum';
+
+  @override
+  String get companydetailSubscription => 'Abonelik';
+
+  @override
+  String get companydetailSubscriptionEnd => 'Abonelik bitişi';
+
+  @override
+  String get companydetailSubscriptionUpdated => 'Abonelik güncellendi';
+
+  @override
+  String get companydetailTenantIdHint => 'Kiracılık kimliği';
+
+  @override
+  String get companydetailUndefined => 'Tanımsız';
+
+  @override
+  String get companydetailUnlimited => 'Sınırsız';
+
+  @override
+  String get companyrequestsApprovedToast => 'Talep onaylandı';
+
+  @override
+  String get companyrequestsRejectedToast => 'Talep reddedildi';
+
+  @override
+  String get companyrequestsValidationSuperadmin => 'Yalnızca süper yönetici';
+
+  @override
+  String get dashboardActiveLabel => 'Aktif';
+
+  @override
+  String get dashboardClientCompanies => 'Müşteri şirketler';
+
+  @override
+  String get dashboardClientCompaniesHint => 'Platformda aktif şirketler';
+
+  @override
+  String get dashboardClientRequestsHint => 'Bekleyen talepler';
+
+  @override
+  String get dashboardCreateCompany => 'Şirket oluştur';
+
+  @override
+  String get dashboardCreateCompanyHint => 'Yeni bir şirket sağla';
+
+  @override
+  String get dashboardEdgeNodes => 'Edge düğümleri';
+
+  @override
+  String get dashboardEdgeNodesHint => 'Ağda aktif düğümler';
+
+  @override
+  String get dashboardExecutiveView => 'Yönetici görünümü';
+
+  @override
+  String get dashboardLoadingCockpit => 'Kokpit yükleniyor…';
+
+  @override
+  String get dashboardPlatformActions => 'Platform eylemleri';
+
+  @override
+  String get dashboardPlatformAdministration => 'Platform yönetimi';
+
+  @override
+  String get dashboardSuperAdmin => 'Süper yönetici';
+
+  @override
+  String get dashboardSupportClient => 'Müşteri desteği';
+
+  @override
+  String get dashboardTicketsHint => 'Destek biletleri';
+
+  @override
+  String get dashboardTrials => 'Denemeler';
+
+  @override
+  String companydetailPlanWithPrice(Object name, Object price) {
+    return '$name — $price €/ay';
+  }
+
+  @override
   String get twoFaTitle => '2FA Güvenliği';
 
   @override
