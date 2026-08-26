@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, CheckCircle2, Eye, EyeOff, Loader2, LockKeyhole } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { Button } from '@/components/ui/Button';
+import { PasswordStrengthBar } from '@/components/ui/PasswordStrengthBar';
 import { getCopy, normalizeLocale, storeAuthSession, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
@@ -159,6 +160,7 @@ export function ActivateAccountForm({ token }: { token: string }) {
                       {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                     </button>
                   </div>
+                  <PasswordStrengthBar password={password} locale={appLocale} />
                 </div>
 
                 <div>
