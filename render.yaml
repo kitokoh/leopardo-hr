@@ -89,8 +89,12 @@ services:
       # App secrets
       - key: APP_KEY
         generateValue: true
+      # Issue #5578 : file UNIQUE en prod = database (décision 2026-08-21,
+      # cf. ProbeAvailabilityCommand + drain GH queue-worker-fallback.yml).
+      # Un QUEUE_CONNECTION=redis ici contredisait le probe (database) →
+      # jobs dispatchés sur database jamais drainés par le worker redis.
       - key: QUEUE_CONNECTION
-        value: redis
+        value: database
       - key: CACHE_STORE
         value: redis
       - key: SESSION_DRIVER
@@ -172,7 +176,7 @@ services:
     autoDeploy: true
     # Override default CMD to run queue:work instead of web server
     dockerCommand: >-
-      php artisan queue:work redis
+      php artisan queue:work database
       --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default
       --tries=3
       --timeout=300
@@ -241,8 +245,9 @@ services:
           name: gestionemployerbackend
           type: web
           envVarKey: APP_KEY
+      # Issue #5578 : file UNIQUE = database (aligné sur probe + drain GH).
       - key: QUEUE_CONNECTION
-        value: redis
+        value: database
       - key: CACHE_STORE
         value: redis
       - key: FIREBASE_PROJECT_ID
@@ -345,8 +350,9 @@ services:
           name: gestionemployerbackend
           type: web
           envVarKey: APP_KEY
+      # Issue #5578 : file UNIQUE = database (aligné sur probe + drain GH).
       - key: QUEUE_CONNECTION
-        value: redis
+        value: database
       # Mail (issue #3594) : le scheduler envoie des emails synchrones (rappels,
       # alertes, notifications planifiées). Sans MAIL_* il retombe sur
       # config/mail.php 'host' => 127.0.0.1:25 et tout envoi échoue en silence.

@@ -14,10 +14,14 @@ return [
     */
 
     // Issue #3562 : en production, un QUEUE_CONNECTION absent ne doit JAMAIS
-    // retomber sur 'sync' (jobs lourds exécutés dans la requête web) — le
-    // worker redis est déployé (render.yaml leopardo-queue-worker). En
-    // dev/test, le défaut reste 'sync' pour la simplicité locale.
-    'default' => env('QUEUE_CONNECTION', env('APP_ENV', 'production') === 'production' ? 'redis' : 'sync'),
+    // retomber sur 'sync' (jobs lourds exécutés dans la requête web).
+    // Issue #5578 : la file UNIQUE de prod est `database` — cohérente avec
+    // ProbeAvailabilityCommand (database volontairement FIXE), le worker
+    // Render (`queue:work database` dans render.yaml) et le drain GH
+    // queue-worker-fallback.yml. Un défaut `redis` ici réintroduisait le
+    // split-brain : jobs dispatchés sur database jamais drainés.
+    // En dev/test, le défaut reste 'sync' pour la simplicité locale.
+    'default' => env('QUEUE_CONNECTION', env('APP_ENV', 'production') === 'production' ? 'database' : 'sync'),
 
     /*
     |--------------------------------------------------------------------------
