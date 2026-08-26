@@ -29,6 +29,18 @@ class AuthRepository {
     );
 
     final data = _envelope(response.data);
+
+    // #5627 — Challenge 2FA : la réponse ne contient pas de token/employee,
+    // seulement mfa_challenge=true + mfa_challenge_token. Le Notifier détecte
+    // cette clé et redirige l'utilisateur vers l'écran de vérification.
+    if (data['mfa_challenge'] == true) {
+      final challengeToken = data['mfa_challenge_token'];
+      if (challengeToken == null || challengeToken is! String) {
+        throw ApiException('mfa_challenge_token manquant dans la réponse', statusCode: 500);
+      }
+      return {'mfa_challenge_token': challengeToken};
+    }
+
     // #4199 : token racine (auth.login renvoie {token, employee}) hors
     //    enveloppe {data:{...}} — helpers locaux documentés, extractDataMap
     //    ne s'applique pas au premier niveau de ce contrat.
@@ -59,6 +71,62 @@ class AuthRepository {
     await _persistEmployeeContext(employee);
 
     return {'employee': employee};
+  }
+
+  /// Vérifie le code TOTP (ou de récupération) soumis après un challenge 2FA.
+  ///
+  /// [challengeToken] — token MFA reçu lors de la réponse /auth/login.
+  /// [code] — code TOTP 6 chiffres ; null si [recoveryCode] est fourni.
+  /// [recoveryCode] — code de récupération ; null si [code] est fourni.
+  ///
+  /// Retourne `{'employee': Employee}` sur succès.
+  Future<Map<String, dynamic>> verifyMfaChallenge({
+    required String challengeToken,
+    String? code,
+    String? recoveryCode,
+  }) async {
+    assert(code != null || recoveryCode != null, 'code ou recoveryCode requis');
+
+    final response = await apiClient.requestWithRetry(
+      '/auth/2fa/verify',
+      method: 'POST',
+      data: {
+        'challenge_token': challengeToken,
+        if (code != null) 'code': code,
+        if (recoveryCode != null) 'recovery_code': recoveryCode,
+        'device_name': 'Mobile App',
+      },
+      isLoginRequest: true,
+    );
+
+    final data = _envelope(response.data);
+    final token = extractToken(data);
+    await storage.saveToken(token);
+
+    // Hydrate l'employé depuis /auth/me.
+    try {
+      final meResponse = await apiClient.requestWithRetry(
+        '/auth/me',
+        timeoutOverride: _authCheckTimeout,
+        maxRetriesOverride: 0,
+      );
+      final meData = extractDataMap(meResponse.data);
+      if (meData.isNotEmpty) {
+        final employee = Employee.fromJson(meData);
+        await _persistEmployeeContext(employee);
+        return {'employee': employee};
+      }
+    } catch (_) {}
+
+    // Fallback : utiliser data.data (id + email) — suffisant pour démarrer.
+    final employeeData = data['data'];
+    if (employeeData is Map<String, dynamic>) {
+      final employee = Employee.fromJson(employeeData);
+      await _persistEmployeeContext(employee);
+      return {'employee': employee};
+    }
+
+    throw ApiException('Impossible de récupérer le profil après vérification 2FA', statusCode: 500);
   }
 
   Future<Map<String, dynamic>> loginWithGoogle() async {

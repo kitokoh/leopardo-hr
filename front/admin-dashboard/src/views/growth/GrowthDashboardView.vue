@@ -32,7 +32,8 @@
 
     <div v-else>
       <div v-if="currentTab === 'partners'" class="space-y-6">
-        <div class="glass-card overflow-hidden">
+        <div class="glass-card overflow-x-auto">
+          <div class="overflow-x-auto">
           <table class="w-full text-left">
             <thead class="bg-slate-50">
               <tr>
@@ -76,11 +77,12 @@
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
       </div>
 
       <div v-if="currentTab === 'payouts'" class="space-y-6">
-        <div class="glass-card overflow-hidden">
+        <div class="glass-card overflow-x-auto">
            <table class="w-full text-left">
             <thead class="bg-slate-50">
               <tr>

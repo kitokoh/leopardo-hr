@@ -12,5 +12,7 @@
   "listenPort": 8037,
   "_punch_methods_comment": "#5120 — Méthodes de pointage autorisées : null = toutes (fingerprint, face, card). Synchroniser avec ZktecoDevice.punch_methods côté API.",
   "punch_methods": null,
+  "_demo_mode_comment": "#5619 — demoMode active le bouton d'accès démo (données fictives pour test/démo). Ne jamais activer en production : le bridge injecte window.__KIOSK_DEMO_MODE dans les pages HTML quand ce champ est true.",
+  "demoMode": false,
   "_edge": "Bloc 'edge' retiré (issue #2750) : aucun code ne le lisait (ni app.js ni bridge.py). Le bridge sert la config cloud via les globals window.__KIOSK_* injectés dans les pages HTML."
 }

@@ -11,19 +11,24 @@ class AuthState {
   final bool isLoading;
   final Employee? employee;
   final String? error;
+  /// Token de challenge 2FA (non null → l'utilisateur doit saisir son code TOTP).
+  final String? mfaChallengeToken;
 
-  AuthState({this.isLoading = false, this.employee, this.error});
+  AuthState({this.isLoading = false, this.employee, this.error, this.mfaChallengeToken});
 
   AuthState copyWith({
     bool? isLoading,
     Employee? employee,
     String? error,
     bool clearError = false,
+    String? mfaChallengeToken,
+    bool clearMfaChallenge = false,
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
       employee: employee ?? this.employee,
       error: clearError ? null : (error ?? this.error),
+      mfaChallengeToken: clearMfaChallenge ? null : (mfaChallengeToken ?? this.mfaChallengeToken),
     );
   }
 }
@@ -59,10 +64,50 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<bool> login(String email, String password) async {
-    state = state.copyWith(isLoading: true, clearError: true);
+    state = state.copyWith(isLoading: true, clearError: true, clearMfaChallenge: true);
     try {
       final data = await _repository.login(email, password);
+
+      // #5627 — Réponse 2FA challenge : pas encore authentifié, rediriger
+      // l'utilisateur vers l'écran de saisie du code TOTP.
+      if (data.containsKey('mfa_challenge_token')) {
+        state = state.copyWith(
+          isLoading: false,
+          mfaChallengeToken: data['mfa_challenge_token'] as String,
+        );
+        return false; // Pas encore connecté — challenge en attente.
+      }
+
       state = state.copyWith(isLoading: false, employee: data['employee']);
+      return true;
+    } catch (e) {
+      if (e is ApiException) {
+        state = state.copyWith(isLoading: false, error: e.message);
+        return false;
+      }
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
+  /// Vérifie le code TOTP (ou de récupération) après un challenge 2FA.
+  /// Appelé depuis [TwoFactorChallengeScreen].
+  Future<bool> verifyMfaChallenge({String? code, String? recoveryCode}) async {
+    final challengeToken = state.mfaChallengeToken;
+    if (challengeToken == null) return false;
+
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final data = await _repository.verifyMfaChallenge(
+        challengeToken: challengeToken,
+        code: code,
+        recoveryCode: recoveryCode,
+      );
+      state = state.copyWith(
+        isLoading: false,
+        employee: data['employee'],
+        clearMfaChallenge: true,
+      );
       return true;
     } catch (e) {
       if (e is ApiException) {

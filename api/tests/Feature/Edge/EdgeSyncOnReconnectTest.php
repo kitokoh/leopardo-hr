@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Edge;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +29,9 @@ class EdgeSyncOnReconnectTest extends TestCase
     use CreatesMvpSchema;
 
     private Company $company;
+
     private Employee $employee;
+
     private Schedule $schedule;
 
     protected function setUp(): void
@@ -39,21 +41,21 @@ class EdgeSyncOnReconnectTest extends TestCase
         $this->createEdgeNodesTable();
 
         $this->company = Company::factory()->create([
-            'schema_name'  => 'shared_tenants',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
+            'status' => 'active',
         ]);
 
         $this->schedule = Schedule::factory()->create([
             'company_id' => $this->company->id,
-            'name'       => 'Journée',
+            'name' => 'Journée',
             'start_time' => '08:00:00',
-            'end_time'   => '17:00:00',
+            'end_time' => '17:00:00',
         ]);
 
         $this->employee = Employee::factory()->create([
-            'company_id'  => $this->company->id,
-            'role'        => 'employee',
+            'company_id' => $this->company->id,
+            'role' => 'employee',
             'schedule_id' => $this->schedule->id,
         ]);
     }
@@ -100,16 +102,16 @@ class EdgeSyncOnReconnectTest extends TestCase
     private function insertEdgeNode(array $overrides = []): object
     {
         $id = DB::table('edge_nodes')->insertGetId(array_merge([
-            'company_id'      => $this->company->id,
-            'node_id'         => 'edge-sync-001',
-            'name'            => 'Kiosque Entrée',
-            'status'          => 'online',
-            'license_valid'   => true,
+            'company_id' => $this->company->id,
+            'node_id' => 'edge-sync-001',
+            'name' => 'Kiosque Entrée',
+            'status' => 'online',
+            'license_valid' => true,
             'license_expires_at' => Carbon::now()->addDays(30)->toDateTimeString(),
-            'last_seen_at'    => Carbon::now()->toDateTimeString(),
-            'pending_count'   => 0,
-            'created_at'      => Carbon::now(),
-            'updated_at'      => Carbon::now(),
+            'last_seen_at' => Carbon::now()->toDateTimeString(),
+            'pending_count' => 0,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ], $overrides));
 
         return DB::table('edge_nodes')->find($id);
@@ -118,20 +120,20 @@ class EdgeSyncOnReconnectTest extends TestCase
     private function createOfflinePunch(int $minutesAgo = 0, int $sessionNumber = 1): AttendanceLog
     {
         return AttendanceLog::create([
-            'company_id'          => $this->company->id,
-            'employee_id'         => $this->employee->id,
-            'schedule_id'         => $this->schedule->id,
-            'date'                => Carbon::today()->toDateString(),
-            'session_number'      => $sessionNumber,
-            'check_in'            => Carbon::now()->subMinutes($minutesAgo)->toDateTimeString(),
-            'method'              => 'qr_code',
-            'work_type'           => 'presentiel',
-            'biometric_type'      => 'none',
+            'company_id' => $this->company->id,
+            'employee_id' => $this->employee->id,
+            'schedule_id' => $this->schedule->id,
+            'date' => Carbon::today()->toDateString(),
+            'session_number' => $sessionNumber,
+            'check_in' => Carbon::now()->subMinutes($minutesAgo)->toDateTimeString(),
+            'method' => 'qr_code',
+            'work_type' => 'presentiel',
+            'biometric_type' => 'none',
             'synced_from_offline' => false,
-            'status'              => 'present',
-            'hours_worked'        => '0',
-            'overtime_hours'      => '0',
-            'late_minutes'        => 0,
+            'status' => 'present',
+            'hours_worked' => '0',
+            'overtime_hours' => '0',
+            'late_minutes' => 0,
         ]);
     }
 
@@ -267,7 +269,7 @@ class EdgeSyncOnReconnectTest extends TestCase
         DB::table('edge_nodes')
             ->where('id', $node->id)
             ->update([
-                'status'       => 'online',
+                'status' => 'online',
                 'last_seen_at' => Carbon::now()->toDateTimeString(),
             ]);
 
@@ -288,13 +290,13 @@ class EdgeSyncOnReconnectTest extends TestCase
         $this->insertEdgeNode(['node_id' => 'edge-heartbeat-node']);
 
         $response = $this->postJson('/api/v1/edge/heartbeat', [
-            'node_id'       => 'edge-heartbeat-node',
+            'node_id' => 'edge-heartbeat-node',
             'pending_count' => 2,
-            'version'       => '1.0.0',
+            'version' => '1.0.0',
         ]);
 
         // Le middleware throttle peut bloquer en test — on accepte 200 ou 429
-        $this->assertContains($response->status(), [200, 422, 429, 500]);
+        // #5585 : payload valide → accepté 200 (les erreurs sont couvertes par des cas dédiés).
+        $response->assertOk();
     }
 }
-

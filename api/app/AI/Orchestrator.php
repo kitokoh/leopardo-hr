@@ -46,6 +46,19 @@ class Orchestrator
         $userRole = $this->resolveUserRole($request->userId, $request->companyId);
         $tools = $this->toolRegistry->getToolsAsLLMFormat($userRole, $request->companyId);
 
+        // Issue #5625 : filtrer les outils sans handler PHP pour ne pas promettre
+        // au LLM (et donc à l'utilisateur) des fonctionnalités inexistantes.
+        $implementedToolNames = array_merge(
+            IntentEngine::supportedReadToolNames(),
+            WriteActionRunner::supportedWriteToolNames(),
+        );
+        $tools = array_values(
+            array_filter(
+                $tools,
+                static fn (array $t): bool => in_array($t['function']['name'] ?? '', $implementedToolNames, true),
+            ),
+        );
+
         $response = $this->client->chat($llmMessages, $tools);
 
         $toolsUsed = [];

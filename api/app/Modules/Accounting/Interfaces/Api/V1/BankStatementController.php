@@ -163,7 +163,7 @@ final class BankStatementController extends Controller
             $matched = $line->matched_payment_id !== null;
             $csv .= implode(';', [
                 $line->line_number,
-                $line->line_date?->toDateString() ?? '',
+                $line->line_date->toDateString(),
                 self::csvCell($line->label),
                 number_format((float) $line->amount, 2, ',', ''),
                 $line->status, // pending|matched

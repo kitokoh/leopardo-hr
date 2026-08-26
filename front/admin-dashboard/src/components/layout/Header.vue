@@ -5,14 +5,14 @@
         <!-- Mobile menu button -->
         <button
           @click="$emit('toggle-sidebar')"
-          class="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 lg:hidden"
+          class="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 md:hidden"
           aria-label="Ouvrir le menu"
         >
           <Bars3Icon class="h-6 w-6" />
         </button>
 
         <!-- Search -->
-        <div class="flex flex-1 items-center justify-center px-2 lg:ml-6 lg:justify-start">
+        <div class="flex flex-1 items-center justify-center px-2 md:ml-6 md:justify-start">
           <div class="w-full max-w-lg lg:max-w-xs">
             <label for="search" class="sr-only">{{ $t('shell.search', 'Rechercher') }}</label>
             <div class="relative group">

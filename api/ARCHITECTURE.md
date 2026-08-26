@@ -57,6 +57,23 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 
 ---
 
+**Garde CI (issue #5584, audit architecture 2026-08-26) :**
+`dev-hub/tools/check-module-isolation.sh` (branché dans `architecture-check.yml`,
+job Module Structure Validator) bloque TOUT nouvel import croisé :
+- `use App\Modules\<X>\...` dans un module ≠ X ;
+- `use App\Modules\<X>\...` dans `Core/`.
+
+La dette héritée (16/18 modules — seuls `Cameras` et `EdgeSync` s'abstiennent ;
+57 paires source→cible) est **actée** dans
+`dev-hub/tools/module-isolation-allowlist.txt` et doit **diminuer** : toute
+ligne ajoutée exige une justification (issue de refactor), aucune n'est
+rajoutée « pour passer ». Dérogations structurelles déjà documentées :
+`Modules/Absence` et `Modules/Expense` sont des façades sur `Planning`
+(PA2-ARCH-002 / PA2-ARCH-011). Refactors de résorption en cours : #5591
+(PayrollCalculator → extraire `Planning`) ; déplacement de l'`Employee`
+canonique hors de `Core/Auth` (#5584 item 3, chantier à part — 361
+consommateurs).
+
 ## Modules existants
 
 | Module | Statut routes | Statut code | ServiceProvider |
