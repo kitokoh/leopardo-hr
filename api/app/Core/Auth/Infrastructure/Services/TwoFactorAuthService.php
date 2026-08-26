@@ -179,7 +179,7 @@ final class TwoFactorAuthService
      */
     public function verifyChallenge(string $challengeToken, ?string $code, ?string $recoveryCode, ?string $deviceName = null): array
     {
-        /** @var array{employee_id: int, company_id: string, tenant_schema: string|null, email: string, device_name: string|null}|null $context */
+        /** @var array{employee_id?: int, company_id?: string, tenant_schema?: string|null, email?: string, device_name?: string|null}|null $context */
         $context = Cache::get('mfa:challenge:'.$challengeToken);
 
         if (! is_array($context) || ! isset($context['employee_id'])) {
@@ -194,7 +194,9 @@ final class TwoFactorAuthService
         $previousSearchPath = null;
         if (DB::getDriverName() === 'pgsql' && is_string($context['tenant_schema'] ?? null) && $context['tenant_schema'] !== '') {
             $searchPathResult = DB::selectOne('SHOW search_path');
-            $previousSearchPath = is_object($searchPathResult) ? (string) $searchPathResult->search_path : null;
+            $previousSearchPath = is_object($searchPathResult) && property_exists($searchPathResult, 'search_path')
+                ? (string) $searchPathResult->search_path
+                : null;
             // NB #5579 : SET search_path TO <schéma> SEUL (merge #5436)
             // rendait `companies` et `personal_access_tokens` (schéma public)
             // introuvables → challenge « expiré » (401) ou 500 à la création
@@ -229,7 +231,7 @@ final class TwoFactorAuthService
             }
 
             /** @var Company|null $company */
-            $company = Company::query()->find($context['company_id']);
+            $company = Company::query()->find((string) ($context['company_id'] ?? ''));
 
             if ($company === null || in_array($company->status, ['suspended', 'expired'], true)) {
                 throw TwoFactorException::challengeExpired();
@@ -303,7 +305,7 @@ final class TwoFactorAuthService
         $candidate = hash('sha256', strtoupper($code));
 
         foreach ($hashed as $index => $entry) {
-            if (is_string($entry) && hash_equals($entry, $candidate)) {
+            if (hash_equals($entry, $candidate)) {
                 unset($hashed[$index]);
                 $employee->forceFill(['two_fa_recovery_codes' => array_values($hashed)])->save();
 

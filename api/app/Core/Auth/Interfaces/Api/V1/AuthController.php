@@ -431,8 +431,7 @@ class AuthController extends Controller
     /**
      * Construit la réponse challenge 2FA (même contrat que login() : le
      * client rappelle ensuite POST /auth/2fa/verify avec un code TOTP).
-     *
-     * @return JsonResponse{mfa_challenge: true, mfa_challenge_token: string, mfa_challenge_expires_in: int}
+     * Corps : mfa_challenge=true, mfa_challenge_token, mfa_challenge_expires_in.
      */
     private function mfaChallengeResponse(
         Employee $employee,
