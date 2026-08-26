@@ -245,7 +245,7 @@ class WebhookIdempotenceTest extends TestCase
 
         $this->app->instance(
             EmployeeEmailLookupService::class,
-            new class ($employee) extends EmployeeEmailLookupService
+            new class($employee) extends EmployeeEmailLookupService
             {
                 public function __construct(private readonly Employee $employee) {}
 
