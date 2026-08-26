@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS public.platform_announcements CASCADE;
 DROP TABLE IF EXISTS public.marketing_leads CASCADE;
 DROP TABLE IF EXISTS public.super_admins CASCADE;
 DROP TABLE IF EXISTS public.user_lookups CASCADE;
+DROP TABLE IF EXISTS public.webhook_events CASCADE;
 DROP TABLE IF EXISTS public.personal_access_tokens CASCADE;
 DROP TABLE IF EXISTS public.languages CASCADE;
 DROP TABLE IF EXISTS public.partner_referrals CASCADE;
@@ -442,7 +443,7 @@ CREATE TABLE shared_tenants.attendance_kiosks (
     company_id uuid NOT NULL,
     name varchar(100) NOT NULL,
     location_label varchar(120) NULL,
-    device_code varchar(40) NOT NULL,
+    device_code varchar(64) NOT NULL,
     sync_token_hash varchar(255) NULL,
     status varchar(20) NOT NULL DEFAULT 'active',
     biometric_mode varchar(30) NOT NULL DEFAULT 'fingerprint',
@@ -843,6 +844,19 @@ CREATE TABLE public.user_lookups (
     employee_id integer NOT NULL,
     role varchar(20) NOT NULL
 );
+
+CREATE TABLE public.webhook_events (
+    id bigserial PRIMARY KEY,
+    source varchar(32) NOT NULL,
+    event_id varchar(191) NOT NULL,
+    payload_hash char(64) NOT NULL,
+    response_code smallint NOT NULL DEFAULT 0,
+    response_body text NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
+CREATE UNIQUE INDEX webhook_events_source_event_id_unique ON public.webhook_events (source, event_id);
 
 CREATE TABLE public.super_admins (
     id serial PRIMARY KEY,

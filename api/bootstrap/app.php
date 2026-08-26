@@ -71,6 +71,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Cible les managers dont la société a été créée il y a 20h–28h et
         // dont l'onboarding comporte encore des étapes requises non complétées.
         $schedule->command('onboarding:send-reminders')->dailyAt('09:00');
+        // Issue #5616 — Purge des fichiers TTS temporaires (RGPD + espace disque).
+        // Les URLs signées expirent en 60 s ; purger les fichiers > 60 min suffit
+        // pour garantir qu'aucun fichier accessible ne subsiste sur disque.
+        $schedule->command('tts:purge')->hourly();
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',

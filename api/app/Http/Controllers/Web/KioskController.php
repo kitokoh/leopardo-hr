@@ -25,8 +25,10 @@ class KioskController extends Controller
     {
         DB::statement('SET search_path TO shared_tenants,public');
 
+        // Issue #5588 : lookup par hash déterministe (device_code non stocké
+        // en clair — AttendanceKiosk::hashDeviceCode).
         $kiosk = AttendanceKiosk::query()
-            ->where('device_code', strtoupper($deviceCode))
+            ->where('device_code', AttendanceKiosk::hashDeviceCode($deviceCode))
             ->where('status', 'active')
             ->firstOrFail();
 
@@ -61,8 +63,10 @@ class KioskController extends Controller
 
         DB::statement('SET search_path TO shared_tenants,public');
 
+        // Issue #5588 : lookup par hash déterministe (device_code non stocké
+        // en clair — AttendanceKiosk::hashDeviceCode).
         $kiosk = AttendanceKiosk::query()
-            ->where('device_code', strtoupper($deviceCode))
+            ->where('device_code', AttendanceKiosk::hashDeviceCode($deviceCode))
             ->where('status', 'active')
             ->firstOrFail();
 
@@ -93,7 +97,9 @@ class KioskController extends Controller
         );
 
         return redirect()
-            ->route('kiosk.show', $kiosk->device_code)
+            // Issue #5588 : le device_code stocké est un hash — on redirige
+            // avec le code EN CLAIR reçu dans l'URL (celui du kiosque).
+            ->route('kiosk.show', $deviceCode)
             ->with('status', 'Pointage enregistre avec succes.');
     }
 

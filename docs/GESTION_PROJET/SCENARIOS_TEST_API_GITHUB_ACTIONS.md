@@ -2,6 +2,13 @@
   
 ## Objectif   
 
+Note 2026-08-26 (issue #5588, lot durcissements) : la surface API kiosque et recrutement public a change —
+- `POST /api/v1/kiosks` (register) : le `device_code` n'est plus stocke en clair (sha256 deterministe au repos, migration tenant `2026_08_26_000001_5588`) ; le code en clair n'est retourne qu'a la creation (provisioning), les lookups API/web hach entree (`AttendanceKiosk::hashDeviceCode`).
+- `GET/POST /api/v1/kiosks/{deviceCode}/roster|punch|announcements` : resolution par hash de l'entree (URL en clair inchangee pour les kiosques) ; les lignes legacy non backfillees sont hors contrat (404).
+- `POST /api/v1/public/careers/{companySlug}/jobs/{jobPosting}/apply` : `resume_url` porte la garde anti-SSRF `NotPrivateUrl` (https public uniquement ; IP privees/loopback/link-local/metadata cloud et hotes `.local/.internal/.lan` refuses → 422).
+- Documentation API web : `/docs`, `/api-explorer`, `/tester-guide`, `/docs/openapi.yaml` exigent l'authentification en production (403 anonyme, Gate `viewApiDocs`) ; restent publiques hors prod.
+- Web kiosk : `GET /kiosk/{deviceCode}` et `POST /kiosk/{deviceCode}/punch` resolvent par hash du device_code.
+
 Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur les roles reels de l'application, les domaines metier critiques et les risques multitenant.
 
 Note 2026-06-28 : Migration des modeles d'authentification (User/Employee) vers l'architecture DDD dans Core/Auth terminee.
@@ -1491,3 +1498,11 @@ HEAD
 - `BankReconciliationTest` : matching exact (score 100 → paiement `matched`, ligne `matched`, relevé `reconciled`) ; approximatif (score < 100 → ligne `pending` + proposition, relevé `reconciling`) ; sans candidat (ligne `pending`) ; idempotence (second passage sans nouvel auto-match).
 - `BankReconciliationManualTest` : rapprochement manuel + lettrage (`reconciled_at`) ; re-match d'une ligne déjà rapprochée (409) ; ligne cross-tenant (404).
 - `BankStatementStatusTest` : soldes attendus/réels, lignes matched/pending, écart de clôture.
+
+Note 2026-08-26 (PM hygiene, PR #5597) : retour au vert des checks backend — RBAC Comptabilité restauré + webhooks idempotents + 2FA.
+- RBAC : `GET /api/v1/accounting/reports/vat-declaration` et `POST /api/v1/accounting/currency/convert` retrouvés HORS groupe `api.manager` (merge) → **regroupés sous `api.manager:principal,comptable`**. Scénarios à vérifier : employé simple → 403 (avant : 200) ; comptable/principal → 200 ; non authentifié → 401 ; les deux endpoints restent sous le préfixe `/accounting` (aucun changement de chemin).
+- Webhooks entrant : `webhook_events` qualifiée `public.webhook_events` (modèle + garde `Schema::hasTable`) → l'idempotence (rejeu Stripe/Chargily/email-bounce/marketing-lead) fonctionne quel que soit le search_path de session. Scénarios : rejeu du même événement → `replayed: true` + aucun effet double ; table absente (fixtures MVP) → traitement sans déduplication (fail-open journalisé) ; migration `webhook_events` rejouée (`artisan migrate` idempotent) → no-op (garde F-17).
+- 2FA/TOTP (#5436) : `mfa_required_roles` lu comme réglage de schéma (sans `company_id` — colonne inexistante). Scénarios : login sans politique → token direct ; politique active pour `rh,principal` → 403 `TWO_FACTOR_REQUIRED` pour RH sans 2FA ; aucun 500 sur les flux auth (régression 2026-08-25 : 30+ tests en échec).
+- Audit partages (#5522) : actions `accounting.share.info` / `accounting.share.download` (préfixe module, convention #5439) → `GET /accounting/documents/shared/{document}/accesses` liste bien les accès (avant : 0 ligne).
+- Payroll : `PayrollPaymentOrder::items()` a une FK explicite `payment_order_id` → l'ordre de virement prépare ses lignes sans QueryException (`column payroll_payment_order_id does not exist`).
+- Couverture : `VatDeclarationTest`, `AccountingMultiCurrencyTest`, `WebhookIdempotenceTest`, `EmailBounceWebhookControllerTest`, `ShareAccessAuditTest`, `PayrollPaymentOrderFlowTest`, `TwoFactorAuthTest`, `AccountingActivationTest` (route `/activation/complete`), `LangCatalogParityTest` (fins de fichier `];` tolérées), `OpenApiDocsTest` (`openapi: "3.0.3"` quoté).

@@ -28,10 +28,10 @@ leopardo-hr/
 - **`declare(strict_types=1);`** en haut de chaque fichier PHP (sauf config)
 - **Namespace PSR-4** — `App\Modules\<NomModule>\*`, `App\Core\*`, `App\Shared\*`
   _(Les anciens espaces `App\Http\Controllers\Api\V1\*` et `App\Services\*` sont supprimés — voir `api/ARCHITECTURE.md`)_
-- **PHPStan** — `phpstan.neon` declare `level: max` pour l'ensemble de `app/`, mais aucun job CI ne l'execute directement aujourd'hui. Ce que la CI verifie reellement, de facon bloquante :
+- **PHPStan** — `phpstan.neon` declare `level: max` pour l'ensemble de `app/` + `routes` + `tests`. Ce que la CI verifie, de facon bloquante :
   - `phpstan-modules.neon` (niveau 5, `app/Core`/`app/Modules`/`app/Shared`) — job `phpstan-modules` (bloquant).
   - `phpstan-strict.neon` (niveau 8, meme perimetre) — job `phpstan-strict`, bloquant sur le **delta** uniquement depuis #1413 : `phpstan-strict-baseline.neon` gele les ~2950 erreurs pre-existantes (voir `api/ARCHITECTURE.md` section "Trajectoire PHPStan" pour la repartition par module et la trajectoire de reduction), toute nouvelle erreur hors baseline fait echouer la CI.
-  - "level max" n'est donc pas un standard verifie en CI aujourd'hui ; le niveau 8 bloquant-sur-delta est l'etat reel le plus proche.
+  - `phpstan.neon` (`level: max`, perimetre app/routes/tests) — branche dans le job `backend-quality` de `tests.yml` (issue #5590) : le step PHPStan analyse TOUT fichier PHP modifie de `app/`, `routes/` et `tests/` au niveau max (avant #5590 : seuls `app/AI`, `app/Http/Middleware` et `routes` etaient couverts). Gate sur le delta via `phpstan-baseline.neon` : les erreurs pre-existantes sont gelees, toute erreur NOUVELLE sur un fichier touche fait echouer la CI. Regenerer la baseline via le workflow `phpstan-baseline.yml` apres un chantier important (elle doit rester proche de `main`).
 - **Pas de `Any`, `mixed` sauf absolument necessaire** — typer tous les parametres et retours
 
 ### 2.2 Nommage
@@ -52,18 +52,21 @@ leopardo-hr/
 
 ```
 app/
-├── Http/
-│   ├── Controllers/Api/V1/     # Controllers API versionnés
-│   ├── Requests/Api/           # FormRequest validation
-│   └── Resources/Api/          # API Resources (transformation JSON)
-├── Models/                     # Eloquent models + traits
-├── Services/                   # Business logic
-├── Policies/                   # Authorization RBAC
-├── Events/                     # Domain events
-├── Listeners/                  # Event handlers
-├── Traits/                     # BelongsToCompany, Approvable, etc.
-└── AI/                         # Couche IA (Orchestrator, Providers, Tools)
+├── Modules/<Nom>/              # Monolithe modulaire DDD (18 modules actifs)
+│   ├── Application/            # Actions, DTOs, Queries (orchestration)
+│   ├── Domain/                 # Models, Contracts, Exceptions (règles métier)
+│   ├── Infrastructure/         # Services, Repositories (implémentation)
+│   ├── Interfaces/Api/V1/      # Controllers + Requests (HTTP)
+│   └── Providers/              # ServiceProvider du module
+├── Core/                       # Socle transversal : Auth, Tenant, Feature
+├── Shared/                     # Code partagé (traits, enums, helpers)
+└── Http/
+    ├── Middleware/             # Middlewares HTTP
+    └── Resources/Api/V1/       # JsonResource centralisées (dérogation PA2-ARCH-010)
 ```
+
+Modules actifs : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `EdgeSync`, `Expense`, `Fleet`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` — état couche-par-couche dans `docs/ARCHITECTURE_STATUS.md`.
+> `app/Http/Controllers/Api/V1/`, `app/Models/` et `app/Services/` ont été **supprimés** (PR #824, phase 2, #1728) — tout nouveau code va dans `Modules/<Nom>/` (`App\Modules\<Nom>\*`).
 
 ### 2.4 Multi-tenant
 

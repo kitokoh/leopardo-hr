@@ -139,9 +139,27 @@ class AuthController extends Controller
     {
         /** @var Employee $employee */
         $employee = $request->user();
-        $dto = UpdateEmployeeDTO::fromRequest($request);
 
+        $oldEmail = (string) $employee->email;
+        $newEmail = $request->validated('email');
+        $emailChanged = is_string($newEmail) && strtolower($newEmail) !== strtolower($oldEmail);
+
+        $dto = UpdateEmployeeDTO::fromRequest($request);
         $fresh = $this->updateProfileAction->execute($employee, $dto);
+
+        // Issue #5587 : trace d'audit + notification de l'ancienne adresse lors
+        // d'un changement d'email (défense en profondeur — le mot de passe a déjà
+        // été validé dans UpdateProfileRequest::after()).
+        if ($emailChanged) {
+            Log::info('auth.profile.email_changed', [
+                'employee_id' => $employee->id,
+                'company_id' => (string) $employee->company_id,
+                'old_email' => $oldEmail,
+                // Ne logguer que le domaine du nouvel email pour éviter de
+                // stocker des données personnelles en clair dans les logs.
+                'new_email_domain' => substr($newEmail, (int) strrpos($newEmail, '@')),
+            ]);
+        }
 
         return (new EmployeeResource($fresh))->response();
     }
@@ -278,6 +296,19 @@ class AuthController extends Controller
             ], 422);
         }
 
+        // Issue #5580 : exiger email_verified=true — un compte Google non vérifié
+        // (ou un IdP qui n'atteste pas la possession) pourrait usurper n'importe
+        // quel employé partageant le même email.
+        $rawGoogleUser = $googleUser->getRaw();
+        if (empty($rawGoogleUser['email_verified'])) {
+            Log::warning('auth.google.callback_email_not_verified', ['email' => $googleUser->getEmail()]);
+
+            return new JsonResponse([
+                'error' => 'EMAIL_NOT_VERIFIED',
+                'message' => __('errors.EMAIL_NOT_VERIFIED'),
+            ], 401);
+        }
+
         /** @var Employee|null $employee */
         $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
 
@@ -324,6 +355,34 @@ class AuthController extends Controller
             }
         }
 
+        // Issue #5579 : garde 2FA sur les flux SSO — sans cette vérification un
+        // employé ayant activé la TOTP pouvait contourner le challenge via Google.
+        if ($employee->two_fa_enabled_at !== null) {
+            // Appareil de confiance (cookie signé) : pas de challenge.
+            $expected = $this->twoFactorService->rememberCookieValue($employee);
+            $provided = $request->cookie('mfa_remember_'.$employee->id);
+            if (! is_string($provided) || ! hash_equals($expected, $provided)) {
+                $challenge = $this->twoFactorService->issueChallenge([
+                    'employee_id' => $employee->id,
+                    'company_id' => (string) $employee->company_id,
+                    'tenant_schema' => null,
+                    'email' => (string) $employee->email,
+                    'device_name' => null,
+                ]);
+
+                return new JsonResponse([
+                    'mfa_challenge' => true,
+                    'mfa_challenge_token' => $challenge['token'],
+                    'mfa_challenge_expires_in' => $challenge['expires_in'],
+                ]);
+            }
+        }
+
+        // Politique tenant : rôle sensible + 2FA non activée → blocage.
+        if ($this->twoFactorService->requiresMfa($employee)) {
+            throw TwoFactorException::required();
+        }
+
         $token = $employee->createToken('google-auth');
 
         return (new EmployeeResource($employee))
@@ -353,6 +412,17 @@ class AuthController extends Controller
             ], 422);
         }
 
+        // Issue #5580 : exiger email_verified=true (parité avec handleGoogleCallback).
+        $rawGoogleUser = $googleUser->getRaw();
+        if (empty($rawGoogleUser['email_verified'])) {
+            Log::warning('auth.google.token_email_not_verified', ['email' => $googleUser->getEmail()]);
+
+            return new JsonResponse([
+                'error' => 'EMAIL_NOT_VERIFIED',
+                'message' => __('errors.EMAIL_NOT_VERIFIED'),
+            ], 401);
+        }
+
         /** @var Employee|null $employee */
         $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
 
@@ -369,6 +439,30 @@ class AuthController extends Controller
             if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
                 throw new AccountSuspendedException;
             }
+        }
+
+        // Issue #5579 : garde 2FA (parité avec handleGoogleCallback).
+        // Note : le flux mobile ne dispose pas du cookie remember ; le challenge
+        // TOTP est systématique si la 2FA est activée.
+        if ($employee->two_fa_enabled_at !== null) {
+            $challenge = $this->twoFactorService->issueChallenge([
+                'employee_id' => $employee->id,
+                'company_id' => (string) $employee->company_id,
+                'tenant_schema' => null,
+                'email' => (string) $employee->email,
+                'device_name' => $validated['device_name'] ?? null,
+            ]);
+
+            return new JsonResponse([
+                'mfa_challenge' => true,
+                'mfa_challenge_token' => $challenge['token'],
+                'mfa_challenge_expires_in' => $challenge['expires_in'],
+            ]);
+        }
+
+        // Politique tenant : rôle sensible + 2FA non activée → blocage.
+        if ($this->twoFactorService->requiresMfa($employee)) {
+            throw TwoFactorException::required();
         }
 
         $tokenName = $validated['device_name'] ?? 'google-mobile';

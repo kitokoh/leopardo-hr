@@ -29,6 +29,21 @@ class AttendanceKiosk extends Model
 {
     use BelongsToCompany;
 
+    /**
+     * Hache un device_code pour le stockage/lookup (issue #5588).
+     *
+     * Le device_code voyage dans l'URL (`/kiosks/{deviceCode}/...`) : il
+     * doit rester une clé de lookup déterministe, mais ne doit plus être
+     * stocké en clair. `sha256(MAJUSCULES)` : indexé par égalité après
+     * hachage de l'entrée, irréversible au repos (un dump DB n'expose plus
+     * les codes). Entropie d'origine (Str::random(10) uppercase) — aucun
+     * salt nécessaire (pas de rainbow table sur 36^10).
+     */
+    public static function hashDeviceCode(string $code): string
+    {
+        return hash('sha256', mb_strtoupper($code));
+    }
+
     protected $fillable = [
         'company_id',
         'name',

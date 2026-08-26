@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-25T00:00:00Z",
+  "_updated_at": "2026-08-26T00:00:00Z",
   "_locale": "ar",
   "app": {
     "title": "ليوباردو للموارد البشرية"
@@ -138,7 +138,8 @@
       "TR": "تركيا",
       "US": "الولايات المتحدة"
     },
-    "required": "مطلوب"
+    "required": "مطلوب",
+    "dismiss": "إغلاق"
   },
   "modules": {
     "attendance": "الحضور",
@@ -1510,7 +1511,11 @@
     "fallbackPollingTitle": "الإشعارات عبر الاستطلاع الاحتياطي (الدفع غير متاح)",
     "tenantOnly": "ميزة المؤسسات — مخصصة لمساحات العملاء",
     "settings": "الإعدادات",
-    "team": "الفريق"
+    "team": "الفريق",
+    "home": "الرئيسية",
+    "attendance": "الحضور",
+    "absences": "الغيابات",
+    "approvals": "الموافقات"
   },
   "exports": {
     "reportEmployees": "الموظفون",
@@ -1811,7 +1816,20 @@
   "contracts": {
     "list_subtitle": "إدارة عقود الموظفين: تتبع الحالات والاستحقاقات وتصدير PDF، مرتبطة مباشرة بواجهة برمجة تطبيقات الموارد البشرية.",
     "searchPlaceholder": "ابحث عن موظف أو نوع عقد...",
-    "allStatuses": "كل الحالات"
+    "allStatuses": "كل الحالات",
+    "mobile_title": "عقدي",
+    "back_tooltip": "رجوع",
+    "empty_title": "لا يوجد عقد",
+    "empty_description": "سيظهر عقدك هنا بمجرد تكوينه.",
+    "label_type": "النوع",
+    "label_start_date": "البداية",
+    "label_end_date": "النهاية",
+    "label_base_salary": "الراتب الأساسي",
+    "loading": "جارٍ تحميل العقود...",
+    "status_active": "نشط",
+    "status_expired": "منتهي الصلاحية",
+    "status_draft": "مسودة",
+    "status_cdi": "دائم (CDI)"
   },
   "training": {
     "titlePlaceholder": "العنوان *",
@@ -2998,7 +3016,10 @@
     "loadError": "تعذّر تحميل حالة التفعيل. حاول مجددًا.",
     "completeError": "فشل التفعيل. حاول مجددًا.",
     "retry": "إعادة المحاولة",
-    "loading": "جارٍ التحميل…"
+    "loading": "جارٍ التحميل…",
+    "bannerTitle": "تفعيل وحدة المحاسبة",
+    "bannerBody": "بعض الخطوات مطلوبة قبل إصدار فواتيرك الأولى.",
+    "bannerCta": "بدء التفعيل"
   },
   "accountingModule": {
     "homeTitle": "المحاسبة",
@@ -3205,5 +3226,57 @@
     "matchDone": "تمت مطابقة البند.",
     "loading": "جارٍ التحميل…",
     "retry": "إعادة المحاولة"
+  },
+  "organigramme": {
+    "title": "الهيكل التنظيمي",
+    "back_tooltip": "رجوع",
+    "empty_title": "لا يوجد هيكل تنظيمي",
+    "loading": "جارٍ تحميل الهيكل التنظيمي..."
+  },
+  "vehicle_map": {
+    "title": "موقع المركبة",
+    "back_tooltip": "رجوع",
+    "empty_title": "لا توجد مركبة",
+    "empty_description": "ستظهر مركباتك المخصصة هنا.",
+    "loading": "جارٍ تحميل المركبات...",
+    "last_update": "آخر تحديث: {time}",
+    "speed_kmh": "{speed} كم/س"
+  },
+  "payrollValidated": "تمت المصادقة",
+  "payrollDocumentUnavailable": "الوثيقة غير متاحة: {error}",
+  "payrollOvertimeHoursTeam": "ساعات إضافية ({hours}س)",
+  "payrollOvertimeHoursItem": "+{hours}س إضافية",
+  "platform_admin": {
+    "activation_note": "تفعيل مباشر من تطبيق Platform Admin الجوال.",
+    "company_approved_note": "تمت الموافقة من تطبيق Leopardo Platform Admin الجوال",
+    "company_rejected_note": "تم الرفض من تطبيق Leopardo Platform Admin الجوال"
+  },
+  "edge_nodes": {
+    "title": "عقد Edge",
+    "subtitle": "مواقع محلية متصلة",
+    "refresh_tooltip": "تحديث",
+    "empty": "لا توجد عقدة Edge مسجلة.",
+    "online": "متصل",
+    "offline": "غير متصل",
+    "section_label": "العقد",
+    "loading": "تحميل العقد",
+    "force_sync": "إجبار المزامنة",
+    "sync_triggered": "تم تشغيل المزامنة.",
+    "last_sync": "آخر مزامنة: {date}",
+    "node_id": "المعرف: {id}",
+    "version_info": "v{version} — {count} موظف"
+  },
+  "support_tickets": {
+    "title": "دعم العملاء",
+    "subtitle": "تذاكر المستأجر",
+    "filter_all": "الكل",
+    "filter_open": "مفتوح",
+    "filter_in_progress": "قيد التنفيذ",
+    "filter_resolved": "محلول",
+    "filter_closed": "مغلق",
+    "empty": "لا توجد تذاكر لهذا الفلتر.",
+    "loading": "تحميل التذاكر",
+    "reply_sent": "تم إرسال الرد.",
+    "loading_ticket": "تحميل التذكرة"
   }
 }

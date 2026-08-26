@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Planning\Domain\Models\AbsenceType;
+use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -25,24 +27,41 @@ class LeaveWorkflowIntegrationTest extends TestCase
 
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
+        // #5585 : l'API exige absence_type_id (le champ `type` n'existe plus)
+        // — seed du type + solde suffisant pour un contrat déterministe 201.
+        $absenceType = AbsenceType::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Congé annuel',
+            'code' => 'CA',
+            'is_paid' => true,
+            'deducts_leave' => true,
+            'requires_proof' => false,
+        ]);
+
+        LeaveBalanceLog::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'delta' => 20.0,
+            'reason' => 'initial_credit',
+            'reference_id' => 0,
+            'balance_after' => 20.0,
+        ]);
+
         Sanctum::actingAs($employee);
 
         $response = $this->postJson('/api/v1/absences', [
-            'type' => 'conge_annuel',
+            'absence_type_id' => $absenceType->id,
             'start_date' => '2026-06-01',
             'end_date' => '2026-06-05',
             'reason' => 'Vacances familiales',
         ]);
 
-        // Should create successfully or return validation error
-        $this->assertContains($response->status(), [201, 422]);
-
-        if ($response->status() === 201) {
-            $response->assertJsonStructure([
+        // #5585 : absence valide → créée 201 (le 422 est couvert par les cas de validation).
+        $response->assertCreated()
+            ->assertJsonStructure([
                 'data' => ['id', 'type', 'start_date', 'end_date', 'status'],
             ]);
-            $this->assertEquals('pending', $response->json('data.status'));
-        }
+        $this->assertEquals('pending', $response->json('data.status'));
     }
 
     public function test_manager_can_list_pending_absences(): void
@@ -108,8 +127,8 @@ class LeaveWorkflowIntegrationTest extends TestCase
 
             // Employee should not be able to approve
             $approveResponse = $this->putJson("/api/v1/absences/{$absenceId}/approve");
-            $this->assertContains($approveResponse->status(), [403, 404, 405]);
+            // #5585 : approbation par un employé sans rôle manager → 403.
+            $approveResponse->assertForbidden();
         }
     }
 }
-

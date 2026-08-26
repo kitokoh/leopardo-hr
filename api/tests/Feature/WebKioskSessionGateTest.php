@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -95,7 +96,8 @@ class WebKioskSessionGateTest extends TestCase
         DB::table('attendance_kiosks')->insert([
             'company_id' => $company->id,
             'name' => 'Borne accueil',
-            'device_code' => $deviceCode,
+            // Issue #5588 : device_code stocké haché (sha256 déterministe).
+            'device_code' => AttendanceKiosk::hashDeviceCode($deviceCode),
             'sync_token_hash' => Hash::make($syncToken),
             'biometric_mode' => 'fingerprint',
             'status' => 'active',

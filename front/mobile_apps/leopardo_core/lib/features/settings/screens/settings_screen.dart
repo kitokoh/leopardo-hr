@@ -19,6 +19,7 @@ import 'package:leopardo_core/features/settings/data/settings_repository.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
+import 'package:leopardo_core/core/providers/theme_mode_provider.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -171,6 +172,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildCabinetSection(),
           const SizedBox(height: 20),
           _buildLanguageSection(context, authState),
+          const SizedBox(height: 20),
+          // Issue #5624 — réglage thème in-app
+          _buildThemeSection(context),
           const SizedBox(height: 20),
           _buildNotificationSection(context),
           const SizedBox(height: 20),
@@ -817,6 +821,67 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             onPressed: _languageSaving ? null : _saveLanguage,
             child: Text(
               _languageSaving ? 'Mise a jour...' : 'Mettre a jour la langue',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Issue #5624 — réglage thème in-app ──────────────────────────────────
+  Widget _buildThemeSection(BuildContext context) {
+    final currentMode = ref.watch(themeModeProvider);
+
+    final options = [
+      (ThemeMode.system, Icons.brightness_auto_outlined, context.l10n.settingsThemeSystem),
+      (ThemeMode.light, Icons.light_mode_outlined, context.l10n.settingsThemeLight),
+      (ThemeMode.dark, Icons.dark_mode_outlined, context.l10n.settingsThemeDark),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: MobileSurface.cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.settingsThemeTitle,
+            style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            context.l10n.settingsThemeHint,
+            style: AppTypography.bodySmall
+                .copyWith(color: MobileSurface.secondary),
+          ),
+          const SizedBox(height: 16),
+          RadioGroup<ThemeMode>(
+            groupValue: currentMode,
+            onChanged: (mode) async {
+              if (mode != null) {
+                await ref.read(themeModeProvider.notifier).setMode(mode);
+              }
+            },
+            child: Column(
+              children: options
+                  .map(
+                    (opt) => RadioListTile<ThemeMode>(
+                      contentPadding: EdgeInsets.zero,
+                      value: opt.$1,
+                      title: Row(
+                        children: [
+                          Icon(opt.$2, size: 20, color: MobileSurface.secondary),
+                          const SizedBox(width: 10),
+                          Text(
+                            opt.$3,
+                            style: AppTypography.body
+                                .copyWith(color: MobileSurface.text),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         ],

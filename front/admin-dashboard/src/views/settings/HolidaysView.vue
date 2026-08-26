@@ -224,7 +224,7 @@
     :open="deleteOpen"
     :title="t('holidays.islamic.delete_confirm_title', 'Supprimer ce jour férié ?')"
     :message="deleteTarget ? t('holidays.islamic.delete_confirm_dialog', { name: deleteTarget.name }) : ''"
-    confirm-label="Supprimer"
+    :confirm-label="t('common.delete', 'Supprimer')"
     @confirm="removeHoliday"
     @cancel="deleteOpen = false"
   />
@@ -232,7 +232,7 @@
     :open="confirmYearOpen"
     :title="t('holidays.islamic.confirm_title', 'Confirmer l\'année ?')"
     :message="t('holidays.islamic.confirm_dialog', { year: islamicYear })"
-    confirm-label="Confirmer"
+    :confirm-label="t('common.confirm', 'Confirmer')"
     @confirm="confirmYear"
     @cancel="confirmYearOpen = false"
   />

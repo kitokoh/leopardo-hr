@@ -1,5 +1,6 @@
 <template>
-  <div class="fixed inset-0 z-50 overflow-y-auto">
+  <div ref="trapRef"
+    class="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Modal" @keydown.escape="$emit('close')">
     <div class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
       <!-- Background overlay -->
       <div
@@ -87,6 +88,13 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { useFocusTrap } from '@/composables/useFocusTrap'
+
+// WCAG 2.1.1/2.1.2 (issue #5622) — piéger le focus dans le modal.
+const _trapActive = ref(true)
+const { containerRef: trapRef } = useFocusTrap(_trapActive)
+
 import { UserIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { translate, toIntlLocale } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale'

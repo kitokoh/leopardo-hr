@@ -60,7 +60,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/documents/next-number', [AccountingDocumentController::class, 'nextNumber']);
             Route::get('/documents/{document}', [AccountingDocumentController::class, 'show'])->whereNumber('document');
             Route::post('/documents/{document}/send', [AccountingDocumentController::class, 'send'])->whereNumber('document');
-            Route::post('/documents/{document}/payments', [AccountingDocumentController::class, 'payments'])->whereNumber('document');
+            // #5577 — POST /accounting/documents/{document}/payments est déclaré
+            // UNIQUEMENT par la trésorerie (#5229) : AccountingPaymentController::store
+            // (FormRequest + audit #5273 + réponse canonique). L'ancienne route du
+            // bloc documents (#5223) était enregistrée en premier et rendait la
+            // trésorerie silencieusement inatteignable — suppression (doublon).
             Route::post('/documents/{document}/cancel', [AccountingDocumentController::class, 'cancel'])->whereNumber('document');
             Route::post('/documents/{document}/credit-note', [AccountingDocumentController::class, 'creditNote'])->whereNumber('document');
             // #5272 — paiement en ligne : initiation d'une session de checkout
@@ -119,13 +123,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::delete('/journal/lettering/{letter}', [AccountingLetteringController::class, 'destroy']);
         });
 
-        // ── Rapports (issue #5271) — déclaration TVA par période.
-        Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
+        // ── Rapports (issue #5271) + conversion (issue #5270) — RBAC
+        // comptable/principal : données financières sensibles. VatDeclaration
+        // et MultiCurrency ont été retrouvés HORS groupe api.manager après
+        // un merge (200 pour un simple employé) — regroupés ici.
+        Route::middleware('api.manager:principal,comptable')->group(function (): void {
+            Route::get('/reports/vat-declaration', [AccountingReportController::class, 'vatDeclaration']);
 
-        // ── Conversion multi-devises (issue #5270) — calcul pur, aucun
-        // état persistant : HT/TVA/TTC entre devise de document et devise
-        // de référence. Taux manuel requis dès que les devises diffèrent.
-        Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
+            // Conversion multi-devises — calcul pur, aucun état persistant :
+            // HT/TVA/TTC entre devise de document et devise de référence.
+            // Taux manuel requis dès que les devises diffèrent.
+            Route::post('/currency/convert', [AccountingCurrencyController::class, 'convert']);
+        });
 
     });
 /**

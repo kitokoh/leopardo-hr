@@ -99,3 +99,10 @@ Générateur : `CedeaoCnsDeclarationGenerator` — `GET /api/v1/payroll-runs/{ru
 Une ligne par bulletin validé (matricule `employees.inps_ml_matricule`) + ligne TOTAUX.
 Canal déclaratif : INPS Mali (www.inps.ml) — montants `pilot` à valider par
 expert-comptable local (registre `docs/payroll/VALIDATION_EXPERTE.md`, #1904).
+
+> **Statut code (2026-08-26, issue #5623)** : `confidenceLevel()` de
+> `CedeaoPayrollRules` retourne **pilot** pour ce pays (barèmes implémentés,
+> non validés par un expert-comptable local). L'UI paie affiche désormais un
+> badge/avertissement pour tout pays au niveau **placeholder** (ex. membres
+> CEDEAO hors CI/BF/ML/TG, membres CEMAC hors CM/GA/CG) et exige une
+> confirmation explicite avant validation d'un run placeholder.

@@ -77,9 +77,46 @@ class PayrollRunController extends Controller
             'notes' => $validated['notes'] ?? null,
         ]);
 
-        return (new PayrollRunResource($run))
-            ->response()
-            ->setStatusCode(201);
+        $response = (new PayrollRunResource($run))->response();
+        $response->setStatusCode(201);
+
+        // Issue #5623 — pays à barèmes 'placeholder' (non validés légalement,
+        // ex. BF/ML/TG) : alerter immédiatement le manager à la création.
+        $warning = $this->placeholderWarning($validated['country_code']);
+        if ($warning !== null) {
+            $response->setData((object) [
+                ...(array) $response->getData(),
+                'warning' => $warning,
+            ]);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Issue #5623 — warning structuré si les règles de paie du pays sont au
+     * niveau 'placeholder' (barèmes indicatifs, non validés par un
+     * expert-comptable local). Retourne null pour pilot/production/unknown.
+     *
+     * @return array{code: string, message: string, country: string}|null
+     */
+    private function placeholderWarning(string $countryCode): ?array
+    {
+        try {
+            $rules = $this->calculator->getRules($countryCode);
+        } catch (\Throwable) {
+            return null;
+        }
+
+        if ($rules->confidenceLevel() !== 'placeholder') {
+            return null;
+        }
+
+        return [
+            'code' => 'PAYROLL_PLACEHOLDER_COUNTRY',
+            'message' => __('payroll.compliance_warning_placeholder'),
+            'country' => $countryCode,
+        ];
     }
 
     public function show(Request $request, PayrollRun $payrollRun): JsonResponse
@@ -223,6 +260,17 @@ class PayrollRunController extends Controller
         // (calculer) mais pas auto-valider sa propre préparation.
         if ($actor->hasManagerRole('principal', 'comptable') === false) {
             abort(403, 'INSUFFICIENT_ROLE');
+        }
+
+        // Issue #5623 — barèmes 'placeholder' : la validation RH exige une
+        // confirmation explicite (les chiffres peuvent être incorrects).
+        if ($this->placeholderWarning($payrollRun->country_code) !== null
+            && $request->boolean('confirm_placeholder') === false) {
+            return response()->json([
+                'error' => 'PAYROLL_PLACEHOLDER_CONFIRM_REQUIRED',
+                'message' => 'PAYROLL_PLACEHOLDER_CONFIRM_REQUIRED',
+                'localized_message' => __('errors.PAYROLL_PLACEHOLDER_CONFIRM_REQUIRED'),
+            ], 422);
         }
 
         try {
