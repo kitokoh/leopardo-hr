@@ -4,6 +4,8 @@
 
 Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur les roles reels de l'application, les domaines metier critiques et les risques multitenant.
 
+Note 2026-08-26 (#5577) : collision de route supprimée — `POST /api/v1/accounting/documents/{document}/payments` n'était plus servi que par l'implémentation canonique `AccountingPaymentController::store` (Trésorerie #5229) ; le doublon `AccountingDocumentController::payments` (groupe Documents, ré-ajout accidentel du merge `78e91d87b`) rendait le contrôleur canonique silencieusement inatteignable. Doublons de même famille traités : `rh.php` (PUT reject), `geo.php` (bloc day-closures), `dashboard.php` (`PATCH /notifications/{id}/read` déprécié). Nouvelle garde CI `dev-hub/tools/check-duplicate-routes.sh` (route:list normalisé, échec sur (méthode, URI) dupliqués) branchée dans `tests.yml` (backend-quality) — la récidive est bloquante.
+
 Note 2026-06-28 : Migration des modeles d'authentification (User/Employee) vers l'architecture DDD dans Core/Auth terminee.
 
 Note 2026-08-22 (stabilisation CI, PR #5295) : les endpoints publics OIDC `GET /sso/oidc/{companyId}/authorize` et `GET /sso/oidc/{companyId}/callback` portent explicitement `throttle:10,1`; `SsoCallbackThrottleTest` vérifie ce contrat anti-abus. Le contrat `api/openapi.yaml` reste parsable par Redocly après fusion des chemins dupliqués, correction des nullable OpenAPI 3.0 et alignement des paramètres recruitment; le miroir et les SDK JavaScript/Python sont régénérés.
