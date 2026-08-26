@@ -130,9 +130,11 @@ final class TwoFactorAuthService
      */
     public function requiresMfa(Employee $employee): bool
     {
+        // Politique tenant : la clé `mfa_required_roles` est un réglage de
+        // schéma (CompanySetting global par clé, pattern repo — pas de
+        // colonne company_id dans `company_settings`).
         $setting = CompanySetting::query()
             ->where('key', 'mfa_required_roles')
-            ->where('company_id', $employee->company_id)
             ->first();
 
         if ($setting === null || ! is_string($setting->value) || $setting->value === '') {
@@ -178,16 +180,17 @@ final class TwoFactorAuthService
         /** @var array{employee_id: int, company_id: string, tenant_schema: string|null, email: string, device_name: string|null}|null $context */
         $context = Cache::get('mfa:challenge:'.$challengeToken);
 
-        if (! is_array($context) || ! isset($context['employee_id'])) {
+        if (! is_array($context)) {
             throw TwoFactorException::challengeExpired();
         }
 
         Cache::forget('mfa:challenge:'.$challengeToken);
 
         $previousSearchPath = null;
-        if (DB::getDriverName() === 'pgsql' && is_string($context['tenant_schema'] ?? null) && $context['tenant_schema'] !== '') {
+        if (DB::getDriverName() === 'pgsql' && $context['tenant_schema'] !== null && $context['tenant_schema'] !== '') {
             $searchPathResult = DB::selectOne('SHOW search_path');
-            $previousSearchPath = is_object($searchPathResult) ? (string) $searchPathResult->search_path : null;
+            $searchPath = is_object($searchPathResult) ? (get_object_vars($searchPathResult)['search_path'] ?? null) : null;
+            $previousSearchPath = is_string($searchPath) && $searchPath !== '' ? $searchPath : null;
             DB::statement('SET search_path TO '.$context['tenant_schema']);
         }
 
@@ -225,7 +228,7 @@ final class TwoFactorAuthService
             $expirationMinutes = (int) config('sanctum.expiration', 0);
             $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
             $abilities = ['*'];
-            if (is_string($context['tenant_schema'] ?? null) && $context['tenant_schema'] !== '') {
+            if ($context['tenant_schema'] !== null && $context['tenant_schema'] !== '') {
                 $abilities[] = 'tenant_schema:'.$context['tenant_schema'];
                 $abilities[] = 'tenant_email:'.$employee->email;
                 $abilities[] = 'tenant_company:'.$company->id;
@@ -241,7 +244,7 @@ final class TwoFactorAuthService
                 'employee' => $employee,
             ];
         } finally {
-            if ($previousSearchPath !== null && $previousSearchPath !== '') {
+            if ($previousSearchPath !== null) {
                 DB::statement('SET search_path TO '.$previousSearchPath);
             }
         }
@@ -284,7 +287,7 @@ final class TwoFactorAuthService
         $candidate = hash('sha256', strtoupper($code));
 
         foreach ($hashed as $index => $entry) {
-            if (is_string($entry) && hash_equals($entry, $candidate)) {
+            if (hash_equals($entry, $candidate)) {
                 unset($hashed[$index]);
                 $employee->forceFill(['two_fa_recovery_codes' => array_values($hashed)])->save();
 

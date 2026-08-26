@@ -102,8 +102,12 @@ class WebhookIdempotenceTest extends TestCase
     /**
      * @return array{0: Company, 1: Subscription, 2: Invoice}
      */
+    /**
+     * @return array{0: Company, 1: Subscription, 2: Invoice}
+     */
     private function billingFixture(string $invoiceNumber = 'LEO-IDEM-TEST', ?string $stripeInvoiceId = null): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
         $subscription = Subscription::create([
             'company_id' => $company->id,
@@ -150,7 +154,9 @@ class WebhookIdempotenceTest extends TestCase
 
         $this->postStripe($payload)->assertOk()->assertJsonPath('received', true);
         $this->assertSame(1, Payment::count());
-        $this->assertSame('paid', $invoice->fresh()->status);
+        $freshInvoice = $invoice->fresh();
+        $this->assertNotNull($freshInvoice);
+        $this->assertSame('paid', $freshInvoice->status);
 
         // Redelivrance du MÊME événement (même id) : rejoué, aucun effet double.
         $replay = $this->postStripe($payload);
@@ -219,7 +225,9 @@ class WebhookIdempotenceTest extends TestCase
 
         $this->postChargily($payload)->assertOk()->assertJsonPath('received', true);
         $this->assertSame(1, Payment::count());
-        $this->assertSame('paid', $invoice->fresh()->status);
+        $freshInvoice = $invoice->fresh();
+        $this->assertNotNull($freshInvoice);
+        $this->assertSame('paid', $freshInvoice->status);
 
         // Redelivrance : rejoué, AUCUN second Payment (double encaissement).
         $this->postChargily($payload)->assertOk()->assertJsonPath('replayed', true);
@@ -236,7 +244,9 @@ class WebhookIdempotenceTest extends TestCase
 
     public function test_email_bounce_replayed_payload_records_single_audit_event(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'bounce-idem@example.com',
@@ -244,11 +254,11 @@ class WebhookIdempotenceTest extends TestCase
 
         $this->app->instance(
             EmployeeEmailLookupService::class,
-            new class ($employee)
+            new class($employee)
             {
                 public function __construct(private readonly Employee $employee) {}
 
-                public function resolve(string $email): ?Employee
+                public function resolve(string $email): Employee
                 {
                     return $this->employee;
                 }

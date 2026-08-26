@@ -6,8 +6,8 @@ namespace App\Modules\Platform\Infrastructure\Services;
 
 use App\Modules\Platform\Domain\Models\WebhookEvent;
 use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * #5444 — Registre d'idempotence persistée des webhooks entrants.
@@ -43,7 +43,7 @@ final class WebhookEventRegistry
         // Garde de schéma partiel (pattern `ensurePunchPhotoProvided` #5265) :
         // en environnement de test sans la table (CreatesMvpSchema), on
         // traite sans déduplication — en production la migration existe.
-        if (! Schema::hasTable('webhook_events')) {
+        if (! Schema::hasTable('public.webhook_events')) {
             return null;
         }
 

@@ -13,6 +13,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PayrollPaymentOrderResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [
