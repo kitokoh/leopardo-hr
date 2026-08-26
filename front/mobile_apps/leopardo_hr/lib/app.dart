@@ -33,6 +33,9 @@ import 'package:leopardo_core/features/user_auth/screens/user_register_screen.da
 import 'package:leopardo_core/features/user_auth/screens/user_login_screen.dart';
 import 'package:leopardo_core/features/user_auth/screens/user_home_screen.dart';
 import 'package:leopardo_core/features/user_auth/screens/company_request_screen.dart';
+// #5540
+import 'package:leopardo_core/features/user_auth/screens/personal_status_screen.dart';
+import 'package:leopardo_core/features/user_auth/screens/company_integration_request_screen.dart';
 import 'package:leopardo_hr/features/contracts/screens/contract_screen.dart';
 import 'package:leopardo_hr/features/organigramme/screens/organigramme_screen.dart';
 import 'package:leopardo_core/features/manager/screens/manager_attendance_monitoring_screen.dart';
@@ -108,6 +111,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/user-login',
         '/user-home',
         '/company-request',
+        '/user-personal-status', // #5540
+        '/user-company-integration', // #5540
         '/access-denied',
       };
       final onPublic = publicRoutes.contains(location);
@@ -153,6 +158,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/company-request',
         builder: (context, state) => const CompanyRequestScreen(),
+      ),
+      // #5540
+      GoRoute(
+        path: '/user-personal-status',
+        builder: (context, state) => const PersonalStatusScreen(),
+      ),
+      GoRoute(
+        path: '/user-company-integration',
+        builder: (context, state) => const CompanyIntegrationRequestScreen(),
       ),
 
       // --- Authenticated routes with bottom nav ---

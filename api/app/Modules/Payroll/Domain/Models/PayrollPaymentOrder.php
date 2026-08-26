@@ -68,6 +68,8 @@ class PayrollPaymentOrder extends Model
     /** @return HasMany<PayrollPaymentOrderItem, $this> */
     public function items(): HasMany
     {
-        return $this->hasMany(PayrollPaymentOrderItem::class);
+        // La migration crée `payment_order_id` (pas la convention
+        // `payroll_payment_order_id`) — FK explicite pour éviter SQLSTATE 42703.
+        return $this->hasMany(PayrollPaymentOrderItem::class, 'payment_order_id');
     }
 }

@@ -27,11 +27,15 @@ import 'package:leopardo_employee/features/notifications/screens/notification_li
 import 'package:leopardo_employee/features/evaluations/screens/evaluation_list_screen.dart';
 import 'package:leopardo_employee/features/cabinet/screens/cabinet_screen.dart';
 import 'package:leopardo_employee/features/settings/screens/settings_screen.dart';
+import 'package:leopardo_core/features/settings/screens/two_factor_settings_screen.dart';
 import 'package:leopardo_employee/features/profile/screens/profile_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/user_register_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/user_login_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/user_home_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/company_request_screen.dart';
+// #5540 — Onboarding personnel multi-statuts
+import 'package:leopardo_core/features/user_auth/screens/personal_status_screen.dart';
+import 'package:leopardo_core/features/user_auth/screens/company_integration_request_screen.dart';
 import 'package:leopardo_employee/features/onboarding/screens/onboarding_screen.dart';
 import 'package:leopardo_employee/features/attendance_geo/screens/attendance_geo_screen.dart';
 import 'package:leopardo_employee/features/attendance_geo/screens/attendance_mode_picker_screen.dart';
@@ -117,6 +121,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/user-home',
         '/company-request',
         '/2fa-challenge',
+        '/user-personal-status', // #5540
+        '/user-company-integration', // #5540
       };
       final onPublic = publicRoutes.contains(location);
 
@@ -155,6 +161,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/company-request',
         builder: (context, state) => const CompanyRequestScreen(),
+      ),
+      // #5540 — Onboarding personnel multi-statuts
+      GoRoute(
+        path: '/user-personal-status',
+        builder: (context, state) => const PersonalStatusScreen(),
+      ),
+      GoRoute(
+        path: '/user-company-integration',
+        builder: (context, state) =>
+            const CompanyIntegrationRequestScreen(),
       ),
 
       // --- Authenticated routes with bottom nav ---
@@ -220,6 +236,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/settings',
             builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: '/settings/2fa',
+            builder: (context, state) =>
+                const TwoFactorSettingsScreen(),
           ),
           GoRoute(
             path: '/profile',

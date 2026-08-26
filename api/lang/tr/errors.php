@@ -268,4 +268,8 @@ return [
     'LETTERING_UNBALANCED' => 'Mutabakat dengeli olmalıdır: toplam borçlar toplam alacaklara eşit olmalıdır.',
     'ALREADY_SEEDED' => 'Bu şirket için demo veriler zaten oluşturuldu.',
     'EMAIL_NOT_VERIFIED' => 'Bu Google e-postası sağlayıcısı tarafından doğrulanmamış. Doğrulanmış bir e-posta hesabı kullanın.',
+    // #5540 — Onboarding multi-statuts
+    'MANAGER_ONLY_ACTION' => 'Bu işlem sadece yöneticiler için geçerlidir.',
+    'INTEGRATION_REQUEST_ALREADY_PENDING' => 'Bu şirket için zaten bekleyen bir talebiniz var.',
+    'INTEGRATION_REQUEST_NOT_FOUND' => 'Entegrasyon talebi bulunamadı.',
 ];

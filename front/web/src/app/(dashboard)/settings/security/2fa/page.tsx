@@ -47,7 +47,7 @@ type EnrollData = {
 };
 
 export default function TwoFactorSettingsPage() {
-  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => &apos;fr&apos;);
 
   const [status, setStatus] = useState<TwoFaStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +56,7 @@ export default function TwoFactorSettingsPage() {
   // Enrôlement
   const [enrollData, setEnrollData] = useState<EnrollData | null>(null);
   const [enrolling, setEnrolling] = useState(false);
-  const [confirmCode, setConfirmCode] = useState('');
+  const [confirmCode, setConfirmCode] = useState(&apos;&apos;);
   const [confirming, setConfirming] = useState(false);
   const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);
@@ -228,7 +228,7 @@ export default function TwoFactorSettingsPage() {
                   </button>
                 </div>
                 <p className="text-xs text-amber-700 dark:text-amber-400 mb-3">
-                  Chacun de ces codes ne peut être utilisé qu'une seule fois pour vous connecter
+                  Chacun de ces codes ne peut être utilisé qu&apos;une seule fois pour vous connecter
                   si vous perdez accès à votre application authenticator.
                 </p>
                 <div className="grid grid-cols-2 gap-2">
@@ -250,7 +250,7 @@ export default function TwoFactorSettingsPage() {
                 Désactiver la 2FA
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                Saisissez votre code TOTP actuel pour désactiver l'authentification à deux facteurs.
+                Saisissez votre code TOTP actuel pour désactiver l&apos;authentification à deux facteurs.
               </p>
               <form onSubmit={handleDisable} className="flex gap-3">
                 <input
@@ -278,7 +278,7 @@ export default function TwoFactorSettingsPage() {
             </div>
           </div>
         ) : enrollData ? (
-          /* ── Étape d'enrôlement : scanner le QR et confirmer ── */
+          /* ── Étape d&apos;enrôlement : scanner le QR et confirmer ── */
           <div className="space-y-5">
             <div className="rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
               <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-3">
@@ -340,7 +340,7 @@ export default function TwoFactorSettingsPage() {
             </div>
           </div>
         ) : (
-          /* ── 2FA désactivée : bouton d'activation ── */
+          /* ── 2FA désactivée : bouton d&apos;activation ── */
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
             <div className="flex items-start gap-4">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
@@ -348,7 +348,7 @@ export default function TwoFactorSettingsPage() {
               </div>
               <div className="flex-1">
                 <h3 className="font-bold text-slate-900 dark:text-white text-sm">
-                  Activer l'authentification à deux facteurs
+                  Activer l&apos;authentification à deux facteurs
                 </h3>
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                   Utilisez une application authenticator (Google Authenticator, Authy, 1Password…)
@@ -365,7 +365,7 @@ export default function TwoFactorSettingsPage() {
                   ) : (
                     <KeyRound className="h-4 w-4" aria-hidden="true" />
                   )}
-                  Commencer l'enrôlement
+                  Commencer l&apos;enrôlement
                 </button>
               </div>
             </div>

@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-26T00:00:00Z",
+  "_updated_at": "2026-08-25T00:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -3226,6 +3226,35 @@
     "matchDone": "Line matched.",
     "loading": "Loading…",
     "retry": "Retry"
+  },
+  "personal_onboarding": {
+    "status_title": "My personal situation",
+    "status_subtitle": "Select all your current statuses. You can choose multiple.",
+    "status_save": "Save",
+    "status_student": "Student",
+    "status_employee": "Employee",
+    "status_entrepreneur": "Entrepreneur",
+    "status_seeking": "Job seeker",
+    "status_saved": "Statuses updated.",
+    "status_error": "Error: unable to save your statuses.",
+    "search_title": "Join a company",
+    "search_subtitle": "Search for a company to apply.",
+    "search_hint": "Company name...",
+    "search_empty": "No company found for « {query} ».",
+    "search_min_chars": "Enter at least 2 characters.",
+    "request_title": "Integration request",
+    "request_company": "Target company",
+    "request_message_label": "Message to manager (optional)",
+    "request_message_hint": "Introduce yourself briefly...",
+    "request_send": "Send request",
+    "request_sent": "Request sent to {company}.",
+    "request_error": "Error: {error}",
+    "request_already_pending": "You already have a pending request for this company.",
+    "requests_title": "My integration requests",
+    "requests_empty": "No pending requests.",
+    "status_pending": "Pending",
+    "status_approved": "Accepted",
+    "status_rejected": "Rejected"
   },
   "organigramme": {
     "title": "Org Chart",

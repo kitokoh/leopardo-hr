@@ -53,6 +53,7 @@ class AttendanceGeoConfig {
   bool get hasForced => forcedMode != null && forcedMode!.isNotEmpty;
 
   @override
+  // dev-only: diagnostic representation, not user-visible (#5510)
   String toString() =>
       'AttendanceGeoConfig(forcedMode: $forcedMode, gpsEnabled: $gpsEnabled, '
       'lat: $latitude, lng: $longitude, radius: $radius)';
