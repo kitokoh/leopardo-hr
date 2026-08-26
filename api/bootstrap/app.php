@@ -67,6 +67,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // monitored by `edge:monitor` below. See issue #1291 and
         // docs/audits/AUDIT_MOBILE_EDGE_2026-07-26.md sections 1.3/1.4.
         $schedule->command('edge:monitor')->everyThirtyMinutes()->withoutOverlapping();
+        // #R12 — Rappel d'onboarding J+1 : envoyé chaque jour à 09:00 UTC.
+        // Cible les managers dont la société a été créée il y a 20h–28h et
+        // dont l'onboarding comporte encore des étapes requises non complétées.
+        $schedule->command('onboarding:send-reminders')->dailyAt('09:00');
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',

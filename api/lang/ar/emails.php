@@ -153,6 +153,14 @@ return [
     'email_subscription_confirmed_invoice_button' => 'تحميل الفاتورة',
     'email_subscription_confirmed_footer' => 'شكرا لثقتكم في ليوباردو HR.',
 
+    // #R12 — تذكير الإعداد اليوم الأول
+    'onboarding_reminder_subject' => 'إعداد Leopardo RH لم يكتمل بعد',
+    'onboarding_reminder_heading' => 'مرحباً :name،',
+    'onboarding_reminder_intro'   => 'لقد أنشأت شركة :company أمس لكن الإعداد لم يكتمل بعد.',
+    'onboarding_reminder_cta'     => 'استئناف الإعداد',
+    'onboarding_reminder_steps'   => 'تبقت بعض الخطوات الرئيسية: إضافة الموظفين، أول تسجيل حضور، إعداد الرواتب.',
+    'onboarding_reminder_support' => 'فريق الدعم متاح لمساعدتك في أي وقت.',
+
     'email_password_reset_subject' => 'إعادة تعيين كلمة المرور',
     'email_password_reset_greeting' => 'مرحبا :name،',
     'email_password_reset_body' => 'لقد طلبت إعادة تعيين كلمة المرور الخاصة بك. انقر على الزر أدناه. تنتهي صلاحية هذا الرابط خلال 60 دقيقة.',

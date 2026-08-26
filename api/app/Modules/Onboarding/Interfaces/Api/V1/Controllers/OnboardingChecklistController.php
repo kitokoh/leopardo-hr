@@ -66,19 +66,27 @@ class OnboardingChecklistController extends Controller
             && isset($geofence['lat'], $geofence['lng'], $geofence['radius_meters'])
             && (float) $geofence['radius_meters'] > 0;
 
+        // #R15 — required=true pour les étapes essentielles au go-live ;
+        // optional pour kiosk/geofence/biometrie (équipements spécifiques).
         $steps = [
-            $this->step('company_created', 'Societe creee', true),
-            $this->step('manager_active', 'Manager principal actif', $actor->role === 'manager'),
-            $this->step('employees_added', 'Equipe ajoutee', $employeesCount >= 2, ['employees_count' => $employeesCount]),
-            $this->step('employees_active', 'Comptes employes actives', $activeEmployeesCount >= max(1, $employeesCount), ['active_employees_count' => $activeEmployeesCount]),
-            $this->step('payroll_ready', 'Bases de paie renseignees', $employeesCount > 0 && $payrollReadyCount >= $employeesCount, ['payroll_ready_count' => $payrollReadyCount]),
-            $this->step('geofence_configured', 'Zone de pointage configuree', $geofenceConfigured),
-            $this->step('biometrics_ready', 'Biometrie configuree', $biometricReadyCount > 0, ['biometric_ready_count' => $biometricReadyCount]),
-            $this->step('kiosk_connected', 'Kiosque ou borne connecte', $kioskCount > 0, ['kiosk_count' => $kioskCount]),
+            $this->step('company_created',   'Societe creee',              true,  required: true),
+            $this->step('manager_active',    'Manager principal actif',    $actor->role === 'manager', required: true),
+            $this->step('employees_added',   'Equipe ajoutee',             $employeesCount >= 2,       required: true, metrics: ['employees_count' => $employeesCount]),
+            $this->step('employees_active',  'Comptes employes actives',   $activeEmployeesCount >= max(1, $employeesCount), required: true, metrics: ['active_employees_count' => $activeEmployeesCount]),
+            $this->step('payroll_ready',     'Bases de paie renseignees',  $employeesCount > 0 && $payrollReadyCount >= $employeesCount, required: false, metrics: ['payroll_ready_count' => $payrollReadyCount]),
+            $this->step('geofence_configured','Zone de pointage configuree',$geofenceConfigured,       required: false),
+            $this->step('biometrics_ready',  'Biometrie configuree',       $biometricReadyCount > 0,  required: false, metrics: ['biometric_ready_count' => $biometricReadyCount]),
+            $this->step('kiosk_connected',   'Kiosque ou borne connecte',  $kioskCount > 0,           required: false, metrics: ['kiosk_count' => $kioskCount]),
         ];
 
         $completed = collect($steps)->where('completed', true)->count();
         $percent = (int) round(($completed / count($steps)) * 100);
+
+        // #R15 — go_live_ready : toutes les étapes requises doivent être complétées.
+        $allRequiredDone = collect($steps)
+            ->filter(fn (array $s): bool => $s['required'] === true)
+            ->every(fn (array $s): bool => $s['completed'] === true);
+
         $nextActions = collect($steps)
             ->where('completed', false)
             ->take(3)
@@ -94,19 +102,21 @@ class OnboardingChecklistController extends Controller
                 'total_steps' => count($steps),
                 'progress_percent' => $percent,
                 'progress' => $percent,
-                'go_live_ready' => $completed >= count($steps) - 1,
+                'go_live_ready' => $allRequiredDone,
                 'next_actions' => $nextActions,
                 'steps' => $steps,
             ],
         ]);
     }
 
-    private function step(string $key, string $label, bool $completed, array $metrics = []): array
+    // #R15 — `required` ajouté pour go_live_ready pondéré.
+    private function step(string $key, string $label, bool $completed, bool $required = true, array $metrics = []): array
     {
         return [
             'key' => $key,
             'label' => $label,
             'completed' => $completed,
+            'required' => $required,
             'metrics' => (object) $metrics,
         ];
     }
