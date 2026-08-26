@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
+use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,13 +20,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class KioskController extends Controller
 {
     public function __construct(
         private readonly KioskAttendanceService $kioskAttendanceService,
-        private readonly \App\Modules\HR\Domain\Contracts\OnboardingQrInterface $onboardingQr,
+        private readonly OnboardingQrInterface $onboardingQr,
     ) {}
 
     public function register(Request $request): JsonResponse
@@ -45,7 +47,6 @@ class KioskController extends Controller
     private function doRegister(Request $request, Company $company, Employee $actor): JsonResponse
     {
         $this->setTenantSearchPath($company);
-
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
@@ -77,7 +78,6 @@ class KioskController extends Controller
             ]),
         ], 201);
     }
-
 
     public function punch(Request $request, string $deviceCode): JsonResponse
     {
@@ -136,7 +136,6 @@ class KioskController extends Controller
     {
         $this->setTenantSearchPath($company);
 
-
         $hasFaceColumn = Schema::hasColumn('employees', 'biometric_face_enabled');
         $hasFingerprintColumn = Schema::hasColumn('employees', 'biometric_fingerprint_enabled');
 
@@ -169,7 +168,6 @@ class KioskController extends Controller
         ]);
     }
 
-
     public function sync(Request $request, string $deviceCode): JsonResponse
     {
         $validated = $request->validate([
@@ -197,13 +195,12 @@ class KioskController extends Controller
         );
     }
 
-/**
+    /**
      * @param  array<string, mixed>  $validated
      */
     private function doSync(AttendanceKiosk $kiosk, array $validated, string $deviceCode): JsonResponse
     {
         $this->setTenantSearchPath($kiosk->company);
-
 
         $result = $this->kioskAttendanceService->syncPunches($kiosk, $validated['events'], $deviceCode);
 
@@ -222,7 +219,6 @@ class KioskController extends Controller
         ]);
     }
 
-
     public function employeeInfo(Request $request, string $deviceCode): JsonResponse
     {
         $validated = $request->validate([
@@ -239,13 +235,12 @@ class KioskController extends Controller
         );
     }
 
-/**
+    /**
      * @param  array<string, mixed>  $validated
      */
     private function doEmployeeInfo(Company $company, array $validated): JsonResponse
     {
         $this->setTenantSearchPath($company);
-
 
         $employee = Employee::query()
             ->where('company_id', $company->id)
@@ -295,7 +290,6 @@ class KioskController extends Controller
         ]);
     }
 
-
     public function announcements(Request $request, string $deviceCode): JsonResponse
     {
         $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
@@ -310,7 +304,6 @@ class KioskController extends Controller
     private function doAnnouncements(AttendanceKiosk $kiosk, Company $company, string $deviceCode): JsonResponse
     {
         $this->setTenantSearchPath($company);
-
 
         if (! Schema::hasTable('kiosk_announcements')) {
             return new JsonResponse(['data' => []]);
@@ -366,7 +359,6 @@ class KioskController extends Controller
         return new JsonResponse(['data' => $announcements]);
     }
 
-
     public function leaveBalance(Request $request, string $deviceCode): JsonResponse
     {
         $validated = $request->validate([
@@ -383,13 +375,12 @@ class KioskController extends Controller
         );
     }
 
-/**
+    /**
      * @param  array<string, mixed>  $validated
      */
     private function doLeaveBalance(Company $company, array $validated): JsonResponse
     {
         $this->setTenantSearchPath($company);
-
 
         $employee = Employee::query()
             ->where('company_id', $company->id)
@@ -415,7 +406,6 @@ class KioskController extends Controller
         ]);
     }
 
-
     public function qrPunch(Request $request, string $deviceCode): JsonResponse
     {
         $validated = $request->validate([
@@ -436,20 +426,19 @@ class KioskController extends Controller
         );
     }
 
-/**
+    /**
      * @param  array<string, mixed>  $validated
      */
     private function doQrPunch(AttendanceKiosk $kiosk, Company $company, array $validated): JsonResponse
     {
         $this->setTenantSearchPath($company);
 
-
         // #3365 : le QR punch n'accepte QUE le jeton signé+expirant émis par
         // /me/qr-profile (OnboardingQrService, type employee_profile) — les
         // payloads JSON base64 nus (forgeables) sont rejetés.
         try {
             $qrPayload = $this->onboardingQr->decodeEmployeeProfile($validated['qr_data']);
-        } catch (\Illuminate\Validation\ValidationException) {
+        } catch (ValidationException) {
             return new JsonResponse([
                 'error' => 'INVALID_QR_TOKEN',
                 'message' => 'INVALID_QR_TOKEN',
@@ -500,7 +489,6 @@ class KioskController extends Controller
         ], $statusCode);
     }
 
-
     private function resolveAuthorizedKiosk(Request $request, string $deviceCode): AttendanceKiosk
     {
         // Issue #2689 (QA 2026-08-15) — le SET search_path doit être annulé
@@ -516,7 +504,7 @@ class KioskController extends Controller
             if (is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')) {
                 $previous = (string) $searchPathRow->search_path;
             }
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // défaut conservé
         }
         DB::statement('SET search_path TO shared_tenants,public');
@@ -552,7 +540,6 @@ class KioskController extends Controller
             DB::statement('SET search_path TO '.$previous);
         }
     }
-
 
     /**
      * Issue #3368 — le search_path PostgreSQL doit être restauré après chaque
@@ -689,4 +676,3 @@ class KioskController extends Controller
         ];
     }
 }
-

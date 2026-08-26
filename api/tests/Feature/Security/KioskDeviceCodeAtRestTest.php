@@ -43,6 +43,9 @@ class KioskDeviceCodeAtRestTest extends TestCase
         $this->assertIsString($syncToken);
 
         // En base : digest sha256 hex (64 caractères), jamais le code en clair.
+        // (search_path posé explicitement : après la requête HTTP, la session
+        // n'est plus dans le schéma du tenant — cf. test legacy ci-dessous.)
+        DB::statement('SET search_path TO shared_tenants,public');
         $kioskId = $response->json('data.id');
         $stored = DB::table('attendance_kiosks')->where('id', $kioskId)->value('device_code');
         $this->assertIsString($stored);
@@ -54,7 +57,9 @@ class KioskDeviceCodeAtRestTest extends TestCase
     public function test_roster_lookup_works_with_plaintext_code_against_stored_hash(): void
     {
         [$manager] = $this->seedCompanyManager();
-        [$deviceCode, $syncToken] = $this->registerKiosk($manager);
+        // registerKiosk retourne [manager, device_code, sync_token] — la
+        // 1re position est l'Employee (ne pas la dépaqueter dans deviceCode).
+        [, $deviceCode, $syncToken] = $this->registerKiosk($manager);
 
         $this->withHeader('X-Kiosk-Token', $syncToken)
             ->getJson('/api/v1/kiosks/'.$deviceCode.'/roster')
@@ -65,7 +70,9 @@ class KioskDeviceCodeAtRestTest extends TestCase
     public function test_punch_lookup_works_with_plaintext_code_against_stored_hash(): void
     {
         [$manager] = $this->seedCompanyManager();
-        [$deviceCode, $syncToken] = $this->registerKiosk($manager);
+        // registerKiosk retourne [manager, device_code, sync_token] — la
+        // 1re position est l'Employee (ne pas la dépaqueter dans deviceCode).
+        [, $deviceCode, $syncToken] = $this->registerKiosk($manager);
 
         $this->withHeader('X-Kiosk-Token', $syncToken)
             ->postJson('/api/v1/kiosks/'.$deviceCode.'/punch', [
@@ -143,6 +150,24 @@ class KioskDeviceCodeAtRestTest extends TestCase
         ]);
 
         DB::statement('SET search_path TO shared_tenants,public');
+
+        // Employé biométrique requis par le punch kiosque (sinon 404
+        // ModelNotFoundException sur l'identifiant — cf. KioskMultiEventPunchTest).
+        $employee = new Employee([
+            'first_name' => 'Karim',
+            'last_name' => 'Employe',
+            'email' => 'karim@kiosk-hash.test',
+            'matricule' => 'EMP-001',
+            'zkteco_id' => 'FP-001',
+            'biometric_fingerprint_enabled' => true,
+            'biometric_fingerprint_reference_path' => 'FP-001',
+        ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $manager = new Employee([
             'first_name' => 'Manager',
