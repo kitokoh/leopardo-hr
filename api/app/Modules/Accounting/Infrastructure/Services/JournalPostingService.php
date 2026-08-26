@@ -62,6 +62,9 @@ final class JournalPostingService
         'bank_transfer' => self::ACCOUNT_BANK,
         'check' => self::ACCOUNT_BANK,
         'card' => self::ACCOUNT_BANK,
+        // #5272 (ADR-0017) — paiement en ligne : trésorerie banque.
+        'online_chargily' => self::ACCOUNT_BANK,
+        'online_stripe' => self::ACCOUNT_BANK,
         'other' => self::ACCOUNT_BANK,
     ];
 

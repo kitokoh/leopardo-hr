@@ -46,12 +46,11 @@ HTTP_VERBS = {"get", "post", "put", "patch", "delete"}
 
 # Les routes des modules DDD peuvent être enregistrées par leur provider
 # (loadRoutesFrom) en dehors de api/routes/ : EdgeSync (SmartAttendance supprimé en Phase 5 #5356).
-MODULE_ROUTE_FILES = [
-    REPO_ROOT / "api" / "app" / "Modules" / "EdgeSync" / "routes" / "api.php",
-    # ADR-0016 Phase 3 (#5354) : routes géo consolidées sous /attendance/*
-    # (chargées par AttendanceServiceProvider via loadRoutesFrom).
-    REPO_ROOT / "api" / "app" / "Modules" / "Attendance" / "routes" / "geo.php",
-]
+# Issue #5512 : auto-découverte des fichiers de routes des modules DDD chargés
+# par leurs providers (loadRoutesFrom) — la liste codée en dur laissait échapper
+# les nouvelles routes de modules (ex. HR/candidate_hiring.php, #5261, invisible
+# à la garde OpenAPI et aux contrôles d'orphan).
+MODULE_ROUTE_FILES = sorted((REPO_ROOT / "api" / "app" / "Modules").glob("*/routes/*.php"))
 
 # Route::apiResource('users') → méthodes CRUD standard Laravel.
 RESOURCE_METHODS = {
@@ -123,7 +122,11 @@ def parse_routes() -> list[dict]:
         # `require` dans api.php (groupe `v1` englobant) doit amorcer la pile —
         # sinon les routes des modules sont comparées sans le préfixe de
         # version et l'allowlist ne matche plus (drift faux positif massif).
-        prefix_stack: list[tuple[int, str]] = list(inherited or [])
+        # Issue #5512 : les entrées héritées du `require` (groupe v1 de api.php)
+        # sont PROTÉGÉES (indent -1) — sinon une fermeture de groupe top-level
+        # (`});` à l'indent 0) les pop et les routes suivantes du fichier perdent
+        # le préfixe de version (invisibles à la garde, faux drift inverse).
+        prefix_stack: list[tuple[int, str]] = [(-1, p) for _, p in (inherited or [])]
         current_prefixes = [p for _, p in prefix_stack]
         pending_prefix: str | None = None
 
@@ -434,6 +437,14 @@ def main() -> int:
         if (method, path) not in route_ops:
             reverse_drift.append(f"{method.upper()} {path}")
     new_reverse = sorted(set(reverse_drift) - reverse_allowlist)
+
+    # Issue #5512 : entrées d'allowlist inverse PÉRIMÉES — une entrée dont la
+    # route existe désormais dans le code masquerait une régression future
+    # (classe #5489/#5416 : route documentée puis perdue par merge). Toute
+    # entrée de l'allowlist qui correspond à une route réelle doit être
+    # retirée du fichier (exit 1).
+    wired_ops = {f"{m.upper()} {p}" for m, p in route_ops}
+    stale_reverse = sorted(reverse_allowlist & wired_ops)
 
     uncovered: list[dict] = []
     covered = 0

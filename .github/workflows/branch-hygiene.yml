@@ -1,0 +1,53 @@
+name: Branch Hygiene
+# ============================================================
+# Issue #5506 : purge automatique des branches distantes
+# (PRs mergées/fermées + locks de claim orphelins > 2 jours).
+# --dry-run par défaut : le rapport est publié en artefact ; le
+# passage en suppression réelle se fait par workflow_dispatch
+# (input delete=true).
+# ============================================================
+
+on:
+  schedule:
+    # Quotidien à 04:17 UTC (décalé des top-of-hour).
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+    inputs:
+      delete:
+        description: "Supprimer réellement (sinon dry-run)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: read
+  actions: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: branch-hygiene
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    timeout-minutes: 20
+    name: Purge stale branches (issue #5506)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Dry-run report (default)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x dev-hub/tools/cleanup-stale-branches.sh
+          dev-hub/tools/cleanup-stale-branches.sh "${{ github.repository }}" --dry-run --max-age-days=2
+
+      - name: Real cleanup (workflow_dispatch delete=true only)
+        if: github.event_name == 'workflow_dispatch' && inputs.delete == true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dev-hub/tools/cleanup-stale-branches.sh "${{ github.repository }}" --max-age-days=2

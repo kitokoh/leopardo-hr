@@ -10,10 +10,10 @@ the counts below only reflect strings a real user could actually see on screen.
 
 ## Summary
 
-- Total user-visible signals: 11069
-- P1 (priority screens: login/attendance/account/...): 1408
-- P2 (other screens): 9661
-- Developer/log-only signals (informational, not counted above): 80
+- Total user-visible signals: 11079
+- P1 (priority screens: login/attendance/account/...): 1413
+- P2 (other screens): 9666
+- Developer/log-only signals (informational, not counted above): 78
 
 ## By surface
 
@@ -53,12 +53,12 @@ the counts below only reflect strings a real user could actually see on screen.
 
 ### mobile_manager
 
-- Signals: 84
+- Signals: 78
 - P1: 0
-- P2: 84
-- Dev/log-only (informational): 4
+- P2: 78
+- Dev/log-only (informational): 3
 
-- [P2] `front/mobile_apps/leopardo_manager/lib/app.dart:356` Leopardo RH
+- [P2] `front/mobile_apps/leopardo_manager/lib/app.dart:352` Leopardo RH
 - [P2] `front/mobile_apps/leopardo_manager/lib/features/settings/data/settings_repository.dart:84` Demande envoyee
 - [P2] `front/mobile_apps/leopardo_manager/lib/features/settings/screens/settings_screen.dart:52` العربية
 - [P2] `front/mobile_apps/leopardo_manager/lib/features/settings/screens/settings_screen.dart:424` QR professionnel
@@ -83,16 +83,16 @@ the counts below only reflect strings a real user could actually see on screen.
 - [P2] `front/mobile_apps/leopardo_manager/lib/features/settings/screens/settings_screen.dart:819` Mettre a jour la langue
 - [P2] `front/mobile_apps/leopardo_manager/lib/features/settings/screens/settings_screen.dart:842` Changez votre mot de passe avant les prochaines etapes de modernisation.
 - [P2] `front/mobile_apps/leopardo_manager/lib/features/settings/screens/settings_screen.dart:852` Mot de passe actuel
-- ... 59 more signals
+- ... 53 more signals
 
 ### mobile_hr
 
-- Signals: 70
+- Signals: 64
 - P1: 0
-- P2: 70
-- Dev/log-only (informational): 4
+- P2: 64
+- Dev/log-only (informational): 3
 
-- [P2] `front/mobile_apps/leopardo_hr/lib/app.dart:333` Leopardo RH
+- [P2] `front/mobile_apps/leopardo_hr/lib/app.dart:329` Leopardo RH
 - [P2] `front/mobile_apps/leopardo_hr/lib/features/contracts/screens/contract_screen.dart:41` Aucun contrat
 - [P2] `front/mobile_apps/leopardo_hr/lib/features/contracts/screens/contract_screen.dart:43` Votre contrat apparaitra ici une fois configure.
 - [P2] `front/mobile_apps/leopardo_hr/lib/features/contracts/screens/contract_screen.dart:87` Salaire base
@@ -117,7 +117,7 @@ the counts below only reflect strings a real user could actually see on screen.
 - [P2] `front/mobile_apps/leopardo_hr/lib/features/settings/screens/settings_screen.dart:485` Le visage peut etre capture depuis le mobile puis soumis a validation manager / RH. Pou...
 - [P2] `front/mobile_apps/leopardo_hr/lib/features/settings/screens/settings_screen.dart:524` Activer la preparation biometrie
 - [P2] `front/mobile_apps/leopardo_hr/lib/features/settings/screens/settings_screen.dart:530` Empreinte digitale souhaitee
-- ... 45 more signals
+- ... 39 more signals
 
 ### mobile_platform_admin
 
@@ -147,17 +147,17 @@ the counts below only reflect strings a real user could actually see on screen.
 - [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_repository.dart:41` Code 2FA requis pour ce compte super-admin.
 - [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_repository.dart:49` Token plateforme manquant
 - [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_repository.dart:59` Session plateforme absente
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:29` En cours
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:30` Résolus
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:31` Fermés
-- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:41` Support client
+- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:34` En cours
+- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:35` Résolus
+- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:36` Fermés
+- [P2] `front/mobile_apps/leopardo_platform_admin/lib/src/features/support/support_tickets_screen.dart:46` Support client
 - ... 11 more signals
 
 ### web_client
 
-- Signals: 9773
-- P1: 354
-- P2: 9419
+- Signals: 9795
+- P1: 359
+- P2: 9436
 - Dev/log-only (informational): 2
 
 - [P1] `front/web/src/app/(landing)/contact/page.tsx:33` Information générale
@@ -185,7 +185,7 @@ the counts below only reflect strings a real user could actually see on screen.
 - [P1] `front/web/src/app/(landing)/contact/page.tsx:66` Ortaklık
 - [P1] `front/web/src/app/(landing)/contact/page.tsx:67` Basın ve Medya
 - [P1] `front/web/src/app/(landing)/contact/page.tsx:68` Unutulan şifre
-- ... 9748 more signals
+- ... 9770 more signals
 
 ### admin_dashboard
 

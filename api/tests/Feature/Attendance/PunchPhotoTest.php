@@ -239,7 +239,7 @@ class PunchPhotoTest extends TestCase
 
         $log = AttendanceLog::query()->firstOrFail();
 
-        $response = $this->get("/api/v1/attendance/{$log->id}/punch-photo");
+        $response = $this->get("/api/v1/attendance/attendance-logs/{$log->id}/punch-photo");
 
         $response->assertStatus(200);
     }

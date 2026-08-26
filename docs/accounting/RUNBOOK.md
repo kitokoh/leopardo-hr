@@ -133,7 +133,55 @@ le mouvement de trésorerie (pas de double comptage).
   `accounting_documents (company_id, due_date)`,
   `accounting_journal_entries (company_id, period)`.
 
-## 10. Supervision
+## 10. Paiement en ligne — webhooks (issue #5272/#5525/#5537)
+
+### URL canonique des webhooks
+
+```
+POST https://<domaine>/api/v1/accounting/payment-webhooks/{gateway}
+```
+
+| Passerelle | `{gateway}` | URL complète (exemple staging) |
+|---|---|---|
+| Chargily (DZ) | `chargily` | `https://app.leopardo.io/api/v1/accounting/payment-webhooks/chargily` |
+| Stripe (FR/UK/US/CI) | `stripe` | `https://app.leopardo.io/api/v1/accounting/payment-webhooks/stripe` |
+
+> **Changement de contrat (2026-08-25, PR #5525)** : l'ancienne URL
+> `/api/v1/accounting/payments/webhook/{gateway}` est supprimée. **Tout
+> dashboard Stripe / Chargily encore configuré sur l'ancien path doit être
+> mis à jour.**
+
+### Configuration dashboard Stripe
+
+1. Aller dans **Stripe Dashboard → Développeurs → Webhooks → Add endpoint**.
+2. URL : `https://<domaine>/api/v1/accounting/payment-webhooks/stripe`.
+3. Événements à écouter : `checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed`.
+4. Copier le **Signing secret** (`whsec_…`) dans la variable d'environnement `STRIPE_WEBHOOK_SECRET`.
+5. Vérifier la signature via la section « Tester les webhooks » (envoyer un événement test).
+
+### Configuration dashboard Chargily
+
+1. Aller dans **Chargily Dashboard → Paramètres → Webhooks**.
+2. URL : `https://<domaine>/api/v1/accounting/payment-webhooks/chargily`.
+3. Copier le **Webhook Secret** dans la variable d'environnement `CHARGILY_WEBHOOK_SECRET`.
+4. Le code `ChargilyPaymentGateway::webhookUrl()` retourne automatiquement la bonne URL ;
+   aucune config PHP à toucher.
+
+### Vérification de la signature HMAC
+
+- **Chargily** : `HMAC-SHA256(payload, CHARGILY_WEBHOOK_SECRET)` — comparé en `hash_equals` (fail-closed : 400 si secret absent ou signature non concordante).
+- **Stripe** : vérification via `Stripe\Webhook::constructEvent()` ou équivalent REST.
+- Toute signature invalide → `400 WEBHOOK_SIGNATURE_INVALID` (aucun effet de bord).
+
+### Dépannage webhook
+
+| Symptôme | Cause probable | Action |
+|---|---|---|
+| 404 sur la notification | Ancienne URL encore configurée | Mettre à jour le dashboard passerelle |
+| 400 `WEBHOOK_SIGNATURE_INVALID` | Secret non configuré ou incorrect | Vérifier `CHARGILY_WEBHOOK_SECRET` / `STRIPE_WEBHOOK_SECRET` |
+| Paiement doublon | Webhook rejoué sans idempotence | Vérifier `webhook_events.source+event_id` (table d'idempotence #5444) |
+
+## 11. Supervision
 
 - Journal déséquilibré = anomalie grave : `GET /accounting/journal?period=…`
   doit toujours rendre `balanced: true`.

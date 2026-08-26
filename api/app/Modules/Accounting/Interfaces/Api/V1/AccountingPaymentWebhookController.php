@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 /**
  * #5272 — Webhook public des passerelles de paiement (Chargily / Stripe).
  *
- * POST /api/v1/accounting/payments/webhook/{gateway}
+ * POST /api/v1/accounting/payment-webhooks/{gateway}
  * Aucune auth Sanctum : la confiance est portée par la signature HMAC
  * (fail-closed) et les métadonnées document_id/company_id envoyées au
  * checkout. Le tenant est résolu par metadata puis posé via TenantManager.

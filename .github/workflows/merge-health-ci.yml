@@ -1,0 +1,47 @@
+name: Merge Health Guard
+
+# Issue #5519 — garde anti-régression de merge : marqueurs de conflit,
+# imports dupliqués, syntaxe des routes, providers sains, routes publiques
+# critiques, contrôleurs orphelins. S'exécute sur chaque PR (bloquant) et
+# en post-merge sur main (signalement précoce — leçon session 2026-08-25 :
+# main a été cassé à 5 reprises par des merges sans détection).
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: merge-health-${{ github.ref }}
+  # #5536 : ne jamais annuler le run en cours (file saturée)
+  cancel-in-progress: false
+
+jobs:
+  check-merge-health:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    name: Merge Health Guard (issue #5519)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          coverage: none
+
+      - name: Run merge-health guard
+        run: bash dev-hub/tools/check-merge-health.sh
+
+      - name: Signal PRs merged without checks (post-merge)
+        if: github.event_name == 'push' && failure()
+        run: |
+          echo "::warning::MAIN CASSÉ post-merge — la garde #5519 a détecté une régression. Voir les logs du run."

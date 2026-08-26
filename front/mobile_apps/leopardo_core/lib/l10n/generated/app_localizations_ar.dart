@@ -6548,4 +6548,261 @@ class AppLocalizationsAr extends AppLocalizations {
   String settingsSubmitFailed(String error) {
     return 'فشل الإرسال: $error';
   }
+
+  @override
+  String get settingsQrOnboardingTitle => 'إعداد QR';
+
+  @override
+  String get settingsQrOnboardingSubtitle =>
+      'شارك ملفك الشخصي أو امسح شركة ضوئيًا.';
+
+  @override
+  String get settingsJourneyAvailable => 'متاح لشركة جديدة';
+
+  @override
+  String settingsJourneyAttachedTo(String company) {
+    return 'مرتبط بـ $company';
+  }
+
+  @override
+  String get settingsJourneyYourCompany => 'شركتك';
+
+  @override
+  String get settingsProfessionalQr => 'رمز QR المهني';
+
+  @override
+  String get settingsQrEmployeeHint =>
+      'يقوم المدير بمسحه ضوئيًا لملء دعوة مسبقًا.';
+
+  @override
+  String get settingsPasteQrButton => 'لصق رمز QR الخاص بالشركة';
+
+  @override
+  String get settingsCompanyQrLabel => 'رمز QR للشركة';
+
+  @override
+  String get settingsRequestIntegration => 'طلب الاندماج';
+
+  @override
+  String get settingsCabinetSubtitle =>
+      'السيرة الذاتية والعقود والشهادات والمستندات الإدارية.';
+
+  @override
+  String get settingsCabinetDocuments => 'مستندات';
+
+  @override
+  String get settingsCabinetShared => 'مشاركة';
+
+  @override
+  String get settingsCabinetPublic => 'عامة';
+
+  @override
+  String get settingsOpenLocker => 'افتح خزانتي';
+
+  @override
+  String get settingsLanguageSyncHint =>
+      'يتم مزامنة هذا التفضيل مع حسابك ويتحكم أيضًا في وضع RTL.';
+
+  @override
+  String get settingsUpdating => 'جارٍ التحديث...';
+
+  @override
+  String get settingsUpdateLanguage => 'تحديث اللغة';
+
+  @override
+  String settingsJourneyCompanyPeriod(String company, String period) {
+    return '$company - $period';
+  }
+
+  @override
+  String get settingsPasswordModernizationHint =>
+      'غيّر كلمة المرور قبل خطوات التحديث القادمة.';
+
+  @override
+  String get settingsUpdatePassword => 'تحديث كلمة المرور';
+
+  @override
+  String get settingsBiometricPreparationTitle => 'التحضير البيومتري';
+
+  @override
+  String get settingsBiometricExplanation =>
+      'يمكن التقاط الوجه من الجوال ثم إرساله لموافقة المدير/الموارد البشرية. بالنسبة لبصمة الإصبع، يمكن لنظامي Android/iOS التحقق محليًا من أنك تستخدم إصبعًا مسجلاً، لكنهما لا يوفران الوصول إلى القالب الخام؛ لذا يبقى التفعيل الفعلي في جهاز الحضور معتمدًا ثم تستخدمه محطة الشركة.';
+
+  @override
+  String settingsBiometricTodayStatus(String face, String fingerprint) {
+    return 'نشط اليوم - الوجه: $face | بصمة الإصبع: $fingerprint';
+  }
+
+  @override
+  String get settingsYes => 'نعم';
+
+  @override
+  String get settingsNo => 'لا';
+
+  @override
+  String get settingsBiometricEnablePreparation => 'تفعيل التحضير البيومتري';
+
+  @override
+  String get settingsBiometricFingerprintWanted => 'بصمة الإصبع مرغوبة';
+
+  @override
+  String get settingsBiometricFaceWanted => 'التعرف على الوجه مرغوب';
+
+  @override
+  String get settingsBiometricFutureConsent =>
+      'الموافقة على الحضور البيومتري المستقبلي';
+
+  @override
+  String get settingsBiometricSensorLabel => 'معرف مستشعر البصمة / المحطة';
+
+  @override
+  String get settingsBiometricSensorHint => 'مثال: FP-ENTREE-01 أو رقم بيومتري';
+
+  @override
+  String get settingsBiometricNotesTitle => 'ملاحظات وموافقة';
+
+  @override
+  String get settingsBiometricNotesHint =>
+      'مثال: السيلفي مسموح، يفضل محطة المدخل الرئيسي، موافقة على صورة الوجه...';
+
+  @override
+  String get settingsBiometricCaptureFace => 'التقاط / اختيار وجهي';
+
+  @override
+  String get settingsBiometricFaceSelected => 'تم تحديد صورة الوجه';
+
+  @override
+  String get settingsSavingShort => 'جارٍ الحفظ...';
+
+  @override
+  String get settingsSubmitBiometric => 'إرسال إلى المدير / الموارد البشرية';
+
+  @override
+  String get settingsSubmitting => 'جارٍ الإرسال...';
+
+  @override
+  String get settingsBiometricPendingExplanation =>
+      'بعد الإرسال، تظل بياناتك البيومترية معلقة. أي تفعيل أول أو تعديل يتطلب موافقة المدير/الموارد البشرية.';
+
+  @override
+  String get settingsEdgeNodeTitle => 'عقدة Edge (شبكة محلية)';
+
+  @override
+  String get settingsEdgeNodeHint =>
+      'اختياري: وجّه إلى خادم Edge مثبت في الموقع للتحقق من الحضور دون إنترنت.';
+
+  @override
+  String get settingsEdgeCloudStatus => 'متصل بالسحابة';
+
+  @override
+  String get settingsEdgeLocalStatus => 'متصل بعقدة Edge المحلية';
+
+  @override
+  String get settingsEdgeOfflineStatus => 'غير متصل';
+
+  @override
+  String settingsEdgeCurrentStatus(String label) {
+    return 'الحالة الحالية: $label';
+  }
+
+  @override
+  String get settingsEdgeAddressLabel => 'عنوان عقدة Edge';
+
+  @override
+  String get settingsEdgeUuidLabel => 'معرف العقدة (UUID)';
+
+  @override
+  String get settingsEdgeTokenLabel => 'رمز Edge';
+
+  @override
+  String get settingsEdgeUuidHint => 'يوفره المسؤول';
+
+  @override
+  String get settingsEdgeTokenHint => 'يُقدم مرة واحدة عند التسجيل';
+
+  @override
+  String get settingsRemove => 'إزالة';
+
+  @override
+  String get settingsSessionLogoutHint =>
+      'اخرج من هذا الفضاء على هذا الهاتف بشكل نظيف.';
+
+  @override
+  String get settingsNotificationsUnavailable =>
+      'التفضيلات غير متاحة حاليًا. اسحب لإعادة التحميل لاحقًا.';
+
+  @override
+  String get settingsNotificationsSaved => 'تم تحديث تفضيلات الإشعارات.';
+
+  @override
+  String settingsNotificationsSaveFailed(String error) {
+    return 'فشل التحديث: $error';
+  }
+
+  @override
+  String get settingsNotificationsIntro =>
+      'اختر القنوات المفيدة دون فقدان تنبيهات الموارد البشرية المهمة.';
+
+  @override
+  String get settingsChannelInApp => 'تنبيهات داخل التطبيق';
+
+  @override
+  String get settingsChannelInAppHint =>
+      'المهام وقرارات الموارد البشرية والحضور والتذكيرات.';
+
+  @override
+  String get settingsChannelPush => 'إشعار الجوال';
+
+  @override
+  String get settingsChannelPushHint => 'إشعارات فورية على هذا الهاتف.';
+
+  @override
+  String get settingsChannelEmailHint => 'ملخص وتأكيدات مهمة.';
+
+  @override
+  String get settingsChannelSmsHint =>
+      'قناة قصيرة مخصصة للطوارئ، نشطة بعد الاشتراك.';
+
+  @override
+  String get settingsChannelWhatsappHint =>
+      'قناة محادثة، تتطلب اشتراكك الصريح.';
+
+  @override
+  String get settingsNotificationsLanguage => 'لغة الإشعارات';
+
+  @override
+  String get settingsQrPasted => 'تم لصق رمز QR الخاص بالشركة.';
+
+  @override
+  String get settingsLanguageUpdated => 'تم تحديث اللغة.';
+
+  @override
+  String get settingsBiometricSavedLocal => 'تم حفظ التحضير البيومتري محليًا.';
+
+  @override
+  String get settingsBiometricEnableFirst => 'فعّل التحضير البيومتري أولاً.';
+
+  @override
+  String get settingsBiometricConsentRequired =>
+      'الموافقة مطلوبة قبل أي إرسال.';
+
+  @override
+  String get settingsBiometricFaceRequired => 'أضف التقاط وجه قبل الإرسال.';
+
+  @override
+  String get settingsBiometricLocalVerifyCancel =>
+      'تم إلغاء التحقق البيومتري المحلي.';
+
+  @override
+  String get settingsBiometricSubmitted =>
+      'أُرسل الطلب إلى المدير / الموارد البشرية للتحقق.';
+
+  @override
+  String settingsBiometricSubmitFailed(String error) {
+    return 'فشل الإرسال: $error';
+  }
+
+  @override
+  String get settingsBiometricConfirmIdentity =>
+      'أكد هويتك لإرسال طلبك البيومتري';
 }
