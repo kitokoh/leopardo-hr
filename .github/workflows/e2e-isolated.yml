@@ -24,6 +24,12 @@ on:
 permissions:
   contents: read
 
+# Issue #5629 (saturation CI) : concurrency aligné sur le reste du repo —
+# un push annule le run PR précédent de la même branche (jamais sur main).
+concurrency:
+  group: e2e-isolated-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   E2E_ADMIN_PASSWORD: e2e-fixture-password
