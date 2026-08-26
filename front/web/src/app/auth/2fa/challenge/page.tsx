@@ -106,7 +106,7 @@ function TwoFactorChallengeForm() {
         setSubmitting(false);
       }
     },
-    [challengeToken, code, rememberDevice, router],
+    [challengeToken, code, rememberDevice, router, isRecovery],
   );
 
   return (

@@ -29,12 +29,16 @@ import 'package:leopardo_core/features/notifications/screens/notification_list_s
 import 'package:leopardo_core/features/evaluations/screens/evaluation_list_screen.dart';
 import 'package:leopardo_core/features/cabinet/screens/cabinet_screen.dart';
 import 'package:leopardo_core/features/settings/screens/settings_screen.dart';
+import 'package:leopardo_core/features/settings/screens/two_factor_settings_screen.dart';
 import 'package:leopardo_core/features/team/screens/team_screen.dart';
 import 'package:leopardo_core/features/tasks/screens/task_list_screen.dart';
 import 'package:leopardo_core/features/user_auth/screens/user_register_screen.dart';
 import 'package:leopardo_core/features/user_auth/screens/user_login_screen.dart';
 import 'package:leopardo_core/features/user_auth/screens/user_home_screen.dart';
 import 'package:leopardo_core/features/user_auth/screens/company_request_screen.dart';
+// #5540
+import 'package:leopardo_core/features/user_auth/screens/personal_status_screen.dart';
+import 'package:leopardo_core/features/user_auth/screens/company_integration_request_screen.dart';
 import 'package:leopardo_manager/features/ai_chat/screens/ai_chat_screen.dart';
 import 'package:leopardo_manager/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart';
@@ -122,6 +126,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/user-login',
         '/user-home',
         '/company-request',
+        '/user-personal-status', // #5540
+        '/user-company-integration', // #5540
         '/access-denied',
         '/2fa-challenge',
       };
@@ -174,6 +180,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/company-request',
         builder: (context, state) => const CompanyRequestScreen(),
+      ),
+      // #5540
+      GoRoute(
+        path: '/user-personal-status',
+        builder: (context, state) => const PersonalStatusScreen(),
+      ),
+      GoRoute(
+        path: '/user-company-integration',
+        builder: (context, state) => const CompanyIntegrationRequestScreen(),
       ),
 
       // --- Authenticated routes with bottom nav ---
@@ -254,6 +269,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/settings',
             builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: '/settings/2fa',
+            builder: (context, state) =>
+                const TwoFactorSettingsScreen(),
           ),
           GoRoute(
             path: '/ai-chat',

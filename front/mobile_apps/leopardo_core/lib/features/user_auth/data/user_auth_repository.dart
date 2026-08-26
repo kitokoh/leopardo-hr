@@ -134,6 +134,79 @@ class UserAuthRepository {
     return extractDataMap(response.data);
   }
 
+  // ── #5540 — Onboarding multi-statuts ────────────────────────────────────
+
+  /// Met à jour les statuts personnels cumulables de l'utilisateur.
+  ///
+  /// Valeurs acceptées : student, employee, entrepreneur, seeking_employment.
+  Future<AppUser> updatePersonalStatuses(
+      List<PersonalStatus> statuses) async {
+    final response = await apiClient.requestWithRetry(
+      '/user/personal-statuses',
+      method: 'PATCH',
+      useUserSession: true,
+      maxRetriesOverride: 0,
+      timeoutOverride: const Duration(seconds: 10),
+      data: {
+        'statuses': statuses.map((s) => s.toApiValue()).toList(),
+      },
+    );
+    return AppUser.fromJson(_userPayload(extractDataMap(response.data)));
+  }
+
+  /// Recherche d'entreprises existantes par nom.
+  ///
+  /// Retourne une liste de [CompanySearchResult] (id, name, country, city).
+  Future<List<CompanySearchResult>> searchCompanies(String query) async {
+    final response = await apiClient.requestWithRetry(
+      '/user/companies/search',
+      useUserSession: true,
+      queryParameters: {'q': query},
+      timeoutOverride: const Duration(seconds: 10),
+      maxRetriesOverride: 0,
+    );
+    return extractDataList(response.data)
+        .map((e) => CompanySearchResult.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Soumet une demande d'intégration pour rejoindre une entreprise existante.
+  Future<IntegrationRequestSummary> submitIntegrationRequest({
+    required String targetCompanyId,
+    required String targetCompanyName,
+    String? message,
+  }) async {
+    final response = await apiClient.requestWithRetry(
+      '/user/company-integration-requests',
+      method: 'POST',
+      useUserSession: true,
+      maxRetriesOverride: 0,
+      timeoutOverride: const Duration(seconds: 12),
+      data: {
+        'target_company_id': targetCompanyId,
+        'target_company_name': targetCompanyName,
+        if (message != null && message.isNotEmpty) 'message': message,
+      },
+    );
+    return IntegrationRequestSummary.fromJson(extractDataMap(response.data));
+  }
+
+  /// Récupère les demandes d'intégration en cours de l'utilisateur.
+  Future<List<IntegrationRequestSummary>> getIntegrationRequests() async {
+    final response = await apiClient.requestWithRetry(
+      '/user/company-integration-requests',
+      useUserSession: true,
+      maxRetriesOverride: 0,
+      timeoutOverride: const Duration(seconds: 10),
+    );
+    return extractDataList(response.data)
+        .map((e) =>
+            IntegrationRequestSummary.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  // ── Profile ──────────────────────────────────────────────────────────────
+
   Future<AppUser> updateProfile({
     String? firstName,
     String? lastName,

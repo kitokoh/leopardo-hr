@@ -268,4 +268,8 @@ return [
     'BANK_STATEMENT_IMPORT_FORMAT' => 'تنسيق ملف الكشف غير صالح.',
     'ALREADY_SEEDED' => 'تم بالفعل إنشاء البيانات التجريبية لهذه الشركة.',
     'EMAIL_NOT_VERIFIED' => 'لم يتم التحقق من هذا البريد الإلكتروني من قبل المزود. استخدم حسابًا ببريد إلكتروني موثق.',
+    // #5540 — Onboarding multi-statuts
+    'MANAGER_ONLY_ACTION' => 'هذا الإجراء مخصص للمدراء فقط.',
+    'INTEGRATION_REQUEST_ALREADY_PENDING' => 'لديك طلب معلق بالفعل لهذه الشركة.',
+    'INTEGRATION_REQUEST_NOT_FOUND' => 'طلب التكامل غير موجود.',
 ];

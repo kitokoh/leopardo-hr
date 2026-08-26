@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-26T00:00:00Z",
+  "_updated_at": "2026-08-25T00:00:00Z",
   "_locale": "ar",
   "app": {
     "title": "ليوباردو للموارد البشرية"
@@ -3886,5 +3886,34 @@
     "loading": "تحميل التذاكر",
     "reply_sent": "تم إرسال الرد.",
     "loading_ticket": "تحميل التذكرة"
+  },
+  "personal_onboarding": {
+    "status_title": "وضعي الشخصي",
+    "status_subtitle": "حدد جميع أوضاعك الحالية. يمكنك اختيار أكثر من وضع.",
+    "status_save": "حفظ",
+    "status_student": "طالب",
+    "status_employee": "موظف",
+    "status_entrepreneur": "رائد أعمال",
+    "status_seeking": "باحث عن عمل",
+    "status_saved": "تم تحديث الأوضاع.",
+    "status_error": "خطأ: تعذر حفظ أوضاعك.",
+    "search_title": "الانضمام إلى شركة",
+    "search_subtitle": "ابحث عن شركة للتقديم.",
+    "search_hint": "اسم الشركة...",
+    "search_empty": "لم يتم العثور على شركة لـ « {query} ».",
+    "search_min_chars": "أدخل حرفين على الأقل.",
+    "request_title": "طلب الانضمام",
+    "request_company": "الشركة المستهدفة",
+    "request_message_label": "رسالة للمدير (اختياري)",
+    "request_message_hint": "قدّم نفسك باختصار...",
+    "request_send": "إرسال الطلب",
+    "request_sent": "تم إرسال الطلب إلى {company}.",
+    "request_error": "خطأ: {error}",
+    "request_already_pending": "لديك طلب معلق بالفعل لهذه الشركة.",
+    "requests_title": "طلبات الانضمام",
+    "requests_empty": "لا توجد طلبات معلقة.",
+    "status_pending": "قيد الانتظار",
+    "status_approved": "مقبول",
+    "status_rejected": "مرفوض"
   }
 }
