@@ -4,7 +4,7 @@
     <div v-if="isLoading" class="fixed inset-0 bg-white dark:bg-gray-900 z-50 flex items-center justify-center">
       <div class="text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-        <p class="mt-4 text-gray-600 dark:text-gray-400">Chargement de l'administration...</p>
+        <p class="mt-4 text-gray-600 dark:text-gray-400">{{ t('adminPalette.appLoading') }}</p>
       </div>
     </div>
 
@@ -17,12 +17,18 @@
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
+import { useLocaleStore } from '@/stores/locale'
 import { useRouter } from 'vue-router'
+import { translate } from '@/i18n/index.js'
 
 const isLoading = ref(true)
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
+const localeStore = useLocaleStore()
 const router = useRouter()
+
+// #5508 — i18n : libellé de chargement localisé ×4 (fallback FR).
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 onMounted(async () => {
   // Initialize theme
