@@ -52,13 +52,18 @@ return [
 
     'allowed_origins_patterns' => [
         // Issue #2333 : previews/déploiements Cloudflare Pages du dashboard
-        // admin (chaque preview a son propre sous-domaine *.pages.dev).
+        // admin (chaque preview a son propre sous-domaine). #5582 : le pattern
+        // historique `#^https://([a-z0-9-]+\.)*pages\.dev$#i` acceptait TOUT
+        // projet Pages (le nom de projet est choisi par l'utilisateur : un
+        // attaquant peut créer `nimportequoi.pages.dev` et matcher le pattern).
+        // Restreint à la zone du projet admin réel `leo-admin` (prod
+        // `https://leo-admin.pages.dev` + previews `<hash>.leo-admin.pages.dev`).
         // ATTENTION : fruitcake/php-cors passe ces entrées directement à
         // preg_match() — ce doit être une EXPRESSION RÉGULIÈRE COMPLÈTE,
         // pas un glob. Un glob 'https://*.pages.dev' crashe en 500
         // (preg_match delimiter) sur TOUT origin non listé en dur
         // (constat QA live 2026-08-15 — toute preview Pages cassée).
-        '#^https://([a-z0-9-]+\.)*pages\.dev$#i',
+        '#^https://([a-z0-9-]+\.)*leo-admin\.pages\.dev$#i',
     ],
 
     // Explicit allow-list instead of '*': defence-in-depth so that a future

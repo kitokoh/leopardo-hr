@@ -16,7 +16,7 @@
 |----------|-------|------------------------------|
 | `POST /api/v1/platform/auth/login` → `INVALID_CREDENTIALS` avec admin@leopardo-rh.com / password123 | `SUPER_ADMIN_PASSWORD` non défini → `SuperAdminSeeder` génère un mot de passe aléatoire (`CHANGER_EN_PROD_*`) | Définir `SUPER_ADMIN_PASSWORD=password123` **et** `FORCE_SUPER_ADMIN_PASSWORD_RESET=true`, puis redéployer (le seeder resynchronise le hash — comportement sécurisé conservé en prod) |
 | `GET /api/v1/demo-users` → 404 | `DEMO_MODE_ENABLED=false` (défaut sécurisé) | `DEMO_MODE_ENABLED=true` sur l'environnement démo/staging (contrat QA documenté AGENTS.md v4.16.128). **Ne pas** toucher à `DISABLE_DEMO_SEEDING` (il bloque la création des démos, pas leur exposition) |
-| CORS panneau admin cassé | `ADMIN_DASHBOARD_URL` non renseigné | Désormais **non bloquant** depuis #2333 : `leo-admin.pages.dev` + `https://*.pages.dev` sont dans la allowlist en dur. Définir quand même `ADMIN_DASHBOARD_URL=https://leo-admin.pages.dev` par hygiène (origine explicite dans les logs/audits) |
+| CORS panneau admin cassé | `ADMIN_DASHBOARD_URL` non renseigné | Désormais **non bloquant** depuis #2333 : `leo-admin.pages.dev` + les previews `https://*.leo-admin.pages.dev` sont dans la allowlist en dur (#5582 : le pattern est restreint à la zone `leo-admin`, plus aucun `*.pages.dev` tiers). Définir quand même `ADMIN_DASHBOARD_URL=https://leo-admin.pages.dev` par hygiène (origine explicite dans les logs/audits) |
 
 ## Procédure (5 min)
 
