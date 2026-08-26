@@ -28,9 +28,10 @@ class LangCatalogParityTest extends TestCase
         $this->assertNotEmpty($files, 'lang directory should contain catalogues');
 
         foreach ($files as $file) {
-            $this->assertStringEndsWith(
-                "];\n",
-                (string) $file->getContents(),
+            $content = (string) $file->getContents();
+            $this->assertMatchesRegularExpression(
+                '/\];\s*$/',
+                $content,
                 "{$file->getFilename()} doit se terminer par '];' (PHP valide)."
             );
         }

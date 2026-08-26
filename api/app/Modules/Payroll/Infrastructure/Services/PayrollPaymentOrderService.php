@@ -63,6 +63,9 @@ class PayrollPaymentOrderService
         }
 
         // Contenu du fichier banque : réutilisation des formats existants.
+        // Les gardes is_string de BankExportGenerator valident iban/bic ;
+        // le type est volontairement large (array<string, mixed>) car la
+        // valeur provient d'un validated() de requête (metadata.bank.*).
         $content = $this->bankExportGenerator->generate($run, $format, $companyBank);
         $fileName = sprintf(
             'payroll-%s-%s.%s',
@@ -98,7 +101,7 @@ class PayrollPaymentOrderService
                 'payment_order_id' => $order->id,
                 'employee_id' => $slip->employee_id,
                 'net_amount' => (float) $slip->net_salary,
-                'iban' => $slip->employee?->iban ?? null,
+                'iban' => $slip->employee->iban ?? null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ])->all();
@@ -150,7 +153,7 @@ class PayrollPaymentOrderService
             'by' => $actor?->id,
         ]);
 
-        return $order->fresh();
+        return $order->fresh() ?? $order;
     }
 
     /** Rapproche l'ordre exécuté avec les paiements (marquage + audit). */
@@ -172,6 +175,6 @@ class PayrollPaymentOrderService
             'by' => $actor?->id,
         ]);
 
-        return $order->fresh();
+        return $order->fresh() ?? $order;
     }
 }

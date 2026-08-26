@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services;
 
-use PragmaRX\Google2FA\Google2FA;
-
 /**
  * #5436 — Génération/vérification TOTP partagée.
  *
@@ -21,10 +19,6 @@ final class TotpService
      */
     public function generateSecret(): string
     {
-        if ($this->google2fa() !== null) {
-            return $this->google2fa()->generateSecretKey();
-        }
-
         return $this->base32Encode(random_bytes(20));
     }
 
@@ -36,10 +30,6 @@ final class TotpService
     {
         if ($secret === '') {
             return false;
-        }
-
-        if ($this->google2fa() !== null) {
-            return $this->google2fa()->verifyKey($secret, $code);
         }
 
         $normalizedCode = preg_replace('/\D+/', '', $code) ?? '';
@@ -63,23 +53,10 @@ final class TotpService
      */
     public function qrCodeUrl(string $account, string $secret, string $issuer = 'Leopardo'): string
     {
-        if ($this->google2fa() !== null) {
-            return $this->google2fa()->getQRCodeUrl($issuer, $account, $secret);
-        }
-
         $encodedIssuer = rawurlencode($issuer);
         $label = rawurlencode($issuer.':'.$account);
 
         return "otpauth://totp/{$label}?secret={$secret}&issuer={$encodedIssuer}&algorithm=SHA1&digits=6&period=30";
-    }
-
-    private function google2fa(): ?Google2FA
-    {
-        if (! class_exists(Google2FA::class)) {
-            return null;
-        }
-
-        return new Google2FA;
     }
 
     private function totpAt(string $secret, int $timestamp): string
@@ -90,7 +67,8 @@ final class TotpService
         $hash = hash_hmac('sha1', $binaryCounter, $key, true);
         $offset = ord(substr($hash, -1)) & 0x0F;
         $chunk = substr($hash, $offset, 4);
-        $value = unpack('N', $chunk)[1] & 0x7FFFFFFF;
+        $unpacked = unpack('N', $chunk);
+        $value = ($unpacked !== false ? $unpacked[1] : 0) & 0x7FFFFFFF;
 
         return str_pad((string) ($value % 1000000), 6, '0', STR_PAD_LEFT);
     }
@@ -107,7 +85,7 @@ final class TotpService
         $encoded = '';
         foreach (str_split($bits, 5) as $chunk) {
             $chunk = str_pad($chunk, 5, '0', STR_PAD_RIGHT);
-            $encoded .= $alphabet[bindec($chunk)];
+            $encoded .= $alphabet[(int) bindec($chunk)];
         }
 
         return $encoded;
@@ -133,7 +111,7 @@ final class TotpService
                 continue;
             }
 
-            $decoded .= chr(bindec($chunk));
+            $decoded .= chr((int) bindec($chunk));
         }
 
         return $decoded;

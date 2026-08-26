@@ -22,7 +22,7 @@ use Throwable;
 class BankExportGenerator
 {
     /**
-     * @param  array{iban: string|null, bic: string|null}|array{name: string, iban: string|null, bic: string|null}|null  $companyBank  coordonnées débiteur pré-résolues (job), sinon résolues ici (contexte tenant)
+     * @param  array<string, mixed>|null  $companyBank  coordonnées débiteur pré-résolues (job), sinon résolues ici (contexte tenant)
      */
     public function generate(PayrollRun $run, string $format, ?array $companyBank = null): string
     {
@@ -93,7 +93,7 @@ class BankExportGenerator
     /** @param Collection<int, PaySlip> $slips */
     /**
      * @param  Collection<int, PaySlip>  $slips
-     * @param  array{iban: string|null, bic: string|null}|array{name: string, iban: string|null, bic: string|null}|null  $companyBank
+     * @param  array<string, mixed>|null  $companyBank
      */
     private function generateSepaExport(PayrollRun $run, Collection $slips, string $currency, ?array $companyBank = null): string
     {

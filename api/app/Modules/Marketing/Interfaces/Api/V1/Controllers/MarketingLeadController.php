@@ -92,7 +92,7 @@ class MarketingLeadController extends Controller
                     'external_id' => $lead->external_id,
                     'status' => $lead->status,
                 ],
-            ]);
+            ]) ?: '';
 
             $this->registry->complete('marketing-lead', $eventId, 201, $body);
 

@@ -23,11 +23,6 @@ use Illuminate\Support\Facades\Log;
  * stamped so `MailMessageProvider` stops retrying that address on every
  * future communication, and a `communication_events` audit row is
  * recorded either way for observability.
- *
- * #5444 : idempotence persistée — le payload n'a pas d'identifiant
- * d'événement côté fournisseur, la clé est donc le hash du payload brut :
- * une redelivrance identique est dédupliquée (une seule ligne
- * `communication_events`, un seul stamping).
  */
 class EmailBounceWebhookController extends Controller
 {
@@ -94,7 +89,7 @@ class EmailBounceWebhookController extends Controller
             if ($employee === null) {
                 Log::info('Email bounce webhook: no matching employee for address', ['event' => $event]);
 
-                $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]) ?: null);
+                $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]) ?: '');
 
                 return new JsonResponse(['received' => true]);
             }
@@ -120,7 +115,7 @@ class EmailBounceWebhookController extends Controller
                 'occurred_at' => now(),
             ]);
 
-            $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]) ?: null);
+            $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]) ?: '');
 
             return new JsonResponse(['received' => true]);
         } catch (\Throwable $e) {

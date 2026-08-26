@@ -44,20 +44,25 @@ final class WebhookEventRegistry
         // Garde de schéma partiel (pattern `ensurePunchPhotoProvided` #5265) :
         // en environnement de test sans la table (CreatesMvpSchema), on
         // traite sans déduplication — en production la migration existe.
-        // #5576 : le garde doit voir la table PLATEFORME (schéma public) même
-        // quand la session pointe sur un autre schéma (search_path tenant) —
-        // `Schema::hasTable()` suit `current_schema()` et ratait la table.
-        if (! $this->webhookEventsTableExists()) {
+        if (! Schema::hasTable('public.webhook_events')) {
             return null;
         }
 
         try {
-            WebhookEvent::query()->create([
-                'source' => $source,
-                'event_id' => $eventId,
-                'payload_hash' => $payloadHash,
-                'response_code' => 0,
-            ]);
+            // #5629 : la violation d'unicité ABORTE la transaction courante en
+            // PostgreSQL (SQLSTATE 25P02 sur toute redelivrance). L'INSERT est
+            // isolé dans une sous-transaction (savepoint en test — les suites
+            // RefreshTenantDatabase vivent dans une transaction globale ;
+            // transaction réelle en prod) : sur conflit, seul le savepoint est
+            // annulé et la relecture ci-dessous reste exécutable.
+            DB::transaction(function () use ($source, $eventId, $payloadHash): void {
+                WebhookEvent::query()->create([
+                    'source' => $source,
+                    'event_id' => $eventId,
+                    'payload_hash' => $payloadHash,
+                    'response_code' => 0,
+                ]);
+            });
 
             return null;
         } catch (UniqueConstraintViolationException $e) {
@@ -84,6 +89,13 @@ final class WebhookEventRegistry
      */
     public function complete(string $source, string $eventId, int $code, ?string $body = null): void
     {
+        // Même garde de schéma partiel que begin() : sans la table (état
+        // d'infra de test après migrate:fresh), complete() est un no-op —
+        // jamais de SQLSTATE 42P01/25P02 sur les webhooks.
+        if (! Schema::hasTable('public.webhook_events')) {
+            return;
+        }
+
         WebhookEvent::query()
             ->where('source', $source)
             ->where('event_id', $eventId)
@@ -100,6 +112,11 @@ final class WebhookEventRegistry
      */
     public function release(string $source, string $eventId): void
     {
+        // Même garde de schéma partiel que begin() : no-op sans la table.
+        if (! Schema::hasTable('public.webhook_events')) {
+            return;
+        }
+
         WebhookEvent::query()
             ->where('source', $source)
             ->where('event_id', $eventId)
@@ -117,27 +134,6 @@ final class WebhookEventRegistry
         }
 
         return hash('sha256', $payload);
-    }
-
-    /**
-     * La table `webhook_events` existe-t-elle (schéma plateforme `public`) ?
-     *
-     * Postgres : `Schema::hasTable()` interroge `current_schema()` (premier
-     * schéma du search_path de session, ex. `shared_tenants` en test) et
-     * ratait la table publique — on vérifie donc explicitement
-     * `public.webhook_events` (avec repli sur le search_path).
-     */
-    private function webhookEventsTableExists(): bool
-    {
-        if (DB::getDriverName() === 'pgsql') {
-            $qualified = DB::selectOne("select to_regclass('public.webhook_events') as table_name");
-
-            if ($qualified !== null && $qualified->table_name !== null) {
-                return true;
-            }
-        }
-
-        return Schema::hasTable('webhook_events');
     }
 
     /**
