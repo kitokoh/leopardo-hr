@@ -865,6 +865,19 @@ trait CreatesMvpSchema
             $table->unsignedInteger('employee_id');
             $table->string('role', 20);
         });
+        // #5444 : registre d'idempotence des webhooks entrants (table publique,
+        // miroir migration public/2026_08_25_000001_create_webhook_events_table).
+        Schema::create('webhook_events', function (Blueprint $table): void {
+            $table->id();
+            $table->string('source', 32);
+            $table->string('event_id', 191);
+            $table->char('payload_hash', 64);
+            $table->unsignedSmallInteger('response_code')->default(0);
+            $table->text('response_body')->nullable();
+            $table->timestamps();
+
+            $table->unique(['source', 'event_id']);
+        });
         Schema::create('super_admins', function (Blueprint $table): void {
             $table->increments('id');
             $table->string('name', 100);
