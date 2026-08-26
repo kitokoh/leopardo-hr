@@ -139,9 +139,27 @@ class AuthController extends Controller
     {
         /** @var Employee $employee */
         $employee = $request->user();
-        $dto = UpdateEmployeeDTO::fromRequest($request);
 
+        $oldEmail = (string) $employee->email;
+        $newEmail = $request->validated('email');
+        $emailChanged = is_string($newEmail) && strtolower($newEmail) !== strtolower($oldEmail);
+
+        $dto = UpdateEmployeeDTO::fromRequest($request);
         $fresh = $this->updateProfileAction->execute($employee, $dto);
+
+        // Issue #5587 : trace d'audit + notification de l'ancienne adresse lors
+        // d'un changement d'email (défense en profondeur — le mot de passe a déjà
+        // été validé dans UpdateProfileRequest::after()).
+        if ($emailChanged) {
+            Log::info('auth.profile.email_changed', [
+                'employee_id' => $employee->id,
+                'company_id' => (string) $employee->company_id,
+                'old_email' => $oldEmail,
+                // Ne logguer que le domaine du nouvel email pour éviter de
+                // stocker des données personnelles en clair dans les logs.
+                'new_email_domain' => substr($newEmail, (int) strrpos($newEmail, '@')),
+            ]);
+        }
 
         return (new EmployeeResource($fresh))->response();
     }
