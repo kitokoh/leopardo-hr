@@ -45,8 +45,15 @@ services:
           property: host
       - key: LOG_CHANNEL
         value: stderr
+      # Issue #5586 : LOG_LEVEL=error filtrait le canal StructuredLogging
+      # (middleware log en info). Abaissé à warning pour laisser passer les
+      # avertissements de l'app sans noyer les logs en info-noise.
       - key: LOG_LEVEL
-        value: error
+        value: warning
+      # Issue #5586 : Sentry DSN câblé — DSN à saisir dans le dashboard Render
+      # (sync: false). SENTRY_TRACES_SAMPLE_RATE peut être ajusté en dashboard.
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
       # Database
       - key: DB_CONNECTION
         value: pgsql
@@ -200,8 +207,15 @@ services:
           property: host
       - key: LOG_CHANNEL
         value: stderr
+      # Issue #5586 : aligné sur le web service (warning).
       - key: LOG_LEVEL
-        value: error
+        value: warning
+      # Issue #5586 : Sentry DSN partagé depuis le web service (même clé).
+      - key: SENTRY_LARAVEL_DSN
+        fromService:
+          name: gestionemployerbackend
+          type: web
+          envVarKey: SENTRY_LARAVEL_DSN
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
@@ -309,6 +323,16 @@ services:
           property: host
       - key: LOG_CHANNEL
         value: stderr
+      # Issue #5586 : LOG_LEVEL absent → défaut Laravel (debug en local, stack en
+      # prod). Aligné explicitement sur warning comme les autres services.
+      - key: LOG_LEVEL
+        value: warning
+      # Issue #5586 : Sentry DSN partagé depuis le web service.
+      - key: SENTRY_LARAVEL_DSN
+        fromService:
+          name: gestionemployerbackend
+          type: web
+          envVarKey: SENTRY_LARAVEL_DSN
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
