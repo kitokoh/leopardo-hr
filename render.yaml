@@ -89,8 +89,10 @@ services:
       # App secrets
       - key: APP_KEY
         generateValue: true
+      # Issue #5578 : la queue est sur database (probe + drain GH #5204/#5205),
+      # pas sur Redis (quota Upstash, incident 2026-08-19).
       - key: QUEUE_CONNECTION
-        value: redis
+        value: database
       - key: CACHE_STORE
         value: redis
       - key: SESSION_DRIVER
@@ -170,9 +172,10 @@ services:
     region: frankfurt
     plan: starter
     autoDeploy: true
-    # Override default CMD to run queue:work instead of web server
+    # Issue #5578 : la queue est sur database — le worker consomme la
+    # connexion par défaut (aligné sur le probe et le drain GH Actions).
     dockerCommand: >-
-      php artisan queue:work redis
+      php artisan queue:work
       --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default
       --tries=3
       --timeout=300
@@ -242,7 +245,7 @@ services:
           type: web
           envVarKey: APP_KEY
       - key: QUEUE_CONNECTION
-        value: redis
+        value: database
       - key: CACHE_STORE
         value: redis
       - key: FIREBASE_PROJECT_ID
@@ -346,7 +349,7 @@ services:
           type: web
           envVarKey: APP_KEY
       - key: QUEUE_CONNECTION
-        value: redis
+        value: database
       # Mail (issue #3594) : le scheduler envoie des emails synchrones (rappels,
       # alertes, notifications planifiées). Sans MAIL_* il retombe sur
       # config/mail.php 'host' => 127.0.0.1:25 et tout envoi échoue en silence.
