@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
@@ -97,8 +97,8 @@ class CompanyOnboardingIntegrationTest extends TestCase
 
         $response = $this->getJson('/api/v1/onboarding-setup/checklist');
 
-        // Should return checklist or 404 if not provisioned yet
-        $this->assertContains($response->status(), [200, 404]);
+        // #5585 : le contrôleur renvoie toujours 200 pour un employé authentifié (pas de 404).
+        $response->assertOk();
     }
 
     private function superAdmin(): SuperAdmin
@@ -108,7 +108,7 @@ class CompanyOnboardingIntegrationTest extends TestCase
             'email' => fake()->unique()->safeEmail(),
         ]);
         $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
+
         return $superAdmin;
     }
 }
-

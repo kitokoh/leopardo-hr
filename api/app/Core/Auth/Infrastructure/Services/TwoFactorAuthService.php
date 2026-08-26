@@ -8,8 +8,10 @@ use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanySetting;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -130,14 +132,25 @@ final class TwoFactorAuthService
      */
     public function requiresMfa(Employee $employee): bool
     {
-        // NB #5579 : `company_settings` est scopé PAR SCHÉMA TENANT (chaque
-        // tenant a sa table — voir 07_SCHEMA_SQL_COMPLET.sql) : il n'existe
-        // pas de colonne company_id. Le filtre `where('company_id', ...)`
-        // du merge #5436 levait SQLSTATE 42703 sur TOUT login (CI rouge).
-        // La résolution search_path (tenant courant) suffit.
-        $setting = CompanySetting::query()
-            ->where('key', 'mfa_required_roles')
-            ->first();
+        try {
+            // Politique tenant : la clé `mfa_required_roles` est un réglage de
+            // schéma (CompanySetting global par clé, pattern repo — pas de
+            // colonne company_id dans `company_settings`).
+            $setting = CompanySetting::query()
+                ->where('key', 'mfa_required_roles')
+                ->first();
+        } catch (QueryException $e) {
+            // #5585/#5579 : table/colonne absente (fixture MVP ou migration
+            // partielle) → la politique tenant ne s'applique pas, SANS 500
+            // (le login ne doit jamais planter sur une lecture de réglage).
+            // La 2FA individuelle (two_fa_enabled_at) reste fail-closed.
+            Log::warning('two_factor.policy_lookup_failed', [
+                'employee_id' => $employee->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
 
         if ($setting === null || ! is_string($setting->value) || $setting->value === '') {
             return false;
@@ -179,27 +192,23 @@ final class TwoFactorAuthService
      */
     public function verifyChallenge(string $challengeToken, ?string $code, ?string $recoveryCode, ?string $deviceName = null): array
     {
-        /** @var array{employee_id?: int, company_id?: string, tenant_schema?: string|null, email?: string, device_name?: string|null}|null $context */
+        /** @var array{employee_id: int, company_id: string, tenant_schema: string|null, email: string, device_name: string|null}|null $context */
         $context = Cache::get('mfa:challenge:'.$challengeToken);
 
-        if (! is_array($context) || ! isset($context['employee_id'])) {
+        if (! is_array($context)) {
             throw TwoFactorException::challengeExpired();
         }
 
-        // NB #5579 : ne PAS oublier le challenge ici — un code TOTP erroné
-        // (422 TWO_FACTOR_INVALID) doit laisser la possibilité de resaisir.
-        // Le challenge n'est consommé qu'au succès de la vérification.
-
         $previousSearchPath = null;
-        if (DB::getDriverName() === 'pgsql' && is_string($context['tenant_schema'] ?? null) && $context['tenant_schema'] !== '') {
+        if (DB::getDriverName() === 'pgsql' && $context['tenant_schema'] !== null && $context['tenant_schema'] !== '') {
             $searchPathResult = DB::selectOne('SHOW search_path');
             $previousSearchPath = is_object($searchPathResult) && property_exists($searchPathResult, 'search_path')
                 ? (string) $searchPathResult->search_path
                 : null;
-            // NB #5579 : SET search_path TO <schéma> SEUL (merge #5436)
-            // rendait `companies` et `personal_access_tokens` (schéma public)
-            // introuvables → challenge « expiré » (401) ou 500 à la création
-            // du token. On positionne schéma tenant + public, comme
+            // NB #5579 : SET search_path TO <schéma> SEUL (merge #5436) rendait
+            // `companies` et `personal_access_tokens` (schéma public)
+            // introuvables → challenge « expiré » (401) ou 500 à la création du
+            // token. On positionne schéma tenant + public, comme
             // AuthService::setTenantSearchPath.
             $tenantSchema = $context['tenant_schema'];
             if (preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $tenantSchema) !== 1) {
@@ -229,15 +238,17 @@ final class TwoFactorAuthService
                 throw TwoFactorException::invalidCode();
             }
 
+            // Single-use au SUCCÈS uniquement : un code invalide ne doit pas
+            // brûler le challenge (l'utilisateur peut retenter avec le même
+            // token). Le challenge est consommé ici, après vérification.
+            Cache::forget('mfa:challenge:'.$challengeToken);
+
             /** @var Company|null $company */
-            $company = Company::query()->find((string) ($context['company_id'] ?? ''));
+            $company = Company::query()->find($context['company_id']);
 
             if ($company === null || in_array($company->status, ['suspended', 'expired'], true)) {
                 throw TwoFactorException::challengeExpired();
             }
-
-            // Vérification réussie → le challenge est consommé (usage unique).
-            Cache::forget('mfa:challenge:'.$challengeToken);
 
             $employee->forceFill(['last_login_at' => now()])->saveQuietly();
 
@@ -245,7 +256,7 @@ final class TwoFactorAuthService
             $expirationMinutes = (int) config('sanctum.expiration', 0);
             $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
             $abilities = ['*'];
-            if (is_string($context['tenant_schema'] ?? null) && $context['tenant_schema'] !== '') {
+            if ($context['tenant_schema'] !== null && $context['tenant_schema'] !== '') {
                 $abilities[] = 'tenant_schema:'.$context['tenant_schema'];
                 $abilities[] = 'tenant_email:'.$employee->email;
                 $abilities[] = 'tenant_company:'.$company->id;
@@ -261,7 +272,7 @@ final class TwoFactorAuthService
                 'employee' => $employee,
             ];
         } finally {
-            if ($previousSearchPath !== null && $previousSearchPath !== '') {
+            if ($previousSearchPath !== null) {
                 DB::statement('SET search_path TO '.$previousSearchPath);
             }
         }

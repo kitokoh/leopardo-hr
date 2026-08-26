@@ -45,7 +45,7 @@ class StripeWebhookController extends Controller
             return new JsonResponse(['error' => 'Invalid signature'], 400);
         }
 
-        $eventId = $this->registry->eventId($payload, is_string($event['id'] ?? null) ? $event['id'] : null);
+        $eventId = $this->registry->eventId($payload, $event['id'] ?? null);
         $replay = $this->registry->begin('stripe', $eventId, hash('sha256', $payload));
 
         if ($replay !== null) {
@@ -60,13 +60,13 @@ class StripeWebhookController extends Controller
         try {
             $this->stripeService->handleEvent($event);
 
-            $this->registry->complete('stripe', $eventId, 200, json_encode(['received' => true]));
+            $this->registry->complete('stripe', $eventId, 200, json_encode(['received' => true]) ?: '');
 
             return new JsonResponse(['received' => true]);
         } catch (\Throwable $e) {
             $this->registry->release('stripe', $eventId);
             Log::error('Stripe Webhook: Error handling event', [
-                'type' => is_string($event['type'] ?? null) ? $event['type'] : null,
+                'type' => $event['type'],
                 'error' => $e->getMessage(),
             ]);
 

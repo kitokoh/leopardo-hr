@@ -28,6 +28,36 @@ class IntentEngine
     /**
      * @return array<int, ToolResult>
      */
+    /**
+     * Issue #5625 : liste statique des outils read qui ont un handler PHP.
+     * Utilisée par l'Orchestrator pour filtrer le registre DB avant d'exposer
+     * les outils au LLM — un outil enregistré en DB mais absent ici ne sera
+     * JAMAIS proposé à l'utilisateur.
+     *
+     * @return list<string>
+     */
+    public static function supportedReadToolNames(): array
+    {
+        return [
+            'get_employees',
+            'get_employee_details',
+            'get_departments',
+            'get_headcount',
+            'search_employees',
+            'get_attendance_today',
+            'get_attendance_anomalies',
+            'get_monthly_report',
+            'get_absences',
+            'get_daily_summary',
+            'get_notifications',
+            'get_leave_balances',
+            'get_payroll_summary',
+        ];
+    }
+
+    /**
+     * @return array<int, ToolResult>
+     */
     public function executeToolCalls(AIResponse $response, string $companyId, int $userId): array
     {
         $results = [];

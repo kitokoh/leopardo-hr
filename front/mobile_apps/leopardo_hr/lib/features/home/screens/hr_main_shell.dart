@@ -20,19 +20,19 @@ class HrMainShell extends StatelessWidget {
         LeopardoNavItem(
           icon: Icons.dashboard_outlined,
           activeIcon: Icons.dashboard_rounded,
-          label: 'Accueil',
+          label: context.l10n.shellHome,
           route: '/',
         ),
         LeopardoNavItem(
           icon: Icons.fingerprint_outlined,
           activeIcon: Icons.fingerprint,
-          label: 'Pointage',
+          label: context.l10n.shellAttendance,
           route: '/attendance',
         ),
         LeopardoNavItem(
           icon: Icons.event_busy_outlined,
           activeIcon: Icons.event_busy,
-          label: 'Absences',
+          label: context.l10n.shellAbsences,
           route: '/absences',
         ),
         LeopardoNavItem(
