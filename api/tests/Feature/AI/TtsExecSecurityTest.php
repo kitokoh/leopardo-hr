@@ -86,6 +86,7 @@ class TtsExecSecurityTest extends TestCase
      */
     private function aiFixture(): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
 
         $employee = Employee::query()->forceCreate([

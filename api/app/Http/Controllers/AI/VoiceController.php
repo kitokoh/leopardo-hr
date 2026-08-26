@@ -272,14 +272,14 @@ class VoiceController extends Controller
         // renvoie null. Le provider cloud (elevenlabs) est préféré par défaut
         // dès qu'une clé est configurée (config/ai.php).
         if (! function_exists('exec')) {
-            Log::error('TTS edge_tts indisponible : exec() est désactivé (AI_TTS_PROVIDER=edge_tts)');
+            Log::error('TTS edge-tts unavailable: exec() is disabled (AI_TTS_PROVIDER=edge_tts)');
 
             return null;
         }
 
         $binary = trim((string) shell_exec('command -v '.(string) config('ai.voice.edge_tts_binary', 'edge-tts').' 2>/dev/null'));
         if ($binary === '') {
-            Log::error('TTS edge_tts indisponible : binaire introuvable (pip install edge-tts, cf. Dockerfile.prod — issue #5616)');
+            Log::error('TTS edge-tts unavailable: binary not found (pip install edge-tts, see Dockerfile.prod - issue #5616)');
 
             return null;
         }
