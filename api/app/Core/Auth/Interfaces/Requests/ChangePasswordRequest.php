@@ -7,6 +7,12 @@ namespace App\Core\Auth\Interfaces\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
+/**
+ * Règles de validation pour le changement de mot de passe.
+ *
+ * #5620 — renforcement : Password::min(8)->numbers() exige au moins un
+ * chiffre, en cohérence avec l'indicateur de force du frontend.
+ */
 class ChangePasswordRequest extends FormRequest
 {
     public function authorize(): bool
