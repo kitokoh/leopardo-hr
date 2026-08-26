@@ -77,6 +77,9 @@ jobs:
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
+      - name: Queue strategy coherence guard — database partout (issue #5578)
+        run: bash dev-hub/tools/check-queue-strategy-coherence.sh
+
 
   phpstan-modules:
     timeout-minutes: 45
