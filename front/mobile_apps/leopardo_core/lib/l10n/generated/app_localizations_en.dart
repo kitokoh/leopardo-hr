@@ -201,29 +201,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authTwoFactorRequired => 'The 2FA code is required.';
 
   @override
-  String get twoFaChallengeTitle => 'Two-factor verification';
-
-  @override
-  String get twoFaChallengeSubtitle =>
-      'Enter the 6-digit code from your authenticator app.';
-
-  @override
-  String get twoFaChallengeCodeHint => 'TOTP code (6 digits)';
-
-  @override
-  String get twoFaChallengeVerifyBtn => 'Verify';
-
-  @override
-  String get twoFaChallengeRecoveryToggle => 'Use a recovery code';
-
-  @override
-  String get twoFaChallengeRecoveryHint => 'Recovery code';
-
-  @override
-  String get twoFaChallengeInvalidError =>
-      'Invalid or expired code. Please try again.';
-
-  @override
   String get authDemoAccess => 'Demo access';
 
   @override
@@ -3449,18 +3426,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shellTeam => 'Team';
 
   @override
-  String get shellHome => 'Home';
-
-  @override
-  String get shellAttendance => 'Attendance';
-
-  @override
-  String get shellAbsences => 'Absences';
-
-  @override
-  String get shellApprovals => 'Approvals';
-
-  @override
   String get exportsReportemployees => 'Employees';
 
   @override
@@ -4270,46 +4235,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contractsAllstatuses => 'All statuses';
-
-  @override
-  String get contractsMobileTitle => 'My Contract';
-
-  @override
-  String get contractsBackTooltip => 'Back';
-
-  @override
-  String get contractsEmptyTitle => 'No contract';
-
-  @override
-  String get contractsEmptyDescription =>
-      'Your contract will appear here once configured.';
-
-  @override
-  String get contractsLabelType => 'Type';
-
-  @override
-  String get contractsLabelStartDate => 'Start';
-
-  @override
-  String get contractsLabelEndDate => 'End';
-
-  @override
-  String get contractsLabelBaseSalary => 'Base salary';
-
-  @override
-  String get contractsLoading => 'Loading contracts...';
-
-  @override
-  String get contractsStatusActive => 'Active';
-
-  @override
-  String get contractsStatusExpired => 'Expired';
-
-  @override
-  String get contractsStatusDraft => 'Draft';
-
-  @override
-  String get contractsStatusCdi => 'Permanent (CDI)';
 
   @override
   String get trainingTitleplaceholder => 'Title *';
@@ -7127,6 +7052,174 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bankreconRetry => 'Retry';
 
   @override
+  String get personalOnboardingStatusTitle => 'My personal situation';
+
+  @override
+  String get personalOnboardingStatusSubtitle =>
+      'Select all your current statuses. You can choose multiple.';
+
+  @override
+  String get personalOnboardingStatusSave => 'Save';
+
+  @override
+  String get personalOnboardingStatusStudent => 'Student';
+
+  @override
+  String get personalOnboardingStatusEmployee => 'Employee';
+
+  @override
+  String get personalOnboardingStatusEntrepreneur => 'Entrepreneur';
+
+  @override
+  String get personalOnboardingStatusSeeking => 'Job seeker';
+
+  @override
+  String get personalOnboardingStatusSaved => 'Statuses updated.';
+
+  @override
+  String get personalOnboardingStatusError =>
+      'Error: unable to save your statuses.';
+
+  @override
+  String get personalOnboardingSearchTitle => 'Join a company';
+
+  @override
+  String get personalOnboardingSearchSubtitle =>
+      'Search for a company to apply.';
+
+  @override
+  String get personalOnboardingSearchHint => 'Company name...';
+
+  @override
+  String personalOnboardingSearchEmpty(Object query) {
+    return 'No company found for « $query ».';
+  }
+
+  @override
+  String get personalOnboardingSearchMinChars => 'Enter at least 2 characters.';
+
+  @override
+  String get personalOnboardingRequestTitle => 'Integration request';
+
+  @override
+  String get personalOnboardingRequestCompany => 'Target company';
+
+  @override
+  String get personalOnboardingRequestMessageLabel =>
+      'Message to manager (optional)';
+
+  @override
+  String get personalOnboardingRequestMessageHint =>
+      'Introduce yourself briefly...';
+
+  @override
+  String get personalOnboardingRequestSend => 'Send request';
+
+  @override
+  String personalOnboardingRequestSent(Object company) {
+    return 'Request sent to $company.';
+  }
+
+  @override
+  String personalOnboardingRequestError(Object error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get personalOnboardingRequestAlreadyPending =>
+      'You already have a pending request for this company.';
+
+  @override
+  String get personalOnboardingRequestsTitle => 'My integration requests';
+
+  @override
+  String get personalOnboardingRequestsEmpty => 'No pending requests.';
+
+  @override
+  String get personalOnboardingStatusPending => 'Pending';
+
+  @override
+  String get personalOnboardingStatusApproved => 'Accepted';
+
+  @override
+  String get personalOnboardingStatusRejected => 'Rejected';
+
+  @override
+  String get twoFaChallengeTitle => 'Two-factor verification';
+
+  @override
+  String get twoFaChallengeSubtitle =>
+      'Enter the 6-digit code from your authenticator app.';
+
+  @override
+  String get twoFaChallengeCodeHint => 'TOTP code (6 digits)';
+
+  @override
+  String get twoFaChallengeVerifyBtn => 'Verify';
+
+  @override
+  String get twoFaChallengeRecoveryToggle => 'Use a recovery code';
+
+  @override
+  String get twoFaChallengeRecoveryHint => 'Recovery code';
+
+  @override
+  String get twoFaChallengeInvalidError =>
+      'Invalid or expired code. Please try again.';
+
+  @override
+  String get shellHome => 'Home';
+
+  @override
+  String get shellAttendance => 'Attendance';
+
+  @override
+  String get shellAbsences => 'Absences';
+
+  @override
+  String get shellApprovals => 'Approvals';
+
+  @override
+  String get contractsMobileTitle => 'My Contract';
+
+  @override
+  String get contractsBackTooltip => 'Back';
+
+  @override
+  String get contractsEmptyTitle => 'No contract';
+
+  @override
+  String get contractsEmptyDescription =>
+      'Your contract will appear here once configured.';
+
+  @override
+  String get contractsLabelType => 'Type';
+
+  @override
+  String get contractsLabelStartDate => 'Start';
+
+  @override
+  String get contractsLabelEndDate => 'End';
+
+  @override
+  String get contractsLabelBaseSalary => 'Base salary';
+
+  @override
+  String get contractsLoading => 'Loading contracts...';
+
+  @override
+  String get contractsStatusActive => 'Active';
+
+  @override
+  String get contractsStatusExpired => 'Expired';
+
+  @override
+  String get contractsStatusDraft => 'Draft';
+
+  @override
+  String get contractsStatusCdi => 'Permanent (CDI)';
+
+  @override
   String get organigrammeTitle => 'Org Chart';
 
   @override
@@ -7876,4 +7969,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get twoFaSettingsTileSubtitle => 'TOTP code required at each sign-in';
+
+  @override
+  String personalOnboardingSearchError(Object error) {
+    return 'Search failed: $error';
+  }
 }

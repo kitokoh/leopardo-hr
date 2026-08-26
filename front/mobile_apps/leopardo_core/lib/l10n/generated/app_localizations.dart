@@ -462,48 +462,6 @@ abstract class AppLocalizations {
   /// **'Le code 2FA est requis.'**
   String get authTwoFactorRequired;
 
-  /// No description provided for @twoFaChallengeTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Vérification à deux facteurs'**
-  String get twoFaChallengeTitle;
-
-  /// No description provided for @twoFaChallengeSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Entrez le code à 6 chiffres de votre application d\'authentification.'**
-  String get twoFaChallengeSubtitle;
-
-  /// No description provided for @twoFaChallengeCodeHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code TOTP (6 chiffres)'**
-  String get twoFaChallengeCodeHint;
-
-  /// No description provided for @twoFaChallengeVerifyBtn.
-  ///
-  /// In fr, this message translates to:
-  /// **'Vérifier'**
-  String get twoFaChallengeVerifyBtn;
-
-  /// No description provided for @twoFaChallengeRecoveryToggle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Utiliser un code de récupération'**
-  String get twoFaChallengeRecoveryToggle;
-
-  /// No description provided for @twoFaChallengeRecoveryHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code de récupération'**
-  String get twoFaChallengeRecoveryHint;
-
-  /// No description provided for @twoFaChallengeInvalidError.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code invalide ou expiré. Réessayez.'**
-  String get twoFaChallengeInvalidError;
-
   /// No description provided for @authDemoAccess.
   ///
   /// In fr, this message translates to:
@@ -6547,30 +6505,6 @@ abstract class AppLocalizations {
   /// **'Équipe'**
   String get shellTeam;
 
-  /// No description provided for @shellHome.
-  ///
-  /// In fr, this message translates to:
-  /// **'Accueil'**
-  String get shellHome;
-
-  /// No description provided for @shellAttendance.
-  ///
-  /// In fr, this message translates to:
-  /// **'Pointage'**
-  String get shellAttendance;
-
-  /// No description provided for @shellAbsences.
-  ///
-  /// In fr, this message translates to:
-  /// **'Absences'**
-  String get shellAbsences;
-
-  /// No description provided for @shellApprovals.
-  ///
-  /// In fr, this message translates to:
-  /// **'Validations'**
-  String get shellApprovals;
-
   /// No description provided for @exportsReportemployees.
   ///
   /// In fr, this message translates to:
@@ -8064,84 +7998,6 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Tous les statuts'**
   String get contractsAllstatuses;
-
-  /// No description provided for @contractsMobileTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mon Contrat'**
-  String get contractsMobileTitle;
-
-  /// No description provided for @contractsBackTooltip.
-  ///
-  /// In fr, this message translates to:
-  /// **'Retour'**
-  String get contractsBackTooltip;
-
-  /// No description provided for @contractsEmptyTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Aucun contrat'**
-  String get contractsEmptyTitle;
-
-  /// No description provided for @contractsEmptyDescription.
-  ///
-  /// In fr, this message translates to:
-  /// **'Votre contrat apparaîtra ici une fois configuré.'**
-  String get contractsEmptyDescription;
-
-  /// No description provided for @contractsLabelType.
-  ///
-  /// In fr, this message translates to:
-  /// **'Type'**
-  String get contractsLabelType;
-
-  /// No description provided for @contractsLabelStartDate.
-  ///
-  /// In fr, this message translates to:
-  /// **'Début'**
-  String get contractsLabelStartDate;
-
-  /// No description provided for @contractsLabelEndDate.
-  ///
-  /// In fr, this message translates to:
-  /// **'Fin'**
-  String get contractsLabelEndDate;
-
-  /// No description provided for @contractsLabelBaseSalary.
-  ///
-  /// In fr, this message translates to:
-  /// **'Salaire de base'**
-  String get contractsLabelBaseSalary;
-
-  /// No description provided for @contractsLoading.
-  ///
-  /// In fr, this message translates to:
-  /// **'Chargement des contrats...'**
-  String get contractsLoading;
-
-  /// No description provided for @contractsStatusActive.
-  ///
-  /// In fr, this message translates to:
-  /// **'Actif'**
-  String get contractsStatusActive;
-
-  /// No description provided for @contractsStatusExpired.
-  ///
-  /// In fr, this message translates to:
-  /// **'Expiré'**
-  String get contractsStatusExpired;
-
-  /// No description provided for @contractsStatusDraft.
-  ///
-  /// In fr, this message translates to:
-  /// **'Brouillon'**
-  String get contractsStatusDraft;
-
-  /// No description provided for @contractsStatusCdi.
-  ///
-  /// In fr, this message translates to:
-  /// **'CDI'**
-  String get contractsStatusCdi;
 
   /// No description provided for @trainingTitleplaceholder.
   ///
@@ -13297,6 +13153,312 @@ abstract class AppLocalizations {
   /// **'Réessayer'**
   String get bankreconRetry;
 
+  /// No description provided for @personalOnboardingStatusTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ma situation personnelle'**
+  String get personalOnboardingStatusTitle;
+
+  /// No description provided for @personalOnboardingStatusSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez tous vos statuts actuels. Vous pouvez en choisir plusieurs.'**
+  String get personalOnboardingStatusSubtitle;
+
+  /// No description provided for @personalOnboardingStatusSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get personalOnboardingStatusSave;
+
+  /// No description provided for @personalOnboardingStatusStudent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étudiant(e)'**
+  String get personalOnboardingStatusStudent;
+
+  /// No description provided for @personalOnboardingStatusEmployee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salarié(e)'**
+  String get personalOnboardingStatusEmployee;
+
+  /// No description provided for @personalOnboardingStatusEntrepreneur.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrepreneur(e)'**
+  String get personalOnboardingStatusEntrepreneur;
+
+  /// No description provided for @personalOnboardingStatusSeeking.
+  ///
+  /// In fr, this message translates to:
+  /// **'En recherche d\'emploi'**
+  String get personalOnboardingStatusSeeking;
+
+  /// No description provided for @personalOnboardingStatusSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statuts mis à jour.'**
+  String get personalOnboardingStatusSaved;
+
+  /// No description provided for @personalOnboardingStatusError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur : impossible de sauvegarder vos statuts.'**
+  String get personalOnboardingStatusError;
+
+  /// No description provided for @personalOnboardingSearchTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejoindre une entreprise'**
+  String get personalOnboardingSearchTitle;
+
+  /// No description provided for @personalOnboardingSearchSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recherchez une entreprise pour y postuler.'**
+  String get personalOnboardingSearchSubtitle;
+
+  /// No description provided for @personalOnboardingSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de l\'entreprise...'**
+  String get personalOnboardingSearchHint;
+
+  /// No description provided for @personalOnboardingSearchEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune entreprise trouvée pour « {query} ».'**
+  String personalOnboardingSearchEmpty(Object query);
+
+  /// No description provided for @personalOnboardingSearchMinChars.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez au moins 2 caractères.'**
+  String get personalOnboardingSearchMinChars;
+
+  /// No description provided for @personalOnboardingRequestTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande d\'intégration'**
+  String get personalOnboardingRequestTitle;
+
+  /// No description provided for @personalOnboardingRequestCompany.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entreprise cible'**
+  String get personalOnboardingRequestCompany;
+
+  /// No description provided for @personalOnboardingRequestMessageLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Message au manager (optionnel)'**
+  String get personalOnboardingRequestMessageLabel;
+
+  /// No description provided for @personalOnboardingRequestMessageHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présentez-vous brièvement...'**
+  String get personalOnboardingRequestMessageHint;
+
+  /// No description provided for @personalOnboardingRequestSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer la demande'**
+  String get personalOnboardingRequestSend;
+
+  /// No description provided for @personalOnboardingRequestSent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande envoyée à {company}.'**
+  String personalOnboardingRequestSent(Object company);
+
+  /// No description provided for @personalOnboardingRequestError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur : {error}'**
+  String personalOnboardingRequestError(Object error);
+
+  /// No description provided for @personalOnboardingRequestAlreadyPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez déjà une demande en attente pour cette entreprise.'**
+  String get personalOnboardingRequestAlreadyPending;
+
+  /// No description provided for @personalOnboardingRequestsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes demandes d\'intégration'**
+  String get personalOnboardingRequestsTitle;
+
+  /// No description provided for @personalOnboardingRequestsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune demande en cours.'**
+  String get personalOnboardingRequestsEmpty;
+
+  /// No description provided for @personalOnboardingStatusPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente'**
+  String get personalOnboardingStatusPending;
+
+  /// No description provided for @personalOnboardingStatusApproved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Acceptée'**
+  String get personalOnboardingStatusApproved;
+
+  /// No description provided for @personalOnboardingStatusRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refusée'**
+  String get personalOnboardingStatusRejected;
+
+  /// No description provided for @twoFaChallengeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification à deux facteurs'**
+  String get twoFaChallengeTitle;
+
+  /// No description provided for @twoFaChallengeSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez le code à 6 chiffres de votre application d\'authentification.'**
+  String get twoFaChallengeSubtitle;
+
+  /// No description provided for @twoFaChallengeCodeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code TOTP (6 chiffres)'**
+  String get twoFaChallengeCodeHint;
+
+  /// No description provided for @twoFaChallengeVerifyBtn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifier'**
+  String get twoFaChallengeVerifyBtn;
+
+  /// No description provided for @twoFaChallengeRecoveryToggle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utiliser un code de récupération'**
+  String get twoFaChallengeRecoveryToggle;
+
+  /// No description provided for @twoFaChallengeRecoveryHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code de récupération'**
+  String get twoFaChallengeRecoveryHint;
+
+  /// No description provided for @twoFaChallengeInvalidError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code invalide ou expiré. Réessayez.'**
+  String get twoFaChallengeInvalidError;
+
+  /// No description provided for @shellHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accueil'**
+  String get shellHome;
+
+  /// No description provided for @shellAttendance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointage'**
+  String get shellAttendance;
+
+  /// No description provided for @shellAbsences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absences'**
+  String get shellAbsences;
+
+  /// No description provided for @shellApprovals.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validations'**
+  String get shellApprovals;
+
+  /// No description provided for @contractsMobileTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon Contrat'**
+  String get contractsMobileTitle;
+
+  /// No description provided for @contractsBackTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get contractsBackTooltip;
+
+  /// No description provided for @contractsEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun contrat'**
+  String get contractsEmptyTitle;
+
+  /// No description provided for @contractsEmptyDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre contrat apparaîtra ici une fois configuré.'**
+  String get contractsEmptyDescription;
+
+  /// No description provided for @contractsLabelType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get contractsLabelType;
+
+  /// No description provided for @contractsLabelStartDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Début'**
+  String get contractsLabelStartDate;
+
+  /// No description provided for @contractsLabelEndDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fin'**
+  String get contractsLabelEndDate;
+
+  /// No description provided for @contractsLabelBaseSalary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salaire de base'**
+  String get contractsLabelBaseSalary;
+
+  /// No description provided for @contractsLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des contrats...'**
+  String get contractsLoading;
+
+  /// No description provided for @contractsStatusActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actif'**
+  String get contractsStatusActive;
+
+  /// No description provided for @contractsStatusExpired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expiré'**
+  String get contractsStatusExpired;
+
+  /// No description provided for @contractsStatusDraft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brouillon'**
+  String get contractsStatusDraft;
+
+  /// No description provided for @contractsStatusCdi.
+  ///
+  /// In fr, this message translates to:
+  /// **'CDI'**
+  String get contractsStatusCdi;
+
   /// No description provided for @organigrammeTitle.
   ///
   /// In fr, this message translates to:
@@ -14664,6 +14826,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Code TOTP demandé à chaque connexion'**
   String get twoFaSettingsTileSubtitle;
+
+  /// No description provided for @personalOnboardingSearchError.
+  ///
+  /// In fr, this message translates to:
+  /// **'La recherche a échoué : {error}'**
+  String personalOnboardingSearchError(Object error);
 }
 
 class _AppLocalizationsDelegate

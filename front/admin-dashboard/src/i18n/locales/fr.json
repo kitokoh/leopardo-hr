@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-26T00:00:00Z",
+  "_updated_at": "2026-08-25T00:00:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -3886,5 +3886,34 @@
     "loading": "Chargement tickets",
     "reply_sent": "Réponse envoyée.",
     "loading_ticket": "Chargement ticket"
+  },
+  "personal_onboarding": {
+    "status_title": "Ma situation personnelle",
+    "status_subtitle": "Sélectionnez tous vos statuts actuels. Vous pouvez en choisir plusieurs.",
+    "status_save": "Enregistrer",
+    "status_student": "Étudiant(e)",
+    "status_employee": "Salarié(e)",
+    "status_entrepreneur": "Entrepreneur(e)",
+    "status_seeking": "En recherche d'emploi",
+    "status_saved": "Statuts mis à jour.",
+    "status_error": "Erreur : impossible de sauvegarder vos statuts.",
+    "search_title": "Rejoindre une entreprise",
+    "search_subtitle": "Recherchez une entreprise pour y postuler.",
+    "search_hint": "Nom de l'entreprise...",
+    "search_empty": "Aucune entreprise trouvée pour « {query} ».",
+    "search_min_chars": "Saisissez au moins 2 caractères.",
+    "request_title": "Demande d'intégration",
+    "request_company": "Entreprise cible",
+    "request_message_label": "Message au manager (optionnel)",
+    "request_message_hint": "Présentez-vous brièvement...",
+    "request_send": "Envoyer la demande",
+    "request_sent": "Demande envoyée à {company}.",
+    "request_error": "Erreur : {error}",
+    "request_already_pending": "Vous avez déjà une demande en attente pour cette entreprise.",
+    "requests_title": "Mes demandes d'intégration",
+    "requests_empty": "Aucune demande en cours.",
+    "status_pending": "En attente",
+    "status_approved": "Acceptée",
+    "status_rejected": "Refusée"
   }
 }

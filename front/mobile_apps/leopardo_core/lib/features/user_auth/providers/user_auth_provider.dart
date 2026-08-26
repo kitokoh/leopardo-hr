@@ -97,6 +97,11 @@ class UserAuthNotifier extends StateNotifier<UserAuthState> {
     await _repository.logout();
     state = UserAuthState();
   }
+
+  /// #5540 — Met à jour l'utilisateur dans le state (après maj statuts/profil).
+  Future<void> setUser(AppUser updated) async {
+    state = state.copyWith(user: updated);
+  }
 }
 
 final userAuthProvider = StateNotifierProvider<UserAuthNotifier, UserAuthState>(
