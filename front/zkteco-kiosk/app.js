@@ -809,32 +809,49 @@ function init() {
 }
 
 // ── Demo Access ──────────────────────────────────────
-const DEMO_COMPANIES = [
-  {
-    name: 'TechCorp Algerie SARL', country: 'DZ',
-    employees: [
-      { matricule: 'DZ-EMP-001', name: 'Ahmed Benali', email: 'ahmed.benali@techcorp-algerie.dz', role: 'principal' },
-      { matricule: 'DZ-EMP-002', name: 'Fatima Meziane', email: 'fatima.meziane@techcorp-algerie.dz', role: 'rh' },
-      { matricule: 'DZ-EMP-003', name: 'Karim Aouad', email: 'karim.aouad@techcorp-algerie.dz', role: 'employee' },
-    ],
-  },
-  {
-    name: 'PharmaPlus Casablanca', country: 'MA',
-    employees: [
-      { matricule: 'MA-EMP-001', name: 'Amina Tahiri', email: 'amina.tahiri@pharmaplus.ma', role: 'principal' },
-      { matricule: 'MA-EMP-002', name: 'Sara Mansouri', email: 'sara.mansouri@pharmaplus.ma', role: 'rh' },
-      { matricule: 'MA-EMP-003', name: 'Youssef Bennani', email: 'youssef.bennani@pharmaplus.ma', role: 'employee' },
-    ],
-  },
-  {
-    name: 'DigitalFlow Tunis', country: 'TN',
-    employees: [
-      { matricule: 'TN-EMP-001', name: 'Sofiane Mrad', email: 'sofiane.mrad@digitalflow.tn', role: 'principal' },
-      { matricule: 'TN-EMP-002', name: 'Olfa Trabelsi', email: 'olfa.trabelsi@digitalflow.tn', role: 'rh' },
-      { matricule: 'TN-EMP-003', name: 'Aziz Khelifi', email: 'aziz.khelifi@digitalflow.tn', role: 'employee' },
-    ],
-  },
-];
+// Issue #5619 : les données de démonstration ne doivent pas être présentes
+// dans les builds de production. Elles ne sont accessibles que si le kiosk
+// est démarré avec LEOPARDO_DEMO_MODE=true (injecté par le serveur dans
+// window.KIOSK_CONFIG.demoMode, ou via le paramètre URL ?demo=1 en
+// développement uniquement).
+//
+// En production (window.KIOSK_CONFIG.demoMode !== true), le bloc
+// DEMO_COMPANIES n'est jamais utilisé et le bouton d'accès démo est masqué.
+
+var DEMO_COMPANIES = (function () {
+  // Vérification stricte : demoMode doit être posé explicitement (truthy).
+  var config = (typeof window !== 'undefined' && window.KIOSK_CONFIG) ? window.KIOSK_CONFIG : {};
+  if (!config.demoMode) {
+    return [];
+  }
+  // Données de démonstration — disponibles uniquement en mode démo activé.
+  return [
+    {
+      name: 'TechCorp Algerie SARL', country: 'DZ',
+      employees: [
+        { matricule: 'DZ-EMP-001', name: 'Ahmed Benali', email: 'ahmed.benali@techcorp-algerie.dz', role: 'principal' },
+        { matricule: 'DZ-EMP-002', name: 'Fatima Meziane', email: 'fatima.meziane@techcorp-algerie.dz', role: 'rh' },
+        { matricule: 'DZ-EMP-003', name: 'Karim Aouad', email: 'karim.aouad@techcorp-algerie.dz', role: 'employee' },
+      ],
+    },
+    {
+      name: 'PharmaPlus Casablanca', country: 'MA',
+      employees: [
+        { matricule: 'MA-EMP-001', name: 'Amina Tahiri', email: 'amina.tahiri@pharmaplus.ma', role: 'principal' },
+        { matricule: 'MA-EMP-002', name: 'Sara Mansouri', email: 'sara.mansouri@pharmaplus.ma', role: 'rh' },
+        { matricule: 'MA-EMP-003', name: 'Youssef Bennani', email: 'youssef.bennani@pharmaplus.ma', role: 'employee' },
+      ],
+    },
+    {
+      name: 'DigitalFlow Tunis', country: 'TN',
+      employees: [
+        { matricule: 'TN-EMP-001', name: 'Sofiane Mrad', email: 'sofiane.mrad@digitalflow.tn', role: 'principal' },
+        { matricule: 'TN-EMP-002', name: 'Olfa Trabelsi', email: 'olfa.trabelsi@digitalflow.tn', role: 'rh' },
+        { matricule: 'TN-EMP-003', name: 'Aziz Khelifi', email: 'aziz.khelifi@digitalflow.tn', role: 'employee' },
+      ],
+    },
+  ];
+}());
 
 function initDemoAccess() {
   const overlay = $('#demoOverlay');
@@ -843,6 +860,12 @@ function initDemoAccess() {
   const closeBtn = $('#demoCloseBtn');
 
   if (!overlay || !list || !openBtn) return;
+
+  // Issue #5619 : masquer le bouton démo en production.
+  if (DEMO_COMPANIES.length === 0) {
+    openBtn.style.display = 'none';
+    return;
+  }
 
   let html = '';
   for (const company of DEMO_COMPANIES) {
