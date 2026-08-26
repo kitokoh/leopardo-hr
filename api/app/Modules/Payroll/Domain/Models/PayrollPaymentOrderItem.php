@@ -35,6 +35,8 @@ class PayrollPaymentOrderItem extends Model
     /** @return BelongsTo<PayrollPaymentOrder, $this> */
     public function paymentOrder(): BelongsTo
     {
-        return $this->belongsTo(PayrollPaymentOrder::class);
+        // Même FK explicite que PayrollPaymentOrder::items() (colonne
+        // `payment_order_id` dans la migration).
+        return $this->belongsTo(PayrollPaymentOrder::class, 'payment_order_id');
     }
 }

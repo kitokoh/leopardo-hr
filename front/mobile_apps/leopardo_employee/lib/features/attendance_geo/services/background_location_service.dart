@@ -226,10 +226,8 @@ class BackgroundLocationService {
         accuracy: position.accuracy.round(),
       );
     } catch (error, stackTrace) {
-      debugPrint(
-        '[BackgroundLocationService] sendGeoEvent($eventType) failed — '
-        'événement mis en file pour réenvoi : $error',
-      );
+      // ignore: avoid_print — dev/ops diagnostic, not user-visible (#5510)
+      debugPrint('[BackgroundLocationService] sendGeoEvent($eventType) failed — queued for retry: $error');
       _enqueueGeoEvent(
         eventType: eventType,
         latitude: position.latitude,
