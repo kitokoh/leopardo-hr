@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/features/user_auth/providers/user_auth_provider.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
+import 'package:leopardo_core/models/app_user.dart';
 
 class UserHomeScreen extends ConsumerWidget {
   const UserHomeScreen({super.key});
@@ -46,6 +48,9 @@ class UserHomeScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
               _buildQuickActions(context, muted),
+              const SizedBox(height: 24),
+              // #5540 — Statuts personnels
+              _buildPersonalStatusSection(context, user, muted),
               const SizedBox(height: 24),
               if (user.employeeLinks.isNotEmpty) ...[
                 _buildSection('Mes entreprises', muted),
@@ -184,6 +189,85 @@ class UserHomeScreen extends ConsumerWidget {
 
   Widget _buildSection(String title, Color muted) {
     return Text(title, style: AppTypography.subtitle.copyWith(color: muted));
+  }
+
+  /// #5540 — Affiche la section "Ma situation" avec les statuts personnels.
+  Widget _buildPersonalStatusSection(
+      BuildContext context, AppUser user, Color muted) {
+    final l10n = context.l10n;
+    final statusLabels = <PersonalStatus, String>{
+      PersonalStatus.student: l10n.personalOnboardingStatusStudent,
+      PersonalStatus.employee: l10n.personalOnboardingStatusEmployee,
+      PersonalStatus.entrepreneur: l10n.personalOnboardingStatusEntrepreneur,
+      PersonalStatus.seekingEmployment:
+          l10n.personalOnboardingStatusSeeking,
+    };
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildSection(l10n.personalOnboardingStatusTitle, muted),
+            TextButton(
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                context.push('/user-personal-status');
+              },
+              child: const Text('Modifier'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        if (user.personalStatuses.isEmpty)
+          Text(
+            l10n.personalOnboardingStatusSubtitle,
+            style: AppTypography.bodySmall.copyWith(color: muted),
+          )
+        else
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            children: user.personalStatuses.map((s) {
+              final label = statusLabels[s] ?? s.name;
+              return Chip(
+                label: Text(
+                  label,
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.rh,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                backgroundColor: AppColors.rh.withValues(alpha: 0.10),
+                side: BorderSide(color: AppColors.rh.withValues(alpha: 0.3)),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+              );
+            }).toList(),
+          ),
+        const SizedBox(height: 12),
+        // Bouton "Rejoindre une entreprise"
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              context.push('/user-company-integration');
+            },
+            icon: const Icon(Icons.business_outlined, size: 18),
+            label: Text(l10n.personalOnboardingSearchTitle),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.rh,
+              side: BorderSide(color: AppColors.rh.withValues(alpha: 0.5)),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 

@@ -269,4 +269,8 @@ return [
     'LETTERING_UNBALANCED' => 'Le lettrage doit être équilibré : la somme des débits doit égaler la somme des crédits.',
     'ALREADY_SEEDED' => 'Les données de démonstration ont déjà été créées pour cette entreprise.',
     'EMAIL_NOT_VERIFIED' => 'Cet email Google n\'a pas été vérifié par son fournisseur. Utilisez un compte avec un email vérifié.',
+    // #5540 — Onboarding multi-statuts
+    'MANAGER_ONLY_ACTION' => 'Cette action est réservée aux managers.',
+    'INTEGRATION_REQUEST_ALREADY_PENDING' => 'Vous avez déjà une demande en attente pour cette entreprise.',
+    'INTEGRATION_REQUEST_NOT_FOUND' => 'Demande d\'intégration introuvable.',
 ];

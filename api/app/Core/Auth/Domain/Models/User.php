@@ -24,6 +24,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $provider
  * @property string $preferred_language
  * @property string $status
+ * @property list<string> $personal_statuses Statuts cumulables : student, employee, entrepreneur, seeking_employment
  * @property Carbon|null $email_verified_at
  * @property Carbon|null $last_login_at
  * @property int $failed_login_attempts
@@ -65,6 +66,7 @@ class User extends Authenticatable
         'provider',
         'preferred_language',
         'last_login_at',
+        'personal_statuses', // #5540 — statuts multi-rôles
     ];
 
     protected $hidden = [
@@ -76,6 +78,7 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
         'locked_until' => 'datetime',
         'failed_login_attempts' => 'integer',
+        'personal_statuses' => 'array', // #5540 — tableau JSON
     ];
 
     public function getAuthPassword(): string
