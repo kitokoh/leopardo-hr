@@ -14,6 +14,7 @@ use App\Modules\Billing\Interfaces\Api\V1\PlatformPlanController;
 use App\Modules\Billing\Interfaces\Api\V1\SelfServiceTrialController;
 use App\Modules\Billing\Interfaces\Api\V1\StripeWebhookController;
 use App\Modules\EdgeSync\Interfaces\Api\V1\EdgeNodeController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBankingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
@@ -208,6 +209,9 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/company-requests', [CompanyRequestController::class, 'store']);
         Route::get('/company/branding', [CompanyBrandingController::class, 'show']);
         Route::patch('/company/branding', [CompanyBrandingController::class, 'update']);
+        // Issue #5613 — Coordonnées bancaires SEPA (IBAN/BIC entreprise).
+        Route::get('/company/banking', [CompanyBankingController::class, 'show']);
+        Route::patch('/company/banking', [CompanyBankingController::class, 'update']);
 
         // PA2-COMM-012 — Pilot client support center: a manager/employee can
         // open a support ticket and reply on their own company's tickets.
