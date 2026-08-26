@@ -155,10 +155,9 @@ class CompanyBankingController extends Controller
      */
     private function bankingFrom(Company $company): array
     {
-        $raw = $company->metadata ?? [];
-        $metadata = is_array($raw)
-            ? $raw
-            : (is_string($raw) ? (json_decode($raw, true) ?: []) : []);
+        // Le cast du modèle garantit array<mixed> (JSON décodé par Eloquent).
+        /** @var array<mixed> $metadata */
+        $metadata = $company->metadata ?? [];
 
         return [
             'company_iban' => $this->nullableString($metadata['company_iban'] ?? null),
