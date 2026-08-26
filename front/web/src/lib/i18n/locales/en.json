@@ -1762,7 +1762,19 @@
     "twoFactorEnabled": "2FA enabled successfully.",
     "twoFactorSubtitle": "Add an extra layer of security to your super-admin account.",
     "twoFactorTitle": "Two-factor authentication (2FA)",
-    "updatePassword": "Update password"
+    "updatePassword": "Update password",
+    "bankTitle": "Bank details",
+    "bankSubtitle": "Company IBAN/BIC — required for SEPA transfers export.",
+    "bankIbanLabel": "IBAN",
+    "bankIbanPlaceholder": "FR76 3000 6000 0112 3456 7890 189",
+    "bankBicLabel": "BIC / SWIFT",
+    "bankBicPlaceholder": "BNPAFRPPXXX",
+    "bankMissingWarning": "Company IBAN is not set: the SEPA transfers export will fail. Enter your bank details below.",
+    "bankSave": "Save",
+    "bankSaving": "Saving...",
+    "bankSaved": "Bank details saved.",
+    "bankSaveError": "Failed to save bank details. Check the entered values.",
+    "bankDzHint": "For a company in Algeria, the 20-digit RIB is accepted."
   },
   "systemPage": {
     "apiError": "Error: :error",

@@ -1762,7 +1762,19 @@
     "twoFactorEnabled": "2FA activé avec succès.",
     "twoFactorSubtitle": "Ajoutez une couche de sécurité supplémentaire à votre compte de super-administrateur.",
     "twoFactorTitle": "Authentification à deux facteurs (2FA)",
-    "updatePassword": "Mettre à jour le mot de passe"
+    "updatePassword": "Mettre à jour le mot de passe",
+    "bankTitle": "Coordonnées bancaires",
+    "bankSubtitle": "IBAN/BIC de l'entreprise — requis pour l'export SEPA (virements).",
+    "bankIbanLabel": "IBAN",
+    "bankIbanPlaceholder": "FR76 3000 6000 0112 3456 7890 189",
+    "bankBicLabel": "BIC / SWIFT",
+    "bankBicPlaceholder": "BNPAFRPPXXX",
+    "bankMissingWarning": "IBAN entreprise non configuré : l'export SEPA (virements) retournera une erreur. Saisissez vos coordonnées bancaires ci-dessous.",
+    "bankSave": "Enregistrer",
+    "bankSaving": "Enregistrement...",
+    "bankSaved": "Coordonnées bancaires enregistrées.",
+    "bankSaveError": "Échec de l'enregistrement des coordonnées bancaires. Vérifiez les valeurs saisies.",
+    "bankDzHint": "Pour une entreprise en Algérie, le RIB à 20 chiffres est accepté."
   },
   "systemPage": {
     "apiError": "Erreur : :error",

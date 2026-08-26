@@ -5542,6 +5542,55 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
+  /company/bank-details:
+    get:
+      tags:
+      - Company
+      summary: Lire les coordonnees bancaires de l'entreprise courante (debiteur SEPA)
+      description: IBAN/BIC depuis companies.metadata.company_iban/company_bic (CompanyBankDetails).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Coordonnees bancaires entreprise
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CompanyBankDetailsResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+    patch:
+      tags:
+      - Company
+      summary: Mettre a jour les coordonnees bancaires de l'entreprise
+      description: Reserve aux managers principal/RH. IBAN (ou RIB DZ 20 chiffres si pays DZ) + BIC SWIFT. Sert de configuration pour l'export SEPA (pain.001.001.03).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyBankDetailsUpdateRequest'
+      responses:
+        '200':
+          description: Coordonnees bancaires mises a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CompanyBankDetailsResponse'
+                  message:
+                    type: string
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /company/qr-onboarding/scan-employee:
     post:
       tags:
@@ -24510,6 +24559,30 @@ components:
           - light
           - dark
           - auto
+    CompanyBankDetailsResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        iban:
+          type: string
+          nullable: true
+        bic:
+          type: string
+          nullable: true
+    CompanyBankDetailsUpdateRequest:
+      type: object
+      properties:
+        company_iban:
+          type: string
+          nullable: true
+          maxLength: 34
+          description: IBAN du compte debiteur (ou RIB DZ a 20 chiffres si pays DZ)
+        company_bic:
+          type: string
+          nullable: true
+          maxLength: 11
+          description: BIC/SWIFT de la banque debitrice
     CompanyBrandingResponse:
       type: object
       properties:

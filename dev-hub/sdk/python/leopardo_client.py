@@ -1200,6 +1200,14 @@ class LeopardoClient:
         """Soumettre une demande de création d'entreprise"""
         return self.request("POST", "/company-requests", **kwargs)
 
+    def get_company_bank_details(self, **kwargs):
+        """Lire les coordonnees bancaires de l'entreprise courante (debiteur SEPA)"""
+        return self.request("GET", "/company/bank-details", **kwargs)
+
+    def patch_company_bank_details(self, **kwargs):
+        """Mettre a jour les coordonnees bancaires de l'entreprise"""
+        return self.request("PATCH", "/company/bank-details", **kwargs)
+
     def get_company_branding(self, **kwargs):
         """Lire l'identite visuelle de l'entreprise courante"""
         return self.request("GET", "/company/branding", **kwargs)

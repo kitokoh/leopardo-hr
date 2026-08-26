@@ -158,6 +158,7 @@ return [
     'BILLING_PORTAL_ACCESS_FAILED' => "Impossible d'accéder au portail de facturation.",
     'FLEET_ALERTS_LOAD_FAILED' => 'Impossible de charger les alertes de flotte.',
     'COMPANY_BRANDING_UPDATED' => 'Identité entreprise mise à jour.',
+    'COMPANY_BANK_DETAILS_UPDATED' => 'Coordonnées bancaires mises à jour.',
     'PAYROLL_RUN_NOT_FOR_COUNTRY' => 'Ce run de paie ne concerne pas :country.',
     'PAYROLL_ALREADY_VALIDATED' => 'Cette fiche de paie est déjà validée et ne peut plus être modifiée.',
     'PAYROLL_RUN_LOCKED' => 'Ce run de paie est verrouillé (clôture comptable) et ne peut plus être modifié.',

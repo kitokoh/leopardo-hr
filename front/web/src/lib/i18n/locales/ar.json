@@ -1762,7 +1762,19 @@
     "twoFactorEnabled": "تم تفعيل المصادقة الثنائية بنجاح.",
     "twoFactorSubtitle": "أضف طبقة أمان إضافية إلى حساب المسؤول الأعلى.",
     "twoFactorTitle": "المصادقة الثنائية (2FA)",
-    "updatePassword": "تحديث كلمة المرور"
+    "updatePassword": "تحديث كلمة المرور",
+    "bankTitle": "البيانات البنكية",
+    "bankSubtitle": "IBAN/BIC الخاص بالشركة — مطلوب لتصدير تحويلات SEPA.",
+    "bankIbanLabel": "IBAN",
+    "bankIbanPlaceholder": "FR76 3000 6000 0112 3456 7890 189",
+    "bankBicLabel": "BIC / SWIFT",
+    "bankBicPlaceholder": "BNPAFRPPXXX",
+    "bankMissingWarning": "IBAN الشركة غير مضبوط: سيفشل تصدير تحويلات SEPA. أدخل بياناتك البنكية أدناه.",
+    "bankSave": "حفظ",
+    "bankSaving": "جارٍ الحفظ...",
+    "bankSaved": "تم حفظ البيانات البنكية.",
+    "bankSaveError": "تعذر حفظ البيانات البنكية. تحقق من القيم المدخلة.",
+    "bankDzHint": "بالنسبة لشركة في الجزائر، يُقبل RIB المكوّن من 20 رقماً."
   },
   "systemPage": {
     "apiError": "خطأ: :error",

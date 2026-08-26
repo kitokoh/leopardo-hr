@@ -21,6 +21,13 @@ use Illuminate\Translation\PotentiallyTranslatedString;
 class ValidIban implements ValidationRule
 {
     /**
+     * @param bool $allowDzRib Issue #5613 : accepter en plus le RIB algérien
+     *                         (20 chiffres) quand l'entreprise est en DZ —
+     *                         DZ ne fait pas partie du registre IBAN officiel.
+     */
+    public function __construct(private readonly bool $allowDzRib = false) {}
+
+    /**
      * Registered IBAN length per ISO 3166-1 alpha-2 country code.
      *
      * DZ (Algeria) and MA (Morocco) are not part of the official IBAN
@@ -63,6 +70,12 @@ class ValidIban implements ValidationRule
         }
 
         $normalized = self::normalize($value);
+
+        // Issue #5613 — RIB DZ (20 chiffres) accepté en plus de l'IBAN quand
+        // le flag est activé (entreprise algérienne).
+        if ($this->allowDzRib && preg_match('/^[0-9]{20}$/', $normalized) === 1) {
+            return;
+        }
 
         if (! self::isValid($normalized)) {
             $fail("Le champ :attribute n'est pas un IBAN valide.");

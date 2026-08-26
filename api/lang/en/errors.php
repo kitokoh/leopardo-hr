@@ -158,6 +158,7 @@ return [
     'BILLING_PORTAL_ACCESS_FAILED' => 'Unable to access the billing portal.',
     'FLEET_ALERTS_LOAD_FAILED' => 'Unable to load fleet alerts.',
     'COMPANY_BRANDING_UPDATED' => 'Company identity updated.',
+    'COMPANY_BANK_DETAILS_UPDATED' => 'Company bank details updated.',
     'PAYROLL_RUN_NOT_FOR_COUNTRY' => 'This payroll run does not concern :country.',
     'PAYROLL_ALREADY_VALIDATED' => 'This payroll run is already validated and can no longer be modified.',
     'PAYROLL_RUN_LOCKED' => 'This payroll run is locked (accounting close) and can no longer be modified.',

@@ -190,12 +190,63 @@
         </div>
       </div>
     </div>
+
+    <!-- Coordonnées bancaires (SEPA, issue #5613) -->
+    <div v-if="canManageBankDetails" class="card animate-slide-up" style="animation-delay: 0.15s">
+      <div class="card-header">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('settingsPage.bankTitle') }}</h2>
+        <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">{{ $t('settingsPage.bankSubtitle') }}</p>
+      </div>
+      <div class="card-body space-y-5">
+        <div v-if="!bankDetailsLoaded" class="text-sm text-slate-400">…</div>
+        <template v-else>
+          <div
+            v-if="!bankDetails.iban"
+            class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900 dark:border-amber-800/60 dark:bg-amber-950/30 dark:text-amber-300"
+            role="alert"
+          >
+            {{ $t('settingsPage.bankMissingWarning') }}
+          </div>
+
+          <form class="flex flex-col gap-4 sm:flex-row sm:items-end" @submit.prevent="submitBankDetails">
+            <div class="flex-1">
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="company-iban">{{ $t('settingsPage.bankIbanLabel') }}</label>
+              <input
+                id="company-iban"
+                v-model="bankDetails.iban"
+                type="text"
+                class="form-input font-mono"
+                :placeholder="$t('settingsPage.bankIbanPlaceholder')"
+                maxlength="34"
+              >
+              <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">{{ $t('settingsPage.bankDzHint') }}</p>
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="company-bic">{{ $t('settingsPage.bankBicLabel') }}</label>
+              <input
+                id="company-bic"
+                v-model="bankDetails.bic"
+                type="text"
+                class="form-input font-mono"
+                :placeholder="$t('settingsPage.bankBicPlaceholder')"
+                maxlength="11"
+              >
+            </div>
+            <button type="submit" class="btn-primary shrink-0" :disabled="isSavingBank">
+              <ArrowPathIcon v-if="isSavingBank" class="mr-2 h-4 w-4 animate-spin" />
+              {{ isSavingBank ? $t('settingsPage.bankSaving') : $t('settingsPage.bankSave') }}
+            </button>
+          </form>
+        </template>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useToast } from 'vue-toastification'
+import api from '@/services/api'
 import { ArrowPathIcon } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useLocaleStore } from '@/stores/locale'
@@ -318,6 +369,51 @@ async function submitDisable2fa() {
     isDisabling2fa.value = false
   }
 }
+
+// Issue #5613 — coordonnées bancaires entreprise (débiteur SEPA).
+const canManageBankDetails = computed(() =>
+  ['principal', 'rh'].includes(authStore.user?.manager_role)
+)
+const bankDetails = reactive({ iban: '', bic: '' })
+const bankDetailsLoaded = ref(false)
+const isSavingBank = ref(false)
+
+async function loadBankDetails() {
+  bankDetailsLoaded.value = false
+  try {
+    const { data } = await api.get('/company/bank-details')
+    bankDetails.iban = data?.data?.iban || ''
+    bankDetails.bic = data?.data?.bic || ''
+  } catch {
+    // Lecture non bloquante : la section reste éditable, le warning s'affiche.
+  } finally {
+    bankDetailsLoaded.value = true
+  }
+}
+
+async function submitBankDetails() {
+  isSavingBank.value = true
+  try {
+    await api.patch('/company/bank-details', {
+      company_iban: bankDetails.iban.trim() || null,
+      company_bic: bankDetails.bic.trim() || null,
+    })
+    toast.success(t('settingsPage.bankSaved'))
+    await loadBankDetails()
+  } catch (e) {
+    const errors = e?.response?.data?.errors
+    const first = errors ? Object.values(errors).flat()[0] : null
+    toast.error(first || t('settingsPage.bankSaveError'))
+  } finally {
+    isSavingBank.value = false
+  }
+}
+
+onMounted(() => {
+  if (canManageBankDetails.value) {
+    void loadBankDetails()
+  }
+})
 </script>
 
 <style scoped>

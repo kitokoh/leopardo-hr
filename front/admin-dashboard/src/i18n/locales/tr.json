@@ -1762,7 +1762,19 @@
     "twoFactorEnabled": "2FA başarıyla etkinleştirildi.",
     "twoFactorSubtitle": "Süper yönetici hesabınıza ek bir güvenlik katmanı ekleyin.",
     "twoFactorTitle": "İki faktörlü kimlik doğrulama (2FA)",
-    "updatePassword": "Parolayı güncelle"
+    "updatePassword": "Parolayı güncelle",
+    "bankTitle": "Banka bilgileri",
+    "bankSubtitle": "Şirket IBAN/BIC — SEPA transferleri dışa aktarımı için gereklidir.",
+    "bankIbanLabel": "IBAN",
+    "bankIbanPlaceholder": "FR76 3000 6000 0112 3456 7890 189",
+    "bankBicLabel": "BIC / SWIFT",
+    "bankBicPlaceholder": "BNPAFRPPXXX",
+    "bankMissingWarning": "Şirket IBAN'ı ayarlanmadı: SEPA transferleri dışa aktarımı başarısız olur. Aşağıya banka bilgilerinizi girin.",
+    "bankSave": "Kaydet",
+    "bankSaving": "Kaydediliyor...",
+    "bankSaved": "Banka bilgileri kaydedildi.",
+    "bankSaveError": "Banka bilgileri kaydedilemedi. Girilen değerleri kontrol edin.",
+    "bankDzHint": "Cezayir'deki bir şirket için 20 haneli RIB kabul edilir."
   },
   "systemPage": {
     "apiError": "Hata: :error",

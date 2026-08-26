@@ -157,6 +157,7 @@ return [
     'BILLING_PORTAL_ACCESS_FAILED' => 'Faturalandırma portalına erişilemiyor.',
     'FLEET_ALERTS_LOAD_FAILED' => 'Filo uyarıları yüklenemedi.',
     'COMPANY_BRANDING_UPDATED' => 'Şirket kimliği güncellendi.',
+    'COMPANY_BANK_DETAILS_UPDATED' => 'Şirket banka bilgileri güncellendi.',
     'PAYROLL_RUN_NOT_FOR_COUNTRY' => 'Bu maaş işlemi :country ile ilgili değil.',
     'PAYROLL_ALREADY_VALIDATED' => 'Bu maaş bordrosu zaten onaylandı ve artık değiştirilemez.',
     'PAYROLL_RUN_LOCKED' => 'Bu maaş bordrosu kilitli (muhasebe kapanışı) ve artık değiştirilemez.',

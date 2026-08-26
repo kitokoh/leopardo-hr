@@ -157,6 +157,7 @@ return [
     'BILLING_PORTAL_ACCESS_FAILED' => 'تعذّر الوصول إلى بوابة الفوترة.',
     'FLEET_ALERTS_LOAD_FAILED' => 'تعذّر تحميل تنبيهات الأسطول.',
     'COMPANY_BRANDING_UPDATED' => 'تم تحديث هوية الشركة.',
+    'COMPANY_BANK_DETAILS_UPDATED' => 'تم تحديث البيانات البنكية للشركة.',
     'PAYROLL_RUN_NOT_FOR_COUNTRY' => 'هذه الدفعة لا تتعلق بـ :country.',
     'PAYROLL_ALREADY_VALIDATED' => 'تم التحقق من هذه دفعة الأجور بالفعل ولا يمكن تعديلها.',
     'PAYROLL_RUN_LOCKED' => 'دفعة الأجور هذه مقفلة (إقفال محاسبي) ولا يمكن تعديلها.',

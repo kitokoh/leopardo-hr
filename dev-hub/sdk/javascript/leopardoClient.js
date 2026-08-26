@@ -1475,6 +1475,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/company-requests", options);
     },
 
+    /** Lire les coordonnees bancaires de l'entreprise courante (debiteur SEPA) */
+    getCompanyBankDetails(options = {}) {
+      return request("GET", "/company/bank-details", options);
+    },
+
+    /** Mettre a jour les coordonnees bancaires de l'entreprise */
+    patchCompanyBankDetails(options = {}) {
+      return request("PATCH", "/company/bank-details", options);
+    },
+
     /** Lire l'identite visuelle de l'entreprise courante */
     getCompanyBranding(options = {}) {
       return request("GET", "/company/branding", options);
