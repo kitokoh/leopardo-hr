@@ -6,8 +6,8 @@ namespace App\Modules\Platform\Infrastructure\Services;
 
 use App\Modules\Platform\Domain\Models\WebhookEvent;
 use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * #5444 — Registre d'idempotence persistée des webhooks entrants.
