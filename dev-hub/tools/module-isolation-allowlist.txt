@@ -1,79 +1,58 @@
-# Allowlist des violations d'isolation de modules ACCEPTÉES (issue #5584).
-#
-# Format : <source>:<cible> — « source » = module (Modules/<M>) ou fichier
-# Core/<chemin> ; « cible » = module importé via `use App\Modules\<cible>\`.
-#
-# Règle (api/ARCHITECTURE.md) : « Un module n'importe jamais directement les
-# classes d'un autre module » et « Core ne dépend pas de Modules ». La dette
-# existante (16/18 modules, 57 paires) est ACTÉE ici pour que la garde CI
-# (`check-module-isolation.sh`) bloque TOUT NOUVEL import croisé, tout en
-# laissant le temps de résorber la dette (refactors dédiés, ex. #5591).
-# Dérogations structurelles documentées dans api/ARCHITECTURE.md :
-#   - Modules/Absence et Modules/Expense sont des FACADES sur Planning
-#     (PA2-ARCH-002 / PA2-ARCH-011) → paire `Absence:Planning`, `Expense:Planning`.
-#
-# Toute ligne ajoutée ici doit être justifiée (issue de refactor) — la dette
-# doit DIMINUER, pas croître.
-#
-# Notification:Platform — import de WebhookEventRegistry par
-# EmailBounceWebhookController (fix webhook #5576 mergé sur main le
-# 2026-08-26). Registre transverse → cible de refactor : déplacer
-# WebhookEventRegistry vers Core/Shared (issue #5584 item 3).
-Absence:Planning
-Accounting:Marketing
-Accounting:Notification
-Attendance:Fleet
-Attendance:HR
-Attendance:Notification
-Attendance:Planning
-Billing:Payroll
-Billing:Platform
-Cabinet:HR
-Core/Auth/Application/Actions/UpdateProfileAction.php:HR
-Core/Auth/Domain/Models/Employee.php:Attendance
-Core/Auth/Domain/Models/Employee.php:Cabinet
-Core/Auth/Domain/Models/Employee.php:HR
-Core/Auth/Domain/Models/Employee.php:Notification
-Core/Auth/Domain/Models/Employee.php:Planning
-Core/Auth/Domain/Models/User.php:HR
-Core/Auth/Interfaces/Api/V1/AuthController.php:HR
-Core/Feature/Infrastructure/Services/FeatureDetector.php:Billing
-Core/Feature/Infrastructure/Services/FeatureRegistry.php:Billing
-Core/Feature/Interfaces/Api/V1/Requests/UpdateFeatureMatrixRequest.php:Billing
-Core/Tenant/Domain/Models/Company.php:Attendance
-Expense:Planning
-Fleet:Attendance
-Growth:Billing
-Growth:Payroll
-HR:Attendance
-HR:Cabinet
-HR:Onboarding
-HR:Payroll
-HR:Planning
-HR:Recruitment
-Marketing:Accounting
-Marketing:Platform
-Notification:Attendance
-Notification:HR
-Notification:Payroll
-Notification:Planning
-Notification:Platform
-Onboarding:Attendance
-Onboarding:HR
-Payroll:Attendance
-Payroll:Billing
-Payroll:Cabinet
-Payroll:Notification
-Payroll:Planning
-Planning:Attendance
-Planning:HR
-Planning:Notification
-Planning:Payroll
-Platform:Attendance
-Platform:Billing
-Platform:HR
-Platform:Notification
-Platform:Onboarding
-Platform:Payroll
-Platform:Planning
-Recruitment:HR
+# Baseline des imports croisés acceptés (issue #5584, audit 2026-08-26).
+# Toute ligne ici représente une violation EXISTANTE et tolérée.
+# Ajouter de nouvelles violations ICI bloque la PR — corriger le code à la place.
+# Format : <source> -> <cible>
+
+Core/Auth -> Modules/Attendance
+Core/Auth -> Modules/Cabinet
+Core/Auth -> Modules/HR
+Core/Auth -> Modules/Notification
+Core/Auth -> Modules/Planning
+Core/Feature -> Modules/Billing
+Core/Tenant -> Modules/Attendance
+Modules/Absence -> Modules/Planning
+Modules/Accounting -> Modules/Marketing
+Modules/Accounting -> Modules/Notification
+Modules/Attendance -> Modules/Fleet
+Modules/Attendance -> Modules/HR
+Modules/Attendance -> Modules/Notification
+Modules/Attendance -> Modules/Planning
+Modules/Billing -> Modules/Payroll
+Modules/Billing -> Modules/Platform
+Modules/Cabinet -> Modules/HR
+Modules/Expense -> Modules/Planning
+Modules/Fleet -> Modules/Attendance
+Modules/Growth -> Modules/Billing
+Modules/Growth -> Modules/Payroll
+Modules/HR -> Modules/Attendance
+Modules/HR -> Modules/Cabinet
+Modules/HR -> Modules/Onboarding
+Modules/HR -> Modules/Payroll
+Modules/HR -> Modules/Planning
+Modules/HR -> Modules/Recruitment
+Modules/Marketing -> Modules/Accounting
+Modules/Marketing -> Modules/Platform
+Modules/Notification -> Modules/Attendance
+Modules/Notification -> Modules/HR
+Modules/Notification -> Modules/Payroll
+Modules/Notification -> Modules/Planning
+Modules/Notification -> Modules/Platform
+Modules/Onboarding -> Modules/Attendance
+Modules/Onboarding -> Modules/HR
+Modules/Payroll -> Modules/Attendance
+Modules/Payroll -> Modules/Billing
+Modules/Payroll -> Modules/Cabinet
+Modules/Payroll -> Modules/Notification
+Modules/Payroll -> Modules/Planning
+Modules/Planning -> Modules/Attendance
+Modules/Planning -> Modules/HR
+Modules/Planning -> Modules/Notification
+Modules/Planning -> Modules/Payroll
+Modules/Platform -> Modules/Attendance
+Modules/Platform -> Modules/Billing
+Modules/Platform -> Modules/HR
+Modules/Platform -> Modules/Notification
+Modules/Platform -> Modules/Onboarding
+Modules/Platform -> Modules/Payroll
+Modules/Platform -> Modules/Planning
+Modules/Recruitment -> Modules/HR

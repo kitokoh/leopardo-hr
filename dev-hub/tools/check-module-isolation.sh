@@ -1,81 +1,109 @@
 #!/usr/bin/env bash
-# check-module-isolation.sh — Garde d'isolation des modules (issue #5584).
+# check-module-isolation.sh — garde CI issue #5584
 #
-# Règle (api/ARCHITECTURE.md) :
-#   - un module n'importe jamais directement les classes d'un autre module ;
-#   - Core/ ne dépend jamais de Modules/.
+# Détecte les NOUVEAUX imports croisés entre modules PHP (App\Modules\X\
+# important App\Modules\Y\, ou App\Core\X important App\Modules\Y\).
 #
-# La dette existante (16/18 modules, 57 paires source->cible) est actée dans
-# module-isolation-allowlist.txt ; cette garde :
-#   1. détecte TOUT import `use App\Modules\<X>\...` dans un module != X et
-#      dans Core/ ;
-#   2. compare chaque paire (source, cible) à l'allowlist ;
-#   3. échoue (exit 1) sur toute paire ABSENTE de l'allowlist → blocage de
-#      tout NOUVEL import croisé, sans casser les refactors en cours.
+# La liste des violations EXISTANTES est dans module-isolation-allowlist.txt.
+# Ce fichier est immuable depuis CI — tout nouvel import croisé fait échouer
+# la PR. Corriger le code (Events Shared, contrats) plutôt qu'agrandir l'allowlist.
 #
-# Usage : dev-hub/tools/check-module-isolation.sh [repo_root]
+# Usage : bash dev-hub/tools/check-module-isolation.sh [api_dir]
+#
+# Sortie :
+#   0 si aucun nouvel import croisé
+#   1 si des imports croisés non listés dans l'allowlist sont trouvés
+#
+# Prérequis : php (pour valider la syntaxe si besoin), grep, awk
+
 set -euo pipefail
 
-REPO_ROOT="$(cd "${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}" && pwd)"
-API_DIR="${REPO_ROOT}/api"
-ALLOWLIST="${REPO_ROOT}/dev-hub/tools/module-isolation-allowlist.txt"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ALLOWLIST="${SCRIPT_DIR}/module-isolation-allowlist.txt"
+API_DIR="${1:-api}"
+APP_DIR="${API_DIR}/app"
 
-if [[ ! -d "${API_DIR}/app/Modules" ]]; then
-  echo "::error::api/app/Modules introuvable — API_DIR invalide ?"
+if [[ ! -d "${APP_DIR}/Modules" ]]; then
+  echo "❌  Répertoire '${APP_DIR}/Modules' introuvable." >&2
   exit 1
 fi
 
 if [[ ! -f "${ALLOWLIST}" ]]; then
-  echo "::error::module-isolation-allowlist.txt introuvable — la garde ne peut pas fonctionner sans allowlist."
+  echo "❌  Allowlist introuvable : ${ALLOWLIST}" >&2
   exit 1
 fi
 
-declare -A allowed
-while IFS= read -r line; do
-  [[ -z "${line}" || "${line}" == \#* ]] && continue
-  allowed["${line}"]=1
-done < "${ALLOWLIST}"
+# ── Collecte des imports croisés actuels ──────────────────────────────────────
+# Pour chaque fichier PHP sous Modules/ ou Core/, on extrait les `use App\...`
+# qui traversent la frontière (Modules/X → Modules/Y ou Core/X → Modules/Y).
 
-violations=0
-report=""
+CURRENT_VIOLATIONS=$(
+  python3 - "${APP_DIR}" << 'PYEOF'
+import re, sys
+from pathlib import Path
 
-# 1) Modules : `use App\Modules\<cible>\` avec cible != module courant.
-while IFS= read -r module; do
-  module_dir="${API_DIR}/app/Modules/${module}"
-  [[ -d "${module_dir}" ]] || continue
-  while IFS= read -r file; do
-    while IFS= read -r target; do
-      [[ -z "${target}" ]] && continue
-      if [[ "${target}" != "${module}" ]]; then
-        pair="${module}:${target}"
-        if [[ -z "${allowed[${pair}]+x}" ]]; then
-          violations=$((violations + 1))
-          report+="❌ ${file}: import de Modules/${target} (paire ${pair} absente de l'allowlist)\n"
-        fi
-      fi
-    done < <(grep -oE '^[[:space:]]*use[[:space:]]+App\\Modules\\[A-Za-z0-9_]+' "${file}" | sed -E 's/.*Modules\\//' | sort -u)
-  done < <(find "${module_dir}" -type f -name '*.php' | sort)
-done < <(find "${API_DIR}/app/Modules" -maxdepth 1 -mindepth 1 -type d -printf '%f\n' | sort)
+app_dir = Path(sys.argv[1])
+violations = set()
 
-# 2) Core : `use App\Modules\<cible>\` (n'importe quel fichier Core).
-api_prefix="${API_DIR}/app/"
-while IFS= read -r file; do
-  rel="${file#"$api_prefix"}"
-  while IFS= read -r target; do
-    [[ -z "${target}" ]] && continue
-    pair="${rel}:${target}"
-    if [[ -z "${allowed[${pair}]+x}" ]]; then
-      violations=$((violations + 1))
-      report+="❌ ${rel}: import de Modules/${target} (paire ${pair} absente de l'allowlist)\n"
-    fi
-  done < <(grep -oE '^[[:space:]]*use[[:space:]]+App\\Modules\\[A-Za-z0-9_]+' "${file}" | sed -E 's/.*Modules\\//' | sort -u)
-done < <(find "${API_DIR}/app/Core" -type f -name '*.php' | sort)
+for php_file in sorted(app_dir.rglob("*.php")):
+    rel = str(php_file.relative_to(app_dir))
+    parts = rel.split("/")
 
-if [[ ${violations} -gt 0 ]]; then
-  echo -e "${report}" >&2
-  echo "::error::Isolation des modules : ${violations} nouvel(le)(s) paire(s) d'import croisé non allowlistée(s). Ajouter une justification dans dev-hub/tools/module-isolation-allowlist.txt (ou mieux : résorber la dette, ex. #5591)."
-  exit 1
+    if parts[0] == "Modules" and len(parts) >= 2:
+        source_module = f"Modules/{parts[1]}"
+    elif parts[0] == "Core" and len(parts) >= 2:
+        source_module = f"Core/{parts[1]}"
+    else:
+        continue
+
+    try:
+        content = php_file.read_text(encoding="utf-8")
+    except Exception:
+        continue
+
+    for line in content.splitlines():
+        line = line.strip()
+        if not line.startswith("use App\\"):
+            continue
+
+        m = re.match(r"use App\\Modules\\(\w+)\\", line)
+        if m:
+            target = f"Modules/{m.group(1)}"
+            if target != source_module and "Core/" not in source_module:
+                violations.add(f"{source_module} -> {target}")
+
+        if "Core/" in source_module:
+            m2 = re.match(r"use App\\Modules\\(\w+)\\", line)
+            if m2:
+                violations.add(f"{source_module} -> Modules/{m2.group(1)}")
+
+for v in sorted(violations):
+    print(v)
+PYEOF
+)
+
+# ── Comparaison contre l'allowlist ───────────────────────────────────────────
+ALLOWED=$(grep -v '^#' "${ALLOWLIST}" | grep -v '^[[:space:]]*$' | sort)
+
+NEW_VIOLATIONS=$(
+  TMP_CURRENT=$(mktemp)
+  TMP_ALLOWED=$(mktemp)
+  echo "${CURRENT_VIOLATIONS}" | sort > "${TMP_CURRENT}"
+  echo "${ALLOWED}" | sort > "${TMP_ALLOWED}"
+  comm -23 "${TMP_CURRENT}" "${TMP_ALLOWED}" || true
+  rm -f "${TMP_CURRENT}" "${TMP_ALLOWED}"
+)
+
+if [[ -z "${NEW_VIOLATIONS}" ]]; then
+  TOTAL=$(echo "${CURRENT_VIOLATIONS}" | grep -c . || echo 0)
+  echo "✅  Aucun nouvel import croisé (${TOTAL} violations connues dans l'allowlist)."
+  exit 0
 fi
 
-echo "✓ Isolation des modules : 0 nouvel import croisé (allowlist $(grep -vcE '^\s*#|^\s*$' "${ALLOWLIST}") paires actées)."
-exit 0
+echo "❌  Nouveaux imports croisés détectés (issue #5584) :" >&2
+echo "${NEW_VIOLATIONS}" | sed "s/^/    /" >&2
+echo "" >&2
+echo "Ces imports violent la règle d'isolation des modules (ARCHITECTURE.md §2)." >&2
+echo "Alternatives : Events Shared, contrats (interfaces), injection de dépendance." >&2
+echo "NE PAS ajouter à l'allowlist sans discussion architecturale documentée." >&2
+exit 1

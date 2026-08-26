@@ -809,65 +809,58 @@ function init() {
 }
 
 // ── Demo Access ──────────────────────────────────────
-// Issue #5619 : les données de démonstration ne doivent pas être présentes
-// dans les builds de production. Elles ne sont accessibles que si le kiosk
-// est démarré avec LEOPARDO_DEMO_MODE=true (injecté par le serveur dans
-// window.KIOSK_CONFIG.demoMode, ou via le paramètre URL ?demo=1 en
-// développement uniquement).
-//
-// En production (window.KIOSK_CONFIG.demoMode !== true), le bloc
-// DEMO_COMPANIES n'est jamais utilisé et le bouton d'accès démo est masqué.
-
-var DEMO_COMPANIES = (function () {
-  // Vérification stricte : demoMode doit être posé explicitement (truthy).
-  var config = (typeof window !== 'undefined' && window.KIOSK_CONFIG) ? window.KIOSK_CONFIG : {};
-  if (!config.demoMode) {
-    return [];
-  }
-  // Données de démonstration — disponibles uniquement en mode démo activé.
-  return [
-    {
-      name: 'TechCorp Algerie SARL', country: 'DZ',
-      employees: [
-        { matricule: 'DZ-EMP-001', name: 'Ahmed Benali', email: 'ahmed.benali@techcorp-algerie.dz', role: 'principal' },
-        { matricule: 'DZ-EMP-002', name: 'Fatima Meziane', email: 'fatima.meziane@techcorp-algerie.dz', role: 'rh' },
-        { matricule: 'DZ-EMP-003', name: 'Karim Aouad', email: 'karim.aouad@techcorp-algerie.dz', role: 'employee' },
-      ],
-    },
-    {
-      name: 'PharmaPlus Casablanca', country: 'MA',
-      employees: [
-        { matricule: 'MA-EMP-001', name: 'Amina Tahiri', email: 'amina.tahiri@pharmaplus.ma', role: 'principal' },
-        { matricule: 'MA-EMP-002', name: 'Sara Mansouri', email: 'sara.mansouri@pharmaplus.ma', role: 'rh' },
-        { matricule: 'MA-EMP-003', name: 'Youssef Bennani', email: 'youssef.bennani@pharmaplus.ma', role: 'employee' },
-      ],
-    },
-    {
-      name: 'DigitalFlow Tunis', country: 'TN',
-      employees: [
-        { matricule: 'TN-EMP-001', name: 'Sofiane Mrad', email: 'sofiane.mrad@digitalflow.tn', role: 'principal' },
-        { matricule: 'TN-EMP-002', name: 'Olfa Trabelsi', email: 'olfa.trabelsi@digitalflow.tn', role: 'rh' },
-        { matricule: 'TN-EMP-003', name: 'Aziz Khelifi', email: 'aziz.khelifi@digitalflow.tn', role: 'employee' },
-      ],
-    },
-  ];
-}());
-
+// #5619 — Les données de démo ne doivent jamais polluer un déploiement
+// de production. La fonction ne s'active que lorsque le serveur injecte
+// `window.__KIOSK_DEMO_MODE = true` (config.example.json, section demo).
+// En production (flag absent ou false), le bouton est masqué et la
+// constante DEMO_COMPANIES n'est jamais déclarée dans le scope global.
 function initDemoAccess() {
-  const overlay = $('#demoOverlay');
-  const list = $('#demoUsersList');
-  const openBtn = $('#demoAccessBtn');
-  const closeBtn = $('#demoCloseBtn');
+  const openBtn = $(\'#demoAccessBtn\');
 
-  if (!overlay || !list || !openBtn) return;
-
-  // Issue #5619 : masquer le bouton démo en production.
-  if (DEMO_COMPANIES.length === 0) {
-    openBtn.style.display = 'none';
+  // Guard : cacher le bouton et ne pas initialiser si on n\'est pas en mode démo.
+  if (!window.__KIOSK_DEMO_MODE) {
+    if (openBtn) {
+      openBtn.classList.add(\'hidden\');
+      openBtn.setAttribute(\'aria-hidden\', \'true\');
+    }
     return;
   }
 
-  let html = '';
+  // Données de démo — déclarées localement, jamais exposées en prod.
+  const DEMO_COMPANIES = [
+    {
+      name: \'TechCorp Algerie SARL\', country: \'DZ\',
+      employees: [
+        { matricule: \'DZ-EMP-001\', name: \'Ahmed Benali\', email: \'ahmed.benali@techcorp-algerie.dz\', role: \'principal\' },
+        { matricule: \'DZ-EMP-002\', name: \'Fatima Meziane\', email: \'fatima.meziane@techcorp-algerie.dz\', role: \'rh\' },
+        { matricule: \'DZ-EMP-003\', name: \'Karim Aouad\', email: \'karim.aouad@techcorp-algerie.dz\', role: \'employee\' },
+      ],
+    },
+    {
+      name: \'PharmaPlus Casablanca\', country: \'MA\',
+      employees: [
+        { matricule: \'MA-EMP-001\', name: \'Amina Tahiri\', email: \'amina.tahiri@pharmaplus.ma\', role: \'principal\' },
+        { matricule: \'MA-EMP-002\', name: \'Sara Mansouri\', email: \'sara.mansouri@pharmaplus.ma\', role: \'rh\' },
+        { matricule: \'MA-EMP-003\', name: \'Youssef Bennani\', email: \'youssef.bennani@pharmaplus.ma\', role: \'employee\' },
+      ],
+    },
+    {
+      name: \'DigitalFlow Tunis\', country: \'TN\',
+      employees: [
+        { matricule: \'TN-EMP-001\', name: \'Sofiane Mrad\', email: \'sofiane.mrad@digitalflow.tn\', role: \'principal\' },
+        { matricule: \'TN-EMP-002\', name: \'Olfa Trabelsi\', email: \'olfa.trabelsi@digitalflow.tn\', role: \'rh\' },
+        { matricule: \'TN-EMP-003\', name: \'Aziz Khelifi\', email: \'aziz.khelifi@digitalflow.tn\', role: \'employee\' },
+      ],
+    },
+  ];
+
+  const overlay = $(\'#demoOverlay\');
+  const list = $(\'#demoUsersList\');
+  const closeBtn = $(\'#demoCloseBtn\');
+
+  if (!overlay || !list || !openBtn) return;
+
+  let html = \'\';
   for (const company of DEMO_COMPANIES) {
     html += `<div class="demo-company-title">${escapeHtml(company.name)} (${escapeHtml(company.country)})</div>`;
     for (const emp of company.employees) {
@@ -880,21 +873,21 @@ function initDemoAccess() {
   }
   list.innerHTML = html;
 
-  openBtn.addEventListener('click', () => overlay.classList.remove('hidden'));
-  closeBtn.addEventListener('click', () => overlay.classList.add('hidden'));
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.add('hidden'); });
+  openBtn.addEventListener(\'click\', () => overlay.classList.remove(\'hidden\'));
+  if (closeBtn) closeBtn.addEventListener(\'click\', () => overlay.classList.add(\'hidden\'));
+  overlay.addEventListener(\'click\', (e) => { if (e.target === overlay) overlay.classList.add(\'hidden\'); });
 
-  list.addEventListener('click', (e) => {
-    const btn = e.target.closest('.demo-user-btn');
+  list.addEventListener(\'click\', (e) => {
+    const btn = e.target.closest(\'.demo-user-btn\');
     if (!btn) return;
     const matricule = btn.dataset.matricule;
     if (els.identifier) els.identifier.value = matricule;
-    const infoId = $('#infoIdentifier');
+    const infoId = $(\'#infoIdentifier\');
     if (infoId) infoId.value = matricule;
-    const leaveId = $('#leaveIdentifier');
+    const leaveId = $(\'#leaveIdentifier\');
     if (leaveId) leaveId.value = matricule;
-    overlay.classList.add('hidden');
-    setStatus('#statusBox', t('demo.selected', { matricule }));
+    overlay.classList.add(\'hidden\');
+    setStatus(\'#statusBox\', t(\'demo.selected\', { matricule }));
   });
 }
 

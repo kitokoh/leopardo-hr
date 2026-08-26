@@ -197,6 +197,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authTwoFactorRequired => 'رمز التحقق الثنائي مطلوب.';
+  @override
+  String get twoFaChallengeTitle => 'التحقق بخطوتين';
+  @override
+  String get twoFaChallengeSubtitle => 'أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة.';
+  @override
+  String get twoFaChallengeCodeHint => 'رمز TOTP (6 أرقام)';
+  @override
+  String get twoFaChallengeVerifyBtn => 'تحقق';
+  @override
+  String get twoFaChallengeRecoveryToggle => 'استخدام رمز الاسترداد';
+  @override
+  String get twoFaChallengeRecoveryHint => 'رمز الاسترداد';
+  @override
+  String get twoFaChallengeInvalidError => 'رمز غير صالح أو منتهي الصلاحية. حاول مرة أخرى.';
 
   @override
   String get authDemoAccess => 'وصول تجريبي';
