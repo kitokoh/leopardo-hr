@@ -119,14 +119,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/recruitment/applicants/{applicant}/interviews', [RecruitmentController::class, 'storeInterview']);
         Route::put('/recruitment/interviews/{interview}', [RecruitmentController::class, 'updateInterview']);
 
-        Route::post('/recruitment/jobs/{id}/publish', [JobPostingActionController::class, 'publish'])->whereNumber('id');
-        Route::post('/recruitment/jobs/{id}/close', [JobPostingActionController::class, 'close'])->whereNumber('id');
-        Route::delete('/recruitment/jobs/{id}', [JobPostingActionController::class, 'destroy'])->whereNumber('id');
-        Route::get('/recruitment/applicants/{id}', [JobPostingActionController::class, 'showApplicant'])->whereNumber('id');
-        Route::patch('/recruitment/applicants/{id}/status', [JobPostingActionController::class, 'updateApplicantStatus'])->whereNumber('id');
-        Route::delete('/recruitment/applicants/{id}', [JobPostingActionController::class, 'destroyApplicant'])->whereNumber('id');
-        Route::patch('/recruitment/interviews/{id}/feedback', [JobPostingActionController::class, 'interviewFeedback'])->whereNumber('id');
-        Route::delete('/recruitment/interviews/{id}', [JobPostingActionController::class, 'destroyInterview'])->whereNumber('id');
+        // Issue #5583 : noms de paramètres alignés sur le reste du module
+        // ({jobPosting}/{applicant}/{interview}) — le SDK généré doit
+        // expédier les mêmes noms que le routeur.
+        Route::post('/recruitment/jobs/{jobPosting}/publish', [JobPostingActionController::class, 'publish'])->whereNumber('jobPosting');
+        Route::post('/recruitment/jobs/{jobPosting}/close', [JobPostingActionController::class, 'close'])->whereNumber('jobPosting');
+        Route::delete('/recruitment/jobs/{jobPosting}', [JobPostingActionController::class, 'destroy'])->whereNumber('jobPosting');
+        Route::get('/recruitment/applicants/{applicant}', [JobPostingActionController::class, 'showApplicant'])->whereNumber('applicant');
+        Route::patch('/recruitment/applicants/{applicant}/status', [JobPostingActionController::class, 'updateApplicantStatus'])->whereNumber('applicant');
+        Route::delete('/recruitment/applicants/{applicant}', [JobPostingActionController::class, 'destroyApplicant'])->whereNumber('applicant');
+        Route::patch('/recruitment/interviews/{interview}/feedback', [JobPostingActionController::class, 'interviewFeedback'])->whereNumber('interview');
+        Route::delete('/recruitment/interviews/{interview}', [JobPostingActionController::class, 'destroyInterview'])->whereNumber('interview');
 
         // ── Training management ──────────────────────────────────────────
         // Issue #2225 : vues dashboard admin (listes globales sessions/inscriptions).
