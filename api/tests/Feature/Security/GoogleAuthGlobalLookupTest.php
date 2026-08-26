@@ -119,6 +119,9 @@ class GoogleAuthGlobalLookupTest extends TestCase
         // Arrange: no employee exists for the Google email being presented
         $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
         $abstractUser->shouldReceive('getEmail')->andReturn('nobody@unknown.example');
+        // #5580 : email vérifié — le rejet attendu est EMPLOYEE_NOT_FOUND (pas
+        // la garde email_verified, qui doit passer).
+        $abstractUser->shouldReceive('offsetGet')->with('email_verified')->andReturn(true);
 
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         $provider->shouldReceive('stateless')->once()->andReturn($provider);
@@ -157,6 +160,9 @@ class GoogleAuthGlobalLookupTest extends TestCase
         $abstractUser->shouldReceive('getEmail')->andReturn('unverified-token@example.com');
         $abstractUser->shouldReceive('getName')->andReturn('Unverified User');
         // Pas de claim email_verified (ni true ni false) : le flux doit rejeter.
+        // NB : mock strict — offsetGet doit être stubbé à null pour simuler
+        // l'absence du claim (sinon Mockery lève BadMethodCallException → 500).
+        $abstractUser->shouldReceive('offsetGet')->with('email_verified')->andReturn(null);
 
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         $provider->shouldReceive('stateless')->once()->andReturn($provider);
