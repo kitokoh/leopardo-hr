@@ -11,6 +11,7 @@ import 'package:leopardo_core/core/branding/tenant_theme.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_theme.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/features/auth/screens/two_factor_challenge_screen.dart';
 import 'package:leopardo_employee/features/auth/screens/login_screen.dart';
 import 'package:leopardo_employee/features/auth/screens/register_screen.dart';
 import 'package:leopardo_employee/features/auth/screens/welcome_screen.dart';
@@ -109,6 +110,11 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (!isAuth && !onPublic) return '/welcome';
       if (isAuth && onPublic) return '/';
+      // Issue #5627 : 2FA challenge en attente → rediriger vers l'écran de vérification.
+      if (!isAuth && authState.mfaChallengeToken != null &&
+          location != '/auth/2fa/challenge') {
+        return '/auth/2fa/challenge';
+      }
       return null;
     },
     routes: [
@@ -137,6 +143,33 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/company-request',
         builder: (context, state) => const CompanyRequestScreen(),
+      ),
+      // Issue #5627 — Écran de challenge 2FA (affiché après login quand MFA est actif)
+      GoRoute(
+        path: '/auth/2fa/challenge',
+        builder: (context, state) {
+          final authState = ref.read(authProvider);
+          final challengeToken = authState.mfaChallengeToken ?? '';
+          return TwoFactorChallengeScreen(
+            challengeToken: challengeToken,
+            onVerified: (token, code, recoveryCode, rememberDevice) async {
+              final twoFaService = ref.read(twoFactorServiceProvider);
+              await twoFaService.verifyChallenge(
+                challengeToken: token,
+                totpCode: code.isNotEmpty ? code : null,
+                recoveryCode: recoveryCode,
+                rememberDevice: rememberDevice,
+              );
+              // Session ouverte → effacer le challenge et charger l'employé
+              ref.read(authProvider.notifier).clearMfaChallenge();
+              await ref.read(authProvider.notifier).checkAuth();
+            },
+            onBack: () {
+              ref.read(authProvider.notifier).clearMfaChallenge();
+              context.go('/welcome');
+            },
+          );
+        },
       ),
 
       // --- Authenticated routes with bottom nav ---

@@ -20,6 +20,8 @@ import 'package:leopardo_core/offline/services/sync_service.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
+// Issue #5627 — 2FA enrollment UI
+import 'package:qr_flutter/qr_flutter.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -63,6 +65,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _preferencesSaving = false;
   bool _biometricSubmitting = false;
   bool _languageSaving = false;
+
+  // Issue #5627 — état de la section 2FA
+  bool? _twoFaEnabled; // null = pas encore chargé
+  bool _twoFaLoading = false;
+  Map<String, dynamic>? _enrollData; // { secret, qr_code_url }
+  List<String> _recoveryCodes = [];
+  bool _twoFaSubmitting = false;
+  final TextEditingController _twoFaCodeController = TextEditingController();
+  final TextEditingController _twoFaDisableCodeController =
+      TextEditingController();
   bool _biometricEnabled = false;
   bool _fingerprintEnabled = false;
   bool _faceEnabled = false;
@@ -183,6 +195,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _edgeNodeIdController.dispose();
     _edgeTokenController.dispose();
     _edgeBaseUrlController.dispose();
+    // Issue #5627
+    _twoFaCodeController.dispose();
+    _twoFaDisableCodeController.dispose();
     super.dispose();
   }
 
@@ -221,6 +236,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildNotificationSection(context),
           const SizedBox(height: 20),
           _buildPasswordSection(context, authState),
+          const SizedBox(height: 20),
+          // Issue #5627 — section 2FA
+          _buildTwoFaSection(context),
           const SizedBox(height: 20),
           _buildBiometricSection(context),
           const SizedBox(height: 20),
@@ -848,6 +866,321 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   : context.l10n.settingsUpdateLanguage,
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  // ── Issue #5627 — section enrôlement / gestion 2FA ─────────────────────
+
+  Future<void> _loadTwoFaStatus() async {
+    setState(() => _twoFaLoading = true);
+    try {
+      final status = await ref.read(twoFactorServiceProvider).getStatus();
+      if (mounted) setState(() => _twoFaEnabled = status['enabled'] == true);
+    } catch (_) {
+      // Silencieux : la section affichera simplement "Chargement…"
+    } finally {
+      if (mounted) setState(() => _twoFaLoading = false);
+    }
+  }
+
+  Future<void> _startEnrollment() async {
+    setState(() => _twoFaSubmitting = true);
+    try {
+      final data = await ref.read(twoFactorServiceProvider).enroll();
+      setState(() => _enrollData = data);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur : $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _twoFaSubmitting = false);
+    }
+  }
+
+  Future<void> _confirmEnrollment() async {
+    final code = _twoFaCodeController.text.trim();
+    if (code.isEmpty) return;
+    setState(() => _twoFaSubmitting = true);
+    try {
+      final codes = await ref.read(twoFactorServiceProvider).confirm(code);
+      setState(() {
+        _twoFaEnabled = true;
+        _enrollData = null;
+        _recoveryCodes = codes;
+        _twoFaCodeController.clear();
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Code invalide : $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _twoFaSubmitting = false);
+    }
+  }
+
+  Future<void> _disable2Fa() async {
+    final code = _twoFaDisableCodeController.text.trim();
+    if (code.isEmpty) return;
+    setState(() => _twoFaSubmitting = true);
+    try {
+      await ref.read(twoFactorServiceProvider).disable(code);
+      setState(() {
+        _twoFaEnabled = false;
+        _twoFaDisableCodeController.clear();
+        _recoveryCodes = [];
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Code invalide : $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _twoFaSubmitting = false);
+    }
+  }
+
+  Widget _buildTwoFaSection(BuildContext context) {
+    // Chargement initial du statut au premier affichage
+    if (_twoFaEnabled == null && !_twoFaLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadTwoFaStatus());
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: MobileSurface.cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Authentification à deux facteurs',
+                style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
+              ),
+              if (_twoFaEnabled != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: _twoFaEnabled! ? Colors.green.withValues(alpha: 0.15) : Colors.grey.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    _twoFaEnabled! ? 'Activée' : 'Désactivée',
+                    style: AppTypography.caption.copyWith(
+                      color: _twoFaEnabled! ? Colors.green : MobileSurface.secondary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Protégez votre compte avec un code TOTP (Google Authenticator, Authy…).',
+            style: AppTypography.bodySmall.copyWith(color: MobileSurface.secondary),
+          ),
+          const SizedBox(height: 16),
+
+          if (_twoFaLoading || _twoFaEnabled == null)
+            const Center(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          // ── Codes de récupération (juste après activation) ──────────────
+          else if (_recoveryCodes.isNotEmpty) ...[
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.amber.withValues(alpha: 0.4)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Codes de récupération — conservez-les en lieu sûr',
+                    style: AppTypography.bodySmall.copyWith(
+                      color: Colors.amber.shade700,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: _recoveryCodes
+                        .map(
+                          (c) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.amber.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              c,
+                              style: AppTypography.caption.copyWith(
+                                fontFamily: 'monospace',
+                                color: MobileSurface.text,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton.icon(
+                    onPressed: () {
+                      Clipboard.setData(
+                        ClipboardData(text: _recoveryCodes.join('\n')),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Codes copiés')),
+                      );
+                    },
+                    icon: const Icon(Icons.copy_outlined, size: 16),
+                    label: const Text('Copier les codes'),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () => setState(() => _recoveryCodes = []),
+              child: const Text('Fermer'),
+            ),
+          ]
+          // ── Phase 2 du flux d'enrôlement : QR + premier code ────────────
+          else if (_enrollData != null) ...[
+            const Text(
+              'Scannez ce QR code avec votre application authenticator :',
+              style: TextStyle(fontSize: 13),
+            ),
+            const SizedBox(height: 12),
+            Center(
+              child: QrImageView(
+                data: (_enrollData!['qr_code_url'] as String? ?? ''),
+                version: QrVersions.auto,
+                size: 200,
+                backgroundColor: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Secret : ${_enrollData!['secret'] ?? ''}',
+              style: AppTypography.caption.copyWith(
+                fontFamily: 'monospace',
+                color: MobileSurface.secondary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _twoFaCodeController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              maxLength: 8,
+              decoration: const InputDecoration(
+                counterText: '',
+                labelText: 'Code TOTP pour confirmer',
+                hintText: '123456',
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton(
+                    onPressed: _twoFaSubmitting ? null : _confirmEnrollment,
+                    child: _twoFaSubmitting
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Activer la 2FA'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                OutlinedButton(
+                  onPressed: () =>
+                      setState(() => _enrollData = null),
+                  child: const Text('Annuler'),
+                ),
+              ],
+            ),
+          ]
+          // ── 2FA activée : afficher le bouton désactivation ───────────────
+          else if (_twoFaEnabled == true) ...[
+            Text(
+              'Votre compte est protégé par un second facteur TOTP.',
+              style: AppTypography.bodySmall
+                  .copyWith(color: MobileSurface.secondary),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _twoFaDisableCodeController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              maxLength: 8,
+              decoration: const InputDecoration(
+                counterText: '',
+                labelText: 'Code TOTP pour désactiver',
+                hintText: '123456',
+              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: _twoFaSubmitting ? null : _disable2Fa,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.red,
+                side: const BorderSide(color: Colors.red),
+              ),
+              child: _twoFaSubmitting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.red,
+                      ),
+                    )
+                  : const Text('Désactiver la 2FA'),
+            ),
+          ]
+          // ── 2FA désactivée : bouton d'activation ─────────────────────────
+          else ...[
+            Text(
+              'Ajoutez une couche de sécurité supplémentaire à votre compte.',
+              style: AppTypography.bodySmall
+                  .copyWith(color: MobileSurface.secondary),
+            ),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              onPressed: _twoFaSubmitting ? null : _startEnrollment,
+              icon: const Icon(Icons.security_outlined, size: 18),
+              label: _twoFaSubmitting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Activer la 2FA'),
+            ),
+          ],
         ],
       ),
     );

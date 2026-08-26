@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/providers/core_providers.dart';
+import 'package:leopardo_core/features/auth/data/two_factor_service.dart';
 import 'package:leopardo_core/offline/database/edge_database.dart';
 import 'package:leopardo_core/offline/services/sync_service.dart';
 import 'package:leopardo_employee/features/attendance/data/attendance_repository.dart';
@@ -112,4 +113,11 @@ final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
 final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return OnboardingRepository(apiClient);
+});
+
+/// Issue #5627 — Service 2FA (enrôlement, challenge, désactivation).
+final twoFactorServiceProvider = Provider<TwoFactorService>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  final storage = ref.watch(secureStorageProvider);
+  return TwoFactorService(apiClient, storage);
 });

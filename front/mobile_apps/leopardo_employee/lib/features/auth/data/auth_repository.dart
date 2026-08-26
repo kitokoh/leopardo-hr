@@ -29,6 +29,16 @@ class AuthRepository {
     );
 
     final data = _envelope(response.data);
+
+    // Issue #5627 : si le backend exige un challenge 2FA, retourner le token
+    // de challenge sans extraire d'employé (la session n'est pas encore ouverte).
+    if (data['mfa_challenge'] == true) {
+      return {
+        'mfa_challenge': true,
+        'mfa_challenge_token': data['mfa_challenge_token'] as String? ?? '',
+      };
+    }
+
     // #4199 : token racine (auth.login renvoie {token, employee}) hors
     //    enveloppe {data:{...}} — helpers locaux documentés, extractDataMap
     //    ne s'applique pas au premier niveau de ce contrat.

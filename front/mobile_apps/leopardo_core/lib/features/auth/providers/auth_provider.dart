@@ -11,19 +11,31 @@ class AuthState {
   final bool isLoading;
   final Employee? employee;
   final String? error;
+  // Issue #5627 : token de challenge 2FA en attente de vérification.
+  final String? mfaChallengeToken;
 
-  AuthState({this.isLoading = false, this.employee, this.error});
+  AuthState({
+    this.isLoading = false,
+    this.employee,
+    this.error,
+    this.mfaChallengeToken,
+  });
 
   AuthState copyWith({
     bool? isLoading,
     Employee? employee,
     String? error,
     bool clearError = false,
+    String? mfaChallengeToken,
+    bool clearMfaChallenge = false,
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
       employee: employee ?? this.employee,
       error: clearError ? null : (error ?? this.error),
+      mfaChallengeToken: clearMfaChallenge
+          ? null
+          : (mfaChallengeToken ?? this.mfaChallengeToken),
     );
   }
 }
@@ -58,6 +70,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
       final data = await _repository.login(email, password);
+      // Issue #5627 : challenge 2FA → stocker le token
+      if (data['mfa_challenge'] == true) {
+        final token = data['mfa_challenge_token'] as String? ?? '';
+        state = state.copyWith(
+          isLoading: false,
+          mfaChallengeToken: token,
+          clearError: true,
+        );
+        return false;
+      }
       state = state.copyWith(isLoading: false, employee: data['employee']);
       return true;
     } catch (e) {
@@ -112,6 +134,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await _pushNotifications.unregisterCurrentToken(apiClient: _apiClient);
     await _repository.logout();
     state = AuthState(); // reset completely
+  }
+
+  /// Issue #5627 — Abandon du challenge 2FA.
+  void clearMfaChallenge() {
+    state = state.copyWith(clearMfaChallenge: true, clearError: true);
   }
 
   /// Issue #2737 (QA 2026-08-15) — session révoquée (401) : reset local

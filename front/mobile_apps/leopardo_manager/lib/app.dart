@@ -15,6 +15,9 @@ import 'package:leopardo_core/features/auth/screens/access_denied_screen.dart';
 import 'package:leopardo_core/features/auth/screens/login_screen.dart';
 import 'package:leopardo_core/features/auth/screens/register_screen.dart';
 import 'package:leopardo_core/features/auth/screens/welcome_screen.dart';
+import 'package:leopardo_core/features/auth/screens/two_factor_challenge_screen.dart';
+import 'package:leopardo_core/core/providers/base_providers.dart'
+    show twoFactorServiceProvider;
 import 'package:leopardo_core/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_core/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_core/features/attendance/screens/monthly_summary_screen.dart';
@@ -124,6 +127,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         return location == '/access-denied' ? null : '/access-denied';
       }
       if (isAuth && onPublic) return '/';
+      // Issue #5627 : 2FA challenge en attente
+      if (!isAuth && authState.mfaChallengeToken != null &&
+          location != '/auth/2fa/challenge') {
+        return '/auth/2fa/challenge';
+      }
 
       return null;
     },
@@ -153,6 +161,32 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/user-home',
         builder: (context, state) => const UserHomeScreen(),
+      ),
+      // Issue #5627 — Écran de challenge 2FA
+      GoRoute(
+        path: '/auth/2fa/challenge',
+        builder: (context, state) {
+          final authState = ref.read(authProvider);
+          final challengeToken = authState.mfaChallengeToken ?? '';
+          return TwoFactorChallengeScreen(
+            challengeToken: challengeToken,
+            onVerified: (token, code, recoveryCode, rememberDevice) async {
+              final twoFaService = ref.read(twoFactorServiceProvider);
+              await twoFaService.verifyChallenge(
+                challengeToken: token,
+                totpCode: code.isNotEmpty ? code : null,
+                recoveryCode: recoveryCode,
+                rememberDevice: rememberDevice,
+              );
+              ref.read(authProvider.notifier).clearMfaChallenge();
+              await ref.read(authProvider.notifier).checkAuth();
+            },
+            onBack: () {
+              ref.read(authProvider.notifier).clearMfaChallenge();
+              context.go('/welcome');
+            },
+          );
+        },
       ),
       GoRoute(
         path: '/company-request',
