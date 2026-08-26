@@ -14,6 +14,11 @@
 #
 # Toute ligne ajoutée ici doit être justifiée (issue de refactor) — la dette
 # doit DIMINUER, pas croître.
+#
+# Notification:Platform — import de WebhookEventRegistry par
+# EmailBounceWebhookController (fix webhook #5576 mergé sur main le
+# 2026-08-26). Registre transverse → cible de refactor : déplacer
+# WebhookEventRegistry vers Core/Shared (issue #5584 item 3).
 Absence:Planning
 Accounting:Marketing
 Accounting:Notification
@@ -52,6 +57,7 @@ Notification:Attendance
 Notification:HR
 Notification:Payroll
 Notification:Planning
+Notification:Platform
 Onboarding:Attendance
 Onboarding:HR
 Payroll:Attendance
