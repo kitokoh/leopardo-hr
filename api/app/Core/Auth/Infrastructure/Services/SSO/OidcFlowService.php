@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services\SSO;
 
+use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Infrastructure\Services\AuthService;
+use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
 use App\Rules\NotPrivateUrl;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -30,6 +33,7 @@ final class OidcFlowService
         private readonly SSOService $ssoService,
         private readonly OidcIdTokenValidator $idTokenValidator,
         private readonly AuthService $authService,
+        private readonly TwoFactorAuthService $twoFactorService,
     ) {}
 
     /**
@@ -97,6 +101,19 @@ final class OidcFlowService
             'jwks_uri' => (string) $config->jwksUri,
         ]);
 
+        // Issue #5580 : exiger email_verified=true dans les claims OIDC.
+        // Un IdP peut émettre un id_token avec email_verified=false pour un
+        // compte non vérifié — accepter cet email permettrait une prise de
+        // contrôle du compte employé correspondant.
+        $emailVerified = $claims['email_verified'] ?? null;
+        if ($emailVerified !== true && $emailVerified !== 'true') {
+            Log::warning('sso.oidc_email_not_verified', [
+                'company_id' => $companyId,
+                'claim_value' => $emailVerified,
+            ]);
+            throw new \RuntimeException('SSO_EMAIL_NOT_VERIFIED: l\'id_token atteste un email non vérifié.');
+        }
+
         $email = $this->extractEmail($claims);
 
         try {
@@ -107,7 +124,36 @@ final class OidcFlowService
 
         $employee = $result['employee'];
         if ((string) $employee->company_id !== $companyId) {
+            // Révoquer le token créé par loginViaEmail avant de lever l'erreur.
+            $employee->tokens()->where('name', 'sso-oidc')->latest('id')->first()?->delete();
             throw new \RuntimeException('SSO_TENANT_MISMATCH: l\'email SSO appartient à une autre entreprise.');
+        }
+
+        // Issue #5579 : garde 2FA sur le flux OIDC — sans cette vérification un
+        // employé ayant activé le TOTP pouvait contourner le challenge via SSO.
+        if ($employee->two_fa_enabled_at !== null) {
+            // Révoquer le token avant d'émettre le challenge.
+            $employee->tokens()->where('name', 'sso-oidc')->latest('id')->first()?->delete();
+
+            $challenge = $this->twoFactorService->issueChallenge([
+                'employee_id' => $employee->id,
+                'company_id' => (string) $employee->company_id,
+                'tenant_schema' => null,
+                'email' => (string) $employee->email,
+                'device_name' => 'sso-oidc',
+            ]);
+
+            return [
+                'mfa_challenge' => true,
+                'mfa_challenge_token' => $challenge['token'],
+                'mfa_challenge_expires_in' => $challenge['expires_in'],
+            ];
+        }
+
+        // Politique tenant : rôle sensible + 2FA non activée → blocage.
+        if ($this->twoFactorService->requiresMfa($employee)) {
+            $employee->tokens()->where('name', 'sso-oidc')->latest('id')->first()?->delete();
+            throw TwoFactorException::required();
         }
 
         return [
