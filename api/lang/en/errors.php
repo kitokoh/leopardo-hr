@@ -273,4 +273,5 @@ return [
     'LETTERING_ALREADY_USED' => 'One or more entries are already lettered with another code.',
     'LETTERING_UNBALANCED' => 'Lettering must be balanced: total debits must equal total credits.',
     'ALREADY_SEEDED' => 'Demo data has already been seeded for this company.',
+    'EMAIL_NOT_VERIFIED' => 'This Google email has not been verified by its provider. Use an account with a verified email.',
 ];

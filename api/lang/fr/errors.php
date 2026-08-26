@@ -267,4 +267,5 @@ return [
     'LETTERING_ALREADY_USED' => 'Une ou plusieurs écritures sont déjà lettrées avec une autre lettre.',
     'LETTERING_UNBALANCED' => 'Le lettrage doit être équilibré : la somme des débits doit égaler la somme des crédits.',
     'ALREADY_SEEDED' => 'Les données de démonstration ont déjà été créées pour cette entreprise.',
+    'EMAIL_NOT_VERIFIED' => 'Cet email Google n\'a pas été vérifié par son fournisseur. Utilisez un compte avec un email vérifié.',
 ];

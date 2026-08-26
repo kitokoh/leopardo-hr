@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Tests\Feature\Auth;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\TotpService;
+use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanySetting;
+use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\RefreshTenantDatabase;
@@ -150,7 +153,7 @@ class TwoFactorAuthTest extends TestCase
     {
         $this->seedAccount('2fa-single@example.com');
         $employee = Employee::where('email', '2fa-single@example.com')->firstOrFail();
-        $secret = (new \App\Core\Auth\Infrastructure\Services\TotpService())->generateSecret();
+        $secret = (new TotpService)->generateSecret();
         $employee->forceFill([
             'two_fa_secret' => $secret,
             'two_fa_enabled_at' => now(),
@@ -173,7 +176,7 @@ class TwoFactorAuthTest extends TestCase
     public function test_recovery_code_is_single_use(): void
     {
         [$company, $employee] = $this->seedAccount('2fa-recovery@example.com');
-        $secret = (new \App\Core\Auth\Infrastructure\Services\TotpService())->generateSecret();
+        $secret = (new TotpService)->generateSecret();
         $recoveryPlain = ['ABC123DEF456', 'GHI789JKL012'];
         $employee->forceFill([
             'two_fa_secret' => $secret,
@@ -202,7 +205,6 @@ class TwoFactorAuthTest extends TestCase
 
         CompanySetting::query()->create([
             'key' => 'mfa_required_roles',
-            'company_id' => $company->id,
             'value' => 'rh,principal',
             'value_type' => 'string',
         ]);
@@ -216,7 +218,7 @@ class TwoFactorAuthTest extends TestCase
     public function test_disable_requires_code(): void
     {
         [$company, $employee] = $this->seedAccount('2fa-disable@example.com');
-        $secret = (new \App\Core\Auth\Infrastructure\Services\TotpService())->generateSecret();
+        $secret = (new TotpService)->generateSecret();
         $employee->forceFill([
             'two_fa_secret' => $secret,
             'two_fa_enabled_at' => now(),
@@ -239,7 +241,7 @@ class TwoFactorAuthTest extends TestCase
     public function test_remember_device_skips_challenge_on_next_login(): void
     {
         [$company, $employee] = $this->seedAccount('2fa-remember@example.com');
-        $secret = (new \App\Core\Auth\Infrastructure\Services\TotpService())->generateSecret();
+        $secret = (new TotpService)->generateSecret();
         $employee->forceFill([
             'two_fa_secret' => $secret,
             'two_fa_enabled_at' => now(),
@@ -257,13 +259,20 @@ class TwoFactorAuthTest extends TestCase
 
         // En test, le middleware EncryptCookies est désactivé pour ce cookie :
         // on transmet la valeur HMAC attendue (le cookie réel est chiffré).
-        $this->app->make(\Illuminate\Cookie\Middleware\EncryptCookies::class)
-            ->disableFor('mfa_remember_'.$employee->id);
-        $expected = app(\App\Core\Auth\Infrastructure\Services\TwoFactorAuthService::class)
+        // NB #5579 : en Laravel 12 le pipeline résout son PROPRE instance de
+        // middleware — un `make()->disableFor()` jetable n'affecte pas la
+        // requête. On pré-lie l'instance configurée dans le conteneur.
+        $cookieMiddleware = $this->app->make(EncryptCookies::class);
+        $cookieMiddleware->disableFor('mfa_remember_'.$employee->id);
+        $this->app->instance(EncryptCookies::class, $cookieMiddleware);
+        $expected = app(TwoFactorAuthService::class)
             ->rememberCookieValue($employee);
 
         // Login suivant AVEC le cookie → token direct (pas de challenge).
-        $this->withUnencryptedCookie('mfa_remember_'.$employee->id, $expected)
+        // NB #5579 : withCredentials() est OBLIGATOIRE — sans lui, les
+        // requêtes JSON (postJson) n'emportent AUCUN cookie.
+        $this->withCredentials()
+            ->withUnencryptedCookie('mfa_remember_'.$employee->id, $expected)
             ->postJson('/api/v1/auth/login', [
                 'email' => '2fa-remember@example.com',
                 'password' => 'password123',
