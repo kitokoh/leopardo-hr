@@ -884,11 +884,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 .copyWith(color: MobileSurface.secondary),
           ),
           const SizedBox(height: 16),
-          ...options.map(
-            (opt) => RadioListTile<ThemeMode>(
-              contentPadding: EdgeInsets.zero,
-              value: opt.$1,
-              groupValue: currentMode,
+          RadioGroup<ThemeMode>(
+            groupValue: currentMode,
+            onChanged: (mode) async {
+              if (mode != null) {
+                await ref
+                    .read(themeModeProvider.notifier)
+                    .setMode(mode);
+              }
+            },
+            child: Column(
+              children: options
+                  .map(
+                    (opt) => RadioListTile<ThemeMode>(
+                      contentPadding: EdgeInsets.zero,
+                      value: opt.$1,
               title: Row(
                 children: [
                   Icon(opt.$2, size: 20, color: MobileSurface.secondary),
@@ -898,13 +908,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           .copyWith(color: MobileSurface.text)),
                 ],
               ),
-              onChanged: (mode) async {
-                if (mode != null) {
-                  await ref
-                      .read(themeModeProvider.notifier)
-                      .setMode(mode);
-                }
-              },
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         ],

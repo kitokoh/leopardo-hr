@@ -36,7 +36,7 @@ class AuthRepository {
     if (data['mfa_challenge'] == true) {
       final challengeToken = data['mfa_challenge_token'];
       if (challengeToken == null || challengeToken is! String) {
-        throw ApiException('mfa_challenge_token manquant dans la réponse', 500);
+        throw ApiException('mfa_challenge_token manquant dans la réponse', statusCode: 500);
       }
       return {'mfa_challenge_token': challengeToken};
     }
@@ -126,7 +126,7 @@ class AuthRepository {
       return {'employee': employee};
     }
 
-    throw ApiException('Impossible de récupérer le profil après vérification 2FA', 500);
+    throw ApiException('Impossible de récupérer le profil après vérification 2FA', statusCode: 500);
   }
 
   Future<Map<String, dynamic>> loginWithGoogle() async {
