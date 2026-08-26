@@ -38,14 +38,18 @@ class SSOController extends Controller
 
         $sso = $this->ssoService->getCompanySSO($actor->company_id);
 
+        // #5614 — Pour OIDC, la validation est disponible sans gate SAML_ENABLED.
+        // Pour SAML, le flag config('services.saml.enabled') reste requis jusqu'à
+        // l'implémentation de la librairie OneLogin (audit #1694).
+        $samlGate = $sso['provider'] !== 'oidc'
+            ? (bool) config('services.saml.enabled', false)
+            : true;
+
         return response()->json([
             'data' => [
                 'enabled' => $sso['enabled'],
                 'provider' => $sso['provider'],
-                // Audit #1694 + gate #3890 : la validation SAML/OIDC n'est
-                // disponible que si le moteur existe ET le flag SAML_ENABLED est posé.
-                'validation_available' => $sso['validation_available']
-                    && (bool) config('services.saml.enabled', false),
+                'validation_available' => $sso['validation_available'] && $samlGate,
             ],
         ]);
     }

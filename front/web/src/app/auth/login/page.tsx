@@ -224,7 +224,24 @@ function LoginInner() {
         },
       });
 
-      const loginPayload = await loginResponse.json() as { data?: StoredAuthUser | { token?: string }; token?: string };
+      const loginPayload = await loginResponse.json() as {
+        data?: StoredAuthUser | { token?: string };
+        token?: string;
+        mfa_challenge?: boolean;
+        mfa_challenge_token?: string;
+        mfa_challenge_expires_in?: number;
+      };
+
+      // #5612 — Si le backend exige la 2FA, stocker le challenge_token et
+      // rediriger vers la page de challenge. Le cookie httpOnly n'est pas
+      // encore posé à ce stade (le token n'est émis qu'après la vérification).
+      if (loginPayload?.mfa_challenge === true && loginPayload?.mfa_challenge_token) {
+        if (typeof window !== 'undefined') {
+          window.sessionStorage.setItem('mfa_challenge_token', loginPayload.mfa_challenge_token);
+        }
+        router.push('/auth/2fa/challenge');
+        return;
+      }
 
       // Audit #1699 : le token vit dans le cookie httpOnly `leopardo_token`
       // posé par le route handler /api/v1/auth/login — il n'est jamais

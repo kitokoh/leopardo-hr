@@ -11,6 +11,12 @@ use App\Http\Middleware\AI\AITenantInjector;
 use App\Http\Middleware\AI\EnsureAIAnalyticsAccess;
 use Illuminate\Support\Facades\Route;
 
+// #5616 — Téléchargement de fichiers TTS via URL signée temporaire (60 s).
+// Pas de middleware auth : la signature cryptographique garantit l'authenticité.
+Route::get('/ai/voice/download/{filename}', [VoiceController::class, 'download'])
+    ->name('ai.voice.download')
+    ->middleware(['signed']);
+
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'throttle:ai-sensitive', AIFeatureCheck::class, AITenantInjector::class, 'throttle:api-plan'])->prefix('ai')->group(function () {
 
     // Phase 1 — Chat IA

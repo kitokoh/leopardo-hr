@@ -197,3 +197,10 @@ Artisan::command('super-admin:reset-password {email} {password}', function (stri
 // confirmer avant la clôture (novembre).
 Schedule::command('islamic:check-unconfirmed')
     ->yearlyOn(11, 15, '09:00');
+
+// #5616 — RGPD : purge des fichiers TTS audio générés > 1 h (URL signées 60 s
+// déjà expirées, les fichiers sont inaccessibles mais occupent le disque).
+Schedule::command('tts:purge')
+    ->hourly()
+    ->withoutOverlapping()
+    ->onOneServer();

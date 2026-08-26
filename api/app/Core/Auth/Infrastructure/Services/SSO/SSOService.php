@@ -19,11 +19,17 @@ class SSOService
     private const SENSITIVE_FIELDS = ['certificate', 'client_secret'];
 
     /**
-     * Audit #1694 : la validation des assertions SAML/OIDC n'est pas
-     * implémentée — exposer false tant que le moteur de validation n'existe
-     * pas (les intégrateurs doivent afficher « SSO en cours de déploiement »).
+     * Retourne si la validation SSO est disponible pour un provider donné.
+     *
+     * - OIDC (#2231) : OidcFlowService est pleinement implémenté → true.
+     * - SAML         : validation OneLogin non implémentée (audit #1694) → false.
+     *
+     * Issue #5614 : l'ancien VALIDATION_AVAILABLE = false bloquait aussi OIDC.
      */
-    private const VALIDATION_AVAILABLE = false;
+    private function isValidationAvailableForProvider(string $provider): bool
+    {
+        return $provider === 'oidc';
+    }
 
     /**
      * @return array{enabled: bool, provider: string|null, config: SSOProviderConfig|null, validation_available: bool}
@@ -40,8 +46,7 @@ class SSOService
                 'enabled' => false,
                 'provider' => null,
                 'config' => null,
-                // Audit #1694 : validation non implémentée.
-                'validation_available' => self::VALIDATION_AVAILABLE,
+                'validation_available' => false,
             ];
         }
 
@@ -65,8 +70,8 @@ class SSOService
                 'provider' => $provider,
                 ...$configData,
             ]),
-            // Audit #1694 : validation non implémentée.
-            'validation_available' => self::VALIDATION_AVAILABLE,
+            // #5614 : true pour OIDC (OidcFlowService implémenté), false pour SAML.
+            'validation_available' => $this->isValidationAvailableForProvider($provider),
         ];
     }
 
@@ -135,11 +140,12 @@ class SSOService
         }
 
         if ($canActivate) {
-            Log::info('OIDC SSO configured and active (validation implemented — issue #2231)', [
+            Log::info('OIDC SSO configuré et actif (issue #2231/#5614)', [
                 'company_id' => $companyId,
             ]);
         } else {
-            Log::warning('SSO configured but kept inactive (validation not implemented — audit #1694)', [
+            // SAML : en attente de l'implémentation OneLogin/php-saml (audit #1694).
+            Log::warning('SSO configuré mais inactif (SAML non implémenté ou config OIDC incomplète)', [
                 'company_id' => $companyId,
                 'provider' => $provider,
             ]);
