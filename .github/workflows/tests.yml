@@ -405,11 +405,11 @@ jobs:
           fi
 
           mapfile -t changed_php_files < <(
+            # Issue #5590 : périmètre étendu au full scope de phpstan.neon
+            # (app/ + routes/ + tests/) — avant, seuls app/AI, Http/Middleware
+            # et routes étaient analysés au niveau max ; config/ reste exclu
+            # (hors paths de phpstan.neon, conventionnellement).
             git diff --name-only "${base_sha}" "${head_sha}" \
-              # Issue #5590 : périmètre étendu au full scope de phpstan.neon
-              # (app/ + routes/ + tests/) — avant, seuls app/AI, Http/Middleware
-              # et routes étaient analysés au niveau max ; config/ reste exclu
-              # (hors paths de phpstan.neon, conventionnellement).
               | grep -E '^api/(app|routes|tests)/.*\.php$' \
               | sort -u || true
           )
