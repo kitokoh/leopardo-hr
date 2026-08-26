@@ -67,6 +67,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // monitored by `edge:monitor` below. See issue #1291 and
         // docs/audits/AUDIT_MOBILE_EDGE_2026-07-26.md sections 1.3/1.4.
         $schedule->command('edge:monitor')->everyThirtyMinutes()->withoutOverlapping();
+        // Issue #5616 — Purge des fichiers TTS temporaires (RGPD + espace disque).
+        // Les URLs signées expirent en 60 s ; purger les fichiers > 60 min suffit
+        // pour garantir qu'aucun fichier accessible ne subsiste sur disque.
+        $schedule->command('tts:purge')->hourly();
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',

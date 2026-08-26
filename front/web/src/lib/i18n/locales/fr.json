@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-25T00:00:00Z",
+  "_updated_at": "2026-08-26T00:00:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -138,7 +138,8 @@
       "TR": "Turquie",
       "US": "États-Unis"
     },
-    "required": "Requis"
+    "required": "Requis",
+    "dismiss": "Fermer"
   },
   "modules": {
     "attendance": "Pointage",
@@ -1510,7 +1511,11 @@
     "fallbackPollingTitle": "Notifications via polling de secours (push indisponible)",
     "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client",
     "settings": "Réglages",
-    "team": "Équipe"
+    "team": "Équipe",
+    "home": "Accueil",
+    "attendance": "Pointage",
+    "absences": "Absences",
+    "approvals": "Validations"
   },
   "exports": {
     "reportEmployees": "Employes",
@@ -1811,7 +1816,20 @@
   "contracts": {
     "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
     "searchPlaceholder": "Rechercher un employe ou un type de contrat...",
-    "allStatuses": "Tous les statuts"
+    "allStatuses": "Tous les statuts",
+    "mobile_title": "Mon Contrat",
+    "back_tooltip": "Retour",
+    "empty_title": "Aucun contrat",
+    "empty_description": "Votre contrat apparaîtra ici une fois configuré.",
+    "label_type": "Type",
+    "label_start_date": "Début",
+    "label_end_date": "Fin",
+    "label_base_salary": "Salaire de base",
+    "loading": "Chargement des contrats...",
+    "status_active": "Actif",
+    "status_expired": "Expiré",
+    "status_draft": "Brouillon",
+    "status_cdi": "CDI"
   },
   "training": {
     "titlePlaceholder": "Titre *",
@@ -2998,7 +3016,10 @@
     "loadError": "Impossible de charger l'état d'activation. Réessayez.",
     "completeError": "L'activation a échoué. Réessayez.",
     "retry": "Réessayer",
-    "loading": "Chargement…"
+    "loading": "Chargement…",
+    "bannerTitle": "Activez le module Comptabilité",
+    "bannerBody": "Quelques étapes sont nécessaires avant de pouvoir émettre vos premières factures.",
+    "bannerCta": "Démarrer l'activation"
   },
   "accountingModule": {
     "homeTitle": "Comptabilité",
@@ -3131,5 +3152,131 @@
     "pageOf": "Page {current} sur {total}",
     "total": "{count} accès",
     "retry": "Réessayer"
+  },
+  "adminPalette": {
+    "appLoading": "Chargement de l'administration…",
+    "searchPlaceholder": "Rechercher pages, actions…",
+    "noResults": "Aucun résultat pour « {query} »",
+    "navNavigate": "naviguer",
+    "navSelect": "sélectionner",
+    "navClose": "fermer",
+    "itemDashboard": "Tableau de bord",
+    "itemDashboardDesc": "Vue principale",
+    "itemAnalytics": "Analytics",
+    "itemAnalyticsDesc": "Statistiques et rapports",
+    "itemUsers": "Utilisateurs",
+    "itemUsersDesc": "Gestion des utilisateurs",
+    "itemCompanies": "Entreprises",
+    "itemCompaniesDesc": "Gestion des entreprises",
+    "itemSubscriptions": "Abonnements",
+    "itemSubscriptionsDesc": "Plans et facturation",
+    "itemSettings": "Paramètres",
+    "itemSettingsDesc": "Compte et préférences",
+    "itemGrowth": "Growth",
+    "itemGrowthDesc": "Partenaires et croissance",
+    "itemEdge": "Edge Nodes",
+    "itemEdgeDesc": "Nœuds edge synchronisés",
+    "itemGlobe": "Globe",
+    "itemGlobeDesc": "Présence mondiale en temps réel",
+    "itemFleet": "Flotte",
+    "itemFleetDesc": "Alertes flotte véhicules",
+    "itemMarketing": "Marketing OAuth",
+    "itemMarketingDesc": "Configuration OAuth marketing",
+    "itemSupport": "Support",
+    "itemSupportDesc": "Tickets support clients",
+    "itemCrm": "CRM",
+    "itemCrmDesc": "Pipeline CRM",
+    "itemToggleDark": "Basculer mode sombre",
+    "itemToggleDarkDesc": "Changer le thème"
+  },
+  "bankRecon": {
+    "title": "Rapprochement bancaire",
+    "subtitle": "File de matching manuel : rapprochez les lignes du relevé avec les paiements enregistrés (score de confiance du matching auto).",
+    "statementsTitle": "Relevés",
+    "noStatements": "Aucun relevé importé.",
+    "selectStatement": "Sélectionner un relevé…",
+    "period": "Période",
+    "reference": "Référence",
+    "status": "Statut",
+    "statusImported": "Importé",
+    "statusReconciled": "Rapproché",
+    "opening": "Solde d'ouverture",
+    "closingExpected": "Clôture attendue",
+    "closingReported": "Clôture relevée",
+    "gap": "Écart",
+    "totalLines": "Lignes",
+    "matchedLines": "Rapprochées",
+    "pendingLines": "En attente",
+    "matchedAmount": "Montant rapproché",
+    "pendingAmount": "Montant en attente",
+    "lineDate": "Date",
+    "lineLabel": "Libellé",
+    "lineAmount": "Montant",
+    "lineStatus": "État",
+    "statusPending": "À rapprocher",
+    "statusMatched": "Rapprochée",
+    "confidence": "Confiance",
+    "proposed": "Proposé",
+    "match": "Matcher",
+    "matchPayment": "Paiement",
+    "noPayments": "Aucun paiement disponible pour cette période.",
+    "exportCsv": "Exporter CSV",
+    "loadError": "Impossible de charger le rapprochement.",
+    "matchError": "Le rapprochement a échoué.",
+    "matchDone": "Ligne rapprochée.",
+    "loading": "Chargement…",
+    "retry": "Réessayer"
+  },
+  "organigramme": {
+    "title": "Organigramme",
+    "back_tooltip": "Retour",
+    "empty_title": "Aucun organigramme",
+    "loading": "Chargement de l'organigramme..."
+  },
+  "vehicle_map": {
+    "title": "Position véhicule",
+    "back_tooltip": "Retour",
+    "empty_title": "Aucun véhicule",
+    "empty_description": "Vos véhicules assignés apparaîtront ici.",
+    "loading": "Chargement des véhicules...",
+    "last_update": "Dernière MAJ : {time}",
+    "speed_kmh": "{speed} km/h"
+  },
+  "payrollValidated": "Validé",
+  "payrollDocumentUnavailable": "Document indisponible : {error}",
+  "payrollOvertimeHoursTeam": "Heures supp ({hours}h)",
+  "payrollOvertimeHoursItem": "+{hours}h supp",
+  "platform_admin": {
+    "activation_note": "Activation directe depuis app mobile platform admin.",
+    "company_approved_note": "Approuvé depuis Leopardo Platform Admin mobile",
+    "company_rejected_note": "Refusé depuis Leopardo Platform Admin mobile"
+  },
+  "edge_nodes": {
+    "title": "Nœuds Edge",
+    "subtitle": "Sites on-premise connectés",
+    "refresh_tooltip": "Rafraîchir",
+    "empty": "Aucun nœud Edge enregistré.",
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "section_label": "Nœuds",
+    "loading": "Chargement nœuds",
+    "force_sync": "Forcer la synchronisation",
+    "sync_triggered": "Sync déclenchée.",
+    "last_sync": "Dernière sync : {date}",
+    "node_id": "ID : {id}",
+    "version_info": "v{version} — {count} employé(s)"
+  },
+  "support_tickets": {
+    "title": "Support client",
+    "subtitle": "Tickets tenant",
+    "filter_all": "Tous",
+    "filter_open": "Ouverts",
+    "filter_in_progress": "En cours",
+    "filter_resolved": "Résolus",
+    "filter_closed": "Fermés",
+    "empty": "Aucun ticket pour ce filtre.",
+    "loading": "Chargement tickets",
+    "reply_sent": "Réponse envoyée.",
+    "loading_ticket": "Chargement ticket"
   }
 }

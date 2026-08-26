@@ -98,13 +98,16 @@ class BiometricAdminController extends Controller
         ]);
 
         $plainToken = Str::random(48);
+        $plainDeviceCode = strtoupper(Str::random(10));
 
         $kiosk = AttendanceKiosk::query()->create([
             'company_id' => $actor->company_id,
             'name' => $validated['name'],
             'location_label' => $validated['location_label'] ?? null,
             'biometric_mode' => $validated['biometric_mode'] ?? 'fingerprint',
-            'device_code' => strtoupper(Str::random(10)),
+            // Issue #5588 : device_code haché au repos (lookup déterministe),
+            // code en clair retourné une seule fois au provisioning.
+            'device_code' => AttendanceKiosk::hashDeviceCode($plainDeviceCode),
             'sync_token_hash' => Hash::make($plainToken),
             'status' => 'active',
         ]);
@@ -113,7 +116,7 @@ class BiometricAdminController extends Controller
             ->route('biometrics.index')
             ->with('status', 'Borne d entree creee.')
             ->with('kiosk_credentials', [
-                'device_code' => $kiosk->device_code,
+                'device_code' => $plainDeviceCode,
                 'sync_token' => $plainToken,
             ]);
     }

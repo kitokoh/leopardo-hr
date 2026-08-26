@@ -25,7 +25,7 @@ APP_URL=https://gestionemployerbackend.onrender.com
 DB_CONNECTION=pgsql
 DATABASE_URL=...
 CACHE_STORE=redis
-QUEUE_CONNECTION=redis
+QUEUE_CONNECTION=database
 REDIS_CLIENT=predis
 REDIS_SCHEME=tls
 REDIS_URL=...
@@ -84,13 +84,13 @@ Creer un service Render separe de type Background Worker, branche `main`, meme i
 
 ```bash
 php artisan config:cache
-php artisan queue:work redis --queue=documents,pdf,payroll,notifications,webhooks,default --sleep=3 --tries=3 --timeout=300 --max-time=3600
+php artisan queue:work --queue=documents,pdf,payroll,notifications,webhooks,default --sleep=3 --tries=3 --timeout=300 --max-time=3600
 ```
 
 Regles :
 
 - un worker ne doit pas servir de trafic HTTP ;
-- `QUEUE_CONNECTION` doit etre `redis` en production ;
+- `QUEUE_CONNECTION` doit etre `database` en production (strategie unique issue #5578 : probe infra, worker Render et drain GH Actions drainent tous la file Postgres — pas de quota Redis brule par le polling) ;
 - `REDIS_CLIENT` doit rester `predis` avec Upstash, surtout quand TLS est actif ;
 - la queue `documents` est obligatoire pour les recus et bordereaux de paiement asynchrones ;
 - `--max-time=3600` force un recyclage regulier pour eviter les fuites memoire ;
@@ -140,7 +140,7 @@ Sur VPS, installer Supervisor et creer deux programmes separes :
 
 ```ini
 [program:leopardo-queue]
-command=php /var/www/leopardo-rh-api/artisan queue:work redis --queue=documents,pdf,payroll,notifications,webhooks,default --sleep=3 --tries=3 --timeout=300 --max-time=3600
+command=php /var/www/leopardo-rh-api/artisan queue:work --queue=documents,pdf,payroll,notifications,webhooks,default --sleep=3 --tries=3 --timeout=300 --max-time=3600
 directory=/var/www/leopardo-rh-api
 autostart=true
 autorestart=true

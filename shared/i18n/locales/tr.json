@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-25T00:00:00Z",
+  "_updated_at": "2026-08-26T00:00:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -138,7 +138,8 @@
       "TR": "Türkiye",
       "US": "Amerika Birleşik Devletleri"
     },
-    "required": "Gerekli"
+    "required": "Gerekli",
+    "dismiss": "Kapat"
   },
   "modules": {
     "attendance": "Puantaj",
@@ -1510,7 +1511,11 @@
     "fallbackPollingTitle": "Yedek polling ile bildirimler (push kullanilamiyor)",
     "tenantOnly": "Kurumsal ozellik — musteri alanlarina ayrilmistir",
     "settings": "Ayarlar",
-    "team": "Ekip"
+    "team": "Ekip",
+    "home": "Ana Sayfa",
+    "attendance": "Devam",
+    "absences": "İzinler",
+    "approvals": "Onaylar"
   },
   "exports": {
     "reportEmployees": "Calisanlar",
@@ -1811,7 +1816,20 @@
   "contracts": {
     "list_subtitle": "Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API'sine bağlı.",
     "searchPlaceholder": "Çalışan veya sözleşme türü ara...",
-    "allStatuses": "Tüm durumlar"
+    "allStatuses": "Tüm durumlar",
+    "mobile_title": "Sözleşmem",
+    "back_tooltip": "Geri",
+    "empty_title": "Sözleşme yok",
+    "empty_description": "Sözleşmeniz yapılandırıldıktan sonra burada görünecek.",
+    "label_type": "Tür",
+    "label_start_date": "Başlangıç",
+    "label_end_date": "Bitiş",
+    "label_base_salary": "Temel maaş",
+    "loading": "Sözleşmeler yükleniyor...",
+    "status_active": "Aktif",
+    "status_expired": "Süresi dolmuş",
+    "status_draft": "Taslak",
+    "status_cdi": "Belirsiz süreli (CDI)"
   },
   "training": {
     "titlePlaceholder": "Başlık *",
@@ -2998,7 +3016,10 @@
     "loadError": "Etkinleştirme durumu yüklenemedi. Tekrar deneyin.",
     "completeError": "Etkinleştirme başarısız oldu. Tekrar deneyin.",
     "retry": "Yeniden dene",
-    "loading": "Yükleniyor…"
+    "loading": "Yükleniyor…",
+    "bannerTitle": "Muhasebe modülünü etkinleştirin",
+    "bannerBody": "İlk faturalarınızı düzenleyebilmek için birkaç adım gereklidir.",
+    "bannerCta": "Etkinleştirmeyi başlat"
   },
   "accountingModule": {
     "homeTitle": "Muhasebe",
@@ -3131,5 +3152,131 @@
     "pageOf": "Sayfa {current} / {total}",
     "total": "{count} erişim",
     "retry": "Yeniden dene"
+  },
+  "adminPalette": {
+    "appLoading": "Yönetim yükleniyor…",
+    "searchPlaceholder": "Sayfa ve işlemleri ara…",
+    "noResults": "\"{query}\" için sonuç yok",
+    "navNavigate": "gezin",
+    "navSelect": "seç",
+    "navClose": "kapat",
+    "itemDashboard": "Kontrol paneli",
+    "itemDashboardDesc": "Ana görünüm",
+    "itemAnalytics": "Analytics",
+    "itemAnalyticsDesc": "İstatistikler ve raporlar",
+    "itemUsers": "Kullanıcılar",
+    "itemUsersDesc": "Kullanıcı yönetimi",
+    "itemCompanies": "Şirketler",
+    "itemCompaniesDesc": "Şirket yönetimi",
+    "itemSubscriptions": "Abonelikler",
+    "itemSubscriptionsDesc": "Planlar ve faturalama",
+    "itemSettings": "Ayarlar",
+    "itemSettingsDesc": "Hesap ve tercihler",
+    "itemGrowth": "Growth",
+    "itemGrowthDesc": "Ortaklıklar ve büyüme",
+    "itemEdge": "Edge Düğümleri",
+    "itemEdgeDesc": "Senkronize edge düğümleri",
+    "itemGlobe": "Globe",
+    "itemGlobeDesc": "Gerçek zamanlı küresel varlık",
+    "itemFleet": "Filo",
+    "itemFleetDesc": "Araç filosu uyarıları",
+    "itemMarketing": "Marketing OAuth",
+    "itemMarketingDesc": "Marketing OAuth yapılandırması",
+    "itemSupport": "Destek",
+    "itemSupportDesc": "Müşteri destek biletleri",
+    "itemCrm": "CRM",
+    "itemCrmDesc": "CRM hattı",
+    "itemToggleDark": "Karanlık moda geç",
+    "itemToggleDarkDesc": "Temayı değiştir"
+  },
+  "bankRecon": {
+    "title": "Banka mutabakatı",
+    "subtitle": "Manuel eşleştirme kuyruğu: hesap özeti satırlarını kayıtlı ödemelerle eşleştirin (otomatik eşleştirme güven skoru).",
+    "statementsTitle": "Hesap özetleri",
+    "noStatements": "İçe aktarılmış hesap özeti yok.",
+    "selectStatement": "Bir hesap özeti seçin…",
+    "period": "Dönem",
+    "reference": "Referans",
+    "status": "Durum",
+    "statusImported": "İçe aktarıldı",
+    "statusReconciled": "Mutabık kılındı",
+    "opening": "Açılış bakiyesi",
+    "closingExpected": "Beklenen kapanış",
+    "closingReported": "Bildirilen kapanış",
+    "gap": "Fark",
+    "totalLines": "Satırlar",
+    "matchedLines": "Mutabık",
+    "pendingLines": "Bekleyen",
+    "matchedAmount": "Mutabık tutar",
+    "pendingAmount": "Bekleyen tutar",
+    "lineDate": "Tarih",
+    "lineLabel": "Açıklama",
+    "lineAmount": "Tutar",
+    "lineStatus": "Durum",
+    "statusPending": "Eşleştirilecek",
+    "statusMatched": "Mutabık",
+    "confidence": "Güven",
+    "proposed": "Önerilen",
+    "match": "Eşleştir",
+    "matchPayment": "Ödeme",
+    "noPayments": "Bu dönem için ödeme yok.",
+    "exportCsv": "CSV dışa aktar",
+    "loadError": "Mutabakat yüklenemedi.",
+    "matchError": "Eşleştirme başarısız.",
+    "matchDone": "Satır mutabık kılındı.",
+    "loading": "Yükleniyor…",
+    "retry": "Yeniden dene"
+  },
+  "organigramme": {
+    "title": "Organizasyon Şeması",
+    "back_tooltip": "Geri",
+    "empty_title": "Organizasyon şeması yok",
+    "loading": "Organizasyon şeması yükleniyor..."
+  },
+  "vehicle_map": {
+    "title": "Araç Konumu",
+    "back_tooltip": "Geri",
+    "empty_title": "Araç yok",
+    "empty_description": "Atanan araçlarınız burada görünecek.",
+    "loading": "Araçlar yükleniyor...",
+    "last_update": "Son güncelleme: {time}",
+    "speed_kmh": "{speed} km/s"
+  },
+  "payrollValidated": "Onaylandı",
+  "payrollDocumentUnavailable": "Belge kullanılamıyor: {error}",
+  "payrollOvertimeHoursTeam": "Fazla mesai ({hours}s)",
+  "payrollOvertimeHoursItem": "+{hours}s fazla",
+  "platform_admin": {
+    "activation_note": "Platform Admin mobil uygulamasından doğrudan aktivasyon.",
+    "company_approved_note": "Leopardo Platform Admin mobil uygulamasından onaylandı",
+    "company_rejected_note": "Leopardo Platform Admin mobil uygulamasından reddedildi"
+  },
+  "edge_nodes": {
+    "title": "Edge Düğümleri",
+    "subtitle": "Yerinde bağlı siteler",
+    "refresh_tooltip": "Yenile",
+    "empty": "Kayıtlı Edge düğümü yok.",
+    "online": "Çevrimiçi",
+    "offline": "Çevrimdışı",
+    "section_label": "Düğümler",
+    "loading": "Düğümler yükleniyor",
+    "force_sync": "Senkronizasyonu zorla",
+    "sync_triggered": "Senkronizasyon tetiklendi.",
+    "last_sync": "Son sync: {date}",
+    "node_id": "ID: {id}",
+    "version_info": "v{version} — {count} çalışan"
+  },
+  "support_tickets": {
+    "title": "Müşteri desteği",
+    "subtitle": "Tenant biletleri",
+    "filter_all": "Tümü",
+    "filter_open": "Açık",
+    "filter_in_progress": "Devam ediyor",
+    "filter_resolved": "Çözüldü",
+    "filter_closed": "Kapatıldı",
+    "empty": "Bu filtre için bilet yok.",
+    "loading": "Biletler yükleniyor",
+    "reply_sent": "Yanıt gönderildi.",
+    "loading_ticket": "Bilet yükleniyor"
   }
 }

@@ -123,14 +123,18 @@ class SensitiveRateLimitTest extends TestCase
         config(['security.rate_limits.kiosk_punch_per_minute' => 2]);
 
         $company = Company::factory()->create();
+        $plainCode = 'RATELIMIT01';
         $kiosk = AttendanceKiosk::query()->create([
             'company_id' => $company->id,
             'name' => 'Rate Limit Kiosk',
-            'device_code' => 'RATELIMIT01',
+            // Issue #5588 : stocké haché (sha256 déterministe).
+            'device_code' => AttendanceKiosk::hashDeviceCode($plainCode),
             'biometric_mode' => 'fingerprint',
             'sync_token_hash' => Hash::make('plain-token'),
             'status' => 'active',
         ]);
+        // En mémoire, le code en clair sert à construire les URLs de test.
+        $kiosk->device_code = $plainCode;
 
         $payload = ['identifier' => 'unknown-employee', 'action' => 'check_in'];
 

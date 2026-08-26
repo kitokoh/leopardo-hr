@@ -221,13 +221,19 @@ class ProfilePermissionErrorContractTest extends TestCase
 
     private function registerKiosk(Company $company): AttendanceKiosk
     {
-        return AttendanceKiosk::query()->create([
+        $plainCode = strtoupper(Str::random(10));
+        $kiosk = AttendanceKiosk::query()->create([
             'company_id' => $company->id,
             'name' => 'Front Desk Kiosk',
             'biometric_mode' => 'fingerprint',
-            'device_code' => strtoupper(Str::random(10)),
+            // Issue #5588 : stocké haché (sha256 déterministe).
+            'device_code' => AttendanceKiosk::hashDeviceCode($plainCode),
             'sync_token_hash' => Hash::make('a-real-sync-token'),
             'status' => 'active',
         ]);
+        // En mémoire, le code en clair sert à construire les URLs de test.
+        $kiosk->device_code = $plainCode;
+
+        return $kiosk;
     }
 }

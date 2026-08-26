@@ -9,13 +9,11 @@ use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
 use App\Modules\Accounting\Application\Services\DocumentWorkflowService;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
-use App\Modules\Accounting\Domain\Enums\PaymentMethod;
 use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 /**
  * #5223 — API des documents comptables (Comptabilité Phase A) : cycle de vie
@@ -148,40 +146,6 @@ class AccountingDocumentController extends Controller
         $this->auditLogger->recordSensitive($request, $this->actor($request), 'accounting.document_sent', $document);
 
         return response()->json(['data' => $this->payload($document)]);
-    }
-
-    /**
-     * POST /api/v1/accounting/documents/{document}/payments — encaissement.
-     */
-    public function payments(Request $request, AccountingDocument $document): JsonResponse
-    {
-        $this->assertTenant($request, $document);
-        $actor = $this->actor($request);
-
-        $validated = $request->validate([
-            'amount' => ['required', 'numeric', 'gt:0'],
-            'method' => ['required', 'string', 'in:'.implode(',', array_map(static fn ($m): string => $m->value, PaymentMethod::cases()))],
-            'received_at' => ['nullable', 'date'],
-            'reference' => ['nullable', 'string', 'max:120'],
-        ]);
-
-        try {
-            $payment = $this->workflow->recordPayment(
-                $document,
-                (float) $validated['amount'],
-                PaymentMethod::from($validated['method']),
-                isset($validated['received_at']) ? Carbon::parse($validated['received_at']) : null,
-                $validated['reference'] ?? null,
-            );
-        } catch (DocumentWorkflowException $exception) {
-            return $this->workflowError($exception);
-        }
-
-        $this->auditLogger->recordSensitive($request, $actor, 'accounting.document_payment', $document, [
-            'amount' => (float) $validated['amount'],
-        ]);
-
-        return response()->json(['data' => ['payment' => $payment->toArray()]], 201);
     }
 
     /**

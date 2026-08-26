@@ -10,11 +10,13 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/branding/tenant_theme.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_theme.dart';
+import 'package:leopardo_core/core/providers/theme_mode_provider.dart';
 import 'package:leopardo_core/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/features/auth/screens/access_denied_screen.dart';
 import 'package:leopardo_core/features/auth/screens/login_screen.dart';
 import 'package:leopardo_core/features/auth/screens/register_screen.dart';
 import 'package:leopardo_core/features/auth/screens/welcome_screen.dart';
+import 'package:leopardo_core/features/auth/screens/two_factor_challenge_screen.dart';
 import 'package:leopardo_core/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_core/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_core/features/attendance/screens/monthly_summary_screen.dart';
@@ -96,11 +98,20 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final authState = authListenable.value;
       final isAuth = authState.employee != null;
+      final hasMfaChallenge = authState.mfaChallengeToken != null;
       final location = state.matchedLocation;
 
       // Pendant l'hydratation auth, garder l'ecran courant visible.
       if (authState.isLoading) {
         return null;
+      }
+
+      // #5627 — Challenge 2FA en attente.
+      if (hasMfaChallenge && location != '/2fa-challenge') {
+        return '/2fa-challenge';
+      }
+      if (isAuth && location == '/2fa-challenge') {
+        return '/';
       }
 
       const publicRoutes = {
@@ -112,12 +123,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/user-home',
         '/company-request',
         '/access-denied',
+        '/2fa-challenge',
       };
       final onPublic = publicRoutes.contains(location);
       final isAuthorized =
           isAuth && (authState.employee!.isManager || authState.employee!.isHr);
 
-      if (!isAuth && !onPublic) return '/welcome';
+      if (!isAuth && !hasMfaChallenge && !onPublic) return '/welcome';
       if (isAuth && !isAuthorized) {
         // T116 : plus de boucle /welcome ↔ / — écran « accès refusé » explicite
         // pour un utilisateur connecté sans le rôle de cette app.
@@ -141,6 +153,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
+      ),
+      // #5627 — Écran de vérification 2FA post-login.
+      GoRoute(
+        path: '/2fa-challenge',
+        builder: (context, state) => const TwoFactorChallengeScreen(),
       ),
       GoRoute(
         path: '/user-register',
@@ -352,7 +369,8 @@ class LeopardoApp extends ConsumerWidget {
       title: branding?.displayName ?? 'Leopardo RH',
       theme: TenantTheme.apply(AppTheme.lightTheme, branding),
       darkTheme: TenantTheme.apply(AppTheme.darkTheme, branding),
-      themeMode: ThemeMode.system,
+      // Issue #5624 — thème dynamique depuis le réglage in-app.
+      themeMode: ref.watch(themeModeProvider),
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: locale,
