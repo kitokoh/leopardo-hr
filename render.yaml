@@ -46,7 +46,12 @@ services:
       - key: LOG_CHANNEL
         value: stderr
       - key: LOG_LEVEL
-        value: error
+        value: info
+      # #5586 : Sentry branché — DSN à saisir dans le dashboard Render
+      # (secret, sync: false) sur les 3 services. Sans DSN, aucun événement
+      # ne quitte la prod (config/sentry.php retombe sur null).
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
       # Database
       - key: DB_CONNECTION
         value: pgsql
@@ -198,7 +203,10 @@ services:
       - key: LOG_CHANNEL
         value: stderr
       - key: LOG_LEVEL
-        value: error
+        value: info
+      # #5586 : Sentry branché — DSN à saisir dans le dashboard Render.
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
@@ -306,6 +314,13 @@ services:
           property: host
       - key: LOG_CHANNEL
         value: stderr
+      # #5586 : aligné sur web/worker — le canal structured (StructuredLogging)
+      # filtre à info ; sans LOG_LEVEL explicite, le scheduler repartait sur le
+      # défaut debug.
+      - key: LOG_LEVEL
+        value: info
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
