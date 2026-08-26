@@ -36,6 +36,12 @@ Route::get('/p/{code}', function () {
 Route::middleware('throttle:auth-sensitive')->get('/demo-login/{token}', DemoLoginController::class);
 Route::middleware('throttle:auth-sensitive')->post('/demo-login/{token}', DemoLoginController::class);
 
+// Issue #5631 (RGPD) : lecture audio TTS — URL signée temporaire
+// (expire en 5 min, générée par VoiceController via temporarySignedRoute).
+// Middleware `signed` : signature invalide/expirée → 403.
+Route::middleware('signed')->get('/tts/{filename}', [\App\Http\Controllers\AI\VoiceController::class, 'streamAudio'])
+    ->name('tts.audio');
+
 // Issue #5588 : la doc API reste publique hors production (QA/démo/tests)
 // mais requiert l'authentification en production (Gate viewApiDocs).
 Route::middleware(\App\Http\Middleware\EnsureApiDocsAuthorized::class)->group(function (): void {

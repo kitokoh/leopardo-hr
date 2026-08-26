@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 class VoiceController extends Controller
 {
@@ -219,7 +221,7 @@ class VoiceController extends Controller
             return null;
         }
 
-        return url('storage/tts/'.$filename);
+        return URL::temporarySignedRoute('tts.audio', now()->addMinutes(5), ['filename' => $filename]);
     }
 
     private function elevenLabsSynthesize(string $text, ?string $voiceId): ?string
@@ -248,11 +250,29 @@ class VoiceController extends Controller
             }
             file_put_contents($storagePath, $response->body());
 
-            return url('storage/tts/'.$filename);
+            return URL::temporarySignedRoute('tts.audio', now()->addMinutes(5), ['filename' => $filename]);
         }
 
         Log::error('ElevenLabs TTS failed', ['status' => $response->status()]);
 
         return null;
+    }
+
+    /**
+     * Issue #5631 (RGPD) : les URLs audio sont signées et expirantes — plus
+     * de fichier accessible en permanence par quiconque possède l'URL.
+     * La signature (`signed` middleware) expire au bout de 5 minutes ; le
+     * fichier reste sur disque jusqu'à la purge `tts:purge`.
+     */
+    public function streamAudio(string $filename): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        abort_unless(preg_match('/^tts_[a-zA-Z0-9]+\.mp3$/', $filename), 404);
+
+        $path = 'tts/'.$filename;
+        abort_unless(Storage::disk('local')->exists($path), 404);
+
+        return Storage::disk('local')->response($path, null, [
+            'Cache-Control' => 'private, max-age=300, no-transform',
+        ]);
     }
 }

@@ -53,6 +53,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('trial-provisionings:sweep')->everyFifteenMinutes();
         // Plan 64 — Auto-close attendance logs without check-out after 12h
         $schedule->command('attendance:auto-close')->hourly();
+        // Issue #5631 (RGPD) : purge des fichiers TTS de plus de 60 min.
+        $schedule->command('tts:purge --older-than=60')->hourly();
         $schedule->command('accounting:purge-expired-shares')->daily();
         // PA2-PAY-012 — Nightly progressive payroll pre-calculation
         $schedule->command('payroll:precalculate')->dailyAt('02:00');
