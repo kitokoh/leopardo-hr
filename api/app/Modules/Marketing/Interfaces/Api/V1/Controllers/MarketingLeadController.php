@@ -94,7 +94,7 @@ class MarketingLeadController extends Controller
                 ],
             ]);
 
-            $this->registry->complete('marketing-lead', $eventId, 201, $body);
+            $this->registry->complete('marketing-lead', $eventId, 201, $body ?: null);
 
             return new JsonResponse([
                 'data' => [

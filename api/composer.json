@@ -11,15 +11,16 @@
     "require": {
         "php": "^8.4.1",
         "barryvdh/laravel-dompdf": "^3.1",
+        "dedoc/scramble": "^0.13.42",
         "laravel/framework": "^12.60",
         "laravel/sanctum": "^4.3",
         "laravel/socialite": "^5.27",
         "laravel/tinker": "^3.0",
+        "pragmarx/google2fa": "^9.1",
         "predis/predis": "^3.6",
         "sentry/sentry-laravel": "^4.0",
-        "dedoc/scramble": "^0.13.42",
-        "symfony/mailgun-mailer": "^8.1",
-        "symfony/http-client": "^8.1"
+        "symfony/http-client": "^8.1",
+        "symfony/mailgun-mailer": "^8.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

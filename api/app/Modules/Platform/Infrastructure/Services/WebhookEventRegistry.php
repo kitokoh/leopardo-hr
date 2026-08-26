@@ -6,8 +6,9 @@ namespace App\Modules\Platform\Infrastructure\Services;
 
 use App\Modules\Platform\Domain\Models\WebhookEvent;
 use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * #5444 — Registre d'idempotence persistée des webhooks entrants.
@@ -43,17 +44,30 @@ final class WebhookEventRegistry
         // Garde de schéma partiel (pattern `ensurePunchPhotoProvided` #5265) :
         // en environnement de test sans la table (CreatesMvpSchema), on
         // traite sans déduplication — en production la migration existe.
-        if (! Schema::hasTable('webhook_events')) {
+        // #5629 : le schéma est explicitement `public` — `Schema::hasTable`
+        // sans schéma résout via `current_schema()` (1er du search_path,
+        // `shared_tenants` en prod/test) et la table n'était JAMAIS détectée
+        // → l'idempotence était silencieusement désactivée en production.
+        if (! Schema::hasTable('public.webhook_events')) {
             return null;
         }
 
         try {
-            WebhookEvent::query()->create([
-                'source' => $source,
-                'event_id' => $eventId,
-                'payload_hash' => $payloadHash,
-                'response_code' => 0,
-            ]);
+            // #5629 : la violation d'unicité ABORTE la transaction courante
+            // en PostgreSQL. L'INSERT est isolé dans un sous-transaction
+            // (savepoint en test — la suite RefreshTenantDatabase vit dans une
+            // transaction globale ; transaction réelle en prod) : sur conflit,
+            // seul le savepoint est annulé et le SELECT de relecture ci-dessous
+            // reste exécutable (sans ça : SQLSTATE 25P02 "current transaction
+            // is aborted" → 500 sur toute redelivrance).
+            DB::transaction(function () use ($source, $eventId, $payloadHash): void {
+                WebhookEvent::query()->create([
+                    'source' => $source,
+                    'event_id' => $eventId,
+                    'payload_hash' => $payloadHash,
+                    'response_code' => 0,
+                ]);
+            });
 
             return null;
         } catch (UniqueConstraintViolationException $e) {

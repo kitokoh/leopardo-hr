@@ -116,7 +116,6 @@ return [
     'tva_label_gst' => 'TPS',
     'tva_label_reduced' => 'TVA réduite',
 
-
     // Profondeur comptable (issue #5422)
     'chart_system_account_not_deletable' => 'Les comptes système (provisionnés) ne peuvent pas être supprimés — désactivez-les si nécessaire.',
     'chart_account_has_entries' => 'Ce compte porte des écritures au journal et ne peut pas être supprimé.',
@@ -126,6 +125,3 @@ return [
     'lettering_invalid' => 'Lettrage invalide : les écritures doivent porter sur le même compte.',
     'lettering_already_used' => 'Une ou plusieurs écritures sont déjà lettrées avec une autre lettre.',
 ];
-
-
-

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Interfaces\Api\V1;
 
-use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Exceptions\TwoFactorException;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\SSO\OidcFlowService;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOService;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOValidationNotImplementedException;
@@ -168,7 +168,7 @@ class SSOController extends Controller
 
             // Issue #5579 : le service peut retourner un challenge 2FA (mfa_challenge=true)
             // si l'employé a la TOTP activée ; dans ce cas, on ne renvoie PAS de token.
-            if (! empty($result['mfa_challenge'])) {
+            if (! empty($result['mfa_challenge'] ?? null)) {
                 return response()->json(['data' => $result]);
             }
 

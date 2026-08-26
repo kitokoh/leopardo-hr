@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c940d68d2fb262222403154a51dbd94b",
+    "content-hash": "c2d197a14011a33563f54b8da39f741d",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -3743,6 +3743,70 @@
                 "source": "https://github.com/phpstan/phpdoc-parser/tree/2.3.3"
             },
             "time": "2026-07-08T07:01:06+00:00"
+        },
+        {
+            "name": "pragmarx/google2fa",
+            "version": "v9.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/antonioribeiro/google2fa.git",
+                "reference": "f00bc788c555adfb6765c437ff3538e59cd88af1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/antonioribeiro/google2fa/zipball/f00bc788c555adfb6765c437ff3538e59cd88af1",
+                "reference": "f00bc788c555adfb6765c437ff3538e59cd88af1",
+                "shasum": ""
+            },
+            "require": {
+                "paragonie/constant_time_encoding": "^1.0|^2.0|^3.0",
+                "php": "^7.1|^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.0|^2.0",
+                "phpstan/phpstan-phpunit": "^1.0|^2.0",
+                "phpunit/phpunit": "~9|~10|~11|~12|~13",
+                "psalm/plugin-phpunit": "^0.19|^0.20",
+                "vimeo/psalm": "^5.26|^6.13"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PragmaRX\\Google2FA\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Antonio Carlos Ribeiro",
+                    "email": "acr@antoniocarlosribeiro.com",
+                    "role": "Creator & Designer"
+                }
+            ],
+            "description": "A One Time Password Authentication package, compatible with Google Authenticator.",
+            "keywords": [
+                "2fa",
+                "Authentication",
+                "MFA",
+                "Two Factor Authentication",
+                "google-authenticator",
+                "google2fa",
+                "hotp",
+                "otp",
+                "rfc4226",
+                "rfc6238",
+                "totp"
+            ],
+            "support": {
+                "docs": "https://github.com/antonioribeiro/google2fa#readme",
+                "issues": "https://github.com/antonioribeiro/google2fa/issues",
+                "security": "https://github.com/antonioribeiro/google2fa/security/policy",
+                "source": "https://github.com/antonioribeiro/google2fa"
+            },
+            "time": "2026-08-15T13:22:01+00:00"
         },
         {
             "name": "predis/predis",

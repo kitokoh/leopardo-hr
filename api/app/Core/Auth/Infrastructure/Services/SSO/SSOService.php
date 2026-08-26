@@ -188,7 +188,7 @@ class SSOService
 
     /**
      * @param  array<string, mixed>  $tokenData
-     * @return array{employee: array<string, mixed>, token: string, token_type: string, token_expires_at: string|null}
+     * @return array{employee: array<string, mixed>, token: string, token_type: string, token_expires_at: string|null}|array{mfa_challenge: true, mfa_challenge_token: string, mfa_challenge_expires_in: int}
      */
     public function handleOIDCCallback(string $companyId, array $tokenData): array
     {

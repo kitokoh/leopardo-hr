@@ -75,13 +75,13 @@ return [
         'year_between' => 'يجب أن تكون السنة بين 2000 و 2100.',
     ],
 
-        'bank_file_required' => 'ملف CSV مطلوب.',
-        'bank_file_mimes' => 'يجب أن يكون الملف بصيغة CSV.',
-        'bank_period_required' => 'فترة الكشف مطلوبة (YYYY-MM).',
-        'bank_period_format' => 'يجب أن تكون الفترة بصيغة YYYY-MM.',
-        'bank_reference_required' => 'مرجع الاستيراد مطلوب.',
-        'bank_payment_required' => 'الدفعة المراد مطابقتها مطلوبة.',
-        'bank_payment_exists' => 'الدفعة المحددة غير موجودة.',
+    'bank_file_required' => 'ملف CSV مطلوب.',
+    'bank_file_mimes' => 'يجب أن يكون الملف بصيغة CSV.',
+    'bank_period_required' => 'فترة الكشف مطلوبة (YYYY-MM).',
+    'bank_period_format' => 'يجب أن تكون الفترة بصيغة YYYY-MM.',
+    'bank_reference_required' => 'مرجع الاستيراد مطلوب.',
+    'bank_payment_required' => 'الدفعة المراد مطابقتها مطلوبة.',
+    'bank_payment_exists' => 'الدفعة المحددة غير موجودة.',
     'errors' => [
         'gateway_checkout_failed' => 'بوابة الدفع غير متاحة مؤقتًا. يرجى المحاولة لاحقًا.',
         'payment_amount_positive' => 'يجب أن يكون مبلغ الدفع موجباً تماماً.',
@@ -115,7 +115,6 @@ return [
     'tva_label_gst' => 'ضريبة السلع والخدمات',
     'tva_label_reduced' => 'الضريبة المخفضة',
 
-
     // Profondeur comptable (issue #5422)
     'chart_system_account_not_deletable' => 'لا يمكن حذف الحسابات النظامية (المجهزة) — يمكن تعطيلها إذا لزم الأمر.',
     'chart_account_has_entries' => 'هذا الحساب يحمل قيوداً في اليومية ولا يمكن حذفه.',
@@ -125,6 +124,3 @@ return [
     'lettering_invalid' => 'تسوية غير صالحة: يجب أن تستهدف القيود نفس الحساب.',
     'lettering_already_used' => 'قيد واحد أو أكثر مسوّى بالفعل برمز آخر.',
 ];
-
-
-

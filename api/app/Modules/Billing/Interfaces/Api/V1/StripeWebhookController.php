@@ -37,6 +37,7 @@ class StripeWebhookController extends Controller
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature', '');
 
+        /** @var array<string, mixed> $event */
         $event = $this->stripeService->verifyWebhookSignature($payload, $sigHeader);
 
         if (! $event) {
@@ -60,7 +61,7 @@ class StripeWebhookController extends Controller
         try {
             $this->stripeService->handleEvent($event);
 
-            $this->registry->complete('stripe', $eventId, 200, json_encode(['received' => true]));
+            $this->registry->complete('stripe', $eventId, 200, json_encode(['received' => true]) ?: null);
 
             return new JsonResponse(['received' => true]);
         } catch (\Throwable $e) {

@@ -38,8 +38,7 @@ class PayrollPaymentOrderService
     /**
      * Prépare un ordre de virement pour un run validé.
      *
-     * @param  array<string, mixed>|null  $companyBank  coordonnées banque entreprise
-     *                                                  (metadata.bank.*), cf. BankExportGenerator
+     * @param  array{iban: string|null, bic: string|null}|array{name: string, iban: string|null, bic: string|null}|null  $companyBank  coordonnées banque entreprise (metadata.bank.*), cf. BankExportGenerator
      */
     public function prepare(
         PayrollRun $run,
@@ -98,7 +97,7 @@ class PayrollPaymentOrderService
                 'payment_order_id' => $order->id,
                 'employee_id' => $slip->employee_id,
                 'net_amount' => (float) $slip->net_salary,
-                'iban' => $slip->employee?->iban ?? null,
+                'iban' => $slip->employee?->iban,
                 'created_at' => now(),
                 'updated_at' => now(),
             ])->all();
@@ -150,7 +149,7 @@ class PayrollPaymentOrderService
             'by' => $actor?->id,
         ]);
 
-        return $order->fresh();
+        return $order->fresh() ?? $order;
     }
 
     /** Rapproche l'ordre exécuté avec les paiements (marquage + audit). */
@@ -172,6 +171,6 @@ class PayrollPaymentOrderService
             'by' => $actor?->id,
         ]);
 
-        return $order->fresh();
+        return $order->fresh() ?? $order;
     }
 }

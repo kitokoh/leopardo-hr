@@ -39,7 +39,7 @@ final class TotpService
         }
 
         if ($this->google2fa() !== null) {
-            return $this->google2fa()->verifyKey($secret, $code);
+            return (bool) $this->google2fa()->verifyKey($secret, $code);
         }
 
         $normalizedCode = preg_replace('/\D+/', '', $code) ?? '';
@@ -90,7 +90,8 @@ final class TotpService
         $hash = hash_hmac('sha1', $binaryCounter, $key, true);
         $offset = ord(substr($hash, -1)) & 0x0F;
         $chunk = substr($hash, $offset, 4);
-        $value = unpack('N', $chunk)[1] & 0x7FFFFFFF;
+        $unpacked = unpack('N', $chunk);
+        $value = is_array($unpacked) ? ($unpacked[1] & 0x7FFFFFFF) : 0;
 
         return str_pad((string) ($value % 1000000), 6, '0', STR_PAD_LEFT);
     }
@@ -107,7 +108,7 @@ final class TotpService
         $encoded = '';
         foreach (str_split($bits, 5) as $chunk) {
             $chunk = str_pad($chunk, 5, '0', STR_PAD_RIGHT);
-            $encoded .= $alphabet[bindec($chunk)];
+            $encoded .= $alphabet[(int) bindec($chunk)];
         }
 
         return $encoded;
@@ -133,7 +134,7 @@ final class TotpService
                 continue;
             }
 
-            $decoded .= chr(bindec($chunk));
+            $decoded .= chr((int) bindec($chunk));
         }
 
         return $decoded;

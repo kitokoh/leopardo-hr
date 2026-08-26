@@ -12,6 +12,7 @@ use App\Exceptions\CompanyNotFoundException;
 use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\Schema;
 readonly class AuthService
 {
     /**
-     * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string}
+     * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string, tenant_schema: ?string}
      */
     public function login(string $email, string $password, ?string $deviceName = null): array
     {
@@ -119,15 +120,15 @@ readonly class AuthService
             $lockedUntil = null;
             if (is_string($lockedRaw) && $lockedRaw !== '') {
                 try {
-                    $lockedUntil = \Illuminate\Support\Carbon::parse($lockedRaw);
+                    $lockedUntil = Carbon::parse($lockedRaw);
                 } catch (\Throwable) {
                     $lockedUntil = null;
                 }
             } elseif ($lockedRaw instanceof \DateTimeInterface) {
-                $lockedUntil = \Illuminate\Support\Carbon::instance($lockedRaw);
+                $lockedUntil = Carbon::instance($lockedRaw);
             }
             if ($this->supportsLoginLocking($employee)
-                && $lockedUntil instanceof \Illuminate\Support\Carbon
+                && $lockedUntil instanceof Carbon
                 && $lockedUntil->isFuture()) {
                 throw new AccountLockedException($lockedUntil);
             }

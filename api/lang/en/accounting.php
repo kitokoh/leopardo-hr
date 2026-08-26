@@ -75,13 +75,13 @@ return [
         'year_between' => 'The year must be between 2000 and 2100.',
     ],
 
-        'bank_file_required' => 'The CSV file is required.',
-        'bank_file_mimes' => 'The file must be CSV.',
-        'bank_period_required' => 'The statement period is required (YYYY-MM).',
-        'bank_period_format' => 'The period must use the YYYY-MM format.',
-        'bank_reference_required' => 'The import reference is required.',
-        'bank_payment_required' => 'The payment to reconcile is required.',
-        'bank_payment_exists' => 'The selected payment does not exist.',
+    'bank_file_required' => 'The CSV file is required.',
+    'bank_file_mimes' => 'The file must be CSV.',
+    'bank_period_required' => 'The statement period is required (YYYY-MM).',
+    'bank_period_format' => 'The period must use the YYYY-MM format.',
+    'bank_reference_required' => 'The import reference is required.',
+    'bank_payment_required' => 'The payment to reconcile is required.',
+    'bank_payment_exists' => 'The selected payment does not exist.',
     'errors' => [
         'gateway_checkout_failed' => 'The payment gateway is temporarily unavailable. Please try again later.',
         'payment_amount_positive' => 'The payment amount must be strictly positive.',
@@ -115,7 +115,6 @@ return [
     'tva_label_gst' => 'GST',
     'tva_label_reduced' => 'Reduced VAT',
 
-
     // Profondeur comptable (issue #5422)
     'chart_system_account_not_deletable' => 'System accounts (provisioned) cannot be deleted — deactivate them if needed.',
     'chart_account_has_entries' => 'This account carries journal entries and cannot be deleted.',
@@ -125,6 +124,3 @@ return [
     'lettering_invalid' => 'Invalid lettering: entries must target the same account.',
     'lettering_already_used' => 'One or more entries are already lettered with another code.',
 ];
-
-
-

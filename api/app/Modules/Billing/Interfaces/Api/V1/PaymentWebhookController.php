@@ -22,7 +22,7 @@ class PaymentWebhookController extends Controller
         $payload = $request->getContent();
         $sigHeader = $request->header('X-Chargily-Signature', '');
 
-        $chargilyService = new ChargilyService();
+        $chargilyService = new ChargilyService;
         $data = $chargilyService->verifyWebhookSignature($payload, $sigHeader);
 
         if ($data === null) {
@@ -84,7 +84,7 @@ class PaymentWebhookController extends Controller
                 }
             }
 
-            $this->registry->complete('chargily', $eventId, 200, json_encode(['received' => true]));
+            $this->registry->complete('chargily', $eventId, 200, json_encode(['received' => true]) ?: null);
 
             return new JsonResponse(['received' => true]);
         } catch (\Throwable $e) {

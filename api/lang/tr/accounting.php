@@ -75,13 +75,13 @@ return [
         'year_between' => 'Yıl 2000 ile 2100 arasında olmalıdır.',
     ],
 
-        'bank_file_required' => 'CSV dosyası zorunludur.',
-        'bank_file_mimes' => 'Dosya CSV formatında olmalıdır.',
-        'bank_period_required' => 'Dönem zorunludur (YYYY-MM).',
-        'bank_period_format' => 'Dönem YYYY-MM formatında olmalıdır.',
-        'bank_reference_required' => 'İçe aktarma referansı zorunludur.',
-        'bank_payment_required' => 'Eşleştirilecek ödeme zorunludur.',
-        'bank_payment_exists' => 'Seçilen ödeme mevcut değil.',
+    'bank_file_required' => 'CSV dosyası zorunludur.',
+    'bank_file_mimes' => 'Dosya CSV formatında olmalıdır.',
+    'bank_period_required' => 'Dönem zorunludur (YYYY-MM).',
+    'bank_period_format' => 'Dönem YYYY-MM formatında olmalıdır.',
+    'bank_reference_required' => 'İçe aktarma referansı zorunludur.',
+    'bank_payment_required' => 'Eşleştirilecek ödeme zorunludur.',
+    'bank_payment_exists' => 'Seçilen ödeme mevcut değil.',
     'errors' => [
         'gateway_checkout_failed' => 'Ödeme sağlayıcısı geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
         'payment_amount_positive' => 'Ödeme tutarı kesinlikle pozitif olmalıdır.',
@@ -115,7 +115,6 @@ return [
     'tva_label_gst' => 'GST',
     'tva_label_reduced' => 'İndirimli KDV',
 
-
     // Profondeur comptable (issue #5422)
     'chart_system_account_not_deletable' => 'Sistem hesapları (sağlanan) silinemez — gerekirse devre dışı bırakın.',
     'chart_account_has_entries' => 'Bu hesap yevmiye kayıtları taşıyor ve silinemez.',
@@ -125,6 +124,3 @@ return [
     'lettering_invalid' => 'Geçersiz mutabakat: kayıtlar aynı hesabı hedeflemelidir.',
     'lettering_already_used' => 'Bir veya daha fazla kayıt başka bir kodla mutabık kılınmış.',
 ];
-
-
-
