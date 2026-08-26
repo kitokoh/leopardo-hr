@@ -162,7 +162,8 @@ class SSOController extends Controller
         }
 
         try {
-            $result = $this->oidcFlowService->complete($companyId, $tokenData);
+            // #5579 : cookies transmis pour honorer l'appareil de confiance 2FA.
+            $result = $this->oidcFlowService->complete($companyId, $tokenData, $request->cookies->all());
 
             return response()->json([
                 'data' => $result,

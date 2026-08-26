@@ -136,4 +136,43 @@ class GoogleAuthGlobalLookupTest extends TestCase
         // Verify no employee was silently created
         $this->assertEquals(0, Employee::withoutGlobalScopes()->where('email', 'nobody@unknown.example')->count());
     }
+    public function test_google_token_login_enrolled_2fa_requires_challenge(): void
+    {
+        // #5579 — le flux token mobile ne délivre pas de token à un compte 2FA
+        // enrôlé : challenge TOTP uniquement (même gate que le callback).
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'DZ']);
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'email' => '2fa-token@example.com',
+            'role' => 'employee',
+            'status' => 'active',
+            'two_fa_secret' => (new \App\Core\Auth\Infrastructure\Services\TotpService())->generateSecret(),
+            'two_fa_enabled_at' => now(),
+        ]);
+
+        $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
+        $abstractUser->shouldReceive('getEmail')->andReturn('2fa-token@example.com');
+        $abstractUser->shouldReceive('getName')->andReturn('TwoFA User');
+        $abstractUser->shouldReceive('offsetGet')->with('email_verified')->andReturn(true);
+
+        $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
+        $provider->shouldReceive('stateless')->once()->andReturn($provider);
+        $provider->shouldReceive('userFromToken')->once()->with('2fa-token')->andReturn($abstractUser);
+
+        Socialite::shouldReceive('driver')->with('google')->once()->andReturn($provider);
+
+        $response = $this->postJson('/api/v1/auth/google/token', [
+            'access_token' => '2fa-token',
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('mfa_challenge', true)
+            ->assertJsonStructure(['mfa_challenge_token', 'mfa_challenge_expires_in'])
+            ->assertJsonMissingPath('token');
+
+        $this->assertSame(0, $employee->tokens()->count());
+    }
+
 }

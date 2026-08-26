@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\CompanySetting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -168,6 +169,111 @@ class SSOOidcFlowTest extends TestCase
         // message d'exception brut — le détail (état inconnu/expiré/consommé)
         // reste en logs pour ne pas fuiter d'information sur un endpoint public.
         $this->assertSame('OIDC_CALLBACK_FAILED', $response->json('error'));
+    }
+
+    public function test_oidc_callback_enrolled_2fa_requires_challenge(): void
+    {
+        // #5579 — un employé 2FA enrôlé ne reçoit PAS de token via OIDC :
+        // challenge TOTP (data.mfa_challenge) à résoudre via /auth/2fa/verify.
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $employee = $this->seedEmployeeForSso();
+        $employee->forceFill([
+            'two_fa_secret' => 'JBSWY3DPEHPK3PXP',
+            'two_fa_enabled_at' => now(),
+        ])->save();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $idToken = $this->signIdToken($privateKey, $nonce);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
+            ->assertOk()
+            ->assertJsonPath('data.mfa_challenge', true)
+            ->assertJsonStructure(['data' => ['mfa_challenge_token', 'mfa_challenge_expires_in']])
+            ->assertJsonMissingPath('data.token');
+
+        // Le token créé par loginViaEmail a été révoqué : aucun token persistant.
+        $this->assertSame(0, $employee->tokens()->count());
+    }
+
+
+    public function test_oidc_callback_policy_mfa_required_blocks(): void
+    {
+        // #5579 — politique tenant mfa_required_roles (rôle sensible) + 2FA non
+        // activée → le flux OIDC bloque (403 TWO_FACTOR_REQUIRED), aucun token.
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $employee = $this->seedEmployeeForSso();
+        $employee->forceFill(['role' => 'manager', 'manager_role' => 'principal'])->save();
+
+        CompanySetting::query()->create([
+            'key' => 'mfa_required_roles',
+            'company_id' => $this->company->id,
+            'value' => 'rh,principal',
+            'value_type' => 'string',
+        ]);
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $idToken = $this->signIdToken($privateKey, $nonce);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
+            ->assertStatus(403)
+            ->assertJsonPath('error', 'TWO_FACTOR_REQUIRED');
+
+        $this->assertSame(0, $employee->tokens()->count());
+    }
+
+
+    public function test_oidc_callback_remember_device_cookie_skips_challenge(): void
+    {
+        // #5579 — appareil de confiance (cookie HMAC valide) : le challenge est
+        // sauté, le token est délivré — parité avec le login classique.
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $employee = $this->seedEmployeeForSso();
+        $employee->forceFill([
+            'two_fa_secret' => 'JBSWY3DPEHPK3PXP',
+            'two_fa_enabled_at' => now(),
+        ])->save();
+
+        $remember = app(\App\Core\Auth\Infrastructure\Services\TwoFactorAuthService::class)
+            ->rememberCookieValue($employee);
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $idToken = $this->signIdToken($privateKey, $nonce);
+
+        $this->withCookie('mfa_remember_'.$employee->id, $remember)
+            ->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
+            ->assertOk()
+            ->assertJsonMissingPath('data.mfa_challenge')
+            ->assertJsonPath('data.employee.email', 'sso.employee@example.com');
     }
 
     public function test_callback_rejects_bad_signature(): void

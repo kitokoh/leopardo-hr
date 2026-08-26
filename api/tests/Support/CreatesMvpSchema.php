@@ -253,6 +253,11 @@ trait CreatesMvpSchema
             $table->string('phone', 30)->nullable();
             $table->string('personal_phone', 30)->nullable();
             $table->string('password_hash', 255);
+            // #5436 : 2FA/TOTP comptes entreprise (miroir migration tenant
+            // 2026_08_25_000006_5454_add_two_fa_to_employees_table).
+            $table->string('two_fa_secret')->nullable();
+            $table->timestamp('two_fa_enabled_at')->nullable();
+            $table->json('two_fa_recovery_codes')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->string('place_of_birth', 120)->nullable();
             $table->char('gender', 1)->nullable();

@@ -53,46 +53,34 @@ class AuthController extends Controller
 
         $employee = $result['employee'];
 
-        // #5436 : 2FA — le token vient d'être créé par AuthService ; s'il ne
-        // doit pas être délivré (challenge ou politique), on le révoque.
-        if ($employee->two_fa_enabled_at !== null) {
-            // Appareil de confiance (cookie signé) : pas de challenge.
-            $expected = $this->twoFactorService->rememberCookieValue($employee);
-            $provided = $request->cookie('mfa_remember_'.$employee->id);
-            if (is_string($provided) && hash_equals($expected, $provided)) {
-                return (new EmployeeResource($employee))
-                    ->additional([
-                        'token' => $result['token'],
-                        'token_type' => $result['token_type'],
-                        'token_expires_at' => $result['token_expires_at'],
-                    ])
-                    ->response();
-            }
-
+        // #5436/#5579 : 2FA — le token vient d'être créé par AuthService ; la
+        // garde factorisée (enforceLoginPolicy) décide s'il doit être délivré :
+        // challenge TOTP (compte enrôlé) ou blocage (politique tenant
+        // mfa_required_roles). Même gate sur les 4 chemins d'authentification.
+        try {
+            $gate = $this->twoFactorService->enforceLoginPolicy(
+                $employee,
+                $result['tenant_schema'] ?? null,
+                $request->validated('device_name'),
+                $request->cookie('mfa_remember_'.$employee->id),
+            );
+        } catch (TwoFactorException $e) {
+            // Le token créé par LoginAction ne doit pas survivre à un blocage.
             $employee->tokens()->latest('id')->first()?->delete();
 
-            $deviceName = $request->validated('device_name');
+            throw $e;
+        }
 
-            $challenge = $this->twoFactorService->issueChallenge([
-                'employee_id' => $employee->id,
-                'company_id' => (string) $employee->company_id,
-                'tenant_schema' => $result['tenant_schema'],
-                'email' => (string) $employee->email,
-                'device_name' => is_string($deviceName) ? $deviceName : null,
-            ]);
+        if ($gate !== null) {
+            // Token révoqué tant que le challenge n'est pas résolu
+            // (POST /auth/2fa/verify avec le token de challenge).
+            $employee->tokens()->latest('id')->first()?->delete();
 
             return new JsonResponse([
                 'mfa_challenge' => true,
-                'mfa_challenge_token' => $challenge['token'],
-                'mfa_challenge_expires_in' => $challenge['expires_in'],
+                'mfa_challenge_token' => $gate['challenge']['token'],
+                'mfa_challenge_expires_in' => $gate['challenge']['expires_in'],
             ]);
-        }
-
-        // Politique tenant : rôle sensible + 2FA non activée → blocage.
-        if ($this->twoFactorService->requiresMfa($employee)) {
-            $employee->tokens()->latest('id')->first()?->delete();
-
-            throw TwoFactorException::required();
         }
 
         return (new EmployeeResource($employee))
@@ -324,6 +312,23 @@ class AuthController extends Controller
             }
         }
 
+        // #5579 : garde 2FA factorisée — compte enrôlé → challenge TOTP (pas
+        // de token), politique tenant mfa_required_roles → blocage 403.
+        $gate = $this->twoFactorService->enforceLoginPolicy(
+            $employee,
+            null,
+            null,
+            $request->cookie('mfa_remember_'.$employee->id),
+        );
+
+        if ($gate !== null) {
+            return new JsonResponse([
+                'mfa_challenge' => true,
+                'mfa_challenge_token' => $gate['challenge']['token'],
+                'mfa_challenge_expires_in' => $gate['challenge']['expires_in'],
+            ]);
+        }
+
         $token = $employee->createToken('google-auth');
 
         return (new EmployeeResource($employee))
@@ -369,6 +374,23 @@ class AuthController extends Controller
             if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
                 throw new AccountSuspendedException;
             }
+        }
+
+        // #5579 : garde 2FA factorisée — même gate que le callback (challenge
+        // TOTP si enrôlé, blocage 403 si politique tenant non satisfaite).
+        $gate = $this->twoFactorService->enforceLoginPolicy(
+            $employee,
+            null,
+            $validated['device_name'] ?? null,
+            $request->cookie('mfa_remember_'.$employee->id),
+        );
+
+        if ($gate !== null) {
+            return new JsonResponse([
+                'mfa_challenge' => true,
+                'mfa_challenge_token' => $gate['challenge']['token'],
+                'mfa_challenge_expires_in' => $gate['challenge']['expires_in'],
+            ]);
         }
 
         $tokenName = $validated['device_name'] ?? 'google-mobile';

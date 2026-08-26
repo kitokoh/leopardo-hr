@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services\SSO;
 
+use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Infrastructure\Services\AuthService;
+use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
 use App\Rules\NotPrivateUrl;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -30,6 +32,7 @@ final class OidcFlowService
         private readonly SSOService $ssoService,
         private readonly OidcIdTokenValidator $idTokenValidator,
         private readonly AuthService $authService,
+        private readonly TwoFactorAuthService $twoFactorAuthService,
     ) {}
 
     /**
@@ -66,9 +69,11 @@ final class OidcFlowService
 
     /**
      * @param  array<string, mixed>  $callbackData  code + state (+ id_token direct optionnel)
-     * @return array{employee: array<string, mixed>, token: string, token_type: string, token_expires_at: ?string}
+     * @param  array<string, mixed>|null  $cookies  cookies de la requête (cookie appareil de
+     *                                              confiance 2FA `mfa_remember_{id}`, #5579)
+     * @return array{employee: array<string, mixed>, token?: string, token_type?: string, token_expires_at?: ?string, mfa_challenge?: true, mfa_challenge_token?: string, mfa_challenge_expires_in?: int}
      */
-    public function complete(string $companyId, array $callbackData): array
+    public function complete(string $companyId, array $callbackData, ?array $cookies = null): array
     {
         $config = $this->oidcConfig($companyId);
 
@@ -108,6 +113,46 @@ final class OidcFlowService
         $employee = $result['employee'];
         if ((string) $employee->company_id !== $companyId) {
             throw new \RuntimeException('SSO_TENANT_MISMATCH: l\'email SSO appartient à une autre entreprise.');
+        }
+
+        // #5579 : garde 2FA factorisée (même gate que login()/Google) — un
+        // compte enrôlé exige un challenge TOTP post-SSO, une politique tenant
+        // mfa_required_roles non satisfaite bloque. Le token créé par
+        // loginViaEmail est révoqué dans les deux cas.
+        $rememberCookie = null;
+        if (is_array($cookies) && isset($cookies['mfa_remember_'.$employee->id]) && is_string($cookies['mfa_remember_'.$employee->id])) {
+            $rememberCookie = $cookies['mfa_remember_'.$employee->id];
+        }
+
+        try {
+            $gate = $this->twoFactorAuthService->enforceLoginPolicy(
+                $employee,
+                $result['tenant_schema'] ?? null,
+                'sso-oidc',
+                $rememberCookie,
+            );
+        } catch (TwoFactorException $e) {
+            $employee->tokens()->latest('id')->first()?->delete();
+
+            throw $e;
+        }
+
+        if ($gate !== null) {
+            $employee->tokens()->latest('id')->first()?->delete();
+
+            return [
+                'employee' => [
+                    'id' => $employee->id,
+                    'first_name' => $employee->first_name,
+                    'last_name' => $employee->last_name,
+                    'email' => $employee->email,
+                    'role' => $employee->role,
+                    'manager_role' => $employee->manager_role,
+                ],
+                'mfa_challenge' => true,
+                'mfa_challenge_token' => $gate['challenge']['token'],
+                'mfa_challenge_expires_in' => $gate['challenge']['expires_in'],
+            ];
         }
 
         return [

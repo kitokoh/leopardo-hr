@@ -3,6 +3,9 @@
 namespace Tests\Feature;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\TotpService;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\CompanySetting;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use Tests\RefreshTenantDatabase;
@@ -118,6 +121,66 @@ class AuthGoogleSignInTest extends TestCase
             ->getJson('/api/v1/auth/google/callback?state=valid-state');
 
         $response->assertStatus(403);
+    }
+
+    public function test_google_callback_enrolled_2fa_requires_challenge(): void
+    {
+        // #5579 — un employé ayant activé la 2FA ne reçoit PAS de token via le
+        // callback Google : challenge TOTP uniquement (POST /auth/2fa/verify).
+        $this->mockGoogleUser('2fa-google@example.com');
+
+        $company = Company::factory()->create(['country' => 'DZ']);
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'email' => '2fa-google@example.com',
+            'password_hash' => Hash::make('secret1234'),
+            'role' => 'ordinary',
+            'status' => 'active',
+            'two_fa_secret' => (new TotpService())->generateSecret(),
+            'two_fa_enabled_at' => now(),
+        ]);
+
+        $response = $this->withSession(['google_oauth_state' => 'valid-state'])
+            ->getJson('/api/v1/auth/google/callback?state=valid-state');
+
+        $response->assertOk()
+            ->assertJsonPath('mfa_challenge', true)
+            ->assertJsonStructure(['mfa_challenge_token', 'mfa_challenge_expires_in'])
+            ->assertJsonMissingPath('token');
+
+        // Aucun token Sanctum émis pour l'employé.
+        $this->assertSame(0, $employee->tokens()->count());
+    }
+
+
+    public function test_google_callback_policy_mfa_required_blocks(): void
+    {
+        // #5579 — politique tenant mfa_required_roles (rôle sensible) + 2FA
+        // non activée → le flux Google bloque, comme le login classique.
+        $this->mockGoogleUser('mfa-policy-google@example.com');
+
+        $company = Company::factory()->create(['country' => 'DZ']);
+        Employee::factory()->create([
+            'company_id' => $company->id,
+            'email' => 'mfa-policy-google@example.com',
+            'password_hash' => Hash::make('secret1234'),
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ]);
+        CompanySetting::query()->create([
+            'key' => 'mfa_required_roles',
+            'company_id' => $company->id,
+            'value' => 'rh,principal',
+            'value_type' => 'string',
+        ]);
+
+        $response = $this->withSession(['google_oauth_state' => 'valid-state'])
+            ->getJson('/api/v1/auth/google/callback?state=valid-state');
+
+        $response->assertStatus(403)
+            ->assertJsonPath('error', 'TWO_FACTOR_REQUIRED');
     }
 
     public function test_google_redirect_returns_503_when_oauth_not_configured(): void

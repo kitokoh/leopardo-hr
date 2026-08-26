@@ -126,6 +126,57 @@ final class TwoFactorAuthService
     }
 
     /**
+     * #5579 — garde 2FA commune à TOUS les chemins d'authentification
+     * (login, Google callback/token, OIDC). Auparavant seule `login()`
+     * consultait `two_fa_enabled_at` / `requiresMfa()` : les flux SSO
+     * émettaient un token Sanctum sans jamais exiger de challenge TOTP.
+     *
+     * - Compte enrôlé (`two_fa_enabled_at`) → challenge TOTP émis, token
+     *   NON délivré — sauf appareil de confiance (cookie HMAC valide) ;
+     * - Politique tenant `mfa_required_roles` + 2FA non activée →
+     *   `TwoFactorException::required()` (blocage 403).
+     *
+     * Retourne `null` quand le token peut être délivré, sinon la structure
+     * challenge à renvoyer au client (POST /auth/2fa/verify).
+     *
+     * @param  string|null  $providedRememberCookie  valeur du cookie
+     *                                               `mfa_remember_{id}` portée par la requête
+     * @return array{challenge: array{token: string, expires_in: int}}|null
+     *
+     * @throws TwoFactorException
+     */
+    public function enforceLoginPolicy(
+        Employee $employee,
+        ?string $tenantSchema = null,
+        ?string $deviceName = null,
+        ?string $providedRememberCookie = null,
+    ): ?array {
+        if ($employee->two_fa_enabled_at !== null) {
+            $expected = $this->rememberCookieValue($employee);
+
+            if (is_string($providedRememberCookie) && hash_equals($expected, $providedRememberCookie)) {
+                return null;
+            }
+
+            return [
+                'challenge' => $this->issueChallenge([
+                    'employee_id' => $employee->id,
+                    'company_id' => (string) $employee->company_id,
+                    'tenant_schema' => $tenantSchema,
+                    'email' => (string) $employee->email,
+                    'device_name' => $deviceName,
+                ]),
+            ];
+        }
+
+        if ($this->requiresMfa($employee)) {
+            throw TwoFactorException::required();
+        }
+
+        return null;
+    }
+
+    /**
      * La politique tenant impose-t-elle la 2FA pour ce compte ?
      */
     public function requiresMfa(Employee $employee): bool
