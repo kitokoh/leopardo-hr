@@ -51,12 +51,7 @@ Route::prefix('api/v1/attendance')
 
             // Préférence d'un employé (lecture manager)
             Route::get('/employees/{employeeId}/preference', [AttendanceModeController::class, 'employeePreference'])->whereNumber('employeeId');
-
-            // ── Fermeture de journée (#5265) — verrouillage + validation ────────
-            Route::get('/day-closures', [AttendanceDayClosureController::class, 'index']);
-            Route::post('/day-closures', [AttendanceDayClosureController::class, 'store']);
-            Route::post('/day-closures/{id}/validate', [AttendanceDayClosureController::class, 'markValidated'])->whereNumber('id');
-            Route::delete('/day-closures/{id}', [AttendanceDayClosureController::class, 'destroy'])->whereNumber('id');
+            // Note #5577 : le bloc day-closures était copié-collé ici — doublon supprimé.
         });
 
         // ── Config mode entreprise (modification — principal uniquement) ──────
