@@ -864,9 +864,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final currentMode = ref.watch(themeModeProvider);
 
     final options = [
-      (ThemeMode.system, Icons.brightness_auto_outlined, 'Automatique (système)'),
-      (ThemeMode.light, Icons.light_mode_outlined, 'Clair'),
-      (ThemeMode.dark, Icons.dark_mode_outlined, 'Sombre'),
+      (ThemeMode.system, Icons.brightness_auto_outlined, context.l10n.settingsThemeSystem),
+      (ThemeMode.light, Icons.light_mode_outlined, context.l10n.settingsThemeLight),
+      (ThemeMode.dark, Icons.dark_mode_outlined, context.l10n.settingsThemeDark),
     ];
 
     return Container(
@@ -876,12 +876,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thème de l\'application',
+            context.l10n.settingsThemeTitle,
             style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
           ),
           const SizedBox(height: 8),
           Text(
-            'Choisissez le thème affiché quelle que soit la configuration système.',
+            context.l10n.settingsThemeHint,
             style: AppTypography.bodySmall
                 .copyWith(color: MobileSurface.secondary),
           ),

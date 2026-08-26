@@ -7669,6 +7669,206 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsYes => 'Oui';
 
   @override
+  String get commonBack => 'Retour';
+
+  @override
+  String get commonSave => 'Enregistrer';
+
+  @override
+  String get companiesActiveImmediatelyHint =>
+      'Le changement est appliqué immédiatement.';
+
+  @override
+  String get companiesCompanyCreated => 'Société créée';
+
+  @override
+  String get companiesCompanyEmail => 'Email société';
+
+  @override
+  String get companiesCreateClient => 'Créer un client';
+
+  @override
+  String get companiesCreating => 'Création…';
+
+  @override
+  String get companiesEmpty => 'Aucune société';
+
+  @override
+  String get companiesNewClient => 'Nouveau client';
+
+  @override
+  String get companiesProvisioning => 'Provisionnement';
+
+  @override
+  String get companiesRequiredField => 'Champ obligatoire';
+
+  @override
+  String get companiesTenantsPlatform => 'Plateforme de tenancy';
+
+  @override
+  String get companiesTrialHint => 'Période d\'essai';
+
+  @override
+  String get companydetailActivateClient => 'Activer le client';
+
+  @override
+  String get companydetailActiveEmployees => 'Employés actifs';
+
+  @override
+  String get companydetailActiveModules => 'Modules actifs';
+
+  @override
+  String get companydetailAnomaliesCritical => 'Anomalies critiques';
+
+  @override
+  String get companydetailChoosePlan => 'Choisir un plan';
+
+  @override
+  String get companydetailClientActivated => 'Client activé';
+
+  @override
+  String get companydetailClientFile => 'Dossier client';
+
+  @override
+  String get companydetailClientReference => 'Référence client';
+
+  @override
+  String get companydetailCopyId => 'Copier l\'ID';
+
+  @override
+  String get companydetailCoreModuleAlwaysActive =>
+      'Module cœur toujours actif';
+
+  @override
+  String get companydetailEditModules => 'Modifier les modules';
+
+  @override
+  String get companydetailEditSubscription => 'Modifier l\'abonnement';
+
+  @override
+  String get companydetailEmployeeLimit => 'Limite d\'employés';
+
+  @override
+  String get companydetailLoadingPlans => 'Chargement des plans…';
+
+  @override
+  String get companydetailModulesUpdated => 'Modules mis à jour';
+
+  @override
+  String get companydetailMonthlyPrice => 'Prix mensuel';
+
+  @override
+  String get companydetailNextActions => 'Prochaines actions';
+
+  @override
+  String get companydetailNoUrgentActions => 'Aucune action urgente';
+
+  @override
+  String get companydetailOptionalInternalNote => 'Note interne facultative';
+
+  @override
+  String get companydetailPlan => 'Plan';
+
+  @override
+  String get companydetailPlanNotFound => 'Plan introuvable';
+
+  @override
+  String get companydetailProductAdoption => 'Adoption produit';
+
+  @override
+  String get companydetailRecommendedActionHint => 'Action recommandée';
+
+  @override
+  String get companydetailSaveModules => 'Enregistrer les modules';
+
+  @override
+  String get companydetailSaving => 'Enregistrement…';
+
+  @override
+  String get companydetailStatus => 'Statut';
+
+  @override
+  String get companydetailSubscription => 'Abonnement';
+
+  @override
+  String get companydetailSubscriptionEnd => 'Fin d\'abonnement';
+
+  @override
+  String get companydetailSubscriptionUpdated => 'Abonnement mis à jour';
+
+  @override
+  String get companydetailTenantIdHint => 'ID de tenancy';
+
+  @override
+  String get companydetailUndefined => 'Non défini';
+
+  @override
+  String get companydetailUnlimited => 'Illimité';
+
+  @override
+  String get companyrequestsApprovedToast => 'Demande approuvée';
+
+  @override
+  String get companyrequestsRejectedToast => 'Demande rejetée';
+
+  @override
+  String get companyrequestsValidationSuperadmin => 'Réservé au super-admin';
+
+  @override
+  String get dashboardActiveLabel => 'Actifs';
+
+  @override
+  String get dashboardClientCompanies => 'Sociétés clientes';
+
+  @override
+  String get dashboardClientCompaniesHint =>
+      'Sociétés actives sur la plateforme';
+
+  @override
+  String get dashboardClientRequestsHint => 'Demandes en attente';
+
+  @override
+  String get dashboardCreateCompany => 'Créer une société';
+
+  @override
+  String get dashboardCreateCompanyHint => 'Provisionner une nouvelle société';
+
+  @override
+  String get dashboardEdgeNodes => 'Nœuds Edge';
+
+  @override
+  String get dashboardEdgeNodesHint => 'Nœuds actifs sur le réseau';
+
+  @override
+  String get dashboardExecutiveView => 'Vue direction';
+
+  @override
+  String get dashboardLoadingCockpit => 'Chargement du cockpit…';
+
+  @override
+  String get dashboardPlatformActions => 'Actions plateforme';
+
+  @override
+  String get dashboardPlatformAdministration => 'Administration plateforme';
+
+  @override
+  String get dashboardSuperAdmin => 'Super-admin';
+
+  @override
+  String get dashboardSupportClient => 'Support client';
+
+  @override
+  String get dashboardTicketsHint => 'Tickets de support';
+
+  @override
+  String get dashboardTrials => 'Essais';
+
+  @override
+  String companydetailPlanWithPrice(Object name, Object price) {
+    return '$name — $price €/mois';
+  }
+
+  @override
   String get twoFaTitle => 'Sécurité 2FA';
 
   @override
