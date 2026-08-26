@@ -2,7 +2,11 @@
   <Teleport to="body">
     <div
       v-if="visible"
-      class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      ref="trapRef"
+      class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm outline-none"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Raccourcis Clavier"
       @click.self="visible = false"
       @keydown.escape="visible = false"
     >
@@ -43,6 +47,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 
 const visible = ref(false)
+const { containerRef: trapRef } = useFocusTrap(visible)
 
 const shortcuts = [
   { keys: 'Ctrl + D', description: 'Basculer mode sombre' },
