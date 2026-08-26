@@ -31,16 +31,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // Notifications — all authenticated employees
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread', [NotificationController::class, 'unread']);
-    // DEPRECIES (compat) : la convention canonique de marquage est
-    //   POST /notifications/read-all et PATCH /notifications/{id}/read
-    // definies dans routes/modules/rh.php (consommees par web + mobile,
-    // issue #2674 — un PR antérieur a tenté PUT et a été rejeté).
-    // Ces alias POST/PATCH restent actifs et testes (NotificationControllerTest),
-    // mais ne doivent plus etre utilises par les nouveaux clients.
-    // DEPRECATED (#4932) : doublons historiques — le contrat canonique est
-    // POST /notifications/read-all + PATCH /notifications/{id}/read
-    // (routes/modules/rh.php, #2674). Conservés pour compatibilité.
-    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead']);
+    // #5577 — le doublon historique `PATCH /notifications/{id}/read` (alias
+    // déprécié #4932, même action que la route canonique) a été SUPPRIMÉ :
+    // rh.php (chargé avant) déclarait déjà `PATCH /notifications/{notification}/read`
+    // avec whereNumber — le doublon était silencieusement inatteignable
+    // (premier enregistré = premier servi) et faisait échouer la garde
+    // check-duplicate-routes.sh. Le contrat canonique reste
+    // POST /notifications/read-all + PATCH /notifications/{id}/read (rh.php, #2674).
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead']);
 
     // Exports — managers only (principal, rh, comptable)
