@@ -54,19 +54,23 @@ class KioskController extends Controller
             'trusted_device_label' => ['nullable', 'string', 'max:120'],
         ]);
 
+        // Issue #5588 : le device_code est stocké haché (mutator SHA-256) —
+        // le code CLAIR n'existe que dans la réponse de création pour que
+        // l'opérateur puisse l'afficher sur la borne.
+        $plainCode = strtoupper(Str::random(10));
         $kiosk = AttendanceKiosk::query()->create([
             'company_id' => $company->id,
             'name' => $validated['name'],
             'location_label' => $validated['location_label'] ?? null,
             'biometric_mode' => $validated['biometric_mode'] ?? 'fingerprint',
             'trusted_device_label' => $validated['trusted_device_label'] ?? null,
-            'device_code' => strtoupper(Str::random(10)),
+            'device_code' => $plainCode,
             'sync_token_hash' => Hash::make($plainToken = Str::random(48)),
             'status' => 'active',
         ]);
 
         return new JsonResponse([
-            'data' => $this->serializeKiosk($kiosk) + [
+            'data' => ['device_code' => $plainCode] + $this->serializeKiosk($kiosk) + [
                 'sync_token' => $plainToken,
             ],
         ], 201);
@@ -515,7 +519,7 @@ class KioskController extends Controller
 
         try {
             $kiosk = AttendanceKiosk::query()
-                ->where('device_code', strtoupper($deviceCode))
+                ->where('device_code', AttendanceKiosk::hashDeviceCode($deviceCode))
                 ->where('status', 'active')
                 ->firstOrFail();
 

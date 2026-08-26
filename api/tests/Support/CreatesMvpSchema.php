@@ -321,7 +321,7 @@ trait CreatesMvpSchema
             } else {
                 $table->json('punch_meta')->nullable();
             }
-            $table->string('source_device_code', 40)->nullable();
+            $table->string('source_device_code', 64)->nullable();
             $table->string('external_event_id', 100)->nullable()->unique();
             $table->string('biometric_type', 20)->nullable();
             $table->boolean('synced_from_offline')->default(false);
@@ -390,7 +390,7 @@ trait CreatesMvpSchema
             $table->uuid('company_id')->index();
             $table->string('name', 100);
             $table->string('location_label', 120)->nullable();
-            $table->string('device_code', 40)->unique();
+            $table->string('device_code', 64)->unique();
             $table->string('sync_token_hash', 255)->nullable();
             $table->string('status', 20)->default('active');
             $table->string('biometric_mode', 30)->default('fingerprint');

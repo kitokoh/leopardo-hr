@@ -46,4 +46,21 @@ class AttendanceKiosk extends Model
         'last_seen_at' => 'datetime',
         'last_sync_at' => 'datetime',
     ];
+
+    /**
+     * Issue #5588 : le device_code n'est JAMAIS stocké en clair. SHA-256 hex
+     * déterministe (64 chars) — queryable par la borne qui présente le code
+     * dans l'URL (bcrypt ne l'est pas), même philosophie que les tokens
+     * ZKTeco (sync_token_hash). La comparaison est insensible à la casse :
+     * le code affiché par la borne est en MAJUSCULES.
+     */
+    public static function hashDeviceCode(string $deviceCode): string
+    {
+        return hash('sha256', strtoupper($deviceCode));
+    }
+
+    public function setDeviceCodeAttribute(string $value): void
+    {
+        $this->attributes['device_code'] = self::hashDeviceCode($value);
+    }
 }

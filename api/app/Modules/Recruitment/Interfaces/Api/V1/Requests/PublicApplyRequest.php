@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Recruitment\Interfaces\Api\V1\Requests;
 
+use App\Rules\NotPrivateUrl;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -25,7 +26,9 @@ class PublicApplyRequest extends FormRequest
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:20',
             'cover_letter' => 'nullable|string|max:5000',
-            'resume_url' => 'nullable|url|max:500',
+            // Issue #5588 : garde SSRF — un futur job de parsing CV ne
+            // devra jamais fetch un URL privé/réservé (pattern webhooks).
+            'resume_url' => ['nullable', 'url', 'max:500', new NotPrivateUrl],
             'resume' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'source' => 'nullable|in:website,linkedin,referral,agency,other',
         ];

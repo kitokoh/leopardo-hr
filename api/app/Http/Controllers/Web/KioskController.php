@@ -26,7 +26,7 @@ class KioskController extends Controller
         DB::statement('SET search_path TO shared_tenants,public');
 
         $kiosk = AttendanceKiosk::query()
-            ->where('device_code', strtoupper($deviceCode))
+            ->where('device_code', AttendanceKiosk::hashDeviceCode($deviceCode))
             ->where('status', 'active')
             ->firstOrFail();
 
@@ -62,7 +62,7 @@ class KioskController extends Controller
         DB::statement('SET search_path TO shared_tenants,public');
 
         $kiosk = AttendanceKiosk::query()
-            ->where('device_code', strtoupper($deviceCode))
+            ->where('device_code', AttendanceKiosk::hashDeviceCode($deviceCode))
             ->where('status', 'active')
             ->firstOrFail();
 

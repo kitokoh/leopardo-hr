@@ -196,6 +196,10 @@ class Employee extends Authenticatable implements HasApiTokensContract
 
     protected $hidden = [
         'password_hash',
+        // Issue #5588 : ne jamais sérialiser le secret TOTP ni les codes de
+        // récupération (SuperAdmin les masquait déjà ; Employee non).
+        'two_fa_secret',
+        'two_fa_recovery_codes',
     ];
 
     protected $casts = [

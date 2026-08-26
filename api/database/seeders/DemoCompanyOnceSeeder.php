@@ -168,7 +168,9 @@ class DemoCompanyOnceSeeder extends Seeder
                         'company_id' => $company->id,
                         'name' => 'Kiosque demo '.$company->slug,
                         'location_label' => 'Accueil demo',
-                        'device_code' => $deviceCode,
+                        // Issue #5588 : stocké haché (mutator du modèle bypassé
+                        // par l'insert brut — hash explicite).
+                        'device_code' => hash('sha256', strtoupper($deviceCode)),
                         'status' => 'active',
                         'biometric_mode' => 'fingerprint',
                         'trusted_device_label' => 'Tablette reception demo',

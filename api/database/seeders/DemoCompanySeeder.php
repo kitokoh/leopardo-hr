@@ -1139,7 +1139,10 @@ SQL);
                 'site_id' => $siteId,
                 'name' => $config['site_name'].' Kiosk',
                 'location_label' => $config['site_name'],
-                'device_code' => $deviceCode,
+                // Issue #5588 : stocké haché (même convention que le mutator
+                // du modèle — insertSharedRowsUsingExistingColumns bypass le
+                // modèle, donc hash explicite ici).
+                'device_code' => hash('sha256', strtoupper($deviceCode)),
                 'sync_token_hash' => Hash::make($deviceCode.'-demo-sync'),
                 'status' => 'active',
                 'biometric_mode' => 'fingerprint',

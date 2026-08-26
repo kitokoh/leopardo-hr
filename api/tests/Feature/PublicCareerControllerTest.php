@@ -221,6 +221,49 @@ class PublicCareerControllerTest extends TestCase
         ]);
     }
 
+    public function test_apply_rejects_private_resume_url(): void
+    {
+        // Issue #5588 : garde SSRF — resume_url ne doit jamais pointer vers
+        // une IP privée/réservée (metadata cloud, réseau interne...).
+        $company = Company::factory()->create();
+        $job = JobPosting::create([
+            'company_id' => $company->id,
+            'title' => 'Support Engineer',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $response = $this->postJson("/api/v1/public/careers/{$company->slug}/jobs/{$job->id}/apply", [
+            'first_name' => 'Nadia',
+            'last_name' => 'Candidate',
+            'email' => 'nadia-ssrf@example.com',
+            'resume_url' => 'http://169.254.169.254/latest/meta-data/iam/security-credentials/',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('resume_url');
+    }
+
+    public function test_apply_accepts_public_resume_url(): void
+    {
+        $company = Company::factory()->create();
+        $job = JobPosting::create([
+            'company_id' => $company->id,
+            'title' => 'Support Engineer',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $response = $this->postJson("/api/v1/public/careers/{$company->slug}/jobs/{$job->id}/apply", [
+            'first_name' => 'Nadia',
+            'last_name' => 'Candidate',
+            'email' => 'nadia-public@example.com',
+            'resume_url' => 'https://cdn.example.com/cv/nadia.pdf',
+        ]);
+
+        $response->assertCreated();
+    }
+
     public function test_it_cannot_apply_twice_with_same_email(): void
     {
         $company = Company::factory()->create();

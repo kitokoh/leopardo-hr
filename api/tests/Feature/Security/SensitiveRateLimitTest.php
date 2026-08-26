@@ -123,10 +123,13 @@ class SensitiveRateLimitTest extends TestCase
         config(['security.rate_limits.kiosk_punch_per_minute' => 2]);
 
         $company = Company::factory()->create();
+        $deviceCode = 'RATELIMIT01';
         $kiosk = AttendanceKiosk::query()->create([
             'company_id' => $company->id,
             'name' => 'Rate Limit Kiosk',
-            'device_code' => 'RATELIMIT01',
+            // Issue #5588 : stocké haché (mutator) — l'URL de la borne porte
+            // toujours le code CLAIR, c'est lui qu'il faut tester.
+            'device_code' => $deviceCode,
             'biometric_mode' => 'fingerprint',
             'sync_token_hash' => Hash::make('plain-token'),
             'status' => 'active',
@@ -134,8 +137,8 @@ class SensitiveRateLimitTest extends TestCase
 
         $payload = ['identifier' => 'unknown-employee', 'action' => 'check_in'];
 
-        $this->post('/kiosk/'.$kiosk->device_code.'/punch', $payload);
-        $this->post('/kiosk/'.$kiosk->device_code.'/punch', $payload);
-        $this->post('/kiosk/'.$kiosk->device_code.'/punch', $payload)->assertStatus(429);
+        $this->post('/kiosk/'.$deviceCode.'/punch', $payload);
+        $this->post('/kiosk/'.$deviceCode.'/punch', $payload);
+        $this->post('/kiosk/'.$deviceCode.'/punch', $payload)->assertStatus(429);
     }
 }

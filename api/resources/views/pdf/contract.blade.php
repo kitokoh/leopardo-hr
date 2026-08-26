@@ -37,7 +37,7 @@
 
     <div class="section">
         <div class="section-title">{{ __('pdf.contract_article1_title') }}</div>
-        <p>{!! __('pdf.contract_article1_body', ['start_date' => '<strong>'.\Carbon\Carbon::parse($contract->start_date)->format('d/m/Y').'</strong>', 'job_title' => '<strong>'.$contract->job_title.'</strong>']) !!}</p>
+        <p>{!! __('pdf.contract_article1_body', ['start_date' => '<strong>'.\Carbon\Carbon::parse($contract->start_date)->format('d/m/Y').'</strong>', 'job_title' => '<strong>'.e($contract->job_title).'</strong>']) !!}</p>
         @if($contract->end_date)
             <p>{!! __('pdf.contract_article1_fixed_term', ['end_date' => '<strong>'.\Carbon\Carbon::parse($contract->end_date)->format('d/m/Y').'</strong>']) !!}</p>
         @endif
@@ -45,12 +45,12 @@
 
     <div class="section">
         <div class="section-title">{{ __('pdf.contract_article2_title') }}</div>
-        <p>{!! __('pdf.contract_article2_body', ['amount' => '<strong>'.number_format($contract->base_salary, 2, ',', ' ').' '.($contract->currency ?? 'DZD').'</strong>', 'frequency' => $contract->salary_frequency ?? __('pdf.contract_frequency_monthly')]) !!}</p>
+        <p>{!! __('pdf.contract_article2_body', ['amount' => '<strong>'.number_format($contract->base_salary, 2, ',', ' ').' '.e($contract->currency ?? 'DZD').'</strong>', 'frequency' => e($contract->salary_frequency ?? __('pdf.contract_frequency_monthly'))]) !!}</p>
     </div>
 
     <div class="section">
         <div class="section-title">{{ __('pdf.contract_article3_title') }}</div>
-        <p>{!! __('pdf.contract_article3_body', ['hours' => '<strong>'.($contract->work_hours_per_week ?? '40').'</strong>']) !!}</p>
+        <p>{!! __('pdf.contract_article3_body', ['hours' => '<strong>'.e((string) ($contract->work_hours_per_week ?? '40')).'</strong>']) !!}</p>
     </div>
 
     @if (! empty($contract->clauses))
