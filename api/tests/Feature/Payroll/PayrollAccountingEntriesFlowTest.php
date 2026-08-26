@@ -47,6 +47,11 @@ class PayrollAccountingEntriesFlowTest extends TestCase
             'validated_at' => now(),
         ]);
 
+        // Miroir de PayrollClosingService::validateRh() : les BULLETINS sont
+        // validés atomiquement avec le run (journalLines filtre
+        // status='validated' — sinon 0 écritures, le test ne teste rien).
+        $run->paySlips()->update(['status' => 'validated']);
+
         AuditLog::create([
             'company_id' => $company->id,
             'user_id' => null,
@@ -206,7 +211,7 @@ class PayrollAccountingEntriesFlowTest extends TestCase
 
         // Run en statut calculated : la génération échoue (RuntimeException) mais
         // l'observer doit LOGGER sans propager (la validation ne casse pas).
-        Log::spy();
+        $logSpy = Log::spy();
 
         AuditLog::create([
             'company_id' => $company->id,
@@ -218,7 +223,9 @@ class PayrollAccountingEntriesFlowTest extends TestCase
             'new_values' => ['status' => 'validated'],
         ]);
 
-        Log::spy()->shouldHaveReceived('error')->once();
+        // NB : un 2e appel Log::spy() renvoie null en Laravel 12 (déjà mock)
+        // — le spy est capturé une fois et réutilisé.
+        $logSpy->shouldHaveReceived('error')->once();
     }
 
     // ── API ────────────────────────────────────────────────────────────────
