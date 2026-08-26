@@ -68,6 +68,8 @@ export type CopyTree = {
       googleNetwork: string;
       googleAuthFailed: string;
       googleNoAccount: string;
+      /** #5617 — CTA vers /signup pour un email Google sans compte */
+      googleNoAccountSignupCta: string;
     };
   };
   dashboard: {
@@ -97,6 +99,24 @@ export type CopyTree = {
     recent_activity: string;
     noNotifications: string;
     managePreferences: string;
+  };
+  /** #5612 — page de challenge 2FA */
+  twoFactor: {
+    challengeTitle: string;
+    challengeSubtitle: string;
+    codeLabel: string;
+    codePlaceholder: string;
+    recoveryCodeLabel: string;
+    recoveryCodePlaceholder: string;
+    useRecoveryCode: string;
+    useTotpCode: string;
+    rememberDevice: string;
+    submit: string;
+    submitting: string;
+    backToLogin: string;
+    invalidCode: string;
+    expiredChallenge: string;
+    genericError: string;
   };
   passwordReset: {
     title: string;
@@ -604,6 +624,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNetwork: 'Impossible de contacter Google. Vérifiez votre connexion et réessayez.',
         googleAuthFailed: 'Google a refusé la connexion. Veuillez réessayer.',
         googleNoAccount: 'Aucun compte Leopardo RH n’est associé à cet email Google. Demandez une invitation à votre administrateur.',
+        googleNoAccountSignupCta: 'Pas encore de compte ? Demander un accès d’essai →',
       },
     },
     dashboard: {
@@ -633,6 +654,23 @@ const copy: Record<AppLocale, CopyTree> = {
       recent_activity: 'Activité récente',
       noNotifications: 'Aucune notification récente.',
       managePreferences: 'Gérer mes préférences',
+    },
+    twoFactor: {
+      challengeTitle: 'Authentification à deux facteurs',
+      challengeSubtitle: "Saisissez le code à 6 chiffres généré par votre application d'authentification.",
+      codeLabel: 'Code à 6 chiffres',
+      codePlaceholder: '123456',
+      recoveryCodeLabel: 'Code de récupération',
+      recoveryCodePlaceholder: 'xxxxxxxx-xxxx',
+      useRecoveryCode: 'Utiliser un code de récupération',
+      useTotpCode: 'Utiliser le code de mon application',
+      rememberDevice: 'Se souvenir de cet appareil pendant 30 jours',
+      submit: 'Vérifier',
+      submitting: 'Vérification…',
+      backToLogin: 'Retour à la connexion',
+      invalidCode: 'Code invalide ou expiré. Réessayez.',
+      expiredChallenge: 'La session de vérification a expiré. Reconnectez-vous.',
+      genericError: 'Erreur lors de la vérification. Réessayez.',
     },
     passwordReset: {
       title: 'Mot de passe oublié',
@@ -1159,6 +1197,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNetwork: 'تعذر الوصول إلى Google. تحقق من اتصالك وحاول مرة أخرى.',
         googleAuthFailed: 'رفض Google تسجيل الدخول. حاول مرة أخرى.',
         googleNoAccount: 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
+        googleNoAccountSignupCta: 'ليس لديك حساب؟ طلب وصولاً تجريبيًا ←',
       },
     },
     dashboard: {
@@ -1188,6 +1227,23 @@ const copy: Record<AppLocale, CopyTree> = {
       recent_activity: 'النشاط الأخير',
       noNotifications: 'لا توجد إشعارات حديثة.',
       managePreferences: 'إدارة تفضيلاتي',
+    },
+    twoFactor: {
+      challengeTitle: 'المصادقة الثنائية',
+      challengeSubtitle: 'أدخل الرمز المكوَّن من 6 أرقام الذي تولّده تطبيق المصادقة لديك.',
+      codeLabel: 'رمز مكوَّن من 6 أرقام',
+      codePlaceholder: '123456',
+      recoveryCodeLabel: 'رمز الاسترداد',
+      recoveryCodePlaceholder: 'xxxxxxxx-xxxx',
+      useRecoveryCode: 'استخدام رمز الاسترداد',
+      useTotpCode: 'استخدام رمز تطبيق المصادقة',
+      rememberDevice: 'تذكر هذا الجهاز لمدة 30 يومًا',
+      submit: 'تحقق',
+      submitting: 'جارٍ التحقق…',
+      backToLogin: 'العودة إلى تسجيل الدخول',
+      invalidCode: 'الرمز غير صالح أو منتهي الصلاحية. أعد المحاولة.',
+      expiredChallenge: 'انتهت جلسة التحقق. أعد تسجيل الدخول.',
+      genericError: 'حدث خطأ أثناء التحقق. أعد المحاولة.',
     },
     passwordReset: {
       title: 'نسيت كلمة المرور؟',
@@ -1714,6 +1770,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNetwork: 'Google ile baglanti kurulamadi. Baglantinizi kontrol edip tekrar deneyin.',
         googleAuthFailed: 'Google girisini reddetti. Lutfen tekrar deneyin.',
         googleNoAccount: 'Bu Google e-postasiyla iliskili Leopardo RH hesabi yok. Yoneticinizden davet isteyin.',
+        googleNoAccountSignupCta: 'Hesabiniz yok mu? Deneme erisimi isteyin →',
       },
     },
     dashboard: {
@@ -1743,6 +1800,23 @@ const copy: Record<AppLocale, CopyTree> = {
       recent_activity: 'Son etkinlik',
       noNotifications: 'Yeni bildirim yok.',
       managePreferences: 'Tercihlerimi yönet',
+    },
+    twoFactor: {
+      challengeTitle: 'İki faktörlü kimlik doğrulama',
+      challengeSubtitle: 'Kimlik doğrulama uygulamanızın oluşturduğu 6 haneli kodu girin.',
+      codeLabel: '6 haneli kod',
+      codePlaceholder: '123456',
+      recoveryCodeLabel: 'Kurtarma kodu',
+      recoveryCodePlaceholder: 'xxxxxxxx-xxxx',
+      useRecoveryCode: 'Kurtarma kodu kullan',
+      useTotpCode: 'Uygulama kodumu kullan',
+      rememberDevice: 'Bu cihazı 30 gün boyunca hatırla',
+      submit: 'Doğrula',
+      submitting: 'Doğrulanıyor…',
+      backToLogin: 'Girişe geri dön',
+      invalidCode: 'Geçersiz veya süresi dolmuş kod. Tekrar deneyin.',
+      expiredChallenge: 'Doğrulama oturumu sona erdi. Yeniden giriş yapın.',
+      genericError: 'Doğrulama hatası. Tekrar deneyin.',
     },
     passwordReset: {
       title: 'Şifrenizi mi unuttunuz?',
@@ -2269,6 +2343,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNetwork: 'Could not reach Google. Check your connection and try again.',
         googleAuthFailed: 'Google refused the sign-in. Please try again.',
         googleNoAccount: 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
+        googleNoAccountSignupCta: 'No account yet? Request trial access →',
       },
     },
     dashboard: {
@@ -2298,6 +2373,23 @@ const copy: Record<AppLocale, CopyTree> = {
       recent_activity: 'Recent activity',
       noNotifications: 'No recent notifications.',
       managePreferences: 'Manage my preferences',
+    },
+    twoFactor: {
+      challengeTitle: 'Two-factor authentication',
+      challengeSubtitle: 'Enter the 6-digit code generated by your authenticator app.',
+      codeLabel: '6-digit code',
+      codePlaceholder: '123456',
+      recoveryCodeLabel: 'Recovery code',
+      recoveryCodePlaceholder: 'xxxxxxxx-xxxx',
+      useRecoveryCode: 'Use a recovery code',
+      useTotpCode: 'Use my authenticator app',
+      rememberDevice: 'Remember this device for 30 days',
+      submit: 'Verify',
+      submitting: 'Verifying…',
+      backToLogin: 'Back to login',
+      invalidCode: 'Invalid or expired code. Please try again.',
+      expiredChallenge: 'Verification session has expired. Please sign in again.',
+      genericError: 'Verification failed. Please try again.',
     },
     passwordReset: {
       title: 'Forgot your password?',

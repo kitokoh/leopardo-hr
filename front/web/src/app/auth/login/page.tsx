@@ -224,7 +224,23 @@ function LoginInner() {
         },
       });
 
-      const loginPayload = await loginResponse.json() as { data?: StoredAuthUser | { token?: string }; token?: string };
+      const loginPayload = await loginResponse.json() as {
+        data?: StoredAuthUser | { token?: string };
+        token?: string;
+        // #5612 — réponse challenge 2FA (HttpCode 200, pas de token dans le cookie)
+        mfa_challenge?: boolean;
+        mfa_challenge_token?: string;
+        mfa_challenge_expires_in?: number;
+      };
+
+      // #5612 — 2FA challenge : le backend a révoqué le token Sanctum initial et
+      // demande un second facteur. Rediriger vers la page challenge sans
+      // toucher au cookie (aucun token n'a été posé).
+      if (loginPayload.mfa_challenge === true && loginPayload.mfa_challenge_token) {
+        const challengeUrl = `/auth/2fa/challenge?token=${encodeURIComponent(loginPayload.mfa_challenge_token)}`;
+        router.push(challengeUrl);
+        return;
+      }
 
       // Audit #1699 : le token vit dans le cookie httpOnly `leopardo_token`
       // posé par le route handler /api/v1/auth/login — il n'est jamais
@@ -309,6 +325,10 @@ function LoginInner() {
   // arrivait sur le formulaire SANS explication : l'utilisateur croit à une
   // panne au lieu d'une action possible (ex. demander une invitation).
   const [urlError, setUrlError] = useState<string | null>(null);
+
+  // #5617 — google_no_account : en plus du message, afficher un CTA vers
+  // /signup pour les utilisateurs sans compte (parcours essai guidé).
+  const showSignupCta = googleErrorCode === 'google_no_account';
 
   useEffect(() => {
     if (!googleErrorCode) {
@@ -418,6 +438,17 @@ function LoginInner() {
                   className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
                 >
                   {error ?? urlError}
+                  {/* #5617 — CTA /signup pour compte Google inconnu */}
+                  {showSignupCta && (
+                    <div className="mt-2 border-t border-red-200 pt-2">
+                      <Link
+                        href="/signup"
+                        className="inline-flex items-center gap-1 text-sm font-semibold text-red-700 underline underline-offset-2 hover:text-red-900"
+                      >
+                        {labels.login.errors.googleNoAccountSignupCta}
+                      </Link>
+                    </div>
+                  )}
                 </div>
               ) : null}
 

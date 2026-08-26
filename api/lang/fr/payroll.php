@@ -84,4 +84,6 @@ return [
     'line_income_tax' => 'Impôt sur le revenu',
     'line_employer_contributions' => 'Cotisations patronales',
     'line_flat_tax' => 'Taxe de minimum fiscal',
+    // #5613 — coordonnées bancaires entreprise
+    'bank_details_updated' => 'Coordonnées bancaires mises à jour.',
 ];

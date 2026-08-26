@@ -112,8 +112,25 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // 2FA required — pass through without touching token
-  if (backendResponse.status === 202 || payload?.error === "TWO_FA_REQUIRED") {
+  // #5612 — Challenge TOTP : le backend a émis un challenge 2FA (HTTP 200,
+  // champ mfa_challenge: true). Aucun token Sanctum n'est dans la réponse
+  // (il a été révoqué côté backend). Passer le payload au client pour qu'il
+  // redirige vers /auth/2fa/challenge.
+  if (payload?.mfa_challenge === true) {
+    return NextResponse.json(payload, {
+      status: backendResponse.status,
+      headers: { "Cache-Control": "no-store" },
+    });
+  }
+
+  // Politique tenant 2FA obligatoire (error: TWO_FACTOR_REQUIRED, HTTP 403).
+  // Note : l'ancienne vérification "TWO_FA_REQUIRED" était incorrecte —
+  // le code réel est TWO_FACTOR_REQUIRED (TwoFactorException::required()).
+  if (
+    backendResponse.status === 202 ||
+    payload?.error === "TWO_FACTOR_REQUIRED" ||
+    payload?.error === "TWO_FA_REQUIRED" // rétrocompatibilité
+  ) {
     return NextResponse.json(payload, { status: backendResponse.status });
   }
 

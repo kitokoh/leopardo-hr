@@ -13,7 +13,8 @@ export type ClientModuleKey =
   | 'partner'
   | 'billing'
   | 'integrations'
-  | 'marketing';
+  | 'marketing'
+  | 'bank_details'; // #5613
 
 export type FeatureState = 'available' | 'trial' | 'locked';
 
@@ -155,6 +156,18 @@ export const CLIENT_MODULES: ClientModule[] = [
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Integrations',
   },
+  // #5613 — Coordonnées bancaires : visible uniquement pour les managers
+  // avec accès à la paie (principal seulement côté backend).
+  {
+    key: 'bank_details',
+    href: '/settings/bank-details',
+    label: 'Coordonnées bancaires',
+    group: 'finance',
+    capabilityKeys: ['payroll', 'can_manage_payroll'],
+    featureKeys: ['payroll'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Coordonnées bancaires',
+  },
   {
     key: 'marketing',
     href: '/social-marketing',
@@ -179,6 +192,7 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/reports': 'reports',
   '/billing': 'billing',
   '/settings/developer': 'integrations',
+  '/settings/bank-details': 'bank_details',
   '/social-marketing': 'marketing',
   '/social': 'marketing',
 };
