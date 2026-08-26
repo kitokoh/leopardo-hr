@@ -63,7 +63,9 @@ final class ShareAccessController extends Controller
             ->whereIn('action', ['accounting.share.info', 'accounting.share.download']);
 
         return AuditLogResource::collection(
-            $query->orderByDesc('created_at')->paginate((int) ($validated['per_page'] ?? 25))
+            // Trie déterministe : created_at DESC + id DESC (les accès d'une même
+            // seconde étaient dans un ordre non garanti → test flaky, audit 2026-08-26).
+            $query->orderByDesc('created_at')->orderByDesc('id')->paginate((int) ($validated['per_page'] ?? 25))
         )->response();
     }
 }
