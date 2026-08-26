@@ -39,14 +39,15 @@ class SSOController extends Controller
 
         $sso = $this->ssoService->getCompanySSO($actor->company_id);
 
+        // Issue #5614 : validation_available vient maintenant du service
+        // (per-provider : OIDC = true, SAML = false). Le gate SAML_ENABLED
+        // ne s'applique qu'au callback SAML (samlCallback()), pas au status
+        // OIDC qui est pleinement opérationnel via OidcFlowService (#2231).
         return response()->json([
             'data' => [
                 'enabled' => $sso['enabled'],
                 'provider' => $sso['provider'],
-                // Audit #1694 + gate #3890 : la validation SAML/OIDC n'est
-                // disponible que si le moteur existe ET le flag SAML_ENABLED est posé.
-                'validation_available' => $sso['validation_available']
-                    && (bool) config('services.saml.enabled', false),
+                'validation_available' => $sso['validation_available'],
             ],
         ]);
     }
