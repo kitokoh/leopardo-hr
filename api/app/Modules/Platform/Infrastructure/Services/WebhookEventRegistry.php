@@ -77,9 +77,19 @@ final class WebhookEventRegistry
 
     /**
      * Mémorise la réponse finale d'un événement traité avec succès.
+     *
+     * Même garde de schéma partiel que `begin()` (#5576) : en environnement
+     * sans la table `webhook_events` (schéma de test MVP), `complete()` est
+     * un no-op — on traite sans déduplication, comme `begin()` l'autorise.
+     * En production la migration `2026_08_25_000001_create_webhook_events_table`
+     * (schéma public) existe toujours : la garde ne change aucun comportement.
      */
     public function complete(string $source, string $eventId, int $code, ?string $body = null): void
     {
+        if (! Schema::hasTable('webhook_events')) {
+            return;
+        }
+
         WebhookEvent::query()
             ->where('source', $source)
             ->where('event_id', $eventId)
@@ -93,9 +103,16 @@ final class WebhookEventRegistry
     /**
      * Libère la réservation après un échec de traitement : la prochaine
      * redelivrance du fournisseur pourra re-traiter l'événement.
+     *
+     * Même garde de schéma partiel que `begin()` (#5576) : no-op si la table
+     * `webhook_events` n'existe pas (schéma de test MVP).
      */
     public function release(string $source, string $eventId): void
     {
+        if (! Schema::hasTable('webhook_events')) {
+            return;
+        }
+
         WebhookEvent::query()
             ->where('source', $source)
             ->where('event_id', $eventId)
