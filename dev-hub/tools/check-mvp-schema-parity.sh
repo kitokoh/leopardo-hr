@@ -84,24 +84,9 @@ fixture_tables=$(printf '%s' "${fixture_tables}" | sed '/^$/d' | sort -u)
 # (F-13, #1543) ou l'ajout à la fixture — NE PAS étendre cette liste pour une
 # nouvelle table : ajouter la table à la fixture dans la PR.
 ALLOWLIST_DRIFT=(
-  accounting_contacts
-  accounting_document_lines
-  accounting_documents
-  accounting_number_counters
-  accounting_payment_reminders
-  accounting_payments
-  accounting_settings
-  app_notifications
-  attendance_mode_settings
-  career_events
-  employee_attendance_preferences
-  employee_departures
-  employee_location_events
-  geo_attendance_sessions
-  payroll_calculation_audits
-  post_publications
-  social_accounts
-  social_posts
+  # F-13 #1543 / #5511 — allowlist vidée le 2026-08-25 : les tables tenant
+  # récentes sont désormais couvertes par la fixture CreatesMvpSchema ou par
+  # des tests RefreshTenantDatabase (voir check-test-schema-drift.sh).
 )
 
 missing_recent=$(comm -23 <(printf '%s' "${created_recent}") <(printf '%s' "${fixture_tables}"))
