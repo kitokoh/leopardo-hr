@@ -105,6 +105,23 @@ jobs:
         working-directory: api
         run: vendor/bin/phpstan analyse --configuration=phpstan-modules.neon --memory-limit=1G --no-progress
 
+      - name: Duplicate routes guard — collisions (METHOD, URI) (#5577)
+        working-directory: api
+        run: |
+          # .env minimal pour que artisan route:list puisse bootstrapper
+          # sans DB réelle (les routes sont enregistrées lors du boot, pas de requête DB)
+          cp .env.example .env.ci-routes
+          echo "APP_ENV=testing"                    >> .env.ci-routes
+          echo "DB_CONNECTION=sqlite"               >> .env.ci-routes
+          echo "DB_DATABASE=:memory:"               >> .env.ci-routes
+          echo "CACHE_DRIVER=array"                 >> .env.ci-routes
+          echo "SESSION_DRIVER=array"               >> .env.ci-routes
+          echo "QUEUE_CONNECTION=sync"              >> .env.ci-routes
+          cp .env.ci-routes .env
+          php artisan key:generate --no-interaction
+          php ../dev-hub/tools/check-duplicate-routes.php .
+          rm -f .env .env.ci-routes
+
   # Audit §2.3 / Plan P1: phpstan-strict.neon existed in the repo (level 8 on
   # app/Core, app/Modules, app/Shared) but was never invoked by any workflow
   # — the audit flagged this as a dead config that quietly gave a false sense
