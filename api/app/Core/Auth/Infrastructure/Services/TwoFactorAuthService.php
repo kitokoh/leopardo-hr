@@ -184,14 +184,22 @@ final class TwoFactorAuthService
             throw TwoFactorException::challengeExpired();
         }
 
-        Cache::forget('mfa:challenge:'.$challengeToken);
-
         $previousSearchPath = null;
         if (DB::getDriverName() === 'pgsql' && $context['tenant_schema'] !== null && $context['tenant_schema'] !== '') {
             $searchPathResult = DB::selectOne('SHOW search_path');
-            $searchPath = is_object($searchPathResult) ? (get_object_vars($searchPathResult)['search_path'] ?? null) : null;
-            $previousSearchPath = is_string($searchPath) && $searchPath !== '' ? $searchPath : null;
-            DB::statement('SET search_path TO '.$context['tenant_schema']);
+            $previousSearchPath = is_object($searchPathResult) && property_exists($searchPathResult, 'search_path')
+                ? (string) $searchPathResult->search_path
+                : null;
+            // NB #5579 : SET search_path TO <schéma> SEUL (merge #5436) rendait
+            // `companies` et `personal_access_tokens` (schéma public)
+            // introuvables → challenge « expiré » (401) ou 500 à la création du
+            // token. On positionne schéma tenant + public, comme
+            // AuthService::setTenantSearchPath.
+            $tenantSchema = $context['tenant_schema'];
+            if (preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $tenantSchema) !== 1) {
+                throw TwoFactorException::challengeExpired();
+            }
+            DB::statement('SET search_path TO '.sprintf('"%s","public"', $tenantSchema));
         }
 
         try {
@@ -214,6 +222,11 @@ final class TwoFactorAuthService
             if (! $verified) {
                 throw TwoFactorException::invalidCode();
             }
+
+            // Single-use au SUCCÈS uniquement : un code invalide ne doit pas
+            // brûler le challenge (l'utilisateur peut retenter avec le même
+            // token). Le challenge est consommé ici, après vérification.
+            Cache::forget('mfa:challenge:'.$challengeToken);
 
             /** @var Company|null $company */
             $company = Company::query()->find($context['company_id']);
