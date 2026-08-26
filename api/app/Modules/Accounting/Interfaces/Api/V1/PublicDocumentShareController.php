@@ -35,7 +35,7 @@ final class PublicDocumentShareController
             abort(404, 'DOCUMENT_SHARE_NOT_FOUND');
         }
 
-        $this->auditAccess($share, 'accounting.share.info');
+        $this->auditAccess($share, 'share.info');
 
         /** @var AccountingDocument $document */
         $document = $share->document;
@@ -62,7 +62,7 @@ final class PublicDocumentShareController
             abort(404, 'DOCUMENT_SHARE_NOT_FOUND');
         }
 
-        $this->auditAccess($share, 'accounting.share.download');
+        $this->auditAccess($share, 'share.download');
 
         /** @var AccountingDocument $document */
         $document = $share->document;
@@ -75,9 +75,13 @@ final class PublicDocumentShareController
 
         // #5521 — no-referrer strict : le token ne doit pas fuiter via Referer
         // lors du téléchargement (règles navigateur + défense en profondeur).
-        return Storage::disk(GenerateDocumentPdf::DISK)
-            ->download($document->pdf_path, $filename)
-            ->header('Referrer-Policy', 'no-referrer');
+        // NB : Storage::download() renvoie un StreamedResponse Symfony — la
+        // macro Laravel ->header() n'existe pas dessus (500 en prod) ; on
+        // pose le header via HeaderBag (#5522 — fix main 2026-08-25).
+        $response = Storage::disk(GenerateDocumentPdf::DISK)->download($document->pdf_path, $filename);
+        $response->headers->set('Referrer-Policy', 'no-referrer');
+
+        return $response;
     }
 
     /**
@@ -127,9 +131,14 @@ final class PublicDocumentShareController
     }
 
     /**
-     * Trace un accès public au portail (issue #5429) — RGPD : qui a consulté
-     * / téléchargé quel document partagé, quand, depuis quelle IP. Écrit dans
-     * le tenant de la compagnie du partage (user_id null : accès non authentifié).
+     * Trace un accès public au portail (issue #5429/#5520) — RGPD : qui a
+     * consulté / téléchargé quel document partagé, quand, depuis quelle IP.
+     *
+     * Utilise l'API unifiée AuditLog::record() (#5439) pour garantir que
+     * `module` et `request_id` (corrélation) sont toujours renseignés.
+     * user_id = null : accès non authentifié (token de partage = credential).
+     *
+     * @param  string  $action  Sous-action sans préfixe module : 'share.info' | 'share.download'
      */
     private function auditAccess(AccountingDocumentShare $share, string $action): void
     {
@@ -140,18 +149,13 @@ final class PublicDocumentShareController
         }
 
         app(TenantManager::class)->withinTenant($company, function () use ($share, $action): void {
-            AuditLog::create([
-                'company_id' => $share->company_id,
-                'user_id' => null,
-                'action' => $action,
-                'auditable_type' => $share->getMorphClass(),
-                'auditable_id' => $share->id,
-                'old_values' => [],
-                'new_values' => [],
-                'ip_address' => request()->ip(),
-                'user_agent' => substr((string) request()->userAgent(), 0, 255),
-                'metadata' => ['share_token' => $share->share_token],
-            ]);
+            AuditLog::record(
+                module: 'accounting',
+                action: $action,
+                subject: $share,
+                actor: null,
+                metadata: ['share_token' => $share->share_token],
+            );
         });
     }
 }

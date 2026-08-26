@@ -86,9 +86,21 @@ class PortalJourneyE2ETest extends TestCase
             ->assertHeader('content-type', 'application/pdf')
             ->assertHeader('referrer-policy', 'no-referrer');  // #5521
 
-        // 4bis) RGPD — les accès info/download sont tracés (issue #5429).
-        $this->assertSame(1, AuditLog::query()->where('action', 'accounting.share.info')->count());
-        $this->assertSame(1, AuditLog::query()->where('action', 'accounting.share.download')->count());
+        // 4bis) RGPD — les accès info/download sont tracés (issue #5429/#5520).
+        // #5520 : AuditLog::record() utilisé → module + request_id renseignés.
+        $infoLog = AuditLog::query()
+            ->where('action', 'share.info')
+            ->where('module', 'accounting')
+            ->first();
+        $this->assertNotNull($infoLog, 'AuditLog share.info introuvable');
+        $this->assertNotNull($infoLog->request_id, 'request_id doit être renseigné (corrélation #5520)');
+
+        $downloadLog = AuditLog::query()
+            ->where('action', 'share.download')
+            ->where('module', 'accounting')
+            ->first();
+        $this->assertNotNull($downloadLog, 'AuditLog share.download introuvable');
+        $this->assertNotNull($downloadLog->request_id, 'request_id doit être renseigné (corrélation #5520)');
 
         // 4ter) RGPD — les métadonnées exposées sont limitées (pas de données sensibles).
         $this->getJson('/api/v1/accounting/documents/shared/'.$token)

@@ -13,7 +13,7 @@
             ref="searchInput"
             v-model="query"
             type="text"
-            placeholder="Rechercher pages, actions..."
+            :placeholder="t('adminPalette.searchPlaceholder')"
             class="flex-1 bg-transparent text-lg font-bold text-slate-900 dark:text-white placeholder-slate-400 outline-none"
             @keydown.down.prevent="moveDown"
             @keydown.up.prevent="moveUp"
@@ -54,13 +54,13 @@
         </div>
 
         <div class="px-4 py-8 text-center text-sm text-gray-400 dark:text-gray-500" v-else-if="query">
-          Aucun resultat pour "{{ query }}"
+          {{ noResultsLabel }}
         </div>
 
         <div class="px-6 py-4 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-          <span class="flex items-center gap-1.5"><kbd class="px-1.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-slate-500">↑↓</kbd> naviguer</span>
-          <span class="flex items-center gap-1.5"><kbd class="px-1.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-slate-500">↵</kbd> sélectionner</span>
-          <span class="flex items-center gap-1.5"><kbd class="px-1.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-slate-500">esc</kbd> fermer</span>
+          <span class="flex items-center gap-1.5"><kbd class="px-1.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-slate-500">↑↓</kbd> {{ t('adminPalette.navNavigate') }}</span>
+          <span class="flex items-center gap-1.5"><kbd class="px-1.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-slate-500">↵</kbd> {{ t('adminPalette.navSelect') }}</span>
+          <span class="flex items-center gap-1.5"><kbd class="px-1.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-slate-500">esc</kbd> {{ t('adminPalette.navClose') }}</span>
         </div>
       </div>
     </div>
@@ -71,6 +71,8 @@
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
+import { useLocaleStore } from '@/stores/locale'
+import { translate } from '@/i18n/index.js'
 import {
   MagnifyingGlassIcon,
   HomeIcon,
@@ -92,35 +94,51 @@ import {
 
 const router = useRouter()
 const themeStore = useThemeStore()
+const localeStore = useLocaleStore()
 
 const isOpen = ref(false)
 const query = ref('')
 const activeIndex = ref(0)
 const searchInput = ref(null)
 
-const items = [
-  { id: 'dashboard', label: 'Tableau de bord', description: 'Vue principale', icon: HomeIcon, route: '/', shortcut: 'Alt+H' },
-  { id: 'analytics', label: 'Analytics', description: 'Statistiques et rapports', icon: ChartBarIcon, route: '/analytics' },
-  { id: 'users', label: 'Utilisateurs', description: 'Gestion des utilisateurs', icon: UsersIcon, route: '/users', shortcut: 'Alt+U' },
-  { id: 'companies', label: 'Entreprises', description: 'Gestion des entreprises', icon: BuildingOfficeIcon, route: '/companies', shortcut: 'Alt+C' },
-  { id: 'subscriptions', label: 'Abonnements', description: 'Plans et facturation', icon: CreditCardIcon, route: '/subscriptions', shortcut: 'Alt+S' },
+// #5508 — i18n : libellés de navigation localisés ×4 (fallback FR).
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
+
+const noResultsLabel = computed(() =>
+  t('adminPalette.noResults').replace('{query}', query.value)
+)
+
+const itemDefs = [
+  { id: 'dashboard', labelKey: 'itemDashboard', descKey: 'itemDashboardDesc', icon: HomeIcon, route: '/', shortcut: 'Alt+H' },
+  { id: 'analytics', labelKey: 'itemAnalytics', descKey: 'itemAnalyticsDesc', icon: ChartBarIcon, route: '/analytics' },
+  { id: 'users', labelKey: 'itemUsers', descKey: 'itemUsersDesc', icon: UsersIcon, route: '/users', shortcut: 'Alt+U' },
+  { id: 'companies', labelKey: 'itemCompanies', descKey: 'itemCompaniesDesc', icon: BuildingOfficeIcon, route: '/companies', shortcut: 'Alt+C' },
+  { id: 'subscriptions', labelKey: 'itemSubscriptions', descKey: 'itemSubscriptionsDesc', icon: CreditCardIcon, route: '/subscriptions', shortcut: 'Alt+S' },
   // Routes tenant sans endpoints super-admin (#3272) : vues retirées du
   // routeur — la palette ne propose que des destinations réellement ouvrables.
-  { id: 'settings', label: 'Paramètres', description: 'Compte et préférences', icon: CogIcon, route: '/settings' },
-  { id: 'growth', label: 'Growth', description: 'Partenaires et croissance', icon: ArrowTrendingUpIcon, route: '/growth' },
-  { id: 'edge', label: 'Edge Nodes', description: 'Nœuds edge synchronisés', icon: ServerIcon, route: '/edge' },
-  { id: 'globe', label: 'Globe', description: 'Présence mondiale en temps réel', icon: GlobeAltIcon, route: '/globe' },
-  { id: 'fleet', label: 'Flotte', description: 'Alertes flotte vehicules', icon: TruckIcon, route: '/fleet' },
-  { id: 'marketing', label: 'Marketing OAuth', description: 'Configuration OAuth marketing', icon: MegaphoneIcon, route: '/marketing/oauth' },
-  { id: 'support', label: 'Support', description: 'Tickets support clients', icon: LifebuoyIcon, route: '/support' },
-  { id: 'crm', label: 'CRM', description: 'Pipeline CRM', icon: PresentationChartLineIcon, route: '/crm/pipeline' },
-  { id: 'toggle-dark', label: 'Basculer mode sombre', description: 'Changer le theme', icon: themeStore.isDark ? SunIcon : MoonIcon, action: () => themeStore.toggle(), shortcut: 'Ctrl+D' },
+  { id: 'settings', labelKey: 'itemSettings', descKey: 'itemSettingsDesc', icon: CogIcon, route: '/settings' },
+  { id: 'growth', labelKey: 'itemGrowth', descKey: 'itemGrowthDesc', icon: ArrowTrendingUpIcon, route: '/growth' },
+  { id: 'edge', labelKey: 'itemEdge', descKey: 'itemEdgeDesc', icon: ServerIcon, route: '/edge' },
+  { id: 'globe', labelKey: 'itemGlobe', descKey: 'itemGlobeDesc', icon: GlobeAltIcon, route: '/globe' },
+  { id: 'fleet', labelKey: 'itemFleet', descKey: 'itemFleetDesc', icon: TruckIcon, route: '/fleet' },
+  { id: 'marketing', labelKey: 'itemMarketing', descKey: 'itemMarketingDesc', icon: MegaphoneIcon, route: '/marketing/oauth' },
+  { id: 'support', labelKey: 'itemSupport', descKey: 'itemSupportDesc', icon: LifebuoyIcon, route: '/support' },
+  { id: 'crm', labelKey: 'itemCrm', descKey: 'itemCrmDesc', icon: PresentationChartLineIcon, route: '/crm/pipeline' },
+  { id: 'toggle-dark', labelKey: 'itemToggleDark', descKey: 'itemToggleDarkDesc', icon: themeStore.isDark ? SunIcon : MoonIcon, action: () => themeStore.toggle(), shortcut: 'Ctrl+D' },
 ]
 
+const items = computed(() =>
+  itemDefs.map((item) => ({
+    ...item,
+    label: t(`adminPalette.${item.labelKey}`),
+    description: t(`adminPalette.${item.descKey}`),
+  }))
+)
+
 const filteredItems = computed(() => {
-  if (!query.value) return items
+  if (!query.value) return items.value
   const q = query.value.toLowerCase()
-  return items.filter(
+  return items.value.filter(
     (item) =>
       item.label.toLowerCase().includes(q) ||
       (item.description && item.description.toLowerCase().includes(q))

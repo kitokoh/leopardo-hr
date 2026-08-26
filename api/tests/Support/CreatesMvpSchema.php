@@ -2312,5 +2312,187 @@ trait CreatesMvpSchema
         DB::purge($connection);
         DB::reconnect($connection);
         DB::statement("SET search_path TO {$path}");
+
+        if (! Schema::hasTable($this->tenantTable('accounting_chart_accounts'))) {
+            Schema::create($this->tenantTable('accounting_chart_accounts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                // Code de compte (ex. 41100000) — normalisé, unique par entreprise.
+                $table->string('code', 20);
+                $table->string('label', 255);
+                // Nature comptable : asset|liability|equity|revenue|expense.
+                $table->string('type', 20);
+                // Classe PCG/SCF : 1 capitaux, 2 immobilisations, 3 stocks,
+                // 4 tiers, 5 financier, 6 charges, 7 produits, 8 comptes spéciaux.
+                $table->unsignedTinyInteger('class')->default(0);
+                // Comptes système (provisionnés) — non supprimables, modifiables.
+                $table->boolean('is_system')->default(false);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'chart_company_code_unique');
+                $table->index(['company_id', 'type'], 'chart_company_type_idx');
+                $table->index(['company_id', 'class'], 'chart_company_class_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('accounting_closed_periods'))) {
+            Schema::create($this->tenantTable('accounting_closed_periods'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->char('period', 7);
+                $table->string('closed_by', 255)->nullable();
+                $table->timestamp('closed_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'period'], 'closed_period_company_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('accounting_fiscal_years'))) {
+            Schema::create($this->tenantTable('accounting_fiscal_years'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedSmallInteger('year');
+                // open | closed
+                $table->string('status', 10)->default('open');
+                $table->string('closed_by', 255)->nullable();
+                $table->timestamp('closed_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'year'], 'fiscal_year_company_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('accounting_journal_entries'))) {
+            Schema::create($this->tenantTable('accounting_journal_entries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->date('entry_date');
+                // Période comptable YYYY-MM dérivée de entry_date — indexée pour le journal.
+                $table->char('period', 7);
+                // document | payment
+                $table->string('source_type', 20);
+                $table->unsignedBigInteger('source_id');
+                // Plan comptable PCF/SYSCOHADA simplifié (cf. JournalPostingService).
+                $table->string('account_code', 20);
+                $table->string('account_label', 255);
+                $table->decimal('debit', 15, 2)->default(0);
+                $table->decimal('credit', 15, 2)->default(0);
+                // Pièce comptable (n° document ou PAY-{id}) — colonne d'export
+                // utilisée par l'expert-comptable (libre de référence).
+                $table->string('piece', 64)->nullable();
+                $table->string('description', 500)->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'period']);
+                $table->index(['company_id', 'entry_date']);
+                // Idempotence du re-posting : une ligne par (source, compte).
+                $table->unique(['company_id', 'source_type', 'source_id', 'account_code'], 'journal_source_account_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('bank_statement_lines'))) {
+            Schema::create($this->tenantTable('bank_statement_lines'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('statement_id')->index();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('line_number');
+                $table->date('line_date');
+                $table->string('label', 255);
+                $table->decimal('amount', 14, 2);            // signé (débit/crédit selon signe configuré)
+                $table->string('external_reference', 120)->nullable();
+                $table->string('category', 60)->nullable();
+                $table->string('status', 20)->default('pending'); // pending|matched
+                // #5435 — FK vers accounting_payments.id (bigint) : le type doit
+                // correspondre (uuid cassait le matching, jamais vérifié par CI).
+                $table->unsignedBigInteger('matched_payment_id')->nullable()->index();
+                $table->unsignedSmallInteger('confidence')->nullable(); // score 0-100
+                $table->text('metadata')->nullable();
+                $table->timestamps();
+
+                $table->unique(['statement_id', 'line_number'], 'bank_statement_lines_number_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('bank_statements'))) {
+            Schema::create($this->tenantTable('bank_statements'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->string('statement_period', 20);      // ex. "2026-08"
+                $table->string('import_reference', 120);     // réf. externe du relevé
+                $table->decimal('opening_balance', 14, 2)->nullable();
+                $table->decimal('closing_balance', 14, 2)->nullable();
+                $table->string('status', 20)->default('imported'); // imported|reconciling|reconciled
+                $table->string('file_hash', 64)->nullable();
+                $table->text('metadata')->nullable();        // cast encrypted:array
+                $table->timestamps();
+
+                $table->unique(['company_id', 'statement_period', 'import_reference'], 'bank_statements_import_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('payroll_payment_order_items'))) {
+            Schema::create($this->tenantTable('payroll_payment_order_items'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('payment_order_id')->index();
+                $table->unsignedBigInteger('employee_id')->index();
+                $table->decimal('net_amount', 14, 2);
+                $table->string('iban', 64)->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('payroll_payment_orders'))) {
+            Schema::create($this->tenantTable('payroll_payment_orders'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('payroll_run_id')->index();
+                $table->string('status', 24)->default('prepared')->index();
+                $table->string('format', 32);
+                $table->string('file_path', 512)->nullable();
+                $table->decimal('total_amount', 14, 2)->default(0);
+                $table->unsignedInteger('transfer_count')->default(0);
+                $table->string('bank_reference', 128)->nullable();
+                $table->unsignedBigInteger('executed_by')->nullable();
+                $table->timestamp('executed_at')->nullable();
+                $table->timestamp('reconciled_at')->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        // F-13 #1543 — tables tenant récentes sans couverture RefreshTenantDatabase :
+        // ajoutées à la fixture (schémas alignés sur les migrations réelles) pour
+        // vider l'allowlist de check-mvp-schema-parity.sh (#5511).
+        if (! Schema::hasTable($this->tenantTable('accounting_payment_reminders'))) {
+            Schema::create($this->tenantTable('accounting_payment_reminders'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('document_id');
+                $table->unsignedSmallInteger('stage');
+                $table->timestamp('sent_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'document_id', 'stage'], 'payment_reminder_stage_unique');
+                $table->index(['company_id', 'document_id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('employee_attendance_preferences'))) {
+            Schema::create($this->tenantTable('employee_attendance_preferences'), function (Blueprint $table): void {
+                $table->increments('id');
+                $table->unsignedInteger('employee_id');
+                $table->uuid('company_id');
+                $table->string('preferred_mode', 20)->default('manual');
+                $table->boolean('gps_consent_given')->default(false);
+                $table->timestampTz('gps_consent_at')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                $table->unique('employee_id');
+                $table->index('company_id');
+            });
+        }
     }
 }
