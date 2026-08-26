@@ -60,10 +60,11 @@ return [
         // nom arbitraire et obtenir un sous-domaine *.pages.dev valide.
         // On restreint désormais au projet connu (`leo-admin`).
         //
+        // [a-z0-9][a-z0-9-]* : sous-domaine commençant par alphanumérique (tiret initial invalide DNS).
         // ATTENTION : fruitcake/php-cors passe ces entrées directement à
         // preg_match() — ce doit être une EXPRESSION RÉGULIÈRE COMPLÈTE,
         // pas un glob. Un glob crashe en 500 (preg_match delimiter).
-        '#^https://[a-z0-9-]+\.leo-admin\.pages\.dev$#i',
+        '#^https://[a-z0-9][a-z0-9-]*\.leo-admin\.pages\.dev$#i',
     ],
 
     // Explicit allow-list instead of '*': defence-in-depth so that a future

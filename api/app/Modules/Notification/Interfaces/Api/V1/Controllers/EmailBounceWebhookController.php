@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Log;
  * stamped so `MailMessageProvider` stops retrying that address on every
  * future communication, and a `communication_events` audit row is
  * recorded either way for observability.
+ *
+ * Fix #5576 : WebhookEventRegistry re-injecté (perdu dans le merge 1d9a272).
  */
 class EmailBounceWebhookController extends Controller
 {
@@ -69,8 +71,8 @@ class EmailBounceWebhookController extends Controller
 
         /** @var array{email: string, event: string, reason?: string|null} $payload */
         $payload = $request->validate([
-            'email' => ['required', 'string', 'email:rfc', 'max:320'],
-            'event' => [
+            'email'  => ['required', 'string', 'email:rfc', 'max:320'],
+            'event'  => [
                 'required',
                 'string',
                 'max:64',
@@ -79,8 +81,8 @@ class EmailBounceWebhookController extends Controller
             'reason' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $email = $payload['email'];
-        $event = $payload['event'];
+        $email  = $payload['email'];
+        $event  = $payload['event'];
         $reason = $payload['reason'] ?? null;
 
         try {
@@ -98,21 +100,21 @@ class EmailBounceWebhookController extends Controller
 
             if ($isBounceOrComplaint) {
                 $employee->forceFill([
-                    'email_bounced_at' => now(),
+                    'email_bounced_at'    => now(),
                     'email_bounce_reason' => $reason ?? $event,
                 ])->save();
             }
 
             CommunicationEvent::query()->create([
-                'company_id'   => (string) $employee->company_id,
-                'employee_id'  => $employee->id,
-                'event_name'   => 'email_provider_webhook',
-                'channel'      => 'email',
-                'status'       => $isBounceOrComplaint ? 'bounced' : 'recorded',
-                'provider'     => (string) config('communication.providers.email', 'mail'),
-                'metadata'     => ['event' => $event],
+                'company_id'    => (string) $employee->company_id,
+                'employee_id'   => $employee->id,
+                'event_name'    => 'email_provider_webhook',
+                'channel'       => 'email',
+                'status'        => $isBounceOrComplaint ? 'bounced' : 'recorded',
+                'provider'      => (string) config('communication.providers.email', 'mail'),
+                'metadata'      => ['event' => $event],
                 'error_message' => $reason,
-                'occurred_at'  => now(),
+                'occurred_at'   => now(),
             ]);
 
             $this->registry->complete('email-bounce', $eventId, 200, json_encode(['received' => true]));

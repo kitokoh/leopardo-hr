@@ -74,6 +74,9 @@ jobs:
       - name: MVP schema parity guard — CreatesMvpSchema ↔ migrations tenant (issue #5443)
         run: bash dev-hub/tools/check-mvp-schema-parity.sh api
 
+      - name: Duplicate routes guard (issue #5577)
+        run: bash dev-hub/tools/check-duplicate-routes.sh api
+
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
