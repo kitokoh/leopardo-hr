@@ -33,6 +33,7 @@
     <div v-else>
       <div v-if="currentTab === 'partners'" class="space-y-6">
         <div class="glass-card overflow-hidden">
+          <div class="overflow-x-auto">
           <table class="w-full text-left">
             <thead class="bg-slate-50">
               <tr>
@@ -76,6 +77,7 @@
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
       </div>
 

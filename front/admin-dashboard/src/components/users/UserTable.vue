@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-hidden">
+  <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-slate-200/50 dark:divide-slate-800/50">
       <thead class="bg-slate-50/50 dark:bg-slate-900/30">
         <tr>
