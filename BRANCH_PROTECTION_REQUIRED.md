@@ -25,7 +25,7 @@
 | `Module Structure Validator` | `architecture-check.yml` | #5584 |
 | `Frontend — ESLint + TypeScript` | `web-ci.yml` | Phase 1 |
 | `actionlint (+ shellcheck)` | `actionlint.yml` | #2131 |
-| **`Ratio fix/feat (cible ≤ 2.5)`** | **`fix-feat-ratio-guard.yml`** | **2026-08-26** |
+| `Ratio fix/feat (cible ≤ 2.5)` *(signal fort, non requis)* | `fix-feat-ratio-guard.yml` | 2026-08-26 |
 
 ## Règles du garde ratio fix/feat
 
@@ -38,12 +38,20 @@ sur une fenêtre glissante (défaut 30 jours). Variables de pilotage :
 | `FIX_FEAT_RATIO_WARN` | `2.5` | Seuil d'avertissement visible (non bloquant) |
 | `FIX_FEAT_RATIO_MAX` | `3.5` | Seuil de blocage (PR ne peut pas merger) |
 
-### Protocole si le garde échoue
+### Phase de calibration (2026-08-26)
 
-1. Vérifier le ratio actuel : `git log --since="30 days ago" --pretty=%s | grep -c "^fix"` vs `grep -c "^feat"`
-2. Implémenter une ou plusieurs features du backlog pour rééquilibrer la fenêtre.
-3. Si urgence sécurité : le PM peut temporairement élever `FIX_FEAT_RATIO_MAX` via
-   _Settings → Variables_ sans modifier de code.
+Le garde tourne en mode **warning uniquement** (`FIX_FEAT_RATIO_ENFORCE=false`).
+Il mesure et affiche le ratio sans bloquer les PRs.
+
+**Activation du verrou** : quand `ratio(main, 30 jours) < 3.5` durablement :
+1. _Settings → Variables_ → ajouter `FIX_FEAT_RATIO_ENFORCE=true`
+2. Ajouter `Ratio fix/feat (cible ≤ 2.5)` dans les required status checks via l'API
+
+### Protocole si le garde est bloquant
+
+1. Vérifier le ratio : `git log --since="30 days ago" --pretty=%s | grep -c "^fix"` vs `grep -c "^feat"`
+2. Implémenter des features du backlog pour rééquilibrer la fenêtre.
+3. Si urgence sécurité : élever `FIX_FEAT_RATIO_MAX` via _Settings → Variables_ sans modifier de code.
 
 ---
 

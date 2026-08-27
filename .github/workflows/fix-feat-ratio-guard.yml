@@ -9,18 +9,26 @@ name: Fix/Feat Ratio Guard
 #   FIX_FEAT_RATIO_MAX        — seuil d'échec (défaut : 3.5)
 #   FIX_FEAT_RATIO_WARN       — seuil d'avertissement visible (défaut : 2.5)
 #   FIX_FEAT_RATIO_DAYS       — fenêtre glissante en jours (défaut : 30)
+#   FIX_FEAT_RATIO_ENFORCE    — 'true' pour activer le blocage (défaut : false)
 #
 # Comportement :
 #   ratio ≤ WARN   → ✅ vert (cadence saine)
 #   WARN < ratio ≤ MAX → ⚠️  warning visible mais pas de blocage
-#   ratio > MAX    → ❌ fail bloquant (la PR ne peut pas merger)
-#   feat = 0       → ❌ fail bloquant (aucune feat dans la fenêtre = urgence)
+#   ratio > MAX et ENFORCE=true  → ❌ fail bloquant
+#   ratio > MAX et ENFORCE=false → ⚠️  warning uniquement (phase de calibration)
+#   feat = 0 et ENFORCE=true     → ❌ fail bloquant
 #
 # La fenêtre glissante sur la branche BASE (main) reflète l'historique réel,
 # pas les commits de la PR en cours — le gate porte sur l'état de santé de
 # main, pas sur le type de la PR individuelle.
 #
-# Ce workflow EST dans les checks requis (bloquant).
+# Phase de déploiement (2026-08-26) :
+#   ENFORCE=false — signal fort, pas verrou. Même pattern que merge-quota-guard
+#   (#5634) qui a démarré en warning avant d'être bloquant. Activer via
+#   vars.FIX_FEAT_RATIO_ENFORCE='true' une fois ratio < 3.5 sur 30 jours.
+#
+# Ce workflow N'EST PAS dans les checks requis lors de son introduction.
+# Il deviendra requis quand ratio(main, 30j) < 3.5 (déclenchement manuel PM).
 
 on:
   pull_request:
@@ -146,6 +154,8 @@ jobs:
           PY
 
       - name: Évaluer le résultat
+        env:
+          ENFORCE: ${{ vars.FIX_FEAT_RATIO_ENFORCE || 'false' }}
         run: |
           echo "=== Résultat du ratio fix/feat ==="
           echo "  fix:*   : ${RATIO_FIXES}"
@@ -154,22 +164,38 @@ jobs:
           echo "  fenêtre : ${RATIO_DAYS} jours"
           echo "  seuil ⚠️  : ≤ ${RATIO_WARN}"
           echo "  seuil ❌ : > ${RATIO_MAX}"
+          echo "  enforce : ${ENFORCE}"
           echo "  statut  : ${RATIO_STATUS}"
+          echo ""
+          if [[ "${ENFORCE}" != "true" ]]; then
+            echo "ℹ️  Phase de calibration — FIX_FEAT_RATIO_ENFORCE=false : résultat informatif uniquement."
+            echo "   Activer vars.FIX_FEAT_RATIO_ENFORCE=true quand ratio(main,30j) < 3.5."
+          fi
 
           case "${RATIO_STATUS}" in
             ok)
-              echo "✅ Ratio fix/feat OK."
+              echo "✅ Ratio fix/feat OK (${RATIO_VALUE} ≤ ${RATIO_WARN})."
               ;;
             warn)
               echo "::warning::Ratio fix/feat élevé (${RATIO_VALUE} > cible ${RATIO_WARN}) — planifier des features."
               ;;
             no_feat)
-              echo "::error::Aucune feat: sur ${RATIO_DAYS} jours — impossible de calculer un ratio sain. Implémenter au moins une feature avant de merger."
-              exit 1
+              MSG="Aucune feat: sur ${RATIO_DAYS} jours (${RATIO_FIXES} fix:) — ratio non calculable. Implémenter au moins une feature."
+              if [[ "${ENFORCE}" == "true" ]]; then
+                echo "::error::${MSG}"
+                exit 1
+              else
+                echo "::warning::${MSG}"
+              fi
               ;;
             fail)
-              echo "::error::Ratio fix/feat trop élevé (${RATIO_VALUE} > seuil ${RATIO_MAX}). Objectif ≤ ${RATIO_WARN}. Voir issue #5634 et PILOTAGE.md."
-              exit 1
+              MSG="Ratio fix/feat trop élevé (${RATIO_VALUE} > seuil ${RATIO_MAX}). Objectif ≤ ${RATIO_WARN}. Voir PILOTAGE.md."
+              if [[ "${ENFORCE}" == "true" ]]; then
+                echo "::error::${MSG}"
+                exit 1
+              else
+                echo "::warning::${MSG}"
+              fi
               ;;
             skip)
               echo "ℹ️  Aucun commit conventionnel fix:/feat: détecté — ratio non applicable."
