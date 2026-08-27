@@ -33,10 +33,20 @@ return [
 
     'voice' => [
         'stt_provider' => env('AI_STT_PROVIDER', 'whisper'),
-        'tts_provider' => env('AI_TTS_PROVIDER', 'edge_tts'),
+        // Issue #5616 (P0-SEC) : edge-tts est un binaire externe (pip) qui
+        // n'est pas garanti en prod et repose sur exec(). Si une clé
+        // ElevenLabs est configurée, on préfère le provider cloud (pas
+        // d'exec(), pas de dépendance binaire) ; sinon edge_tts reste le
+        // défaut documenté (voir Dockerfile.prod pour l'installation).
+        'tts_provider' => env(
+            'AI_TTS_PROVIDER',
+            env('ELEVENLABS_API_KEY') ? 'elevenlabs' : 'edge_tts',
+        ),
         'deepgram_key' => env('DEEPGRAM_API_KEY'),
         'elevenlabs_key' => env('ELEVENLABS_API_KEY'),
         'elevenlabs_default_voice' => env('ELEVENLABS_DEFAULT_VOICE', '21m00Tcm4TlvDq8ikWAM'),
+        // Chemin du binaire edge-tts (testable / override ops).
+        'edge_tts_binary' => env('EDGE_TTS_BINARY', 'edge-tts'),
     ],
 
     'agent' => [

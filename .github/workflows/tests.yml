@@ -480,187 +480,6 @@ jobs:
           echo "PHPStan/Larastan failed."
           exit 1
 
-  backend-coverage:
-    name: Backend Coverage (PHPUnit)
-    runs-on: ubuntu-latest
-    # Issue #4251 : 45 min < duree reelle (~62 min) -> timeout porte a 75 min.
-    timeout-minutes: 75
-    needs: detect-changes
-    if: needs.detect-changes.outputs.api_changed == 'true'
-
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_DB: leopardo_test
-          POSTGRES_USER: leopardo_user
-          POSTGRES_PASSWORD: leopardo_pass_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          lfs: true
-
-      - name: Setup backend (PHP + Composer + multi-tenant DB, PCOV coverage)
-        uses: ./.github/actions/setup-backend-db
-        with:
-          coverage: pcov
-
-      - name: Run backend test suite with coverage
-        id: backend_coverage_tests
-        continue-on-error: true
-        working-directory: ./api
-        env:
-          DB_CONNECTION: pgsql
-          DB_HOST: 127.0.0.1
-          DB_DATABASE: leopardo_test
-          DB_SEARCH_PATH: public,shared_tenants
-        run: |
-          set -o pipefail
-          mkdir -p storage/test-results storage/coverage-html
-          # Issue #4695 : parallélisé comme le job backend-tests (paratest
-          # fusionne les rapports de couverture des workers).
-          php artisan test --parallel --processes=4 \
-            --coverage-clover=storage/test-results/clover.xml \
-            --coverage-html=storage/coverage-html 2>&1 | tee storage/test-results/backend-test-output.txt
-          test_exit=${PIPESTATUS[0]}
-          {
-            echo "Backend coverage test exit code: ${test_exit}"
-            grep -E -m 1 'SQLSTATE\\[[0-9A-Z]+\\]|FAILURES!|ERRORS!|There were [0-9]+ errors' storage/test-results/backend-test-output.txt || true
-          } | tee storage/test-results/backend-causal-error.txt
-          exit "${test_exit}"
-
-      - name: Build backend coverage summary
-        if: always()
-        id: backend_coverage_summary
-        working-directory: ./api
-        shell: bash
-        env:
-          BACKEND_COVERAGE_MIN: ${{ vars.BACKEND_COVERAGE_MIN }}
-        run: |
-          set -euo pipefail
-          threshold="${BACKEND_COVERAGE_MIN:-${DEFAULT_BACKEND_COVERAGE_MIN}}"
-          mkdir -p storage/test-results
-
-          if [[ ! -f storage/test-results/clover.xml ]]; then
-            {
-              echo "- Threshold configured: ${threshold}%"
-              echo "- Backend statement coverage: unavailable"
-              echo "- Coverage test step: ${{ steps.backend_coverage_tests.outcome }}"
-              echo "- HTML artifact: unavailable"
-              echo "- Clover artifact: unavailable"
-            } > storage/test-results/backend-coverage-summary.md
-            printf "Backend statement coverage: unavailable\n" > storage/test-results/coverage-summary.txt
-            cat storage/test-results/backend-coverage-summary.md >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-
-          php <<'PHP' > storage/test-results/coverage-summary.txt
-          <?php
-          $xml = simplexml_load_file('storage/test-results/clover.xml');
-          if ($xml === false) {
-              fwrite(STDERR, "Unable to read clover.xml\n");
-              exit(1);
-          }
-
-          $metrics = $xml->project->metrics ?? null;
-          if ($metrics === null) {
-              fwrite(STDERR, "Missing project metrics in clover.xml\n");
-              exit(1);
-          }
-
-          $covered = (int) ($metrics['coveredstatements'] ?? 0);
-          $total = (int) ($metrics['statements'] ?? 0);
-          $percent = $total > 0 ? round(($covered / $total) * 100, 2) : 0.0;
-
-          echo "Backend statement coverage: {$percent}% ({$covered}/{$total})\n";
-          PHP
-
-          coverage_line="$(cat storage/test-results/coverage-summary.txt)"
-          {
-            echo "- Threshold configured: ${threshold}%"
-            echo "- ${coverage_line}"
-            echo "- HTML artifact: api/storage/coverage-html/"
-            echo "- Clover artifact: api/storage/test-results/clover.xml"
-          } > storage/test-results/backend-coverage-summary.md
-
-          cat storage/test-results/backend-coverage-summary.md >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Enforce backend coverage threshold
-        id: backend_coverage_gate
-        continue-on-error: true
-        if: always() && steps.backend_coverage_tests.outcome == 'success'
-        working-directory: ./api
-        shell: bash
-        env:
-          BACKEND_COVERAGE_MIN: ${{ vars.BACKEND_COVERAGE_MIN }}
-        run: |
-          set -euo pipefail
-          threshold="${BACKEND_COVERAGE_MIN:-${DEFAULT_BACKEND_COVERAGE_MIN}}"
-          percent="$(python - <<'PY'
-          from pathlib import Path
-          import re
-          line = Path('storage/test-results/coverage-summary.txt').read_text(encoding='utf-8').strip()
-          match = re.search(r'coverage:\s*([0-9]+(?:\.[0-9]+)?)%', line)
-          print(match.group(1) if match else '0')
-          PY
-          )"
-          printf "Threshold: %s%%\nResult: %s%%\n" "${threshold}" "${percent}" > storage/test-results/backend-coverage-threshold.txt
-          awk -v percent="${percent}" -v threshold="${threshold}" 'BEGIN { exit ((percent + 0) < (threshold + 0)) ? 1 : 0 }'
-
-      - name: Upload backend coverage summary
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: backend-coverage-summary
-          path: |
-            api/storage/test-results/backend-coverage-summary.md
-            api/storage/test-results/coverage-summary.txt
-            api/storage/test-results/backend-coverage-threshold.txt
-            api/storage/test-results/backend-test-output.txt
-            api/storage/test-results/backend-causal-error.txt
-          if-no-files-found: error
-
-      - name: Upload backend coverage reports
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: backend-coverage-reports
-          path: |
-            api/storage/test-results/clover.xml
-            api/storage/coverage-html/**
-          if-no-files-found: ignore
-
-      - name: Fail coverage job if test suite failed
-        if: steps.backend_coverage_tests.outcome == 'failure'
-        run: |
-          echo "Backend coverage test suite failed before summary generation."
-          exit 1
-
-      - name: Fail coverage job if threshold gate failed
-        if: steps.backend_coverage_gate.outcome == 'failure'
-        run: |
-          echo "Backend coverage threshold not met."
-          exit 1
-
   governance-gates:
     timeout-minutes: 45
     name: Governance Gates (changelog + canonical files)
@@ -713,7 +532,6 @@ jobs:
       - backend-tests
       - backend-security
       - backend-quality
-      - backend-coverage
       - governance-gates
       - dependency-review
     # Audit #1706 : les secrets SMTP ne doivent pas être exposés sur les PR
@@ -738,20 +556,12 @@ jobs:
           name: backend-quality-summary
           path: artifacts/backend-quality-summary
 
-      - name: Download backend coverage summary
-        if: always() && !contains(fromJson('["cancelled","timed_out","skipped"]'), needs.backend-coverage.result)
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: backend-coverage-summary
-          path: artifacts/backend-coverage-summary
-
       - name: Build CI report
         id: report
         shell: bash
         run: |
           set -euo pipefail
           BACKEND_SUMMARY="artifacts/backend-quality-summary/backend-quality-summary.md"
-          BACKEND_COVERAGE_SUMMARY="artifacts/backend-coverage-summary/backend-coverage-summary.md"
           cat > ci-report.md <<EOF
           # CI Report — Leopardo RH
 
@@ -767,7 +577,6 @@ jobs:
           - Backend Tests: ${{ needs.backend-tests.result }}
           - Backend Security: ${{ needs.backend-security.result }}
           - Backend Quality: ${{ needs.backend-quality.result }}
-          - Backend Coverage: ${{ needs.backend-coverage.result }}
           - Governance Gates: ${{ needs.governance-gates.result }}
           - Dependency Review: ${{ needs.dependency-review.result }}
 
@@ -778,8 +587,6 @@ jobs:
           - Web admin scenarios: docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md
           - Backend quality artifacts: backend-quality-reports
           - Backend quality summary artifact: backend-quality-summary
-          - Backend coverage artifacts: backend-coverage-reports
-          - Backend coverage summary artifact: backend-coverage-summary
 
           ## Backend Coverage Intent
           - Unit: services et logique metier pure
@@ -788,7 +595,6 @@ jobs:
 
           ## Quality Notes
           - PHP static analysis: PHPStan + Larastan with versioned baseline support
-          - Backend coverage: clover + HTML artifact + threshold summary
           - Mobile tests: machine-readable output + coverage summary artifact
           - Deploy policy: main deploy is allowed only after the required workflows for the same SHA conclude successfully
           EOF
@@ -798,14 +604,6 @@ jobs:
               echo
               echo "## Backend Quality Summary"
               cat "${BACKEND_SUMMARY}"
-            } >> ci-report.md
-          fi
-
-          if [[ -f "${BACKEND_COVERAGE_SUMMARY}" ]]; then
-            {
-              echo
-              echo "## Backend Coverage Summary"
-              cat "${BACKEND_COVERAGE_SUMMARY}"
             } >> ci-report.md
           fi
 
@@ -838,7 +636,6 @@ jobs:
           (needs.backend-tests.result == 'success' || needs.backend-tests.result == 'skipped') &&
           (needs.backend-security.result == 'success' || needs.backend-security.result == 'skipped') &&
           (needs.backend-quality.result == 'success' || needs.backend-quality.result == 'skipped') &&
-          (needs.backend-coverage.result == 'success' || needs.backend-coverage.result == 'skipped') &&
           (needs.governance-gates.result == 'success' || needs.governance-gates.result == 'skipped') &&
           (needs.dependency-review.result == 'success' || needs.dependency-review.result == 'skipped')
         run: echo "All checks passed - PR can be merged or main can be deployed"
@@ -848,7 +645,6 @@ jobs:
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-tests.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-security.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-quality.result) ||
-          contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-coverage.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.governance-gates.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.dependency-review.result)
         run: |

@@ -24,9 +24,10 @@ on:
 permissions:
   contents: read
 
-# Issue #5629 : annuler les runs PR obsolètes pour libérer les runners.
+# Issue #5629 (saturation CI) : concurrency aligné sur le reste du repo —
+# un push annule le run PR précédent de la même branche (jamais sur main).
 concurrency:
-  group: e2e-isolated-${{ github.ref }}
+  group: e2e-isolated-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
