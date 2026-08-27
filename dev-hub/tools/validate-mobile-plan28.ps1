@@ -131,6 +131,13 @@ if (Test-Path -LiteralPath $employeeRoot) {
 
 if (Test-Path -LiteralPath $managerRoot) {
     $managerContent = Get-DartContent $managerRoot
+    # #5279 (dé-duplication mobile) : les écrans/actions approve/reject vivent
+    # dans leopardo_core (ré-exportés par le manager, ex. app.dart routes).
+    # Le contrat manager = manager + core (même pattern que
+    # validate-mobile-release-readiness.ps1).
+    if (Test-Path -LiteralPath $coreRoot) {
+        $managerContent += "`n" + (Get-DartContent $coreRoot)
+    }
     $managerRequiredTokens = @(
         "approveAbsence",
         "rejectAbsence",

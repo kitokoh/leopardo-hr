@@ -1666,6 +1666,104 @@ paths:
           description: Non authentifié
         '404':
           description: Demande introuvable
+  /user/companies/search:
+    get:
+      tags:
+      - User
+      summary: Rechercher des entreprises (demande d'integration)
+      description: Recherche d'entreprises par nom pour le formulaire de demande d'integration (type creation/integration).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Resultats de recherche
+        '401':
+          $ref: '#/components/responses/Error401'
+  /user/company-integration-requests:
+    get:
+      tags:
+      - User
+      summary: Lister mes demandes d'integration
+      description: Liste les demandes d'integration du user courant (statut, entreprise cible).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Demandes du user
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - User
+      summary: Creer une demande d'integration
+      description: Cree une demande d'integration vers une entreprise existante (anti-doublon 409, limite 5 demandes en attente).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              - target_company_id
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - creation
+                  - integration
+                target_company_id:
+                  type: string
+                sector:
+                  type: string
+      responses:
+        '200':
+          description: Demande creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '409':
+          description: Demande deja en attente
+        '422':
+          $ref: '#/components/responses/Error422'
+  /user/personal-statuses:
+    patch:
+      tags:
+      - User
+      summary: Mettre a jour les statuts personnels
+      description: Met a jour la liste des statuts cumulables du user courant (student/employee/entrepreneur/seeking_employment). Liste vide autorisee (reset).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                personal_statuses:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                    - student
+                    - employee
+                    - entrepreneur
+                    - seeking_employment
+      responses:
+        '200':
+          description: Statuts mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
   /user/employee-links:
     get:
       tags:
@@ -2133,6 +2231,115 @@ paths:
           description: Progression de l'onboarding
         '401':
           $ref: '#/components/responses/Error401'
+  /company-integration-requests:
+    get:
+      tags:
+      - User
+      summary: Lister les demandes d'integration de mon entreprise (manager)
+      description: Liste tenant-scope des demandes d'integration recues (manager/principal).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Demandes recues
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /company-integration-requests/{id}/accept:
+    post:
+      tags:
+      - User
+      summary: Accepter une demande d'integration (manager)
+      description: Accepte la demande et cree le lien user-entreprise (idempotent, 404 si demande hors tenant).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Demande acceptee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Demande introuvable
+  /company-integration-requests/{id}/reject:
+    post:
+      tags:
+      - User
+      summary: Refuser une demande d'integration (manager)
+      description: Refuse la demande d'integration (404 si demande hors tenant).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Demande refusee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Demande introuvable
+  /company/banking:
+    get:
+      tags:
+      - HR Referentials
+      summary: Lire les coordonnees bancaires de l'entreprise
+      description: Retourne les coordonnees bancaires (RIB/IBAN) et parametres de la compagnie.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Coordonnees bancaires
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    patch:
+      tags:
+      - HR Referentials
+      summary: Mettre a jour les coordonnees bancaires de l'entreprise
+      description: Met a jour les coordonnees bancaires de la compagnie (RBAC principal/comptable).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bank_name:
+                  type: string
+                iban:
+                  type: string
+                bic:
+                  type: string
+                rib:
+                  type: string
+                account_holder:
+                  type: string
+      responses:
+        '200':
+          description: Coordonnees mises a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
   /company-requests:
     get:
       tags:
@@ -22179,6 +22386,61 @@ paths:
                     $ref: '#/components/schemas/AccountingActivation'
         '403':
           $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - Accounting
+      summary: Activer le module Comptabilite (wizard 4 etapes, #5626)
+      description: 'Execute l''activation complete : parametrage (langue des documents, devise, taux TVA, series de numerotation, modele PDF, mentions) puis creation du contact de test et de la facture d''exemple. Idempotent (RBAC principal/comptable).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  example: DZD
+                document_language:
+                  type: string
+                  example: fr
+                tva_rates:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      label:
+                        type: string
+                      rate:
+                        type: number
+                number_series:
+                  type: object
+                  additionalProperties:
+                    type: string
+                template_style:
+                  type: string
+                payment_terms:
+                  type: string
+                legal_mentions:
+                  type: string
+      responses:
+        '200':
+          description: Activation completee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AccountingActivation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
   /accounting/audit-logs:
     get:
       tags:
@@ -24009,6 +24271,27 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /voice/tts/{filename}:
+    get:
+      tags:
+      - AI
+      summary: Servir un fichier TTS genere (edge-tts / elevenlabs)
+      description: Retourne le fichier audio TTS genere (accel du stockage). Fail-closed si le binaire edge-tts est indisponible.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: filename
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Fichier audio
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Fichier introuvable
 components:
   securitySchemes:
     BearerAuth:

@@ -45,7 +45,7 @@ jest.mock('framer-motion', () => {
       return Promise.resolve({
         json: async () => ({
           data: {
-            steps: [{ key: 'employees_added', label: 'Equipe', completed: false, metrics: { employees_count: 3 } }],
+            steps: [{ key: 'employees_added', label: 'Premier employé', completed: false, metrics: { employees_count: 3 } }],
           },
         }),
       } as Response);
@@ -68,7 +68,7 @@ jest.mock('framer-motion', () => {
         steps: [
           {
             id: 9,
-            step_key: 'first_checkin',
+            step_key: 'first_attendance',
             title: 'Premier pointage',
             description: null,
             status: 'pending',
@@ -140,8 +140,8 @@ const checklistPayload = {
     steps: [
       {
         id: 1,
-        step_key: 'add_employees',
-        title: 'Ajouter des employés',
+        step_key: 'first_employee',
+        title: 'Premier employé',
         description: null,
         status: 'pending',
         order: 1,
@@ -149,8 +149,8 @@ const checklistPayload = {
       },
       {
         id: 2,
-        step_key: 'setup_schedules',
-        title: 'Définir les horaires',
+        step_key: 'configure_schedules',
+        title: 'Configurer les horaires',
         description: null,
         status: 'pending',
         order: 2,
@@ -177,8 +177,8 @@ describe('OnboardingWizard', () => {
     render(<OnboardingWizard user={managerUser} onComplete={jest.fn()} />);
 
     // Titres localisés depuis le copy tree (pas les titres FR seedés du backend).
-    expect((await screen.findAllByText('Ajoutez vos équipes')).length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Définissez les horaires').length).toBeGreaterThan(0);
+    expect((await screen.findAllByText('Premier employé')).length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Configurer les horaires').length).toBeGreaterThan(0);
     // Badge d'étape localisé (plus de « Étape » en dur).
     expect(screen.getByText('Étape 1 sur 2')).toBeInTheDocument();
   });
@@ -191,12 +191,12 @@ describe('OnboardingWizard', () => {
     const onComplete = jest.fn();
     render(<OnboardingWizard user={managerUser} onComplete={onComplete} />);
 
-    await screen.findAllByText('Ajoutez vos équipes');
+    await screen.findAllByText('Premier employé');
 
     // Étape 1 (requise) : « Suivant » → PATCH complete.
     await userEvent.click(screen.getByRole('button', { name: /Suivant/i }));
     await waitFor(() =>
-      expect(mockedApiFetch).toHaveBeenCalledWith('/onboarding-setup/add_employees/complete', {
+      expect(mockedApiFetch).toHaveBeenCalledWith('/onboarding-setup/first_employee/complete', {
         method: 'PATCH',
       })
     );
@@ -205,7 +205,7 @@ describe('OnboardingWizard', () => {
     // Étape 2 (dernière, optionnelle) : « Terminer » → PATCH complete.
     await userEvent.click(screen.getByRole('button', { name: /Terminer/i }));
     await waitFor(() =>
-      expect(mockedApiFetch).toHaveBeenCalledWith('/onboarding-setup/setup_schedules/complete', {
+      expect(mockedApiFetch).toHaveBeenCalledWith('/onboarding-setup/configure_schedules/complete', {
         method: 'PATCH',
       })
     );
@@ -224,13 +224,13 @@ describe('OnboardingWizard', () => {
 
     render(<OnboardingWizard user={managerUser} onComplete={jest.fn()} />);
 
-    await screen.findAllByText('Ajoutez vos équipes');
+    await screen.findAllByText('Premier employé');
     await userEvent.click(screen.getByRole('button', { name: /Suivant/i }));
 
-    await screen.findAllByText('Définissez les horaires');
+    await screen.findAllByText('Configurer les horaires');
     await userEvent.click(screen.getByRole('button', { name: /Passer cette étape/i }));
     await waitFor(() =>
-      expect(mockedApiFetch).toHaveBeenCalledWith('/onboarding-setup/setup_schedules/skip', {
+      expect(mockedApiFetch).toHaveBeenCalledWith('/onboarding-setup/configure_schedules/skip', {
         method: 'PATCH',
       })
     );
@@ -249,7 +249,7 @@ describe('OnboardingWizard', () => {
       json: async () => checklistPayload,
     } as Response);
     await userEvent.click(screen.getByRole('button', { name: /Réessayer/i }));
-    expect((await screen.findAllByText('Ajoutez vos équipes')).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText('Premier employé')).length).toBeGreaterThan(0);
   });
 
   it('shows the Quick Start badge when the company has fewer than 15 employees (#4939)', async () => {
@@ -261,7 +261,7 @@ describe('OnboardingWizard', () => {
       return Promise.resolve({
         json: async () => ({
           data: {
-            steps: [{ key: 'employees_added', label: 'Equipe', completed: false, metrics: { employees_count: 3 } }],
+            steps: [{ key: 'employees_added', label: 'Premier employé', completed: false, metrics: { employees_count: 3 } }],
           },
         }),
       } as Response);
@@ -284,7 +284,7 @@ describe('OnboardingWizard', () => {
         steps: [
           {
             id: 9,
-            step_key: 'first_checkin',
+            step_key: 'first_attendance',
             title: 'Premier pointage',
             description: null,
             status: 'pending',

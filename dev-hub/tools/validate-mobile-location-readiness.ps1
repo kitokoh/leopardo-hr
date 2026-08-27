@@ -55,14 +55,24 @@ foreach ($app in $apps) {
         Assert-Contains $providers "attendanceLocationServiceProvider" "$app providers local marker"
     }
 
+    # #5279 (dé-duplication mobile, lot 2) : depuis que le repository/provider
+    # attendance vivent dans leopardo_core, les apps peuvent ré-exporter
+    # l'implémentation partagée (comme core_providers plus haut). Accepter les
+    # deux formes : ré-export core OU markers locaux (apps pas encore migrées,
+    # ex. employee). Les marqueurs gps_lat/gps_lng/gps_accuracy et
+    # currentForAttendance/gpsAccuracy vivent alors dans leopardo_core.
     $attendanceProvider = Read-RepoFile "front/mobile_apps/leopardo_$app/lib/features/attendance/providers/attendance_provider.dart"
-    Assert-Contains $attendanceProvider "currentForAttendance" "$app attendance provider"
-    Assert-Contains $attendanceProvider "gpsAccuracy" "$app attendance provider"
+    if ($attendanceProvider -notlike "*package:leopardo_core/features/attendance/providers/attendance_provider.dart*") {
+        Assert-Contains $attendanceProvider "currentForAttendance" "$app attendance provider"
+        Assert-Contains $attendanceProvider "gpsAccuracy" "$app attendance provider"
+    }
 
     $repository = Read-RepoFile "front/mobile_apps/leopardo_$app/lib/features/attendance/data/attendance_repository.dart"
-    Assert-Contains $repository "gps_lat" "$app attendance repository"
-    Assert-Contains $repository "gps_lng" "$app attendance repository"
-    Assert-Contains $repository "gps_accuracy" "$app attendance repository"
+    if ($repository -notlike "*package:leopardo_core/features/attendance/data/attendance_repository.dart*") {
+        Assert-Contains $repository "gps_lat" "$app attendance repository"
+        Assert-Contains $repository "gps_lng" "$app attendance repository"
+        Assert-Contains $repository "gps_accuracy" "$app attendance repository"
+    }
 
     Write-Host "[mobile-location] ${app}: native permissions and attendance payload are ready."
 }

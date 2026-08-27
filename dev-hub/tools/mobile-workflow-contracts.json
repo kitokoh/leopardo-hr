@@ -488,17 +488,16 @@
             "Uri.encodeComponent(company.id)",
             "createCompany",
             "platformCountryDefaultsProvider",
-            "Creer le client",
-            "Pays du client",
-            "Activer immediatement",
             "companyHealth",
             "companySubscription",
             "companyFeatures",
             "plans",
             "updateCompanySubscription",
             "updateCompanyFeatures",
-            "Modifier abonnement",
-            "Modifier modules"
+            "_activateCompany(",
+            "_FeaturesSheet",
+            "_submit",
+            "platformCountryDefaultsProvider"
           ]
         },
         {
@@ -516,8 +515,8 @@
           "sourceTokens": [
             "context.push('/platform/company-requests')",
             "reviewCompanyRequest",
-            "Approuver",
-            "Refuser"
+            "_review(context, ref, true)",
+            "_review(context, ref, false)"
           ]
         }
       ]

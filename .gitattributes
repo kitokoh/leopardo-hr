@@ -16,6 +16,9 @@ CHANGELOG.md merge=union
 # Les fichiers LFS sont stockés hors-git (GitHub LFS) ; le checkout CI doit
 # utiliser actions/checkout avec lfs: true (fait sur tous les workflows).
 *.png   filter=lfs diff=lfs merge=lfs -text
+# assets/branding : PNG commités en binaire (pas de pointers LFS) — même
+# exception que front/web/public/*.png (#5698, valide-and-sync git diff).
+assets/branding/*.png !filter !diff !merge -text
 *.jpg   filter=lfs diff=lfs merge=lfs -text
 *.jpeg  filter=lfs diff=lfs merge=lfs -text
 *.webp  filter=lfs diff=lfs merge=lfs -text

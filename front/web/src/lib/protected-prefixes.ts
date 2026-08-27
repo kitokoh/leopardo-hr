@@ -16,6 +16,9 @@ export const PROTECTED_PREFIXES = [
   '/dashboard',
   '/absences',
   '/attendance',
+  // Sous-route géo du pointage (issue #5407) : données GPS fraîches —
+  // exclue du pré-cache sw.js (protégée comme /attendance/* par le middleware).
+  '/attendance/geo',
   '/billing',
   '/contracts',
   '/employees',

@@ -815,13 +815,13 @@ function init() {
 // En production (flag absent ou false), le bouton est masqué et la
 // constante DEMO_COMPANIES n'est jamais déclarée dans le scope global.
 function initDemoAccess() {
-  const openBtn = $(\'#demoAccessBtn\');
+  const openBtn = $('#demoAccessBtn');
 
-  // Guard : cacher le bouton et ne pas initialiser si on n\'est pas en mode démo.
+  // Guard : cacher le bouton et ne pas initialiser si on n'est pas en mode démo.
   if (!window.__KIOSK_DEMO_MODE) {
     if (openBtn) {
-      openBtn.classList.add(\'hidden\');
-      openBtn.setAttribute(\'aria-hidden\', \'true\');
+      openBtn.classList.add('hidden');
+      openBtn.setAttribute('aria-hidden', 'true');
     }
     return;
   }
@@ -829,38 +829,38 @@ function initDemoAccess() {
   // Données de démo — déclarées localement, jamais exposées en prod.
   const DEMO_COMPANIES = [
     {
-      name: \'TechCorp Algerie SARL\', country: \'DZ\',
+      name: 'TechCorp Algerie SARL', country: 'DZ',
       employees: [
-        { matricule: \'DZ-EMP-001\', name: \'Ahmed Benali\', email: \'ahmed.benali@techcorp-algerie.dz\', role: \'principal\' },
-        { matricule: \'DZ-EMP-002\', name: \'Fatima Meziane\', email: \'fatima.meziane@techcorp-algerie.dz\', role: \'rh\' },
-        { matricule: \'DZ-EMP-003\', name: \'Karim Aouad\', email: \'karim.aouad@techcorp-algerie.dz\', role: \'employee\' },
+        { matricule: 'DZ-EMP-001', name: 'Ahmed Benali', email: 'ahmed.benali@techcorp-algerie.dz', role: 'principal' },
+        { matricule: 'DZ-EMP-002', name: 'Fatima Meziane', email: 'fatima.meziane@techcorp-algerie.dz', role: 'rh' },
+        { matricule: 'DZ-EMP-003', name: 'Karim Aouad', email: 'karim.aouad@techcorp-algerie.dz', role: 'employee' },
       ],
     },
     {
-      name: \'PharmaPlus Casablanca\', country: \'MA\',
+      name: 'PharmaPlus Casablanca', country: 'MA',
       employees: [
-        { matricule: \'MA-EMP-001\', name: \'Amina Tahiri\', email: \'amina.tahiri@pharmaplus.ma\', role: \'principal\' },
-        { matricule: \'MA-EMP-002\', name: \'Sara Mansouri\', email: \'sara.mansouri@pharmaplus.ma\', role: \'rh\' },
-        { matricule: \'MA-EMP-003\', name: \'Youssef Bennani\', email: \'youssef.bennani@pharmaplus.ma\', role: \'employee\' },
+        { matricule: 'MA-EMP-001', name: 'Amina Tahiri', email: 'amina.tahiri@pharmaplus.ma', role: 'principal' },
+        { matricule: 'MA-EMP-002', name: 'Sara Mansouri', email: 'sara.mansouri@pharmaplus.ma', role: 'rh' },
+        { matricule: 'MA-EMP-003', name: 'Youssef Bennani', email: 'youssef.bennani@pharmaplus.ma', role: 'employee' },
       ],
     },
     {
-      name: \'DigitalFlow Tunis\', country: \'TN\',
+      name: 'DigitalFlow Tunis', country: 'TN',
       employees: [
-        { matricule: \'TN-EMP-001\', name: \'Sofiane Mrad\', email: \'sofiane.mrad@digitalflow.tn\', role: \'principal\' },
-        { matricule: \'TN-EMP-002\', name: \'Olfa Trabelsi\', email: \'olfa.trabelsi@digitalflow.tn\', role: \'rh\' },
-        { matricule: \'TN-EMP-003\', name: \'Aziz Khelifi\', email: \'aziz.khelifi@digitalflow.tn\', role: \'employee\' },
+        { matricule: 'TN-EMP-001', name: 'Sofiane Mrad', email: 'sofiane.mrad@digitalflow.tn', role: 'principal' },
+        { matricule: 'TN-EMP-002', name: 'Olfa Trabelsi', email: 'olfa.trabelsi@digitalflow.tn', role: 'rh' },
+        { matricule: 'TN-EMP-003', name: 'Aziz Khelifi', email: 'aziz.khelifi@digitalflow.tn', role: 'employee' },
       ],
     },
   ];
 
-  const overlay = $(\'#demoOverlay\');
-  const list = $(\'#demoUsersList\');
-  const closeBtn = $(\'#demoCloseBtn\');
+  const overlay = $('#demoOverlay');
+  const list = $('#demoUsersList');
+  const closeBtn = $('#demoCloseBtn');
 
   if (!overlay || !list || !openBtn) return;
 
-  let html = \'\';
+  let html = '';
   for (const company of DEMO_COMPANIES) {
     html += `<div class="demo-company-title">${escapeHtml(company.name)} (${escapeHtml(company.country)})</div>`;
     for (const emp of company.employees) {
@@ -873,21 +873,21 @@ function initDemoAccess() {
   }
   list.innerHTML = html;
 
-  openBtn.addEventListener(\'click\', () => overlay.classList.remove(\'hidden\'));
-  if (closeBtn) closeBtn.addEventListener(\'click\', () => overlay.classList.add(\'hidden\'));
-  overlay.addEventListener(\'click\', (e) => { if (e.target === overlay) overlay.classList.add(\'hidden\'); });
+  openBtn.addEventListener('click', () => overlay.classList.remove('hidden'));
+  if (closeBtn) closeBtn.addEventListener('click', () => overlay.classList.add('hidden'));
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.add('hidden'); });
 
-  list.addEventListener(\'click\', (e) => {
-    const btn = e.target.closest(\'.demo-user-btn\');
+  list.addEventListener('click', (e) => {
+    const btn = e.target.closest('.demo-user-btn');
     if (!btn) return;
     const matricule = btn.dataset.matricule;
     if (els.identifier) els.identifier.value = matricule;
-    const infoId = $(\'#infoIdentifier\');
+    const infoId = $('#infoIdentifier');
     if (infoId) infoId.value = matricule;
-    const leaveId = $(\'#leaveIdentifier\');
+    const leaveId = $('#leaveIdentifier');
     if (leaveId) leaveId.value = matricule;
-    overlay.classList.add(\'hidden\');
-    setStatus(\'#statusBox\', t(\'demo.selected\', { matricule }));
+    overlay.classList.add('hidden');
+    setStatus('#statusBox', t('demo.selected', { matricule }));
   });
 }
 

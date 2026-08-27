@@ -74,6 +74,7 @@ export const config = {
     '/dashboard/:path*',
     '/absences/:path*',
     '/attendance/:path*',
+    '/attendance/geo/:path*', // géo pointage (source unique #3377)
     '/billing/:path*',
     '/contracts/:path*',
     '/employees/:path*',

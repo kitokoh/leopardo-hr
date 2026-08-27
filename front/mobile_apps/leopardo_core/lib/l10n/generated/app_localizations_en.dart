@@ -303,6 +303,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonRequired => 'Required';
 
   @override
+  String get commonDismiss => 'Dismiss';
+
+  @override
   String get modulesAttendance => 'Attendance';
 
   @override
@@ -3426,6 +3429,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shellTeam => 'Team';
 
   @override
+  String get shellHome => 'Home';
+
+  @override
+  String get shellAttendance => 'Attendance';
+
+  @override
+  String get shellAbsences => 'Absences';
+
+  @override
+  String get shellApprovals => 'Approvals';
+
+  @override
   String get exportsReportemployees => 'Employees';
 
   @override
@@ -4235,6 +4250,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contractsAllstatuses => 'All statuses';
+
+  @override
+  String get contractsMobileTitle => 'My Contract';
+
+  @override
+  String get contractsBackTooltip => 'Back';
+
+  @override
+  String get contractsEmptyTitle => 'No contract';
+
+  @override
+  String get contractsEmptyDescription =>
+      'Your contract will appear here once configured.';
+
+  @override
+  String get contractsLabelType => 'Type';
+
+  @override
+  String get contractsLabelStartDate => 'Start';
+
+  @override
+  String get contractsLabelEndDate => 'End';
+
+  @override
+  String get contractsLabelBaseSalary => 'Base salary';
+
+  @override
+  String get contractsLoading => 'Loading contracts...';
+
+  @override
+  String get contractsStatusActive => 'Active';
+
+  @override
+  String get contractsStatusExpired => 'Expired';
+
+  @override
+  String get contractsStatusDraft => 'Draft';
+
+  @override
+  String get contractsStatusCdi => 'Permanent (CDI)';
 
   @override
   String get trainingTitleplaceholder => 'Title *';
@@ -6430,6 +6485,151 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountingactivationLoading => 'Loading…';
 
   @override
+  String get accountingactivationBannertitle =>
+      'Activate the Accounting module';
+
+  @override
+  String get accountingactivationBannerbody =>
+      'A few steps are required before you can issue your first invoices.';
+
+  @override
+  String get accountingactivationBannercta => 'Start activation';
+
+  @override
+  String get accountingactivationAddtvarate => 'Add a rate';
+
+  @override
+  String get accountingactivationFieldcurrency => 'Currency';
+
+  @override
+  String get accountingactivationFieldcurrencyhint =>
+      'Currency used for documents and accounting.';
+
+  @override
+  String get accountingactivationFielddefaultderived =>
+      'Default derived from country';
+
+  @override
+  String get accountingactivationFielddocumentlanguage => 'Document language';
+
+  @override
+  String get accountingactivationFieldlegalmentions => 'Legal mentions';
+
+  @override
+  String get accountingactivationFieldlegalmentionsplaceholder =>
+      'Legal mentions to display on documents…';
+
+  @override
+  String get accountingactivationFieldnumberseries => 'Number series';
+
+  @override
+  String get accountingactivationFieldnumberserieshint =>
+      'Prefix used to number each document type.';
+
+  @override
+  String get accountingactivationFieldpaymentterms => 'Payment terms';
+
+  @override
+  String get accountingactivationFieldpaymenttermsplaceholder =>
+      'e.g. Payment within 30 days';
+
+  @override
+  String get accountingactivationFieldtemplatestyle => 'PDF template';
+
+  @override
+  String get accountingactivationFieldtemplatestyleplaceholder => 'modern';
+
+  @override
+  String get accountingactivationFieldtvarates => 'VAT rates';
+
+  @override
+  String get accountingactivationRemovetvarate => 'Remove this rate';
+
+  @override
+  String get accountingactivationSeriesplaceholder => 'FAC-2026-0001';
+
+  @override
+  String get accountingactivationSeriesInvoice => 'Invoice';
+
+  @override
+  String get accountingactivationSeriesProforma => 'Proforma';
+
+  @override
+  String get accountingactivationSeriesQuote => 'Quote';
+
+  @override
+  String get accountingactivationSeriesCreditNote => 'Credit note';
+
+  @override
+  String get accountingactivationSeriesDeliveryNote => 'Delivery note';
+
+  @override
+  String get accountingactivationSeriesReceipt => 'Receipt';
+
+  @override
+  String get accountingactivationTvaratelabel => 'Rate label';
+
+  @override
+  String get accountingactivationTvaratelabelplaceholder => 'Standard VAT';
+
+  @override
+  String get accountingactivationTvaratevalue => 'Rate (%)';
+
+  @override
+  String get accountingactivationTvaratevalueplaceholder => '19';
+
+  @override
+  String get accountingactivationWizardback => 'Back';
+
+  @override
+  String get accountingactivationWizardfinish => 'Activate Accounting';
+
+  @override
+  String get accountingactivationWizardnext => 'Continue';
+
+  @override
+  String get accountingactivationWizardstep1title =>
+      'Identity & document language';
+
+  @override
+  String get accountingactivationWizardstep1subtitle =>
+      'Choose the document language and the company currency.';
+
+  @override
+  String get accountingactivationWizardstep2title => 'VAT & number series';
+
+  @override
+  String get accountingactivationWizardstep2subtitle =>
+      'Configure VAT rates and numbering prefixes.';
+
+  @override
+  String get accountingactivationWizardstep3title =>
+      'PDF template & legal mentions';
+
+  @override
+  String get accountingactivationWizardstep3subtitle =>
+      'Customize the document template and legal mentions.';
+
+  @override
+  String get accountingactivationWizardstep4title => 'Finalize activation';
+
+  @override
+  String get accountingactivationWizardstep4subtitle =>
+      'Review the settings then activate the module.';
+
+  @override
+  String get accountingactivationWizardstep4body =>
+      'The module will be activated with these settings. You can change them anytime from settings.';
+
+  @override
+  String accountingactivationWizardstepindicator(Object current, Object total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get accountingactivationWizardstepsaria => 'Setup steps';
+
+  @override
   String get accountingmoduleHometitle => 'Accounting';
 
   @override
@@ -7145,79 +7345,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get personalOnboardingStatusRejected => 'Rejected';
 
   @override
-  String get twoFaChallengeTitle => 'Two-factor verification';
-
-  @override
-  String get twoFaChallengeSubtitle =>
-      'Enter the 6-digit code from your authenticator app.';
-
-  @override
-  String get twoFaChallengeCodeHint => 'TOTP code (6 digits)';
-
-  @override
-  String get twoFaChallengeVerifyBtn => 'Verify';
-
-  @override
-  String get twoFaChallengeRecoveryToggle => 'Use a recovery code';
-
-  @override
-  String get twoFaChallengeRecoveryHint => 'Recovery code';
-
-  @override
-  String get twoFaChallengeInvalidError =>
-      'Invalid or expired code. Please try again.';
-
-  @override
-  String get shellHome => 'Home';
-
-  @override
-  String get shellAttendance => 'Attendance';
-
-  @override
-  String get shellAbsences => 'Absences';
-
-  @override
-  String get shellApprovals => 'Approvals';
-
-  @override
-  String get contractsMobileTitle => 'My Contract';
-
-  @override
-  String get contractsBackTooltip => 'Back';
-
-  @override
-  String get contractsEmptyTitle => 'No contract';
-
-  @override
-  String get contractsEmptyDescription =>
-      'Your contract will appear here once configured.';
-
-  @override
-  String get contractsLabelType => 'Type';
-
-  @override
-  String get contractsLabelStartDate => 'Start';
-
-  @override
-  String get contractsLabelEndDate => 'End';
-
-  @override
-  String get contractsLabelBaseSalary => 'Base salary';
-
-  @override
-  String get contractsLoading => 'Loading contracts...';
-
-  @override
-  String get contractsStatusActive => 'Active';
-
-  @override
-  String get contractsStatusExpired => 'Expired';
-
-  @override
-  String get contractsStatusDraft => 'Draft';
-
-  @override
-  String get contractsStatusCdi => 'Permanent (CDI)';
+  String personalOnboardingSearchError(Object error) {
+    return 'Search error: $error';
+  }
 
   @override
   String get organigrammeTitle => 'Org Chart';
@@ -7366,311 +7496,135 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supportTicketsLoadingTicket => 'Loading ticket';
 
   @override
-  String get settingsThemeTitle => 'Application theme';
+  String get twoFaTitle => 'Two-factor authentication';
 
   @override
-  String get settingsThemeHint =>
-      'Choose the theme shown regardless of the system configuration.';
+  String get twoFaSubtitle => 'Secure your account with a dynamic code.';
 
   @override
-  String get settingsThemeSystem => 'Automatic (system)';
+  String get twoFaScanPrompt => 'Scan this QR code';
+
+  @override
+  String get twoFaEnterCode => '6-digit code';
+
+  @override
+  String get twoFaConfirm => 'Confirm';
+
+  @override
+  String get twoFaDisable => 'Disable 2FA';
+
+  @override
+  String get twoFaDisableHint => 'Enter your current code to disable';
+
+  @override
+  String get twoFaRegenerate => 'Regenerate codes';
+
+  @override
+  String get twoFaRegenerateConfirm =>
+      'Old codes will be invalidated. Continue?';
+
+  @override
+  String get twoFaRequiredBanner =>
+      'Your company requires two-factor authentication';
+
+  @override
+  String get twoFaStatusEnabled => 'Enabled';
+
+  @override
+  String get twoFaStatusEnabledHint => 'Your account is protected by 2FA';
+
+  @override
+  String get twoFaStatusDisabled => 'Disabled';
+
+  @override
+  String get twoFaStatusDisabledHint => 'Enable 2FA to strengthen security';
+
+  @override
+  String get twoFaCopySecret => 'Copy secret';
+
+  @override
+  String get twoFaCopied => 'Copied';
+
+  @override
+  String get twoFaCopyAll => 'Copy all';
+
+  @override
+  String get twoFaAllCopied => 'All codes copied';
+
+  @override
+  String get twoFaRecoveryTitle => 'Recovery codes';
+
+  @override
+  String get twoFaRecoveryHint =>
+      'Keep these codes safe — they let you recover access if you lose your phone.';
+
+  @override
+  String get twoFaDoneHint => 'Once the codes are saved, confirm activation.';
+
+  @override
+  String get twoFaGenericError => 'Something went wrong.';
+
+  @override
+  String get twoFaInvalidCode => 'Invalid code. Try again.';
+
+  @override
+  String get twoFaLoading => 'Loading…';
+
+  @override
+  String get twoFaActivate => 'Enable 2FA';
+
+  @override
+  String get twoFaCancel => 'Cancel';
+
+  @override
+  String get twoFaCodeLabel => 'Code';
+
+  @override
+  String get twoFaCodeHint => '6-digit code';
+
+  @override
+  String get twoFaConfirmHint => 'Enter the code shown in your app';
+
+  @override
+  String get twoFaChallengeTitle => 'Two-step verification';
+
+  @override
+  String get twoFaChallengeSubtitle =>
+      'Enter the code from your authenticator app';
+
+  @override
+  String get twoFaChallengeCodeHint => '6-digit code';
+
+  @override
+  String get twoFaChallengeRecoveryHint =>
+      'Use a recovery code if you no longer have access to the app.';
+
+  @override
+  String get twoFaChallengeRecoveryToggle => 'Use a recovery code';
+
+  @override
+  String get twoFaChallengeVerifyBtn => 'Verify';
+
+  @override
+  String get twoFaSettingsTile => 'Two-factor authentication';
+
+  @override
+  String get twoFaSettingsTileSubtitle => 'Dynamic code required at sign-in';
+
+  @override
+  String get settingsThemeTitle => 'Theme';
+
+  @override
+  String get settingsThemeHint => 'Customize the app appearance';
+
+  @override
+  String get settingsThemeSystem => 'System';
 
   @override
   String get settingsThemeLight => 'Light';
 
   @override
   String get settingsThemeDark => 'Dark';
-
-  @override
-  String get settingsBiometricCaptureFace => 'Capture face';
-
-  @override
-  String get settingsBiometricConfirmIdentity =>
-      'Verify your identity to continue.';
-
-  @override
-  String get settingsBiometricConsentRequired =>
-      'Your consent is required before enabling biometrics.';
-
-  @override
-  String get settingsBiometricEnableFirst =>
-      'Enable biometrics first in settings.';
-
-  @override
-  String get settingsBiometricEnablePreparation =>
-      'Biometric activation preparation';
-
-  @override
-  String get settingsBiometricExplanation =>
-      'Use your fingerprint or face to sign in faster and secure your access.';
-
-  @override
-  String get settingsBiometricFaceRequired =>
-      'Camera permission is required for face recognition.';
-
-  @override
-  String get settingsBiometricFaceSelected => 'Face selected';
-
-  @override
-  String get settingsBiometricFaceWanted =>
-      'Do you want to enable face recognition?';
-
-  @override
-  String get settingsBiometricFingerprintWanted =>
-      'Do you want to enable fingerprint?';
-
-  @override
-  String get settingsBiometricFutureConsent => 'Consent for future activations';
-
-  @override
-  String get settingsBiometricLocalVerifyCancel =>
-      'Biometric verification cancelled.';
-
-  @override
-  String get settingsBiometricNotesHint => 'Internal notes (optional)';
-
-  @override
-  String get settingsBiometricNotesTitle => 'Enrollment notes';
-
-  @override
-  String get settingsBiometricPendingExplanation =>
-      'Waiting for your device confirmation…';
-
-  @override
-  String get settingsBiometricPreparationTitle =>
-      'Preparing biometric enrollment';
-
-  @override
-  String get settingsBiometricSavedLocal =>
-      'Biometric settings saved on this device.';
-
-  @override
-  String get settingsBiometricSensorHint => 'Place your finger on the sensor…';
-
-  @override
-  String get settingsBiometricSensorLabel => 'Sensor';
-
-  @override
-  String settingsBiometricSubmitFailed(Object error) {
-    return 'Biometric submission failed: $error';
-  }
-
-  @override
-  String get settingsBiometricSubmitted =>
-      'Biometric enrollment submitted for validation.';
-
-  @override
-  String settingsBiometricTodayStatus(Object face, Object fingerprint) {
-    return 'Face: $face · Fingerprint: $fingerprint';
-  }
-
-  @override
-  String get settingsCabinetDocuments => 'Documents';
-
-  @override
-  String get settingsCabinetPublic => 'Public';
-
-  @override
-  String get settingsCabinetShared => 'Shared';
-
-  @override
-  String get settingsCabinetSubtitle => 'Your documents and shared files.';
-
-  @override
-  String get settingsChannelEmailHint => 'Receive important alerts by email.';
-
-  @override
-  String get settingsChannelInApp => 'In-app';
-
-  @override
-  String get settingsChannelInAppHint => 'Notifications shown in the app.';
-
-  @override
-  String get settingsChannelPush => 'Push';
-
-  @override
-  String get settingsChannelPushHint => 'Push notifications on this device.';
-
-  @override
-  String get settingsChannelSmsHint => 'SMS for codes and critical alerts.';
-
-  @override
-  String get settingsChannelWhatsappHint =>
-      'WhatsApp if configured by the company.';
-
-  @override
-  String get settingsCompanyQrLabel => 'Company QR';
-
-  @override
-  String get settingsDigitalLockerSubtitle => 'Store your documents securely.';
-
-  @override
-  String get settingsDigitalLockerTitle => 'Digital locker';
-
-  @override
-  String get settingsEdgeAddressLabel => 'Edge node address';
-
-  @override
-  String get settingsEdgeCloudStatus => 'Cloud';
-
-  @override
-  String settingsEdgeCurrentStatus(Object label) {
-    return 'Current status: $label';
-  }
-
-  @override
-  String get settingsEdgeLocalStatus => 'Local Edge';
-
-  @override
-  String get settingsEdgeNodeHint =>
-      'Connect the app to a local Edge node for offline mode.';
-
-  @override
-  String get settingsEdgeNodeTitle => 'Edge node';
-
-  @override
-  String get settingsEdgeOfflineStatus => 'Offline';
-
-  @override
-  String get settingsEdgeRemoved => 'Edge node disconnected.';
-
-  @override
-  String get settingsEdgeTokenHint => 'Secret generated during pairing.';
-
-  @override
-  String get settingsEdgeTokenLabel => 'Edge token';
-
-  @override
-  String get settingsEdgeUuidHint => 'Unique node identifier.';
-
-  @override
-  String get settingsEdgeUuidLabel => 'Node UUID';
-
-  @override
-  String settingsJourneyAttachedTo(Object company) {
-    return 'Currently at $company';
-  }
-
-  @override
-  String get settingsJourneyAvailable => 'Available for a new company';
-
-  @override
-  String settingsJourneyCompanyPeriod(Object company, Object period) {
-    return '$company · $period';
-  }
-
-  @override
-  String get settingsJourneyYourCompany => 'your company';
-
-  @override
-  String get settingsLanguageSyncHint =>
-      'The chosen language also drives notifications and emails.';
-
-  @override
-  String get settingsLanguageUpdated => 'Language saved.';
-
-  @override
-  String get settingsNo => 'No';
-
-  @override
-  String get settingsNotificationsIntro =>
-      'Choose the channels through which you receive alerts.';
-
-  @override
-  String get settingsNotificationsLanguage => 'Notification language';
-
-  @override
-  String get settingsNotificationsSaved => 'Notification preferences saved.';
-
-  @override
-  String settingsNotificationsSaveFailed(Object error) {
-    return 'Saving failed: $error';
-  }
-
-  @override
-  String get settingsNotificationsUnavailable =>
-      'Notifications unavailable on this device.';
-
-  @override
-  String get settingsOpenLocker => 'Open locker';
-
-  @override
-  String get settingsPasswordModernizationHint =>
-      'Enable a stronger password to secure your account.';
-
-  @override
-  String get settingsPasteQrButton => 'Paste QR';
-
-  @override
-  String get settingsPersonalPhoneHint => 'Personal number (optional).';
-
-  @override
-  String get settingsPortableIdentityHint =>
-      'Your portable professional identity.';
-
-  @override
-  String get settingsPortableIdentitySubtitle =>
-      'QR code and company identity documents.';
-
-  @override
-  String get settingsPortableIdentityTitle => 'Portable identity';
-
-  @override
-  String get settingsProfessionalQr => 'Professional QR';
-
-  @override
-  String get settingsQrEmployeeHint => 'Show this QR to your employer.';
-
-  @override
-  String get settingsQrOnboardingSubtitle =>
-      'Quickly onboard at a new position.';
-
-  @override
-  String get settingsQrOnboardingTitle => 'QR onboarding';
-
-  @override
-  String get settingsQrPasted => 'QR code pasted.';
-
-  @override
-  String settingsQrRejected(Object error) {
-    return 'QR rejected: $error';
-  }
-
-  @override
-  String get settingsRecoveryEmailHint => 'Recovery email (optional).';
-
-  @override
-  String get settingsRemove => 'Remove';
-
-  @override
-  String get settingsRequestIntegration => 'Request integration';
-
-  @override
-  String get settingsSavingShort => 'Saving…';
-
-  @override
-  String get settingsSessionLogoutHint => 'Signs out on this device.';
-
-  @override
-  String get settingsSubmitBiometric => 'Submit enrollment';
-
-  @override
-  String get settingsSubmitting => 'Submitting…';
-
-  @override
-  String get settingsUpdateLanguage => 'Update language';
-
-  @override
-  String get settingsUpdatePassword => 'Update password';
-
-  @override
-  String get settingsUpdating => 'Updating…';
-
-  @override
-  String get settingsViewProfile => 'View profile';
-
-  @override
-  String get settingsYes => 'Yes';
 
   @override
   String get commonBack => 'Back';
@@ -7680,13 +7634,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get companiesActiveImmediatelyHint =>
-      'The change is applied immediately.';
+      'Activate immediately after creation';
 
   @override
-  String get companiesCompanyCreated => 'Company created';
+  String get companiesCompanyCreated => 'Company created successfully';
 
   @override
-  String get companiesCompanyEmail => 'Company email';
+  String get companiesCompanyEmail => 'Contact email';
 
   @override
   String get companiesCreateClient => 'Create client';
@@ -7701,16 +7655,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get companiesNewClient => 'New client';
 
   @override
-  String get companiesProvisioning => 'Provisioning';
+  String get companiesProvisioning => 'Platform provisioning';
 
   @override
   String get companiesRequiredField => 'Required field';
 
   @override
-  String get companiesTenantsPlatform => 'Tenancy platform';
+  String get companiesTenantsPlatform => 'Platform companies';
 
   @override
-  String get companiesTrialHint => 'Trial period';
+  String get companiesTrialHint => 'Start with a trial';
 
   @override
   String get companydetailActivateClient => 'Activate client';
@@ -7725,7 +7679,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get companydetailAnomaliesCritical => 'Critical anomalies';
 
   @override
-  String get companydetailChoosePlan => 'Choose a plan';
+  String get companydetailChoosePlan => 'Choose a plan to activate';
 
   @override
   String get companydetailClientActivated => 'Client activated';
@@ -7737,7 +7691,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get companydetailClientReference => 'Client reference';
 
   @override
-  String get companydetailCopyId => 'Copy ID';
+  String get companydetailCopyId => 'Copy';
 
   @override
   String get companydetailCoreModuleAlwaysActive => 'Core module always active';
@@ -7761,13 +7715,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get companydetailMonthlyPrice => 'Monthly price';
 
   @override
-  String get companydetailNextActions => 'Next actions';
+  String get companydetailNextActions => 'Recommended actions';
 
   @override
   String get companydetailNoUrgentActions => 'No urgent actions';
 
   @override
-  String get companydetailOptionalInternalNote => 'Optional internal note';
+  String get companydetailOptionalInternalNote => 'Internal note (optional)';
 
   @override
   String get companydetailPlan => 'Plan';
@@ -7779,7 +7733,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get companydetailProductAdoption => 'Product adoption';
 
   @override
-  String get companydetailRecommendedActionHint => 'Recommended action';
+  String get companydetailRecommendedActionHint =>
+      'Action recommended by the system';
 
   @override
   String get companydetailSaveModules => 'Save modules';
@@ -7800,7 +7755,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get companydetailSubscriptionUpdated => 'Subscription updated';
 
   @override
-  String get companydetailTenantIdHint => 'Tenancy ID';
+  String get companydetailTenantIdHint => 'Tenant ID — copy it for support';
 
   @override
   String get companydetailUndefined => 'Undefined';
@@ -7815,31 +7770,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get companyrequestsRejectedToast => 'Request rejected';
 
   @override
-  String get companyrequestsValidationSuperadmin => 'Super-admin only';
+  String get companyrequestsValidationSuperadmin => 'Super-admin validation';
 
   @override
-  String get dashboardActiveLabel => 'Active';
+  String get dashboardActiveLabel => 'Active companies';
 
   @override
   String get dashboardClientCompanies => 'Client companies';
 
   @override
-  String get dashboardClientCompaniesHint => 'Companies active on the platform';
+  String get dashboardClientCompaniesHint => 'Manage existing clients';
 
   @override
-  String get dashboardClientRequestsHint => 'Pending requests';
+  String get dashboardClientRequestsHint => 'Pending creation requests';
 
   @override
   String get dashboardCreateCompany => 'Create company';
 
   @override
-  String get dashboardCreateCompanyHint => 'Provision a new company';
+  String get dashboardCreateCompanyHint => 'Provision a new client';
 
   @override
   String get dashboardEdgeNodes => 'Edge nodes';
 
   @override
-  String get dashboardEdgeNodesHint => 'Nodes active on the network';
+  String get dashboardEdgeNodesHint => 'Kiosk and sync nodes';
 
   @override
   String get dashboardExecutiveView => 'Executive view';
@@ -7854,7 +7809,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardPlatformAdministration => 'Platform administration';
 
   @override
-  String get dashboardSuperAdmin => 'Super-admin';
+  String get dashboardSuperAdmin => 'Super admin';
 
   @override
   String get dashboardSupportClient => 'Client support';
@@ -7863,115 +7818,286 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardTicketsHint => 'Support tickets';
 
   @override
-  String get dashboardTrials => 'Trials';
+  String get dashboardTrials => 'Active trials';
 
   @override
-  String companydetailPlanWithPrice(Object name, Object price) {
-    return '$name — $price €/month';
+  String get settingsBiometricCaptureFace => 'Capture face';
+
+  @override
+  String get settingsBiometricConfirmIdentity => 'Confirm your identity';
+
+  @override
+  String get settingsBiometricConsentRequired => 'Biometric consent required';
+
+  @override
+  String get settingsBiometricEnableFirst => 'Enable biometrics first';
+
+  @override
+  String get settingsBiometricEnablePreparation => 'Biometric preparation';
+
+  @override
+  String get settingsBiometricExplanation =>
+      'Use your device biometrics to secure the app.';
+
+  @override
+  String get settingsBiometricFaceRequired => 'Face is required for this mode';
+
+  @override
+  String get settingsBiometricFaceSelected => 'Face selected';
+
+  @override
+  String get settingsBiometricFaceWanted => 'Enable face recognition';
+
+  @override
+  String get settingsBiometricFingerprintWanted => 'Enable fingerprint';
+
+  @override
+  String get settingsBiometricFutureConsent => 'Consent for future check-ins';
+
+  @override
+  String get settingsBiometricLocalVerifyCancel =>
+      'Local verification cancelled';
+
+  @override
+  String get settingsBiometricNotesHint => 'Internal note (e.g. model)';
+
+  @override
+  String get settingsBiometricNotesTitle => 'Biometric note';
+
+  @override
+  String get settingsBiometricPendingExplanation =>
+      'Your request is pending validation.';
+
+  @override
+  String get settingsBiometricPreparationTitle => 'Preparation';
+
+  @override
+  String get settingsBiometricSavedLocal => 'Biometrics saved locally';
+
+  @override
+  String get settingsBiometricSensorHint => 'Biometric sensor name';
+
+  @override
+  String get settingsBiometricSensorLabel => 'Biometric sensor';
+
+  @override
+  String get settingsBiometricSubmitted => 'Biometric request submitted';
+
+  @override
+  String get settingsCabinetDocuments => 'Documents';
+
+  @override
+  String get settingsCabinetPublic => 'Public';
+
+  @override
+  String get settingsCabinetShared => 'Shared';
+
+  @override
+  String get settingsCabinetSubtitle => 'Your confidential documents';
+
+  @override
+  String get settingsChannelEmailHint => 'Email notifications';
+
+  @override
+  String get settingsChannelInApp => 'In-app';
+
+  @override
+  String get settingsChannelInAppHint => 'In-app notifications';
+
+  @override
+  String get settingsChannelPush => 'Push';
+
+  @override
+  String get settingsChannelPushHint => 'Mobile push notifications';
+
+  @override
+  String get settingsChannelSmsHint => 'SMS notifications';
+
+  @override
+  String get settingsChannelWhatsappHint => 'WhatsApp notifications';
+
+  @override
+  String get settingsCompanyQrLabel => 'Company QR';
+
+  @override
+  String get settingsDigitalLockerTitle => 'Digital locker';
+
+  @override
+  String get settingsDigitalLockerSubtitle => 'Encrypted sensitive documents';
+
+  @override
+  String get settingsEdgeAddressLabel => 'Edge node address';
+
+  @override
+  String get settingsEdgeCloudStatus => 'Cloud';
+
+  @override
+  String get settingsEdgeLocalStatus => 'Local edge';
+
+  @override
+  String get settingsEdgeNodeHint => 'Connect an edge node for offline mode.';
+
+  @override
+  String get settingsEdgeNodeTitle => 'Edge node';
+
+  @override
+  String get settingsEdgeOfflineStatus => 'Offline';
+
+  @override
+  String get settingsEdgeRemoved => 'Edge node removed';
+
+  @override
+  String get settingsEdgeTokenHint => 'Edge authentication token';
+
+  @override
+  String get settingsEdgeTokenLabel => 'Edge token';
+
+  @override
+  String get settingsEdgeUuidHint => 'Unique node identifier';
+
+  @override
+  String get settingsEdgeUuidLabel => 'Node UUID';
+
+  @override
+  String get settingsJourneyAvailable => 'Journey available';
+
+  @override
+  String get settingsJourneyYourCompany => 'Your company';
+
+  @override
+  String get settingsLanguageSyncHint => 'Language syncs across your devices.';
+
+  @override
+  String get settingsLanguageUpdated => 'Language updated';
+
+  @override
+  String get settingsNo => 'No';
+
+  @override
+  String get settingsNotificationsIntro => 'Choose your notification channels.';
+
+  @override
+  String get settingsNotificationsLanguage => 'Notification language';
+
+  @override
+  String get settingsNotificationsSaved => 'Preferences saved';
+
+  @override
+  String get settingsNotificationsUnavailable =>
+      'Notifications unavailable on this device.';
+
+  @override
+  String get settingsOpenLocker => 'Open locker';
+
+  @override
+  String get settingsPasswordModernizationHint =>
+      'Strengthen your password for better security.';
+
+  @override
+  String get settingsPasteQrButton => 'Paste QR';
+
+  @override
+  String get settingsPersonalPhoneHint => 'Personal number (optional)';
+
+  @override
+  String get settingsPortableIdentityTitle => 'Portable identity';
+
+  @override
+  String get settingsPortableIdentityHint =>
+      'Your portable professional identity';
+
+  @override
+  String get settingsPortableIdentitySubtitle => 'Share your identity securely';
+
+  @override
+  String get settingsProfessionalQr => 'Professional QR';
+
+  @override
+  String get settingsQrEmployeeHint => 'Scan this QR to join the company';
+
+  @override
+  String get settingsQrOnboardingTitle => 'Onboarding QR';
+
+  @override
+  String get settingsQrOnboardingSubtitle => 'QR for new employee onboarding';
+
+  @override
+  String get settingsQrPasted => 'QR pasted';
+
+  @override
+  String get settingsRecoveryEmailHint => 'Recovery email (optional)';
+
+  @override
+  String get settingsRemove => 'Remove';
+
+  @override
+  String get settingsRequestIntegration => 'Request integration';
+
+  @override
+  String get settingsSavingShort => 'Saving…';
+
+  @override
+  String get settingsSessionLogoutHint =>
+      'Sign out on all devices if in doubt.';
+
+  @override
+  String get settingsSubmitBiometric => 'Submit request';
+
+  @override
+  String get settingsSubmitting => 'Submitting…';
+
+  @override
+  String get settingsUpdateLanguage => 'Update language';
+
+  @override
+  String get settingsUpdatePassword => 'Update password';
+
+  @override
+  String get settingsUpdating => 'Updating…';
+
+  @override
+  String get settingsViewProfile => 'View profile';
+
+  @override
+  String get settingsYes => 'Yes';
+
+  @override
+  String settingsJourneyAttachedTo(Object companyName) {
+    return 'Attached to $companyName';
   }
 
   @override
-  String get twoFaTitle => '2FA Security';
+  String settingsJourneyCompanyPeriod(Object companyName, Object period) {
+    return '$companyName — $period';
+  }
 
   @override
-  String get twoFaSubtitle => 'Two-factor authentication';
+  String settingsBiometricTodayStatus(Object face, Object fingerprint) {
+    return 'Face: $face · Fingerprint: $fingerprint';
+  }
 
   @override
-  String get twoFaLoading => 'Loading…';
+  String settingsEdgeCurrentStatus(Object status) {
+    return 'Current mode: $status';
+  }
 
   @override
-  String get twoFaGenericError => 'Something went wrong. Please try again.';
+  String settingsQrRejected(Object error) {
+    return 'QR rejected: $error';
+  }
 
   @override
-  String get twoFaRequiredBanner =>
-      'Two-factor authentication is required for your profile. Enable it now.';
+  String settingsBiometricSubmitFailed(Object error) {
+    return 'Submission failed: $error';
+  }
 
   @override
-  String get twoFaStatusEnabled => '2FA enabled';
+  String settingsNotificationsSaveFailed(Object error) {
+    return 'Failed to save notification preferences: $error';
+  }
 
   @override
-  String get twoFaStatusDisabled => '2FA disabled';
-
-  @override
-  String get twoFaStatusEnabledHint => 'A code is required at each sign-in.';
-
-  @override
-  String get twoFaStatusDisabledHint =>
-      'Protect your account with a TOTP code.';
-
-  @override
-  String get twoFaActivate => 'Enable 2FA';
-
-  @override
-  String get twoFaScanPrompt =>
-      'Scan this QR code with Google Authenticator, Authy or any TOTP-compatible app.';
-
-  @override
-  String get twoFaCopySecret => 'Copy secret';
-
-  @override
-  String get twoFaConfirmHint =>
-      'Enter the first code generated by your app to enable two-factor authentication.';
-
-  @override
-  String get twoFaCodeLabel => '6-digit code';
-
-  @override
-  String get twoFaCodeHint => '000000';
-
-  @override
-  String get twoFaConfirm => 'Confirm and enable';
-
-  @override
-  String get twoFaRecoveryTitle => 'Recovery codes';
-
-  @override
-  String get twoFaRecoveryHint =>
-      'Keep these codes somewhere safe. Each can only be used once.';
-
-  @override
-  String get twoFaCopied => 'Code copied.';
-
-  @override
-  String get twoFaAllCopied => 'Codes copied.';
-
-  @override
-  String get twoFaCopyAll => 'Copy all';
-
-  @override
-  String get twoFaDoneHint =>
-      'Two-factor authentication enabled. A code will be required at each sign-in.';
-
-  @override
-  String get twoFaRegenerate => 'Regenerate codes';
-
-  @override
-  String get twoFaRegenerateConfirm =>
-      'Regenerate recovery codes? Old codes will be invalidated.';
-
-  @override
-  String get twoFaCancel => 'Cancel';
-
-  @override
-  String get twoFaDisable => 'Disable 2FA';
-
-  @override
-  String get twoFaDisableHint => 'TOTP or recovery code';
-
-  @override
-  String get twoFaEnterCode => 'Code';
-
-  @override
-  String get twoFaInvalidCode => 'Invalid code. Check and try again.';
-
-  @override
-  String get twoFaSettingsTile => 'Two-factor authentication';
-
-  @override
-  String get twoFaSettingsTileSubtitle => 'TOTP code required at each sign-in';
-
-  @override
-  String personalOnboardingSearchError(Object error) {
-    return 'Search failed: $error';
+  String companydetailPlanWithPrice(Object planName, Object price) {
+    return '$planName — $price';
   }
 }
