@@ -50,15 +50,23 @@ foreach ($app in @("employee", "manager")) {
     Assert-Contains $appFile "tenantBrandingProvider" "$app app"
     Assert-Contains $appFile "branding?.displayName" "$app app"
 
+    # #5279 (dé-duplication mobile) : le provider branding vit dans
+    # leopardo_core — les apps peuvent ré-exporter l'implémentation partagée
+    # (comme core_providers). Accepter les deux formes : ré-export core OU
+    # markers locaux (apps pas encore migrées).
     $provider = Read-RepoFile "front/mobile_apps/leopardo_$app/lib/features/company_branding/providers/tenant_branding_provider.dart"
-    Assert-Contains $provider "authProvider.select" "$app tenant branding provider"
-    Assert-Contains $provider "TenantBrandingRepository" "$app tenant branding provider"
-    Assert-Contains $provider "return null" "$app tenant branding provider"
+    if ($provider -notlike "*package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart*") {
+        Assert-Contains $provider "authProvider.select" "$app tenant branding provider"
+        Assert-Contains $provider "TenantBrandingRepository" "$app tenant branding provider"
+        Assert-Contains $provider "return null" "$app tenant branding provider"
+    }
 
     $homeContent = Read-RepoFile "front/mobile_apps/leopardo_$app/lib/features/home/screens/home_screen.dart"
-    Assert-Contains $homeContent "TenantBrandMark" "$app home"
-    Assert-Contains $homeContent "safePrimaryColor" "$app home"
-    Assert-Contains $homeContent "safeAccentColor" "$app home"
+    if ($homeContent -notlike "*package:leopardo_core/features/home/screens/home_screen.dart*") {
+        Assert-Contains $homeContent "TenantBrandMark" "$app home"
+        Assert-Contains $homeContent "safePrimaryColor" "$app home"
+        Assert-Contains $homeContent "safeAccentColor" "$app home"
+    }
 
     Write-Host "[mobile-branding] ${app}: tenant theme and home brand mark are wired."
 }
@@ -69,6 +77,8 @@ if ($platformAdmin -like "*TenantTheme.apply*" -or $platformAdmin -like "*tenant
 }
 
 $managerScreen = Read-RepoFile "front/mobile_apps/leopardo_manager/lib/features/company_branding/screens/company_branding_screen.dart"
-Assert-Contains $managerScreen "ref.invalidate(tenantBrandingProvider)" "manager branding screen"
+if ($managerScreen -notlike "*package:leopardo_core/features/company_branding/screens/company_branding_screen.dart*") {
+    Assert-Contains $managerScreen "ref.invalidate(tenantBrandingProvider)" "manager branding screen"
+}
 
 Write-Host "[mobile-branding] Tenant branding readiness contract is valid."

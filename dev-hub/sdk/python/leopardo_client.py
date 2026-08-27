@@ -136,6 +136,10 @@ class LeopardoClient:
         """Etat d'activation du module Comptabilite (check-list du wizard)"""
         return self.request("GET", "/accounting/activation", **kwargs)
 
+    def post_accounting_activation(self, **kwargs):
+        """Activer le module Comptabilite (wizard 4 etapes, #5626)"""
+        return self.request("POST", "/accounting/activation", **kwargs)
+
     def post_accounting_activation_complete(self, **kwargs):
         """Completer l'activation du module Comptabilite (wizard)"""
         return self.request("POST", "/accounting/activation/complete", **kwargs)
@@ -1192,6 +1196,18 @@ class LeopardoClient:
         """Analytics communication tenant"""
         return self.request("GET", "/communication/analytics", **kwargs)
 
+    def get_company_integration_requests(self, **kwargs):
+        """Lister les demandes d'integration de mon entreprise (manager)"""
+        return self.request("GET", "/company-integration-requests", **kwargs)
+
+    def post_company_integration_requests_by_id_accept(self, **kwargs):
+        """Accepter une demande d'integration (manager)"""
+        return self.request("POST", "/company-integration-requests/{id}/accept", **kwargs)
+
+    def post_company_integration_requests_by_id_reject(self, **kwargs):
+        """Refuser une demande d'integration (manager)"""
+        return self.request("POST", "/company-integration-requests/{id}/reject", **kwargs)
+
     def get_company_requests(self, **kwargs):
         """Demandes de création d'entreprise de l'utilisateur"""
         return self.request("GET", "/company-requests", **kwargs)
@@ -1199,6 +1215,14 @@ class LeopardoClient:
     def post_company_requests(self, **kwargs):
         """Soumettre une demande de création d'entreprise"""
         return self.request("POST", "/company-requests", **kwargs)
+
+    def get_company_banking(self, **kwargs):
+        """Lire les coordonnees bancaires de l'entreprise"""
+        return self.request("GET", "/company/banking", **kwargs)
+
+    def patch_company_banking(self, **kwargs):
+        """Mettre a jour les coordonnees bancaires de l'entreprise"""
+        return self.request("PATCH", "/company/banking", **kwargs)
 
     def get_company_branding(self, **kwargs):
         """Lire l'identite visuelle de l'entreprise courante"""
@@ -3268,6 +3292,18 @@ class LeopardoClient:
         """Change le mot de passe de l'utilisateur connecté"""
         return self.request("POST", "/user/change-password", **kwargs)
 
+    def get_user_companies_search(self, **kwargs):
+        """Rechercher des entreprises (demande d'integration)"""
+        return self.request("GET", "/user/companies/search", **kwargs)
+
+    def get_user_company_integration_requests(self, **kwargs):
+        """Lister mes demandes d'integration"""
+        return self.request("GET", "/user/company-integration-requests", **kwargs)
+
+    def post_user_company_integration_requests(self, **kwargs):
+        """Creer une demande d'integration"""
+        return self.request("POST", "/user/company-integration-requests", **kwargs)
+
     def get_user_company_requests(self, **kwargs):
         """Liste les demandes de création d'entreprise de l'utilisateur"""
         return self.request("GET", "/user/company-requests", **kwargs)
@@ -3299,6 +3335,10 @@ class LeopardoClient:
     def get_user_me(self, **kwargs):
         """Profil de l'utilisateur connecté"""
         return self.request("GET", "/user/me", **kwargs)
+
+    def patch_user_personal_statuses(self, **kwargs):
+        """Mettre a jour les statuts personnels"""
+        return self.request("PATCH", "/user/personal-statuses", **kwargs)
 
     def patch_user_profile(self, **kwargs):
         """Met à jour le profil de l'utilisateur connecté"""
@@ -3391,6 +3431,10 @@ class LeopardoClient:
     def get_view_cam(self, **kwargs):
         """Viewer public par token"""
         return self.request("GET", "/view/cam", **kwargs)
+
+    def get_voice_tts_by_filename(self, **kwargs):
+        """Servir un fichier TTS genere (edge-tts / elevenlabs)"""
+        return self.request("GET", "/voice/tts/{filename}", **kwargs)
 
     def get_webhooks(self, **kwargs):
         """Lister les webhooks de l'entreprise"""

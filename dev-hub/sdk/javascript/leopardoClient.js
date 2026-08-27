@@ -145,6 +145,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/accounting/activation", options);
     },
 
+    /** Activer le module Comptabilite (wizard 4 etapes, #5626) */
+    postAccountingActivation(options = {}) {
+      return request("POST", "/accounting/activation", options);
+    },
+
     /** Completer l'activation du module Comptabilite (wizard) */
     postAccountingActivationComplete(options = {}) {
       return request("POST", "/accounting/activation/complete", options);
@@ -1465,6 +1470,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/communication/analytics", options);
     },
 
+    /** Lister les demandes d'integration de mon entreprise (manager) */
+    getCompanyIntegrationRequests(options = {}) {
+      return request("GET", "/company-integration-requests", options);
+    },
+
+    /** Accepter une demande d'integration (manager) */
+    postCompanyIntegrationRequestsByIdAccept(options = {}) {
+      return request("POST", "/company-integration-requests/{id}/accept", options);
+    },
+
+    /** Refuser une demande d'integration (manager) */
+    postCompanyIntegrationRequestsByIdReject(options = {}) {
+      return request("POST", "/company-integration-requests/{id}/reject", options);
+    },
+
     /** Demandes de création d'entreprise de l'utilisateur */
     getCompanyRequests(options = {}) {
       return request("GET", "/company-requests", options);
@@ -1473,6 +1493,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Soumettre une demande de création d'entreprise */
     postCompanyRequests(options = {}) {
       return request("POST", "/company-requests", options);
+    },
+
+    /** Lire les coordonnees bancaires de l'entreprise */
+    getCompanyBanking(options = {}) {
+      return request("GET", "/company/banking", options);
+    },
+
+    /** Mettre a jour les coordonnees bancaires de l'entreprise */
+    patchCompanyBanking(options = {}) {
+      return request("PATCH", "/company/banking", options);
     },
 
     /** Lire l'identite visuelle de l'entreprise courante */
@@ -4060,6 +4090,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/user/change-password", options);
     },
 
+    /** Rechercher des entreprises (demande d'integration) */
+    getUserCompaniesSearch(options = {}) {
+      return request("GET", "/user/companies/search", options);
+    },
+
+    /** Lister mes demandes d'integration */
+    getUserCompanyIntegrationRequests(options = {}) {
+      return request("GET", "/user/company-integration-requests", options);
+    },
+
+    /** Creer une demande d'integration */
+    postUserCompanyIntegrationRequests(options = {}) {
+      return request("POST", "/user/company-integration-requests", options);
+    },
+
     /** Liste les demandes de création d'entreprise de l'utilisateur */
     getUserCompanyRequests(options = {}) {
       return request("GET", "/user/company-requests", options);
@@ -4098,6 +4143,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Profil de l'utilisateur connecté */
     getUserMe(options = {}) {
       return request("GET", "/user/me", options);
+    },
+
+    /** Mettre a jour les statuts personnels */
+    patchUserPersonalStatuses(options = {}) {
+      return request("PATCH", "/user/personal-statuses", options);
     },
 
     /** Met à jour le profil de l'utilisateur connecté */
@@ -4213,6 +4263,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Viewer public par token */
     getViewCam(options = {}) {
       return request("GET", "/view/cam", options);
+    },
+
+    /** Servir un fichier TTS genere (edge-tts / elevenlabs) */
+    getVoiceTtsByFilename(options = {}) {
+      return request("GET", "/voice/tts/{filename}", options);
     },
 
     /** Lister les webhooks de l'entreprise */
