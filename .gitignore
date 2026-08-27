@@ -98,3 +98,8 @@ docs/validation/I18N_DEBT_REPORT_2026_08_09.md
 
 # agent planning scratch (local only)
 .claude/
+
+# Flutter/Dart build artifacts (cache local, chemins absolus — jamais en git)
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
