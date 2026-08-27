@@ -7273,6 +7273,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get personalOnboardingStatusRejected => 'مرفوض';
 
   @override
+  String personalOnboardingSearchError(Object error) {
+    return 'خطأ في البحث: $error';
+  }
+
+  @override
   String get organigrammeTitle => 'الهيكل التنظيمي';
 
   @override
@@ -7416,4 +7421,606 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get supportTicketsLoadingTicket => 'تحميل التذكرة';
+
+  @override
+  String get twoFaTitle => 'التحقق بخطوتين';
+
+  @override
+  String get twoFaSubtitle => 'أمّن حسابك برمز ديناميكي.';
+
+  @override
+  String get twoFaScanPrompt => 'امسح رمز QR هذا';
+
+  @override
+  String get twoFaEnterCode => 'رمز من 6 أرقام';
+
+  @override
+  String get twoFaConfirm => 'تأكيد';
+
+  @override
+  String get twoFaDisable => 'تعطيل التحقق بخطوتين';
+
+  @override
+  String get twoFaDisableHint => 'أدخل رمزك الحالي للتعطيل';
+
+  @override
+  String get twoFaRegenerate => 'إعادة توليد الرموز';
+
+  @override
+  String get twoFaRegenerateConfirm =>
+      'ستُلغى الرموز القديمة. هل تريد المتابعة؟';
+
+  @override
+  String get twoFaRequiredBanner => 'تتطلب شركتك التحقق بخطوتين';
+
+  @override
+  String get twoFaStatusEnabled => 'مفعّل';
+
+  @override
+  String get twoFaStatusEnabledHint => 'حسابك محمي بالتحقق بخطوتين';
+
+  @override
+  String get twoFaStatusDisabled => 'معطّل';
+
+  @override
+  String get twoFaStatusDisabledHint => 'فعّل التحقق بخطوتين لتعزيز الأمان';
+
+  @override
+  String get twoFaCopySecret => 'نسخ السر';
+
+  @override
+  String get twoFaCopied => 'تم النسخ';
+
+  @override
+  String get twoFaCopyAll => 'نسخ الكل';
+
+  @override
+  String get twoFaAllCopied => 'تم نسخ جميع الرموز';
+
+  @override
+  String get twoFaRecoveryTitle => 'رموز الاسترداد';
+
+  @override
+  String get twoFaRecoveryHint =>
+      'احتفظ بهذه الرموز في مكان آمن — فهي تتيح استعادة الوصول إذا فقدت هاتفك.';
+
+  @override
+  String get twoFaDoneHint => 'بعد حفظ الرموز، أكّد التفعيل.';
+
+  @override
+  String get twoFaGenericError => 'حدث خطأ ما.';
+
+  @override
+  String get twoFaInvalidCode => 'رمز غير صالح. حاول مجددًا.';
+
+  @override
+  String get twoFaLoading => 'جارٍ التحميل…';
+
+  @override
+  String get twoFaActivate => 'تفعيل التحقق بخطوتين';
+
+  @override
+  String get twoFaCancel => 'إلغاء';
+
+  @override
+  String get twoFaCodeLabel => 'الرمز';
+
+  @override
+  String get twoFaCodeHint => 'رمز من 6 أرقام';
+
+  @override
+  String get twoFaConfirmHint => 'أدخل الرمز المعروض في تطبيقك';
+
+  @override
+  String get twoFaChallengeTitle => 'التحقق بخطوتين';
+
+  @override
+  String get twoFaChallengeSubtitle => 'أدخل الرمز من تطبيق المصادقة';
+
+  @override
+  String get twoFaChallengeCodeHint => 'رمز من 6 أرقام';
+
+  @override
+  String get twoFaChallengeRecoveryHint =>
+      'استخدم رمز استرداد إذا لم يعد لديك وصول إلى التطبيق.';
+
+  @override
+  String get twoFaChallengeRecoveryToggle => 'استخدم رمز استرداد';
+
+  @override
+  String get twoFaChallengeVerifyBtn => 'تحقق';
+
+  @override
+  String get twoFaSettingsTile => 'التحقق بخطوتين';
+
+  @override
+  String get twoFaSettingsTileSubtitle => 'رمز ديناميكي مطلوب عند تسجيل الدخول';
+
+  @override
+  String get settingsThemeTitle => 'المظهر';
+
+  @override
+  String get settingsThemeHint => 'خصّص مظهر التطبيق';
+
+  @override
+  String get settingsThemeSystem => 'النظام';
+
+  @override
+  String get settingsThemeLight => 'فاتح';
+
+  @override
+  String get settingsThemeDark => 'داكن';
+
+  @override
+  String get commonBack => 'رجوع';
+
+  @override
+  String get commonSave => 'حفظ';
+
+  @override
+  String get companiesActiveImmediatelyHint => 'تفعيل فورًا بعد الإنشاء';
+
+  @override
+  String get companiesCompanyCreated => 'تم إنشاء الشركة بنجاح';
+
+  @override
+  String get companiesCompanyEmail => 'البريد الإلكتروني للتواصل';
+
+  @override
+  String get companiesCreateClient => 'إنشاء عميل';
+
+  @override
+  String get companiesCreating => 'جارٍ الإنشاء…';
+
+  @override
+  String get companiesEmpty => 'لا توجد شركات';
+
+  @override
+  String get companiesNewClient => 'عميل جديد';
+
+  @override
+  String get companiesProvisioning => 'تجهيز المنصة';
+
+  @override
+  String get companiesRequiredField => 'حقل مطلوب';
+
+  @override
+  String get companiesTenantsPlatform => 'شركات المنصة';
+
+  @override
+  String get companiesTrialHint => 'البدء بتجربة';
+
+  @override
+  String get companydetailActivateClient => 'تفعيل العميل';
+
+  @override
+  String get companydetailActiveEmployees => 'الموظفون النشطون';
+
+  @override
+  String get companydetailActiveModules => 'الوحدات النشطة';
+
+  @override
+  String get companydetailAnomaliesCritical => 'حالات شاذة حرجة';
+
+  @override
+  String get companydetailChoosePlan => 'اختر خطة للتفعيل';
+
+  @override
+  String get companydetailClientActivated => 'تم تفعيل العميل';
+
+  @override
+  String get companydetailClientFile => 'ملف العميل';
+
+  @override
+  String get companydetailClientReference => 'مرجع العميل';
+
+  @override
+  String get companydetailCopyId => 'نسخ';
+
+  @override
+  String get companydetailCoreModuleAlwaysActive =>
+      'الوحدة الأساسية نشطة دائمًا';
+
+  @override
+  String get companydetailEditModules => 'تعديل الوحدات';
+
+  @override
+  String get companydetailEditSubscription => 'تعديل الاشتراك';
+
+  @override
+  String get companydetailEmployeeLimit => 'حد الموظفين';
+
+  @override
+  String get companydetailLoadingPlans => 'جارٍ تحميل الخطط…';
+
+  @override
+  String get companydetailModulesUpdated => 'تم تحديث الوحدات';
+
+  @override
+  String get companydetailMonthlyPrice => 'السعر الشهري';
+
+  @override
+  String get companydetailNextActions => 'إجراءات موصى بها';
+
+  @override
+  String get companydetailNoUrgentActions => 'لا توجد إجراءات عاجلة';
+
+  @override
+  String get companydetailOptionalInternalNote => 'ملاحظة داخلية (اختياري)';
+
+  @override
+  String get companydetailPlan => 'الخطة';
+
+  @override
+  String get companydetailPlanNotFound => 'الخطة غير موجودة';
+
+  @override
+  String get companydetailProductAdoption => 'اعتماد المنتج';
+
+  @override
+  String get companydetailRecommendedActionHint => 'إجراء موصى به من النظام';
+
+  @override
+  String get companydetailSaveModules => 'حفظ الوحدات';
+
+  @override
+  String get companydetailSaving => 'جارٍ الحفظ…';
+
+  @override
+  String get companydetailStatus => 'الحالة';
+
+  @override
+  String get companydetailSubscription => 'الاشتراك';
+
+  @override
+  String get companydetailSubscriptionEnd => 'نهاية الاشتراك';
+
+  @override
+  String get companydetailSubscriptionUpdated => 'تم تحديث الاشتراك';
+
+  @override
+  String get companydetailTenantIdHint => 'معرّف المستأجر — انسخه للدعم';
+
+  @override
+  String get companydetailUndefined => 'غير محدد';
+
+  @override
+  String get companydetailUnlimited => 'غير محدود';
+
+  @override
+  String get companyrequestsApprovedToast => 'تمت الموافقة على الطلب';
+
+  @override
+  String get companyrequestsRejectedToast => 'تم رفض الطلب';
+
+  @override
+  String get companyrequestsValidationSuperadmin => 'موافقة المشرف العام';
+
+  @override
+  String get dashboardActiveLabel => 'الشركات النشطة';
+
+  @override
+  String get dashboardClientCompanies => 'شركات العملاء';
+
+  @override
+  String get dashboardClientCompaniesHint => 'إدارة العملاء الحاليين';
+
+  @override
+  String get dashboardClientRequestsHint => 'طلبات إنشاء معلقة';
+
+  @override
+  String get dashboardCreateCompany => 'إنشاء شركة';
+
+  @override
+  String get dashboardCreateCompanyHint => 'تجهيز عميل جديد';
+
+  @override
+  String get dashboardEdgeNodes => 'عقد الحافة';
+
+  @override
+  String get dashboardEdgeNodesHint => 'الكشك وعقد المزامنة';
+
+  @override
+  String get dashboardExecutiveView => 'عرض تنفيذي';
+
+  @override
+  String get dashboardLoadingCockpit => 'جارٍ تحميل لوحة القيادة…';
+
+  @override
+  String get dashboardPlatformActions => 'إجراءات المنصة';
+
+  @override
+  String get dashboardPlatformAdministration => 'إدارة المنصة';
+
+  @override
+  String get dashboardSuperAdmin => 'مشرف عام';
+
+  @override
+  String get dashboardSupportClient => 'دعم العملاء';
+
+  @override
+  String get dashboardTicketsHint => 'تذاكر الدعم';
+
+  @override
+  String get dashboardTrials => 'تجارب نشطة';
+
+  @override
+  String get settingsBiometricCaptureFace => 'التقاط الوجه';
+
+  @override
+  String get settingsBiometricConfirmIdentity => 'أكّد هويتك';
+
+  @override
+  String get settingsBiometricConsentRequired =>
+      'موافقة القياسات الحيوية مطلوبة';
+
+  @override
+  String get settingsBiometricEnableFirst => 'فعّل القياسات الحيوية أولاً';
+
+  @override
+  String get settingsBiometricEnablePreparation => 'تحضير القياسات الحيوية';
+
+  @override
+  String get settingsBiometricExplanation =>
+      'استخدم القياسات الحيوية لجهازك لتأمين التطبيق.';
+
+  @override
+  String get settingsBiometricFaceRequired => 'الوجه مطلوب لهذا الوضع';
+
+  @override
+  String get settingsBiometricFaceSelected => 'تم تحديد الوجه';
+
+  @override
+  String get settingsBiometricFaceWanted => 'تفعيل التعرف على الوجه';
+
+  @override
+  String get settingsBiometricFingerprintWanted => 'تفعيل بصمة الإصبع';
+
+  @override
+  String get settingsBiometricFutureConsent =>
+      'موافقة على نقاط الحضور المستقبلية';
+
+  @override
+  String get settingsBiometricLocalVerifyCancel => 'تم إلغاء التحقق المحلي';
+
+  @override
+  String get settingsBiometricNotesHint => 'ملاحظة داخلية (مثال: نموذج)';
+
+  @override
+  String get settingsBiometricNotesTitle => 'ملاحظة القياسات الحيوية';
+
+  @override
+  String get settingsBiometricPendingExplanation => 'طلبك في انتظار التحقق.';
+
+  @override
+  String get settingsBiometricPreparationTitle => 'التحضير';
+
+  @override
+  String get settingsBiometricSavedLocal => 'تم حفظ القياسات الحيوية محليًا';
+
+  @override
+  String get settingsBiometricSensorHint => 'اسم مستشعر القياسات الحيوية';
+
+  @override
+  String get settingsBiometricSensorLabel => 'مستشعر القياسات الحيوية';
+
+  @override
+  String get settingsBiometricSubmitted => 'تم إرسال طلب القياسات الحيوية';
+
+  @override
+  String get settingsCabinetDocuments => 'المستندات';
+
+  @override
+  String get settingsCabinetPublic => 'عامة';
+
+  @override
+  String get settingsCabinetShared => 'مشاركة';
+
+  @override
+  String get settingsCabinetSubtitle => 'مستنداتك السرية';
+
+  @override
+  String get settingsChannelEmailHint => 'إشعارات البريد الإلكتروني';
+
+  @override
+  String get settingsChannelInApp => 'داخل التطبيق';
+
+  @override
+  String get settingsChannelInAppHint => 'إشعارات داخل التطبيق';
+
+  @override
+  String get settingsChannelPush => 'دفع';
+
+  @override
+  String get settingsChannelPushHint => 'إشعارات الدفع للجوال';
+
+  @override
+  String get settingsChannelSmsHint => 'إشعارات SMS';
+
+  @override
+  String get settingsChannelWhatsappHint => 'إشعارات واتساب';
+
+  @override
+  String get settingsCompanyQrLabel => 'رمز QR للشركة';
+
+  @override
+  String get settingsDigitalLockerTitle => 'خزنة رقمية';
+
+  @override
+  String get settingsDigitalLockerSubtitle => 'مستندات حساسة مشفرة';
+
+  @override
+  String get settingsEdgeAddressLabel => 'عنوان عقدة الحافة';
+
+  @override
+  String get settingsEdgeCloudStatus => 'سحابة';
+
+  @override
+  String get settingsEdgeLocalStatus => 'حافة محلية';
+
+  @override
+  String get settingsEdgeNodeHint => 'اربط عقدة حافة للوضع دون اتصال.';
+
+  @override
+  String get settingsEdgeNodeTitle => 'عقدة الحافة';
+
+  @override
+  String get settingsEdgeOfflineStatus => 'دون اتصال';
+
+  @override
+  String get settingsEdgeRemoved => 'تمت إزالة عقدة الحافة';
+
+  @override
+  String get settingsEdgeTokenHint => 'رمز مصادقة الحافة';
+
+  @override
+  String get settingsEdgeTokenLabel => 'رمز الحافة';
+
+  @override
+  String get settingsEdgeUuidHint => 'معرّف العقدة الفريد';
+
+  @override
+  String get settingsEdgeUuidLabel => 'UUID العقدة';
+
+  @override
+  String get settingsJourneyAvailable => 'المسار متاح';
+
+  @override
+  String get settingsJourneyYourCompany => 'شركتك';
+
+  @override
+  String get settingsLanguageSyncHint => 'تتزامن اللغة عبر أجهزتك.';
+
+  @override
+  String get settingsLanguageUpdated => 'تم تحديث اللغة';
+
+  @override
+  String get settingsNo => 'لا';
+
+  @override
+  String get settingsNotificationsIntro => 'اختر قنوات الإشعارات.';
+
+  @override
+  String get settingsNotificationsLanguage => 'لغة الإشعارات';
+
+  @override
+  String get settingsNotificationsSaved => 'تم حفظ التفضيلات';
+
+  @override
+  String get settingsNotificationsUnavailable =>
+      'الإشعارات غير متاحة على هذا الجهاز.';
+
+  @override
+  String get settingsOpenLocker => 'فتح الخزنة';
+
+  @override
+  String get settingsPasswordModernizationHint =>
+      'قوّ كلمة المرور لتحسين الأمان.';
+
+  @override
+  String get settingsPasteQrButton => 'لصق QR';
+
+  @override
+  String get settingsPersonalPhoneHint => 'رقم شخصي (اختياري)';
+
+  @override
+  String get settingsPortableIdentityTitle => 'هوية محمولة';
+
+  @override
+  String get settingsPortableIdentityHint => 'هويتك المهنية المحمولة';
+
+  @override
+  String get settingsPortableIdentitySubtitle => 'شارك هويتك بأمان';
+
+  @override
+  String get settingsProfessionalQr => 'QR مهني';
+
+  @override
+  String get settingsQrEmployeeHint => 'امسح هذا الرمز للانضمام إلى الشركة';
+
+  @override
+  String get settingsQrOnboardingTitle => 'QR الإعداد';
+
+  @override
+  String get settingsQrOnboardingSubtitle => 'QR لإعداد الموظفين الجدد';
+
+  @override
+  String get settingsQrPasted => 'تم لصق الرمز';
+
+  @override
+  String get settingsRecoveryEmailHint => 'بريد الاسترداد (اختياري)';
+
+  @override
+  String get settingsRemove => 'إزالة';
+
+  @override
+  String get settingsRequestIntegration => 'طلب تكامل';
+
+  @override
+  String get settingsSavingShort => 'جارٍ الحفظ…';
+
+  @override
+  String get settingsSessionLogoutHint =>
+      'سجّل الخروج من جميع الأجهزة عند الشك.';
+
+  @override
+  String get settingsSubmitBiometric => 'إرسال الطلب';
+
+  @override
+  String get settingsSubmitting => 'جارٍ الإرسال…';
+
+  @override
+  String get settingsUpdateLanguage => 'تحديث اللغة';
+
+  @override
+  String get settingsUpdatePassword => 'تحديث كلمة المرور';
+
+  @override
+  String get settingsUpdating => 'جارٍ التحديث…';
+
+  @override
+  String get settingsViewProfile => 'عرض الملف الشخصي';
+
+  @override
+  String get settingsYes => 'نعم';
+
+  @override
+  String settingsJourneyAttachedTo(Object companyName) {
+    return 'مرتبط بـ $companyName';
+  }
+
+  @override
+  String settingsJourneyCompanyPeriod(Object companyName, Object period) {
+    return 'الشركة $companyName — $period';
+  }
+
+  @override
+  String settingsBiometricTodayStatus(Object face, Object fingerprint) {
+    return 'الوجه: $face · بصمة الإصبع: $fingerprint';
+  }
+
+  @override
+  String settingsEdgeCurrentStatus(Object status) {
+    return 'الوضع الحالي: $status';
+  }
+
+  @override
+  String settingsQrRejected(Object error) {
+    return 'تم رفض الرمز: $error';
+  }
+
+  @override
+  String settingsBiometricSubmitFailed(Object error) {
+    return 'فشل الإرسال: $error';
+  }
+
+  @override
+  String settingsNotificationsSaveFailed(Object error) {
+    return 'تعذّر حفظ تفضيلات الإشعارات: $error';
+  }
+
+  @override
+  String companydetailPlanWithPrice(Object planName, Object price) {
+    return 'الخطة $planName — $price';
+  }
 }

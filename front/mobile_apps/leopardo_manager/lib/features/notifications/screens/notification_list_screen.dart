@@ -1,4 +1,3 @@
-import 'package:leopardo_core/features/notifications/screens/notification_list_screen.dart';
 
 export 'package:leopardo_core/features/notifications/screens/notification_list_screen.dart'
     show NotificationListScreen;

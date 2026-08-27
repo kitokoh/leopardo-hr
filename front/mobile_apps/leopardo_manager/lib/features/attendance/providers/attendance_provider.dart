@@ -1,4 +1,3 @@
-import 'package:leopardo_core/features/attendance/providers/attendance_provider.dart';
 
 export 'package:leopardo_core/features/attendance/providers/attendance_provider.dart'
     show AttendanceState, AttendanceNotifier;

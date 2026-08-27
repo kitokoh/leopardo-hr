@@ -5,7 +5,6 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_accounting/core/i18n/app_strings.dart';
 import 'package:leopardo_accounting/core/providers/core_providers.dart';
-import 'package:leopardo_accounting/features/auth/providers/auth_provider.dart';
 
 /// Écran d'accueil — hub de navigation (liste documents, création facture,
 /// suivi des impayés). Issue #5236.
