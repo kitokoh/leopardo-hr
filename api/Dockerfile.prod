@@ -37,6 +37,12 @@ RUN install-php-extensions \
     opcache \
     redis
 
+# Issue #5616 (P0-SEC) : edge-tts (TTS vocal, VoiceController::edgeTtsSynthesize)
+# est un paquet Python requis si AI_TTS_PROVIDER=edge_tts (défaut sans clé
+# ElevenLabs). Sans lui, exec() échouait silencieusement en prod.
+RUN apk add --no-cache python3 py3-pip \
+    && pip3 install --no-cache-dir --break-system-packages edge-tts
+
 WORKDIR /app
 
 # Build context is the monorepo root (render.yaml: dockerContext: .) so
