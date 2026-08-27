@@ -173,6 +173,15 @@ function runLocal(args) {
     process.exit(2);
   }
   const currentNames = scanLocalDir(curDir);
+  // Le premier scope fourni est main : ses préfixes ne constituent pas une
+  // collision (déjà fusionnés) — seules les migrations NOUVELLES de cur
+  // sont contrôlées (parité avec main()).
+  const mainDir = others[0];
+  const mainNames = mainDir ? scanLocalDir(mainDir) : [];
+  const mainPrefixes = new Set(scanFilenames(mainNames).keys());
+  const currentNewNames = currentNames.filter(
+    (n) => !mainPrefixes.has(extractPrefix(n)),
+  );
   const otherScopes = others.map((dir, i) => ({
     scope: i === 0 ? 'main' : `PR #? (${path.basename(dir)})`,
     names: scanLocalDir(dir),
@@ -232,6 +241,18 @@ async function main() {
   console.log(
     `${prs.length} PR(s) ouverte(s)${currentPR ? ` — PR courante #${currentPR.number}` : ' — head non rattaché à une PR ouverte'} ; ${others.length} autre(s) à comparer.`,
   );
+
+  // Push direct (push sur main, workflow_dispatch, …) : aucun head de PR à
+  // protéger — ce garde ne s'applique qu'aux PRs ouvertes (une collision
+  // introduite par merge direct sera détectée par la CI de la PR concernée).
+  // Sans ce garde-fou, baseSha vide (push) faisait considérer TOUTES les
+  // migrations de main comme « nouvelles » et les comparer aux PRs ouvertes
+  // (qui les héritent de main) → collision fantôme systématique dès qu'une
+  // PR est ouverte (constat 2026-08-27, commit 3f47e23).
+  if (!currentPR) {
+    console.log('OK: head non rattaché à une PR ouverte (push direct) — contrôle inter-PR sans objet.');
+    process.exit(0);
+  }
 
   const currentNames = await treeMigrationFiles(headSha);
 
