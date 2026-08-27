@@ -19,11 +19,11 @@ use Tests\TestCase;
 class PublicApplyResumeUrlGuardTest extends TestCase
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     private function validator(array $data): \Illuminate\Validation\Validator
     {
-        return Validator::make($data, (new PublicApplyRequest())->rules());
+        return Validator::make($data, (new PublicApplyRequest)->rules());
     }
 
     public function test_private_ipv4_resume_url_is_rejected(): void
@@ -56,7 +56,12 @@ class PublicApplyResumeUrlGuardTest extends TestCase
         // Hôte fictif autorisé en environnement de test (règle NotPrivateUrl,
         // hôtes .example.com acceptés en testing uniquement — zéro risque
         // SSRF, aucun résolution DNS requise).
-        $v = $this->validator(['resume_url' => 'https://cv.example.com/resume.pdf']);
+        $v = $this->validator([
+            'first_name' => 'Karim',
+            'last_name' => 'Bensaid',
+            'email' => 'karim@example.com',
+            'resume_url' => 'https://cv.example.com/resume.pdf',
+        ]);
         $this->assertFalse($v->fails());
     }
 

@@ -32,6 +32,7 @@ class SsoTwoFactorGuardTest extends TestCase
      */
     private function seedEmployee(string $email, string $role = 'ordinary', ?string $managerRole = null, bool $with2fa = false): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
         /** @var Employee $employee */
         $employee = Employee::factory()->create([

@@ -21,10 +21,12 @@ class LeaveWorkflowIntegrationTest extends TestCase
 
     public function test_employee_can_submit_leave_request(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ']);
 
         Employee::factory()->manager()->create(['company_id' => $company->id]);
 
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         // #5585 : l'API exige absence_type_id (le champ `type` n'existe plus)
@@ -66,6 +68,7 @@ class LeaveWorkflowIntegrationTest extends TestCase
 
     public function test_manager_can_list_pending_absences(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
 
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
@@ -105,8 +108,10 @@ class LeaveWorkflowIntegrationTest extends TestCase
 
     public function test_employee_cannot_approve_own_leave(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
 
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',

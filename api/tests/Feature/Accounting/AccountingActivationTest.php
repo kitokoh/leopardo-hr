@@ -126,7 +126,7 @@ class AccountingActivationTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $response = $this->postJson('/api/v1/accounting/activation/complete', $this->activationPayload());
+        $response = $this->postJson('/api/v1/accounting/activation', $this->activationPayload());
 
         $response->assertStatus(200);
         $response->assertJsonPath('data.completed', true);
@@ -161,10 +161,10 @@ class AccountingActivationTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $first = $this->postJson('/api/v1/accounting/activation/complete', $this->activationPayload());
+        $first = $this->postJson('/api/v1/accounting/activation', $this->activationPayload());
         $first->assertStatus(200);
 
-        $second = $this->postJson('/api/v1/accounting/activation/complete', $this->activationPayload());
+        $second = $this->postJson('/api/v1/accounting/activation', $this->activationPayload());
         $second->assertStatus(200);
 
         // Mêmes ressources, aucun doublon (idempotence par marqueurs).
@@ -194,7 +194,7 @@ class AccountingActivationTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $this->postJson('/api/v1/accounting/activation/complete', $this->activationPayload())
+        $this->postJson('/api/v1/accounting/activation', $this->activationPayload())
             ->assertStatus(200);
 
         $response = $this->getJson('/api/v1/accounting/activation');
@@ -212,7 +212,7 @@ class AccountingActivationTest extends TestCase
         $payload = $this->activationPayload();
         $payload['currency'] = 'XXX';
 
-        $this->postJson('/api/v1/accounting/activation/complete', $payload)
+        $this->postJson('/api/v1/accounting/activation', $payload)
             ->assertStatus(422)
             ->assertJsonValidationErrors('currency');
     }
@@ -221,18 +221,18 @@ class AccountingActivationTest extends TestCase
     {
         Sanctum::actingAs($this->ordinaryEmployee($this->companyA));
         $this->getJson('/api/v1/accounting/activation')->assertStatus(403);
-        $this->postJson('/api/v1/accounting/activation/complete', $this->activationPayload())->assertStatus(403);
+        $this->postJson('/api/v1/accounting/activation', $this->activationPayload())->assertStatus(403);
 
         Sanctum::actingAs($this->manager($this->companyA, 'marketing'));
         $this->getJson('/api/v1/accounting/activation')->assertStatus(403);
-        $this->postJson('/api/v1/accounting/activation/complete', $this->activationPayload())->assertStatus(403);
+        $this->postJson('/api/v1/accounting/activation', $this->activationPayload())->assertStatus(403);
     }
 
     public function test_principal_can_activate(): void
     {
         Sanctum::actingAs($this->manager($this->companyA, 'principal'));
 
-        $this->postJson('/api/v1/accounting/activation/complete', $this->activationPayload())
+        $this->postJson('/api/v1/accounting/activation', $this->activationPayload())
             ->assertStatus(200)
             ->assertJsonPath('data.completed', true);
     }
@@ -241,7 +241,7 @@ class AccountingActivationTest extends TestCase
     {
         // L'entreprise A active son module…
         Sanctum::actingAs($this->manager($this->companyA));
-        $this->postJson('/api/v1/accounting/activation/complete', $this->activationPayload())
+        $this->postJson('/api/v1/accounting/activation', $this->activationPayload())
             ->assertStatus(200)
             ->assertJsonPath('data.completed', true);
 
@@ -268,7 +268,7 @@ class AccountingActivationTest extends TestCase
     {
         Sanctum::actingAs($this->manager($this->companyA));
 
-        $this->postJson('/api/v1/accounting/activation/complete', $this->activationPayload())
+        $this->postJson('/api/v1/accounting/activation', $this->activationPayload())
             ->assertStatus(200);
 
         $invoice = AccountingDocument::query()

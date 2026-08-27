@@ -59,6 +59,8 @@ class AuthProfileSettingsTest extends TestCase
                 'first_name' => 'Karim Updated',
                 'last_name' => 'Aouad Updated',
                 'email' => 'karim.updated@company.test',
+                // #5587 : changement d'email → mot de passe actuel exigé.
+                'current_password' => 'password123',
                 'personal_email' => 'karim.personal@example.test',
                 'recovery_email' => 'karim.recovery@example.test',
                 'personal_phone' => '+213555000111',

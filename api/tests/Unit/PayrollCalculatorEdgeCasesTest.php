@@ -6,8 +6,8 @@ namespace Tests\Unit;
 
 use App\Modules\Payroll\Domain\Models\SalaryComponent;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+use App\Modules\Payroll\Infrastructure\Services\PaySlipValueCalculator;
 use PHPUnit\Framework\TestCase;
-use ReflectionMethod;
 
 /**
  * S-4 (#1664) — Edge cases du noyau paie (calcul pur, sans DB).
@@ -174,10 +174,9 @@ class PayrollCalculatorEdgeCasesTest extends TestCase
 
     private function componentAmount(SalaryComponent $component, float $base, float $gross): float
     {
-        $method = new ReflectionMethod(PayrollCalculator::class, 'computeComponentAmount');
-        $method->setAccessible(true);
-
-        return (float) $method->invoke($this->calculator, $component, $base, $gross);
+        // #5591 : computeComponentAmount a migré vers PaySlipValueCalculator
+        // (public désormais — plus besoin de réflexion).
+        return (new PaySlipValueCalculator)->computeComponentAmount($component, $base, $gross);
     }
 
     public function test_component_amount_fixed(): void

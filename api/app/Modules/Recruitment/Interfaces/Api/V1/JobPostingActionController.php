@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Recruitment\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ApplicantResource;
 use App\Http\Resources\Api\V1\InterviewResource;
 use App\Http\Resources\Api\V1\JobPostingResource;
 use App\Modules\Recruitment\Domain\Models\Applicant;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Recruitment\Domain\Models\Interview;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
 use Illuminate\Http\JsonResponse;
@@ -87,7 +87,7 @@ class JobPostingActionController extends Controller
 
         $applicant = Applicant::where('company_id', $user->company_id)
             ->with(['jobPosting:id,title', 'interviews'])
-            ->findOrFail($jobPosting);
+            ->findOrFail($applicant);
 
         return (new ApplicantResource($applicant))->response();
     }
@@ -155,4 +155,3 @@ class JobPostingActionController extends Controller
         return response()->json(['message' => 'Interview cancelled.']);
     }
 }
-

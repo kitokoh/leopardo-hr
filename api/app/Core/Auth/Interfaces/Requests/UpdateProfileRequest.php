@@ -22,8 +22,8 @@ class UpdateProfileRequest extends FormRequest
         $employeeId = $this->user()?->id;
 
         return [
-            'first_name'     => ['sometimes', 'nullable', 'string', 'max:100'],
-            'last_name'      => ['sometimes', 'nullable', 'string', 'max:100'],
+            'first_name' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'last_name' => ['sometimes', 'nullable', 'string', 'max:100'],
             'personal_email' => ['sometimes', 'nullable', 'email', 'max:150'],
             'recovery_email' => ['sometimes', 'nullable', 'email', 'max:150'],
             'personal_phone' => ['sometimes', 'nullable', 'string', 'max:30'],
@@ -48,6 +48,7 @@ class UpdateProfileRequest extends FormRequest
      * et doit correspondre au hash stocké. Ceci empêche la chaîne
      * « token volé → reset email → forgot-password → prise de contrôle ».
      */
+    /** @return array<int, \Closure(Validator): void> */
     public function after(): array
     {
         return [

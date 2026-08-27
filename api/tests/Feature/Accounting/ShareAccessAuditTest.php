@@ -113,8 +113,6 @@ class ShareAccessAuditTest extends TestCase
 
         $response->assertOk()
             ->assertJsonCount(2, 'data')
-            ->assertJsonPath('data.0.action', 'accounting.share.download')
-            ->assertJsonPath('data.1.action', 'accounting.share.info')
             ->assertJsonPath('data.0.module', 'accounting')
             ->assertJsonPath('data.0.ip_address', '127.0.0.1')
             ->assertJsonStructure([
@@ -124,6 +122,12 @@ class ShareAccessAuditTest extends TestCase
                 'links',
                 'meta' => ['current_page', 'last_page', 'total'],
             ]);
+
+        // Les deux accès (info + download) sont audités ; l'ordre n'est pas
+        // garanti (même seconde → tri created_at DESC avec égalités).
+        $actions = array_column($response->json('data'), 'action');
+        sort($actions);
+        $this->assertSame(['accounting.share.download', 'accounting.share.info'], $actions);
     }
 
     public function test_comptable_lists_share_accesses_for_document(): void

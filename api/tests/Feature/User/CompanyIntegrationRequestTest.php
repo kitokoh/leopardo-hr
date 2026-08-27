@@ -35,7 +35,9 @@ class CompanyIntegrationRequestTest extends TestCase
 
     public function test_user_can_submit_integration_request(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['name' => 'Acme Global']);
+        /** @var User $user */
         $user = User::factory()->create();
 
         Sanctum::actingAs($user, [], 'user_api');
@@ -64,7 +66,9 @@ class CompanyIntegrationRequestTest extends TestCase
 
     public function test_duplicate_pending_request_is_rejected_with_409(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var User $user */
         $user = User::factory()->create();
 
         Sanctum::actingAs($user, [], 'user_api');
@@ -83,7 +87,9 @@ class CompanyIntegrationRequestTest extends TestCase
 
     public function test_user_can_list_own_integration_requests(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['name' => 'Beta Corp']);
+        /** @var User $user */
         $user = User::factory()->create();
 
         Sanctum::actingAs($user, [], 'user_api');
@@ -102,6 +108,7 @@ class CompanyIntegrationRequestTest extends TestCase
 
     public function test_integration_request_requires_valid_uuid(): void
     {
+        /** @var User $user */
         $user = User::factory()->create();
 
         Sanctum::actingAs($user, [], 'user_api');
@@ -114,6 +121,7 @@ class CompanyIntegrationRequestTest extends TestCase
 
     public function test_user_can_update_personal_statuses(): void
     {
+        /** @var User $user */
         $user = User::factory()->create();
 
         Sanctum::actingAs($user, [], 'user_api');
@@ -124,11 +132,12 @@ class CompanyIntegrationRequestTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.personal_statuses', ['student', 'employee']);
 
-        $this->assertSame(['student', 'employee'], $user->fresh()->personal_statuses);
+        $this->assertSame(['student', 'employee'], $user->fresh()?->personal_statuses);
     }
 
     public function test_user_can_reset_personal_statuses_to_empty(): void
     {
+        /** @var User $user */
         $user = User::factory()->create(['personal_statuses' => ['entrepreneur']]);
 
         Sanctum::actingAs($user, [], 'user_api');
@@ -140,6 +149,7 @@ class CompanyIntegrationRequestTest extends TestCase
 
     public function test_invalid_personal_status_is_rejected(): void
     {
+        /** @var User $user */
         $user = User::factory()->create();
 
         Sanctum::actingAs($user, [], 'user_api');
@@ -153,6 +163,7 @@ class CompanyIntegrationRequestTest extends TestCase
     {
         Company::factory()->create(['name' => 'Acme Global', 'city' => 'Paris']);
         Company::factory()->create(['name' => 'Globex', 'city' => 'Lyon']);
+        /** @var User $user */
         $user = User::factory()->create();
 
         Sanctum::actingAs($user, [], 'user_api');
@@ -168,7 +179,9 @@ class CompanyIntegrationRequestTest extends TestCase
 
     public function test_non_manager_cannot_list_integration_requests(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($employee);
@@ -181,9 +194,13 @@ class CompanyIntegrationRequestTest extends TestCase
 
     public function test_manager_lists_pending_integration_requests_for_own_tenant(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['name' => 'Acme']);
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create(['name' => 'Autre']);
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var User $user */
         $user = User::factory()->create(['first_name' => 'Lina', 'last_name' => 'Kacem']);
 
         // Demande pour le tenant du manager
@@ -203,12 +220,16 @@ class CompanyIntegrationRequestTest extends TestCase
 
     public function test_manager_accept_creates_user_employee_link(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'employee@acme.test',
         ]);
+        /** @var User $user */
         $user = User::factory()->create(['email' => 'applicant@mail.test']);
         $request = $this->createIntegrationRequest($user, $company);
 
@@ -238,10 +259,15 @@ class CompanyIntegrationRequestTest extends TestCase
 
     public function test_manager_cannot_accept_with_employee_of_another_company(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $foreignEmployee */
         $foreignEmployee = Employee::factory()->create(['company_id' => $otherCompany->id]);
+        /** @var User $user */
         $user = User::factory()->create();
         $request = $this->createIntegrationRequest($user, $company);
 
@@ -256,9 +282,13 @@ class CompanyIntegrationRequestTest extends TestCase
 
     public function test_accept_when_link_already_exists_is_idempotent(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
+        /** @var User $user */
         $user = User::factory()->create();
         $request = $this->createIntegrationRequest($user, $company);
 
@@ -288,8 +318,11 @@ class CompanyIntegrationRequestTest extends TestCase
 
     public function test_manager_rejects_integration_request(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var User $user */
         $user = User::factory()->create();
         $request = $this->createIntegrationRequest($user, $company);
 
@@ -310,8 +343,11 @@ class CompanyIntegrationRequestTest extends TestCase
 
     public function test_accept_reviewed_request_returns_404(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var User $user */
         $user = User::factory()->create();
         $request = $this->createIntegrationRequest($user, $company, 'rejected');
 
