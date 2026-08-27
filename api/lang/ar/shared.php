@@ -110,6 +110,7 @@ return [
             'US' => 'الولايات المتحدة',
         ],
         'required' => 'مطلوب',
+        'dismiss' => 'إغلاق',
     ],
     'modules' => [
         'attendance' => 'الحضور',

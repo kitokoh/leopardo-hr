@@ -110,6 +110,7 @@ return [
             'US' => 'United States',
         ],
         'required' => 'Required',
+        'dismiss' => 'Dismiss',
     ],
     'modules' => [
         'attendance' => 'Attendance',

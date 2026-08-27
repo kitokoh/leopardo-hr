@@ -110,6 +110,7 @@ return [
             'US' => 'Amerika Birleşik Devletleri',
         ],
         'required' => 'Gerekli',
+        'dismiss' => 'Kapat',
     ],
     'modules' => [
         'attendance' => 'Puantaj',

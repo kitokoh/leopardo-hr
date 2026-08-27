@@ -53,12 +53,22 @@ describe('portal API route messages i18n (#4863)', () => {
         .split('\n')
         .filter((l: string) => !l.trim().startsWith('//'))
         .join('\n')
-      const frLines = code.split('\n').filter((l: string) => {
-        const matches = l.match(frPattern)
-        return (matches ?? []).length > 0
-      })
+      // #4863 : les fallbacks i18nT(locale, 'key', 'FR…') sont autorisés (3e
+      // argument) — y compris quand le formatage (prettier) place le fallback
+      // sur sa propre ligne. On retire ces appels AVANT la vérification pour
+      // ne garder que les littéraux réellement en dur.
+      const withoutFallbacks = code.replace(
+        /i18nT\(\s*[^,]+,\s*["'][^"']+["'],\s*["'][^"']*["'],?\s*\)/g,
+        'i18nT(locale, "key", "fallback")',
+      )
+      const frLines = withoutFallbacks
+        .split('\n')
+        .filter((l: string) => {
+          const matches = l.match(frPattern)
+          return (matches ?? []).length > 0
+        })
       // Les fallbacks t(locale, key, 'FR…') sont autorisés (3e argument).
-      const hardcoded = frLines.filter((l: string) => !l.includes('i18nT(') && !l.includes("t(locale, '"))
+      const hardcoded = frLines.filter((l: string) => !l.includes("t(locale, '"))
       expect(hardcoded).toEqual([])
     }
   })

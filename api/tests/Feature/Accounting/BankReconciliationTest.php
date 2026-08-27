@@ -189,7 +189,9 @@ class BankReconciliationTest extends TestCase
 
         // L'export renvoie une Response classique (petit CSV en mémoire, pas de
         // streaming nécessaire — parité #5573) : getContent(), pas streamedContent().
-        $csv = $response->getContent();
+        // getContent() renvoie string|false (Symfony) — cast (string) requis
+        // par PHPStan strict (8 erreurs, audit 2026-08-27, #5690).
+        $csv = (string) $response->getContent();
         // BOM UTF-8 + en-tête.
         $this->assertStringStartsWith("\xEF\xBB\xBF", $csv);
         $this->assertStringContainsString('Ligne;Date;Libelle;Montant;Statut', $csv);

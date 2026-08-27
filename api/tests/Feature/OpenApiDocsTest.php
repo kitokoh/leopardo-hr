@@ -102,7 +102,12 @@ class OpenApiDocsTest extends TestCase
         // détecter l'environnement pour que la gate prod s'applique.
         app()->detectEnvironment(fn () => 'production');
 
-        $employee = new Employee(['company_id' => '00000000-0000-0000-0000-000000000001']);
+        // #5697 : company_id n'est PAS fillable sur Employee (Core\Auth) — un
+        // mass-assignment via le constructeur l'ignore silencieusement et la
+        // Gate viewApiDocs ($user && $user->company_id) renvoie 403 en prod.
+        // Assignation directe = reflète un user hydraté depuis la DB (Sanctum).
+        $employee = new Employee;
+        $employee->company_id = '00000000-0000-0000-0000-000000000001';
 
         $this->actingAs($employee, 'web')
             ->get('/docs')

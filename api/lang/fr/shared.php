@@ -110,6 +110,7 @@ return [
             'US' => 'États-Unis',
         ],
         'required' => 'Requis',
+        'dismiss' => 'Fermer',
     ],
     'modules' => [
         'attendance' => 'Pointage',
