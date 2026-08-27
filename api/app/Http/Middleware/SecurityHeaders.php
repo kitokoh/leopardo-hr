@@ -37,7 +37,12 @@ class SecurityHeaders
 
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
-        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        // Référence #5521 : un endpoint peut poser sa propre politique plus
+        // stricte (ex. portail document partagé → no-referrer, l'URL porte un
+        // token) — le défaut du middleware ne doit pas l'écraser.
+        if (! $response->headers->has('Referrer-Policy')) {
+            $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        }
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
         if ($request->isSecure()) {

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, CheckCircle2, Eye, EyeOff, Loader2, LockKeyhole } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { Button } from '@/components/ui/Button';
+import { PasswordStrengthBar } from '@/components/ui/PasswordStrengthBar';
 import { getCopy, normalizeLocale, type AppLocale } from '@/lib/i18n';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
@@ -133,6 +134,7 @@ export function ResetPasswordForm({
                       {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                     </button>
                   </div>
+                  <PasswordStrengthBar password={password} locale={appLocale} />
                 </div>
 
                 <div>

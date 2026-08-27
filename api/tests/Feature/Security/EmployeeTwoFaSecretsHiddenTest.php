@@ -37,7 +37,11 @@ class EmployeeTwoFaSecretsHiddenTest extends TestCase
 
     public function test_attributes_remain_readable_on_the_model(): void
     {
-        $employee = new Employee([
+        // forceFill : two_fa_secret / two_fa_recovery_codes ne sont pas
+        // fillables — new Employee([...]) les abandonnerait silencieusement
+        // (attribut null, test rouge — même piège que #3677).
+        $employee = new Employee;
+        $employee->forceFill([
             'two_fa_secret' => 'JBSWY3DPEHPK3PXP',
             'two_fa_recovery_codes' => ['AAAA-BBBB-CCCC'],
         ]);

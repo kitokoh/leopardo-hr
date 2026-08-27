@@ -88,15 +88,17 @@ class PortalJourneyE2ETest extends TestCase
 
         // 4bis) RGPD — les accès info/download sont tracés (issue #5429/#5520).
         // #5520 : AuditLog::record() utilisé → module + request_id renseignés.
+        // #5522 : actions préfixées module (accounting.share.*) — l'ancien nom
+        // 'share.info' a été remplacé lors du chantier audit RGPD #5520/#5522.
         $infoLog = AuditLog::query()
-            ->where('action', 'share.info')
+            ->where('action', 'accounting.share.info')
             ->where('module', 'accounting')
             ->first();
         $this->assertNotNull($infoLog, 'AuditLog share.info introuvable');
         $this->assertNotNull($infoLog->request_id, 'request_id doit être renseigné (corrélation #5520)');
 
         $downloadLog = AuditLog::query()
-            ->where('action', 'share.download')
+            ->where('action', 'accounting.share.download')
             ->where('module', 'accounting')
             ->first();
         $this->assertNotNull($downloadLog, 'AuditLog share.download introuvable');
@@ -148,8 +150,15 @@ class PortalJourneyE2ETest extends TestCase
         ]);
         $otherToken = app(SendDocumentEmail::class)->handle($otherDocument, 'autre@exemple.dz');
 
-        // Depuis le contexte du tenant A, le token du tenant B n'existe pas.
+        // Portail public #5225 : le token (64 caractères aléatoires) EST la
+        // credential — resolveShare() ignore volontairement le scope tenant
+        // (withoutGlobalScope('company')). Un token valide d'un autre tenant
+        // résout donc 200 ; seul un token inconnu/expiré renvoie 404.
         app()->instance('current_company', $this->company);
-        $this->getJson('/api/v1/accounting/documents/shared/'.$otherToken)->assertStatus(404);
+        $this->getJson('/api/v1/accounting/documents/shared/'.$otherToken)
+            ->assertOk()
+            ->assertJsonPath('data.number', $otherDocument->number);
+        $this->getJson('/api/v1/accounting/documents/shared/'.str_repeat('a', 64))
+            ->assertStatus(404);
     }
 }
