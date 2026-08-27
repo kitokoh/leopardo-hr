@@ -49,6 +49,12 @@ jobs:
     outputs:
       mobile: ${{ steps.filter.outputs.mobile }}
     steps:
+      # dorny/paths-filter exige un dépôt git cloné — sans checkout, le job
+      # échouait sur chaque push main (git rev-parse: not a git repository).
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
       - uses: dorny/paths-filter@v4
         id: filter
         with:
