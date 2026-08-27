@@ -1,0 +1,206 @@
+name: Fix/Feat Ratio Guard
+
+# Issue post-audit 2026-08-26 — ratio fix/feat sur main était à 5.24 (cible ≤ 2.5).
+#
+# Ce garde mesure le ratio fix:feat sur les N derniers jours glissants et
+# échoue si le ratio dépasse le seuil configuré.
+#
+# Variables de repo pilotables par le PM (aucun changement de code requis) :
+#   FIX_FEAT_RATIO_MAX        — seuil d'échec (défaut : 3.5)
+#   FIX_FEAT_RATIO_WARN       — seuil d'avertissement visible (défaut : 2.5)
+#   FIX_FEAT_RATIO_DAYS       — fenêtre glissante en jours (défaut : 30)
+#   FIX_FEAT_RATIO_ENFORCE    — 'true' pour activer le blocage (défaut : false)
+#
+# Comportement :
+#   ratio ≤ WARN   → ✅ vert (cadence saine)
+#   WARN < ratio ≤ MAX → ⚠️  warning visible mais pas de blocage
+#   ratio > MAX et ENFORCE=true  → ❌ fail bloquant
+#   ratio > MAX et ENFORCE=false → ⚠️  warning uniquement (phase de calibration)
+#   feat = 0 et ENFORCE=true     → ❌ fail bloquant
+#
+# La fenêtre glissante sur la branche BASE (main) reflète l'historique réel,
+# pas les commits de la PR en cours — le gate porte sur l'état de santé de
+# main, pas sur le type de la PR individuelle.
+#
+# Phase de déploiement (2026-08-26) :
+#   ENFORCE=false — signal fort, pas verrou. Même pattern que merge-quota-guard
+#   (#5634) qui a démarré en warning avant d'être bloquant. Activer via
+#   vars.FIX_FEAT_RATIO_ENFORCE='true' une fois ratio < 3.5 sur 30 jours.
+#
+# Ce workflow N'EST PAS dans les checks requis lors de son introduction.
+# Il deviendra requis quand ratio(main, 30j) < 3.5 (déclenchement manuel PM).
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Fenêtre d'analyse (jours, défaut: 30)"
+        required: false
+        default: '30'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: fix-feat-ratio-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ratio:
+    timeout-minutes: 10
+    name: Ratio fix/feat (cible ≤ 2.5)
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main')
+
+    steps:
+      - name: Checkout (historique complet pour l'analyse)
+        uses: actions/checkout@v4
+        with:
+          # Récupérer l'historique de la branche base (main) sur la fenêtre.
+          # fetch-depth 0 pour ne pas rater les commits anciens.
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Calculer le ratio fix/feat
+        id: ratio
+        env:
+          DAYS: ${{ inputs.days || vars.FIX_FEAT_RATIO_DAYS || '30' }}
+          MAX: ${{ vars.FIX_FEAT_RATIO_MAX || '3.5' }}
+          WARN: ${{ vars.FIX_FEAT_RATIO_WARN || '2.5' }}
+        run: |
+          python3 - <<'PY'
+          import subprocess, os, sys, math
+
+          days  = int(os.environ.get("DAYS", 30))
+          max_r = float(os.environ.get("MAX",  3.5))
+          warn_r= float(os.environ.get("WARN", 2.5))
+
+          # Commits sur la branche base (HEAD actuel) dans la fenêtre glissante.
+          since = f"--since={days} days ago"
+          fmt   = "--pretty=format:%s"       # sujet uniquement
+          result = subprocess.run(
+              ["git", "log", since, fmt],
+              capture_output=True, text=True, check=True,
+          )
+          subjects = result.stdout.splitlines()
+
+          fixes = sum(
+              1 for s in subjects
+              if s.lower().startswith(("fix:", "fix(", "hotfix:", "hotfix(", "revert: fix"))
+          )
+          feats = sum(
+              1 for s in subjects
+              if s.lower().startswith(("feat:", "feat(", "feature:", "feature("))
+          )
+          total = len(subjects)
+          other = total - fixes - feats
+
+          print(f"=== Analyse git log (derniers {days} jours) ===")
+          print(f"  Total commits : {total}")
+          print(f"  fix:*          : {fixes}")
+          print(f"  feat:*         : {feats}")
+          print(f"  autres         : {other}")
+
+          # Écrire les outputs GitHub Actions
+          env_file = os.environ.get("GITHUB_ENV", "")
+          with open(env_file, "a") as f:
+              f.write(f"RATIO_FIXES={fixes}\n")
+              f.write(f"RATIO_FEATS={feats}\n")
+              f.write(f"RATIO_TOTAL={total}\n")
+              f.write(f"RATIO_DAYS={days}\n")
+              f.write(f"RATIO_MAX={max_r}\n")
+              f.write(f"RATIO_WARN={warn_r}\n")
+
+          if feats == 0:
+              if fixes == 0:
+                  # Pas de commit conventionnel — skip sans blocage.
+                  print(f"\nℹ️  Aucun commit fix: ni feat: sur {days} jours — skip ratio.")
+                  with open(env_file, "a") as f:
+                      f.write("RATIO_STATUS=skip\n")
+              else:
+                  print(f"\n❌ 0 feat: sur {days} jours ({fixes} fix:) — ratio indéfini (∞).")
+                  print(f"   Planifier au moins une feature dans la fenêtre courante.")
+                  with open(env_file, "a") as f:
+                      f.write("RATIO_STATUS=no_feat\n")
+              sys.exit(0)
+
+          ratio = fixes / feats
+          print(f"\n  Ratio fix/feat : {ratio:.2f}  (cible ≤ {warn_r}, seuil ❌ > {max_r})")
+
+          if ratio <= warn_r:
+              print(f"\n✅ Ratio sain ({ratio:.2f} ≤ {warn_r}) — cadence features/fixes équilibrée.")
+              status = "ok"
+          elif ratio <= max_r:
+              print(f"\n⚠️  Ratio élevé ({ratio:.2f} > cible {warn_r}) — envisager plus de feat: prochainement.")
+              status = "warn"
+          else:
+              print(f"\n❌ Ratio trop élevé ({ratio:.2f} > seuil {max_r}) — trop de correctifs, pas assez de features.")
+              print(f"   Règle produit : objectif MRR 150-250 € nécessite de livrer des valeurs.")
+              print(f"   ➜ Implémenter au moins une feature avant de merger de nouveaux correctifs.")
+              status = "fail"
+
+          with open(env_file, "a") as f:
+              f.write(f"RATIO_VALUE={ratio:.2f}\n")
+              f.write(f"RATIO_STATUS={status}\n")
+          PY
+
+      - name: Évaluer le résultat
+        env:
+          ENFORCE: ${{ vars.FIX_FEAT_RATIO_ENFORCE || 'false' }}
+        run: |
+          echo "=== Résultat du ratio fix/feat ==="
+          echo "  fix:*   : ${RATIO_FIXES}"
+          echo "  feat:*  : ${RATIO_FEATS}"
+          echo "  ratio   : ${RATIO_VALUE:-N/A}"
+          echo "  fenêtre : ${RATIO_DAYS} jours"
+          echo "  seuil ⚠️  : ≤ ${RATIO_WARN}"
+          echo "  seuil ❌ : > ${RATIO_MAX}"
+          echo "  enforce : ${ENFORCE}"
+          echo "  statut  : ${RATIO_STATUS}"
+          echo ""
+          if [[ "${ENFORCE}" != "true" ]]; then
+            echo "ℹ️  Phase de calibration — FIX_FEAT_RATIO_ENFORCE=false : résultat informatif uniquement."
+            echo "   Activer vars.FIX_FEAT_RATIO_ENFORCE=true quand ratio(main,30j) < 3.5."
+          fi
+
+          case "${RATIO_STATUS}" in
+            ok)
+              echo "✅ Ratio fix/feat OK (${RATIO_VALUE} ≤ ${RATIO_WARN})."
+              ;;
+            warn)
+              echo "::warning::Ratio fix/feat élevé (${RATIO_VALUE} > cible ${RATIO_WARN}) — planifier des features."
+              ;;
+            no_feat)
+              MSG="Aucune feat: sur ${RATIO_DAYS} jours (${RATIO_FIXES} fix:) — ratio non calculable. Implémenter au moins une feature."
+              if [[ "${ENFORCE}" == "true" ]]; then
+                echo "::error::${MSG}"
+                exit 1
+              else
+                echo "::warning::${MSG}"
+              fi
+              ;;
+            fail)
+              MSG="Ratio fix/feat trop élevé (${RATIO_VALUE} > seuil ${RATIO_MAX}). Objectif ≤ ${RATIO_WARN}. Voir PILOTAGE.md."
+              if [[ "${ENFORCE}" == "true" ]]; then
+                echo "::error::${MSG}"
+                exit 1
+              else
+                echo "::warning::${MSG}"
+              fi
+              ;;
+            skip)
+              echo "ℹ️  Aucun commit conventionnel fix:/feat: détecté — ratio non applicable."
+              ;;
+            *)
+              echo "Statut inattendu: ${RATIO_STATUS}"
+              ;;
+          esac
