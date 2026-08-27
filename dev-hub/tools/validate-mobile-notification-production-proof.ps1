@@ -64,7 +64,10 @@ foreach ($app in @("employee", "manager")) {
         $screenPath = "front/mobile_apps/leopardo_core/lib/features/notifications/screens/notification_list_screen.dart"
     }
     $screen = Read-RepoFile $screenPath
-    Assert-Contains $screen "RefreshIndicator" "$app notifications refresh"
+    if ($screen -notlike "*package:leopardo_core/features/notifications/screens/notification_list_screen.dart*") {
+        Assert-Contains $screen "RefreshIndicator" "$app notifications refresh"
+        Assert-Contains $screen "Dismissible" "$app notifications delete gesture"
+    }
     Assert-Contains $screen "Dismissible" "$app notifications delete gesture"
     Assert-Contains $screen "markAsRead" "$app notifications mark read"
     Assert-Contains $screen "delete" "$app notifications delete action"

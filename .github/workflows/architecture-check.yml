@@ -37,6 +37,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           lfs: true
+          # check-app-version-sync.sh / check-duplicate-routes.sh comparent
+          # GITHUB_BASE_SHA..HEAD — il faut l'historique complet (#5698).
+          fetch-depth: 0
 
       # check-duplicate-routes.sh (issue #5577) exécute `php artisan route:list`
       # — sans vendor/ le pipeline échoue en 255 (constat #5698, audit 2026-08-27).
