@@ -165,7 +165,7 @@ if (-not (Test-Path -LiteralPath $contractPath)) {
                 # résoudre le contenu depuis core dans ce cas aussi.
                 if (Test-Path -LiteralPath $filePath) {
                     $appScreen = Get-Content -LiteralPath $filePath -Raw
-                    if ($appScreen -match "package:leopardo_core/.*$([regex]::Escape($relativeFile -replace '^lib/', ''))") {
+                    if ($appScreen -match ("package:leopardo_core/.*" + [regex]::Escape(($relativeFile -replace '^lib/', '')))) {
                         $coreScreen = Join-Path $coreRoot $relativeFile
                         if (Test-Path -LiteralPath $coreScreen) {
                             $filePath = $coreScreen
