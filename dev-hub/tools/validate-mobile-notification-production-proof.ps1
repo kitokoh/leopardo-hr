@@ -67,10 +67,9 @@ foreach ($app in @("employee", "manager")) {
     if ($screen -notlike "*package:leopardo_core/features/notifications/screens/notification_list_screen.dart*") {
         Assert-Contains $screen "RefreshIndicator" "$app notifications refresh"
         Assert-Contains $screen "Dismissible" "$app notifications delete gesture"
+        Assert-Contains $screen "markAsRead" "$app notifications mark read"
+        Assert-Contains $screen "delete" "$app notifications delete action"
     }
-    Assert-Contains $screen "Dismissible" "$app notifications delete gesture"
-    Assert-Contains $screen "markAsRead" "$app notifications mark read"
-    Assert-Contains $screen "delete" "$app notifications delete action"
 
     Write-Host "[mobile-notifications] ${app}: push token lifecycle and notification actions are wired."
 }

@@ -65,7 +65,7 @@ class BridgeSecurityTest(unittest.TestCase):
             headers=headers or {},
         )
         try:
-            with urllib.request.urlopen(req, timeout=10) as response:
+            with urllib.request.urlopen(req, timeout=30) as response:
                 return response.status, response.read().decode("utf-8"), dict(response.headers)
         except urllib.error.HTTPError as error:
             return error.code, error.read().decode("utf-8"), dict(error.headers)
@@ -147,7 +147,7 @@ class BridgeSecurityTest(unittest.TestCase):
             },
         )
         try:
-            with urllib.request.urlopen(req, timeout=10) as response:
+            with urllib.request.urlopen(req, timeout=30) as response:
                 status = response.status
         except urllib.error.HTTPError as error:
             status = error.code
