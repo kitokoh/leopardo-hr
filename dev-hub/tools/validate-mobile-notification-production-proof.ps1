@@ -39,16 +39,22 @@ foreach ($app in @("employee", "manager")) {
     Assert-Contains $appFile "pushNotificationServiceProvider" "$app push init"
     Assert-Contains $appFile ".initialize(apiClient: ref.read(apiClientProvider))" "$app push init api client"
 
+    # #5279 (dé-duplication mobile) : auth + repository notifications vivent
+    # dans leopardo_core — accepter ré-export core OU markers locaux.
     $auth = Read-RepoFile "front/mobile_apps/leopardo_$app/lib/features/auth/providers/auth_provider.dart"
-    Assert-Contains $auth "unregisterCurrentToken(apiClient: _apiClient)" "$app logout push cleanup"
-    Assert-Contains $auth "await _repository.logout()" "$app logout order"
+    if ($auth -notlike "*package:leopardo_core/features/auth/providers/auth_provider.dart*") {
+        Assert-Contains $auth "unregisterCurrentToken(apiClient: _apiClient)" "$app logout push cleanup"
+        Assert-Contains $auth "await _repository.logout()" "$app logout order"
+    }
 
     $repository = Read-RepoFile "front/mobile_apps/leopardo_$app/lib/features/notifications/data/notification_repository.dart"
-    Assert-Contains $repository "/notifications" "$app notifications repository"
-    Assert-Contains $repository "/notifications/read-all" "$app notifications read all"
-    Assert-Contains $repository "/notifications/`$id/read" "$app notifications mark read"
-    Assert-Contains $repository "method: 'DELETE'" "$app notifications delete"
-    Assert-Contains $repository "requestWithRetry" "$app notifications retry"
+    if ($repository -notlike "*package:leopardo_core/features/notifications/data/notification_repository.dart*") {
+        Assert-Contains $repository "/notifications" "$app notifications repository"
+        Assert-Contains $repository "/notifications/read-all" "$app notifications read all"
+        Assert-Contains $repository "/notifications/`$id/read" "$app notifications mark read"
+        Assert-Contains $repository "method: 'DELETE'" "$app notifications delete"
+        Assert-Contains $repository "requestWithRetry" "$app notifications retry"
+    }
 
     # Issue #5279 (dé-duplication mobile) : le screen notifications du
     # manager a été déplacé dans leopardo_core — fallback sur le core si le

@@ -301,6 +301,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get commonRequired => 'مطلوب';
 
   @override
+  String get commonDismiss => 'إغلاق';
+
+  @override
   String get modulesAttendance => 'الحضور';
 
   @override
@@ -3402,6 +3405,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get shellTeam => 'الفريق';
 
   @override
+  String get shellHome => 'الرئيسية';
+
+  @override
+  String get shellAttendance => 'الحضور';
+
+  @override
+  String get shellAbsences => 'الغيابات';
+
+  @override
+  String get shellApprovals => 'الموافقات';
+
+  @override
   String get exportsReportemployees => 'الموظفون';
 
   @override
@@ -4198,6 +4213,45 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get contractsAllstatuses => 'كل الحالات';
+
+  @override
+  String get contractsMobileTitle => 'عقدي';
+
+  @override
+  String get contractsBackTooltip => 'رجوع';
+
+  @override
+  String get contractsEmptyTitle => 'لا يوجد عقد';
+
+  @override
+  String get contractsEmptyDescription => 'سيظهر عقدك هنا بمجرد تكوينه.';
+
+  @override
+  String get contractsLabelType => 'النوع';
+
+  @override
+  String get contractsLabelStartDate => 'البداية';
+
+  @override
+  String get contractsLabelEndDate => 'النهاية';
+
+  @override
+  String get contractsLabelBaseSalary => 'الراتب الأساسي';
+
+  @override
+  String get contractsLoading => 'جارٍ تحميل العقود...';
+
+  @override
+  String get contractsStatusActive => 'نشط';
+
+  @override
+  String get contractsStatusExpired => 'منتهي الصلاحية';
+
+  @override
+  String get contractsStatusDraft => 'مسودة';
+
+  @override
+  String get contractsStatusCdi => 'دائم (CDI)';
 
   @override
   String get trainingTitleplaceholder => 'العنوان *';
@@ -6368,6 +6422,149 @@ class AppLocalizationsAr extends AppLocalizations {
   String get accountingactivationLoading => 'جارٍ التحميل…';
 
   @override
+  String get accountingactivationBannertitle => 'تفعيل وحدة المحاسبة';
+
+  @override
+  String get accountingactivationBannerbody =>
+      'بعض الخطوات مطلوبة قبل إصدار فواتيرك الأولى.';
+
+  @override
+  String get accountingactivationBannercta => 'بدء التفعيل';
+
+  @override
+  String get accountingactivationAddtvarate => 'إضافة نسبة';
+
+  @override
+  String get accountingactivationFieldcurrency => 'العملة';
+
+  @override
+  String get accountingactivationFieldcurrencyhint =>
+      'العملة المستخدمة في المستندات والمحاسبة.';
+
+  @override
+  String get accountingactivationFielddefaultderived =>
+      'الافتراضي المشتق من الدولة';
+
+  @override
+  String get accountingactivationFielddocumentlanguage => 'لغة المستندات';
+
+  @override
+  String get accountingactivationFieldlegalmentions => 'الإشارات القانونية';
+
+  @override
+  String get accountingactivationFieldlegalmentionsplaceholder =>
+      'الإشارات القانونية التي ستظهر على المستندات…';
+
+  @override
+  String get accountingactivationFieldnumberseries => 'سلسلة الترقيم';
+
+  @override
+  String get accountingactivationFieldnumberserieshint =>
+      'البادئة المستخدمة لترقيم كل نوع مستند.';
+
+  @override
+  String get accountingactivationFieldpaymentterms => 'شروط الدفع';
+
+  @override
+  String get accountingactivationFieldpaymenttermsplaceholder =>
+      'مثال: الدفع خلال 30 يومًا';
+
+  @override
+  String get accountingactivationFieldtemplatestyle => 'قالب PDF';
+
+  @override
+  String get accountingactivationFieldtemplatestyleplaceholder => 'عصري';
+
+  @override
+  String get accountingactivationFieldtvarates => 'نسب الضريبة';
+
+  @override
+  String get accountingactivationRemovetvarate => 'إزالة هذه النسبة';
+
+  @override
+  String get accountingactivationSeriesplaceholder => 'مثال: FAC-2026-0001';
+
+  @override
+  String get accountingactivationSeriesInvoice => 'فاتورة';
+
+  @override
+  String get accountingactivationSeriesProforma => 'بروفورما';
+
+  @override
+  String get accountingactivationSeriesQuote => 'عرض سعر';
+
+  @override
+  String get accountingactivationSeriesCreditNote => 'إشعار دائن';
+
+  @override
+  String get accountingactivationSeriesDeliveryNote => 'إشعار تسليم';
+
+  @override
+  String get accountingactivationSeriesReceipt => 'إيصال';
+
+  @override
+  String get accountingactivationTvaratelabel => 'تسمية النسبة';
+
+  @override
+  String get accountingactivationTvaratelabelplaceholder => 'ضريبة قياسية';
+
+  @override
+  String get accountingactivationTvaratevalue => 'النسبة (%)';
+
+  @override
+  String get accountingactivationTvaratevalueplaceholder => '19';
+
+  @override
+  String get accountingactivationWizardback => 'رجوع';
+
+  @override
+  String get accountingactivationWizardfinish => 'تفعيل المحاسبة';
+
+  @override
+  String get accountingactivationWizardnext => 'متابعة';
+
+  @override
+  String get accountingactivationWizardstep1title => 'الهوية ولغة المستندات';
+
+  @override
+  String get accountingactivationWizardstep1subtitle =>
+      'اختر لغة المستندات وعملة الشركة.';
+
+  @override
+  String get accountingactivationWizardstep2title => 'الضريبة وسلاسل الترقيم';
+
+  @override
+  String get accountingactivationWizardstep2subtitle =>
+      'اضبط نسب الضريبة وبوادئ الترقيم.';
+
+  @override
+  String get accountingactivationWizardstep3title =>
+      'قالب PDF والإشارات القانونية';
+
+  @override
+  String get accountingactivationWizardstep3subtitle =>
+      'خصص قالب المستندات والإشارات القانونية.';
+
+  @override
+  String get accountingactivationWizardstep4title => 'إكمال التفعيل';
+
+  @override
+  String get accountingactivationWizardstep4subtitle =>
+      'راجع الإعدادات ثم فعّل الوحدة.';
+
+  @override
+  String get accountingactivationWizardstep4body =>
+      'سيتم تفعيل الوحدة بهذه الإعدادات. يمكنك تعديلها في أي وقت من الإعدادات.';
+
+  @override
+  String accountingactivationWizardstepindicator(Object current, Object total) {
+    return 'الخطوة $current من $total';
+  }
+
+  @override
+  String get accountingactivationWizardstepsaria => 'خطوات الإعداد';
+
+  @override
   String get accountingmoduleHometitle => 'المحاسبة';
 
   @override
@@ -7076,80 +7273,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get personalOnboardingStatusRejected => 'مرفوض';
 
   @override
-  String get twoFaChallengeTitle => 'التحقق بخطوتين';
-
-  @override
-  String get twoFaChallengeSubtitle =>
-      'أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة.';
-
-  @override
-  String get twoFaChallengeCodeHint => 'رمز TOTP (6 أرقام)';
-
-  @override
-  String get twoFaChallengeVerifyBtn => 'تحقق';
-
-  @override
-  String get twoFaChallengeRecoveryToggle => 'استخدام رمز الاسترداد';
-
-  @override
-  String get twoFaChallengeRecoveryHint => 'رمز الاسترداد';
-
-  @override
-  String get twoFaChallengeInvalidError =>
-      'رمز غير صالح أو منتهي الصلاحية. حاول مرة أخرى.';
-
-  @override
-  String get shellHome => 'الرئيسية';
-
-  @override
-  String get shellAttendance => 'الحضور';
-
-  @override
-  String get shellAbsences => 'الغيابات';
-
-  @override
-  String get shellApprovals => 'الموافقات';
-
-  @override
-  String get contractsMobileTitle => 'عقدي';
-
-  @override
-  String get contractsBackTooltip => 'رجوع';
-
-  @override
-  String get contractsEmptyTitle => 'لا يوجد عقد';
-
-  @override
-  String get contractsEmptyDescription => 'سيظهر عقدك هنا بمجرد تكوينه.';
-
-  @override
-  String get contractsLabelType => 'النوع';
-
-  @override
-  String get contractsLabelStartDate => 'البداية';
-
-  @override
-  String get contractsLabelEndDate => 'النهاية';
-
-  @override
-  String get contractsLabelBaseSalary => 'الراتب الأساسي';
-
-  @override
-  String get contractsLoading => 'جارٍ تحميل العقود...';
-
-  @override
-  String get contractsStatusActive => 'نشط';
-
-  @override
-  String get contractsStatusExpired => 'منتهي الصلاحية';
-
-  @override
-  String get contractsStatusDraft => 'مسودة';
-
-  @override
-  String get contractsStatusCdi => 'دائم (CDI)';
-
-  @override
   String get organigrammeTitle => 'الهيكل التنظيمي';
 
   @override
@@ -7293,604 +7416,4 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get supportTicketsLoadingTicket => 'تحميل التذكرة';
-
-  @override
-  String get settingsThemeTitle => 'مظهر التطبيق';
-
-  @override
-  String get settingsThemeHint =>
-      'اختر المظهر المعروض بغض النظر عن إعدادات النظام.';
-
-  @override
-  String get settingsThemeSystem => 'تلقائي (النظام)';
-
-  @override
-  String get settingsThemeLight => 'فاتح';
-
-  @override
-  String get settingsThemeDark => 'داكن';
-
-  @override
-  String get settingsBiometricCaptureFace => 'التقاط الوجه';
-
-  @override
-  String get settingsBiometricConfirmIdentity => 'تحقق من هويتك للمتابعة.';
-
-  @override
-  String get settingsBiometricConsentRequired =>
-      'مطلوب موافقتك قبل تفعيل القياسات الحيوية.';
-
-  @override
-  String get settingsBiometricEnableFirst =>
-      'فعّل القياسات الحيوية أولاً في الإعدادات.';
-
-  @override
-  String get settingsBiometricEnablePreparation =>
-      'التحضير لتفعيل القياسات الحيوية';
-
-  @override
-  String get settingsBiometricExplanation =>
-      'استخدم بصمة إصبعك أو وجهك لتسجيل الدخول بشكل أسرع وتأمين وصولك.';
-
-  @override
-  String get settingsBiometricFaceRequired =>
-      'إذن الكاميرا مطلوب للتعرف على الوجه.';
-
-  @override
-  String get settingsBiometricFaceSelected => 'تم اختيار الوجه';
-
-  @override
-  String get settingsBiometricFaceWanted => 'هل تريد تفعيل التعرف على الوجه؟';
-
-  @override
-  String get settingsBiometricFingerprintWanted => 'هل تريد تفعيل بصمة الإصبع؟';
-
-  @override
-  String get settingsBiometricFutureConsent =>
-      'الموافقة على عمليات التفعيل المستقبلية';
-
-  @override
-  String get settingsBiometricLocalVerifyCancel => 'تم إلغاء التحقق الحيوي.';
-
-  @override
-  String get settingsBiometricNotesHint => 'ملاحظات داخلية (اختياري)';
-
-  @override
-  String get settingsBiometricNotesTitle => 'ملاحظات التسجيل';
-
-  @override
-  String get settingsBiometricPendingExplanation => 'بانتظار تأكيد جهازك…';
-
-  @override
-  String get settingsBiometricPreparationTitle => 'جارٍ تحضير التسجيل الحيوي';
-
-  @override
-  String get settingsBiometricSavedLocal =>
-      'تم حفظ الإعدادات الحيوية على هذا الجهاز.';
-
-  @override
-  String get settingsBiometricSensorHint => 'ضع إصبعك على المستشعر…';
-
-  @override
-  String get settingsBiometricSensorLabel => 'المستشعر';
-
-  @override
-  String settingsBiometricSubmitFailed(Object error) {
-    return 'فشل إرسال البيانات الحيوية: $error';
-  }
-
-  @override
-  String get settingsBiometricSubmitted => 'تم إرسال التسجيل الحيوي للتحقق.';
-
-  @override
-  String settingsBiometricTodayStatus(Object face, Object fingerprint) {
-    return 'الوجه: $face · بصمة الإصبع: $fingerprint';
-  }
-
-  @override
-  String get settingsCabinetDocuments => 'المستندات';
-
-  @override
-  String get settingsCabinetPublic => 'عام';
-
-  @override
-  String get settingsCabinetShared => 'مشاركة';
-
-  @override
-  String get settingsCabinetSubtitle => 'مستنداتك وملفاتك المشتركة.';
-
-  @override
-  String get settingsChannelEmailHint =>
-      'استلم التنبيهات المهمة عبر البريد الإلكتروني.';
-
-  @override
-  String get settingsChannelInApp => 'داخل التطبيق';
-
-  @override
-  String get settingsChannelInAppHint => 'الإشعارات المعروضة داخل التطبيق.';
-
-  @override
-  String get settingsChannelPush => 'الإشعارات الفورية';
-
-  @override
-  String get settingsChannelPushHint => 'إشعارات فورية على هذا الجهاز.';
-
-  @override
-  String get settingsChannelSmsHint => 'رسائل SMS للرموز والتنبيهات الحرجة.';
-
-  @override
-  String get settingsChannelWhatsappHint => 'واتساب إذا قامت الشركة بتكوينه.';
-
-  @override
-  String get settingsCompanyQrLabel => 'رمز الشركة';
-
-  @override
-  String get settingsDigitalLockerSubtitle => 'خزّن مستنداتك بأمان.';
-
-  @override
-  String get settingsDigitalLockerTitle => 'الخزنة الرقمية';
-
-  @override
-  String get settingsEdgeAddressLabel => 'عنوان عقدة Edge';
-
-  @override
-  String get settingsEdgeCloudStatus => 'السحابة';
-
-  @override
-  String settingsEdgeCurrentStatus(Object label) {
-    return 'الحالة الحالية: $label';
-  }
-
-  @override
-  String get settingsEdgeLocalStatus => 'Edge محلي';
-
-  @override
-  String get settingsEdgeNodeHint =>
-      'اربط التطبيق بعقدة Edge محلية للوضع دون اتصال.';
-
-  @override
-  String get settingsEdgeNodeTitle => 'عقدة Edge';
-
-  @override
-  String get settingsEdgeOfflineStatus => 'غير متصل';
-
-  @override
-  String get settingsEdgeRemoved => 'تم فصل عقدة Edge.';
-
-  @override
-  String get settingsEdgeTokenHint => 'السر المُنشأ أثناء الاقتران.';
-
-  @override
-  String get settingsEdgeTokenLabel => 'رمز Edge';
-
-  @override
-  String get settingsEdgeUuidHint => 'معرّف العقدة الفريد.';
-
-  @override
-  String get settingsEdgeUuidLabel => 'UUID العقدة';
-
-  @override
-  String settingsJourneyAttachedTo(Object company) {
-    return 'حاليًا في $company';
-  }
-
-  @override
-  String get settingsJourneyAvailable => 'متاح لشركة جديدة';
-
-  @override
-  String settingsJourneyCompanyPeriod(Object company, Object period) {
-    return '$company · $period';
-  }
-
-  @override
-  String get settingsJourneyYourCompany => 'شركتك';
-
-  @override
-  String get settingsLanguageSyncHint =>
-      'اللغة المختارة تتحكم أيضًا في الإشعارات والبريد الإلكتروني.';
-
-  @override
-  String get settingsLanguageUpdated => 'تم حفظ اللغة.';
-
-  @override
-  String get settingsNo => 'لا';
-
-  @override
-  String get settingsNotificationsIntro =>
-      'اختر القنوات التي تستلم عبرها تنبيهاتك.';
-
-  @override
-  String get settingsNotificationsLanguage => 'لغة الإشعارات';
-
-  @override
-  String get settingsNotificationsSaved => 'تم حفظ تفضيلات الإشعارات.';
-
-  @override
-  String settingsNotificationsSaveFailed(Object error) {
-    return 'فشل الحفظ: $error';
-  }
-
-  @override
-  String get settingsNotificationsUnavailable =>
-      'الإشعارات غير متاحة على هذا الجهاز.';
-
-  @override
-  String get settingsOpenLocker => 'فتح الخزنة';
-
-  @override
-  String get settingsPasswordModernizationHint =>
-      'فعّل كلمة مرور أقوى لتأمين حسابك.';
-
-  @override
-  String get settingsPasteQrButton => 'لصق رمز QR';
-
-  @override
-  String get settingsPersonalPhoneHint => 'الرقم الشخصي (اختياري).';
-
-  @override
-  String get settingsPortableIdentityHint => 'هويتك المهنية القابلة للنقل.';
-
-  @override
-  String get settingsPortableIdentitySubtitle => 'رمز QR ومستندات هوية الشركة.';
-
-  @override
-  String get settingsPortableIdentityTitle => 'الهوية القابلة للنقل';
-
-  @override
-  String get settingsProfessionalQr => 'رمز QR المهني';
-
-  @override
-  String get settingsQrEmployeeHint => 'اعرض رمز QR هذا على صاحب العمل.';
-
-  @override
-  String get settingsQrOnboardingSubtitle => 'الانضمام بسرعة إلى منصب جديد.';
-
-  @override
-  String get settingsQrOnboardingTitle => 'الانضمام عبر رمز QR';
-
-  @override
-  String get settingsQrPasted => 'تم لصق رمز QR.';
-
-  @override
-  String settingsQrRejected(Object error) {
-    return 'تم رفض رمز QR: $error';
-  }
-
-  @override
-  String get settingsRecoveryEmailHint => 'البريد الاحتياطي (اختياري).';
-
-  @override
-  String get settingsRemove => 'إزالة';
-
-  @override
-  String get settingsRequestIntegration => 'طلب التكامل';
-
-  @override
-  String get settingsSavingShort => 'جارٍ الحفظ…';
-
-  @override
-  String get settingsSessionLogoutHint => 'يسجل الخروج على هذا الجهاز.';
-
-  @override
-  String get settingsSubmitBiometric => 'إرسال التسجيل';
-
-  @override
-  String get settingsSubmitting => 'جارٍ الإرسال…';
-
-  @override
-  String get settingsUpdateLanguage => 'تحديث اللغة';
-
-  @override
-  String get settingsUpdatePassword => 'تحديث كلمة المرور';
-
-  @override
-  String get settingsUpdating => 'جارٍ التحديث…';
-
-  @override
-  String get settingsViewProfile => 'عرض الملف الشخصي';
-
-  @override
-  String get settingsYes => 'نعم';
-
-  @override
-  String get commonBack => 'رجوع';
-
-  @override
-  String get commonSave => 'حفظ';
-
-  @override
-  String get companiesActiveImmediatelyHint => 'يتم تطبيق التغيير فورًا.';
-
-  @override
-  String get companiesCompanyCreated => 'تم إنشاء الشركة';
-
-  @override
-  String get companiesCompanyEmail => 'البريد الإلكتروني للشركة';
-
-  @override
-  String get companiesCreateClient => 'إنشاء عميل';
-
-  @override
-  String get companiesCreating => 'جارٍ الإنشاء…';
-
-  @override
-  String get companiesEmpty => 'لا توجد شركات';
-
-  @override
-  String get companiesNewClient => 'عميل جديد';
-
-  @override
-  String get companiesProvisioning => 'التجهيز';
-
-  @override
-  String get companiesRequiredField => 'حقل مطلوب';
-
-  @override
-  String get companiesTenantsPlatform => 'منصة الإيجار';
-
-  @override
-  String get companiesTrialHint => 'فترة تجريبية';
-
-  @override
-  String get companydetailActivateClient => 'تفعيل العميل';
-
-  @override
-  String get companydetailActiveEmployees => 'الموظفون النشطون';
-
-  @override
-  String get companydetailActiveModules => 'الوحدات النشطة';
-
-  @override
-  String get companydetailAnomaliesCritical => 'الحالات الشاذة الحرجة';
-
-  @override
-  String get companydetailChoosePlan => 'اختر خطة';
-
-  @override
-  String get companydetailClientActivated => 'تم تفعيل العميل';
-
-  @override
-  String get companydetailClientFile => 'ملف العميل';
-
-  @override
-  String get companydetailClientReference => 'مرجع العميل';
-
-  @override
-  String get companydetailCopyId => 'نسخ المعرف';
-
-  @override
-  String get companydetailCoreModuleAlwaysActive =>
-      'الوحدة الأساسية نشطة دائمًا';
-
-  @override
-  String get companydetailEditModules => 'تعديل الوحدات';
-
-  @override
-  String get companydetailEditSubscription => 'تعديل الاشتراك';
-
-  @override
-  String get companydetailEmployeeLimit => 'حد الموظفين';
-
-  @override
-  String get companydetailLoadingPlans => 'جارٍ تحميل الخطط…';
-
-  @override
-  String get companydetailModulesUpdated => 'تم تحديث الوحدات';
-
-  @override
-  String get companydetailMonthlyPrice => 'السعر الشهري';
-
-  @override
-  String get companydetailNextActions => 'الإجراءات التالية';
-
-  @override
-  String get companydetailNoUrgentActions => 'لا توجد إجراءات عاجلة';
-
-  @override
-  String get companydetailOptionalInternalNote => 'ملاحظة داخلية اختيارية';
-
-  @override
-  String get companydetailPlan => 'الخطة';
-
-  @override
-  String get companydetailPlanNotFound => 'الخطة غير موجودة';
-
-  @override
-  String get companydetailProductAdoption => 'تبني المنتج';
-
-  @override
-  String get companydetailRecommendedActionHint => 'الإجراء الموصى به';
-
-  @override
-  String get companydetailSaveModules => 'حفظ الوحدات';
-
-  @override
-  String get companydetailSaving => 'جارٍ الحفظ…';
-
-  @override
-  String get companydetailStatus => 'الحالة';
-
-  @override
-  String get companydetailSubscription => 'الاشتراك';
-
-  @override
-  String get companydetailSubscriptionEnd => 'نهاية الاشتراك';
-
-  @override
-  String get companydetailSubscriptionUpdated => 'تم تحديث الاشتراك';
-
-  @override
-  String get companydetailTenantIdHint => 'معرف الإيجار';
-
-  @override
-  String get companydetailUndefined => 'غير محدد';
-
-  @override
-  String get companydetailUnlimited => 'غير محدود';
-
-  @override
-  String get companyrequestsApprovedToast => 'تمت الموافقة على الطلب';
-
-  @override
-  String get companyrequestsRejectedToast => 'تم رفض الطلب';
-
-  @override
-  String get companyrequestsValidationSuperadmin => 'للمشرف الأعلى فقط';
-
-  @override
-  String get dashboardActiveLabel => 'نشط';
-
-  @override
-  String get dashboardClientCompanies => 'شركات العملاء';
-
-  @override
-  String get dashboardClientCompaniesHint => 'الشركات النشطة على المنصة';
-
-  @override
-  String get dashboardClientRequestsHint => 'الطلبات المعلقة';
-
-  @override
-  String get dashboardCreateCompany => 'إنشاء شركة';
-
-  @override
-  String get dashboardCreateCompanyHint => 'تجهيز شركة جديدة';
-
-  @override
-  String get dashboardEdgeNodes => 'عقد الحافة';
-
-  @override
-  String get dashboardEdgeNodesHint => 'العقد النشطة على الشبكة';
-
-  @override
-  String get dashboardExecutiveView => 'عرض الإدارة';
-
-  @override
-  String get dashboardLoadingCockpit => 'جارٍ تحميل لوحة التحكم…';
-
-  @override
-  String get dashboardPlatformActions => 'إجراءات المنصة';
-
-  @override
-  String get dashboardPlatformAdministration => 'إدارة المنصة';
-
-  @override
-  String get dashboardSuperAdmin => 'المشرف الأعلى';
-
-  @override
-  String get dashboardSupportClient => 'دعم العملاء';
-
-  @override
-  String get dashboardTicketsHint => 'تذاكر الدعم';
-
-  @override
-  String get dashboardTrials => 'التجارب';
-
-  @override
-  String companydetailPlanWithPrice(Object name, Object price) {
-    return '$name — $price €/شهر';
-  }
-
-  @override
-  String get twoFaTitle => 'أمان التحقق بخطوتين';
-
-  @override
-  String get twoFaSubtitle => 'المصادقة الثنائية';
-
-  @override
-  String get twoFaLoading => 'جارٍ التحميل…';
-
-  @override
-  String get twoFaGenericError => 'حدث خطأ. يرجى المحاولة مرة أخرى.';
-
-  @override
-  String get twoFaRequiredBanner =>
-      'المصادقة الثنائية إلزامية لملفك الشخصي. فعّلها الآن.';
-
-  @override
-  String get twoFaStatusEnabled => 'التحقق بخطوتين مفعّل';
-
-  @override
-  String get twoFaStatusDisabled => 'التحقق بخطوتين معطّل';
-
-  @override
-  String get twoFaStatusEnabledHint => 'يُطلب رمز عند كل تسجيل دخول.';
-
-  @override
-  String get twoFaStatusDisabledHint => 'احمِ حسابك برمز TOTP.';
-
-  @override
-  String get twoFaActivate => 'تفعيل التحقق بخطوتين';
-
-  @override
-  String get twoFaScanPrompt =>
-      'امسح رمز QR هذا باستخدام Google Authenticator أو Authy أو أي تطبيق متوافق مع TOTP.';
-
-  @override
-  String get twoFaCopySecret => 'نسخ السر';
-
-  @override
-  String get twoFaConfirmHint =>
-      'أدخل الرمز الأول الذي يولّده تطبيقك لتفعيل المصادقة الثنائية.';
-
-  @override
-  String get twoFaCodeLabel => 'رمز من 6 أرقام';
-
-  @override
-  String get twoFaCodeHint => '000000';
-
-  @override
-  String get twoFaConfirm => 'تأكيد وتفعيل';
-
-  @override
-  String get twoFaRecoveryTitle => 'رموز الاسترداد';
-
-  @override
-  String get twoFaRecoveryHint =>
-      'احتفظ بهذه الرموز في مكان آمن. يمكن استخدام كل رمز مرة واحدة فقط.';
-
-  @override
-  String get twoFaCopied => 'تم نسخ الرمز.';
-
-  @override
-  String get twoFaAllCopied => 'تم نسخ الرموز.';
-
-  @override
-  String get twoFaCopyAll => 'نسخ الكل';
-
-  @override
-  String get twoFaDoneHint =>
-      'تم تفعيل المصادقة الثنائية. سيُطلب رمز عند كل تسجيل دخول.';
-
-  @override
-  String get twoFaRegenerate => 'إعادة توليد الرموز';
-
-  @override
-  String get twoFaRegenerateConfirm =>
-      'إعادة توليد رموز الاسترداد؟ ستُلغى الرموز القديمة.';
-
-  @override
-  String get twoFaCancel => 'إلغاء';
-
-  @override
-  String get twoFaDisable => 'تعطيل التحقق بخطوتين';
-
-  @override
-  String get twoFaDisableHint => 'رمز TOTP أو رمز استرداد';
-
-  @override
-  String get twoFaEnterCode => 'الرمز';
-
-  @override
-  String get twoFaInvalidCode => 'رمز غير صالح. تحقق وأعد المحاولة.';
-
-  @override
-  String get twoFaSettingsTile => 'المصادقة الثنائية';
-
-  @override
-  String get twoFaSettingsTileSubtitle => 'يُطلب رمز TOTP عند كل تسجيل دخول';
-
-  @override
-  String personalOnboardingSearchError(Object error) {
-    return 'فشل البحث: $error';
-  }
 }

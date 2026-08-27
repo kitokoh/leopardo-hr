@@ -666,6 +666,12 @@ abstract class AppLocalizations {
   /// **'Requis'**
   String get commonRequired;
 
+  /// No description provided for @commonDismiss.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermer'**
+  String get commonDismiss;
+
   /// No description provided for @modulesAttendance.
   ///
   /// In fr, this message translates to:
@@ -6505,6 +6511,30 @@ abstract class AppLocalizations {
   /// **'Équipe'**
   String get shellTeam;
 
+  /// No description provided for @shellHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accueil'**
+  String get shellHome;
+
+  /// No description provided for @shellAttendance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointage'**
+  String get shellAttendance;
+
+  /// No description provided for @shellAbsences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absences'**
+  String get shellAbsences;
+
+  /// No description provided for @shellApprovals.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validations'**
+  String get shellApprovals;
+
   /// No description provided for @exportsReportemployees.
   ///
   /// In fr, this message translates to:
@@ -7998,6 +8028,84 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Tous les statuts'**
   String get contractsAllstatuses;
+
+  /// No description provided for @contractsMobileTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon Contrat'**
+  String get contractsMobileTitle;
+
+  /// No description provided for @contractsBackTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get contractsBackTooltip;
+
+  /// No description provided for @contractsEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun contrat'**
+  String get contractsEmptyTitle;
+
+  /// No description provided for @contractsEmptyDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre contrat apparaîtra ici une fois configuré.'**
+  String get contractsEmptyDescription;
+
+  /// No description provided for @contractsLabelType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get contractsLabelType;
+
+  /// No description provided for @contractsLabelStartDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Début'**
+  String get contractsLabelStartDate;
+
+  /// No description provided for @contractsLabelEndDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fin'**
+  String get contractsLabelEndDate;
+
+  /// No description provided for @contractsLabelBaseSalary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salaire de base'**
+  String get contractsLabelBaseSalary;
+
+  /// No description provided for @contractsLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des contrats...'**
+  String get contractsLoading;
+
+  /// No description provided for @contractsStatusActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actif'**
+  String get contractsStatusActive;
+
+  /// No description provided for @contractsStatusExpired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expiré'**
+  String get contractsStatusExpired;
+
+  /// No description provided for @contractsStatusDraft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brouillon'**
+  String get contractsStatusDraft;
+
+  /// No description provided for @contractsStatusCdi.
+  ///
+  /// In fr, this message translates to:
+  /// **'CDI'**
+  String get contractsStatusCdi;
 
   /// No description provided for @trainingTitleplaceholder.
   ///
@@ -11965,6 +12073,264 @@ abstract class AppLocalizations {
   /// **'Chargement…'**
   String get accountingactivationLoading;
 
+  /// No description provided for @accountingactivationBannertitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activez le module Comptabilité'**
+  String get accountingactivationBannertitle;
+
+  /// No description provided for @accountingactivationBannerbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quelques étapes sont nécessaires avant de pouvoir émettre vos premières factures.'**
+  String get accountingactivationBannerbody;
+
+  /// No description provided for @accountingactivationBannercta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Démarrer l\'activation'**
+  String get accountingactivationBannercta;
+
+  /// No description provided for @accountingactivationAddtvarate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un taux'**
+  String get accountingactivationAddtvarate;
+
+  /// No description provided for @accountingactivationFieldcurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise'**
+  String get accountingactivationFieldcurrency;
+
+  /// No description provided for @accountingactivationFieldcurrencyhint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise utilisée pour les documents et la comptabilité.'**
+  String get accountingactivationFieldcurrencyhint;
+
+  /// No description provided for @accountingactivationFielddefaultderived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Défaut dérivé du pays'**
+  String get accountingactivationFielddefaultderived;
+
+  /// No description provided for @accountingactivationFielddocumentlanguage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue des documents'**
+  String get accountingactivationFielddocumentlanguage;
+
+  /// No description provided for @accountingactivationFieldlegalmentions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mentions légales'**
+  String get accountingactivationFieldlegalmentions;
+
+  /// No description provided for @accountingactivationFieldlegalmentionsplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mentions légales à afficher sur les documents…'**
+  String get accountingactivationFieldlegalmentionsplaceholder;
+
+  /// No description provided for @accountingactivationFieldnumberseries.
+  ///
+  /// In fr, this message translates to:
+  /// **'Séries de numérotation'**
+  String get accountingactivationFieldnumberseries;
+
+  /// No description provided for @accountingactivationFieldnumberserieshint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préfixe utilisé pour numéroter chaque type de document.'**
+  String get accountingactivationFieldnumberserieshint;
+
+  /// No description provided for @accountingactivationFieldpaymentterms.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conditions de paiement'**
+  String get accountingactivationFieldpaymentterms;
+
+  /// No description provided for @accountingactivationFieldpaymenttermsplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. : Paiement à 30 jours'**
+  String get accountingactivationFieldpaymenttermsplaceholder;
+
+  /// No description provided for @accountingactivationFieldtemplatestyle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modèle PDF'**
+  String get accountingactivationFieldtemplatestyle;
+
+  /// No description provided for @accountingactivationFieldtemplatestyleplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'moderne'**
+  String get accountingactivationFieldtemplatestyleplaceholder;
+
+  /// No description provided for @accountingactivationFieldtvarates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taux de TVA'**
+  String get accountingactivationFieldtvarates;
+
+  /// No description provided for @accountingactivationRemovetvarate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer ce taux'**
+  String get accountingactivationRemovetvarate;
+
+  /// No description provided for @accountingactivationSeriesplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'FAC-2026-0001'**
+  String get accountingactivationSeriesplaceholder;
+
+  /// No description provided for @accountingactivationSeriesInvoice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facture'**
+  String get accountingactivationSeriesInvoice;
+
+  /// No description provided for @accountingactivationSeriesProforma.
+  ///
+  /// In fr, this message translates to:
+  /// **'Proforma'**
+  String get accountingactivationSeriesProforma;
+
+  /// No description provided for @accountingactivationSeriesQuote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devis'**
+  String get accountingactivationSeriesQuote;
+
+  /// No description provided for @accountingactivationSeriesCreditNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avoir'**
+  String get accountingactivationSeriesCreditNote;
+
+  /// No description provided for @accountingactivationSeriesDeliveryNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bon de livraison'**
+  String get accountingactivationSeriesDeliveryNote;
+
+  /// No description provided for @accountingactivationSeriesReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reçu'**
+  String get accountingactivationSeriesReceipt;
+
+  /// No description provided for @accountingactivationTvaratelabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libellé du taux'**
+  String get accountingactivationTvaratelabel;
+
+  /// No description provided for @accountingactivationTvaratelabelplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'TVA standard'**
+  String get accountingactivationTvaratelabelplaceholder;
+
+  /// No description provided for @accountingactivationTvaratevalue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taux (%)'**
+  String get accountingactivationTvaratevalue;
+
+  /// No description provided for @accountingactivationTvaratevalueplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'19'**
+  String get accountingactivationTvaratevalueplaceholder;
+
+  /// No description provided for @accountingactivationWizardback.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get accountingactivationWizardback;
+
+  /// No description provided for @accountingactivationWizardfinish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer la Comptabilité'**
+  String get accountingactivationWizardfinish;
+
+  /// No description provided for @accountingactivationWizardnext.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer'**
+  String get accountingactivationWizardnext;
+
+  /// No description provided for @accountingactivationWizardstep1title.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identité & langue des documents'**
+  String get accountingactivationWizardstep1title;
+
+  /// No description provided for @accountingactivationWizardstep1subtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez la langue des documents et la devise de l\'entreprise.'**
+  String get accountingactivationWizardstep1subtitle;
+
+  /// No description provided for @accountingactivationWizardstep2title.
+  ///
+  /// In fr, this message translates to:
+  /// **'TVA & séries de numérotation'**
+  String get accountingactivationWizardstep2title;
+
+  /// No description provided for @accountingactivationWizardstep2subtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Configurez les taux de TVA et les préfixes de numérotation.'**
+  String get accountingactivationWizardstep2subtitle;
+
+  /// No description provided for @accountingactivationWizardstep3title.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modèle PDF & mentions légales'**
+  String get accountingactivationWizardstep3title;
+
+  /// No description provided for @accountingactivationWizardstep3subtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Personnalisez le modèle des documents et vos mentions légales.'**
+  String get accountingactivationWizardstep3subtitle;
+
+  /// No description provided for @accountingactivationWizardstep4title.
+  ///
+  /// In fr, this message translates to:
+  /// **'Finaliser l\'activation'**
+  String get accountingactivationWizardstep4title;
+
+  /// No description provided for @accountingactivationWizardstep4subtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifiez le paramétrage puis activez le module.'**
+  String get accountingactivationWizardstep4subtitle;
+
+  /// No description provided for @accountingactivationWizardstep4body.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le module sera activé avec ce paramétrage. Vous pourrez le modifier à tout moment depuis les réglages.'**
+  String get accountingactivationWizardstep4body;
+
+  /// No description provided for @accountingactivationWizardstepindicator.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étape {current} sur {total}'**
+  String accountingactivationWizardstepindicator(Object current, Object total);
+
+  /// No description provided for @accountingactivationWizardstepsaria.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étapes de configuration'**
+  String get accountingactivationWizardstepsaria;
+
   /// No description provided for @accountingmoduleHometitle.
   ///
   /// In fr, this message translates to:
@@ -13315,150 +13681,6 @@ abstract class AppLocalizations {
   /// **'Refusée'**
   String get personalOnboardingStatusRejected;
 
-  /// No description provided for @twoFaChallengeTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Vérification à deux facteurs'**
-  String get twoFaChallengeTitle;
-
-  /// No description provided for @twoFaChallengeSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Entrez le code à 6 chiffres de votre application d\'authentification.'**
-  String get twoFaChallengeSubtitle;
-
-  /// No description provided for @twoFaChallengeCodeHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code TOTP (6 chiffres)'**
-  String get twoFaChallengeCodeHint;
-
-  /// No description provided for @twoFaChallengeVerifyBtn.
-  ///
-  /// In fr, this message translates to:
-  /// **'Vérifier'**
-  String get twoFaChallengeVerifyBtn;
-
-  /// No description provided for @twoFaChallengeRecoveryToggle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Utiliser un code de récupération'**
-  String get twoFaChallengeRecoveryToggle;
-
-  /// No description provided for @twoFaChallengeRecoveryHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code de récupération'**
-  String get twoFaChallengeRecoveryHint;
-
-  /// No description provided for @twoFaChallengeInvalidError.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code invalide ou expiré. Réessayez.'**
-  String get twoFaChallengeInvalidError;
-
-  /// No description provided for @shellHome.
-  ///
-  /// In fr, this message translates to:
-  /// **'Accueil'**
-  String get shellHome;
-
-  /// No description provided for @shellAttendance.
-  ///
-  /// In fr, this message translates to:
-  /// **'Pointage'**
-  String get shellAttendance;
-
-  /// No description provided for @shellAbsences.
-  ///
-  /// In fr, this message translates to:
-  /// **'Absences'**
-  String get shellAbsences;
-
-  /// No description provided for @shellApprovals.
-  ///
-  /// In fr, this message translates to:
-  /// **'Validations'**
-  String get shellApprovals;
-
-  /// No description provided for @contractsMobileTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mon Contrat'**
-  String get contractsMobileTitle;
-
-  /// No description provided for @contractsBackTooltip.
-  ///
-  /// In fr, this message translates to:
-  /// **'Retour'**
-  String get contractsBackTooltip;
-
-  /// No description provided for @contractsEmptyTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Aucun contrat'**
-  String get contractsEmptyTitle;
-
-  /// No description provided for @contractsEmptyDescription.
-  ///
-  /// In fr, this message translates to:
-  /// **'Votre contrat apparaîtra ici une fois configuré.'**
-  String get contractsEmptyDescription;
-
-  /// No description provided for @contractsLabelType.
-  ///
-  /// In fr, this message translates to:
-  /// **'Type'**
-  String get contractsLabelType;
-
-  /// No description provided for @contractsLabelStartDate.
-  ///
-  /// In fr, this message translates to:
-  /// **'Début'**
-  String get contractsLabelStartDate;
-
-  /// No description provided for @contractsLabelEndDate.
-  ///
-  /// In fr, this message translates to:
-  /// **'Fin'**
-  String get contractsLabelEndDate;
-
-  /// No description provided for @contractsLabelBaseSalary.
-  ///
-  /// In fr, this message translates to:
-  /// **'Salaire de base'**
-  String get contractsLabelBaseSalary;
-
-  /// No description provided for @contractsLoading.
-  ///
-  /// In fr, this message translates to:
-  /// **'Chargement des contrats...'**
-  String get contractsLoading;
-
-  /// No description provided for @contractsStatusActive.
-  ///
-  /// In fr, this message translates to:
-  /// **'Actif'**
-  String get contractsStatusActive;
-
-  /// No description provided for @contractsStatusExpired.
-  ///
-  /// In fr, this message translates to:
-  /// **'Expiré'**
-  String get contractsStatusExpired;
-
-  /// No description provided for @contractsStatusDraft.
-  ///
-  /// In fr, this message translates to:
-  /// **'Brouillon'**
-  String get contractsStatusDraft;
-
-  /// No description provided for @contractsStatusCdi.
-  ///
-  /// In fr, this message translates to:
-  /// **'CDI'**
-  String get contractsStatusCdi;
-
   /// No description provided for @organigrammeTitle.
   ///
   /// In fr, this message translates to:
@@ -13710,1128 +13932,6 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Chargement ticket'**
   String get supportTicketsLoadingTicket;
-
-  /// No description provided for @settingsThemeTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Thème de l\'application'**
-  String get settingsThemeTitle;
-
-  /// No description provided for @settingsThemeHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Choisissez le thème affiché quelle que soit la configuration système.'**
-  String get settingsThemeHint;
-
-  /// No description provided for @settingsThemeSystem.
-  ///
-  /// In fr, this message translates to:
-  /// **'Automatique (système)'**
-  String get settingsThemeSystem;
-
-  /// No description provided for @settingsThemeLight.
-  ///
-  /// In fr, this message translates to:
-  /// **'Clair'**
-  String get settingsThemeLight;
-
-  /// No description provided for @settingsThemeDark.
-  ///
-  /// In fr, this message translates to:
-  /// **'Sombre'**
-  String get settingsThemeDark;
-
-  /// No description provided for @settingsBiometricCaptureFace.
-  ///
-  /// In fr, this message translates to:
-  /// **'Capturer le visage'**
-  String get settingsBiometricCaptureFace;
-
-  /// No description provided for @settingsBiometricConfirmIdentity.
-  ///
-  /// In fr, this message translates to:
-  /// **'Vérifiez votre identité pour continuer.'**
-  String get settingsBiometricConfirmIdentity;
-
-  /// No description provided for @settingsBiometricConsentRequired.
-  ///
-  /// In fr, this message translates to:
-  /// **'Votre consentement est requis avant d\'activer la biométrie.'**
-  String get settingsBiometricConsentRequired;
-
-  /// No description provided for @settingsBiometricEnableFirst.
-  ///
-  /// In fr, this message translates to:
-  /// **'Activez d\'abord la biométrie dans les réglages.'**
-  String get settingsBiometricEnableFirst;
-
-  /// No description provided for @settingsBiometricEnablePreparation.
-  ///
-  /// In fr, this message translates to:
-  /// **'Préparation de l\'activation biométrique'**
-  String get settingsBiometricEnablePreparation;
-
-  /// No description provided for @settingsBiometricExplanation.
-  ///
-  /// In fr, this message translates to:
-  /// **'Utilisez votre empreinte ou votre visage pour vous connecter plus rapidement et sécuriser vos accès.'**
-  String get settingsBiometricExplanation;
-
-  /// No description provided for @settingsBiometricFaceRequired.
-  ///
-  /// In fr, this message translates to:
-  /// **'L\'autorisation caméra est requise pour la reconnaissance faciale.'**
-  String get settingsBiometricFaceRequired;
-
-  /// No description provided for @settingsBiometricFaceSelected.
-  ///
-  /// In fr, this message translates to:
-  /// **'Visage sélectionné'**
-  String get settingsBiometricFaceSelected;
-
-  /// No description provided for @settingsBiometricFaceWanted.
-  ///
-  /// In fr, this message translates to:
-  /// **'Voulez-vous activer la reconnaissance faciale ?'**
-  String get settingsBiometricFaceWanted;
-
-  /// No description provided for @settingsBiometricFingerprintWanted.
-  ///
-  /// In fr, this message translates to:
-  /// **'Voulez-vous activer l\'empreinte digitale ?'**
-  String get settingsBiometricFingerprintWanted;
-
-  /// No description provided for @settingsBiometricFutureConsent.
-  ///
-  /// In fr, this message translates to:
-  /// **'Consentement pour les prochaines activations'**
-  String get settingsBiometricFutureConsent;
-
-  /// No description provided for @settingsBiometricLocalVerifyCancel.
-  ///
-  /// In fr, this message translates to:
-  /// **'Vérification biométrique annulée.'**
-  String get settingsBiometricLocalVerifyCancel;
-
-  /// No description provided for @settingsBiometricNotesHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Notes internes (optionnel)'**
-  String get settingsBiometricNotesHint;
-
-  /// No description provided for @settingsBiometricNotesTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Notes de l\'enrôlement'**
-  String get settingsBiometricNotesTitle;
-
-  /// No description provided for @settingsBiometricPendingExplanation.
-  ///
-  /// In fr, this message translates to:
-  /// **'En attente de confirmation de votre appareil…'**
-  String get settingsBiometricPendingExplanation;
-
-  /// No description provided for @settingsBiometricPreparationTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Préparation de l\'enrôlement biométrique'**
-  String get settingsBiometricPreparationTitle;
-
-  /// No description provided for @settingsBiometricSavedLocal.
-  ///
-  /// In fr, this message translates to:
-  /// **'Réglages biométriques enregistrés sur cet appareil.'**
-  String get settingsBiometricSavedLocal;
-
-  /// No description provided for @settingsBiometricSensorHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Placez votre doigt sur le capteur…'**
-  String get settingsBiometricSensorHint;
-
-  /// No description provided for @settingsBiometricSensorLabel.
-  ///
-  /// In fr, this message translates to:
-  /// **'Capteur'**
-  String get settingsBiometricSensorLabel;
-
-  /// No description provided for @settingsBiometricSubmitFailed.
-  ///
-  /// In fr, this message translates to:
-  /// **'Échec de la soumission biométrique : {error}'**
-  String settingsBiometricSubmitFailed(Object error);
-
-  /// No description provided for @settingsBiometricSubmitted.
-  ///
-  /// In fr, this message translates to:
-  /// **'Enrôlement biométrique soumis pour validation.'**
-  String get settingsBiometricSubmitted;
-
-  /// No description provided for @settingsBiometricTodayStatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Visage : {face} · Empreinte : {fingerprint}'**
-  String settingsBiometricTodayStatus(Object face, Object fingerprint);
-
-  /// No description provided for @settingsCabinetDocuments.
-  ///
-  /// In fr, this message translates to:
-  /// **'Documents'**
-  String get settingsCabinetDocuments;
-
-  /// No description provided for @settingsCabinetPublic.
-  ///
-  /// In fr, this message translates to:
-  /// **'Public'**
-  String get settingsCabinetPublic;
-
-  /// No description provided for @settingsCabinetShared.
-  ///
-  /// In fr, this message translates to:
-  /// **'Partagés'**
-  String get settingsCabinetShared;
-
-  /// No description provided for @settingsCabinetSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Vos justificatifs et pièces partagées.'**
-  String get settingsCabinetSubtitle;
-
-  /// No description provided for @settingsChannelEmailHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Recevez les alertes importantes par email.'**
-  String get settingsChannelEmailHint;
-
-  /// No description provided for @settingsChannelInApp.
-  ///
-  /// In fr, this message translates to:
-  /// **'In-app'**
-  String get settingsChannelInApp;
-
-  /// No description provided for @settingsChannelInAppHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Notifications affichées dans l\'application.'**
-  String get settingsChannelInAppHint;
-
-  /// No description provided for @settingsChannelPush.
-  ///
-  /// In fr, this message translates to:
-  /// **'Push'**
-  String get settingsChannelPush;
-
-  /// No description provided for @settingsChannelPushHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Notifications push sur cet appareil.'**
-  String get settingsChannelPushHint;
-
-  /// No description provided for @settingsChannelSmsHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'SMS pour les codes et alertes critiques.'**
-  String get settingsChannelSmsHint;
-
-  /// No description provided for @settingsChannelWhatsappHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'WhatsApp si configuré par l\'entreprise.'**
-  String get settingsChannelWhatsappHint;
-
-  /// No description provided for @settingsCompanyQrLabel.
-  ///
-  /// In fr, this message translates to:
-  /// **'QR entreprise'**
-  String get settingsCompanyQrLabel;
-
-  /// No description provided for @settingsDigitalLockerSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Stockez vos justificatifs en toute sécurité.'**
-  String get settingsDigitalLockerSubtitle;
-
-  /// No description provided for @settingsDigitalLockerTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Casier numérique'**
-  String get settingsDigitalLockerTitle;
-
-  /// No description provided for @settingsEdgeAddressLabel.
-  ///
-  /// In fr, this message translates to:
-  /// **'Adresse du nœud Edge'**
-  String get settingsEdgeAddressLabel;
-
-  /// No description provided for @settingsEdgeCloudStatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Cloud'**
-  String get settingsEdgeCloudStatus;
-
-  /// No description provided for @settingsEdgeCurrentStatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Statut actuel : {label}'**
-  String settingsEdgeCurrentStatus(Object label);
-
-  /// No description provided for @settingsEdgeLocalStatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Edge local'**
-  String get settingsEdgeLocalStatus;
-
-  /// No description provided for @settingsEdgeNodeHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Connectez l\'application à un nœud Edge local pour le mode hors-ligne.'**
-  String get settingsEdgeNodeHint;
-
-  /// No description provided for @settingsEdgeNodeTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Nœud Edge'**
-  String get settingsEdgeNodeTitle;
-
-  /// No description provided for @settingsEdgeOfflineStatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Hors-ligne'**
-  String get settingsEdgeOfflineStatus;
-
-  /// No description provided for @settingsEdgeRemoved.
-  ///
-  /// In fr, this message translates to:
-  /// **'Nœud Edge déconnecté.'**
-  String get settingsEdgeRemoved;
-
-  /// No description provided for @settingsEdgeTokenHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Secret généré lors de l\'appairage.'**
-  String get settingsEdgeTokenHint;
-
-  /// No description provided for @settingsEdgeTokenLabel.
-  ///
-  /// In fr, this message translates to:
-  /// **'Jeton Edge'**
-  String get settingsEdgeTokenLabel;
-
-  /// No description provided for @settingsEdgeUuidHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Identifiant unique du nœud.'**
-  String get settingsEdgeUuidHint;
-
-  /// No description provided for @settingsEdgeUuidLabel.
-  ///
-  /// In fr, this message translates to:
-  /// **'UUID du nœud'**
-  String get settingsEdgeUuidLabel;
-
-  /// No description provided for @settingsJourneyAttachedTo.
-  ///
-  /// In fr, this message translates to:
-  /// **'Actuellement chez {company}'**
-  String settingsJourneyAttachedTo(Object company);
-
-  /// No description provided for @settingsJourneyAvailable.
-  ///
-  /// In fr, this message translates to:
-  /// **'Disponible pour une nouvelle entreprise'**
-  String get settingsJourneyAvailable;
-
-  /// No description provided for @settingsJourneyCompanyPeriod.
-  ///
-  /// In fr, this message translates to:
-  /// **'{company} · {period}'**
-  String settingsJourneyCompanyPeriod(Object company, Object period);
-
-  /// No description provided for @settingsJourneyYourCompany.
-  ///
-  /// In fr, this message translates to:
-  /// **'votre entreprise'**
-  String get settingsJourneyYourCompany;
-
-  /// No description provided for @settingsLanguageSyncHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'La langue choisie pilote aussi les notifications et les emails.'**
-  String get settingsLanguageSyncHint;
-
-  /// No description provided for @settingsLanguageUpdated.
-  ///
-  /// In fr, this message translates to:
-  /// **'Langue enregistrée.'**
-  String get settingsLanguageUpdated;
-
-  /// No description provided for @settingsNo.
-  ///
-  /// In fr, this message translates to:
-  /// **'Non'**
-  String get settingsNo;
-
-  /// No description provided for @settingsNotificationsIntro.
-  ///
-  /// In fr, this message translates to:
-  /// **'Choisissez les canaux par lesquels vous recevez vos alertes.'**
-  String get settingsNotificationsIntro;
-
-  /// No description provided for @settingsNotificationsLanguage.
-  ///
-  /// In fr, this message translates to:
-  /// **'Langue des notifications'**
-  String get settingsNotificationsLanguage;
-
-  /// No description provided for @settingsNotificationsSaved.
-  ///
-  /// In fr, this message translates to:
-  /// **'Préférences de notification enregistrées.'**
-  String get settingsNotificationsSaved;
-
-  /// No description provided for @settingsNotificationsSaveFailed.
-  ///
-  /// In fr, this message translates to:
-  /// **'Échec de l\'enregistrement : {error}'**
-  String settingsNotificationsSaveFailed(Object error);
-
-  /// No description provided for @settingsNotificationsUnavailable.
-  ///
-  /// In fr, this message translates to:
-  /// **'Notifications indisponibles sur cet appareil.'**
-  String get settingsNotificationsUnavailable;
-
-  /// No description provided for @settingsOpenLocker.
-  ///
-  /// In fr, this message translates to:
-  /// **'Ouvrir le casier'**
-  String get settingsOpenLocker;
-
-  /// No description provided for @settingsPasswordModernizationHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Activez un mot de passe plus robuste pour sécuriser votre compte.'**
-  String get settingsPasswordModernizationHint;
-
-  /// No description provided for @settingsPasteQrButton.
-  ///
-  /// In fr, this message translates to:
-  /// **'Coller le QR'**
-  String get settingsPasteQrButton;
-
-  /// No description provided for @settingsPersonalPhoneHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Numéro personnel (optionnel).'**
-  String get settingsPersonalPhoneHint;
-
-  /// No description provided for @settingsPortableIdentityHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Votre identité professionnelle portable.'**
-  String get settingsPortableIdentityHint;
-
-  /// No description provided for @settingsPortableIdentitySubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'QR code et pièces d\'identité de l\'entreprise.'**
-  String get settingsPortableIdentitySubtitle;
-
-  /// No description provided for @settingsPortableIdentityTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Identité portable'**
-  String get settingsPortableIdentityTitle;
-
-  /// No description provided for @settingsProfessionalQr.
-  ///
-  /// In fr, this message translates to:
-  /// **'QR professionnel'**
-  String get settingsProfessionalQr;
-
-  /// No description provided for @settingsQrEmployeeHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Présentez ce QR à votre employeur.'**
-  String get settingsQrEmployeeHint;
-
-  /// No description provided for @settingsQrOnboardingSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Intégrez rapidement un nouveau poste.'**
-  String get settingsQrOnboardingSubtitle;
-
-  /// No description provided for @settingsQrOnboardingTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Onboarding par QR'**
-  String get settingsQrOnboardingTitle;
-
-  /// No description provided for @settingsQrPasted.
-  ///
-  /// In fr, this message translates to:
-  /// **'QR code collé.'**
-  String get settingsQrPasted;
-
-  /// No description provided for @settingsQrRejected.
-  ///
-  /// In fr, this message translates to:
-  /// **'QR rejeté : {error}'**
-  String settingsQrRejected(Object error);
-
-  /// No description provided for @settingsRecoveryEmailHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Email de secours (optionnel).'**
-  String get settingsRecoveryEmailHint;
-
-  /// No description provided for @settingsRemove.
-  ///
-  /// In fr, this message translates to:
-  /// **'Retirer'**
-  String get settingsRemove;
-
-  /// No description provided for @settingsRequestIntegration.
-  ///
-  /// In fr, this message translates to:
-  /// **'Demander l\'intégration'**
-  String get settingsRequestIntegration;
-
-  /// No description provided for @settingsSavingShort.
-  ///
-  /// In fr, this message translates to:
-  /// **'Enregistrement…'**
-  String get settingsSavingShort;
-
-  /// No description provided for @settingsSessionLogoutHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Ferme la session sur cet appareil.'**
-  String get settingsSessionLogoutHint;
-
-  /// No description provided for @settingsSubmitBiometric.
-  ///
-  /// In fr, this message translates to:
-  /// **'Soumettre l\'enrôlement'**
-  String get settingsSubmitBiometric;
-
-  /// No description provided for @settingsSubmitting.
-  ///
-  /// In fr, this message translates to:
-  /// **'Envoi…'**
-  String get settingsSubmitting;
-
-  /// No description provided for @settingsUpdateLanguage.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mettre à jour la langue'**
-  String get settingsUpdateLanguage;
-
-  /// No description provided for @settingsUpdatePassword.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mettre à jour le mot de passe'**
-  String get settingsUpdatePassword;
-
-  /// No description provided for @settingsUpdating.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mise à jour…'**
-  String get settingsUpdating;
-
-  /// No description provided for @settingsViewProfile.
-  ///
-  /// In fr, this message translates to:
-  /// **'Voir le profil'**
-  String get settingsViewProfile;
-
-  /// No description provided for @settingsYes.
-  ///
-  /// In fr, this message translates to:
-  /// **'Oui'**
-  String get settingsYes;
-
-  /// No description provided for @commonBack.
-  ///
-  /// In fr, this message translates to:
-  /// **'Retour'**
-  String get commonBack;
-
-  /// No description provided for @commonSave.
-  ///
-  /// In fr, this message translates to:
-  /// **'Enregistrer'**
-  String get commonSave;
-
-  /// No description provided for @companiesActiveImmediatelyHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Le changement est appliqué immédiatement.'**
-  String get companiesActiveImmediatelyHint;
-
-  /// No description provided for @companiesCompanyCreated.
-  ///
-  /// In fr, this message translates to:
-  /// **'Société créée'**
-  String get companiesCompanyCreated;
-
-  /// No description provided for @companiesCompanyEmail.
-  ///
-  /// In fr, this message translates to:
-  /// **'Email société'**
-  String get companiesCompanyEmail;
-
-  /// No description provided for @companiesCreateClient.
-  ///
-  /// In fr, this message translates to:
-  /// **'Créer un client'**
-  String get companiesCreateClient;
-
-  /// No description provided for @companiesCreating.
-  ///
-  /// In fr, this message translates to:
-  /// **'Création…'**
-  String get companiesCreating;
-
-  /// No description provided for @companiesEmpty.
-  ///
-  /// In fr, this message translates to:
-  /// **'Aucune société'**
-  String get companiesEmpty;
-
-  /// No description provided for @companiesNewClient.
-  ///
-  /// In fr, this message translates to:
-  /// **'Nouveau client'**
-  String get companiesNewClient;
-
-  /// No description provided for @companiesProvisioning.
-  ///
-  /// In fr, this message translates to:
-  /// **'Provisionnement'**
-  String get companiesProvisioning;
-
-  /// No description provided for @companiesRequiredField.
-  ///
-  /// In fr, this message translates to:
-  /// **'Champ obligatoire'**
-  String get companiesRequiredField;
-
-  /// No description provided for @companiesTenantsPlatform.
-  ///
-  /// In fr, this message translates to:
-  /// **'Plateforme de tenancy'**
-  String get companiesTenantsPlatform;
-
-  /// No description provided for @companiesTrialHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Période d\'essai'**
-  String get companiesTrialHint;
-
-  /// No description provided for @companydetailActivateClient.
-  ///
-  /// In fr, this message translates to:
-  /// **'Activer le client'**
-  String get companydetailActivateClient;
-
-  /// No description provided for @companydetailActiveEmployees.
-  ///
-  /// In fr, this message translates to:
-  /// **'Employés actifs'**
-  String get companydetailActiveEmployees;
-
-  /// No description provided for @companydetailActiveModules.
-  ///
-  /// In fr, this message translates to:
-  /// **'Modules actifs'**
-  String get companydetailActiveModules;
-
-  /// No description provided for @companydetailAnomaliesCritical.
-  ///
-  /// In fr, this message translates to:
-  /// **'Anomalies critiques'**
-  String get companydetailAnomaliesCritical;
-
-  /// No description provided for @companydetailChoosePlan.
-  ///
-  /// In fr, this message translates to:
-  /// **'Choisir un plan'**
-  String get companydetailChoosePlan;
-
-  /// No description provided for @companydetailClientActivated.
-  ///
-  /// In fr, this message translates to:
-  /// **'Client activé'**
-  String get companydetailClientActivated;
-
-  /// No description provided for @companydetailClientFile.
-  ///
-  /// In fr, this message translates to:
-  /// **'Dossier client'**
-  String get companydetailClientFile;
-
-  /// No description provided for @companydetailClientReference.
-  ///
-  /// In fr, this message translates to:
-  /// **'Référence client'**
-  String get companydetailClientReference;
-
-  /// No description provided for @companydetailCopyId.
-  ///
-  /// In fr, this message translates to:
-  /// **'Copier l\'ID'**
-  String get companydetailCopyId;
-
-  /// No description provided for @companydetailCoreModuleAlwaysActive.
-  ///
-  /// In fr, this message translates to:
-  /// **'Module cœur toujours actif'**
-  String get companydetailCoreModuleAlwaysActive;
-
-  /// No description provided for @companydetailEditModules.
-  ///
-  /// In fr, this message translates to:
-  /// **'Modifier les modules'**
-  String get companydetailEditModules;
-
-  /// No description provided for @companydetailEditSubscription.
-  ///
-  /// In fr, this message translates to:
-  /// **'Modifier l\'abonnement'**
-  String get companydetailEditSubscription;
-
-  /// No description provided for @companydetailEmployeeLimit.
-  ///
-  /// In fr, this message translates to:
-  /// **'Limite d\'employés'**
-  String get companydetailEmployeeLimit;
-
-  /// No description provided for @companydetailLoadingPlans.
-  ///
-  /// In fr, this message translates to:
-  /// **'Chargement des plans…'**
-  String get companydetailLoadingPlans;
-
-  /// No description provided for @companydetailModulesUpdated.
-  ///
-  /// In fr, this message translates to:
-  /// **'Modules mis à jour'**
-  String get companydetailModulesUpdated;
-
-  /// No description provided for @companydetailMonthlyPrice.
-  ///
-  /// In fr, this message translates to:
-  /// **'Prix mensuel'**
-  String get companydetailMonthlyPrice;
-
-  /// No description provided for @companydetailNextActions.
-  ///
-  /// In fr, this message translates to:
-  /// **'Prochaines actions'**
-  String get companydetailNextActions;
-
-  /// No description provided for @companydetailNoUrgentActions.
-  ///
-  /// In fr, this message translates to:
-  /// **'Aucune action urgente'**
-  String get companydetailNoUrgentActions;
-
-  /// No description provided for @companydetailOptionalInternalNote.
-  ///
-  /// In fr, this message translates to:
-  /// **'Note interne facultative'**
-  String get companydetailOptionalInternalNote;
-
-  /// No description provided for @companydetailPlan.
-  ///
-  /// In fr, this message translates to:
-  /// **'Plan'**
-  String get companydetailPlan;
-
-  /// No description provided for @companydetailPlanNotFound.
-  ///
-  /// In fr, this message translates to:
-  /// **'Plan introuvable'**
-  String get companydetailPlanNotFound;
-
-  /// No description provided for @companydetailProductAdoption.
-  ///
-  /// In fr, this message translates to:
-  /// **'Adoption produit'**
-  String get companydetailProductAdoption;
-
-  /// No description provided for @companydetailRecommendedActionHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Action recommandée'**
-  String get companydetailRecommendedActionHint;
-
-  /// No description provided for @companydetailSaveModules.
-  ///
-  /// In fr, this message translates to:
-  /// **'Enregistrer les modules'**
-  String get companydetailSaveModules;
-
-  /// No description provided for @companydetailSaving.
-  ///
-  /// In fr, this message translates to:
-  /// **'Enregistrement…'**
-  String get companydetailSaving;
-
-  /// No description provided for @companydetailStatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Statut'**
-  String get companydetailStatus;
-
-  /// No description provided for @companydetailSubscription.
-  ///
-  /// In fr, this message translates to:
-  /// **'Abonnement'**
-  String get companydetailSubscription;
-
-  /// No description provided for @companydetailSubscriptionEnd.
-  ///
-  /// In fr, this message translates to:
-  /// **'Fin d\'abonnement'**
-  String get companydetailSubscriptionEnd;
-
-  /// No description provided for @companydetailSubscriptionUpdated.
-  ///
-  /// In fr, this message translates to:
-  /// **'Abonnement mis à jour'**
-  String get companydetailSubscriptionUpdated;
-
-  /// No description provided for @companydetailTenantIdHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'ID de tenancy'**
-  String get companydetailTenantIdHint;
-
-  /// No description provided for @companydetailUndefined.
-  ///
-  /// In fr, this message translates to:
-  /// **'Non défini'**
-  String get companydetailUndefined;
-
-  /// No description provided for @companydetailUnlimited.
-  ///
-  /// In fr, this message translates to:
-  /// **'Illimité'**
-  String get companydetailUnlimited;
-
-  /// No description provided for @companyrequestsApprovedToast.
-  ///
-  /// In fr, this message translates to:
-  /// **'Demande approuvée'**
-  String get companyrequestsApprovedToast;
-
-  /// No description provided for @companyrequestsRejectedToast.
-  ///
-  /// In fr, this message translates to:
-  /// **'Demande rejetée'**
-  String get companyrequestsRejectedToast;
-
-  /// No description provided for @companyrequestsValidationSuperadmin.
-  ///
-  /// In fr, this message translates to:
-  /// **'Réservé au super-admin'**
-  String get companyrequestsValidationSuperadmin;
-
-  /// No description provided for @dashboardActiveLabel.
-  ///
-  /// In fr, this message translates to:
-  /// **'Actifs'**
-  String get dashboardActiveLabel;
-
-  /// No description provided for @dashboardClientCompanies.
-  ///
-  /// In fr, this message translates to:
-  /// **'Sociétés clientes'**
-  String get dashboardClientCompanies;
-
-  /// No description provided for @dashboardClientCompaniesHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Sociétés actives sur la plateforme'**
-  String get dashboardClientCompaniesHint;
-
-  /// No description provided for @dashboardClientRequestsHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Demandes en attente'**
-  String get dashboardClientRequestsHint;
-
-  /// No description provided for @dashboardCreateCompany.
-  ///
-  /// In fr, this message translates to:
-  /// **'Créer une société'**
-  String get dashboardCreateCompany;
-
-  /// No description provided for @dashboardCreateCompanyHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Provisionner une nouvelle société'**
-  String get dashboardCreateCompanyHint;
-
-  /// No description provided for @dashboardEdgeNodes.
-  ///
-  /// In fr, this message translates to:
-  /// **'Nœuds Edge'**
-  String get dashboardEdgeNodes;
-
-  /// No description provided for @dashboardEdgeNodesHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Nœuds actifs sur le réseau'**
-  String get dashboardEdgeNodesHint;
-
-  /// No description provided for @dashboardExecutiveView.
-  ///
-  /// In fr, this message translates to:
-  /// **'Vue direction'**
-  String get dashboardExecutiveView;
-
-  /// No description provided for @dashboardLoadingCockpit.
-  ///
-  /// In fr, this message translates to:
-  /// **'Chargement du cockpit…'**
-  String get dashboardLoadingCockpit;
-
-  /// No description provided for @dashboardPlatformActions.
-  ///
-  /// In fr, this message translates to:
-  /// **'Actions plateforme'**
-  String get dashboardPlatformActions;
-
-  /// No description provided for @dashboardPlatformAdministration.
-  ///
-  /// In fr, this message translates to:
-  /// **'Administration plateforme'**
-  String get dashboardPlatformAdministration;
-
-  /// No description provided for @dashboardSuperAdmin.
-  ///
-  /// In fr, this message translates to:
-  /// **'Super-admin'**
-  String get dashboardSuperAdmin;
-
-  /// No description provided for @dashboardSupportClient.
-  ///
-  /// In fr, this message translates to:
-  /// **'Support client'**
-  String get dashboardSupportClient;
-
-  /// No description provided for @dashboardTicketsHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Tickets de support'**
-  String get dashboardTicketsHint;
-
-  /// No description provided for @dashboardTrials.
-  ///
-  /// In fr, this message translates to:
-  /// **'Essais'**
-  String get dashboardTrials;
-
-  /// No description provided for @companydetailPlanWithPrice.
-  ///
-  /// In fr, this message translates to:
-  /// **'{name} — {price} €/mois'**
-  String companydetailPlanWithPrice(Object name, Object price);
-
-  /// No description provided for @twoFaTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Sécurité 2FA'**
-  String get twoFaTitle;
-
-  /// No description provided for @twoFaSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Authentification à double facteur'**
-  String get twoFaSubtitle;
-
-  /// No description provided for @twoFaLoading.
-  ///
-  /// In fr, this message translates to:
-  /// **'Chargement…'**
-  String get twoFaLoading;
-
-  /// No description provided for @twoFaGenericError.
-  ///
-  /// In fr, this message translates to:
-  /// **'Une erreur est survenue. Merci de réessayer.'**
-  String get twoFaGenericError;
-
-  /// No description provided for @twoFaRequiredBanner.
-  ///
-  /// In fr, this message translates to:
-  /// **'La double authentification est obligatoire pour votre profil. Activez-la dès maintenant.'**
-  String get twoFaRequiredBanner;
-
-  /// No description provided for @twoFaStatusEnabled.
-  ///
-  /// In fr, this message translates to:
-  /// **'2FA active'**
-  String get twoFaStatusEnabled;
-
-  /// No description provided for @twoFaStatusDisabled.
-  ///
-  /// In fr, this message translates to:
-  /// **'2FA désactivée'**
-  String get twoFaStatusDisabled;
-
-  /// No description provided for @twoFaStatusEnabledHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Un code est demandé à chaque connexion.'**
-  String get twoFaStatusEnabledHint;
-
-  /// No description provided for @twoFaStatusDisabledHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Protégez votre compte avec un code TOTP.'**
-  String get twoFaStatusDisabledHint;
-
-  /// No description provided for @twoFaActivate.
-  ///
-  /// In fr, this message translates to:
-  /// **'Activer la 2FA'**
-  String get twoFaActivate;
-
-  /// No description provided for @twoFaScanPrompt.
-  ///
-  /// In fr, this message translates to:
-  /// **'Scannez ce QR code avec Google Authenticator, Authy ou toute application compatible TOTP.'**
-  String get twoFaScanPrompt;
-
-  /// No description provided for @twoFaCopySecret.
-  ///
-  /// In fr, this message translates to:
-  /// **'Copier le secret'**
-  String get twoFaCopySecret;
-
-  /// No description provided for @twoFaConfirmHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Saisissez le premier code généré par votre application pour activer la double authentification.'**
-  String get twoFaConfirmHint;
-
-  /// No description provided for @twoFaCodeLabel.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code à 6 chiffres'**
-  String get twoFaCodeLabel;
-
-  /// No description provided for @twoFaCodeHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'000000'**
-  String get twoFaCodeHint;
-
-  /// No description provided for @twoFaConfirm.
-  ///
-  /// In fr, this message translates to:
-  /// **'Confirmer et activer'**
-  String get twoFaConfirm;
-
-  /// No description provided for @twoFaRecoveryTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Codes de récupération'**
-  String get twoFaRecoveryTitle;
-
-  /// No description provided for @twoFaRecoveryHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Conservez ces codes en lieu sûr. Chacun ne peut être utilisé qu\'une seule fois.'**
-  String get twoFaRecoveryHint;
-
-  /// No description provided for @twoFaCopied.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code copié.'**
-  String get twoFaCopied;
-
-  /// No description provided for @twoFaAllCopied.
-  ///
-  /// In fr, this message translates to:
-  /// **'Codes copiés.'**
-  String get twoFaAllCopied;
-
-  /// No description provided for @twoFaCopyAll.
-  ///
-  /// In fr, this message translates to:
-  /// **'Tout copier'**
-  String get twoFaCopyAll;
-
-  /// No description provided for @twoFaDoneHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Double authentification activée. À chaque connexion, un code vous sera demandé.'**
-  String get twoFaDoneHint;
-
-  /// No description provided for @twoFaRegenerate.
-  ///
-  /// In fr, this message translates to:
-  /// **'Régénérer les codes'**
-  String get twoFaRegenerate;
-
-  /// No description provided for @twoFaRegenerateConfirm.
-  ///
-  /// In fr, this message translates to:
-  /// **'Régénérer les codes de récupération ? Les anciens codes seront invalidés.'**
-  String get twoFaRegenerateConfirm;
-
-  /// No description provided for @twoFaCancel.
-  ///
-  /// In fr, this message translates to:
-  /// **'Annuler'**
-  String get twoFaCancel;
-
-  /// No description provided for @twoFaDisable.
-  ///
-  /// In fr, this message translates to:
-  /// **'Désactiver la 2FA'**
-  String get twoFaDisable;
-
-  /// No description provided for @twoFaDisableHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code TOTP ou code de récupération'**
-  String get twoFaDisableHint;
-
-  /// No description provided for @twoFaEnterCode.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code'**
-  String get twoFaEnterCode;
-
-  /// No description provided for @twoFaInvalidCode.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code invalide. Vérifiez et réessayez.'**
-  String get twoFaInvalidCode;
-
-  /// No description provided for @twoFaSettingsTile.
-  ///
-  /// In fr, this message translates to:
-  /// **'Double authentification'**
-  String get twoFaSettingsTile;
-
-  /// No description provided for @twoFaSettingsTileSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code TOTP demandé à chaque connexion'**
-  String get twoFaSettingsTileSubtitle;
-
-  /// No description provided for @personalOnboardingSearchError.
-  ///
-  /// In fr, this message translates to:
-  /// **'La recherche a échoué : {error}'**
-  String personalOnboardingSearchError(Object error);
 }
 
 class _AppLocalizationsDelegate
