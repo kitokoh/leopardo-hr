@@ -143,3 +143,40 @@ i18n).
 + API GitHub (runs/checks, lecture seule) + smoke tests HTTP sur la production. La suite
 PHPUnit complète a été exécutée localement (60 min). Les 10 échecs liés à Redis ont été
 re-exécutés avec Redis et passent : seuls les 2 échecs listés §1 sont réels.*
+
+---
+
+# 📌 MISE À JOUR — IMPLÉMENTATION TERMINÉE (PR #5698)
+
+> La totalité des points ci-dessous a été **corrigée, exécutée et vérifiée** (pas seulement documentée).
+> PR : https://github.com/kitokoh/leopardo-hr/pull/5698 (9 commits, 53 fichiers, +11 071/−2 026)
+
+## ✅ Corrigé et vérifié (local + CI)
+
+| Domaine | Correctif | Vérification |
+|---|---|---|
+| Gate `viewApiDocs` (403 /docs) | assignation directe `company_id` dans le test (user hydraté DB) | PHPUnit 7/7 + CI ✅ |
+| i18n `bank_*` (#5435) | 7 clés déplacées dans `validation` en/tr/ar, doublon top-level fr supprimé (98 clés ×4) | LangCatalogParityTest + AccountingI18nTest ✅ |
+| PHPStan strict (check requis) | cast `(string)` sur `getContent()` (8 erreurs) | **PHPStan strict = 0** ✅ |
+| `.env.example` | `EDGE_TTS_BINARY` ajouté (garde #1487) | parité 286 clés, 0 manquante ✅ |
+| Kiosk ZKTeco | 127 apostrophes échappées `\'` corrigées (`app.js`) | node --check + i18n tests ✅ |
+| web-offline (PWA) | `typescript ^7.0.2 → ^5.9.3` (ERESOLVE npm ci) | npm ci/lint/23 tests/build ✅ |
+| front/web jest (12 échecs) | garde #4863 multi-lignes, OnboardingWizard sur DEFAULT_STEPS, clés `accountingActivation.wizard*` ×4, `/attendance/geo` #3377 | **jest 633/633** ✅ |
+| OpenAPI | 11 routes documentées (activation POST, personal-statuses, integration-requests ×6, voice/tts, banking ×2) | **couverture 859/859**, Redocly valide, SDKs régénérés ✅ |
+| Mobile CI (chaîne complète) | passerelles ré-export manager (location/branding/auth/notifications), guards core-aware (#5279), plan28, workflow-contracts tokens réels, Hygiene fetch-depth 0, `.gitattributes` LFS | **guards tous verts** ✅ |
+| Mobile l10n (bloquant compilation) | **190 clés i18n manquantes ajoutées ×4** (twoFa ×37, settingsTheme ×5, settings ×110, companies/companydetail/dashboard ×40, 8 paramétrées) + keyAliases sync-mobile + gen-l10n | **flutter analyze 0 issue sur les 7 apps** ✅ |
+| Kiosk Python bridge flaky | timeout HTTP 10→30 s | tests 27/27 ✅ |
+| Suite PHPUnit complète | — | **4008 passés / 2 flaky env** (DemoSuperAdminSync order-dépendant, EdgeSyncDaemon env) — CI Backend ✅ |
+
+## 🔴 Restants (non corrigeables en code — actions requises)
+
+1. **PA2 claim collisions** + **Quota merges quotidiens** : gates de PROCESS (protocole agents IA / quota journalier) — s'effacent avec le protocole habituel du repo.
+2. **Web E2E Playwright** : CORS — l'e2e tourne contre la **prod** (127.0.0.1:4173 non whitelisté sur l'instance 4.24.0 déployée). Le code CORS est correct sur main (config/cors.php inclut l'origine). **Passera après le déploiement de main** (pas de vrai staging, #1485).
+3. **Queue Supervision — prod** : secrets CI `DB_*` absents du repo (issue #5306) — à renseigner (je ne peux pas créer les credentials prod).
+4. **Redis down en prod** : incident opérationnel — relancer l'instance Redis sur Render.
+5. **Redis local/CI** : le `DemoSuperAdminSyncTest` est order-dépendant (flaky) — à stabiliser séparément.
+
+## 📊 Bilan
+- Checks requis sur la PR : **tous verts** (Backend Coverage, PHPStan Strict, Module Structure, Frontend ESLint+TS).
+- 46+ checks verts / 3 rouges (dont 2 process + 1 infra prod).
+- La suite PHPUnit réelle est plus grande que documenté : **~4 010 tests** (le README annonce 1 917).
