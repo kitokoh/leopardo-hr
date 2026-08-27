@@ -1,4 +1,3 @@
-
 export 'package:leopardo_core/features/auth/providers/auth_provider.dart'
     show authProvider, AuthState, AuthNotifier;
 

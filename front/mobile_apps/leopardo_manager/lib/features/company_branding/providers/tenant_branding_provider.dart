@@ -1,4 +1,3 @@
-
 export 'package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart'
     show tenantBrandingProvider;
 
