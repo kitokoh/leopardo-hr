@@ -61,6 +61,14 @@ return [
         'amount_min' => 'Tutar kesinlikle pozitif olmalıdır.',
         'method_invalid' => 'Geçersiz ödeme yöntemi (cash, bank_transfer, check, card, other).',
         'series_unknown' => 'Bilinmeyen seri: « :key » bir belge türü değil (:allowed).',
+        'bank_file_required' => 'CSV dosyası zorunludur.',
+        'bank_file_mimes' => 'Dosya CSV formatında olmalıdır.',
+        'bank_period_required' => 'Dönem zorunludur (YYYY-MM).',
+        'bank_period_format' => 'Dönem YYYY-MM formatında olmalıdır.',
+        'bank_reference_required' => 'İçe aktarma referansı zorunludur.',
+        'bank_payment_required' => 'Eşleştirilecek ödeme zorunludur.',
+        'bank_payment_exists' => 'Seçilen ödeme mevcut değil.',
+
         // Rapprochement / profondeur (issue #5422)
         'year_required' => 'Yıl zorunludur.',
         'year_integer' => 'Yıl bir tam sayı olmalıdır.',
@@ -75,13 +83,6 @@ return [
         'year_between' => 'Yıl 2000 ile 2100 arasında olmalıdır.',
     ],
 
-        'bank_file_required' => 'CSV dosyası zorunludur.',
-        'bank_file_mimes' => 'Dosya CSV formatında olmalıdır.',
-        'bank_period_required' => 'Dönem zorunludur (YYYY-MM).',
-        'bank_period_format' => 'Dönem YYYY-MM formatında olmalıdır.',
-        'bank_reference_required' => 'İçe aktarma referansı zorunludur.',
-        'bank_payment_required' => 'Eşleştirilecek ödeme zorunludur.',
-        'bank_payment_exists' => 'Seçilen ödeme mevcut değil.',
     'errors' => [
         'gateway_checkout_failed' => 'Ödeme sağlayıcısı geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
         'payment_amount_positive' => 'Ödeme tutarı kesinlikle pozitif olmalıdır.',

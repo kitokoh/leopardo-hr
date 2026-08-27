@@ -4,6 +4,9 @@ Toutes les modifications notables de ce projet sont documentées ici.
 Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
+### Audit stabilité main — régressions corrigées (2026-08-27)
+- `OpenApiDocsTest` : `company_id` n'est pas fillable sur le modèle Employee — le test construisait un employé sans tenant (Gate `viewApiDocs` → 403 en prod). Assignation directe de l'attribut pour refléter un utilisateur hydraté depuis la DB (7/7).
+- Parité i18n comptabilité (#5524) : les clés `bank_*` vivaient au top-level dans en/tr/ar mais dans `validation.*` en fr (chemin réellement utilisé par les Requests, `__('accounting.validation.bank_*')`) → messages de validation renvoyés bruts en en/tr/ar. Alignées ×4 dans `validation`, doublon top-level fr supprimé (LangCatalogParityTest + AccountingI18nTest verts, 96 clés ×4).
 
 ### Webhooks Stripe/Chargily — URL canonique documentée (#5537)
 - `ChargilyPaymentGateway::webhookUrl()` confirmé : retourne `/api/v1/accounting/payment-webhooks/chargily` (nouvelle URL, PR #5525).

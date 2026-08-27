@@ -125,14 +125,8 @@ return [
     'lettering_unbalanced' => 'Le lettrage doit être équilibré : la somme des débits doit égaler la somme des crédits.',
     'lettering_invalid' => 'Lettrage invalide : les écritures doivent porter sur le même compte.',
     'lettering_already_used' => 'Une ou plusieurs écritures sont déjà lettrées avec une autre lettre.',
-    // Rapprochement bancaire (issue #5435) — parité avec en/tr/ar (#5627 audit).
-    'bank_file_mimes' => 'Le fichier doit être au format CSV.',
-    'bank_file_required' => 'Le fichier CSV est requis.',
-    'bank_payment_exists' => 'Le paiement sélectionné n\'existe pas.',
-    'bank_payment_required' => 'Le paiement à rapprocher est requis.',
-    'bank_period_format' => 'La période doit utiliser le format AAAA-MM.',
-    'bank_period_required' => 'La période du relevé est requise (AAAA-MM).',
-    'bank_reference_required' => 'La référence d\'import est requise.',
+    // Les messages bank_* vivent dans le sous-tableau `validation.*` (chemin
+    // utilisé par les Request — doublon top-level supprimé, #5524 parité).
 ];
 
 

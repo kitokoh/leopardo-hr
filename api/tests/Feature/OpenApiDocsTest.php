@@ -102,7 +102,12 @@ class OpenApiDocsTest extends TestCase
         // détecter l'environnement pour que la gate prod s'applique.
         app()->detectEnvironment(fn () => 'production');
 
-        $employee = new Employee(['company_id' => '00000000-0000-0000-0000-000000000001']);
+        // company_id n'est PAS dans $fillable (modèle Employee) : le passage
+        // par le constructeur est silencieusement ignoré → Gate viewApiDocs
+        // échoue. Un utilisateur chargé depuis la DB a l'attribut hydraté ;
+        // on force l'assignation pour refléter cet état.
+        $employee = new Employee;
+        $employee->company_id = '00000000-0000-0000-0000-000000000001';
 
         $this->actingAs($employee, 'web')
             ->get('/docs')

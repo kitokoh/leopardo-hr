@@ -61,6 +61,14 @@ return [
         'amount_min' => 'يجب أن يكون المبلغ موجباً تماماً.',
         'method_invalid' => 'طريقة دفع غير صالحة (cash, bank_transfer, check, card, other).',
         'series_unknown' => 'سلسلة غير معروفة: « :key » ليست نوع مستند (:allowed).',
+        'bank_file_required' => 'ملف CSV مطلوب.',
+        'bank_file_mimes' => 'يجب أن يكون الملف بصيغة CSV.',
+        'bank_period_required' => 'فترة الكشف مطلوبة (YYYY-MM).',
+        'bank_period_format' => 'يجب أن تكون الفترة بصيغة YYYY-MM.',
+        'bank_reference_required' => 'مرجع الاستيراد مطلوب.',
+        'bank_payment_required' => 'الدفعة المراد مطابقتها مطلوبة.',
+        'bank_payment_exists' => 'الدفعة المحددة غير موجودة.',
+
         // Rapprochement / profondeur (issue #5422)
         'year_required' => 'السنة مطلوبة.',
         'year_integer' => 'يجب أن تكون السنة رقماً صحيحاً.',
@@ -75,13 +83,6 @@ return [
         'year_between' => 'يجب أن تكون السنة بين 2000 و 2100.',
     ],
 
-        'bank_file_required' => 'ملف CSV مطلوب.',
-        'bank_file_mimes' => 'يجب أن يكون الملف بصيغة CSV.',
-        'bank_period_required' => 'فترة الكشف مطلوبة (YYYY-MM).',
-        'bank_period_format' => 'يجب أن تكون الفترة بصيغة YYYY-MM.',
-        'bank_reference_required' => 'مرجع الاستيراد مطلوب.',
-        'bank_payment_required' => 'الدفعة المراد مطابقتها مطلوبة.',
-        'bank_payment_exists' => 'الدفعة المحددة غير موجودة.',
     'errors' => [
         'gateway_checkout_failed' => 'بوابة الدفع غير متاحة مؤقتًا. يرجى المحاولة لاحقًا.',
         'payment_amount_positive' => 'يجب أن يكون مبلغ الدفع موجباً تماماً.',

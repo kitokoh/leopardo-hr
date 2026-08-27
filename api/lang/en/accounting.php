@@ -61,6 +61,14 @@ return [
         'amount_min' => 'The amount must be strictly positive.',
         'method_invalid' => 'Invalid payment method (cash, bank_transfer, check, card, other).',
         'series_unknown' => 'Unknown series: « :key » is not a document type (:allowed).',
+        'bank_file_required' => 'The CSV file is required.',
+        'bank_file_mimes' => 'The file must be CSV.',
+        'bank_period_required' => 'The statement period is required (YYYY-MM).',
+        'bank_period_format' => 'The period must use the YYYY-MM format.',
+        'bank_reference_required' => 'The import reference is required.',
+        'bank_payment_required' => 'The payment to reconcile is required.',
+        'bank_payment_exists' => 'The selected payment does not exist.',
+
         // Rapprochement / profondeur (issue #5422)
         'year_required' => 'The year is required.',
         'year_integer' => 'The year must be an integer.',
@@ -75,13 +83,6 @@ return [
         'year_between' => 'The year must be between 2000 and 2100.',
     ],
 
-        'bank_file_required' => 'The CSV file is required.',
-        'bank_file_mimes' => 'The file must be CSV.',
-        'bank_period_required' => 'The statement period is required (YYYY-MM).',
-        'bank_period_format' => 'The period must use the YYYY-MM format.',
-        'bank_reference_required' => 'The import reference is required.',
-        'bank_payment_required' => 'The payment to reconcile is required.',
-        'bank_payment_exists' => 'The selected payment does not exist.',
     'errors' => [
         'gateway_checkout_failed' => 'The payment gateway is temporarily unavailable. Please try again later.',
         'payment_amount_positive' => 'The payment amount must be strictly positive.',
