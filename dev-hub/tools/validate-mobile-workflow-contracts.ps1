@@ -160,6 +160,18 @@ if (-not (Test-Path -LiteralPath $contractPath)) {
                         $filePath = $coreScreen
                     }
                 }
+                # #5279 (lot #5698) : les apps composent core via des passerelles
+                # de ré-export (fichier = simple export du même écran core) —
+                # résoudre le contenu depuis core dans ce cas aussi.
+                if (Test-Path -LiteralPath $filePath) {
+                    $appScreen = Get-Content -LiteralPath $filePath -Raw
+                    if ($appScreen -match "package:leopardo_core/.*$([regex]::Escape($relativeFile -replace '^lib/', ''))") {
+                        $coreScreen = Join-Path $coreRoot $relativeFile
+                        if (Test-Path -LiteralPath $coreScreen) {
+                            $filePath = $coreScreen
+                        }
+                    }
+                }
                 if (-not (Test-Path -LiteralPath $filePath)) {
                     Add-Failure "$($app.name)/$($workflow.name) missing screen file: $relativeFile"
                     continue
