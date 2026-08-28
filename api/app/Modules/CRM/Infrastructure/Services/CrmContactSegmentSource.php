@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Infrastructure\Services;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\CRM\Domain\Contracts\SegmentContactSourceInterface;
 use App\Modules\CRM\Domain\Enums\SegmentOperator;
 use Illuminate\Database\Query\Builder;
