@@ -56,4 +56,5 @@ return [
     MarketingServiceProvider::class,
     // — Accounting module (Phase A, issue #5221)
     AccountingServiceProvider::class,
+    CrmServiceProvider::class,
 ];
