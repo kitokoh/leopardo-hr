@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Support\Gdpr;
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * CrmRgpdRegistry — registre versionné des traitements PII du CRM client
