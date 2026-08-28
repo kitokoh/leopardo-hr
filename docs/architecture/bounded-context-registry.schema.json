@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/kitokoh/leopardo-hr/main/docs/architecture/bounded-context-registry.schema.json",
+  "title": "Leopardo Bounded Context Registry",
+  "description": "Registre machine-readable des bounded contexts Leopardo (MAT-001, issue #5859). Source de vérité pour la garde dev-hub/tools/check-bc-registry.sh.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "updated", "issue", "contexts"],
+  "properties": {
+    "version": { "type": "string", "description": "Version du registre (sémantique simple, ex. 1.0)." },
+    "updated": { "type": "string", "format": "date", "description": "Date de dernière mise à jour (YYYY-MM-DD)." },
+    "issue": { "type": "integer", "description": "Issue de référence du registre (MAT-001 = 5859)." },
+    "source": { "type": "string", "description": "Document de gouvernance source (table des bounded contexts)." },
+    "contexts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/boundedContext" }
+    },
+    "sharedPaths": {
+      "type": "array",
+      "description": "Chemins transverses (infrastructure partagée) — autorisés à ne pas être réclamés par un BC.",
+      "items": { "type": "string" }
+    }
+  },
+  "definitions": {
+    "boundedContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "code", "name", "owner", "priority", "status", "paths", "dependencies"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[0-9]{2}$", "description": "Numéro séquentiel du BC (01..23)." },
+        "code": { "type": "string", "pattern": "^BC-[A-Z0-9-]+$", "description": "Code unique du BC (ex. BC-PLATFORM)." },
+        "name": { "type": "string", "minLength": 1 },
+        "owner": { "type": "string", "pattern": "^[a-zA-Z0-9-]+$", "description": "Login GitHub du propriétaire du contexte." },
+        "priority": { "type": "string", "enum": ["P0", "P1", "P2", "P3"] },
+        "status": {
+          "type": "string",
+          "enum": ["existing", "partial", "to-create"],
+          "description": "existing = tous les chemins doivent exister ; partial = au moins un chemin existe ; to-create = module futur (chemins attendus absents)."
+        },
+        "paths": {
+          "type": "array",
+          "description": "Chemins autorisés (relatifs racine repo). Un dossier api/app/Modules/* ou api/app/Core/* doit être réclamé par exactement un BC, ou listé dans sharedPaths.",
+          "items": { "type": "string" }
+        },
+        "dependencies": {
+          "type": "array",
+          "description": "Codes des BC dont ce contexte dépend (contrats autorisés). Doivent référencer des codes existants du registre.",
+          "items": { "type": "string", "pattern": "^BC-[A-Z0-9-]+$" }
+        },
+        "routes": {
+          "type": "array",
+          "description": "Fichiers de routes possédés par le BC (advisory — existence vérifiée en warning).",
+          "items": { "type": "string" }
+        },
+        "migrations": {
+          "type": "array",
+          "description": "Répertoires/fichiers de migrations possédés (advisory).",
+          "items": { "type": "string" }
+        },
+        "events": {
+          "type": "array",
+          "description": "Événements de domaine possédés par le BC (advisory, documentaire).",
+          "items": { "type": "string" }
+        },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}
