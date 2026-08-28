@@ -82,7 +82,7 @@ final class CrossTenantAssertions
         /** @var TModel $row */
         $row = $modelClass::query()->create($attributes);
         self::assertCompanyIdPresent($test, $row);
-        $test->assertSame($expectedCompanyId, (string) $row->getAttribute('company_id'));
+        $test->assertSame($expectedCompanyId, strval($row->getAttribute('company_id')));
 
         return $row;
     }
@@ -163,12 +163,12 @@ final class CrossTenantAssertions
         $manager = app(TenantManager::class);
 
         $manager->withinTenant($tenantA, function () use ($modelClass, $tenantB, $test): void {
-            $ids = $modelClass::query()->pluck('company_id')->map(static fn ($id): string => (string) $id)->all();
+            $ids = $modelClass::query()->pluck('company_id')->map(static fn ($id): string => strval($id))->all();
             $test->assertNotContains((string) $tenantB->id, $ids, 'A ne doit jamais voir les lignes de B.');
         });
 
         $manager->withinTenant($tenantB, function () use ($modelClass, $tenantA, $test): void {
-            $ids = $modelClass::query()->pluck('company_id')->map(static fn ($id): string => (string) $id)->all();
+            $ids = $modelClass::query()->pluck('company_id')->map(static fn ($id): string => strval($id))->all();
             $test->assertNotContains((string) $tenantA->id, $ids, 'B ne doit jamais voir les lignes de A.');
         });
     }
