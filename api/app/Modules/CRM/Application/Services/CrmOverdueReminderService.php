@@ -36,7 +36,7 @@ class CrmOverdueReminderService
             ->withoutGlobalScope('company')
             ->whereIn('status', ['todo', 'in_progress'])
             ->where('due_at', '<', $now)
-            ->get(['id', 'company_id', 'assignee_id', 'title', 'due_at']);
+            ->get(['id', 'company_id', 'assigned_to', 'title', 'due_at']);
 
         $emitted = 0;
 
@@ -57,7 +57,7 @@ class CrmOverdueReminderService
             CrmTaskOverdue::dispatch(
                 (int) $task->company_id,
                 (int) $task->id,
-                $task->assignee_id !== null ? (int) $task->assignee_id : null,
+                $task->assigned_to !== null ? (int) $task->assigned_to : null,
                 (string) $task->title,
                 $task->due_at?->toIso8601String(),
             );

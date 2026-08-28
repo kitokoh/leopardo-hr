@@ -31,7 +31,7 @@ class ListCrmTasksQuery
     public function execute(array $input): LengthAwarePaginator
     {
         $query = CrmTask::query()
-            ->with(['assignee:id,first_name,last_name', 'account:id,name'])
+            ->with('assignee:id,first_name,last_name')
             ->orderByRaw('due_at ASC NULLS LAST')
             ->orderByDesc('id');
 
@@ -52,7 +52,7 @@ class ListCrmTasksQuery
         }
 
         if (isset($input['owner_id'])) {
-            $query->where('assignee_id', (int) $input['owner_id']);
+            $query->where('assigned_to', (int) $input['owner_id']);
         }
 
         if (isset($input['account_id'])) {

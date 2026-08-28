@@ -22,7 +22,7 @@ final class CreateCrmTaskAction
     {
         if ($dto->assigneeId !== null && ! $this->assigneeInTenant($dto->assigneeId)) {
             throw ValidationException::withMessages([
-                'assignee_id' => ['ASSIGNEE_NOT_IN_TENANT'],
+                'assigned_to' => ['ASSIGNEE_NOT_IN_TENANT'],
             ]);
         }
 
@@ -37,7 +37,7 @@ final class CreateCrmTaskAction
             'due_at' => $dto->dueAt,
             'status' => 'todo',
             'priority' => $dto->priority,
-            'assignee_id' => $dto->assigneeId,
+            'assigned_to' => $dto->assigneeId,
             'account_id' => $dto->accountId,
             'contact_id' => $dto->contactId,
         ]);

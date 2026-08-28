@@ -27,7 +27,7 @@ class AccountTimelineQuery
 
         $query = CrmActivity::query()
             ->where('account_id', $account->id)
-            ->with('owner:id,first_name,last_name')
+            ->with('actor:id,first_name,last_name')
             ->orderByDesc('id')
             ->limit($limit + 1); // +1 pour détecter une page suivante
 

@@ -70,7 +70,7 @@ class CrmTaskController extends Controller
     {
         $this->authorize('view', $task);
 
-        $task->load(['assignee:id,first_name,last_name', 'account:id,name']);
+        $task->load('assignee:id,first_name,last_name');
 
         return (new CrmTaskResource($task))->response();
     }
@@ -92,7 +92,7 @@ class CrmTaskController extends Controller
             contactId: isset($validated['contact_id']) ? (int) $validated['contact_id'] : null,
         ));
 
-        return (new CrmTaskResource($task->load(['assignee:id,first_name,last_name', 'account:id,name'])))->response();
+        return (new CrmTaskResource($task->load('assignee:id,first_name,last_name')))->response();
     }
 
     public function complete(CrmTask $task): JsonResponse

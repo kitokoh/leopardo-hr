@@ -156,7 +156,7 @@ class CrmTaskTimelineTest extends TestCase
         $this->postJson('/api/v1/crm/tasks', ['title' => 'X'])->assertStatus(403);
 
         Sanctum::actingAs($this->manager($this->companyA));
-        $id = $this->createCrmTask(['company_id' => $this->companyA->id, 'assignee_id' => $assignee->id]);
+        $id = $this->createCrmTask(['company_id' => $this->companyA->id, 'assigned_to' => $assignee->id]);
 
         Sanctum::actingAs($assignee);
         $this->getJson("/api/v1/crm/tasks/{$id}")->assertStatus(403); // RBAC route (api.manager)
@@ -227,7 +227,7 @@ class CrmTaskTimelineTest extends TestCase
 
         $taskId = $this->createCrmTask([
             'company_id' => $company->id,
-            'assignee_id' => $assignee->id,
+            'assigned_to' => $assignee->id,
             'due_at' => now()->subDay(),
             'status' => 'todo',
         ]);

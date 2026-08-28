@@ -78,43 +78,52 @@ trait CreatesCrmSchema
         }
 
         if (! schemaTableExists('crm_activities')) {
+            // Schéma réel #5710 (PR #5753) : append-only, occurred_at, created_by.
             Schema::create('crm_activities', function (Blueprint $table): void {
-                $table->bigIncrements('id');
+                $table->id();
                 $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('account_id')->index();
-                $table->unsignedBigInteger('contact_id')->nullable()->index();
-                $table->string('type', 60);
-                $table->timestampTz('done_at')->nullable();
-                $table->unsignedInteger('owner_id')->nullable()->index();
-                $table->jsonb('metadata')->nullable();
-                $table->timestampTz('created_at')->useCurrent();
-                $table->timestampTz('updated_at')->useCurrent();
+                $table->unsignedBigInteger('account_id')->nullable();
+                $table->unsignedBigInteger('contact_id')->nullable();
+                $table->unsignedBigInteger('lead_id')->nullable();
+                $table->unsignedBigInteger('opportunity_id')->nullable();
+                $table->string('type', 40);
+                $table->string('subject', 200)->nullable();
+                $table->text('description')->nullable();
+                $table->timestamp('occurred_at')->useCurrent();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestamps();
 
-                $table->index(['company_id', 'account_id', 'id']);
+                $table->index(['company_id', 'account_id', 'occurred_at']);
             });
         }
 
         if (! schemaTableExists('crm_tasks')) {
             Schema::create('crm_tasks', function (Blueprint $table): void {
-                $table->bigIncrements('id');
+                $table->id();
                 $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('account_id')->nullable()->index();
-                $table->unsignedBigInteger('contact_id')->nullable()->index();
-                $table->string('title', 255);
+                $table->unsignedBigInteger('account_id')->nullable();
+                $table->unsignedBigInteger('contact_id')->nullable();
+                $table->unsignedBigInteger('lead_id')->nullable();
+                $table->unsignedBigInteger('opportunity_id')->nullable();
+                $table->string('title', 200);
                 $table->text('description')->nullable();
                 $table->string('status', 20)->default('todo');
                 $table->string('priority', 10)->default('medium');
-                $table->timestampTz('due_at')->nullable()->index();
-                $table->unsignedInteger('assignee_id')->nullable()->index();
-                $table->timestampTz('created_at')->useCurrent();
-                $table->timestampTz('updated_at')->useCurrent();
+                $table->timestamp('due_at')->nullable();
+                $table->timestamp('completed_at')->nullable();
+                $table->unsignedBigInteger('assigned_to')->nullable();
+                $table->unsignedBigInteger('completed_by')->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestamps();
 
                 $table->index(['company_id', 'status']);
-                $table->index(['company_id', 'assignee_id']);
+                $table->index(['company_id', 'due_at']);
+                $table->index(['assigned_to']);
             });
         }
 
         if (! schemaTableExists('crm_task_reminders')) {
+            // Issue #5720 — relances internes (table portée par ce batch).
             Schema::create('crm_task_reminders', function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->index();
@@ -193,12 +202,17 @@ trait CreatesCrmSchema
             'company_id' => '00000000-0000-0000-0000-000000000000',
             'account_id' => null,
             'contact_id' => null,
+            'lead_id' => null,
+            'opportunity_id' => null,
             'title' => 'Relancer le client',
             'description' => null,
             'status' => 'todo',
             'priority' => 'medium',
             'due_at' => null,
-            'assignee_id' => null,
+            'completed_at' => null,
+            'assigned_to' => null,
+            'completed_by' => null,
+            'created_by' => null,
             'created_at' => now(),
             'updated_at' => now(),
         ], $overrides));
@@ -216,10 +230,13 @@ trait CreatesCrmSchema
             'company_id' => '00000000-0000-0000-0000-000000000000',
             'account_id' => 1,
             'contact_id' => null,
+            'lead_id' => null,
+            'opportunity_id' => null,
             'type' => 'call',
-            'done_at' => now(),
-            'owner_id' => null,
-            'metadata' => null,
+            'subject' => null,
+            'description' => null,
+            'occurred_at' => now(),
+            'created_by' => null,
             'created_at' => now(),
             'updated_at' => now(),
         ], $overrides));

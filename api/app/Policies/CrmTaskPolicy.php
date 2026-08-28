@@ -41,7 +41,7 @@ class CrmTaskPolicy
             return false;
         }
 
-        return $this->isCrmRole($actor) || $task->assignee_id === $actor->id;
+        return $this->isCrmRole($actor) || $task->assigned_to === $actor->id;
     }
 
     public function create(Employee $actor): bool
@@ -55,7 +55,7 @@ class CrmTaskPolicy
             return false;
         }
 
-        return $this->isCrmRole($actor) || $task->assignee_id === $actor->id;
+        return $this->isCrmRole($actor) || $task->assigned_to === $actor->id;
     }
 
     public function complete(Employee $actor, CrmTask $task): bool

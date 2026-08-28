@@ -18,14 +18,17 @@ class CrmActivityResource extends JsonResource
         return [
             'id' => $this->id,
             'type' => $this->type,
+            'subject' => $this->subject,
+            'description' => $this->description,
             'contact_id' => $this->contact_id,
-            'done_at' => $this->done_at?->toIso8601String(),
-            'owner' => $this->whenLoaded('owner') && $this->owner ? [
-                'id' => $this->owner->id,
-                'first_name' => $this->owner->first_name,
-                'last_name' => $this->owner->last_name,
+            'lead_id' => $this->lead_id,
+            'opportunity_id' => $this->opportunity_id,
+            'occurred_at' => $this->occurred_at?->toIso8601String(),
+            'actor' => $this->whenLoaded('actor') && $this->actor ? [
+                'id' => $this->actor->id,
+                'first_name' => $this->actor->first_name,
+                'last_name' => $this->actor->last_name,
             ] : null,
-            'metadata' => $this->metadata,
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

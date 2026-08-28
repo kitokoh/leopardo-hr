@@ -28616,14 +28616,26 @@ components:
           type: integer
         type:
           type: string
+        subject:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
         contact_id:
           type: integer
           nullable: true
-        done_at:
+        lead_id:
+          type: integer
+          nullable: true
+        opportunity_id:
+          type: integer
+          nullable: true
+        occurred_at:
           type: string
           format: date-time
           nullable: true
-        owner:
+        actor:
           type: object
           nullable: true
           properties:
@@ -28633,9 +28645,6 @@ components:
               type: string
             last_name:
               type: string
-        metadata:
-          type: object
-          nullable: true
         created_at:
           type: string
           format: date-time
