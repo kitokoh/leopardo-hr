@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
+use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Http\Controllers\Controller;
 use App\Modules\FuelStation\Domain\Exceptions\ShiftOverlapException;
 use App\Modules\FuelStation\Domain\Models\FuelShift;
@@ -30,6 +32,8 @@ class FuelShiftController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
         $this->authorize('viewAny', FuelShift::class);
@@ -55,6 +59,8 @@ class FuelShiftController extends Controller
 
     public function store(StoreFuelShiftRequest $request): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
         $this->authorize('create', FuelShift::class);
@@ -66,6 +72,8 @@ class FuelShiftController extends Controller
 
     public function show(Request $request, FuelShift $shift): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -80,6 +88,8 @@ class FuelShiftController extends Controller
 
     public function update(UpdateFuelShiftRequest $request, FuelShift $shift): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -96,6 +106,8 @@ class FuelShiftController extends Controller
 
     public function destroy(Request $request, FuelShift $shift): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -112,6 +124,8 @@ class FuelShiftController extends Controller
 
     public function assignments(Request $request, FuelShift $shift): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -133,6 +147,8 @@ class FuelShiftController extends Controller
 
     public function assign(StoreFuelShiftAssignmentRequest $request, FuelShift $shift): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -153,6 +169,8 @@ class FuelShiftController extends Controller
 
     public function cancelAssignment(Request $request, FuelShiftAssignment $assignment): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -172,6 +190,8 @@ class FuelShiftController extends Controller
      */
     public function myShifts(Request $request): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -251,5 +271,14 @@ class FuelShiftController extends Controller
         }
 
         return $parsed->startOfDay();
+    }
+
+
+
+    private function assertSolutionActive(): void
+    {
+        if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
+            throw new FuelSolutionInactiveException;
+        }
     }
 }

@@ -13,7 +13,7 @@ use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment;
  *
  * - Manager (role=manager) : gestion complète des shifts et affectations.
  * - Employé (pompiste) : pas d'accès direct à l'administration — il lit ses
- *   propres affectations via l'endpoint self-service /fuel/me/shifts
+ *   propres affectations via l'endpoint self-service /fuel-station/me/shifts
  *   (scope employee_id dans le contrôleur, aucune fuite tenant possible).
  */
 class FuelShiftPolicy

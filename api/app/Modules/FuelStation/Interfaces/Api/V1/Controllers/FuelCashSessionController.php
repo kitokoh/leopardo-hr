@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
+use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
@@ -33,6 +35,8 @@ class FuelCashSessionController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
         $this->authorize('viewAny', FuelCashSession::class);
@@ -68,6 +72,8 @@ class FuelCashSessionController extends Controller
 
     public function store(OpenFuelCashSessionRequest $request): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
         $this->authorize('create', FuelCashSession::class);
@@ -79,6 +85,8 @@ class FuelCashSessionController extends Controller
 
     public function show(Request $request, FuelCashSession $session): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -93,6 +101,8 @@ class FuelCashSessionController extends Controller
 
     public function addMovement(StoreFuelCashSessionMovementRequest $request, FuelCashSession $session): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -109,6 +119,8 @@ class FuelCashSessionController extends Controller
 
     public function close(CloseFuelCashSessionRequest $request, FuelCashSession $session): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -131,6 +143,8 @@ class FuelCashSessionController extends Controller
 
     public function approve(Request $request, FuelCashSession $session): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -156,6 +170,8 @@ class FuelCashSessionController extends Controller
      */
     public function mySessions(Request $request): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -224,5 +240,14 @@ class FuelCashSessionController extends Controller
             'created_by' => $movement->created_by,
             'created_at' => $movement->created_at->toISOString(),
         ];
+    }
+
+
+
+    private function assertSolutionActive(): void
+    {
+        if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
+            throw new FuelSolutionInactiveException;
+        }
     }
 }

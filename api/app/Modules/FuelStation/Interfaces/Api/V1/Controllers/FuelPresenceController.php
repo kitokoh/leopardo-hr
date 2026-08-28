@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
+use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\FuelStation\Domain\Models\FuelShift;
@@ -31,6 +33,8 @@ class FuelPresenceController extends Controller
 
     public function shiftPresence(Request $request, FuelShift $shift): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -83,6 +87,8 @@ class FuelPresenceController extends Controller
 
     public function myPresence(Request $request): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -133,5 +139,14 @@ class FuelPresenceController extends Controller
                 'presence' => $result,
             ],
         ]);
+    }
+
+
+
+    private function assertSolutionActive(): void
+    {
+        if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
+            throw new FuelSolutionInactiveException;
+        }
     }
 }

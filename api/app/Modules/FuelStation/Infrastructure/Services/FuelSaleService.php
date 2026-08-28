@@ -16,10 +16,11 @@ use Illuminate\Support\Facades\Schema;
  *   par le client) ; quantity en decimal(14,3) (litres), prix en decimal(14,2).
  * - Idempotence : `external_id` unique par tenant — un rejeu renvoie la
  *   vente existante (zéro doublon).
- * - Relation compteur/vente validée : si `fuel_pumps` (FUEL-003) existe, la
- *   pompe doit appartenir au tenant (PUMP_OUTSIDE_TENANT) ; idem station
- *   via `fuel_stations` (FUEL-002). Session de caisse toujours validée
- *   contre `fuel_cash_sessions` (même tenant).
+ * - Relation pompe/vente validée : la pompe doit appartenir au tenant
+ *   (PUMP_OUTSIDE_TENANT) ; idem station via `fuel_stations` (FUEL-002).
+ *   Session de caisse toujours validée contre `fuel_cash_sessions` (même
+ *   tenant). Station/pompe sont BIGINTs reliés par FKs composites
+ *   (x, company_id) → fuel_stations/fuel_pumps (pattern FUEL-002/003).
  */
 final class FuelSaleService
 {
@@ -69,7 +70,7 @@ final class FuelSaleService
 
     private function assertPumpBelongsToTenant(Employee $actor, mixed $pumpId): void
     {
-        if (! is_string($pumpId) || $pumpId === '') {
+        if (! is_numeric($pumpId)) {
             return;
         }
 
@@ -80,7 +81,7 @@ final class FuelSaleService
 
         $exists = DB::table('fuel_pumps')
             ->where('company_id', $actor->company_id)
-            ->where('id', $pumpId)
+            ->where('id', (int) $pumpId)
             ->exists();
 
         abort_if(! $exists, 422, 'PUMP_OUTSIDE_TENANT');
@@ -88,7 +89,7 @@ final class FuelSaleService
 
     private function assertStationBelongsToTenant(Employee $actor, mixed $stationId): void
     {
-        if (! is_string($stationId) || $stationId === '') {
+        if (! is_numeric($stationId)) {
             return;
         }
 
@@ -99,7 +100,7 @@ final class FuelSaleService
 
         $exists = DB::table('fuel_stations')
             ->where('company_id', $actor->company_id)
-            ->where('id', $stationId)
+            ->where('id', (int) $stationId)
             ->exists();
 
         abort_if(! $exists, 422, 'STATION_OUTSIDE_TENANT');

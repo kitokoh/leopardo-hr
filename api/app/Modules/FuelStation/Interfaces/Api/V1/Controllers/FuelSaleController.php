@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
+use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Http\Controllers\Controller;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
 use App\Modules\FuelStation\Infrastructure\Services\FuelSaleService;
@@ -25,6 +27,8 @@ class FuelSaleController extends Controller
 
     public function store(StoreFuelSaleRequest $request): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
         $this->authorize('create', FuelSale::class);
@@ -36,6 +40,8 @@ class FuelSaleController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
         $this->authorize('viewAny', FuelSale::class);
@@ -84,6 +90,8 @@ class FuelSaleController extends Controller
 
     public function show(Request $request, FuelSale $sale): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -101,6 +109,8 @@ class FuelSaleController extends Controller
      */
     public function mySales(Request $request): JsonResponse
     {
+        $this->assertSolutionActive();
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -160,5 +170,14 @@ class FuelSaleController extends Controller
             'created_at' => $sale->created_at->toISOString(),
             'updated_at' => $sale->updated_at->toISOString(),
         ];
+    }
+
+
+
+    private function assertSolutionActive(): void
+    {
+        if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
+            throw new FuelSolutionInactiveException;
+        }
     }
 }
