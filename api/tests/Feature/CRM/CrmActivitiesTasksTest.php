@@ -245,9 +245,10 @@ class CrmActivitiesTasksTest extends TestCase
             ->where('auditable_type', CrmTask::class)
             ->get();
 
-        // created + updated + deleted
+        // created + updated + deleted (ordre non garanti par le SELECT)
         $this->assertSame(3, $rows->count());
-        $this->assertSame(['created', 'updated', 'deleted'], $rows->pluck('action')->all());
+        $actions = $rows->pluck('action')->sort()->values()->all();
+        $this->assertSame(['created', 'deleted', 'updated'], $actions);
     }
 
     private function setTenant(Company $company): void
