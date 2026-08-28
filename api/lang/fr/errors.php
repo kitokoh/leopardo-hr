@@ -182,7 +182,7 @@ return [
     'ENTERPRISE_SCHEMA_FROZEN' => 'Mode schema Enterprise gelé. Contactez le support.',
     'COMPANY_SCHEMA_MODE_LOCKED' => 'Mode schema Enterprise gelé. Contactez le support.',
     'AI_FEATURE_DISABLED' => 'Les fonctionnalités IA sont désactivées pour cet espace.',
-    'CRM_FEATURE_DISABLED' => 'Le module CRM n'est pas activé pour cet espace.',
+    'CRM_FEATURE_DISABLED' => 'Le module CRM n\'est pas activé pour cet espace.',
     'CRM_KILL_SWITCH_ACTIVE' => 'Le module CRM est temporairement indisponible (intervention).',
 
     // Manager roles (audit SWEQA-3, #4812)

@@ -99,7 +99,7 @@ final class CrmFeature
         $global = in_array($key, self::INTEGRATIONS, true)
             && (bool) config("crm.integrations.{$key}.enabled", false);
 
-        $integration = ($company?->metadata ?? [])[self::METADATA_PREFIX.$key] ?? null;
+        $integration = ($company->metadata ?? [])[self::METADATA_PREFIX.$key] ?? null;
         $tenant = is_array($integration) && (bool) ($integration['enabled'] ?? false);
 
         return [
