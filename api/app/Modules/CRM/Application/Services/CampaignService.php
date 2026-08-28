@@ -114,7 +114,7 @@ final class CampaignService
     public function start(CrmCampaign $campaign, ?int $actorId): CrmCampaign
     {
         if (! in_array($campaign->status, [CampaignStatus::Draft->value, CampaignStatus::Scheduled->value, CampaignStatus::Paused->value], true)) {
-            throw ValidationException::withMessages(['campaign' => 'Seules les campagnes draft, scheduled ou paused peuvent démarrer.']);
+            throw ValidationException::withMessages(['campaign' => 'Only draft, scheduled or paused campaigns can start.']);
         }
 
         $audience = $this->resolveAudience($campaign);
@@ -168,7 +168,7 @@ final class CampaignService
     public function pause(CrmCampaign $campaign, ?int $actorId): CrmCampaign
     {
         if ($campaign->status !== CampaignStatus::Running->value) {
-            throw ValidationException::withMessages(['campaign' => 'Seule une campagne running peut être mise en pause.']);
+            throw ValidationException::withMessages(['campaign' => 'Only a running campaign can be paused.']);
         }
 
         $campaign->update(['status' => CampaignStatus::Paused->value]);
@@ -192,7 +192,7 @@ final class CampaignService
     public function cancel(CrmCampaign $campaign, ?int $actorId): CrmCampaign
     {
         if (in_array($campaign->status, [CampaignStatus::Finished->value, CampaignStatus::Cancelled->value], true)) {
-            throw ValidationException::withMessages(['campaign' => 'Campagne déjà terminée.']);
+            throw ValidationException::withMessages(['campaign' => 'Campaign already finished.']);
         }
 
         DB::transaction(function () use ($campaign): void {
@@ -218,7 +218,7 @@ final class CampaignService
     public function finish(CrmCampaign $campaign, ?int $actorId): CrmCampaign
     {
         if ($campaign->status !== CampaignStatus::Running->value) {
-            throw ValidationException::withMessages(['campaign' => 'Seule une campagne running peut être terminée.']);
+            throw ValidationException::withMessages(['campaign' => 'Only a running campaign can be finished.']);
         }
 
         $campaign->update([
@@ -263,7 +263,7 @@ final class CampaignService
     {
         if ($campaign->segment_id !== null) {
             if (! Schema::hasTable('crm_segment_members')) {
-                throw ValidationException::withMessages(['campaign' => 'Segments CRM indisponibles (module segments pas encore migré).']);
+                throw ValidationException::withMessages(['campaign' => 'CRM segments unavailable (segments module not migrated yet).']);
             }
 
             $rows = DB::table('crm_segment_members')
@@ -277,7 +277,7 @@ final class CampaignService
             }
 
             if ($ids === []) {
-                throw ValidationException::withMessages(['campaign' => 'Le segment ciblé ne contient aucun membre.']);
+                throw ValidationException::withMessages(['campaign' => 'The targeted segment has no members.']);
             }
 
             return $ids;
@@ -286,7 +286,7 @@ final class CampaignService
         $audience = $campaign->audience_snapshot ?? [];
 
         if ($audience === []) {
-            throw ValidationException::withMessages(['campaign' => 'Aucune audience : ciblez un segment ou fournissez une liste explicite de contacts.']);
+            throw ValidationException::withMessages(['campaign' => 'No audience: target a segment or provide an explicit contact list.']);
         }
 
         return $audience;
