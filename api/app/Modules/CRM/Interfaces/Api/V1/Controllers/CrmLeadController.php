@@ -6,10 +6,10 @@ namespace App\Modules\CRM\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\CrmLeadResource;
 use App\Modules\CRM\Domain\Models\CrmLead;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmLeadRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\UpdateCrmLeadRequest;
-use App\Http\Resources\Api\V1\CrmLeadResource;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

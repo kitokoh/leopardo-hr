@@ -6,11 +6,11 @@ namespace App\Modules\CRM\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\CrmPipelineStageResource;
 use App\Modules\CRM\Domain\Models\CrmPipeline;
 use App\Modules\CRM\Domain\Models\CrmPipelineStage;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmPipelineStageRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\UpdateCrmPipelineStageRequest;
-use App\Http\Resources\Api\V1\CrmPipelineStageResource;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;

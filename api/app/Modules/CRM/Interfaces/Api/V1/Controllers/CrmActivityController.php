@@ -6,9 +6,9 @@ namespace App\Modules\CRM\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\CrmActivityResource;
 use App\Modules\CRM\Domain\Models\CrmActivity;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmActivityRequest;
-use App\Http\Resources\Api\V1\CrmActivityResource;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

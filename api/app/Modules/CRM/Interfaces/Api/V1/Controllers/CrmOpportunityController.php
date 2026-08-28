@@ -6,11 +6,11 @@ namespace App\Modules\CRM\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\CrmOpportunityResource;
 use App\Modules\CRM\Domain\Models\CrmOpportunity;
 use App\Modules\CRM\Domain\Models\CrmPipelineStage;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmOpportunityRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\UpdateCrmOpportunityRequest;
-use App\Http\Resources\Api\V1\CrmOpportunityResource;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

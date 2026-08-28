@@ -6,10 +6,10 @@ namespace App\Modules\CRM\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\CrmTaskResource;
 use App\Modules\CRM\Domain\Models\CrmTask;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmTaskRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\UpdateCrmTaskRequest;
-use App\Http\Resources\Api\V1\CrmTaskResource;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
