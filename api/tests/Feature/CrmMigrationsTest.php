@@ -95,12 +95,32 @@ class CrmMigrationsTest extends TestCase
         DB::table('crm_contacts')->insert(['account_id' => $accountA, 'company_id' => $companyA->id] + $base);
 
         // Second contact primaire sur le MÊME compte : rejeté par l'index
-        // unique partiel. Dernière assertion du test : PostgreSQL aborte la
-        // transaction courante (25P02) — aucune requête ne doit suivre ici
-        // (le teardown du trait RefreshDatabase rollback).
-        $this->expectException(QueryException::class);
+        // unique partiel. La closure est exécutée dans un savepoint
+        // (DB::transaction imbriquée) : l'erreur n'abort pas la transaction
+        // de test — le teardown (SET search_path) reste fonctionnel.
+        try {
+            DB::transaction(function () use ($accountA, $companyA, $base): void {
+                DB::table('crm_contacts')->insert(['account_id' => $accountA, 'company_id' => $companyA->id] + $base);
+            });
+            $this->fail('L\'index unique partiel n\'a pas rejeté le second contact primaire du même compte.');
+        } catch (QueryException) {
+            // Attendu : violation de crm_contacts_primary_account_unique.
+        }
 
-        DB::table('crm_contacts')->insert(['account_id' => $accountA, 'company_id' => $companyA->id] + $base);
+        // La transaction de test est toujours utilisable : un contact primaire
+        // sur un AUTRE compte est accepté (pas de fuite de contrainte).
+        /** @var Company $companyB */
+        $companyB = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $accountB = DB::table('crm_accounts')->insertGetId([
+            'company_id' => $companyB->id,
+            'name' => 'Compte B',
+            'status' => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('crm_contacts')->insert(['account_id' => $accountB, 'company_id' => $companyB->id] + $base);
+
+        $this->assertSame(2, DB::table('crm_contacts')->where('is_primary', true)->count());
     }
 
     public function test_primary_contact_is_allowed_on_other_accounts(): void
@@ -166,16 +186,19 @@ class CrmMigrationsTest extends TestCase
             $migrate = $this->artisan('migrate', ['--path' => $tmpDir]);
             $migrate->assertExitCode(0);
 
-            $this->assertTrue(Schema::hasTable('crm_accounts'));
-            $this->assertTrue(Schema::hasTable('crm_contacts'));
+            // Existence vérifiée par schéma explicite (to_regclass) — évite la
+            // résolution de `current_schema()` de Schema::hasTable selon le
+            // search_path de la session de test.
+            $this->assertNotNull($this->tableSchema('crm_accounts'), 'crm_accounts doit exister après migrate');
+            $this->assertNotNull($this->tableSchema('crm_contacts'), 'crm_contacts doit exister après migrate');
 
             // Rollback : down() des deux migrations (dernier batch = le nôtre).
             /** @var PendingCommand $rollback */
             $rollback = $this->artisan('migrate:rollback', ['--path' => $tmpDir, '--step' => 1]);
             $rollback->assertExitCode(0);
 
-            $this->assertFalse(Schema::hasTable('crm_accounts'));
-            $this->assertFalse(Schema::hasTable('crm_contacts'));
+            $this->assertNull($this->tableSchema('crm_accounts'), 'crm_accounts doit être dropée après rollback');
+            $this->assertNull($this->tableSchema('crm_contacts'), 'crm_contacts doit être dropée après rollback');
         } finally {
             // Nettoyage du répertoire temporaire (le batch de test est
             // annulé par la transaction du trait RefreshDatabase).
@@ -184,5 +207,23 @@ class CrmMigrationsTest extends TestCase
             }
             rmdir($tmpDir);
         }
+    }
+
+    /**
+     * Retourne le schéma hébergeant la table (shared_tenants ou public), ou
+     * null si elle n'existe nulle part.
+     */
+    private function tableSchema(string $table): ?string
+    {
+        foreach (['shared_tenants', 'public'] as $schema) {
+            /** @var object{t: mixed}|null $row */
+            $row = DB::selectOne("SELECT to_regclass('{$schema}.{$table}') AS t");
+
+            if ($row !== null && $row->t !== null) {
+                return $schema;
+            }
+        }
+
+        return null;
     }
 }
