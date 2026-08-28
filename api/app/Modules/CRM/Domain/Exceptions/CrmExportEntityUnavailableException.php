@@ -8,7 +8,7 @@ final class CrmExportEntityUnavailableException extends CrmExportException
 {
     public function __construct()
     {
-        parent::__construct('Entité d\'export CRM indisponible (socle V0 non encore mergé sur cet environnement).');
+        parent::__construct('Entite d\'export CRM indisponible (socle V0 non encore merge sur cet environnement).');
     }
 
     public function errorCode(): string

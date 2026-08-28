@@ -8,7 +8,7 @@ final class CrmExportNotReadyException extends CrmExportException
 {
     public function __construct()
     {
-        parent::__construct('Export CRM pas encore prêt (traitement en cours) ou échoué.');
+        parent::__construct('Export CRM pas encore pret (traitement en cours) ou echoue.');
     }
 
     public function errorCode(): string

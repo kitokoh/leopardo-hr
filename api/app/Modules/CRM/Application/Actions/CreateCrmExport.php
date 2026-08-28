@@ -23,13 +23,13 @@ final class CreateCrmExport
     public function execute(CreateCrmExportDTO $dto, ?string $userId): CrmExportJob
     {
         if (! CrmExportEntity::isValid($dto->entity)) {
-            throw new \App\Modules\CRM\Domain\Exceptions\CrmExportInvalidRequestException('Entité d\'export inconnue.');
+            throw new \App\Modules\CRM\Domain\Exceptions\CrmExportInvalidRequestException('Entite d\'export inconnue.');
         }
 
         $allowed = CrmExportColumns::allowedFor($dto->entity);
         foreach ($dto->columns as $column) {
             if (! in_array($column, $allowed, true)) {
-                throw new \App\Modules\CRM\Domain\Exceptions\CrmExportInvalidRequestException('Colonne non allowlistée pour cette entité : '.$column);
+                throw new \App\Modules\CRM\Domain\Exceptions\CrmExportInvalidRequestException('Colonne non allowlistee pour cette entite : '.$column);
             }
         }
 

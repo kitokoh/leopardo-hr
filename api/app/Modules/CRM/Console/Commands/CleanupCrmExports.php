@@ -19,9 +19,9 @@ use Illuminate\Support\Facades\Storage;
  */
 final class CleanupCrmExports extends Command
 {
-    protected $signature = 'crm:exports:cleanup {--retention-days=7 : conservation des fichiers après expiration}';
+    protected $signature = 'crm:exports:cleanup {--retention-days=7 : conservation des fichiers apres expiration}';
 
-    protected $description = 'Purge les exports CRM expirés et leurs fichiers (disque privé).';
+    protected $description = 'Purge les exports CRM expires et leurs fichiers (disque prive).';
 
     public function handle(): int
     {
@@ -48,13 +48,13 @@ final class CleanupCrmExports extends Command
             $job->forceFill(['status' => 'expired', 'file_path' => null])->save();
         }
 
-        Log::info('CRM exports: purge exécutée', [
+        Log::info('CRM exports: purge executee', [
             'expired' => $expiredCount,
             'stale_jobs' => $stale->count(),
             'deleted_files' => $deletedFiles,
         ]);
 
-        $this->info("CRM exports purgés : {$expiredCount} expirés, {$stale->count()} fichiers nettoyés.");
+        $this->info("CRM exports purges : {$expiredCount} expires, {$stale->count()} fichiers nettoyes.");
 
         return self::SUCCESS;
     }

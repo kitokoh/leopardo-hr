@@ -85,7 +85,7 @@ class CrmExportController extends Controller
             throw new CrmExportNotReadyException();
         }
 
-        Log::info('CRM export: téléchargement', [
+        Log::info('CRM export: telechargement', [
             'export_job_id' => $job->id,
             'user_id' => auth()->id(),
         ]);

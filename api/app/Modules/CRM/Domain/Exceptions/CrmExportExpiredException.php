@@ -8,7 +8,7 @@ final class CrmExportExpiredException extends CrmExportException
 {
     public function __construct()
     {
-        parent::__construct('Export CRM expiré — générer un nouvel export.');
+        parent::__construct('Export CRM expire — generer un nouvel export.');
     }
 
     public function errorCode(): string
