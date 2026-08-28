@@ -7,6 +7,7 @@ use App\Modules\Billing\Providers\BillingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
 use App\Modules\Cameras\Providers\CamerasServiceProvider;
 use App\Modules\CRM\Providers\CrmServiceProvider;
+use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
@@ -42,6 +43,7 @@ return [
     CamerasServiceProvider::class,
     // — CRM client (issue #5707, ADR-CRM-DUAL-CONTEXTS)
     CrmServiceProvider::class,
+    FuelStationServiceProvider::class,
     // — New DDD modules (Phase 2)
     GrowthServiceProvider::class,
     AbsenceServiceProvider::class,
