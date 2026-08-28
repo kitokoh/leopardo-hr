@@ -6,6 +6,7 @@ namespace Tests\Feature\FuelStation;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -35,6 +36,9 @@ class FuelStationMigrationTest extends TestCase
         $this->companyB = $companyB;
     }
 
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
     private function station(Company $company, array $overrides = []): FuelStation
     {
         /** @var FuelStation $station */
@@ -69,15 +73,21 @@ class FuelStationMigrationTest extends TestCase
         // Même code chez un AUTRE tenant → autorisé (isolation).
         $this->station($this->companyB, ['code' => 'ST-001']);
 
-        // Même code chez le MÊME tenant → contrainte unique.
-        $this->expectException(\Illuminate\Database\QueryException::class);
-        $this->station($this->companyA, ['code' => 'ST-001']);
+        // Même code chez le MÊME tenant → contrainte unique. La transaction
+        // imbriquée crée un savepoint (pattern #4978) : le RAISE PostgreSQL
+        // n'empoisonne pas la transaction RefreshDatabase du test (25P02).
+        $this->expectException(QueryException::class);
+        DB::transaction(function (): void {
+            $this->station($this->companyA, ['code' => 'ST-001']);
+        });
     }
 
     public function test_status_check_rejects_unknown_status(): void
     {
-        $this->expectException(\Illuminate\Database\QueryException::class);
-        $this->station($this->companyA, ['status' => 'exploded']);
+        $this->expectException(QueryException::class);
+        DB::transaction(function (): void {
+            $this->station($this->companyA, ['status' => 'exploded']);
+        });
     }
 
     public function test_valid_statuses_are_accepted(): void
