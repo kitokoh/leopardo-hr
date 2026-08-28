@@ -3713,10 +3713,10 @@
     "alertDismissError": "Uyarı kapatılamadı."
   },
   "crm": {
-    "title": "Satış Hunisi",
-    "subtitle": "Potansiyel müşteriler, denemeler ve aktif müşteriler.",
+    "title": "Müşteri CRM",
+    "subtitle": "Potansiyel müşterilerinizi, hesaplarınızı, kişilerinizi ve fırsatlarınızı yönetin — veriler şirket başına (tenant) izole edilir.",
     "loadError": "CRM hattı yüklenemedi.",
-    "loading": "Hat yükleniyor…",
+    "loading": "Yükleniyor…",
     "refresh": "Yenile",
     "activeBadge": "Aktif",
     "columnActive": "Aktif Müşteriler",
@@ -3737,7 +3737,58 @@
     "sourceManager": "Yönetici talebi",
     "sourceNewsletter": "Bülten",
     "sourceSelfService": "Self-servis deneme",
-    "sourceSignup": "Kayıt"
+    "sourceSignup": "Kayıt",
+    "isolationNote": "Tenant kapsamlı veri: bu alandan Leopardo ticari CRM'ine erişim yoktur.",
+    "featureLocked": "CRM modülü şirketiniz için etkin değil.",
+    "errorLoading": "Veriler yüklenemedi.",
+    "searchPlaceholder": "Ara…",
+    "paginationPrev": "Önceki",
+    "paginationNext": "Sonraki",
+    "paginationPage": "Sayfa",
+    "accounts": {
+      "title": "Hesaplar",
+      "description": "Şirketinizin müşteri kuruluşları",
+      "subtitle": "Hesap listesi (tenant kapsamlı).",
+      "empty": "Henüz hesap yok.",
+      "colName": "Ad",
+      "colStatus": "Durum",
+      "colEmail": "E-posta",
+      "colPhone": "Telefon",
+      "colCreated": "Oluşturulma"
+    },
+    "contacts": {
+      "title": "Kişiler",
+      "description": "Hesaplarınıza bağlı kişiler",
+      "subtitle": "Kişi listesi (tenant kapsamlı).",
+      "empty": "Henüz kişi yok.",
+      "primary": "Birincil"
+    },
+    "leads": {
+      "title": "Potansiyel Müşteriler",
+      "description": "Nitelendirilecek iş fırsatları",
+      "subtitle": "Potansiyel müşteri listesi (tenant kapsamlı).",
+      "empty": "Henüz potansiyel müşteri yok.",
+      "colName": "Ad",
+      "colCompany": "Şirket",
+      "colStatus": "Durum",
+      "colSource": "Kaynak",
+      "colEmail": "E-posta",
+      "colCreated": "Oluşturulma"
+    },
+    "pipeline": {
+      "title": "Pipeline",
+      "description": "Aşamalara göre fırsat genel bakışı",
+      "subtitle": "Aşamalara göre gruplandırılmış fırsatlar (tenant kapsamlı).",
+      "empty": "Henüz fırsat yok.",
+      "stage": {
+        "prospecting": "Araştırma",
+        "qualification": "Nitelendirme",
+        "proposal": "Teklif",
+        "negotiation": "Müzakere",
+        "won": "Kazanıldı",
+        "lost": "Kaybedildi"
+      }
+    }
   },
   "growth": {
     "approve": "Onayla",
