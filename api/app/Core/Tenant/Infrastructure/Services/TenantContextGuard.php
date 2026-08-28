@@ -31,7 +31,6 @@ final class TenantContextGuard
      * échoue immédiatement (fail-closed).
      *
      * @param  string  $operation  Nom de l'opération (logging structuré).
-     * @return Company
      *
      * @throws TenantContextMissingException quand aucun contexte tenant n'est actif.
      */

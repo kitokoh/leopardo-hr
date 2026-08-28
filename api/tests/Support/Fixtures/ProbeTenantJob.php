@@ -21,7 +21,7 @@ final class ProbeTenantJob implements TenantScopedJob
 
     public function __construct(private readonly string $companyId) {}
 
-    public function tenantCompanyId(): ?string
+    public function tenantCompanyId(): string
     {
         return $this->companyId;
     }
