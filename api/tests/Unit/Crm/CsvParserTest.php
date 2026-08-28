@@ -204,7 +204,8 @@ class CsvParserTest extends TestCase
     {
         $file = UploadedFile::fake()->createWithContent('data.csv', 'name,industry');
 
-        self::assertNull($this->parser->validateUpload($file));
+        $this->parser->validateUpload($file);
+        $this->addToAssertionCount(1);
     }
 
     private function writeTemp(string $content): string

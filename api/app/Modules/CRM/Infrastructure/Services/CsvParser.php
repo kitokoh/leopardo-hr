@@ -199,7 +199,7 @@ final class CsvParser
         }
 
         $converted = mb_convert_encoding($raw, 'UTF-8', 'Windows-1252');
-        if ($converted !== false && mb_check_encoding($converted, 'UTF-8')) {
+        if (mb_check_encoding($converted, 'UTF-8')) {
             return $converted;
         }
 
@@ -249,10 +249,6 @@ final class CsvParser
     private function parseLine(string $line, int $lineNumber): array
     {
         $cells = str_getcsv($line);
-
-        if ($cells === false) {
-            return [];
-        }
 
         return array_map(static fn (mixed $cell): string => (string) $cell, $cells);
     }

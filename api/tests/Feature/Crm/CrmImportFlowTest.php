@@ -104,7 +104,7 @@ class CrmImportFlowTest extends TestCase
         $preview = $response->json('data.preview_data.0');
         self::assertSame('jea***', $preview['email']);
         self::assertSame('060***', $preview['phone']);
-        self::assertStringNotContainsString('jean.dupont@example.com', $response->getContent());
+        self::assertStringNotContainsString('jean.dupont@example.com', (string) $response->getContent());
     }
 
     public function test_preview_reports_per_line_errors(): void
@@ -153,7 +153,7 @@ class CrmImportFlowTest extends TestCase
             ->assertJsonPath('data.status', 'committed');
 
         self::assertSame(2, CrmAccount::query()->count());
-        self::assertSame('Acme', CrmAccount::query()->orderBy('id')->first()->name);
+        self::assertSame('Acme', CrmAccount::query()->orderBy('id')->first()?->name);
 
         self::assertSame(1, AuditLog::query()
             ->where('action', 'crm.import.committed')

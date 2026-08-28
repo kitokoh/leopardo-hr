@@ -12,6 +12,7 @@ use App\Modules\CRM\Domain\Enums\CrmImportStatus;
 use App\Modules\CRM\Domain\Exceptions\CrmImportException;
 use App\Modules\CRM\Domain\Models\CrmImport;
 use App\Modules\CRM\Infrastructure\Jobs\CrmImportCommitJob;
+use App\Modules\CRM\Infrastructure\Services\CsvParser;
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -54,6 +55,7 @@ final class CrmImportService
         }
 
         $result = $this->parser->parse($path, $entityType);
+        $companyId = $this->companyId($actor);
 
         $sample = array_slice($result->rows, 0, self::PREVIEW_SAMPLE_SIZE);
         $maskedSample = array_map(
@@ -61,7 +63,7 @@ final class CrmImportService
             $sample
         );
 
-        $import = $this->imports->createForCompany($actor->company_id, $actor->id, [
+        $import = $this->imports->createForCompany($companyId, $actor->id, [
             'entity_type' => $entityType,
             'filename' => $file->getClientOriginalName(),
             'status' => 'previewed',
@@ -98,7 +100,9 @@ final class CrmImportService
      */
     public function commit(int $importId, Employee $actor): CrmImport
     {
-        $import = $this->imports->findForCompany($importId, $actor->company_id)
+        $companyId = $this->companyId($actor);
+
+        $import = $this->imports->findForCompany($importId, $companyId)
             ?? throw CrmImportException::notFound();
 
         if (! $this->imports->claimCommit($import)) {
@@ -125,9 +129,15 @@ final class CrmImportService
             'new_values' => ['valid_rows' => $import->valid_rows],
         ]);
 
-        CrmImportCommitJob::dispatch($import->id, $actor->company_id, $actor->id);
+        CrmImportCommitJob::dispatch($import->id, $companyId, $actor->id);
 
-        return $this->imports->findForCompany($importId, $actor->company_id) ?? $import;
+        // Re-lecture après dispatch (statut rafraîchi en queue sync).
+        // Expression volontairement non identique à la 1re requête : le
+        // `?? throw` initial étend son narrowing PHPStan à toute expression
+        // identique — `$companyId` ici garderait `$fresh` non nullable.
+        $fresh = $this->imports->findForCompany($importId, $this->companyId($actor));
+
+        return $fresh ?? $import;
     }
 
     /**
@@ -135,7 +145,9 @@ final class CrmImportService
      */
     public function cancel(int $importId, Employee $actor): CrmImport
     {
-        $import = $this->imports->findForCompany($importId, $actor->company_id)
+        $companyId = $this->companyId($actor);
+
+        $import = $this->imports->findForCompany($importId, $companyId)
             ?? throw CrmImportException::notFound();
 
         if (! $this->imports->claimCancel($import)) {
@@ -161,6 +173,15 @@ final class CrmImportService
         ]);
 
         return $import;
+    }
+
+    /**
+     * Identifiant du tenant obligatoire : les routes d'import sont scopées
+     * (middleware tenant) — un acteur sans compagnie est traité en 404 sûr.
+     */
+    private function companyId(Employee $actor): string
+    {
+        return $actor->company_id ?? throw CrmImportException::notFound();
     }
 
     /**

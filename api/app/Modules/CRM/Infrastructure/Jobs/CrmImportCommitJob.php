@@ -11,7 +11,6 @@ use App\Core\Tenant\TenantManager;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\CRM\Domain\Contracts\CrmImportRepositoryInterface;
 use App\Modules\CRM\Domain\Contracts\CrmImportRowPersisterInterface;
-use App\Modules\CRM\Domain\Enums\CrmImportEntityType;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -54,6 +53,9 @@ class CrmImportCommitJob implements ShouldQueue, TenantScopedJob
     ) {
     }
 
+    /**
+     * @return array<int, object>
+     */
     public function middleware(): array
     {
         return [new EnsureTenantContext];
@@ -98,7 +100,7 @@ class CrmImportCommitJob implements ShouldQueue, TenantScopedJob
 
             $entityType = $import->entity_type;
 
-            if (! $entityType instanceof CrmImportEntityType || ! $persister->supports($entityType)) {
+            if (! $persister->supports($entityType)) {
                 $imports->markFailed($import, ['error' => 'unsupported_entity']);
 
                 return;

@@ -28,13 +28,9 @@ class CrmImportResource extends JsonResource
 
         return [
             'id' => $import->id,
-            'entity_type' => $import->entity_type instanceof \App\Modules\CRM\Domain\Enums\CrmImportEntityType
-                ? $import->entity_type->value
-                : (string) $import->entity_type,
+            'entity_type' => $import->entity_type->value,
             'filename' => $import->filename,
-            'status' => $import->status instanceof \App\Modules\CRM\Domain\Enums\CrmImportStatus
-                ? $import->status->value
-                : (string) $import->status,
+            'status' => $import->status->value,
             'total_rows' => $import->total_rows,
             'valid_rows' => $import->valid_rows,
             'error_rows' => $import->error_rows,

@@ -22,9 +22,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property int $id
  * @property string $company_id
- * @property string $entity_type
+ * @property CrmImportEntityType $entity_type
  * @property string $filename
- * @property string $status
+ * @property CrmImportStatus $status
  * @property int $total_rows
  * @property int $valid_rows
  * @property int $error_rows
@@ -35,8 +35,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $created_by
  * @property int|null $committed_by
  * @property int|null $cancelled_by
- * @property string|null $committed_at
- * @property string|null $cancelled_at
+ * @property \Illuminate\Support\Carbon|null $committed_at
+ * @property \Illuminate\Support\Carbon|null $cancelled_at
  * @property array<mixed>|null $result
  *
  * @mixin Builder<static>
@@ -79,6 +79,7 @@ class CrmImport extends Model
         'cancelled_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<Employee, $this> */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'created_by');
@@ -86,6 +87,6 @@ class CrmImport extends Model
 
     public function isCommittable(): bool
     {
-        return $this->status !== null && in_array($this->status->value, CrmImportStatus::committableStatuses(), true);
+        return in_array($this->status->value, CrmImportStatus::committableStatuses(), true);
     }
 }

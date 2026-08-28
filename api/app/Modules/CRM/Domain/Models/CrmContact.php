@@ -54,6 +54,7 @@ class CrmContact extends Model
         'archived_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<CrmAccount, $this> */
     public function account(): BelongsTo
     {
         return $this->belongsTo(CrmAccount::class, 'account_id');

@@ -55,11 +55,13 @@ class CrmAccount extends Model
         'archived_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<Employee, $this> */
     public function owner(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'owner_id');
     }
 
+    /** @return HasOne<CrmContact, $this> */
     public function primaryContact(): HasOne
     {
         return $this->hasOne(CrmContact::class, 'account_id')->where('is_primary', true);
