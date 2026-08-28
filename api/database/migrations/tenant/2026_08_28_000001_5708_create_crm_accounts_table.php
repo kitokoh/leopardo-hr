@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Schema;
  * Archivage : soft delete via `archived_at` (jamais de DELETE destructif
  * côté API, purge RGPD encadrée).
  */
-class CreateCrmAccountsTable extends Migration
+return new class extends Migration
 {
     public function up(): void
     {
@@ -58,4 +58,4 @@ class CreateCrmAccountsTable extends Migration
     {
         Schema::dropIfExists('crm_accounts');
     }
-}
+};

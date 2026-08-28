@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * Archivage : soft delete via `archived_at`.
  */
-class CreateCrmContactsTable extends Migration
+return new class extends Migration
 {
     public function up(): void
     {
@@ -82,4 +82,4 @@ class CreateCrmContactsTable extends Migration
     {
         Schema::dropIfExists('crm_contacts');
     }
-}
+};
