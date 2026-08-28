@@ -50,7 +50,7 @@ class CrmEmailController extends Controller
         } catch (EmailRateLimitExceededException) {
             return response()->json([
                 'error' => 'EMAIL_RATE_LIMITED',
-                'message' => 'Quota email dépassé pour cette heure.',
+                'message' => 'Email quota exceeded for this hour.',
             ], 429);
         }
 
@@ -77,7 +77,7 @@ class CrmEmailController extends Controller
         } catch (EmailRateLimitExceededException) {
             return response()->json([
                 'error' => 'EMAIL_RATE_LIMITED',
-                'message' => 'Quota email dépassé pour cette heure.',
+                'message' => 'Email quota exceeded for this hour.',
             ], 429);
         }
 
@@ -91,7 +91,7 @@ class CrmEmailController extends Controller
         } catch (InvalidUnsubscribeTokenException) {
             return response()->json([
                 'error' => 'INVALID_UNSUBSCRIBE_TOKEN',
-                'message' => 'Lien de désabonnement invalide ou expiré.',
+                'message' => 'Invalid or expired unsubscribe link.',
             ], 422);
         }
 

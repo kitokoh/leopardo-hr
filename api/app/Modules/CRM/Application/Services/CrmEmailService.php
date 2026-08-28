@@ -51,7 +51,7 @@ final class CrmEmailService
 
         $limit = (int) config('crm.email.transactional_rate_limit_per_hour', 2000);
         if (! $this->rateLimiter->consume($companyId, 'transactional', $limit)) {
-            throw new EmailRateLimitExceededException('Quota email transactionnel dépassé.');
+            throw new EmailRateLimitExceededException('Transactional email quota exceeded.');
         }
 
         $result = $this->provider->send($message);
@@ -77,7 +77,7 @@ final class CrmEmailService
 
         $limit = (int) config('crm.email.rate_limit_per_hour', 500);
         if (! $this->rateLimiter->consume($companyId, 'marketing', $limit)) {
-            throw new EmailRateLimitExceededException('Quota email marketing dépassé.');
+            throw new EmailRateLimitExceededException('Marketing email quota exceeded.');
         }
 
         $result = $this->provider->send($message);
@@ -95,7 +95,7 @@ final class CrmEmailService
     public function sendCampaignSend(CrmCampaignSend $send, string $companyId): EmailDeliveryResult
     {
         if (! Schema::hasTable('crm_contacts')) {
-            return EmailDeliveryResult::failed('contacts CRM non migrés (#5708)');
+            return EmailDeliveryResult::failed('CRM contacts not migrated yet (#5708)');
         }
 
         $contact = DB::table('crm_contacts')
@@ -104,7 +104,7 @@ final class CrmEmailService
             ->first();
 
         if ($contact === null || ! is_string($contact->email ?? null) || $contact->email === '') {
-            return EmailDeliveryResult::failed('contact introuvable ou sans email');
+            return EmailDeliveryResult::failed('contact not found or without email');
         }
 
         $message = new EmailMessage(
