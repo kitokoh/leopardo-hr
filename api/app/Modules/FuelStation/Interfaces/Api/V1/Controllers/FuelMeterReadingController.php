@@ -64,7 +64,7 @@ class FuelMeterReadingController extends Controller
     {
         $readingModel = FuelMeterReading::query()->where('id', $reading)->first();
         if ($readingModel === null) {
-            throw new FuelReadingException('Relevé introuvable.', 'FUEL_READING_NOT_FOUND', 404);
+            throw new FuelReadingException('Releve introuvable.', 'FUEL_READING_NOT_FOUND', 404);
         }
 
         try {
