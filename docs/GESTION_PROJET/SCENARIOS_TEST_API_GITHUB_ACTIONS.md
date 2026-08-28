@@ -1507,11 +1507,6 @@ Note 2026-08-26 (PM hygiene, PR #5597) : retour au vert des checks backend — R
 - Payroll : `PayrollPaymentOrder::items()` a une FK explicite `payment_order_id` → l'ordre de virement prépare ses lignes sans QueryException (`column payroll_payment_order_id does not exist`).
 - Couverture : `VatDeclarationTest`, `AccountingMultiCurrencyTest`, `WebhookIdempotenceTest`, `EmailBounceWebhookControllerTest`, `ShareAccessAuditTest`, `PayrollPaymentOrderFlowTest`, `TwoFactorAuthTest`, `AccountingActivationTest` (route `/activation/complete`), `LangCatalogParityTest` (fins de fichier `];` tolérées), `OpenApiDocsTest` (`openapi: "3.0.3"` quoté).
 
-Note 2026-08-28 (issues #5725/#5727/#5728/#5729) : nouveau module CRM client tenant (`App\Modules\CRM`) — surface API ajoutee :
-- Canaux de communication : `GET/POST /crm/channels`, `PATCH /crm/channels/{channel}`, `POST /crm/channels/{channel}/send`, `GET /crm/channels/{channel}/messages|conversations|observability` (api.manager:principal,rh) ; webhooks publics `GET/POST /crm/webhooks/whatsapp` (signature HMAC fail-closed, anti-rejeu).
-- Automatisations : `GET/POST /crm/automations`, `GET/PUT/DELETE /crm/automations/{automation}`, `POST .../activate|pause|simulate`, `GET .../runs`, `POST /crm/automations/emergency-stop`, `POST /crm/automations/events/{event}`.
-- Exports/read models : `GET/POST /crm/exports`, `GET /crm/exports/{export}`, `GET /crm/exports/{export}/download`, `GET /crm/read-models`.
-Scenarios CI requis : RBAC (employee 403), isolation cross-tenant (404), consentement/quota/dead-letter canaux, webhook signature + rejeu, automatisations idempotence/simulation/emergency-stop, exports expiration/allowlist.
 
 Note 2026-08-28 (issues #5795/#5798) : nouveau module FuelStation (`App\Modules\FuelStation`) — surface API ajoutee :
 - Manifest/activation : `GET /fuelstation/manifest`, `POST /fuelstation/activate`, `GET /fuelstation/status` (api.manager:principal,rh) — activation idempotente, dependances refusees (422).
