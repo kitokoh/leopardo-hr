@@ -1,0 +1,63 @@
+# Routes publiques CANONIQUES — garde anti-régression de merge (issue #5519).
+# Format : <METHOD> <uri sans slash initial> (méthodes GET|HEAD fusionnées en GET).
+# Toute route de cette liste DOIT exister dans `php artisan route:list` : sa
+# disparition silencieuse (merge qui retire le routage d'un controller existant)
+# fait échouer la CI. Ne retirez une entrée qu'avec une PR et un motif (route
+# réellement supprimée, jamais « plus routée par erreur »).
+#
+# Contexte : session 2026-08-25 — routes publiques du portail perdues 2× par
+# des merges parallèles (#5495/#5377) alors que les controllers existaient.
+#
+# ── Portail / partage de documents (perdues en #5495/#5377) ────────────────
+GET api/v1/accounting/documents/shared/{token}
+GET api/v1/accounting/documents/shared/{token}/download
+GET api/v1/cabinet/shared/{token}
+# ── Auth publique ───────────────────────────────────────────────────────────
+POST api/v1/auth/login
+POST api/v1/auth/register
+POST api/v1/auth/forgot-password
+POST api/v1/auth/reset-password
+POST api/v1/auth/google
+GET api/v1/auth/google/callback
+POST api/v1/auth/google/token
+POST api/v1/auth/2fa/verify
+POST api/v1/user/login
+POST api/v1/user/register
+GET api/v1/user/google-signin
+POST api/v1/platform/auth/login
+GET api/v1/invitation/{token}
+GET api/v1/invitation/{token}/activate
+# ── Sondes de santé / registres publics ─────────────────────────────────────
+GET api/v1/health
+GET api/v1/health/live
+GET api/v1/health/ready
+GET api/v1/i18n/catalog
+GET api/v1/i18n/catalog/{locale}
+# ── Webhooks entrants (signature provider, fail-closed) ─────────────────────
+POST api/v1/webhooks/stripe
+POST api/v1/webhooks/chargily
+POST api/v1/webhooks/email-bounce
+POST api/v1/accounting/payment-webhooks/{gateway}
+# ── SSO / callbacks ─────────────────────────────────────────────────────────
+GET api/v1/sso/providers
+POST api/v1/sso/saml/{companyId}/callback
+GET api/v1/sso/oidc/{companyId}/authorize
+POST api/v1/sso/oidc/{companyId}/callback
+# ── Portail carrières public (ATS) ──────────────────────────────────────────
+GET api/v1/public/careers/{companySlug}
+GET api/v1/public/careers/{companySlug}/feed.xml
+GET api/v1/public/careers/{companySlug}/jobs/{jobPosting}
+POST api/v1/public/careers/{companySlug}/jobs/{jobPosting}/apply
+# ── Kiosques / devices (auth par device_code) ───────────────────────────────
+POST api/v1/kiosks/{deviceCode}/punch
+GET api/v1/kiosks/{deviceCode}/roster
+POST api/v1/kiosks/{deviceCode}/sync
+GET api/v1/kiosks/{deviceCode}/announcements
+GET api/v1/kiosks/{deviceCode}/employee-info
+GET api/v1/kiosks/{deviceCode}/leave-balance
+POST api/v1/kiosks/{deviceCode}/qr-punch
+POST api/v1/zkteco/heartbeat/{serialNumber}
+POST api/v1/zkteco/sync-attendance/{serialNumber}
+# ── Essai guidé ─────────────────────────────────────────────────────────────
+POST api/v1/trial/signup
+GET api/v1/trial/verify
