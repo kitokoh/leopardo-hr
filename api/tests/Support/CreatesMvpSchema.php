@@ -1272,8 +1272,30 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('crm_outbox_events'))) {
-            Schema::create($this->moduleTable('crm_outbox_events'), function (Blueprint $table): void {
+        if (! Schema::hasTable($this->tenantTable('crm_imports'))) {
+            Schema::create($this->tenantTable('crm_imports'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->string('entity_type', 20);
+                $table->string('filename', 255);
+                $table->string('status', 20)->default('previewed');
+                $table->unsignedInteger('total_rows')->default(0);
+                $table->unsignedInteger('valid_rows')->default(0);
+                $table->unsignedInteger('error_rows')->default(0);
+                $table->jsonb('columns')->nullable();
+                $table->jsonb('preview_data')->nullable();
+                $table->jsonb('errors')->nullable();
+                $table->jsonb('raw_rows')->nullable();
+                $table->jsonb('result')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->unsignedInteger('committed_by')->nullable();
+                $table->unsignedInteger('cancelled_by')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('crm_outbox_events'))) {
+            Schema::create($this->tenantTable('crm_outbox_events'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
                 $table->string('event_type', 80);
@@ -2285,6 +2307,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "conversation_threads"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_events"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "notification_preferences"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "crm_imports"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "crm_outbox_events"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "client_events"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_audit_logs"'.$cascade);
