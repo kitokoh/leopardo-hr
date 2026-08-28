@@ -37,6 +37,8 @@ return [
     'INVITATION_ALREADY_ACCEPTED' => 'تم قبول هذه الدعوة مسبقاً.',
     'TOO_MANY_PENDING_REQUESTS' => 'عدد كبير جداً من الطلبات المعلقة.',
     'SHARE_EXPIRED' => 'انتهت صلاحية رابط المشاركة.',
+    'SOLUTION_NOT_FOUND' => 'حل غير معروف.',
+    'SOLUTION_MISSING_DEPENDENCY' => 'الوحدات المطلوبة لهذا الحل غير نشطة.',
     'FUEL_SOLUTION_INACTIVE' => 'حل FuelStation غير نشط لهذا المستأجر.',
     'FUEL_READING_FUTURE' => 'القراءة مؤرخة في المستقبل.',
     'FUEL_READING_REJECTED' => 'تم رفض القراءة.',

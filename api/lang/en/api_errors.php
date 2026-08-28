@@ -37,6 +37,8 @@ return [
     'INVITATION_ALREADY_ACCEPTED' => 'This invitation has already been accepted.',
     'TOO_MANY_PENDING_REQUESTS' => 'Too many pending requests.',
     'SHARE_EXPIRED' => 'This share link has expired.',
+    'SOLUTION_NOT_FOUND' => 'Unknown solution.',
+    'SOLUTION_MISSING_DEPENDENCY' => 'Required modules are not active for this solution.',
     'FUEL_SOLUTION_INACTIVE' => 'The FuelStation solution is not active for this tenant.',
     'FUEL_READING_FUTURE' => 'The reading is dated in the future.',
     'FUEL_READING_REJECTED' => 'The reading was rejected.',
