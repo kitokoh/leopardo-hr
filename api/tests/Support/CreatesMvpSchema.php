@@ -2251,6 +2251,80 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('fuel_equipment'))) {
+            Schema::create($this->moduleTable('fuel_equipment'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('site_id')->index();
+                $table->string('type', 20);
+                $table->string('code', 40);
+                $table->string('name', 160)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamp('installed_at')->nullable();
+                $table->json('metadata')->nullable();
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'fuel_equipment_company_code_unique');
+                $table->index(['company_id', 'site_id'], 'fuel_equipment_company_site_index');
+                $table->index(['company_id', 'type'], 'fuel_equipment_company_type_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_pumps'))) {
+            Schema::create($this->moduleTable('fuel_pumps'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('site_id')->index();
+                $table->uuid('equipment_id')->nullable()->index();
+                $table->string('code', 40);
+                $table->string('name', 160)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'fuel_pumps_company_code_unique');
+                $table->index(['company_id', 'site_id'], 'fuel_pumps_company_site_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_tanks'))) {
+            Schema::create($this->moduleTable('fuel_tanks'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('site_id')->index();
+                $table->string('code', 40);
+                $table->string('product', 30);
+                $table->decimal('capacity', 12, 2);
+                $table->string('unit', 10)->default('l');
+                $table->decimal('current_level', 12, 2)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'fuel_tanks_company_code_unique');
+                $table->index(['company_id', 'site_id'], 'fuel_tanks_company_site_index');
+                $table->index(['company_id', 'product'], 'fuel_tanks_company_product_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_meters'))) {
+            Schema::create($this->moduleTable('fuel_meters'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('pump_id')->index();
+                $table->string('code', 40);
+                $table->string('unit', 10)->default('l');
+                $table->boolean('is_active')->default(true);
+                $table->string('status', 20)->default('active');
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'fuel_meters_company_code_unique');
+                $table->index(['company_id', 'pump_id'], 'fuel_meters_company_pump_index');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('fuel_station_activations'))) {
             Schema::create($this->moduleTable('fuel_station_activations'), function (Blueprint $table): void {
                 $table->uuid('company_id')->primary();
