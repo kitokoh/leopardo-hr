@@ -60,7 +60,6 @@ class TenantManagerStandardizationTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create();
         $manager = $this->manager();
-        $manager->clearTenant();
 
         $inside = null;
         $result = $manager->withinTenant($company, function () use (&$inside): string {
@@ -87,7 +86,6 @@ class TenantManagerStandardizationTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create();
         $manager = $this->manager();
-        $manager->clearTenant();
 
         try {
             $manager->withinTenant($company, function (): void {
@@ -114,7 +112,6 @@ class TenantManagerStandardizationTest extends TestCase
         /** @var Company $b */
         $b = Company::factory()->create();
         $manager = $this->manager();
-        $manager->clearTenant();
 
         $seen = [];
         $manager->withinTenant($a, function () use ($manager, $b, &$seen): void {
@@ -137,7 +134,6 @@ class TenantManagerStandardizationTest extends TestCase
         /** @var Company $b */
         $b = Company::factory()->create();
         $manager = $this->manager();
-        $manager->clearTenant();
 
         $afterInner = null;
         try {
@@ -168,7 +164,6 @@ class TenantManagerStandardizationTest extends TestCase
         /** @var Company $b */
         $b = Company::factory()->create();
         $manager = $this->manager();
-        $manager->clearTenant();
 
         $manager->setTenant($a);
         $this->assertSame($a->id, $manager->current()?->id);
@@ -193,7 +188,6 @@ class TenantManagerStandardizationTest extends TestCase
         $manager->setTenant($company);
         $this->assertTrue($manager->hasTenant());
 
-        $manager->clearTenant();
         $this->assertFalse($manager->hasTenant());
         $this->assertNull($manager->current());
         $this->assertStringContainsString('shared_tenants', $this->searchPath());
