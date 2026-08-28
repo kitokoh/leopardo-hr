@@ -29,29 +29,32 @@ class CrmCampaignController extends Controller
     {
         $this->authorize('viewAny', CrmCampaign::class);
 
-        $validated = $request->validate([
+        $request->validate([
             'status' => ['nullable', 'string', 'in:'.implode(',', CampaignStatus::values())],
             'channel' => ['nullable', 'string', 'in:email,sms,whatsapp'],
             'search' => ['nullable', 'string', 'max:120'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 
-        $perPage = (int) ($validated['per_page'] ?? 20);
+        $perPage = $request->integer('per_page', 20);
+        $status = $request->string('status')->toString();
+        $channel = $request->string('channel')->toString();
+        $search = $request->string('search')->toString();
 
         $query = CrmCampaign::query()
             ->withCount('sends')
             ->orderByDesc('id');
 
-        if (! empty($validated['status'])) {
-            $query->where('status', (string) $validated['status']);
+        if ($status !== '') {
+            $query->where('status', $status);
         }
 
-        if (! empty($validated['channel'])) {
-            $query->where('channel', (string) $validated['channel']);
+        if ($channel !== '') {
+            $query->where('channel', $channel);
         }
 
-        if (! empty($validated['search'])) {
-            $query->where('name', 'like', '%'.addcslashes((string) $validated['search'], '%_\\').'%');
+        if ($search !== '') {
+            $query->where('name', 'like', '%'.addcslashes($search, '%_\\').'%');
         }
 
         $paginator = $query->paginate($perPage);
@@ -214,7 +217,7 @@ class CrmCampaignController extends Controller
         // (même pattern que AccountingContactController::assertTenantScope).
         $companyId = $request->user()?->getAttribute('company_id');
 
-        if ($companyId !== null && (string) $campaign->company_id !== (string) $companyId) {
+        if (is_string($companyId) && (string) $campaign->company_id !== $companyId) {
             abort(404);
         }
     }
@@ -245,6 +248,6 @@ class CrmCampaignController extends Controller
     {
         $userId = request()->user()?->getAuthIdentifier();
 
-        return $userId !== null ? (int) $userId : null;
+        return is_numeric($userId) ? (int) $userId : null;
     }
 }

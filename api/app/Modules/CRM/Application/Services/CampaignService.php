@@ -239,6 +239,7 @@ final class CampaignService
      */
     public function report(CrmCampaign $campaign): array
     {
+        /** @var array<string, int> $counts */
         $counts = CrmCampaignSend::query()
             ->where('campaign_id', $campaign->id)
             ->selectRaw('status, count(*) as total')
@@ -273,7 +274,9 @@ final class CampaignService
 
             $ids = [];
             foreach ($rows as $id) {
-                $ids[] = (int) $id;
+                if (is_numeric($id)) {
+                    $ids[] = (int) $id;
+                }
             }
 
             if ($ids === []) {
