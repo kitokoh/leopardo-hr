@@ -53,7 +53,7 @@ final class CrmExportSource
         $this->assertAvailable($entity);
         $table = $this->tableFor($entity);
 
-        $query = DB::table($table)->where('company_id', currentCompany()?->id);
+        $query = DB::table($table)->where('company_id', currentCompany()->id);
 
         if (isset($filters['status']) && is_string($filters['status'])) {
             $query->where('status', $filters['status']);

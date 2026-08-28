@@ -62,7 +62,7 @@ final class CrmReadModelService
         }
 
         $rows = \Illuminate\Support\Facades\DB::table('crm_contacts')
-            ->where('company_id', currentCompany()?->id)
+            ->where('company_id', currentCompany()->id)
             ->selectRaw('account_id, count(*) as total')
             ->groupBy('account_id')
             ->pluck('total');
@@ -96,7 +96,7 @@ final class CrmReadModelService
         }
 
         $rows = \Illuminate\Support\Facades\DB::table('crm_opportunities')
-            ->where('company_id', currentCompany()?->id)
+            ->where('company_id', currentCompany()->id)
             ->selectRaw('pipeline_id, count(*) as total, coalesce(sum(amount), 0) as amount')
             ->groupBy('pipeline_id')
             ->get();
@@ -155,7 +155,7 @@ final class CrmReadModelService
         }
 
         $base = \Illuminate\Support\Facades\DB::table($table)
-            ->where('company_id', currentCompany()?->id);
+            ->where('company_id', currentCompany()->id);
 
         $total = (int) (clone $base)->count();
 
@@ -173,7 +173,7 @@ final class CrmReadModelService
     private function countGrouped(string $table, string $column): array
     {
         return \Illuminate\Support\Facades\DB::table($table)
-            ->where('company_id', currentCompany()?->id)
+            ->where('company_id', currentCompany()->id)
             ->select($column)
             ->get()
             ->countBy(fn (object $row): string => (string) $row->{$column})
