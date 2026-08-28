@@ -67,7 +67,7 @@ class CrmWhatsAppWebhookController extends Controller
         }
 
         $payload = $request->json();
-        $entries = is_array($payload->get('entry')) ? $payload->get('entry') : [];
+        $entries = is_array($payload) ? ($payload['entry'] ?? []) : [];
 
         foreach ($entries as $entry) {
             $this->processEntry(is_array($entry) ? $entry : []);

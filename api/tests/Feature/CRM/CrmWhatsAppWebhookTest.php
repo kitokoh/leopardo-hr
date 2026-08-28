@@ -194,10 +194,11 @@ class CrmWhatsAppWebhookTest extends TestCase
         $raw = json_encode($payload, JSON_THROW_ON_ERROR);
         $signature = 'sha256='.hash_hmac('sha256', $raw, self::SECRET);
 
-        return $this->postJson('/api/v1/crm/webhooks/whatsapp', $payload, [
-            'X-Hub-Signature-256' => $signature,
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->call('POST', '/api/v1/crm/webhooks/whatsapp', [], [], [], [
+            'HTTP_X-Hub-Signature-256' => $signature,
+            'CONTENT_TYPE' => 'application/json',
+            'ACCEPT' => 'application/json',
+        ], $raw);
     }
 
     /**
