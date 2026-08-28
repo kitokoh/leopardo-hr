@@ -91,6 +91,7 @@ class CrmCampaignController extends Controller
 
     public function show(CrmCampaign $campaign): JsonResponse
     {
+        $this->assertTenantScope(request(), $campaign);
         $this->authorize('view', $campaign);
 
         return response()->json(['data' => $this->serialize($campaign->loadCount('sends'))]);
@@ -98,6 +99,7 @@ class CrmCampaignController extends Controller
 
     public function update(UpdateCampaignRequest $request, CrmCampaign $campaign): JsonResponse
     {
+        $this->assertTenantScope($request, $campaign);
         $this->authorize('update', $campaign);
 
         $name = $request->filled('name') ? $request->string('name')->toString() : $campaign->name;
@@ -127,6 +129,7 @@ class CrmCampaignController extends Controller
 
     public function destroy(CrmCampaign $campaign): JsonResponse
     {
+        $this->assertTenantScope(request(), $campaign);
         $this->authorize('delete', $campaign);
 
         $campaign->sends()->delete();
@@ -137,6 +140,7 @@ class CrmCampaignController extends Controller
 
     public function start(CrmCampaign $campaign): JsonResponse
     {
+        $this->assertTenantScope(request(), $campaign);
         $this->authorize('start', $campaign);
 
         return response()->json(['data' => $this->serialize($this->campaigns->start($campaign, $this->actorId())->loadCount('sends'))]);
@@ -144,6 +148,7 @@ class CrmCampaignController extends Controller
 
     public function pause(CrmCampaign $campaign): JsonResponse
     {
+        $this->assertTenantScope(request(), $campaign);
         $this->authorize('pause', $campaign);
 
         return response()->json(['data' => $this->serialize($this->campaigns->pause($campaign, $this->actorId()))]);
@@ -151,6 +156,7 @@ class CrmCampaignController extends Controller
 
     public function resume(CrmCampaign $campaign): JsonResponse
     {
+        $this->assertTenantScope(request(), $campaign);
         $this->authorize('resume', $campaign);
 
         return response()->json(['data' => $this->serialize($this->campaigns->resume($campaign, $this->actorId()))]);
@@ -158,6 +164,7 @@ class CrmCampaignController extends Controller
 
     public function cancel(CrmCampaign $campaign): JsonResponse
     {
+        $this->assertTenantScope(request(), $campaign);
         $this->authorize('cancel', $campaign);
 
         return response()->json(['data' => $this->serialize($this->campaigns->cancel($campaign, $this->actorId()))]);
@@ -165,6 +172,7 @@ class CrmCampaignController extends Controller
 
     public function finish(CrmCampaign $campaign): JsonResponse
     {
+        $this->assertTenantScope(request(), $campaign);
         $this->authorize('finish', $campaign);
 
         return response()->json(['data' => $this->serialize($this->campaigns->finish($campaign, $this->actorId()))]);
@@ -172,6 +180,7 @@ class CrmCampaignController extends Controller
 
     public function report(CrmCampaign $campaign): JsonResponse
     {
+        $this->assertTenantScope(request(), $campaign);
         $this->authorize('report', $campaign);
 
         return response()->json(['data' => $this->campaigns->report($campaign)]);
@@ -196,6 +205,18 @@ class CrmCampaignController extends Controller
         }
 
         return $ids;
+    }
+
+    private function assertTenantScope(Request $request, CrmCampaign $campaign): void
+    {
+        // Binding implicite résolu avant le middleware tenant
+        // (SubstituteBindings global) : garde explicite 404 cross-tenant
+        // (même pattern que AccountingContactController::assertTenantScope).
+        $companyId = $request->user()?->getAttribute('company_id');
+
+        if ($companyId !== null && (string) $campaign->company_id !== (string) $companyId) {
+            abort(404);
+        }
     }
 
     /**

@@ -258,7 +258,9 @@ class CrmCampaignTest extends TestCase
 
     public function test_start_dispatches_campaign_started_event(): void
     {
-        Event::fake();
+        // Ne fake QUE l'événement de domaine : Event::fake() global désactive
+        // aussi les model events (creating → auto-fill company_id).
+        Event::fake([CampaignStarted::class]);
         $campaign = $this->createCampaign([100]);
         $this->app->instance(CampaignConsentCheckerInterface::class, $this->fakeConsentChecker([100]));
 
