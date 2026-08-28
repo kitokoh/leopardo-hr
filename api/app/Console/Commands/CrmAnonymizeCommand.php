@@ -117,7 +117,7 @@ final class CrmAnonymizeCommand extends Command
             return $total;
         });
 
-        return is_int($result) ? $result : 0;
+        return $result;
     }
 
     private function anonymizeTable(Company $company, string $table, bool $dryRun): int
