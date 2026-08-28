@@ -20442,6 +20442,169 @@ paths:
           description: Lead déjà converti
         '422':
           $ref: '#/components/responses/Validation422'
+  /crm/dedup/suggestions:
+    get:
+      tags:
+      - CRM
+      summary: Suggestions de doublons (explicables, tenant-scoped)
+      description: "Déduplication supervisée (#5718) : paires par email normalisé identique ou nom similaire (Levenshtein ≤ 2). Jamais cross-tenant. Permission : principal/rh."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: entity
+        in: query
+        schema:
+          type: string
+          enum:
+          - accounts
+          - contacts
+          - leads
+          default: accounts
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+          default: 20
+      responses:
+        '200':
+          description: Liste de suggestions bornée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        entity:
+                          type: string
+                        reason:
+                          type: string
+                          enum:
+                          - same_email
+                          - similar_name
+                        score:
+                          type: number
+                        winner:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            label:
+                              type: string
+                        loser:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            label:
+                              type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /crm/merge/preview:
+    get:
+      tags:
+      - CRM
+      summary: Preview d'une fusion (aucune écriture)
+      description: "Diff de champs + relations à transférer avant fusion (#5718). Permission : principal/rh."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: entity
+        in: query
+        schema:
+          type: string
+          enum:
+          - accounts
+          - contacts
+          - leads
+          default: accounts
+      - name: winner_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: loser_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Preview (aucune écriture)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/merge:
+    post:
+      tags:
+      - CRM
+      summary: Fusion supervisée (principal uniquement)
+      description: "Fusion transactionnelle : champs complétés, relations transférées, perdant ARCHIVÉ (jamais supprimé — rollback logique), audit crm.merge.* (#5718)."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - entity
+              - winner_id
+              - loser_id
+              properties:
+                entity:
+                  type: string
+                  enum:
+                  - accounts
+                  - contacts
+                  - leads
+                winner_id:
+                  type: integer
+                loser_id:
+                  type: integer
+      responses:
+        '200':
+          description: Fusion effectuée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      entity:
+                        type: string
+                      winner_id:
+                        type: integer
+                      loser_id:
+                        type: integer
+                      updated_fields:
+                        type: array
+                        items:
+                          type: string
+                      transferred_contacts:
+                        type: integer
+                      archived_loser:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /crm/imports:
     post:
       tags:

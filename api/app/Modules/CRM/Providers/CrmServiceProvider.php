@@ -14,17 +14,18 @@ use App\Modules\CRM\Infrastructure\Services\CrmOutboxConsumerRegistry;
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxPublisher;
 use App\Modules\CRM\Policies\CrmImportPolicy;
 use App\Modules\CRM\Policies\CrmLeadPolicy;
+use App\Modules\CRM\Policies\CrmMergePolicy;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
- * #5714/#5741 — Provider du module CRM (import CSV + outbox).
+ * #5714/#5717/#5718/#5741 — Provider du module CRM (import CSV, conversion,
+ * déduplication, outbox).
  *
- * Enregistre les ports & adapters du module (contrats → implémentations) :
- * import CSV (#5714) et outbox (#5741), plus la Policy d'import. Le module
- * CRM client est strictement isolé du CRM commercial Platform/Marketing
- * (ADR-CRM-001, garde d'isolation #5584).
+ * Enregistre les ports & adapters du module (contrats → implémentations) et
+ * les Policies métier. Le module CRM client est strictement isolé du CRM
+ * commercial Platform/Marketing (ADR-CRM-001, garde d'isolation #5584).
  * (Squelette CRM-V0-03 #5707 remplacé par les implémentations métier.)
  */
 class CrmServiceProvider extends ServiceProvider
@@ -42,5 +43,6 @@ class CrmServiceProvider extends ServiceProvider
     {
         Gate::policy(\App\Modules\CRM\Domain\Models\CrmImport::class, CrmImportPolicy::class);
         Gate::policy(\App\Modules\CRM\Domain\Models\CrmLead::class, CrmLeadPolicy::class);
+        Gate::policy(\App\Modules\CRM\Domain\Models\CrmAccount::class, CrmMergePolicy::class);
     }
 }
