@@ -73,6 +73,40 @@ class CrmMigrationsTest extends TestCase
     {
         /** @var Company $companyA */
         $companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+
+        $accountA = DB::table('crm_accounts')->insertGetId([
+            'company_id' => $companyA->id,
+            'name' => 'Compte A',
+            'status' => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $base = [
+            'first_name' => 'Jean',
+            'last_name' => 'Dupont',
+            'status' => 'active',
+            'is_primary' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        // Premier contact primaire sur le compte : OK.
+        DB::table('crm_contacts')->insert(['account_id' => $accountA, 'company_id' => $companyA->id] + $base);
+
+        // Second contact primaire sur le MÊME compte : rejeté par l'index
+        // unique partiel. Dernière assertion du test : PostgreSQL aborte la
+        // transaction courante (25P02) — aucune requête ne doit suivre ici
+        // (le teardown du trait RefreshDatabase rollback).
+        $this->expectException(QueryException::class);
+
+        DB::table('crm_contacts')->insert(['account_id' => $accountA, 'company_id' => $companyA->id] + $base);
+    }
+
+    public function test_primary_contact_is_allowed_on_other_accounts(): void
+    {
+        /** @var Company $companyA */
+        $companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
         /** @var Company $companyB */
         $companyB = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
@@ -100,19 +134,9 @@ class CrmMigrationsTest extends TestCase
             'updated_at' => now(),
         ];
 
-        // Premier contact primaire sur le compte A : OK.
         DB::table('crm_contacts')->insert(['account_id' => $accountA, 'company_id' => $companyA->id] + $base);
-
-        // Second contact primaire sur le MÊME compte : rejeté (index partiel).
-        try {
-            DB::table('crm_contacts')->insert(['account_id' => $accountA, 'company_id' => $companyA->id] + $base);
-            $this->fail('L\'index unique partiel n\'a pas rejeté le second contact primaire du même compte.');
-        } catch (QueryException) {
-            // Attendu : violation de la contrainte crm_contacts_primary_account_unique.
-        }
-
-        // Contact primaire sur un AUTRE compte : OK (pas de fuite de contrainte).
         DB::table('crm_contacts')->insert(['account_id' => $accountB, 'company_id' => $companyB->id] + $base);
+
         $this->assertSame(2, DB::table('crm_contacts')->where('is_primary', true)->count());
     }
 
