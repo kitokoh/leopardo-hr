@@ -101,6 +101,9 @@ jobs:
       - name: Pilot go/no-go gates guard (issue #5876, MAT-018)
         run: bash dev-hub/tools/check-pilot-gates.sh
 
+      - name: Performance budgets guard — scans lents, N+1, index (issue #5872, MAT-014)
+        run: bash dev-hub/tools/check-performance-budgets.sh api
+
       - name: Queue strategy coherence guard — database partout (issue #5578)
         run: bash dev-hub/tools/check-queue-strategy-coherence.sh
 
