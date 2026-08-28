@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\FuelStation;
 
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Core\Solutions\Exceptions\SolutionMissingDependencyException;
 use App\Core\Solutions\Exceptions\SolutionNotFoundException;
-use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Core\Solutions\SolutionActivator;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;

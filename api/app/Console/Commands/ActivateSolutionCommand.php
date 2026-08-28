@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Core\Solutions\SolutionActivator;
-use App\Exceptions\DomainException;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Exceptions\DomainException;
 use Illuminate\Console\Command;
 
 /**

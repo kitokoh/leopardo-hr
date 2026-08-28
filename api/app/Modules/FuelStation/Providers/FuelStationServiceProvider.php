@@ -17,11 +17,11 @@ class FuelStationServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(SolutionCatalogue::class, function (): SolutionCatalogue {
-            return new SolutionCatalogue();
+            return new SolutionCatalogue;
         });
 
         $this->app->resolving(SolutionCatalogue::class, function (SolutionCatalogue $catalogue): void {
-            $catalogue->register('fuel_station', static fn (): FuelStationManifest => new FuelStationManifest());
+            $catalogue->register('fuel_station', static fn (): FuelStationManifest => new FuelStationManifest);
         });
     }
 

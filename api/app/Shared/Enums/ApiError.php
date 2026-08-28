@@ -162,7 +162,7 @@ enum ApiError: string
         };
     }
 
-    /** @param array<string, mixed> $extra */
+    /** @param  array<string, mixed>  $extra */
     public function response(array $extra = []): JsonResponse
     {
         return response()->json(array_merge([
