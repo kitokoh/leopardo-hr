@@ -141,8 +141,7 @@ class WebhookThreatModelTest extends TestCase
 
     private function bindLookupStub(?Employee $employee): void
     {
-        $this->app->bind(EmployeeEmailLookupService::class, fn () => new class($employee) extends EmployeeEmailLookupService
-        {
+        $this->app->bind(EmployeeEmailLookupService::class, fn () => new class($employee) extends EmployeeEmailLookupService {
             public function __construct(private readonly ?Employee $stubbed) {}
 
             public function resolve(string $email): ?Employee
