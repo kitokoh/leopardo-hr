@@ -31,10 +31,11 @@ final class CrmContactSegmentSource implements SegmentContactSourceInterface
             return [];
         }
 
-        $company = currentCompany();
-        if (! $company instanceof Company) {
+        if (! app()->bound('current_company')) {
             return [];
         }
+
+        $company = currentCompany();
 
         $builder = DB::table('crm_contacts')
             ->select('id')

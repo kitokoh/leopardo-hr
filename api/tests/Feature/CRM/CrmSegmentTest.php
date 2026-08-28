@@ -101,6 +101,9 @@ class CrmSegmentTest extends TestCase
         };
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function validDefinition(): array
     {
         return [
