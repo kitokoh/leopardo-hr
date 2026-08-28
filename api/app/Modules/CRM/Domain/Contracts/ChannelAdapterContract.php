@@ -28,6 +28,9 @@ interface ChannelAdapterContract
      * Vérifie qu'une adresse de destination est utilisable (numéro valide,
      * format accepté). Retourne true si le provider accepte l'adresse.
      */
+    /**
+     * @param  array<string, mixed>  $settings  configuration non sensible du canal
+     */
     public function verify(string $address, array $settings): bool;
 
     /**
@@ -39,6 +42,9 @@ interface ChannelAdapterContract
     /**
      * Tente de révoquer/supprimer un message déjà envoyé (best-effort).
      * Retourne true si le provider confirme la révocation.
+     */
+    /**
+     * @param  array<string, mixed>  $settings  configuration non sensible du canal
      */
     public function revoke(string $providerMessageId, array $settings): bool;
 
