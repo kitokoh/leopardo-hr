@@ -24,7 +24,7 @@ reproductible), le rebuild est audité et le consentement est respecté.
 
 ## Périmètre
 
-- Migration tenant `2026_08_28_000006_5723_create_crm_segments_tables.php`
+- Migration tenant `2026_08_28_000501_5723_create_crm_segments_tables.php`
 - `api/app/Modules/CRM/` : `Domain/Support/SegmentDefinitionValidator`,
   `Domain/Contracts/SegmentContactSourceInterface`, `Domain/Models/{CrmSegment,
   CrmSegmentMember, CrmSegmentVersion}`, `Domain/Enums/SegmentOperator`,
