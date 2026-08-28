@@ -21,4 +21,9 @@ abstract class CrmChannelException extends RuntimeException
     {
         return 422;
     }
+
+    public function render(\Illuminate\Http\Request $request): \Illuminate\Http\JsonResponse
+    {
+        return new \Illuminate\Http\JsonResponse(['error' => $this->errorCode()], $this->httpStatus());
+    }
 }
