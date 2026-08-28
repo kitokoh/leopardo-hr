@@ -261,6 +261,12 @@ jobs:
         # dev-hub/tools/module-isolation-allowlist.txt.
         run: dev-hub/tools/check-module-isolation.sh
 
+      - name: Bounded context dependencies guard (MAT-002 / issue #5860)
+        # Matrice versionnée deny-by-default : toute arête inter-contextes
+        # absente de bounded-context-dependencies.json fait échouer la CI
+        # (message actionnable fichier + import + arête).
+        run: bash dev-hub/tools/check-bounded-context-dependencies.sh
+
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
 
