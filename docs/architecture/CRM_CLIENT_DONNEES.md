@@ -48,3 +48,29 @@
   `(company_id, due_at)`, `(company_id, related_type, related_id)`.
 - Ownership : l'assigné, le créateur et les managers du tenant (`principal`,
   `rh`) accèdent à la tâche (Policies CRM-V0-07, issue #5711).
+
+## 6. Contrats API et OpenAPI (CRM-V0-08, issue #5712)
+
+- **Périmètre** : routes `/api/v1/crm/*` (fichier `api/routes/modules/crm.php`),
+  middleware `throttle:api` + `auth:sanctum` + `token.refresh` + `tenant` +
+  `throttle:api-plan`, puis `api.manager:principal,rh` (403 pour les
+  non-managers / rôles hors périmètre) et Policies `App\Policies\Crm\*`
+  (garde fine, aucune garde inline).
+- **Distinction Platform CRM** : le CRM commercial Leopardo reste sous
+  `/api/v1/platform/crm/*` (super-admin, `PlatformCrmPipelineController`) —
+  aucune route client sous `/platform`, aucun import croisé (garde #5584).
+- **Contrat OpenAPI** : 16 chemins `/crm/*` et 15 schémas
+  (`CrmLead`, `CrmOpportunity`, `CrmActivity`, `CrmTask`, `CrmAccount`,
+  `CrmContact`, `CrmPipeline`, `CrmPipelineStage` + payloads) dans
+  `api/openapi.yaml` ; garde de couverture `check-openapi-route-coverage.py`
+  (895/895, 0 drift) ; miroir `dev-hub/openapi/v1.yaml` et SDK JS/Python
+  régénérés via `make openapi-sync` (garde `make openapi-check`).
+- **Réponses** : enveloppe Laravel `{data, meta}` paginée sur les listes ;
+  erreurs stables 401 `UNAUTHENTICATED`, 403 `MANAGER_REQUIRED` /
+  `INSUFFICIENT_ROLE` (middleware) ou 403 Policy, 404 `RESOURCE_NOT_FOUND`
+  (hors tenant ou inexistant), 422 validation (dont `_unknown` pour les
+  champs inconnus).
+- **Invariants API** : append-only pour la timeline (`/crm/activities` sans
+  PUT → 405) ; `won_at`/`lost_at` dérivés de l'étape ; `completed_at` dérivé
+  de la transition `done` ; archivage doux (`status: archived`) pour les
+  comptes/contacts.
