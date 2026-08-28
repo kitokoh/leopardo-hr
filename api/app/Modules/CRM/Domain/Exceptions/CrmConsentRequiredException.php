@@ -8,7 +8,7 @@ final class CrmConsentRequiredException extends CrmChannelException
 {
     public function __construct()
     {
-        parent::__construct('Consentement de communication requis pour ce contact/canal/finalité.');
+        parent::__construct('Consentement de communication requis pour ce contact/canal/finalite.');
     }
 
     public function errorCode(): string

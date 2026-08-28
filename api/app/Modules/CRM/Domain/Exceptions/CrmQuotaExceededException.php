@@ -8,7 +8,7 @@ final class CrmQuotaExceededException extends CrmChannelException
 {
     public function __construct()
     {
-        parent::__construct('Quota mensuel du canal dépassé pour ce tenant.');
+        parent::__construct('Quota mensuel du canal depasse pour ce tenant.');
     }
 
     public function errorCode(): string
