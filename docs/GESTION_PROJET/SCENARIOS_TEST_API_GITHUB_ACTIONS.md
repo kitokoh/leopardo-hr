@@ -1513,3 +1513,9 @@ Note 2026-08-28 (issue #5795) : module FuelStation — manifest de solution + ac
 - `GET /fuelstation/status` — état d'activation du tenant courant (`inactive`/`active` + manifest_version + activated_at), isolation cross-tenant fail-closed (404).
 - Scénarios CI requis : RBAC employé (403), activation avec toutes dépendances (200 + feature flag), refus 422 si dépendance manquante, idempotence (second POST sans effet), statut avant/après activation, isolation cross-tenant (404).
 - Couverture : `api/tests/Feature/FuelStation/FuelStationManifestTest.php` (6 tests) — OpenAPI 3 chemins + SDK, i18n ×4 (`FUEL_*`), RBAC matrix, docs parity (20ᵉ module).
+
+Note 2026-08-28 (issue #5796) : module FuelStation — migrations stations et sites tenant-first.
+- Tables `fuel_stations` (entité légale : code unique par tenant, pays ISO, timezone, statut) et `fuel_sites` (site opérationnel rattaché à la station, géo optionnelle) — `company_id` non nullable partout, clés composites `(company_id, code)`, index `(company_id, status)` / `(company_id, station_id)`, archivage soft.
+- Modèles tenant-scoped `FuelStation`/`FuelSite` (`BelongsToCompany`) — références cross-tenant impossibles.
+- Scénarios CI requis : colonnes attendues, unicité par tenant (même code sur 2 tenants OK, doublon intra-tenant rejeté), `company_id` non null, index tenant-first, isolation cross-tenant.
+- Couverture : `api/tests/Feature/FuelStation/FuelStationMigrationsTest.php` (5 tests).
