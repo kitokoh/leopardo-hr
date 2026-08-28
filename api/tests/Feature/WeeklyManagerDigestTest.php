@@ -8,6 +8,7 @@ use App\Contracts\Queue\TenantScopedJob;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
+use App\Modules\HR\Domain\Models\Department;
 use App\Modules\Notification\Infrastructure\Jobs\SendWeeklyManagerDigestJob;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use Illuminate\Support\Facades\Queue;
@@ -64,18 +65,22 @@ class WeeklyManagerDigestTest extends TestCase
     {
         /** @var Company $company */
         $company = Company::factory()->create(['status' => 'active']);
+        /** @var Department $dept */
+        $dept = Department::query()->create(['name' => 'Dép. Test']);
+        $dept->company_id = $company->id;
+        $dept->save();
         /** @var Employee $principal */
         $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
         /** @var Employee $deptManager */
         $deptManager = Employee::factory()->managerDept()->create([
             'company_id' => $company->id,
-            'department_id' => 10,
+            'department_id' => $dept->id,
         ]);
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'manager_id' => $deptManager->id,
-            'department_id' => 10,
+            'department_id' => $dept->id,
         ]);
 
         /** @var CommunicationService&Mockery\MockInterface $communication */
@@ -109,18 +114,22 @@ class WeeklyManagerDigestTest extends TestCase
     {
         /** @var Company $company */
         $company = Company::factory()->create(['status' => 'active']);
+        /** @var Department $dept */
+        $dept = Department::query()->create(['name' => 'Dép. Test']);
+        $dept->company_id = $company->id;
+        $dept->save();
         /** @var Employee $principal */
         $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
         /** @var Employee $deptManager */
         $deptManager = Employee::factory()->managerDept()->create([
             'company_id' => $company->id,
-            'department_id' => 10,
+            'department_id' => $dept->id,
         ]);
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'manager_id' => $deptManager->id,
-            'department_id' => 10,
+            'department_id' => $dept->id,
         ]);
 
         $contexts = [];
@@ -132,7 +141,11 @@ class WeeklyManagerDigestTest extends TestCase
             ->with(
                 Mockery::type(Employee::class),
                 'weekly_manager_digest',
-                Mockery::capture($contexts),
+                Mockery::on(static function (array $context) use (&$contexts): bool {
+                    $contexts[] = $context;
+
+                    return true;
+                }),
                 ['email']
             );
 
@@ -180,6 +193,7 @@ class WeeklyManagerDigestTest extends TestCase
         /** @var PendingCommand $cmd */
         $cmd = $this->artisan('manager:weekly-digest', ['--week' => '2026-08-24']);
         $cmd->assertExitCode(0);
+        $cmd->run();
 
         Queue::assertPushed(SendWeeklyManagerDigestJob::class, 2);
         Queue::assertPushed(
