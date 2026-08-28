@@ -252,6 +252,7 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/tracking.php';
     require __DIR__.'/modules/dashboard.php';
     require __DIR__.'/modules/planning.php';
+    require __DIR__.'/modules/crm.php';
 
     require __DIR__.'/modules/billing.php';
     require __DIR__.'/modules/sso.php';

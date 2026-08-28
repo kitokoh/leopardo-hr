@@ -11,4 +11,7 @@ return [
     'CRM_WEBHOOK_SIGNATURE_INVALID' => 'Geçersiz CRM webhook imzası.',
     'CRM_WEBHOOK_NOT_CONFIGURED' => 'CRM webhook yapılandırılmamış (gizli anahtar eksik).',
     'CRM_WEBHOOK_VERIFY_INVALID' => 'CRM webhook abonelik doğrulaması reddedildi.',
-];
+
+    'merge' => [
+        'unknown_entity' => 'Bilinmeyen varlık (accounts, contacts veya leads).',
+    ],];

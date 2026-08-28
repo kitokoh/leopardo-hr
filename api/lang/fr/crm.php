@@ -11,4 +11,7 @@ return [
     'CRM_WEBHOOK_SIGNATURE_INVALID' => 'Signature de webhook CRM invalide.',
     'CRM_WEBHOOK_NOT_CONFIGURED' => 'Webhook CRM non configuré (secret absent).',
     'CRM_WEBHOOK_VERIFY_INVALID' => 'Vérification d\'abonnement du webhook CRM refusée.',
-];
+
+    'merge' => [
+        'unknown_entity' => 'Entité inconnue (accounts, contacts ou leads).',
+    ],];
