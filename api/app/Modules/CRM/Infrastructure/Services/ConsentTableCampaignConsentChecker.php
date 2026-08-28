@@ -24,8 +24,12 @@ final class ConsentTableCampaignConsentChecker implements CampaignConsentChecker
             return false;
         }
 
+        if (! app()->bound('current_company')) {
+            return false;
+        }
+
         return DB::table('crm_consents')
-            ->where('company_id', currentCompany()?->id)
+            ->where('company_id', currentCompany()->id)
             ->where('contact_id', $contactId)
             ->where('channel', $channel)
             ->where('purpose', 'marketing')
