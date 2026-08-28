@@ -23,11 +23,21 @@ abstract class BaseCrmRequest extends FormRequest
     }
 
     /**
-     * @return array<string, mixed>
+     * Surcharge compatible avec `FormRequest::validated($key = null, $default = null)`
+     * (PHP 8.4 — une signature sans paramètres rend le chargement fatal).
+     *
+     * Le contrôle des champs inconnus n'est appliqué que sur l'appel complet
+     * (`$key === null`) ; l'accès par clé (`validated('field')`) passe tel quel.
+     *
+     * @return mixed
      */
-    public function validated(): array
+    public function validated($key = null, $default = null): mixed
     {
-        $validated = parent::validated();
+        $validated = parent::validated($key, $default);
+
+        if ($key !== null) {
+            return $validated;
+        }
 
         $allowed = array_keys($this->rules());
         $unknown = array_values(array_diff(array_keys($this->all()), $allowed));
