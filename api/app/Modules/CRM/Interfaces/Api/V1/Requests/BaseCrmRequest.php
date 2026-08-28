@@ -23,6 +23,11 @@ abstract class BaseCrmRequest extends FormRequest
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    abstract public function rules(): array;
+
+    /**
      * Surcharge compatible avec `FormRequest::validated($key = null, $default = null)`
      * (PHP 8.4 — une signature sans paramètres rend le chargement fatal).
      *

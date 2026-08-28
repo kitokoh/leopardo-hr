@@ -13,6 +13,7 @@ use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmOpportunityRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\UpdateCrmOpportunityRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 
 /**
@@ -24,7 +25,7 @@ use Illuminate\Http\Request;
 class CrmOpportunityController extends Controller
 {
     use CrmQueryHelpers;
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection|JsonResponse
     {
         $this->authorize('viewAny', CrmOpportunity::class);
         $this->rejectUnknownQueryKeys($request, [

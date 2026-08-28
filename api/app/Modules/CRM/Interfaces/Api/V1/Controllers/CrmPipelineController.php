@@ -12,6 +12,7 @@ use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmPipelineRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\UpdateCrmPipelineRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 
 /**
@@ -23,7 +24,7 @@ use Illuminate\Http\Request;
 class CrmPipelineController extends Controller
 {
     use CrmQueryHelpers;
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection|JsonResponse
     {
         $this->authorize('viewAny', CrmPipeline::class);
         $this->rejectUnknownQueryKeys($request, ['per_page', 'sort_by', 'sort_dir']);
