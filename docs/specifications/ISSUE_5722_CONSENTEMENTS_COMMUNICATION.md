@@ -23,7 +23,7 @@ sans consentement requis**.
 
 ## Périmètre
 
-- Migration tenant `2026_08_28_000005_5722_create_crm_consents_table.php`
+- Migration tenant `2026_08_28_000500_5722_create_crm_consents_table.php`
 - `api/app/Modules/CRM/` : `Domain/Enums`, `Domain/Models/CrmConsent`,
   `Domain/Events/CrmConsentRevoked`, `Application/Services/CommunicationConsentService`,
   `Application/Listeners/PropagateConsentRevocation`,
