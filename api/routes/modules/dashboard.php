@@ -47,6 +47,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::middleware('api.manager:principal,rh,comptable')->group(function (): void {
         Route::get('/export/employees', [ExportController::class, 'employees']);
         Route::get('/export/attendance', [ExportController::class, 'attendance']);
+        Route::get('/export/attendance/monthly', [ExportController::class, 'attendanceMonthly']);
         Route::get('/export/pay-slips', [ExportController::class, 'paySlips']);
         Route::get('/export/absences', [ExportController::class, 'absences']);
         Route::get('/export/training', [ExportController::class, 'training']);

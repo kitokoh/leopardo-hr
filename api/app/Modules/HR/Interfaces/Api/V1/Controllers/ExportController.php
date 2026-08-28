@@ -7,6 +7,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceReportService;
 use App\Modules\HR\Domain\Models\ExportHistory;
 use App\Support\CsvCellSanitizer;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -244,9 +245,58 @@ class ExportController extends Controller
         return $this->exportResponse($request, $records, 'vehicles_export', 'vehicles');
     }
 
-    public function history(Request $request): JsonResponse
+    /**
+     * Export CSV mensuel des présences (synthèse par employé) — issue #5696.
+     *
+     * Réutilise `AttendanceReportService` (même agrégation que
+     * `/attendance/monthly-report`) et l'expose sur la surface d'export
+     * canonique `/export/*` avec historique (`ExportHistory`) et scope
+     * manager (`visibleToManager`, PA2-SEC-002/003).
+     */
+    public function attendanceMonthly(Request $request, AttendanceReportService $reportService): JsonResponse
     {
         /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->isManager()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'month' => ['nullable', 'string', 'regex:/^\d{4}-\d{2}$/'],
+        ]);
+
+        $month = (string) ($validated['month'] ?? now()->format('Y-m'));
+
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        $company = currentCompany();
+
+        $report = $reportService->build(
+            $company,
+            AttendanceReportService::PERIOD_MONTH,
+            ['month' => $month],
+            $user,
+        );
+
+        $employees = $report['data']['employees'] ?? [];
+        $rows = collect($employees)->map(static fn (array $row): \stdClass => (object) $row);
+        $count = count($employees);
+        $filename = 'attendance_monthly_'.$month.'.csv';
+
+        $this->recordExport($request, $user, 'attendance_monthly', 'csv', $count, $filename);
+
+        return response()->json([
+            'data' => [
+                'format' => 'csv',
+                'content' => $this->toCsv($rows),
+                'filename' => $filename,
+                'count' => $count,
+                'month' => $month,
+            ],
+        ]);
+    }
+
+    public function history(Request $request): JsonResponse
+    {        /** @var Employee $user */
         $user = $request->user();
         if (! $user->isManager()) {
             abort(403);
