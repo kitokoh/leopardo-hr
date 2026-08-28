@@ -11,6 +11,7 @@ use App\Modules\CRM\Domain\Events\CampaignStarted;
 use App\Modules\CRM\Domain\Models\CrmCampaign;
 use App\Modules\CRM\Domain\Models\CrmCampaignSend;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
@@ -228,7 +229,7 @@ class CrmCampaignTest extends TestCase
         $campaign->update(['segment_id' => 77]);
         $this->app->instance(CampaignConsentCheckerInterface::class, $this->fakeConsentChecker([201, 202, 203]));
 
-        \Illuminate\Support\Facades\DB::table('crm_segment_members')->insert([
+        DB::table('crm_segment_members')->insert([
             ['segment_id' => 77, 'company_id' => $this->companyA->id, 'contact_id' => 201, 'source' => 'computed'],
             ['segment_id' => 77, 'company_id' => $this->companyA->id, 'contact_id' => 202, 'source' => 'computed'],
             ['segment_id' => 77, 'company_id' => $this->companyB->id, 'contact_id' => 999, 'source' => 'computed'],
