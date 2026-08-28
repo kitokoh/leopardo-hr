@@ -1,0 +1,166 @@
+{
+  "repository": "kitokoh/leopardo-hr",
+  "issues": [
+    {
+      "key": "DEP-BC01",
+      "title": "[DEP-BC01] Deep maturity — BC-01 PLATFORM",
+      "status": "created",
+      "number": 5877,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5877"
+    },
+    {
+      "key": "DEP-BC02",
+      "title": "[DEP-BC02] Deep maturity — BC-02 TENANT",
+      "status": "created",
+      "number": 5878,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5878"
+    },
+    {
+      "key": "DEP-BC03",
+      "title": "[DEP-BC03] Deep maturity — BC-03 IDENTITY",
+      "status": "created",
+      "number": 5879,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5879"
+    },
+    {
+      "key": "DEP-BC04",
+      "title": "[DEP-BC04] Deep maturity — BC-04 HR",
+      "status": "created",
+      "number": 5880,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5880"
+    },
+    {
+      "key": "DEP-BC05",
+      "title": "[DEP-BC05] Deep maturity — BC-05 WORKFORCE",
+      "status": "created",
+      "number": 5881,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5881"
+    },
+    {
+      "key": "DEP-BC06",
+      "title": "[DEP-BC06] Deep maturity — BC-06 LEAVE",
+      "status": "created",
+      "number": 5882,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5882"
+    },
+    {
+      "key": "DEP-BC07",
+      "title": "[DEP-BC07] Deep maturity — BC-07 PAYROLL",
+      "status": "created",
+      "number": 5883,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5883"
+    },
+    {
+      "key": "DEP-BC08",
+      "title": "[DEP-BC08] Deep maturity — BC-08 ACCOUNTING",
+      "status": "created",
+      "number": 5884,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5884"
+    },
+    {
+      "key": "DEP-BC09",
+      "title": "[DEP-BC09] Deep maturity — BC-09 EXPENSE",
+      "status": "created",
+      "number": 5885,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5885"
+    },
+    {
+      "key": "DEP-BC10",
+      "title": "[DEP-BC10] Deep maturity — BC-10 RECRUITMENT",
+      "status": "created",
+      "number": 5886,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5886"
+    },
+    {
+      "key": "DEP-BC11",
+      "title": "[DEP-BC11] Deep maturity — BC-11 CRM",
+      "status": "created",
+      "number": 5887,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5887"
+    },
+    {
+      "key": "DEP-BC12",
+      "title": "[DEP-BC12] Deep maturity — BC-12 GROWTH",
+      "status": "created",
+      "number": 5888,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5888"
+    },
+    {
+      "key": "DEP-BC13",
+      "title": "[DEP-BC13] Deep maturity — BC-13 COMMS",
+      "status": "created",
+      "number": 5889,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5889"
+    },
+    {
+      "key": "DEP-BC14",
+      "title": "[DEP-BC14] Deep maturity — BC-14 INTEGRATION",
+      "status": "created",
+      "number": 5890,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5890"
+    },
+    {
+      "key": "DEP-BC15",
+      "title": "[DEP-BC15] Deep maturity — BC-15 FUEL",
+      "status": "created",
+      "number": 5891,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5891"
+    },
+    {
+      "key": "DEP-BC16",
+      "title": "[DEP-BC16] Deep maturity — BC-16 EDU",
+      "status": "created",
+      "number": 5892,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5892"
+    },
+    {
+      "key": "DEP-BC17",
+      "title": "[DEP-BC17] Deep maturity — BC-17 RETAIL",
+      "status": "created",
+      "number": 5893,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5893"
+    },
+    {
+      "key": "DEP-BC18",
+      "title": "[DEP-BC18] Deep maturity — BC-18 FIELD",
+      "status": "created",
+      "number": 5894,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5894"
+    },
+    {
+      "key": "DEP-BC19",
+      "title": "[DEP-BC19] Deep maturity — BC-19 DEVICE",
+      "status": "created",
+      "number": 5895,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5895"
+    },
+    {
+      "key": "DEP-BC20",
+      "title": "[DEP-BC20] Deep maturity — BC-20 DOCUMENTS",
+      "status": "created",
+      "number": 5896,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5896"
+    },
+    {
+      "key": "DEP-BC21",
+      "title": "[DEP-BC21] Deep maturity — BC-21 BILLING",
+      "status": "created",
+      "number": 5897,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5897"
+    },
+    {
+      "key": "DEP-BC22",
+      "title": "[DEP-BC22] Deep maturity — BC-22 ANALYTICS",
+      "status": "created",
+      "number": 5898,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5898"
+    },
+    {
+      "key": "DEP-BC23",
+      "title": "[DEP-BC23] Deep maturity — BC-23 AI",
+      "status": "created",
+      "number": 5899,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5899"
+    }
+  ]
+}
