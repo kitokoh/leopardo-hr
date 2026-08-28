@@ -11,7 +11,6 @@ use App\Modules\FuelStation\Domain\Models\FuelStation;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
-use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
