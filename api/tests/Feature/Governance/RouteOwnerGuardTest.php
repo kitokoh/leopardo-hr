@@ -82,12 +82,17 @@ class RouteOwnerGuardTest extends TestCase
 
     public function test_cross_tenant_employee_cannot_read_other_tenant_absence(): void
     {
+        /** @var Company $companyA */
         $companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Company $companyB */
         $companyB = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
+        /** @var Employee $managerA */
         $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
+        /** @var Employee $employeeB */
         $employeeB = Employee::factory()->create(['company_id' => $companyB->id]);
 
+        /** @var AbsenceType $absenceType */
         $absenceType = AbsenceType::query()->create([
             'company_id' => $companyB->id,
             'name' => 'Congé payé',
@@ -97,10 +102,12 @@ class RouteOwnerGuardTest extends TestCase
             'requires_proof' => false,
         ]);
 
+        /** @var Absence $absenceB */
         $absenceB = Absence::query()->create([
             'company_id' => $companyB->id,
             'employee_id' => $employeeB->id,
             'absence_type_id' => $absenceType->id,
+            'days_count' => 3,
             'start_date' => now()->toDateString(),
             'end_date' => now()->toDateString(),
         ]);
