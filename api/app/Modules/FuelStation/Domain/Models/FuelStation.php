@@ -21,7 +21,7 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string|null $address
  * @property string $timezone
- * @property string $status  active|inactive|archived
+ * @property string $status active|inactive|archived
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
