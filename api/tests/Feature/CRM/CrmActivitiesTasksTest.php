@@ -115,7 +115,7 @@ class CrmActivitiesTasksTest extends TestCase
             ->get();
 
         $this->assertCount(2, $timeline);
-        $this->assertSame('Note de cadrage', $timeline->first()->subject);
+        $this->assertSame('Note de cadrage', $timeline->first()?->subject);
     }
 
     public function test_cross_tenant_activity_is_invisible(): void
@@ -156,7 +156,7 @@ class CrmActivitiesTasksTest extends TestCase
         // Terminal : reopen() depuis cancelled est refusé.
         $task->update(['status' => CrmTaskStatus::Cancelled->value, 'completed_at' => null]);
         $task->reopen();
-        $this->assertSame(CrmTaskStatus::Cancelled->value, $task->fresh()->status);
+        $this->assertSame(CrmTaskStatus::Cancelled->value, $task->fresh()?->status);
     }
 
     public function test_overdue_scope_excludes_done_and_cancelled(): void
@@ -203,12 +203,8 @@ class CrmActivitiesTasksTest extends TestCase
         $this->assertTrue($task->assignees()->where('employees.id', $employee->id)->exists());
 
         // Unicité (task_id, employee_id) : le second attach lève une violation.
-        try {
-            $task->assignees()->attach($employee->id, ['assigned_by_id' => $employee->id]);
-            $this->fail('La contrainte UNIQUE(task_id, employee_id) aurait dû rejeter le doublon.');
-        } catch (QueryException) {
-            $this->assertTrue(true);
-        }
+        $this->expectException(QueryException::class);
+        $task->assignees()->attach($employee->id, ['assigned_by_id' => $employee->id]);
     }
 
     public function test_deleting_task_cascades_to_assignees_pivot(): void

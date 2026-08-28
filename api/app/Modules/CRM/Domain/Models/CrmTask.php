@@ -115,6 +115,7 @@ class CrmTask extends Model
      * Filtrer les tâches échues et non terminées.
      *
      * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeOverdue(Builder $query): Builder
     {
@@ -126,6 +127,7 @@ class CrmTask extends Model
      * Filtrer sur une cible (lead, opportunity, contact, account).
      *
      * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeForRelated(Builder $query, CrmRelatedType $type, int $relatedId): Builder
     {

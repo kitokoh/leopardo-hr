@@ -40,6 +40,10 @@ trait Auditable
         });
     }
 
+    /**
+     * @param  array<array-key, mixed>  $old
+     * @param  array<array-key, mixed>  $new
+     */
     protected static function recordAudit(Model $model, string $action, array $old, array $new): void
     {
         $companyId = $model->getAttribute('company_id');

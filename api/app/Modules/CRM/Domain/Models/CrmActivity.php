@@ -66,6 +66,7 @@ class CrmActivity extends Model
      * Filtrer la timeline sur une cible (lead, opportunity, contact, account).
      *
      * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeForRelated(Builder $query, CrmRelatedType $type, int $relatedId): Builder
     {
