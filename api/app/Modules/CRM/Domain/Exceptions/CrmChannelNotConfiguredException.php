@@ -8,7 +8,7 @@ final class CrmChannelNotConfiguredException extends CrmChannelException
 {
     public function __construct()
     {
-        parent::__construct('Canal actif mais non configuré (token/provider absent).');
+        parent::__construct('Canal actif mais non configure (token/provider absent).');
     }
 
     public function errorCode(): string

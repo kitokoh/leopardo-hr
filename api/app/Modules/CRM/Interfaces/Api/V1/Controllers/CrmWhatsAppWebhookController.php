@@ -55,7 +55,7 @@ class CrmWhatsAppWebhookController extends Controller
     {
         $secret = (string) config('crm.webhooks.shared_secret', '');
         if ($secret === '') {
-            Log::error('CRM webhook: shared_secret non configuré — webhook REFUSÉ (fail-closed). Set CRM_WEBHOOKS_SHARED_SECRET.');
+            Log::error('CRM webhook: shared_secret non configure — webhook REFUSE (fail-closed). Set CRM_WEBHOOKS_SHARED_SECRET.');
 
             return new JsonResponse(['error' => 'CRM_WEBHOOK_NOT_CONFIGURED'], 503);
         }
