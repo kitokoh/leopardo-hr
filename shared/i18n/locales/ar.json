@@ -3544,5 +3544,62 @@
   "settingsQrRejected": "تم رفض الرمز: {error}",
   "settingsBiometricSubmitFailed": "فشل الإرسال: {error}",
   "settingsNotificationsSaveFailed": "تعذّر حفظ تفضيلات الإشعارات: {error}",
-  "companydetailPlanWithPrice": "الخطة {planName} — {price}"
+  "companydetailPlanWithPrice": "الخطة {planName} — {price}",
+  "crm": {
+    "title": "CRM العميل",
+    "subtitle": "إدارة العملاء المحتملين والحسابات وجهات الاتصال والفرص — البيانات معزولة لكل شركة (مستأجر).",
+    "isolationNote": "بيانات نطاق المستأجر: لا وصول إلى CRM ليوباردو التجاري من هذه المساحة.",
+    "loading": "جارٍ التحميل…",
+    "featureLocked": "وحدة CRM غير مفعّلة لشركتك.",
+    "errorLoading": "تعذر تحميل البيانات.",
+    "searchPlaceholder": "بحث…",
+    "refresh": "تحديث",
+    "paginationPrev": "السابق",
+    "paginationNext": "التالي",
+    "paginationPage": "صفحة",
+    "accounts": {
+      "title": "الحسابات",
+      "description": "مؤسسات العملاء لشركتك",
+      "subtitle": "قائمة الحسابات (نطاق المستأجر).",
+      "empty": "لا توجد حسابات بعد.",
+      "colName": "الاسم",
+      "colStatus": "الحالة",
+      "colEmail": "البريد",
+      "colPhone": "الهاتف",
+      "colCreated": "أنشئ في"
+    },
+    "contacts": {
+      "title": "جهات الاتصال",
+      "description": "الأشخاص المرتبطون بحساباتك",
+      "subtitle": "قائمة جهات الاتصال (نطاق المستأجر).",
+      "empty": "لا توجد جهات اتصال بعد.",
+      "primary": "أساسي"
+    },
+    "leads": {
+      "title": "العملاء المحتملون",
+      "description": "فرص أعمال للتأهيل",
+      "subtitle": "قائمة العملاء المحتملين (نطاق المستأجر).",
+      "empty": "لا يوجد عملاء محتملون بعد.",
+      "colName": "الاسم",
+      "colCompany": "الشركة",
+      "colStatus": "الحالة",
+      "colSource": "المصدر",
+      "colEmail": "البريد",
+      "colCreated": "أنشئ في"
+    },
+    "pipeline": {
+      "title": "خط الأنابيب",
+      "description": "نظرة عامة على الفرص حسب المرحلة",
+      "subtitle": "الفرص مجمعة حسب المرحلة (نطاق المستأجر).",
+      "empty": "لا توجد فرص بعد.",
+      "stage": {
+        "prospecting": "استكشاف",
+        "qualification": "تأهيل",
+        "proposal": "اقتراح",
+        "negotiation": "تفاوض",
+        "won": "مربوحة",
+        "lost": "خاسرة"
+      }
+    }
+  }
 }
