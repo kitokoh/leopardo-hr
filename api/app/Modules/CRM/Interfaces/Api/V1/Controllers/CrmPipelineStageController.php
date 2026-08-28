@@ -60,7 +60,7 @@ class CrmPipelineStageController extends Controller
         } catch (QueryException $exception) {
             if ($this->isUniqueViolation($exception)) {
                 throw ValidationException::withMessages([
-                    'position' => ['Un stage occupe déjà cette position dans le pipeline.'],
+                    'position' => [__('crm.pipeline_stage_position_taken')],
                 ]);
             }
 
@@ -79,7 +79,7 @@ class CrmPipelineStageController extends Controller
         } catch (QueryException $exception) {
             if ($this->isUniqueViolation($exception)) {
                 throw ValidationException::withMessages([
-                    'position' => ['Un stage occupe déjà cette position dans le pipeline.'],
+                    'position' => [__('crm.pipeline_stage_position_taken')],
                 ]);
             }
 
