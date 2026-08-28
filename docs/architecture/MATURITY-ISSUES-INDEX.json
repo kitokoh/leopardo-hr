@@ -1,0 +1,131 @@
+{
+  "repository": "kitokoh/leopardo-hr",
+  "issues": [
+    {
+      "key": "MAT-001",
+      "title": "[MAT-001] Registre automatisé des bounded contexts",
+      "status": "created",
+      "number": 5859,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5859"
+    },
+    {
+      "key": "MAT-002",
+      "title": "[MAT-002] Guard d’architecture inter-contextes",
+      "status": "created",
+      "number": 5860,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5860"
+    },
+    {
+      "key": "MAT-003",
+      "title": "[MAT-003] Guard routes et Policies platform/tenant",
+      "status": "created",
+      "number": 5861,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5861"
+    },
+    {
+      "key": "MAT-004",
+      "title": "[MAT-004] Contrat TenantManager global",
+      "status": "created",
+      "number": 5862,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5862"
+    },
+    {
+      "key": "MAT-005",
+      "title": "[MAT-005] Conventions de migrations Laravel par bounded context",
+      "status": "created",
+      "number": 5863,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5863"
+    },
+    {
+      "key": "MAT-006",
+      "title": "[MAT-006] Catalogue d’événements versionnés",
+      "status": "created",
+      "number": 5864,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5864"
+    },
+    {
+      "key": "MAT-007",
+      "title": "[MAT-007] Golden tests Payroll/Accounting",
+      "status": "created",
+      "number": 5865,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5865"
+    },
+    {
+      "key": "MAT-008",
+      "title": "[MAT-008] Runtime inbox/outbox/queues fiable",
+      "status": "created",
+      "number": 5866,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5866"
+    },
+    {
+      "key": "MAT-009",
+      "title": "[MAT-009] Observabilité et corrélation commune",
+      "status": "created",
+      "number": 5867,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5867"
+    },
+    {
+      "key": "MAT-010",
+      "title": "[MAT-010] Feature flags et kill switch",
+      "status": "created",
+      "number": 5868,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5868"
+    },
+    {
+      "key": "MAT-011",
+      "title": "[MAT-011] Classification PII et cycle de vie",
+      "status": "created",
+      "number": 5869,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5869"
+    },
+    {
+      "key": "MAT-012",
+      "title": "[MAT-012] Seeds pilotes et données synthétiques",
+      "status": "created",
+      "number": 5870,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5870"
+    },
+    {
+      "key": "MAT-013",
+      "title": "[MAT-013] Golden journeys end-to-end",
+      "status": "created",
+      "number": 5871,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5871"
+    },
+    {
+      "key": "MAT-014",
+      "title": "[MAT-014] Budgets performance et guards N+1",
+      "status": "created",
+      "number": 5872,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5872"
+    },
+    {
+      "key": "MAT-015",
+      "title": "[MAT-015] Runbooks backup restauration rollback",
+      "status": "created",
+      "number": 5873,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5873"
+    },
+    {
+      "key": "MAT-016",
+      "title": "[MAT-016] Release train et compatibilité apps",
+      "status": "created",
+      "number": 5874,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5874"
+    },
+    {
+      "key": "MAT-017",
+      "title": "[MAT-017] Revue sécurité uploads/OCR/WhatsApp/POS/devices",
+      "status": "created",
+      "number": 5875,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5875"
+    },
+    {
+      "key": "MAT-018",
+      "title": "[MAT-018] Go/no-go pilotes FuelStation/EduManager",
+      "status": "created",
+      "number": 5876,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5876"
+    }
+  ]
+}
