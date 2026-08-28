@@ -138,7 +138,7 @@ final class CrmAnonymizeCommand extends Command
             return 0;
         }
 
-        $columns = array_map('strval', Schema::getColumnListing($table));
+        $columns = array_map(static fn ($column): string => (string) $column, Schema::getColumnListing($table));
         $piiColumns = array_intersect_key($piiColumns, array_flip($columns));
 
         $rows = 0;
@@ -147,7 +147,7 @@ final class CrmAnonymizeCommand extends Command
             ->orderBy('id')
             ->chunkById(500, function ($chunk) use ($company, $table, $piiColumns, $dryRun, &$rows): void {
                 foreach ($chunk as $row) {
-                    $values = $this->anonymizedValues($table, $piiColumns, strval($row->id), strval($company->id));
+                    $values = $this->anonymizedValues($table, $piiColumns, (string) $row->id, (string) $company->id);
 
                     if (! $dryRun) {
                         DB::table($table)->where('id', $row->id)->update($values);
