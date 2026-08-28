@@ -100,15 +100,25 @@ class CrmCampaignController extends Controller
     {
         $this->authorize('update', $campaign);
 
+        $name = $request->filled('name') ? $request->string('name')->toString() : $campaign->name;
+        $description = $request->has('description')
+            ? ($request->filled('description') ? $request->string('description')->toString() : null)
+            : $campaign->description;
+        $segmentId = $request->has('segment_id')
+            ? ($request->filled('segment_id') ? $request->integer('segment_id') : null)
+            : $campaign->segment_id;
+        $audience = $request->has('audience') ? $this->audience($request) : ($campaign->audience_snapshot ?? []);
+        $scheduledAt = $request->has('scheduled_at')
+            ? ($request->filled('scheduled_at') ? now()->parse($request->string('scheduled_at')->toString()) : null)
+            : $campaign->scheduled_at;
+
         $campaign = $this->campaigns->update(
             $campaign,
-            $request->input('name', $campaign->name),
-            $request->has('description') ? $request->input('description') : $campaign->description,
-            $request->has('segment_id') ? $request->input('segment_id') : $campaign->segment_id,
-            $request->has('audience') ? $this->audience($request) : ($campaign->audience_snapshot ?? []),
-            $request->has('scheduled_at')
-                ? ($request->filled('scheduled_at') ? now()->parse($request->string('scheduled_at')->toString()) : null)
-                : $campaign->scheduled_at,
+            $name,
+            $description,
+            $segmentId,
+            $audience,
+            $scheduledAt,
             $this->actorId(),
         );
 
