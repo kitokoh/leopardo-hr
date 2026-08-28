@@ -664,3 +664,156 @@ API + UI + tests + pilote
 ```
 
 Cette stratégie permet à Leopardo de devenir une plateforme adaptable sans transformer le monorepo en ensemble de branches divergentes. Elle conserve la stabilité des modules existants, protège le CRM commercial de Leopardo, place le CRM client dans les espaces clients et donne un cadre clair pour ajouter des solutions sectorielles sans dupliquer le cœur métier.
+
+## 13. Exigence critique FuelStation — relevés de compteur par pompe
+
+### 13.1 Cas d’usage obligatoire
+
+Un pompiste doit pouvoir déclarer précisément qu’à une heure donnée, une pompe déterminée affichait une valeur déterminée sur un compteur déterminé. Il doit ensuite pouvoir déclarer une nouvelle valeur pour cette même pompe et ce même compteur à une autre heure. Le système doit conserver les deux relevés, identifier l’opérateur, enregistrer le site, la pompe, le compteur, la date et l’heure, puis calculer la différence entre les deux valeurs lorsque la séquence est cohérente.
+
+Exemple métier :
+
+```text
+Station : Station ABC
+Pompe : P-04
+Compteur : C-04-A
+Pompiste : opérateur-123
+
+08:00 → relevé 125 430,20 litres
+16:00 → relevé 125 612,80 litres
+
+Volume mesuré sur la période : 182,60 litres
+```
+
+Le nombre affiché par le compteur est un relevé cumulatif et non une vente saisie manuellement. Le volume de période est donc la différence entre le relevé courant et le relevé précédent, avec conservation de la précision native du compteur. Le système doit distinguer compteur mécanique, électronique, totalisateur principal, totalisateur secondaire et compteur de test si le matériel le nécessite.
+
+### 13.2 Modèle de données complémentaire
+
+```text
+fuel_meter_registers
+- id
+- company_id
+- station_id
+- pump_id
+- meter_code
+- meter_type
+- product_code
+- unit_code
+- precision_scale
+- rollover_limit NULL
+- installed_at
+- retired_at NULL
+- status
+- UNIQUE(company_id, pump_id, meter_code, status_active_guard)
+
+fuel_meter_readings
+- id
+- company_id
+- station_id
+- pump_id
+- meter_id
+- reading_value_minor
+- reading_unit
+- captured_at_utc
+- captured_at_station_local
+- timezone
+- captured_by_employee_id
+- shift_id NULL
+- source_code              # operator, import, device, correction
+- device_reference NULL
+- idempotency_key
+- status                   # submitted, accepted, rejected, corrected
+- correction_reason NULL
+- created_at
+- UNIQUE(company_id, idempotency_key)
+- INDEX(company_id, meter_id, captured_at_utc DESC)
+- INDEX(company_id, pump_id, captured_at_utc DESC)
+
+fuel_meter_intervals
+- id
+- company_id
+- meter_id
+- previous_reading_id
+- current_reading_id
+- previous_value_minor
+- current_value_minor
+- delta_minor
+- interval_seconds
+- calculated_at
+- calculation_status       # valid, rollover, anomaly, pending_review
+- UNIQUE(company_id, previous_reading_id, current_reading_id)
+```
+
+`company_id` est obligatoire sur chaque table. Les foreign keys composites doivent empêcher de relier une lecture à une pompe ou un meter d’un autre tenant. Les valeurs monétaires et volumétriques sont stockées en unités mineures entières ou en `numeric` contrôlé selon la précision du compteur ; les flottants binaires sont interdits pour le calcul métier.
+
+### 13.3 Règles de cohérence
+
+Une lecture est refusée si la pompe, le compteur, la station ou l’employé n’appartiennent pas au tenant courant. L’heure reçue est normalisée en UTC, mais l’heure locale de la station est conservée pour l’affichage et l’audit. Une lecture future au-delà d’une dérive configurée est rejetée ou soumise à revue. Deux relevés identiques peuvent être acceptés uniquement s’ils ont des clés d’idempotence distinctes et un motif opérationnel compatible.
+
+Lorsqu’un relevé courant est inférieur au relevé précédent, le système ne doit pas accepter silencieusement la différence négative. Il doit classer l’intervalle comme `anomaly`, puis proposer une revue pour remise à zéro, remplacement du compteur, rollover déclaré ou correction autorisée. Une correction ne supprime jamais le relevé original ; elle crée une nouvelle version, exige un motif et laisse une trace d’audit.
+
+Le calcul d’intervalle doit vérifier :
+
+| Contrôle | Résultat |
+|---|---|
+| Même tenant, station, pompe et compteur | Sinon rejet cross-tenant ou incohérence. |
+| `current.captured_at > previous.captured_at` | Sinon statut `anomaly`. |
+| Valeur courante supérieure ou rollover documenté | Sinon revue obligatoire. |
+| Shift et opérateur cohérents | Avertissement ou blocage selon politique station. |
+| Delta sous le seuil de capacité configuré | Sinon anomalie opérationnelle. |
+| Idempotency key déjà traitée | Retour du résultat existant, sans doublon. |
+
+### 13.4 API métier
+
+```text
+POST /api/v1/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings
+GET  /api/v1/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings
+GET  /api/v1/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals
+POST /api/v1/fuel-station/meter-readings/{reading}/corrections
+POST /api/v1/fuel-station/meter-intervals/{interval}/review
+```
+
+Le POST exige `reading_value`, `unit`, `captured_at`, `idempotency_key` et éventuellement `shift_id`/`device_reference`. Le serveur résout station, pompe et meter dans le contexte tenant authentifié ; il n’accepte pas un `company_id` fourni par le client comme autorité. Les Requests Laravel appliquent une allowlist stricte des unités, formats de date, bornes numériques et motifs de correction.
+
+La réponse doit indiquer `accepted`, `pending_review` ou `rejected`, le relevé précédent trouvé, le delta lorsqu’il est calculable, la raison d’une anomalie et le `correlation_id`. Elle ne doit pas exposer de stack trace ou de données d’un autre tenant.
+
+### 13.5 Écran pompiste
+
+L’écran mobile ou kiosk doit être utilisable en quelques secondes :
+
+```text
+[Station ABC] [Shift 08:00–16:00]
+
+Pompe : [ P-04 ▼ ]
+Compteur : [ C-04-A ▼ ]
+Valeur affichée : [ 125430.20 ]
+Heure du relevé : [ maintenant ▼ ]
+
+[Prendre une photo facultative selon politique]
+[Enregistrer le relevé]
+```
+
+Après enregistrement, l’interface affiche immédiatement la dernière valeur, la valeur précédente, le delta calculé, l’heure et l’identité de l’opérateur. Si le compteur est incohérent, l’application doit dire clairement `Relevé enregistré pour vérification` et ne jamais modifier la valeur silencieusement.
+
+L’interface manager affiche la grille station/pompe/compteur, les trous temporels, les anomalies, les deltas, les relevés corrigés et les écarts avec les ventes ou les clôtures de caisse. Les corrections sont séparées des saisies normales et nécessitent une permission dédiée.
+
+### 13.6 Offline et synchronisation
+
+Si l’application pompiste fonctionne hors ligne, elle stocke localement uniquement les relevés nécessaires, chiffrés, avec expiration et identifiant d’appareil. La synchronisation utilise la même `idempotency_key`, conserve l’heure de capture et distingue heure de capture de l’heure de réception serveur. Un conflit ne remplace jamais le relevé serveur ; il crée un état de revue.
+
+Les événements `fuel.meter_reading.accepted.v1`, `fuel.meter_interval.calculated.v1` et `fuel.meter_anomaly.detected.v1` sont publiés par outbox après commit. Attendance peut fournir le contexte de shift, Payroll peut utiliser les heures de présence, Accounting peut consommer des agrégats validés, mais aucun de ces modules ne peut modifier directement un relevé de compteur.
+
+### 13.7 Critères d’acceptation obligatoires
+
+- Un pompiste peut choisir une station, une pompe et un compteur autorisés par son tenant.
+- Il peut enregistrer deux relevés à deux heures différentes avec son identité et son shift.
+- Le système calcule la différence uniquement lorsque les relevés sont cohérents.
+- Une valeur décroissante devient une anomalie ou un rollover explicitement déclaré, jamais une différence négative silencieuse.
+- Une requête cross-tenant échoue et est couverte par un test négatif.
+- Une répétition de webhook, de synchronisation ou de POST ne crée pas de double relevé.
+- Une correction conserve l’original, exige un motif et produit un audit.
+- Les index permettent la lecture du dernier relevé et de l’historique par meter sans scan global.
+- Les données sont affichées dans la timezone de la station et stockées avec une référence UTC.
+- Le parcours mobile reste utilisable lorsque le réseau est instable et rejoue sans doublon.
+
+Cette exigence devient une partie de `FUEL-002`, `FUEL-003`, `FUEL-006`, `FUEL-008` et `FUEL-010`. Une version de FuelStation ne peut être considérée fonctionnelle si elle gère les shifts et les caisses mais ne permet pas de tracer les compteurs par pompe, par opérateur et par heure.
