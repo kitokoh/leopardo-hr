@@ -18,4 +18,7 @@ return [
     'CRM_EXPORT_INVALID_REQUEST' => 'Invalid CRM export request (entity or column not allowlisted).',
     'CRM_EXPORT_FAILED' => 'CRM export generation failed.',
     'CRM_EXPORT_ENTITY_INVALID' => 'Unknown CRM export entity.',
-];
+
+    'merge' => [
+        'unknown_entity' => 'Unknown entity (accounts, contacts or leads).',
+    ],];

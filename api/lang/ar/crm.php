@@ -18,4 +18,7 @@ return [
     'CRM_EXPORT_INVALID_REQUEST' => 'طلب تصدير CRM غير صالح (كيان أو عمود غير مسموح به).',
     'CRM_EXPORT_FAILED' => 'فشل إنشاء تصدير CRM.',
     'CRM_EXPORT_ENTITY_INVALID' => 'كيان تصدير CRM غير معروف.',
-];
+
+    'merge' => [
+        'unknown_entity' => 'كيان غير معروف (accounts أو contacts أو leads).',
+    ],];

@@ -18,4 +18,7 @@ return [
     'CRM_EXPORT_INVALID_REQUEST' => 'Geçersiz CRM dışa aktarma isteği (varlık veya sütun beyaz listede değil).',
     'CRM_EXPORT_FAILED' => 'CRM dışa aktarma oluşturma başarısız.',
     'CRM_EXPORT_ENTITY_INVALID' => 'Bilinmeyen CRM dışa aktarma varlığı.',
-];
+
+    'merge' => [
+        'unknown_entity' => 'Bilinmeyen varlık (accounts, contacts veya leads).',
+    ],];
