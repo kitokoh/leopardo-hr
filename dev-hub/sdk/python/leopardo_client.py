@@ -1332,6 +1332,150 @@ class LeopardoClient:
         """Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager)"""
         return self.request("POST", "/cotisation-simulation", **kwargs)
 
+    def get_crm_accounts(self, **kwargs):
+        """Lister les comptes CRM du tenant"""
+        return self.request("GET", "/crm/accounts", **kwargs)
+
+    def post_crm_accounts(self, **kwargs):
+        """Creer un compte CRM"""
+        return self.request("POST", "/crm/accounts", **kwargs)
+
+    def delete_crm_accounts_by_account(self, **kwargs):
+        """Archiver un compte CRM"""
+        return self.request("DELETE", "/crm/accounts/{account}", **kwargs)
+
+    def get_crm_accounts_by_account(self, **kwargs):
+        """Detail d'un compte CRM"""
+        return self.request("GET", "/crm/accounts/{account}", **kwargs)
+
+    def put_crm_accounts_by_account(self, **kwargs):
+        """Mettre a jour un compte CRM"""
+        return self.request("PUT", "/crm/accounts/{account}", **kwargs)
+
+    def get_crm_activities(self, **kwargs):
+        """Lister la timeline CRM du tenant"""
+        return self.request("GET", "/crm/activities", **kwargs)
+
+    def post_crm_activities(self, **kwargs):
+        """Ajouter une activite a la timeline"""
+        return self.request("POST", "/crm/activities", **kwargs)
+
+    def delete_crm_activities_by_activity(self, **kwargs):
+        """Supprimer une activite CRM"""
+        return self.request("DELETE", "/crm/activities/{activity}", **kwargs)
+
+    def get_crm_activities_by_activity(self, **kwargs):
+        """Detail d'une activite CRM"""
+        return self.request("GET", "/crm/activities/{activity}", **kwargs)
+
+    def get_crm_contacts(self, **kwargs):
+        """Lister les contacts CRM du tenant"""
+        return self.request("GET", "/crm/contacts", **kwargs)
+
+    def post_crm_contacts(self, **kwargs):
+        """Creer un contact CRM"""
+        return self.request("POST", "/crm/contacts", **kwargs)
+
+    def delete_crm_contacts_by_contact(self, **kwargs):
+        """Archiver un contact CRM"""
+        return self.request("DELETE", "/crm/contacts/{contact}", **kwargs)
+
+    def get_crm_contacts_by_contact(self, **kwargs):
+        """Detail d'un contact CRM"""
+        return self.request("GET", "/crm/contacts/{contact}", **kwargs)
+
+    def put_crm_contacts_by_contact(self, **kwargs):
+        """Mettre a jour un contact CRM"""
+        return self.request("PUT", "/crm/contacts/{contact}", **kwargs)
+
+    def get_crm_leads(self, **kwargs):
+        """Lister les leads CRM du tenant"""
+        return self.request("GET", "/crm/leads", **kwargs)
+
+    def post_crm_leads(self, **kwargs):
+        """Creer un lead CRM"""
+        return self.request("POST", "/crm/leads", **kwargs)
+
+    def delete_crm_leads_by_lead(self, **kwargs):
+        """Supprimer un lead CRM"""
+        return self.request("DELETE", "/crm/leads/{lead}", **kwargs)
+
+    def get_crm_leads_by_lead(self, **kwargs):
+        """Detail d'un lead CRM"""
+        return self.request("GET", "/crm/leads/{lead}", **kwargs)
+
+    def put_crm_leads_by_lead(self, **kwargs):
+        """Mettre a jour un lead CRM"""
+        return self.request("PUT", "/crm/leads/{lead}", **kwargs)
+
+    def get_crm_opportunities(self, **kwargs):
+        """Lister les opportunites CRM du tenant"""
+        return self.request("GET", "/crm/opportunities", **kwargs)
+
+    def post_crm_opportunities(self, **kwargs):
+        """Creer une opportunite CRM"""
+        return self.request("POST", "/crm/opportunities", **kwargs)
+
+    def delete_crm_opportunities_by_opportunity(self, **kwargs):
+        """Supprimer une opportunite CRM"""
+        return self.request("DELETE", "/crm/opportunities/{opportunity}", **kwargs)
+
+    def get_crm_opportunities_by_opportunity(self, **kwargs):
+        """Detail d'une opportunite CRM"""
+        return self.request("GET", "/crm/opportunities/{opportunity}", **kwargs)
+
+    def put_crm_opportunities_by_opportunity(self, **kwargs):
+        """Mettre a jour une opportunite CRM"""
+        return self.request("PUT", "/crm/opportunities/{opportunity}", **kwargs)
+
+    def get_crm_pipelines(self, **kwargs):
+        """Lister les pipelines CRM du tenant"""
+        return self.request("GET", "/crm/pipelines", **kwargs)
+
+    def post_crm_pipelines(self, **kwargs):
+        """Creer un pipeline CRM"""
+        return self.request("POST", "/crm/pipelines", **kwargs)
+
+    def delete_crm_pipelines_by_pipeline(self, **kwargs):
+        """Supprimer un pipeline CRM"""
+        return self.request("DELETE", "/crm/pipelines/{pipeline}", **kwargs)
+
+    def get_crm_pipelines_by_pipeline(self, **kwargs):
+        """Detail d'un pipeline CRM"""
+        return self.request("GET", "/crm/pipelines/{pipeline}", **kwargs)
+
+    def put_crm_pipelines_by_pipeline(self, **kwargs):
+        """Mettre a jour un pipeline CRM"""
+        return self.request("PUT", "/crm/pipelines/{pipeline}", **kwargs)
+
+    def post_crm_pipelines_by_pipeline_stages(self, **kwargs):
+        """Ajouter une etape a un pipeline"""
+        return self.request("POST", "/crm/pipelines/{pipeline}/stages", **kwargs)
+
+    def delete_crm_pipelines_by_pipeline_stages_by_stage(self, **kwargs):
+        """Supprimer une etape d'un pipeline"""
+        return self.request("DELETE", "/crm/pipelines/{pipeline}/stages/{stage}", **kwargs)
+
+    def get_crm_tasks(self, **kwargs):
+        """Lister les taches CRM du tenant"""
+        return self.request("GET", "/crm/tasks", **kwargs)
+
+    def post_crm_tasks(self, **kwargs):
+        """Creer une tache CRM"""
+        return self.request("POST", "/crm/tasks", **kwargs)
+
+    def delete_crm_tasks_by_task(self, **kwargs):
+        """Supprimer une tache CRM"""
+        return self.request("DELETE", "/crm/tasks/{task}", **kwargs)
+
+    def get_crm_tasks_by_task(self, **kwargs):
+        """Detail d'une tache CRM"""
+        return self.request("GET", "/crm/tasks/{task}", **kwargs)
+
+    def put_crm_tasks_by_task(self, **kwargs):
+        """Mettre a jour une tache CRM"""
+        return self.request("PUT", "/crm/tasks/{task}", **kwargs)
+
     def get_dashboard_admin(self, **kwargs):
         """Synthese dashboard admin (principal)"""
         return self.request("GET", "/dashboard/admin", **kwargs)

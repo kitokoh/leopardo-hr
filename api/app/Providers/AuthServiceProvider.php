@@ -34,6 +34,13 @@ use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
+use App\Modules\CRM\Domain\Models\CrmAccount;
+use App\Modules\CRM\Domain\Models\CrmActivity;
+use App\Modules\CRM\Domain\Models\CrmContact;
+use App\Modules\CRM\Domain\Models\CrmLead;
+use App\Modules\CRM\Domain\Models\CrmOpportunity;
+use App\Modules\CRM\Domain\Models\CrmPipeline;
+use App\Modules\CRM\Domain\Models\CrmTask;
 use App\Policies\AbsencePolicy;
 use App\Policies\ApprovalRequestPolicy;
 use App\Policies\AttendancePolicy;
@@ -64,6 +71,13 @@ use App\Policies\SocialPostPolicy;
 use App\Policies\TrainingPolicy;
 use App\Policies\VehiclePolicy;
 use App\Policies\WebhookEndpointPolicy;
+use App\Policies\Crm\CrmAccountPolicy;
+use App\Policies\Crm\CrmActivityPolicy;
+use App\Policies\Crm\CrmContactPolicy;
+use App\Policies\Crm\CrmLeadPolicy;
+use App\Policies\Crm\CrmOpportunityPolicy;
+use App\Policies\Crm\CrmPipelinePolicy;
+use App\Policies\Crm\CrmTaskPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -126,6 +140,16 @@ class AuthServiceProvider extends ServiceProvider
         // Marketing (Phase 2)
         Gate::policy(SocialAccount::class, SocialAccountPolicy::class);
         Gate::policy(SocialPost::class, SocialPostPolicy::class);
+
+        // CRM client tenant (Issue #5711 — CRM-V0-07) : Policies dédiées,
+        // garde applicative unique (aucune garde inline dans les contrôleurs).
+        Gate::policy(CrmAccount::class, CrmAccountPolicy::class);
+        Gate::policy(CrmActivity::class, CrmActivityPolicy::class);
+        Gate::policy(CrmContact::class, CrmContactPolicy::class);
+        Gate::policy(CrmLead::class, CrmLeadPolicy::class);
+        Gate::policy(CrmOpportunity::class, CrmOpportunityPolicy::class);
+        Gate::policy(CrmPipeline::class, CrmPipelinePolicy::class);
+        Gate::policy(CrmTask::class, CrmTaskPolicy::class);
 
         // Gate definitions
         Gate::define('manage-billing', [BillingPolicy::class, 'manageSubscription']);
