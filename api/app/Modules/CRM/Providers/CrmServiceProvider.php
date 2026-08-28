@@ -20,7 +20,6 @@ use App\Modules\CRM\Infrastructure\Services\CrmOutboxPublisher;
 use App\Modules\CRM\Policies\CrmImportPolicy;
 use App\Modules\CRM\Policies\CrmLeadPolicy;
 use App\Modules\CRM\Policies\CrmMergePolicy;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
