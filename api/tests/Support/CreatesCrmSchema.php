@@ -77,6 +77,63 @@ trait CreatesCrmSchema
             });
         }
 
+        if (! schemaTableExists('crm_pipelines')) {
+            // Schéma réel #5709 (PR #5750).
+            Schema::create('crm_pipelines', function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 100);
+                $table->text('description')->nullable();
+                $table->boolean('is_default')->default(false);
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'name'], 'crm_pipelines_company_name_unique');
+            });
+        }
+
+        if (! schemaTableExists('crm_pipeline_stages')) {
+            Schema::create('crm_pipeline_stages', function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('pipeline_id');
+                $table->string('name', 100);
+                $table->unsignedSmallInteger('position')->default(0);
+                $table->string('color', 20)->nullable();
+                $table->boolean('is_won')->default(false);
+                $table->boolean('is_lost')->default(false);
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->unique(['pipeline_id', 'position'], 'crm_pipeline_stages_pipeline_position_unique');
+            });
+        }
+
+        if (! schemaTableExists('crm_opportunities')) {
+            Schema::create('crm_opportunities', function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('pipeline_id');
+                $table->unsignedBigInteger('stage_id');
+                $table->string('name', 150);
+                $table->unsignedBigInteger('account_id')->nullable();
+                $table->unsignedBigInteger('converted_from_lead_id')->nullable();
+                $table->decimal('amount', 14, 2)->nullable();
+                $table->char('currency', 3)->nullable();
+                $table->date('expected_close_date')->nullable();
+                $table->unsignedBigInteger('owner_id')->nullable();
+                $table->string('source', 40)->nullable();
+                $table->text('description')->nullable();
+                $table->timestamp('won_at')->nullable();
+                $table->timestamp('lost_at')->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'pipeline_id']);
+                $table->index(['owner_id']);
+            });
+        }
+
         if (! schemaTableExists('crm_activities')) {
             // Schéma réel #5710 (PR #5753) : append-only, occurred_at, created_by.
             Schema::create('crm_activities', function (Blueprint $table): void {
@@ -241,5 +298,73 @@ trait CreatesCrmSchema
             'updated_at' => now(),
         ], $overrides));
     }
+    /**
+     * Insère une ligne crm_pipelines de test (schéma canonique, cf. #5709).
+     *
+     * @param  array<string, mixed>  $overrides
+     * @return int
+     */
+    private function createCrmPipeline(array $overrides = []): int
+    {
+        return DB::table('crm_pipelines')->insertGetId(array_merge([
+            'company_id' => '00000000-0000-0000-0000-000000000000',
+            'name' => 'Pipeline principal',
+            'is_default' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ], $overrides));
+    }
+
+    /**
+     * Insère une ligne crm_stages de test (schéma canonique, cf. #5709).
+     *
+     * @param  array<string, mixed>  $overrides
+     * @return int
+     */
+    private function createCrmStage(array $overrides = []): int
+    {
+        return DB::table('crm_pipeline_stages')->insertGetId(array_merge([
+            'company_id' => '00000000-0000-0000-0000-000000000000',
+            'pipeline_id' => 1,
+            'name' => 'Prospection',
+            'position' => 0,
+            'color' => null,
+            'is_won' => false,
+            'is_lost' => false,
+            'created_by' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ], $overrides));
+    }
+
+    /**
+     * Insère une ligne crm_opportunities de test (schéma canonique, cf. #5709).
+     *
+     * @param  array<string, mixed>  $overrides
+     * @return int
+     */
+    private function createCrmOpportunity(array $overrides = []): int
+    {
+        return DB::table('crm_opportunities')->insertGetId(array_merge([
+            'company_id' => '00000000-0000-0000-0000-000000000000',
+            'pipeline_id' => 1,
+            'stage_id' => 1,
+            'name' => 'Opportunité Alpha',
+            'account_id' => null,
+            'converted_from_lead_id' => null,
+            'amount' => 10000,
+            'currency' => 'DZD',
+            'expected_close_date' => null,
+            'owner_id' => null,
+            'source' => null,
+            'description' => null,
+            'won_at' => null,
+            'lost_at' => null,
+            'created_by' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ], $overrides));
+    }
+
 }
 

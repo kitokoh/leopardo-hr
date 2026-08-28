@@ -17,6 +17,7 @@ declare(strict_types=1);
  * coexistent sous le préfixe `/api/v1/crm/*`.
  */
 
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDashboardController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmSearchController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmTaskController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmTimelineController;
@@ -42,4 +43,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/tasks/{task}', [CrmTaskController::class, 'destroy'])->whereNumber('task');
 
         Route::get('/accounts/{account}/timeline', [CrmTimelineController::class, 'index'])->whereNumber('account');
+
+        // ----------------------------------------------------------------
+        // Dashboard CRM (issue #5721) : pipeline & qualité des données.
+        // Read models agrégés tenant-scoped, Policy crm.dashboard.
+        // ----------------------------------------------------------------
+        Route::get('/dashboard/pipeline', [CrmDashboardController::class, 'pipeline']);
+        Route::get('/dashboard/quality', [CrmDashboardController::class, 'quality']);
     });
