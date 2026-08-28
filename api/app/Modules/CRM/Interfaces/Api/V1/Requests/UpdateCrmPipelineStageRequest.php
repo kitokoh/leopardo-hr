@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Interfaces\Api\V1\Requests;
 
+use App\Modules\CRM\Domain\Models\CrmPipelineStage;
 use Illuminate\Contracts\Validation\Validator;
 
 /**
@@ -28,8 +29,11 @@ class UpdateCrmPipelineStageRequest extends BaseCrmRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator): void {
-            $isWon = (bool) $this->input('is_won', $this->route('crmPipelineStage')?->is_won ?? false);
-            $isLost = (bool) $this->input('is_lost', $this->route('crmPipelineStage')?->is_lost ?? false);
+            /** @var CrmPipelineStage|null $stage */
+            $stage = $this->route('crmPipelineStage');
+
+            $isWon = (bool) $this->input('is_won', $stage instanceof CrmPipelineStage ? $stage->is_won : false);
+            $isLost = (bool) $this->input('is_lost', $stage instanceof CrmPipelineStage ? $stage->is_lost : false);
 
             if ($isWon && $isLost) {
                 $validator->errors()->add('is_lost', 'Un stage ne peut pas être à la fois gagnant et perdant.');
