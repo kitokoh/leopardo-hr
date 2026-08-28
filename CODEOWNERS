@@ -33,6 +33,9 @@
 /api/app/Policies/          @kitokoh
 /api/config/                @kitokoh
 
+# CRM client module (bounded context tenant, issue #5745 / ADR-CRM-001)
+/api/app/Modules/CRM/       @kitokoh
+
 # Audit #1712 + issue #1730 : @kitokoh est seul propriétaire humain aujourd'hui.
 # ÉTAT RÉEL de la protection (source : dev-hub/tools/branch-protection-canonical.json,
 # vérifié via API le 2026-08-15, issue #3533) : **0 approval requis**,
