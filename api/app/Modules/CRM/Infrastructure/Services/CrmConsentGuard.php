@@ -39,7 +39,7 @@ final class CrmConsentGuard
         }
 
         $optIn = DB::table('crm_contact_consents')
-            ->where('company_id', currentCompany()?->id)
+            ->where('company_id', currentCompany()->id)
             ->where('contact_id', $contactId)
             ->where('channel', $channel)
             ->where('purpose', $purpose)

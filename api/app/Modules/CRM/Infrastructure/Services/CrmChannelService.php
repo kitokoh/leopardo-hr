@@ -31,23 +31,15 @@ use Illuminate\Support\Facades\Log;
  */
 final class CrmChannelService
 {
-    /** @var array<string, ChannelAdapterContract> */
-    private array $adapters = [];
-
     /**
      * @param  array<string, ChannelAdapterContract>  $adapters  type → adaptateur
      */
     public function __construct(
         private readonly array $adapters,
         private readonly CrmChannelMessageRepositoryInterface $messages,
-        private readonly CrmPhoneNormalizer $normalizer,
         private readonly CrmConsentGuard $consentGuard,
         private readonly CrmQuotaService $quotaService,
-    ) {
-        foreach ($adapters as $type => $adapter) {
-            $this->adapters[$type] = $adapter;
-        }
-    }
+    ) {}
 
     /**
      * Envoie un message via le canal du tenant courant.
@@ -94,7 +86,7 @@ final class CrmChannelService
             Log::info('CRM channel: message envoyé', [
                 'channel_id' => $channel->id,
                 'type' => $channel->type,
-                'provider_message_id' => $result['provider_message_id'] ?? null,
+                'provider_message_id' => $result['provider_message_id'],
             ]);
 
             return $message->refresh();
@@ -179,7 +171,7 @@ final class CrmChannelService
             }
 
             DB::transaction(function () use ($channel, $provider, $providerMessageId, $message): void {
-                $existing = $this->messages->findByProviderMessageId((string) currentCompany()?->id, $providerMessageId);
+                $existing = $this->messages->findByProviderMessageId((string) currentCompany()->id, $providerMessageId);
                 if ($existing !== null) {
                     // Rejeu webhook → acquittement silencieux (idempotence).
                     return;
@@ -212,7 +204,7 @@ final class CrmChannelService
                 continue;
             }
 
-            $this->messages->applyDeliveryStatus((string) currentCompany()?->id, $providerMessageId, $mapped, Carbon::now());
+            $this->messages->applyDeliveryStatus((string) currentCompany()->id, $providerMessageId, $mapped, Carbon::now());
         }
     }
 

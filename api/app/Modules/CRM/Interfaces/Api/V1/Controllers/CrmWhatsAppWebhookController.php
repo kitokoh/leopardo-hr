@@ -66,8 +66,7 @@ class CrmWhatsAppWebhookController extends Controller
             throw new CrmWebhookSignatureInvalidException();
         }
 
-        $payload = $request->json();
-        $entries = is_array($payload) ? ($payload['entry'] ?? []) : [];
+        $entries = (array) $request->json('entry', []);
 
         foreach ($entries as $entry) {
             $this->processEntry(is_array($entry) ? $entry : []);

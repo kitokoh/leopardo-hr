@@ -42,12 +42,12 @@ final class WhatsAppAdapter implements ChannelAdapterContract
             throw new CrmProviderException('WhatsApp: body ou template requis', false, 'EMPTY_PAYLOAD');
         }
 
-        // Le provider ne renvoie pas de coût au moment de l'envoi : on le
-        // marque null — l'observabilité des coûts est assurée par l'audit.
+        // Le provider ne renvoie pas de coût au moment de l'envoi : la clé
+        // `cost` est omise (contrat `cost?: float`) — l'observabilité des
+        // coûts est assurée par l'audit.
         return [
             'provider_message_id' => $providerMessageId,
             'status' => 'sent',
-            'cost' => null,
         ];
     }
 
