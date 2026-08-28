@@ -6,3 +6,12 @@
 # Les verbes d'action PUT/PATCH dépréciés (#4930) sont désormais documentés
 # dans openapi.yaml avec `deprecated: true` (tags [Deprecated]).
 
+# CRM client — segments (#5723) : contrat OpenAPI canonique publié par #5712
+# (Périmètre CRM V0-08 « Publier les contrats API et OpenAPI du CRM client »).
+GET /v1/crm/segments
+GET /v1/crm/segments/{param}
+GET /v1/crm/segments/{param}/members
+POST /v1/crm/segments
+PUT /v1/crm/segments/{param}
+DELETE /v1/crm/segments/{param}
+POST /v1/crm/segments/{param}/rebuild
