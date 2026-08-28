@@ -294,8 +294,8 @@ class GoldenJournalPostingTest extends TestCase
         try {
             $service->postDocument($lateInvoice);
             self::fail('le posting dans une période clôturée doit lever PeriodClosedException');
-        } catch (PeriodClosedException) {
-            self::assertTrue(true);
+        } catch (PeriodClosedException $e) {
+            self::assertSame('PERIOD_CLOSED', $e->errorCode());
         }
 
         // Le snapshot (totaux) reste figé — aucune écriture ajoutée.
