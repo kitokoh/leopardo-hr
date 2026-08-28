@@ -80,4 +80,3 @@ class PlatformCompanyFeatureController extends Controller
         ]);
     }
 }
-

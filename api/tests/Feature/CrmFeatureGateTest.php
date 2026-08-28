@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\CrmFeature;
 use App\Core\Tenant\Domain\Models\Company;
@@ -54,7 +53,7 @@ class CrmFeatureGateTest extends TestCase
 
     public function test_gate_blocks_when_tenant_flag_off(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['features' => ['rh' => true]]);
         $this->bindTenant($company);
         $this->registerGateRoute();
@@ -66,7 +65,7 @@ class CrmFeatureGateTest extends TestCase
 
     public function test_gate_allows_when_tenant_flag_on(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['features' => ['rh' => true, 'crm' => true]]);
         $this->bindTenant($company);
         $this->registerGateRoute();
@@ -77,7 +76,7 @@ class CrmFeatureGateTest extends TestCase
     public function test_kill_switch_blocks_even_when_tenant_flag_on(): void
     {
         config()->set('crm.kill_switch.enabled', true);
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['features' => ['rh' => true, 'crm' => true]]);
         $this->bindTenant($company);
         $this->registerGateRoute();
@@ -106,7 +105,7 @@ class CrmFeatureGateTest extends TestCase
 
     public function test_integrations_are_closed_by_default(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['features' => ['rh' => true, 'crm' => true]]);
 
         // Global par défaut false + métadonnées vides → fermé.
@@ -117,7 +116,7 @@ class CrmFeatureGateTest extends TestCase
 
     public function test_integration_requires_global_and_tenant_authorization(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create([
             'features' => ['rh' => true, 'crm' => true],
             'metadata' => ['crm.integrations.whatsapp' => ['enabled' => true]],
@@ -132,7 +131,7 @@ class CrmFeatureGateTest extends TestCase
         $this->assertTrue(CrmFeature::integrationEnabled('whatsapp', $company));
 
         // Global on + tenant off → fermé.
-        /** @var \App\Core\Tenant\Domain\Models\Company $companyNoOptIn */
+        /** @var Company $companyNoOptIn */
         $companyNoOptIn = Company::factory()->create(['features' => ['crm' => true]]);
         $this->assertFalse(CrmFeature::integrationEnabled('whatsapp', $companyNoOptIn));
 
@@ -143,7 +142,7 @@ class CrmFeatureGateTest extends TestCase
 
     public function test_unknown_integration_key_is_never_enabled(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['features' => ['crm' => true]]);
         config()->set('crm.integrations.telegram.enabled', true);
 
@@ -152,7 +151,7 @@ class CrmFeatureGateTest extends TestCase
 
     public function test_status_exposes_server_side_truth(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create([
             'features' => ['rh' => true, 'crm' => true],
             'metadata' => ['crm.integrations.email' => ['enabled' => true]],
@@ -174,7 +173,7 @@ class CrmFeatureGateTest extends TestCase
 
     public function test_super_admin_can_activate_crm_and_toggle_is_audited(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['features' => ['rh' => true]]);
         $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
@@ -209,9 +208,9 @@ class CrmFeatureGateTest extends TestCase
 
     public function test_tenant_client_cannot_self_authorize_feature_flags(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['features' => ['rh' => true]]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
@@ -228,7 +227,7 @@ class CrmFeatureGateTest extends TestCase
 
     public function test_crm_flag_defaults_to_disabled(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['features' => ['rh' => true]]);
         $this->assertFalse($company->hasFeature('crm'));
     }
