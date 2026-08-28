@@ -115,6 +115,29 @@ class CrmEmailTest extends TestCase
         });
     }
 
+    private function ensureCampaignSendsTable(): void
+    {
+        if (Schema::hasTable('crm_campaign_sends')) {
+            return;
+        }
+
+        // Table livrée par la migration de l'issue #5724 : créée ad-hoc tant
+        // que la PR #5764 n'est pas mergée (schéma aligné).
+        Schema::create('crm_campaign_sends', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('campaign_id')->index();
+            $table->uuid('company_id')->index();
+            $table->unsignedBigInteger('contact_id');
+            $table->string('channel', 20);
+            $table->string('status', 20)->default('pending');
+            $table->string('provider_message_id', 255)->nullable();
+            $table->string('error', 500)->nullable();
+            $table->timestamp('sent_at')->nullable();
+            $table->timestamp('delivered_at')->nullable();
+            $table->timestamps();
+        });
+    }
+
     private function ensureConsentsTable(): void
     {
         if (Schema::hasTable('crm_consents')) {
@@ -308,6 +331,7 @@ class CrmEmailTest extends TestCase
     public function test_webhook_bounce_adds_suppression_and_marks_send(): void
     {
         config(['crm.email.webhook_secret' => 'test-secret']);
+        $this->ensureCampaignSendsTable();
 
         app()->instance('current_company', $this->companyA);
         /** @var CrmCampaignSend $send */
@@ -369,6 +393,7 @@ class CrmEmailTest extends TestCase
     public function test_send_campaign_send_resolves_contact_and_marks_sent(): void
     {
         $this->ensureContactsTable();
+        $this->ensureCampaignSendsTable();
         app()->instance('current_company', $this->companyA);
 
         DB::table('crm_contacts')->insert([
