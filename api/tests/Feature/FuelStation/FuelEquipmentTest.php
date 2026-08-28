@@ -8,9 +8,9 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
 use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
+use App\Modules\FuelStation\Domain\Models\FuelTank;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
-use App\Modules\FuelStation\Domain\Models\FuelTank;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
