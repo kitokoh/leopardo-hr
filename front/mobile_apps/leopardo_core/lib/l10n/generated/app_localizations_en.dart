@@ -1125,6 +1125,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardYourcompany => 'Your company';
 
   @override
+  String get dashboardLeaveBalanceTitle => 'My leave balance';
+
+  @override
+  String get dashboardLeaveBalanceSubtitle => 'Remaining days by type, current year';
+
+  @override
+  String get dashboardLeaveBalanceLoading => 'Loading balance…';
+
+  @override
+  String get dashboardLeaveBalanceError => 'Unable to load leave balance.';
+
+  @override
+  String get dashboardLeaveBalanceEmpty => 'No balance configured for this account.';
+
+  @override
+  String dashboardLeaveBalanceAvailable(Object days) {
+    return '$days day(s) available';
+  }
+
+  @override
+  String dashboardLeaveBalanceUsed(Object days) {
+    return '$days used';
+  }
+
+  @override
+  String get dashboardSeeAbsences => 'View my absences';
+
+  @override
+  String get dashboardLeaveBalanceUnknown => 'Leave';
+
+  @override
   String get marketingOauthNavTitle => 'Marketing OAuth';
 
   @override
