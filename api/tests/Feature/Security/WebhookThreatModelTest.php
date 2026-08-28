@@ -42,15 +42,14 @@ class WebhookThreatModelTest extends TestCase
 
     public function test_oversized_payload_is_rejected_before_processing(): void
     {
-        $response = $this->call(
-            'POST',
-            '/api/v1/webhooks/email-bounce',
-            [],
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            str_repeat('a', InboundWebhookVerifier::DEFAULT_MAX_PAYLOAD_BYTES + 1),
-        );
+        // JSON valide > 1 MiB : la borne de taille est vérifiée AVANT la
+        // validation Laravel (le champ `reason` outrepasse sa propre limite
+        // mais le contrôle 413 intervient en premier).
+        $response = $this->postJson('/api/v1/webhooks/email-bounce', [
+            'email' => 'oversized@example.test',
+            'event' => 'bounce',
+            'reason' => str_repeat('x', InboundWebhookVerifier::DEFAULT_MAX_PAYLOAD_BYTES + 1),
+        ]);
 
         $response->assertStatus(413);
         $this->assertSame(0, CommunicationEvent::query()->count());
@@ -109,17 +108,10 @@ class WebhookThreatModelTest extends TestCase
             'payload' => ['note' => str_repeat('x', InboundWebhookVerifier::DEFAULT_MAX_PAYLOAD_BYTES + 1)],
         ], JSON_THROW_ON_ERROR);
 
-        $response = $this->call(
-            'POST',
+        $response = $this->postJson(
             '/api/v1/marketing/leads',
-            [],
-            [],
-            [],
-            [
-                'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTHORIZATION' => 'Bearer test-lead-secret',
-            ],
-            $raw,
+            json_decode($raw, true, 512, JSON_THROW_ON_ERROR),
+            ['Authorization' => 'Bearer test-lead-secret'],
         );
 
         $response->assertStatus(413);
