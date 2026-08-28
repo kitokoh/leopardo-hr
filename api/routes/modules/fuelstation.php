@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/me/shifts', [FuelShiftController::class, 'myShifts']);
         // FUEL-006 (#5800) : présence du pompiste pour une date (Y-m-d).
         Route::get('/me/presence', [FuelPresenceController::class, 'myPresence']);
+        // FUEL-007 (#5801) : sessions de caisse du pompiste connecté.
+        Route::get('/me/cash-sessions', [FuelCashSessionController::class, 'mySessions']);
+        // FUEL-007 (#5801) : cycle de vie (ouverture/mouvements/clôture) —
+        // policy par opened_by ; approbation manager.
+        Route::post('/cash-sessions', [FuelCashSessionController::class, 'store']);
+        Route::post('/cash-sessions/{session}/movements', [FuelCashSessionController::class, 'addMovement'])->whereUuid('session');
+        Route::post('/cash-sessions/{session}/close', [FuelCashSessionController::class, 'close'])->whereUuid('session');
 
         Route::middleware('api.manager')->group(function (): void {
             Route::get('/shifts', [FuelShiftController::class, 'index']);
@@ -35,5 +43,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::delete('/shift-assignments/{assignment}', [FuelShiftController::class, 'cancelAssignment'])->whereUuid('assignment');
             // FUEL-006 (#5800) : rostre de présence du shift pour une date (Y-m-d).
             Route::get('/shifts/{shift}/presence', [FuelPresenceController::class, 'shiftPresence'])->whereUuid('shift');
+            // FUEL-007 (#5801) : gestion des sessions de caisse (manager).
+            Route::get('/cash-sessions', [FuelCashSessionController::class, 'index']);
+            Route::get('/cash-sessions/{session}', [FuelCashSessionController::class, 'show'])->whereUuid('session');
+            Route::post('/cash-sessions/{session}/approve', [FuelCashSessionController::class, 'approve'])->whereUuid('session');
         });
     });

@@ -10178,6 +10178,220 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           description: Date invalide
+  /fuel/cash-sessions:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les sessions de caisse (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - open
+          - closed
+          - approved
+      - name: station_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: date
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Sessions paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Ouvrir une session de caisse (pompiste)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                station_id:
+                  type: string
+                  format: uuid
+                  nullable: true
+                opening_balance:
+                  type: number
+                  default: 0
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Session ouverte
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation
+  /fuel/cash-sessions/{session}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une session (proprietaire ou manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Session avec mouvements
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Session introuvable ou autre tenant
+  /fuel/cash-sessions/{session}/movements:
+    post:
+      tags:
+      - FuelStation
+      summary: Ajouter un mouvement in/out (proprietaire, session ouverte)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              - amount
+              - reason
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - in
+                  - out
+                amount:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: true
+                reason:
+                  type: string
+                  maxLength: 255
+      responses:
+        '201':
+          description: Mouvement ajoute
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Pas le proprietaire
+        '422':
+          description: SESSION_NOT_OPEN ou validation
+  /fuel/cash-sessions/{session}/close:
+    post:
+      tags:
+      - FuelStation
+      summary: Cloturer une session (proprietaire, idempotente)
+      description: "Expected balance et variance calcules serveur. Rejeu sans effet (statut terminal)."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - closing_balance
+              properties:
+                closing_balance:
+                  type: number
+                  minimum: 0
+      responses:
+        '200':
+          description: Session close (ou etat courant si deja close)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Pas le proprietaire
+  /fuel/cash-sessions/{session}/approve:
+    post:
+      tags:
+      - FuelStation
+      summary: Approuver une cloture (manager, verrouille l'ecart)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Session approuvee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager requis
+        '422':
+          description: SESSION_NOT_CLOSED
+  /fuel/me/cash-sessions:
+    get:
+      tags:
+      - FuelStation
+      summary: Sessions de caisse du pompiste connecte (self-service)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - open
+          - closed
+          - approved
+      responses:
+        '200':
+          description: Sessions du pompiste
+        '401':
+          $ref: '#/components/responses/Error401'
   /fuel/shift-assignments/{assignment}:
     delete:
       tags:

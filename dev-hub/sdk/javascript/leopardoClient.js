@@ -2180,6 +2180,41 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/fleet/reports/mileage", options);
     },
 
+    /** Lister les sessions de caisse (manager) */
+    getFuelCashSessions(options = {}) {
+      return request("GET", "/fuel/cash-sessions", options);
+    },
+
+    /** Ouvrir une session de caisse (pompiste) */
+    postFuelCashSessions(options = {}) {
+      return request("POST", "/fuel/cash-sessions", options);
+    },
+
+    /** Detail d'une session (proprietaire ou manager) */
+    getFuelCashSessionsBySession(options = {}) {
+      return request("GET", "/fuel/cash-sessions/{session}", options);
+    },
+
+    /** Approuver une cloture (manager, verrouille l'ecart) */
+    postFuelCashSessionsBySessionApprove(options = {}) {
+      return request("POST", "/fuel/cash-sessions/{session}/approve", options);
+    },
+
+    /** Cloturer une session (proprietaire, idempotente) */
+    postFuelCashSessionsBySessionClose(options = {}) {
+      return request("POST", "/fuel/cash-sessions/{session}/close", options);
+    },
+
+    /** Ajouter un mouvement in/out (proprietaire, session ouverte) */
+    postFuelCashSessionsBySessionMovements(options = {}) {
+      return request("POST", "/fuel/cash-sessions/{session}/movements", options);
+    },
+
+    /** Sessions de caisse du pompiste connecte (self-service) */
+    getFuelMeCashSessions(options = {}) {
+      return request("GET", "/fuel/me/cash-sessions", options);
+    },
+
     /** Presence du pompiste connecte pour une date (self-service) */
     getFuelMePresence(options = {}) {
       return request("GET", "/fuel/me/presence", options);

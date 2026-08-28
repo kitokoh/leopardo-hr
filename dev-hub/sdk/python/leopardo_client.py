@@ -1764,6 +1764,34 @@ class LeopardoClient:
         """Rapport kilometrage"""
         return self.request("GET", "/fleet/reports/mileage", **kwargs)
 
+    def get_fuel_cash_sessions(self, **kwargs):
+        """Lister les sessions de caisse (manager)"""
+        return self.request("GET", "/fuel/cash-sessions", **kwargs)
+
+    def post_fuel_cash_sessions(self, **kwargs):
+        """Ouvrir une session de caisse (pompiste)"""
+        return self.request("POST", "/fuel/cash-sessions", **kwargs)
+
+    def get_fuel_cash_sessions_by_session(self, **kwargs):
+        """Detail d'une session (proprietaire ou manager)"""
+        return self.request("GET", "/fuel/cash-sessions/{session}", **kwargs)
+
+    def post_fuel_cash_sessions_by_session_approve(self, **kwargs):
+        """Approuver une cloture (manager, verrouille l'ecart)"""
+        return self.request("POST", "/fuel/cash-sessions/{session}/approve", **kwargs)
+
+    def post_fuel_cash_sessions_by_session_close(self, **kwargs):
+        """Cloturer une session (proprietaire, idempotente)"""
+        return self.request("POST", "/fuel/cash-sessions/{session}/close", **kwargs)
+
+    def post_fuel_cash_sessions_by_session_movements(self, **kwargs):
+        """Ajouter un mouvement in/out (proprietaire, session ouverte)"""
+        return self.request("POST", "/fuel/cash-sessions/{session}/movements", **kwargs)
+
+    def get_fuel_me_cash_sessions(self, **kwargs):
+        """Sessions de caisse du pompiste connecte (self-service)"""
+        return self.request("GET", "/fuel/me/cash-sessions", **kwargs)
+
     def get_fuel_me_presence(self, **kwargs):
         """Presence du pompiste connecte pour une date (self-service)"""
         return self.request("GET", "/fuel/me/presence", **kwargs)
