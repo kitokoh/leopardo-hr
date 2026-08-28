@@ -119,11 +119,12 @@ class CrmOutboxDispatchCommand extends Command
 
             $event->forceFill([
                 'status' => CrmOutboxEvent::STATUS_SENT,
+                'attempts' => $event->attempts + 1,
                 'processed_at' => now(),
                 'last_error' => null,
             ])->save();
         } catch (PermanentOutboxException $e) {
-            $this->deadLetter($event, $e->getMessage());
+            $this->deadLetter($event, 'permanent: '.$e->getMessage());
         } catch (Throwable $e) {
             // Transitoire par défaut : retry avec backoff (borné par MAX_ATTEMPTS).
             $this->retry($event, $e->getMessage());

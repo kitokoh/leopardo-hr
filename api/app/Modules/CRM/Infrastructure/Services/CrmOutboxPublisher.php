@@ -19,6 +19,9 @@ use Illuminate\Support\Facades\DB;
  */
 final class CrmOutboxPublisher
 {
+    /**
+     * @param  array<string, mixed>  $payload
+     */
     public function publish(
         string $companyId,
         string $eventType,
@@ -30,8 +33,21 @@ final class CrmOutboxPublisher
     ): CrmOutboxEvent {
         $key = $idempotencyKey ?? hash('sha256', $eventType.'|'.json_encode($payload, JSON_THROW_ON_ERROR));
 
+        // Dédup : pre-SELECT (cas nominal) PUIS INSERT en transaction
+        // imbriquée (savepoint). Une violation unique PostgreSQL ABORTE la
+        // transaction courante (25P02) : sans savepoint, le SELECT du catch
+        // échoue en cascade (observé en CI sur le test « double publish »).
+        $existing = CrmOutboxEvent::query()
+            ->where('company_id', $companyId)
+            ->where('idempotency_key', $key)
+            ->first();
+
+        if ($existing instanceof CrmOutboxEvent) {
+            return $existing;
+        }
+
         try {
-            return CrmOutboxEvent::query()->create([
+            return DB::transaction(fn (): CrmOutboxEvent => CrmOutboxEvent::query()->create([
                 'company_id' => $companyId,
                 'event_type' => $eventType,
                 'aggregate_type' => $aggregateType,
@@ -40,7 +56,7 @@ final class CrmOutboxPublisher
                 'status' => CrmOutboxEvent::STATUS_PENDING,
                 'idempotency_key' => $key,
                 'available_at' => $availableAt ?? now(),
-            ]);
+            ]));
         } catch (UniqueConstraintViolationException) {
             /** @var CrmOutboxEvent $existing */
             $existing = CrmOutboxEvent::query()
