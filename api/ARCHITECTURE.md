@@ -102,6 +102,7 @@ consommateurs).
 | `Modules/Onboarding` | ✅ routes/api.php | ✅ complet | `OnboardingServiceProvider` |
 | `Modules/Platform` | ✅ routes/api.php | ✅ complet | `PlatformServiceProvider` |
 | `Modules/Accounting` | ✅ routes/modules/accounting.php | ✅ complet | `AccountingServiceProvider` |
+| `Modules/CRM` | ✅ routes/modules/crm.php | 🔶 en construction (V0/V1 CRM client — issues #5707→#5731) | `CrmServiceProvider` |
 
 **Légende :** ✅ complet | 🔄 migration partielle en cours
 
