@@ -3713,10 +3713,10 @@
     "alertDismissError": "Unable to dismiss the alert."
   },
   "crm": {
-    "title": "Sales Pipeline",
-    "subtitle": "Leads, trials and active clients.",
+    "title": "Client CRM",
+    "subtitle": "Manage your prospects, accounts, contacts and opportunities — data isolated per company (tenant).",
     "loadError": "Unable to load the CRM pipeline.",
-    "loading": "Loading pipeline…",
+    "loading": "Loading…",
     "refresh": "Refresh",
     "activeBadge": "Active",
     "columnActive": "Active Clients",
@@ -3737,7 +3737,58 @@
     "sourceManager": "Manager request",
     "sourceNewsletter": "Newsletter",
     "sourceSelfService": "Self-service trial",
-    "sourceSignup": "Signup"
+    "sourceSignup": "Signup",
+    "isolationNote": "Tenant-scoped data: no access to the Leopardo commercial CRM from this space.",
+    "featureLocked": "CRM module not enabled for your company.",
+    "errorLoading": "Unable to load data.",
+    "searchPlaceholder": "Search…",
+    "paginationPrev": "Previous",
+    "paginationNext": "Next",
+    "paginationPage": "Page",
+    "accounts": {
+      "title": "Accounts",
+      "description": "Client organizations of your company",
+      "subtitle": "Account list (tenant-scoped).",
+      "empty": "No accounts yet.",
+      "colName": "Name",
+      "colStatus": "Status",
+      "colEmail": "Email",
+      "colPhone": "Phone",
+      "colCreated": "Created"
+    },
+    "contacts": {
+      "title": "Contacts",
+      "description": "People linked to your accounts",
+      "subtitle": "Contact list (tenant-scoped).",
+      "empty": "No contacts yet.",
+      "primary": "Primary"
+    },
+    "leads": {
+      "title": "Leads",
+      "description": "Business opportunities to qualify",
+      "subtitle": "Lead list (tenant-scoped).",
+      "empty": "No leads yet.",
+      "colName": "Name",
+      "colCompany": "Company",
+      "colStatus": "Status",
+      "colSource": "Source",
+      "colEmail": "Email",
+      "colCreated": "Created"
+    },
+    "pipeline": {
+      "title": "Pipeline",
+      "description": "Opportunities overview by stage",
+      "subtitle": "Opportunities grouped by stage (tenant-scoped).",
+      "empty": "No opportunities yet.",
+      "stage": {
+        "prospecting": "Prospecting",
+        "qualification": "Qualification",
+        "proposal": "Proposal",
+        "negotiation": "Negotiation",
+        "won": "Won",
+        "lost": "Lost"
+      }
+    }
   },
   "growth": {
     "approve": "Approve",
