@@ -2180,6 +2180,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/fleet/reports/mileage", options);
     },
 
+    /** Revoir un intervalle en anomalie (accept/reject) — manager principal/rh */
+    postFuelStationMeterIntervalsByIntervalReview(options = {}) {
+      return request("POST", "/fuel-station/meter-intervals/{interval}/review", options);
+    },
+
+    /** Corriger un releve (versionne, audite) — manager principal/rh */
+    postFuelStationMeterReadingsByReadingCorrections(options = {}) {
+      return request("POST", "/fuel-station/meter-readings/{reading}/corrections", options);
+    },
+
+    /** Lister les intervalles calcules d'un compteur */
+    getFuelStationStationsByStationPumpsByPumpMetersByMeterIntervals(options = {}) {
+      return request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals", options);
+    },
+
+    /** Lister les releves d'un compteur */
+    getFuelStationStationsByStationPumpsByPumpMetersByMeterReadings(options = {}) {
+      return request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", options);
+    },
+
+    /** Enregistrer un releve de compteur (cumulatif, idempotent) */
+    postFuelStationStationsByStationPumpsByPumpMetersByMeterReadings(options = {}) {
+      return request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", options);
+    },
+
     /** Candidature partenaire */
     postGrowthPartnerApply(options = {}) {
       return request("POST", "/growth/partner/apply", options);

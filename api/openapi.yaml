@@ -6017,6 +6017,148 @@ paths:
                           type: integer
                         month:
                           type: integer
+  /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings:
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer un releve de compteur (cumulatif, idempotent)
+      description: |-
+        Releve cumule d'un compteur (valeur en unites mineures entieres).
+        Idempotent (idempotency_key). Valeur decroissante sans rollover
+        documente → intervalle en anomalie (revue obligatoire). Solution
+        FuelStation active requise (403 sinon). Issue #5798.
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: pump
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: meter
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FuelMeterReadingPayload'
+      responses:
+        '201':
+          description: Releve accepte
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelMeterReadingResult'
+        '200':
+          description: Rejeu idempotent (aucun doublon)
+        '403':
+          description: Solution inactive ou permission manquante
+        '404':
+          description: Station/pompe/compteur introuvable (hors tenant)
+        '422':
+          $ref: '#/components/responses/Validation422'
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les releves d'un compteur
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: pump
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: meter
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Liste des releves (100 max, plus recents d'abord)
+  /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les intervalles calcules d'un compteur
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: pump
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: meter
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Liste des intervalles (valid|rollover|anomaly|pending_review)
+  /fuel-station/meter-readings/{reading}/corrections:
+    post:
+      tags:
+      - FuelStation
+      summary: Corriger un releve (versionne, audite) — manager principal/rh
+      parameters:
+      - name: reading
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reading_value_minor, reason]
+              properties:
+                reading_value_minor: {type: integer, minimum: 0}
+                reason: {type: string, maxLength: 1000}
+      responses:
+        '200':
+          description: Correction enregistree (nouvelle version, original marque corrected)
+        '403':
+          description: Permission manager requise
+        '409':
+          description: Releve deja corrige ou rejete
+  /fuel-station/meter-intervals/{interval}/review:
+    post:
+      tags:
+      - FuelStation
+      summary: Revoir un intervalle en anomalie (accept/reject) — manager principal/rh
+      parameters:
+      - name: interval
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision]
+              properties:
+                decision: {type: string, enum: [accept, reject]}
+                note: {type: string, maxLength: 1000}
+      responses:
+        '200':
+          description: Revue enregistree
+        '403':
+          description: Permission manager requise
+        '409':
+          description: Intervalle deja revu
   /accounting/contacts:
     get:
       tags:
@@ -31775,3 +31917,58 @@ components:
           type: integer
           nullable: true
           description: Paiement candidat proposé par le matching auto (issue #5523)
+
+    FuelMeterReadingPayload:
+      type: object
+      required: [reading_value_minor, idempotency_key]
+      properties:
+        reading_value_minor:
+          type: integer
+          minimum: 0
+          description: Valeur cumulee en unites mineures entieres (ex. centilitres)
+        reading_unit:
+          type: string
+          enum: [l, ml, gal, ft3]
+          default: l
+        captured_at:
+          type: string
+          format: date-time
+          nullable: true
+        timezone:
+          type: string
+          maxLength: 64
+        shift_id:
+          type: integer
+          nullable: true
+        device_reference:
+          type: string
+          maxLength: 120
+          nullable: true
+        idempotency_key:
+          type: string
+          maxLength: 191
+    FuelMeterReadingResult:
+      type: object
+      properties:
+        reading:
+          type: object
+          properties:
+            id: {type: integer}
+            meter_id: {type: integer}
+            reading_value_minor: {type: integer}
+            reading_unit: {type: string}
+            captured_at_utc: {type: string, format: date-time}
+            status: {type: string}
+            source_code: {type: string}
+        interval:
+          type: object
+          nullable: true
+          properties:
+            id: {type: integer}
+            delta_minor: {type: integer}
+            calculation_status: {type: string}
+            interval_seconds: {type: integer}
+        replayed:
+          type: boolean
+        correlation_id:
+          type: string

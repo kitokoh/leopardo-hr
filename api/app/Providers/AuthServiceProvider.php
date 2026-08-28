@@ -16,6 +16,8 @@ use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
 use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\HR\Domain\Models\Contract;
+use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
+use App\Modules\FuelStation\Domain\Models\FuelMeterReading;
 use App\Modules\HR\Domain\Models\Department;
 use App\Modules\HR\Domain\Models\Evaluation;
 use App\Modules\HR\Domain\Models\OnboardingStep;
@@ -46,6 +48,7 @@ use App\Policies\EvaluationPolicy;
 use App\Policies\ExpenseClaimPolicy;
 use App\Policies\ExportPolicy;
 use App\Policies\FeatureFlagPolicy;
+use App\Policies\FuelMeterReadingPolicy;
 use App\Policies\InvoicePolicy;
 use App\Policies\LoanPolicy;
 use App\Policies\OnboardingPolicy;
@@ -79,6 +82,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(CameraAccessToken::class, CameraPolicy::class);
 
         // Org structure
+        Gate::policy(FuelMeterReading::class, FuelMeterReadingPolicy::class);
+        Gate::policy(FuelMeterInterval::class, FuelMeterReadingPolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);

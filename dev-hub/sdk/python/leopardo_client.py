@@ -1764,6 +1764,26 @@ class LeopardoClient:
         """Rapport kilometrage"""
         return self.request("GET", "/fleet/reports/mileage", **kwargs)
 
+    def post_fuel_station_meter_intervals_by_interval_review(self, **kwargs):
+        """Revoir un intervalle en anomalie (accept/reject) — manager principal/rh"""
+        return self.request("POST", "/fuel-station/meter-intervals/{interval}/review", **kwargs)
+
+    def post_fuel_station_meter_readings_by_reading_corrections(self, **kwargs):
+        """Corriger un releve (versionne, audite) — manager principal/rh"""
+        return self.request("POST", "/fuel-station/meter-readings/{reading}/corrections", **kwargs)
+
+    def get_fuel_station_stations_by_station_pumps_by_pump_meters_by_meter_intervals(self, **kwargs):
+        """Lister les intervalles calcules d'un compteur"""
+        return self.request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals", **kwargs)
+
+    def get_fuel_station_stations_by_station_pumps_by_pump_meters_by_meter_readings(self, **kwargs):
+        """Lister les releves d'un compteur"""
+        return self.request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", **kwargs)
+
+    def post_fuel_station_stations_by_station_pumps_by_pump_meters_by_meter_readings(self, **kwargs):
+        """Enregistrer un releve de compteur (cumulatif, idempotent)"""
+        return self.request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", **kwargs)
+
     def post_growth_partner_apply(self, **kwargs):
         """Candidature partenaire"""
         return self.request("POST", "/growth/partner/apply", **kwargs)
