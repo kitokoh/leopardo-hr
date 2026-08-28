@@ -41,11 +41,11 @@ class WebhookEnvelopeContractTest extends TestCase
 
     public function test_test_endpoint_posts_versioned_envelope(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
-        /** @var \App\Modules\Billing\Domain\Models\WebhookEndpoint $endpoint */
+        /** @var WebhookEndpoint $endpoint */
         $endpoint = WebhookEndpoint::create([
             'company_id' => $company->id,
             'url' => 'https://example.com/hook',
@@ -121,7 +121,7 @@ class WebhookEnvelopeContractTest extends TestCase
 
     public function test_dispatch_uses_same_correlation_id_for_all_endpoints_of_a_tenant(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
         $companyId = $company->id;
 
@@ -161,7 +161,7 @@ class WebhookEnvelopeContractTest extends TestCase
 
     public function test_dispatch_envelope_carries_tenant_and_occurred_at(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
         $companyId = $company->id;
 
@@ -204,9 +204,9 @@ class WebhookEnvelopeContractTest extends TestCase
     {
         // Rétro-compatibilité du job : sans correlation_id/occurred_at
         // (jobs déjà en file avant #5744), l'enveloppe reste complète.
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var \App\Modules\Billing\Domain\Models\WebhookEndpoint $endpoint */
+        /** @var WebhookEndpoint $endpoint */
         $endpoint = WebhookEndpoint::create([
             'company_id' => $company->id,
             'url' => 'https://example.com/hook',
