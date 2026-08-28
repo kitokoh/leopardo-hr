@@ -31,7 +31,7 @@ class FuelStationManifestController extends Controller
     {
         $manifest = $this->manifestService->manifest();
 
-        $activation = FuelStationActivation::query()->where('company_id', currentCompany()?->id)->first();
+        $activation = FuelStationActivation::query()->where('company_id', currentCompany()->id)->first();
 
         return new JsonResponse([
             'data' => [
@@ -51,8 +51,8 @@ class FuelStationManifestController extends Controller
         try {
             $result = $this->activateFuelStation->execute();
         } catch (FuelStationDependencyMissingException $e) {
-            Log::warning('FuelStation: activation refusée (dépendances manquantes)', [
-                'company_id' => currentCompany()?->id,
+            Log::warning('FuelStation: activation refused (missing dependencies)', [
+                'company_id' => currentCompany()->id,
                 'missing' => $e->missingDependencies(),
             ]);
 
@@ -69,7 +69,7 @@ class FuelStationManifestController extends Controller
 
     public function status(): JsonResponse
     {
-        $activation = FuelStationActivation::query()->where('company_id', currentCompany()?->id)->first();
+        $activation = FuelStationActivation::query()->where('company_id', currentCompany()->id)->first();
 
         return new JsonResponse([
             'data' => [

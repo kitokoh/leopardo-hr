@@ -34,10 +34,6 @@ final class ActivateFuelStation
         $manifest = $this->manifestService->manifest();
         $company = currentCompany();
 
-        if (! $company instanceof Company) {
-            throw new \App\Modules\FuelStation\Domain\Exceptions\FuelStationActivationException('Contexte tenant absent.');
-        }
-
         $missing = $this->missingDependencies($company, $manifest['dependencies']);
         if ($missing !== []) {
             throw new FuelStationDependencyMissingException($missing);
@@ -57,7 +53,7 @@ final class ActivateFuelStation
             $company->save();
         }
 
-        Log::info('FuelStation: solution activée', [
+        Log::info('FuelStation: solution activated', [
             'company_id' => $company->id,
             'manifest_version' => $manifest['version'],
         ]);

@@ -1508,7 +1508,27 @@ Note 2026-08-26 (PM hygiene, PR #5597) : retour au vert des checks backend — R
 - Couverture : `VatDeclarationTest`, `AccountingMultiCurrencyTest`, `WebhookIdempotenceTest`, `EmailBounceWebhookControllerTest`, `ShareAccessAuditTest`, `PayrollPaymentOrderFlowTest`, `TwoFactorAuthTest`, `AccountingActivationTest` (route `/activation/complete`), `LangCatalogParityTest` (fins de fichier `];` tolérées), `OpenApiDocsTest` (`openapi: "3.0.3"` quoté).
 
 
-Note 2026-08-28 (issues #5795/#5798) : nouveau module FuelStation (`App\Modules\FuelStation`) — surface API ajoutee :
-- Manifest/activation : `GET /fuelstation/manifest`, `POST /fuelstation/activate`, `GET /fuelstation/status` (api.manager:principal,rh) — activation idempotente, dependances refusees (422).
-- Releves de compteur : `POST/GET /fuelstation/meters/{meter}/readings`, `POST /fuelstation/readings/{reading}/correct` — idempotence (company_id, meter_id, reading_at), delta/anomalie/rollover, corrections versionnees.
-Scenarios CI requis : RBAC (employee 403), isolation cross-tenant (404), activation dependances, delta/anomalie, idempotence, correction.
+Note 2026-08-28 (issue #5795) : module FuelStation — manifest de solution + activation tenant (API).
+- `GET /fuelstation/manifest` — manifest validé par allowlist (`config/fuelstation.php` : clés inconnues rejetées, maturité/permissions/dépendances bornées), RBAC `api.manager:principal,rh` (employé → 403).
+- `POST /fuelstation/activate` — activation idempotente par tenant (`fuel_station_activations` upsert + feature flag `fuelstation` posé sur la company), dépendances de base manquantes → 422 avec liste (`FUEL_DEPENDENCIES_MISSING`), rejeu absorbé (zéro doublon).
+- `GET /fuelstation/status` — état d'activation du tenant courant (`inactive`/`active` + manifest_version + activated_at), isolation cross-tenant fail-closed (404).
+- Scénarios CI requis : RBAC employé (403), activation avec toutes dépendances (200 + feature flag), refus 422 si dépendance manquante, idempotence (second POST sans effet), statut avant/après activation, isolation cross-tenant (404).
+- Couverture : `api/tests/Feature/FuelStation/FuelStationManifestTest.php` (6 tests) — OpenAPI 3 chemins + SDK, i18n ×4 (`FUEL_*`), RBAC matrix, docs parity (20ᵉ module).
+
+Note 2026-08-28 (issue #5796) : module FuelStation — migrations stations et sites tenant-first.
+- Tables `fuel_stations` (entité légale : code unique par tenant, pays ISO, timezone, statut) et `fuel_sites` (site opérationnel rattaché à la station, géo optionnelle) — `company_id` non nullable partout, clés composites `(company_id, code)`, index `(company_id, status)` / `(company_id, station_id)`, archivage soft.
+- Modèles tenant-scoped `FuelStation`/`FuelSite` (`BelongsToCompany`) — références cross-tenant impossibles.
+- Scénarios CI requis : colonnes attendues, unicité par tenant (même code sur 2 tenants OK, doublon intra-tenant rejeté), `company_id` non null, index tenant-first, isolation cross-tenant.
+- Couverture : `api/tests/Feature/FuelStation/FuelStationMigrationsTest.php` (5 tests).
+
+Note 2026-08-28 (issue #5797) : module FuelStation — équipements pompes, cuves, compteurs (tenant-first).
+- Tables `fuel_equipment` (type allowlisté `pump|tank|meter|nozzle|other`), `fuel_pumps`, `fuel_tanks` (produit allowlisté `diesel|essence_95|essence_98|gpl|lubrifiant|autre`, capacité, unité `l|m3`), `fuel_meters` — compteur actif unique par pompe (index partiel PG `(pump_id)` WHERE `is_active`).
+- Codes uniques par tenant (composites), index tenant-first, archivage soft, références cross-tenant impossibles. Enums `FuelEquipmentType`/`FuelProduct`/`FuelUnit`/`FuelStatus` + modèles tenant-scoped.
+- Scénarios CI requis : tables + allowlists, unicité par tenant, compteur actif unique, désactivation libère le slot, isolation cross-tenant, capacité/unités.
+- Couverture : tests Feature équipement (8 tests) — `api/tests/Feature/FuelStation/*`.
+
+Note 2026-08-28 (issue #5798) : module FuelStation — relevés de compteur par pompe, heure et opérateur.
+- `POST/GET /fuelstation/meters/{meter}/readings` — relevé (cumul, UTC + local, delta, rollover, anomalie, source manual|api|device, opérateur, shift), idempotence par unicité `(company_id, meter_id, reading_at)` (rejeu absorbé, zéro doublon), valeur décroissante → anomalie.
+- `POST /fuelstation/readings/{reading}/correct` — correction versionnée et auditée (ligne old→new + recalcul), RBAC `api.manager:principal,rh` (employé → 403).
+- Scénarios CI requis : RBAC employé (403), isolation cross-tenant (404), delta vs relevé précédent, anomalie/rollover, idempotence, correction versionnée.
+- Couverture : tests Feature relevés (7 tests) — `api/tests/Feature/FuelStation/*` ; i18n ×4 (`FUEL_*`), OpenAPI 3 chemins + SDK.
