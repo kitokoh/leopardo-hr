@@ -17,13 +17,13 @@ POST api/v1/auth/login
 POST api/v1/auth/register
 POST api/v1/auth/forgot-password
 POST api/v1/auth/reset-password
-POST api/v1/auth/google
+GET api/v1/auth/google
 GET api/v1/auth/google/callback
 POST api/v1/auth/google/token
 POST api/v1/auth/2fa/verify
 POST api/v1/user/login
 POST api/v1/user/register
-GET api/v1/user/google-signin
+POST api/v1/user/google-signin
 POST api/v1/platform/auth/login
 GET api/v1/invitation/{token}
 GET api/v1/invitation/{token}/activate
@@ -60,4 +60,4 @@ POST api/v1/zkteco/heartbeat/{serialNumber}
 POST api/v1/zkteco/sync-attendance/{serialNumber}
 # ── Essai guidé ─────────────────────────────────────────────────────────────
 POST api/v1/trial/signup
-GET api/v1/trial/verify
+POST api/v1/trial/verify
