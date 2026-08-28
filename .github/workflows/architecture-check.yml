@@ -98,6 +98,9 @@ jobs:
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
+      - name: BC registry guard — manifeste machine-readable + CODEOWNERS (issue #5859, MAT-001)
+        run: bash dev-hub/tools/check-bc-registry.sh
+
       - name: Queue strategy coherence guard — database partout (issue #5578)
         run: bash dev-hub/tools/check-queue-strategy-coherence.sh
 

@@ -47,3 +47,86 @@
 #   3. Dès qu'un second mainteneur humain rejoint, l'ajouter ici par chemin
 #      (ex. @second-maintainer) ET activer `require_code_owner_reviews` pour
 #      répartir les révisions obligatoires.
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Bounded contexts — sections par contexte (MAT-001, issue #5859)
+# Registre machine-readable : dev-hub/tools/bc-registry.json — le garde
+# dev-hub/tools/check-bc-registry.sh exige une section `# BC-xx` par contexte
+# et la couverture de chaque chemin actif/partiel par les motifs ci-dessous.
+# Propriétaire humain unique aujourd'hui : @kitokoh (revue documentaire,
+# 0 approval requis — voir entête de ce fichier).
+# ═══════════════════════════════════════════════════════════════════════════
+# BC-01 PLATFORM
+/api/app/Modules/Platform/  @kitokoh
+/api/app/Modules/Onboarding/  @kitokoh
+/api/routes/modules/dashboard.php  @kitokoh
+# BC-02 TENANT
+/api/app/Core/Tenant/  @kitokoh
+# BC-03 IDENTITY
+/api/app/Core/Auth/  @kitokoh
+/api/app/Policies/  @kitokoh
+/api/routes/modules/user.php  @kitokoh
+/api/routes/modules/sso.php  @kitokoh
+# BC-04 HR
+/api/app/Modules/HR/  @kitokoh
+/api/routes/modules/hr_app.php  @kitokoh
+/api/routes/modules/hr_extended.php  @kitokoh
+/api/routes/modules/rh.php  @kitokoh
+# BC-05 WORKFORCE
+/api/app/Modules/Attendance/  @kitokoh
+/api/app/Modules/Planning/  @kitokoh
+/api/routes/modules/planning.php  @kitokoh
+# BC-06 LEAVE
+/api/app/Modules/Absence/  @kitokoh
+/api/routes/modules/absence.php  @kitokoh
+# BC-07 PAYROLL
+/api/app/Modules/Payroll/  @kitokoh
+/api/routes/modules/payroll_engine.php  @kitokoh
+# BC-08 ACCOUNTING
+/api/app/Modules/Accounting/  @kitokoh
+/api/routes/modules/accounting.php  @kitokoh
+# BC-09 EXPENSE
+/api/app/Modules/Expense/  @kitokoh
+/api/routes/modules/expense.php  @kitokoh
+# BC-10 RECRUITMENT
+/api/app/Modules/Recruitment/  @kitokoh
+# BC-11 CRM
+/api/app/Modules/CRM/  @kitokoh
+/api/routes/modules/crm.php  @kitokoh
+# BC-12 GROWTH
+/api/app/Modules/Marketing/  @kitokoh
+/api/app/Modules/Growth/  @kitokoh
+/api/routes/modules/marketing.php  @kitokoh
+/api/routes/modules/growth.php  @kitokoh
+# BC-13 COMMS
+/api/app/Modules/Notification/  @kitokoh
+/api/app/Contracts/Communication/  @kitokoh
+# BC-14 INTEGRATION
+/api/app/Jobs/  @kitokoh
+/api/app/Contracts/Queue/  @kitokoh
+/api/routes/modules/integrations.php  @kitokoh
+# BC-15 FUEL
+/api/app/Solutions/FuelStation/  @kitokoh
+# BC-16 EDU
+/api/app/Solutions/EduManager/  @kitokoh
+# BC-17 RETAIL
+/api/app/Solutions/Retail/  @kitokoh
+# BC-18 FIELD
+/api/app/Modules/Fleet/  @kitokoh
+/api/routes/modules/tracking.php  @kitokoh
+# BC-19 DEVICE
+/api/app/Modules/Cameras/  @kitokoh
+/api/app/Modules/EdgeSync/  @kitokoh
+/api/routes/modules/cameras.php  @kitokoh
+# BC-20 DOCUMENTS
+/api/app/Modules/Cabinet/  @kitokoh
+/api/routes/modules/cabinet.php  @kitokoh
+/api/storage/app/private/  @kitokoh
+# BC-21 BILLING
+/api/app/Modules/Billing/  @kitokoh
+/api/routes/modules/billing.php  @kitokoh
+# BC-22 ANALYTICS
+/api/app/Modules/Reporting/  @kitokoh
+# BC-23 AI
+/api/app/AI/  @kitokoh
+/api/routes/ai.php  @kitokoh

@@ -1,0 +1,711 @@
+{
+  "$comment": "Registre machine-readable des bounded contexts Leopardo (MAT-001, issue #5859). Source de vérité pour les gardes CI : check-bc-registry.sh (existence des chemins, propriétaires, cohérence CODEOWNERS) puis check-bc-dependencies.sh (MAT-002). Aligné sur docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md. Toute modification de chemin, propriétaire ou dépendance doit passer par une PR de coordination.",
+  "schema_version": "1.0",
+  "contexts": [
+    {
+      "code": "BC-01",
+      "name": "PLATFORM",
+      "label": "Platform Core",
+      "owner": "kitokoh",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/Platform",
+        "api/app/Modules/Onboarding"
+      ],
+      "routes": [
+        "api/routes/modules/dashboard.php",
+        "api/routes/api.php",
+        "api/routes/web.php",
+        "api/routes/console.php"
+      ],
+      "migrations": [
+        "api/database/migrations/public/*plans*",
+        "api/database/migrations/public/*companies*",
+        "api/database/migrations/public/*company_requests*",
+        "api/database/migrations/public/*support*",
+        "api/database/migrations/public/*seed_locks*",
+        "api/database/migrations/public/*languages*",
+        "api/database/migrations/public/*trial_provisionings*",
+        "api/database/migrations/public/*super_admins*",
+        "api/database/migrations/public/*platform_*",
+        "api/database/migrations/public/*failed_jobs*",
+        "api/database/migrations/public/*jobs_table*",
+        "api/database/migrations/public/*scheduled_task_runs*",
+        "api/database/migrations/public/*webhook_events*",
+        "api/database/migrations/public/*marketing_leads*",
+        "api/database/migrations/public/*growth_module*",
+        "api/database/migrations/public/*partner_tracking*",
+        "api/database/migrations/public/*partners*",
+        "api/database/migrations/public/*commissions*",
+        "api/database/migrations/public/*public_holidays*",
+        "api/database/migrations/public/*islamic_calendar*",
+        "api/database/migrations/public/*metadata_and_features*",
+        "api/database/migrations/tenant/*onboarding*",
+        "api/database/migrations/tenant/*features*",
+        "api/database/migrations/tenant/*client_events*"
+      ],
+      "events": [
+        "App\\Events\\CompanyCreated",
+        "App\\Events\\SubscriptionPaid",
+        "App\\Events\\MarketingLeadQualified"
+      ],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03"
+      ],
+      "notes": "Provisioning, catalogue, feature flags, configuration globale. Le CRM commercial Leopardo reste ici (Platform/Marketing, marketing_leads/partners en schéma public), distinct du CRM client BC-11."
+    },
+    {
+      "code": "BC-02",
+      "name": "TENANT",
+      "label": "Tenant & Isolation",
+      "owner": "kitokoh",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        "api/app/Core/Tenant"
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant/*audit_logs*",
+        "api/database/migrations/tenant/*privacy*",
+        "api/database/migrations/tenant/*lockout*",
+        "api/database/migrations/tenant/*encrypt_existing*",
+        "api/database/migrations/tenant/*global_unique_email*",
+        "api/database/migrations/tenant/*missing_updated_at*",
+        "api/database/migrations/tenant/*perf_audit*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-03"
+      ],
+      "notes": "Entreprises, TenantManager, search path, scopes et isolation. Les migrations partagées tenant appartiennent au contexte qui les revendique ; les migrations d'infrastructure transverses restent sous BC-02."
+    },
+    {
+      "code": "BC-03",
+      "name": "IDENTITY",
+      "label": "Identity & Access",
+      "owner": "kitokoh",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        "api/app/Core/Auth",
+        "api/app/Policies"
+      ],
+      "routes": [
+        "api/routes/modules/user.php",
+        "api/routes/modules/sso.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*two_fa*",
+        "api/database/migrations/tenant/*social_accounts*",
+        "api/database/migrations/tenant/*device_tokens*",
+        "api/database/migrations/tenant/*preferred_language*",
+        "api/database/migrations/tenant/*metadata_to_employees*",
+        "api/database/migrations/tenant/*extended_profile*",
+        "api/database/migrations/public/*users*",
+        "api/database/migrations/public/*user_invitations*",
+        "api/database/migrations/public/*personal_access_tokens*",
+        "api/database/migrations/public/*password_reset*",
+        "api/database/migrations/public/*sso_configs*"
+      ],
+      "events": [],
+      "allowed_dependencies": [],
+      "notes": "Utilisateurs, memberships, rôles, permissions, invitations, sessions, 2FA, SSO et Policies de base."
+    },
+    {
+      "code": "BC-04",
+      "name": "HR",
+      "label": "Human Resources",
+      "owner": "kitokoh",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/HR"
+      ],
+      "routes": [
+        "api/routes/modules/hr_app.php",
+        "api/routes/modules/hr_extended.php",
+        "api/routes/modules/rh.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*create_employees*",
+        "api/database/migrations/tenant/*employees_table*",
+        "api/database/migrations/tenant/*contracts*",
+        "api/database/migrations/tenant/*departures*",
+        "api/database/migrations/tenant/*career_events*",
+        "api/database/migrations/tenant/*personal_contact*",
+        "api/database/migrations/tenant/*cnps*",
+        "api/database/migrations/tenant/*matricules*",
+        "api/database/migrations/tenant/*badge_number*",
+        "api/database/migrations/tenant/*salary_structure*",
+        "api/database/migrations/tenant/*departed*",
+        "api/database/migrations/tenant/*candidate_id*",
+        "api/database/migrations/tenant/*family_parts*",
+        "api/database/migrations/tenant/*add_manager_to_departments*",
+        "api/database/migrations/tenant/*create_departments*",
+        "api/database/migrations/tenant/*execution_fields*",
+        "api/database/migrations/tenant/*national_id*"
+      ],
+      "events": [
+        "App\\Events\\EmployeeCreated",
+        "App\\Events\\EmployeeArchived",
+        "App\\Events\\EmployeeDeparted",
+        "App\\Events\\EmployeeLastContractTerminated",
+        "App\\Events\\EmployeeRoleAssigned"
+      ],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-05",
+        "BC-06"
+      ],
+      "notes": "Employés, contrats, départements, profils, documents RH et cycle de vie employé."
+    },
+    {
+      "code": "BC-05",
+      "name": "WORKFORCE",
+      "label": "Attendance, Planning & Workforce",
+      "owner": "kitokoh",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/Attendance",
+        "api/app/Modules/Planning"
+      ],
+      "routes": [
+        "api/routes/modules/planning.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*attendance*",
+        "api/database/migrations/tenant/*schedules*",
+        "api/database/migrations/tenant/*geo_*",
+        "api/database/migrations/tenant/*location_events*",
+        "api/database/migrations/tenant/*day_closures*",
+        "api/database/migrations/tenant/*correction_requests*",
+        "api/database/migrations/tenant/*company_employee_composite*",
+        "api/database/migrations/tenant/*partial_unique_open*",
+        "api/database/migrations/tenant/*multi_punch*",
+        "api/database/migrations/tenant/*performance_indexes*",
+        "api/database/migrations/tenant/*punch_photo*",
+        "api/database/migrations/tenant/*zkteco_methods_to_attendance*",
+        "api/database/migrations/tenant/*ensure_attendance_logs*"
+      ],
+      "events": [
+        "App\\Events\\AttendanceCheckedIn",
+        "App\\Events\\AttendanceCheckedOut"
+      ],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04"
+      ],
+      "notes": "Présence, shifts, planning, géolocalisation, modes de pointage et affectations."
+    },
+    {
+      "code": "BC-06",
+      "name": "LEAVE",
+      "label": "Leave & Absence",
+      "owner": "kitokoh",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/Absence"
+      ],
+      "routes": [
+        "api/routes/modules/absence.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*leave_management*",
+        "api/database/migrations/tenant/*leave_balances_index*",
+        "api/database/migrations/tenant/*leave_inputs*"
+      ],
+      "events": [
+        "App\\Events\\AbsenceApproved",
+        "App\\Events\\AbsenceRejected",
+        "App\\Events\\AbsenceRequested"
+      ],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04"
+      ],
+      "notes": "Congés, absences, justificatifs, soldes, validations et calendrier d'absence."
+    },
+    {
+      "code": "BC-07",
+      "name": "PAYROLL",
+      "label": "Payroll",
+      "owner": "kitokoh",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/Payroll"
+      ],
+      "routes": [
+        "api/routes/modules/payroll_engine.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*payroll*",
+        "api/database/migrations/tenant/*payment_batches*",
+        "api/database/migrations/tenant/*payment_documents*",
+        "api/database/migrations/tenant/*salary_advances*",
+        "api/database/migrations/tenant/*tax_rate*",
+        "api/database/migrations/tenant/*social_contributions*",
+        "api/database/migrations/tenant/*rate_validation*",
+        "api/database/migrations/tenant/*regularization*",
+        "api/database/migrations/tenant/*locking_to_payroll*",
+        "api/database/migrations/tenant/*double_validation*",
+        "api/database/migrations/tenant/*backfill_*",
+        "api/database/migrations/tenant/*currency_to_salary*",
+        "api/database/migrations/tenant/*proof_path*",
+        "api/database/migrations/tenant/*dispute_fields*",
+        "api/database/migrations/tenant/*payment_orders*",
+        "api/database/migrations/tenant/*expense_accounting_entries*"
+      ],
+      "events": [
+        "App\\Events\\PayrollValidated",
+        "App\\Events\\TaxRateApproved",
+        "App\\Events\\TaxRateRejected",
+        "App\\Events\\TaxRateSubmitted"
+      ],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04",
+        "BC-05",
+        "BC-06",
+        "BC-08"
+      ],
+      "notes": "Périodes, règles, calculs, snapshots, bulletins, validations et exports paie."
+    },
+    {
+      "code": "BC-08",
+      "name": "ACCOUNTING",
+      "label": "Accounting & Finance",
+      "owner": "kitokoh",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/Accounting"
+      ],
+      "routes": [
+        "api/routes/modules/accounting.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*accounting*",
+        "api/database/migrations/tenant/*ledger_entries*",
+        "api/database/migrations/tenant/*bank_statement*",
+        "api/database/migrations/tenant/*bank_exports*",
+        "api/database/migrations/tenant/*fiscal_years*",
+        "api/database/migrations/tenant/*lettering*",
+        "api/database/migrations/tenant/*payment_reminders*",
+        "api/database/migrations/tenant/*gateway_payment*",
+        "api/database/migrations/tenant/*document_hash_to_payment*",
+        "api/database/migrations/tenant/*payment_documents_metadata*",
+        "api/database/migrations/tenant/*payment_metadata*",
+        "api/database/migrations/tenant/*document_shares*",
+        "api/database/migrations/tenant/*number_counters*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04",
+        "BC-07"
+      ],
+      "notes": "Plan comptable, journaux, écritures, exercices, lettrage, FEC et états financiers."
+    },
+    {
+      "code": "BC-09",
+      "name": "EXPENSE",
+      "label": "Expenses & Benefits",
+      "owner": "kitokoh",
+      "priority": "P2",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/Expense"
+      ],
+      "routes": [
+        "api/routes/modules/expense.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*loans_and_expenses*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04",
+        "BC-08"
+      ],
+      "notes": "Dépenses, avances, prêts, remboursements et avantages, avec contrat Finance."
+    },
+    {
+      "code": "BC-10",
+      "name": "RECRUITMENT",
+      "label": "Recruitment",
+      "owner": "kitokoh",
+      "priority": "P2",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/Recruitment"
+      ],
+      "routes": [
+        "api/routes/modules/rh.php",
+        "api/routes/modules/hr_extended.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*recruitment*",
+        "api/database/migrations/tenant/*unique_applicant*"
+      ],
+      "events": [
+        "App\\Events\\CandidateHired"
+      ],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04"
+      ],
+      "notes": "Candidatures, postes, candidats, entretiens, décisions et onboarding d'embauche. Routes partagées avec HR (rh.php / hr_extended.php)."
+    },
+    {
+      "code": "BC-11",
+      "name": "CRM",
+      "label": "Customer CRM (tenant)",
+      "owner": "kitokoh",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/CRM"
+      ],
+      "routes": [
+        "api/routes/modules/crm.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*crm_*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-12"
+      ],
+      "notes": "Accounts, contacts, leads, opportunités, activités, tâches et pipelines du tenant. Ne lit pas le CRM commercial plateforme (BC-01)."
+    },
+    {
+      "code": "BC-12",
+      "name": "GROWTH",
+      "label": "Marketing & Growth (client)",
+      "owner": "kitokoh",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/Marketing",
+        "api/app/Modules/Growth"
+      ],
+      "routes": [
+        "api/routes/modules/marketing.php",
+        "api/routes/modules/growth.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*marketing*",
+        "api/database/migrations/tenant/*social_posts*",
+        "api/database/migrations/tenant/*post_publications*",
+        "api/database/migrations/tenant/*whatsapp_consent*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-11"
+      ],
+      "notes": "Segments, campagnes, consentements, templates et marketing client."
+    },
+    {
+      "code": "BC-13",
+      "name": "COMMS",
+      "label": "Notifications & Communications",
+      "owner": "kitokoh",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/Notification",
+        "api/app/Contracts/Communication"
+      ],
+      "routes": [
+        "api/routes/modules/dashboard.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*communication_tables*",
+        "api/database/migrations/tenant/*notification_preferences*",
+        "api/database/migrations/tenant/*app_notifications*",
+        "api/database/migrations/tenant/*conversation_threads*",
+        "api/database/migrations/tenant/*company_announcements*",
+        "api/database/migrations/tenant/*email_bounce*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-14"
+      ],
+      "notes": "Email, SMS, WhatsApp, préférences, templates, inbox/outbox et délivrabilité. Routes partagées (dashboard.php)."
+    },
+    {
+      "code": "BC-14",
+      "name": "INTEGRATION",
+      "label": "Integration Runtime",
+      "owner": "kitokoh",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        "api/app/Jobs",
+        "api/app/Contracts/Queue",
+        "api/app/Modules/EdgeSync"
+      ],
+      "routes": [
+        "api/routes/modules/integrations.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*webhook*",
+        "api/database/migrations/tenant/*edge_sync*",
+        "api/database/migrations/tenant/*edge_nodes*",
+        "api/database/migrations/tenant/*sync_token*",
+        "api/database/migrations/tenant/*calendar*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03"
+      ],
+      "notes": "Webhooks, queues, inbox durable, outbox transactionnelle, adaptateurs et replay."
+    },
+    {
+      "code": "BC-15",
+      "name": "FUEL",
+      "label": "FuelStation (verticale)",
+      "owner": "kitokoh",
+      "priority": "P0",
+      "status": "planned",
+      "paths": [
+        "api/app/Solutions/FuelStation"
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant/*fuel*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04",
+        "BC-05"
+      ],
+      "notes": "Stations, pompes, compteurs, sessions pompistes, photos/OCR, ventes, dépôts et bilans. En cours de livraison (issues FUEL-001..022) — statut passera à active à l'arrivée du code sur main."
+    },
+    {
+      "code": "BC-16",
+      "name": "EDU",
+      "label": "EduManager (verticale)",
+      "owner": "kitokoh",
+      "priority": "P1",
+      "status": "planned",
+      "paths": [
+        "api/app/Solutions/EduManager"
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant/*edu*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04"
+      ],
+      "notes": "Campus, élèves, guardians, classes, présences, notes, bulletins et admissions (issues EDU-001..022)."
+    },
+    {
+      "code": "BC-17",
+      "name": "RETAIL",
+      "label": "Retail & POS",
+      "owner": "kitokoh",
+      "priority": "P3",
+      "status": "planned",
+      "paths": [
+        "api/app/Solutions/Retail"
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant/*retail*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03"
+      ],
+      "notes": "Produits, magasins, caisse, tickets, stocks et synchronisation POS (futur)."
+    },
+    {
+      "code": "BC-18",
+      "name": "FIELD",
+      "label": "Field Service & Fleet",
+      "owner": "kitokoh",
+      "priority": "P2",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/Fleet"
+      ],
+      "routes": [
+        "api/routes/modules/tracking.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*vehicle_trips*",
+        "api/database/migrations/tenant/*traccar*",
+        "api/database/migrations/tenant/*tracking_tables*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04"
+      ],
+      "notes": "Véhicules, interventions, équipements, maintenance et opérations terrain génériques."
+    },
+    {
+      "code": "BC-19",
+      "name": "DEVICE",
+      "label": "Devices, Cameras & Edge",
+      "owner": "kitokoh",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/Cameras",
+        "api/app/Modules/EdgeSync"
+      ],
+      "routes": [
+        "api/routes/modules/cameras.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*cameras_module*",
+        "api/database/migrations/tenant/*zkteco_devices*",
+        "api/database/migrations/tenant/*biometric_requests*",
+        "api/database/migrations/tenant/*kiosk*",
+        "api/database/migrations/tenant/*device_tokens*",
+        "api/database/migrations/tenant/*edge_sync*",
+        "api/database/migrations/tenant/*edge_nodes*",
+        "api/database/migrations/tenant/*punch_methods*",
+        "api/database/migrations/tenant/*sync_token*",
+        "api/database/migrations/edge/*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-05"
+      ],
+      "notes": "Appareils, kiosques, biométrie, synchronisation edge et politiques device. Modules/EdgeSync partagé avec BC-14."
+    },
+    {
+      "code": "BC-20",
+      "name": "DOCUMENTS",
+      "label": "Documents & Evidence",
+      "owner": "kitokoh",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/Cabinet",
+        "api/storage/app/private"
+      ],
+      "routes": [
+        "api/routes/modules/cabinet.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*cabinet*",
+        "api/database/migrations/tenant/*employee_documents*",
+        "api/database/migrations/tenant/*document_shares*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04"
+      ],
+      "notes": "Fichiers, pièces justificatives, scans, retention, antivirus, signatures et exports protégés. Le module Cabinet (placard employé) porte aujourd'hui cette responsabilité ; un module Documents dédié est à formaliser."
+    },
+    {
+      "code": "BC-21",
+      "name": "BILLING",
+      "label": "Billing & Subscription",
+      "owner": "kitokoh",
+      "priority": "P2",
+      "status": "active",
+      "paths": [
+        "api/app/Modules/Billing"
+      ],
+      "routes": [
+        "api/routes/modules/billing.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*billing_tables*",
+        "api/database/migrations/tenant/*features_table*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-08"
+      ],
+      "notes": "Plans, activation commerciale, facturation de plateforme et entitlements."
+    },
+    {
+      "code": "BC-22",
+      "name": "ANALYTICS",
+      "label": "Reporting & Analytics",
+      "owner": "kitokoh",
+      "priority": "P1",
+      "status": "planned",
+      "paths": [
+        "api/app/Modules/Reporting"
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant/*export_history*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-07",
+        "BC-08"
+      ],
+      "notes": "Read models, indicateurs, exports asynchrones, audit reporting et data quality. Module à formaliser ; export_history sert déjà de base."
+    },
+    {
+      "code": "BC-23",
+      "name": "AI",
+      "label": "AI Assistive Services",
+      "owner": "kitokoh",
+      "priority": "P2",
+      "status": "active",
+      "paths": [
+        "api/app/AI"
+      ],
+      "routes": [
+        "api/routes/ai.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant/*ai_tables*"
+      ],
+      "events": [],
+      "allowed_dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-14"
+      ],
+      "notes": "OCR, suggestions et assistants bornés, registry, consentement et traçabilité."
+    }
+  ]
+}
