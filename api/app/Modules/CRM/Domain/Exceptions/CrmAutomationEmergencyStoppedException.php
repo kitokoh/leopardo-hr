@@ -8,7 +8,7 @@ final class CrmAutomationEmergencyStoppedException extends CrmAutomationExceptio
 {
     public function __construct()
     {
-        parent::__construct('Automatisations CRM arrêtées d\'urgence pour ce tenant.');
+        parent::__construct('Automatisations CRM arretees d\'urgence pour ce tenant.');
     }
 
     public function errorCode(): string

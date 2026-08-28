@@ -24,7 +24,7 @@ final class SendSmsAction implements AutomationActionContract
     {
         $channel = CrmChannel::query()->where('type', CrmChannelType::SMS)->where('status', 'active')->first();
         if ($channel === null) {
-            throw new \RuntimeException('Aucun canal SMS configuré pour ce tenant.');
+            throw new \RuntimeException('Aucun canal SMS configure pour ce tenant.');
         }
 
         $to = $this->resolveTo($config, $context);
@@ -45,7 +45,7 @@ final class SendSmsAction implements AutomationActionContract
         return [
             'action' => $this->type(),
             'to' => $this->resolveTo($config, $context),
-            'effect' => 'SMS envoyé (simulation — aucun envoi réel)',
+            'effect' => 'SMS envoye (simulation — aucun envoi reel)',
         ];
     }
 

@@ -27,7 +27,7 @@ final class SendEmailAction implements AutomationActionContract
     {
         $channel = CrmChannel::query()->where('type', CrmChannelType::EMAIL)->where('status', 'active')->first();
         if ($channel === null) {
-            throw new \RuntimeException('Aucun canal email configuré pour ce tenant (attendu avec #5726).');
+            throw new \RuntimeException('Aucun canal email configure pour ce tenant (attendu avec #5726).');
         }
 
         $to = isset($config['to']) && is_string($config['to']) ? $config['to'] : ($context['email'] ?? null);
@@ -48,7 +48,7 @@ final class SendEmailAction implements AutomationActionContract
         return [
             'action' => $this->type(),
             'to' => $config['to'] ?? $context['email'] ?? null,
-            'effect' => 'email envoyé (simulation — aucun envoi réel)',
+            'effect' => 'email envoye (simulation — aucun envoi reel)',
         ];
     }
 

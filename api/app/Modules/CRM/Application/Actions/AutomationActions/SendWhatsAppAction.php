@@ -25,7 +25,7 @@ final class SendWhatsAppAction implements AutomationActionContract
     {
         $channel = $this->channelOrNull(CrmChannelType::WHATSAPP);
         if ($channel === null) {
-            throw new \RuntimeException('Aucun canal WhatsApp configuré pour ce tenant.');
+            throw new \RuntimeException('Aucun canal WhatsApp configure pour ce tenant.');
         }
 
         $to = $this->resolveTo($config, $context);
@@ -48,7 +48,7 @@ final class SendWhatsAppAction implements AutomationActionContract
             'action' => $this->type(),
             'to' => $this->resolveTo($config, $context),
             'template_name' => $config['template_name'] ?? null,
-            'effect' => 'message WhatsApp envoyé (simulation — aucun envoi réel)',
+            'effect' => 'message WhatsApp envoye (simulation — aucun envoi reel)',
         ];
     }
 

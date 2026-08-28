@@ -158,7 +158,7 @@ class CrmAutomationController extends Controller
         try {
             $this->engine->dispatch($event, $context);
         } catch (CrmAutomationException $e) {
-            Log::warning('CRM automation dispatch refusé', [
+            Log::warning('CRM automation dispatch refuse', [
                 'event' => $event,
                 'code' => $e->errorCode(),
             ]);

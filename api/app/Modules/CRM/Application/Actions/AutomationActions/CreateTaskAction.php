@@ -27,10 +27,10 @@ final class CreateTaskAction implements AutomationActionContract
     public function execute(array $config, array $context): void
     {
         if (! Schema::hasTable('crm_tasks')) {
-            throw new \RuntimeException('Table crm_tasks indisponible (socle V0 #5710 non mergé).');
+            throw new \RuntimeException('Table crm_tasks indisponible (socle V0 #5710 non merge).');
         }
 
-        $title = isset($config['title']) && is_string($config['title']) ? $config['title'] : 'Tâche CRM';
+        $title = isset($config['title']) && is_string($config['title']) ? $config['title'] : 'Tache CRM';
         $dueAt = isset($config['due_at']) && is_string($config['due_at']) ? $config['due_at'] : now()->addDay();
 
         DB::table('crm_tasks')->insert([
@@ -48,8 +48,8 @@ final class CreateTaskAction implements AutomationActionContract
     {
         return [
             'action' => $this->type(),
-            'title' => $config['title'] ?? 'Tâche CRM',
-            'effect' => 'tâche créée (simulation — aucune écriture)',
+            'title' => $config['title'] ?? 'Tache CRM',
+            'effect' => 'tache creee (simulation — aucune ecriture)',
         ];
     }
 }

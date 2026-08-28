@@ -50,7 +50,7 @@ final class HttpWebhookAction implements AutomationActionContract
             throw new \RuntimeException('Webhook sortant HTTP '.$response->status());
         }
 
-        Log::info('CRM automation: webhook sortant envoyé', [
+        Log::info('CRM automation: webhook sortant envoye', [
             'url' => $url,
             'status' => $response->status(),
         ]);
@@ -61,7 +61,7 @@ final class HttpWebhookAction implements AutomationActionContract
         return [
             'action' => $this->type(),
             'url' => $config['url'] ?? null,
-            'effect' => 'webhook HTTP sortant appelé (simulation — aucun appel réel)',
+            'effect' => 'webhook HTTP sortant appele (simulation — aucun appel reel)',
         ];
     }
 }
