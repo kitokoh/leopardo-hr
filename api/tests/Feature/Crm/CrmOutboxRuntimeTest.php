@@ -88,7 +88,7 @@ class CrmOutboxRuntimeTest extends TestCase
         self::assertNull($event->last_error, 'la dernière erreur est effacée au replay');
 
         // Cause corrigée : un consommateur est maintenant enregistré.
-        $this->registry->register(new LedgerConsumer('crm.runtime.event'));
+        $this->registry->register(new RuntimeLedgerConsumer('crm.runtime.event'));
         Artisan::call('crm:outbox-dispatch');
 
         self::assertSame(CrmOutboxEvent::STATUS_SENT, $event->refresh()->status);
@@ -97,7 +97,7 @@ class CrmOutboxRuntimeTest extends TestCase
 
     public function test_replay_dry_run_changes_nothing(): void
     {
-        $this->registry->register(new PermanentFailConsumer('crm.runtime.event'));
+        $this->registry->register(new RuntimePermanentFailConsumer('crm.runtime.event'));
 
         $event = $this->publisher->publish(
             (string) $this->company->id,
@@ -122,7 +122,7 @@ class CrmOutboxRuntimeTest extends TestCase
 
     public function test_replay_respects_company_and_event_type_filters(): void
     {
-        $this->registry->register(new PermanentFailConsumer('crm.runtime.event'));
+        $this->registry->register(new RuntimePermanentFailConsumer('crm.runtime.event'));
 
         $this->publisher->publish((string) $this->company->id, 'crm.runtime.event', ['account_id' => 3]);
         $this->publisher->publish((string) $this->company->id, 'crm.other.event', ['account_id' => 4]);
@@ -172,7 +172,7 @@ class CrmOutboxRuntimeTest extends TestCase
 
     public function test_dispatch_limit_bounds_batch_backpressure(): void
     {
-        $this->registry->register(new LedgerConsumer('crm.runtime.event'));
+        $this->registry->register(new RuntimeLedgerConsumer('crm.runtime.event'));
 
         for ($i = 1; $i <= 10; $i++) {
             $this->publisher->publish((string) $this->company->id, 'crm.runtime.event', ['account_id' => 100 + $i]);
@@ -186,7 +186,7 @@ class CrmOutboxRuntimeTest extends TestCase
 
     public function test_status_command_reports_counts_and_dlq_sample_redacted(): void
     {
-        $this->registry->register(new PermanentFailConsumer('crm.runtime.event'));
+        $this->registry->register(new RuntimePermanentFailConsumer('crm.runtime.event'));
 
         $this->publisher->publish((string) $this->company->id, 'crm.runtime.event', ['account_id' => 6]);
         Artisan::call('crm:outbox-dispatch');
@@ -264,7 +264,7 @@ final class FailAfterEffectConsumer implements CrmOutboxConsumer
 /**
  * Consommateur de test : erreur permanente (dead-letter immédiate).
  */
-final class PermanentFailConsumer implements CrmOutboxConsumer
+final class RuntimePermanentFailConsumer implements CrmOutboxConsumer
 {
     public function __construct(private readonly string $eventType) {}
 
@@ -282,7 +282,7 @@ final class PermanentFailConsumer implements CrmOutboxConsumer
 /**
  * Consommateur de test : applique un effet idempotent (ledger unique).
  */
-final class LedgerConsumer implements CrmOutboxConsumer
+final class RuntimeLedgerConsumer implements CrmOutboxConsumer
 {
     public function __construct(private readonly string $eventType) {}
 
