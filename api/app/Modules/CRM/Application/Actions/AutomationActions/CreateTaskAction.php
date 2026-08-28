@@ -35,7 +35,7 @@ final class CreateTaskAction implements AutomationActionContract
 
         DB::table('crm_tasks')->insert([
             'id' => (string) Str::uuid(),
-            'company_id' => currentCompany()?->id,
+            'company_id' => currentCompany()->id,
             'title' => $title,
             'due_at' => $dueAt,
             'done' => false,

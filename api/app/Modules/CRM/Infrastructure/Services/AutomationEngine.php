@@ -102,19 +102,19 @@ final class AutomationEngine
     public function setEmergencyStop(bool $enabled): void
     {
         CrmAutomationState::query()->updateOrCreate(
-            ['company_id' => currentCompany()?->id],
+            ['company_id' => currentCompany()->id],
             ['enabled' => $enabled, 'updated_at' => now()],
         );
 
         Log::warning('CRM automation: interrupteur d\'urgence modifié', [
-            'company_id' => currentCompany()?->id,
+            'company_id' => currentCompany()->id,
             'enabled' => $enabled,
         ]);
     }
 
     public function isEmergencyStopped(): bool
     {
-        $state = CrmAutomationState::query()->where('company_id', currentCompany()?->id)->first();
+        $state = CrmAutomationState::query()->where('company_id', currentCompany()->id)->first();
 
         return $state !== null && ! $state->enabled;
     }
