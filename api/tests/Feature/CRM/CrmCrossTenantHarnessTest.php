@@ -6,11 +6,12 @@ namespace Tests\Feature\CRM;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
+use App\Contracts\Queue\TenantScopedJob;
+use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use Tests\RefreshTenantDatabase;
 use Tests\Support\CRM\CrossTenantAssertions;
 use Tests\Support\CRM\CrmTenantFixture;
-use Tests\Support\Fixtures\TenantContextProbeJob;
 use Tests\TestCase;
 
 /**
@@ -121,8 +122,8 @@ class CrmCrossTenantHarnessTest extends TestCase
         $manager->clearTenant();
 
         $context = null;
-        (new \App\Jobs\Middleware\EnsureTenantContext)->handle(
-            new TenantContextProbeJob($tenantA->id),
+        (new EnsureTenantContext)->handle(
+            new HarnessTenantProbeJob($tenantA->id),
             function () use (&$context): void {
                 $context = app(TenantManager::class)->current()?->id;
             }
@@ -195,6 +196,35 @@ class CrmCrossTenantHarnessTest extends TestCase
 
         $this->assertIsArray($report['created']);
         $this->assertIsArray($report['missing']);
-        $this->assertSame(CrmTenantFixture::CRM_TABLES, array_values(array_merge($report['created'], $report['missing'])));
+        // Indépendant de l'ordre : created + missing partitionnent toujours
+        // le contrat complet des tables CRM (aujourd'hui : created vide).
+        $this->assertEqualsCanonicalizing(
+            CrmTenantFixture::CRM_TABLES,
+            array_merge($report['created'], $report['missing'])
+        );
     }
+}
+
+/**
+ * Fixture locale — job tenant-scopé pour la dimension « job » du harness
+ * (issue #5738). Autonome : ne dépend d'aucune autre PR du programme.
+ */
+final class HarnessTenantProbeJob implements TenantScopedJob
+{
+    public function __construct(private readonly string $companyId) {}
+
+    public function tenantCompanyId(): string
+    {
+        return $this->companyId;
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [new EnsureTenantContext];
+    }
+
+    public function handle(): void {}
 }
