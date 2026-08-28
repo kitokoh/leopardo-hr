@@ -1764,6 +1764,18 @@ class LeopardoClient:
         """Rapport kilometrage"""
         return self.request("GET", "/fleet/reports/mileage", **kwargs)
 
+    def post_fuelstation_activate(self, **kwargs):
+        """Activer FuelStation sur le tenant (idempotent)"""
+        return self.request("POST", "/fuelstation/activate", **kwargs)
+
+    def get_fuelstation_manifest(self, **kwargs):
+        """Manifest de la solution FuelStation (catalogue, permissions, dependances)"""
+        return self.request("GET", "/fuelstation/manifest", **kwargs)
+
+    def get_fuelstation_status(self, **kwargs):
+        """Etat d'activation FuelStation du tenant"""
+        return self.request("GET", "/fuelstation/status", **kwargs)
+
     def post_growth_partner_apply(self, **kwargs):
         """Candidature partenaire"""
         return self.request("POST", "/growth/partner/apply", **kwargs)

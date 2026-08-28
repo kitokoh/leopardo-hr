@@ -107,6 +107,8 @@ tags:
 - name: Marketing
   description: Connexion du compte social (agregateur Ayrshare) et gestion des publications reseaux sociaux d'un tenant.
 - name: Platform Admin
+- name: FuelStation
+  description: 'FuelStation : stations, sites, pompes, cuves, compteurs, relevés (issues #5795-#5798).'
   description: 'Administration super-admin : gestion tenants, plans, metriques globales.'
 paths:
   /attendance/config:
@@ -24292,6 +24294,51 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: Fichier introuvable
+  /fuelstation/manifest:
+    get:
+      tags:
+      - FuelStation
+      summary: Manifest de la solution FuelStation (catalogue, permissions, dependances)
+      description: Manifest valide par allowlist. Reserve aux managers principal/rh. CRM commercial hors perimetre.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Manifest + etat d'activation du tenant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuelstation/activate:
+    post:
+      tags:
+      - FuelStation
+      summary: Activer FuelStation sur le tenant (idempotent)
+      description: Verifie les dependances (modules de base via la matrice features du tenant) — une dependance manquante refuse l'activation (422 avec la liste). Idempotent (upsert).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Solution activee (statut + version manifest)
+        '422':
+          description: Dependances manquantes (liste dans `missing`)
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuelstation/status:
+    get:
+      tags:
+      - FuelStation
+      summary: Etat d'activation FuelStation du tenant
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: active/inactive + version manifest
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
 components:
   securitySchemes:
     BearerAuth:

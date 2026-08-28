@@ -2199,8 +2199,27 @@ trait CreatesMvpSchema
                     ->cascadeOnDelete();
             });
         }
+
+        $this->createFuelStationTables();
     }
 
+
+    /**
+     * #5795 — FuelStation activations tenant. Miroir de la migration
+     * 2026_08_28_000004_5795_create_fuel_station_activations_table.php.
+     */
+    private function createFuelStationTables(): void
+    {
+        if (! Schema::hasTable($this->moduleTable('fuel_station_activations'))) {
+            Schema::create($this->moduleTable('fuel_station_activations'), function (Blueprint $table): void {
+                $table->uuid('company_id')->primary();
+                $table->string('manifest_version', 30);
+                $table->string('status', 20)->default('active');
+                $table->timestamp('activated_at')->nullable();
+                $table->timestamps();
+            });
+        }
+    }
     private function dropMvpTables(): void
     {
         if (DB::getDriverName() === 'pgsql') {
