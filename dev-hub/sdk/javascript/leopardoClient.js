@@ -2180,6 +2180,51 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/fleet/reports/mileage", options);
     },
 
+    /** Affectations de shifts du pompiste connecte (self-service) */
+    getFuelMeShifts(options = {}) {
+      return request("GET", "/fuel/me/shifts", options);
+    },
+
+    /** Annuler une affectation (manager, statut cancelled) */
+    deleteFuelShiftAssignmentsByAssignment(options = {}) {
+      return request("DELETE", "/fuel/shift-assignments/{assignment}", options);
+    },
+
+    /** Lister les shifts (manager) */
+    getFuelShifts(options = {}) {
+      return request("GET", "/fuel/shifts", options);
+    },
+
+    /** Creer un shift (manager) */
+    postFuelShifts(options = {}) {
+      return request("POST", "/fuel/shifts", options);
+    },
+
+    /** Supprimer un shift (manager, refus si affectations actives) */
+    deleteFuelShiftsByShift(options = {}) {
+      return request("DELETE", "/fuel/shifts/{shift}", options);
+    },
+
+    /** Detail d'un shift (manager) */
+    getFuelShiftsByShift(options = {}) {
+      return request("GET", "/fuel/shifts/{shift}", options);
+    },
+
+    /** Mettre a jour un shift (manager) */
+    putFuelShiftsByShift(options = {}) {
+      return request("PUT", "/fuel/shifts/{shift}", options);
+    },
+
+    /** Affectations d'un shift (manager) */
+    getFuelShiftsByShiftAssignments(options = {}) {
+      return request("GET", "/fuel/shifts/{shift}/assignments", options);
+    },
+
+    /** Affecter un employe a un shift pour une date (manager) */
+    postFuelShiftsByShiftAssignments(options = {}) {
+      return request("POST", "/fuel/shifts/{shift}/assignments", options);
+    },
+
     /** Candidature partenaire */
     postGrowthPartnerApply(options = {}) {
       return request("POST", "/growth/partner/apply", options);

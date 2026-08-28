@@ -9844,6 +9844,309 @@ paths:
       responses:
         '200':
           description: Liste vehicules maintenance due
+  /fuel/me/shifts:
+    get:
+      tags:
+      - FuelStation
+      summary: Affectations de shifts du pompiste connecte (self-service)
+      description: FUEL-005 — liste les affectations du salarie authentifie sur une fenetre de dates (date_from/date_to, Y-m-d).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      responses:
+        '200':
+          description: Liste des affectations
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel/shifts:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les shifts (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+      responses:
+        '200':
+          description: Liste des shifts
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer un shift (manager)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - start_time
+              - end_time
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                station_id:
+                  type: string
+                  format: uuid
+                  nullable: true
+                start_time:
+                  type: string
+                  example: '06:00'
+                end_time:
+                  type: string
+                  example: '14:00'
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Shift cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation (nom duplique, horaires invalides)
+  /fuel/shifts/{shift}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'un shift (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Shift
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour un shift (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                station_id:
+                  type: string
+                  format: uuid
+                  nullable: true
+                start_time:
+                  type: string
+                  example: '06:00'
+                end_time:
+                  type: string
+                  example: '14:00'
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Shift mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+        '422':
+          description: Validation
+    delete:
+      tags:
+      - FuelStation
+      summary: Supprimer un shift (manager, refus si affectations actives)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Shift supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+        '422':
+          description: SHIFT_HAS_ASSIGNMENTS
+  /fuel/shifts/{shift}/assignments:
+    get:
+      tags:
+      - FuelStation
+      summary: Affectations d'un shift (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      responses:
+        '200':
+          description: Affectations du shift
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+    post:
+      tags:
+      - FuelStation
+      summary: Affecter un employe a un shift pour une date (manager)
+      description: Rejette un employe d'un autre tenant (EMPLOYEE_OUTSIDE_TENANT), un shift inactif (SHIFT_INACTIVE) et un chevauchement horaire le meme jour (SHIFT_OVERLAP).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              - assignment_date
+              properties:
+                employee_id:
+                  type: integer
+                assignment_date:
+                  type: string
+                  example: '2026-09-01'
+                status:
+                  type: string
+                  enum:
+                  - scheduled
+                  - confirmed
+                  - completed
+                  - cancelled
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Affectation creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+        '422':
+          description: SHIFT_OVERLAP / SHIFT_INACTIVE / EMPLOYEE_OUTSIDE_TENANT
+  /fuel/shift-assignments/{assignment}:
+    delete:
+      tags:
+      - FuelStation
+      summary: Annuler une affectation (manager, statut cancelled)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: assignment
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Affectation annulee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Affectation introuvable ou autre tenant
   /reports/headcount:
     get:
       tags:

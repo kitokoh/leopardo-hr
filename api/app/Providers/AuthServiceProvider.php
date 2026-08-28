@@ -13,6 +13,9 @@ use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
+use App\Modules\FuelStation\Domain\Models\FuelShift;
+use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment;
+use App\Modules\FuelStation\Domain\Policies\FuelShiftPolicy;
 use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\HR\Domain\Models\Contract;
@@ -98,6 +101,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Invoice::class, InvoicePolicy::class);
         Gate::policy(EmployeeLoan::class, LoanPolicy::class);
         Gate::policy(ExpenseClaim::class, ExpenseClaimPolicy::class);
+        // — FuelStation (FUEL-005, issue #5799)
+        Gate::policy(FuelShift::class, FuelShiftPolicy::class);
+        Gate::policy(FuelShiftAssignment::class, FuelShiftPolicy::class);
         Gate::policy(PayrollRun::class, PayrollPolicy::class);
         Gate::policy(PaySlip::class, PayrollPolicy::class);
 
