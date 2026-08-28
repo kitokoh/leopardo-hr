@@ -25,7 +25,7 @@ par tenant, audit complet.
 
 ## Périmètre
 
-- Migration tenant `2026_08_28_000008_5726_create_crm_email_tables.php`
+- Migration tenant `2026_08_28_000503_5726_create_crm_email_tables.php`
   (`crm_email_suppressions` + `crm_email_events`)
 - `api/config/crm.php` + clés `.env.example` (`CRM_EMAIL_*`, garde #1487)
 - `api/app/Modules/CRM/` : `Domain/DTOs/{EmailMessage, EmailDeliveryResult}`,
