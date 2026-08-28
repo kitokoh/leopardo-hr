@@ -154,7 +154,7 @@ class WebhookEnvelopeContractTest extends TestCase
             return true;
         });
 
-        $this->assertCount(2, array_unique($correlationIds));
+        $this->assertCount(1, array_unique($correlationIds), 'Un même dispatch partage le même correlation_id entre endpoints.');
         $this->assertNotSame('', $correlationIds[0]);
         $this->assertCount(2, array_unique($webhookIds), 'Chaque livraison porte un Webhook-Id distinct.');
     }
