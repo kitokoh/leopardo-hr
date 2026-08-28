@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Core\Tenant\Domain\Models\Company;
-use Illuminate\Console\PendingCommand;
+use Illuminate\Testing\PendingCommand;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
