@@ -71,7 +71,9 @@ class CrmMigrationsTest extends TestCase
 
     public function test_primary_contact_is_unique_per_account(): void
     {
+        /** @var Company $companyA */
         $companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Company $companyB */
         $companyB = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
         $accountA = DB::table('crm_accounts')->insertGetId([
