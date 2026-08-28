@@ -9,6 +9,9 @@ use App\Modules\CRM\Domain\Contracts\CrmImportRepositoryInterface;
 use App\Modules\CRM\Domain\Contracts\CrmImportRowPersisterInterface;
 use App\Modules\CRM\Domain\Contracts\CrmLeadRepositoryInterface;
 use App\Modules\CRM\Domain\Events\CrmConsentRevoked;
+use App\Modules\CRM\Domain\Models\CrmAccount;
+use App\Modules\CRM\Domain\Models\CrmImport;
+use App\Modules\CRM\Domain\Models\CrmLead;
 use App\Modules\CRM\Infrastructure\Repositories\CrmImportRepository;
 use App\Modules\CRM\Infrastructure\Repositories\CrmLeadRepository;
 use App\Modules\CRM\Infrastructure\Services\CrmImportRowPersister;
@@ -44,9 +47,9 @@ class CrmServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Gate::policy(\App\Modules\CRM\Domain\Models\CrmImport::class, CrmImportPolicy::class);
-        Gate::policy(\App\Modules\CRM\Domain\Models\CrmLead::class, CrmLeadPolicy::class);
-        Gate::policy(\App\Modules\CRM\Domain\Models\CrmAccount::class, CrmMergePolicy::class);
+        Gate::policy(CrmImport::class, CrmImportPolicy::class);
+        Gate::policy(CrmLead::class, CrmLeadPolicy::class);
+        Gate::policy(CrmAccount::class, CrmMergePolicy::class);
 
         // #5722 — propagation du retrait de consentement vers les campagnes
         // (#5724) : annulation des envois pending/queued du contact.
