@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use App\Core\Tenant\TenantManager;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Assert;
@@ -70,11 +71,15 @@ final class CrossTenantAssertions
      * Mutation : une ligne créée dans le contexte courant porte le company_id
      * du tenant courant (jamais un company_id externe).
      *
-     * @param  class-string<Model>  $modelClass
+     * @template TModel of Model
+     *
+     * @param  class-string<TModel>  $modelClass
+     * @param  array<string, mixed>  $attributes
+     * @return TModel
      */
     public static function assertCreatedRowIsTenantScoped(TestCase $test, string $modelClass, array $attributes, string $expectedCompanyId): Model
     {
-        /** @var Model $row */
+        /** @var TModel $row */
         $row = $modelClass::query()->create($attributes);
         self::assertCompanyIdPresent($test, $row);
         $test->assertSame($expectedCompanyId, (string) $row->getAttribute('company_id'));
@@ -105,6 +110,8 @@ final class CrossTenantAssertions
     /**
      * HTTP : une réponse pour une ressource d'un autre tenant doit être un
      * 404 sûr (jamais 200/403 — ne pas révéler l'existence, #5706/#3231).
+     *
+     * @param  TestResponse<Response>  $response
      */
     public static function assertCrossTenantHttp404(TestCase $test, TestResponse $response): void
     {

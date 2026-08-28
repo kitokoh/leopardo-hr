@@ -194,8 +194,6 @@ class CrmCrossTenantHarnessTest extends TestCase
 
         $report = CrmTenantFixture::seedCrmDataIfAvailable($tenantA);
 
-        $this->assertIsArray($report['created']);
-        $this->assertIsArray($report['missing']);
         // Indépendant de l'ordre : created + missing partitionnent toujours
         // le contrat complet des tables CRM (aujourd'hui : created vide).
         $this->assertEqualsCanonicalizing(

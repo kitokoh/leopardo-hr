@@ -52,7 +52,9 @@ final class CrmTenantFixture
      */
     public static function createTwoTenants(): array
     {
+        /** @var Company $tenantA */
         $tenantA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Company $tenantB */
         $tenantB = Company::factory()->create(['country' => 'FR', 'currency' => 'EUR']);
 
         return [$tenantA, $tenantB];
@@ -65,10 +67,17 @@ final class CrmTenantFixture
      */
     public static function usersByRole(Company $company): array
     {
+        /** @var Employee $principal */
+        $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $rh */
+        $rh = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
         return [
-            'principal' => Employee::factory()->manager()->create(['company_id' => $company->id]),
-            'rh' => Employee::factory()->managerRh()->create(['company_id' => $company->id]),
-            'employee' => Employee::factory()->create(['company_id' => $company->id]),
+            'principal' => $principal,
+            'rh' => $rh,
+            'employee' => $employee,
         ];
     }
 
