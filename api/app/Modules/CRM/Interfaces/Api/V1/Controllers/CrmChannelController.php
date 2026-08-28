@@ -57,7 +57,7 @@ class CrmChannelController extends Controller
         }
 
         $channel = CrmChannel::query()->firstOrNew([
-            'company_id' => currentCompany()?->id,
+            'company_id' => currentCompany()->id,
             'type' => $type,
             'provider' => $provider,
         ]);

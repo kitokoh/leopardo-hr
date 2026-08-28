@@ -13,6 +13,15 @@ use App\Modules\CRM\Infrastructure\Repositories\CrmChannelMessageRepository;
 use App\Modules\CRM\Infrastructure\Services\CrmChannelService;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * CRM Client (interne tenant) — provider du module (issue #5707, CRM-V0-03).
+ *
+ * Squelette DDD ratifié par l'ADR-CRM-DUAL-CONTEXTS : le CRM client est un
+ * module tenant-scoped distinct du CRM commercial Leopardo (Platform/
+ * Marketing). Les couches Application/Domain/Infrastructure/Interfaces se
+ * remplissent au fil des issues CRM-V0-04+ ; les canaux de communication
+ * tenant (WhatsApp/SMS/email) sont livrés par les issues CRM-V1 (#5725+).
+ */
 class CrmServiceProvider extends ServiceProvider
 {
     public function register(): void
@@ -33,7 +42,6 @@ class CrmServiceProvider extends ServiceProvider
             return new CrmChannelService(
                 adapters: $adapters,
                 messages: $app->make(CrmChannelMessageRepositoryInterface::class),
-                normalizer: $app->make(\App\Modules\CRM\Infrastructure\Services\CrmPhoneNormalizer::class),
                 consentGuard: $app->make(\App\Modules\CRM\Infrastructure\Services\CrmConsentGuard::class),
                 quotaService: $app->make(\App\Modules\CRM\Infrastructure\Services\CrmQuotaService::class),
             );
