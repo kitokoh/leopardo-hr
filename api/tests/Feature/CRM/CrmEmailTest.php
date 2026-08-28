@@ -162,7 +162,7 @@ class CrmEmailTest extends TestCase
 
     public function test_transactional_send_respects_suppression(): void
     {
-        $provider = new RecordingEmailProvider();
+        $provider = new RecordingEmailProvider;
         $this->app->instance(EmailProviderInterface::class, $provider);
         $this->emailService()->suppress($this->companyA->id, 'supprime@example.com', 'bounce', 'webhook');
 
@@ -240,7 +240,7 @@ class CrmEmailTest extends TestCase
 
     public function test_provider_is_interchangeable(): void
     {
-        $provider = new RecordingEmailProvider();
+        $provider = new RecordingEmailProvider;
         $this->app->instance(EmailProviderInterface::class, $provider);
 
         $result = $this->emailService()->sendTransactional(

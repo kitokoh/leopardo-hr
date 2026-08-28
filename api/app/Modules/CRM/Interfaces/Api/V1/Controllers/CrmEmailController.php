@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Interfaces\Api\V1\Controllers;
 
+use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\CRM\Application\Services\CrmEmailService;
+use App\Modules\CRM\Domain\DTOs\EmailDeliveryResult;
 use App\Modules\CRM\Domain\DTOs\EmailMessage;
 use App\Modules\CRM\Domain\Exceptions\EmailRateLimitExceededException;
 use App\Modules\CRM\Domain\Exceptions\InvalidUnsubscribeTokenException;
 use App\Modules\CRM\Domain\Models\CrmEmailSuppression;
+use App\Modules\CRM\Infrastructure\Services\UnsubscribeTokenService;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\EmailUnsubscribeRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\SendMarketingEmailRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\SendTransactionalEmailRequest;
-use App\Modules\CRM\Infrastructure\Services\UnsubscribeTokenService;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -118,7 +120,7 @@ class CrmEmailController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function serializeResult(\App\Modules\CRM\Domain\DTOs\EmailDeliveryResult $result): array
+    private function serializeResult(EmailDeliveryResult $result): array
     {
         return [
             'status' => $result->status,
@@ -131,7 +133,7 @@ class CrmEmailController extends Controller
     {
         $company = currentCompany();
 
-        if (! $company instanceof \App\Core\Tenant\Domain\Models\Company) {
+        if (! $company instanceof Company) {
             abort(403, 'Tenant context missing.');
         }
 
