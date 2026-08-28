@@ -47,11 +47,11 @@ describe('LeaveBalancesCard (#5694)', () => {
     render(<LeaveBalancesCard locale="fr" />);
 
     expect(await screen.findByText('Soldes de congés')).toBeInTheDocument();
-    expect(screen.getByText('Congé payé')).toBeInTheDocument();
-    // 30 − 12 − 3 = 15 disponibles
-    expect(screen.getByText('15')).toBeInTheDocument();
-    expect(screen.getByText('Congé maladie')).toBeInTheDocument();
-    expect(screen.getByText('10')).toBeInTheDocument();
+    expect(await screen.findByText('Congé payé')).toBeInTheDocument();
+    // 30 − 12 − 3 = 15 disponibles (textContent du bloc de droite : "15 j")
+    expect(await screen.findByText('15')).toBeInTheDocument();
+    expect(await screen.findByText('Congé maladie')).toBeInTheDocument();
+    expect(await screen.findByText('10')).toBeInTheDocument();
     await waitFor(() =>
       expect(mockedApiFetch).toHaveBeenCalledWith('/me/leave-balances')
     );

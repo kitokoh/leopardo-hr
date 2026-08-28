@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { apiFetch } from '@/lib/api-client';
 import LeaveRequestForm from '../LeaveRequestForm';
@@ -33,7 +33,19 @@ const balancesPayload = {
   ],
 };
 
+const balancesResponse = { json: async () => balancesPayload } as Response;
+
 const okResponse = { ok: true, json: async () => ({ data: { id: 99 } }) } as Response;
+
+/**
+ * apiFetch URL-aware : GET /me/leave-balances → soldes ; POST /absences → 201.
+ */
+const mockApi = () => {
+  mockedApiFetch.mockImplementation((url: string) =>
+    url === '/me/leave-balances' ? Promise.resolve(balancesResponse) : Promise.resolve(okResponse)
+  );
+};
+
 
 beforeAll(() => {
   window.localStorage.setItem('preferred_locale', 'fr');
@@ -45,7 +57,7 @@ beforeEach(() => {
 
 describe('LeaveRequestForm (#5693)', () => {
   it('propose uniquement les types avec solde disponible et soumet POST /absences', async () => {
-    mockedApiFetch.mockResolvedValue(okResponse);
+    mockApi();
     const onSubmitted = jest.fn();
 
     render(<LeaveRequestForm locale="fr" onSubmitted={onSubmitted} />);
@@ -53,16 +65,18 @@ describe('LeaveRequestForm (#5693)', () => {
     expect(await screen.findByText('Nouvelle absence')).toBeInTheDocument();
 
     // Congé maladie a 0 disponible → absent du sélecteur.
-    const select = screen.getByLabelText('Type');
+    const select = await screen.findByLabelText('Type');
     expect(select).toBeInTheDocument();
     expect(screen.queryByText(/Congé maladie/)).not.toBeInTheDocument();
     expect(screen.getByText(/Congé payé/)).toBeInTheDocument();
 
     await userEvent.selectOptions(select, '11');
-    await userEvent.type(screen.getByLabelText('Début'), '2026-09-01');
-    await userEvent.type(screen.getByLabelText('Fin'), '2026-09-05');
+    fireEvent.change(screen.getByLabelText('Début'), { target: { value: '2026-09-01' } });
+    fireEvent.change(screen.getByLabelText('Fin'), { target: { value: '2026-09-05' } });
     await userEvent.type(screen.getByLabelText('Motif'), 'Vacances');
-    await userEvent.click(screen.getByRole('button', { name: /Soumettre au RH/i }));
+    fireEvent.submit(
+      screen.getByRole('button', { name: /Soumettre au RH/i }).closest('form') as HTMLFormElement
+    );
 
     await waitFor(() =>
       expect(mockedApiFetch).toHaveBeenCalledWith(
@@ -84,13 +98,15 @@ describe('LeaveRequestForm (#5693)', () => {
   });
 
   it('refuse une soumission incomplète (type manquant)', async () => {
-    mockedApiFetch.mockResolvedValue(okResponse);
+    mockApi();
 
     render(<LeaveRequestForm locale="fr" onSubmitted={jest.fn()} />);
 
     await screen.findByText('Nouvelle absence');
 
-    await userEvent.click(screen.getByRole('button', { name: /Soumettre au RH/i }));
+    fireEvent.submit(
+      screen.getByRole('button', { name: /Soumettre au RH/i }).closest('form') as HTMLFormElement
+    );
 
     expect(await screen.findByText("Type d'absence requis")).toBeInTheDocument();
     expect(mockedApiFetch).not.toHaveBeenCalledWith(
@@ -100,17 +116,19 @@ describe('LeaveRequestForm (#5693)', () => {
   });
 
   it('refuse une fin antérieure au début', async () => {
-    mockedApiFetch.mockResolvedValue(okResponse);
+    mockApi();
 
     render(<LeaveRequestForm locale="fr" onSubmitted={jest.fn()} />);
 
     await screen.findByText('Nouvelle absence');
 
-    await userEvent.selectOptions(screen.getByLabelText('Type'), '11');
-    await userEvent.type(screen.getByLabelText('Début'), '2026-09-10');
-    await userEvent.type(screen.getByLabelText('Fin'), '2026-09-01');
+    await userEvent.selectOptions(await screen.findByLabelText('Type'), '11');
+    fireEvent.change(screen.getByLabelText('Début'), { target: { value: '2026-09-10' } });
+    fireEvent.change(screen.getByLabelText('Fin'), { target: { value: '2026-09-01' } });
     await userEvent.type(screen.getByLabelText('Motif'), 'Vacances');
-    await userEvent.click(screen.getByRole('button', { name: /Soumettre au RH/i }));
+    fireEvent.submit(
+      screen.getByRole('button', { name: /Soumettre au RH/i }).closest('form') as HTMLFormElement
+    );
 
     expect(await screen.findByText('Renseignez les dates de début et de fin.')).toBeInTheDocument();
     expect(mockedApiFetch).not.toHaveBeenCalledWith(

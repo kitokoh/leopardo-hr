@@ -178,6 +178,29 @@ export type CopyTree = {
   };
   absences: {
     title: string;
+    subtitle: string;
+    request: string;
+    newAbsence: string;
+    newAbsenceHint: string;
+    type: string;
+    typeRequired: string;
+    typePlaceholder: string;
+    start: string;
+    end: string;
+    reason: string;
+    reasonHint: string;
+    reasonRequired: string;
+    dateRequired: string;
+    attachProof: string;
+    proofAttached: string;
+    submitToHr: string;
+    submitting: string;
+    submittedSnack: string;
+    submitError: string;
+    daysAvailable: string;
+    daysShort: string;
+    noTypeAvailable: string;
+    balancesLoading: string;
     approve: string;
     reject: string;
     cancel: string;
@@ -185,9 +208,7 @@ export type CopyTree = {
     rejectBody: string;
     reasonLabel: string;
     reasonPlaceholder: string;
-    reasonRequired: string;
     rejectReasonRequired: string;
-    dateRequired: string;
     rejectConfirm: string;
     rejectInProgress: string;
     statusPending: string;
@@ -196,6 +217,17 @@ export type CopyTree = {
     statusCancelled: string;
     loadError: string;
     empty: string;
+  };
+  leaveBalances: {
+    title: string;
+    subtitle: string;
+    available: string;
+    used: string;
+    pending: string;
+    daysShort: string;
+    noData: string;
+    loading: string;
+    loadError: string;
   };
   payrollPage: {
     title: string;
@@ -814,6 +846,7 @@ const copy: Record<AppLocale, CopyTree> = {
       title: 'Soldes de congés',
       subtitle: 'Vos jours restants par type',
       available: 'Disponibles',
+      daysShort: 'ي',
       used: 'Pris',
       pending: 'En attente',
       noData: 'Aucun solde pour cette année',
@@ -1427,6 +1460,7 @@ const copy: Record<AppLocale, CopyTree> = {
       title: 'أرصدة الإجازات',
       subtitle: 'أيامك المتبقية حسب النوع',
       available: 'متاح',
+      daysShort: 'g',
       used: 'مستخدم',
       pending: 'قيد الانتظار',
       noData: 'لا يوجد رصيد لهذه السنة',
@@ -2040,6 +2074,7 @@ const copy: Record<AppLocale, CopyTree> = {
       title: 'İzin bakiyeleri',
       subtitle: 'Tür başına kalan günleriniz',
       available: 'Mevcut',
+      daysShort: 'd',
       used: 'Kullanılan',
       pending: 'Bekleyen',
       noData: 'Bu yıl için bakiye yok',
@@ -2655,6 +2690,7 @@ const copy: Record<AppLocale, CopyTree> = {
       available: 'Available',
       used: 'Used',
       pending: 'Pending',
+      daysShort: 'd',
       noData: 'No balance for this year',
       loading: 'Loading balances…',
       loadError: 'Unable to load your balances.',
