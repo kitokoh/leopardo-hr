@@ -11,7 +11,6 @@ use App\Modules\CRM\Domain\Models\CrmAccount;
 use App\Modules\CRM\Domain\Models\CrmContact;
 use App\Modules\CRM\Domain\Models\CrmImport;
 use App\Modules\CRM\Domain\Models\CrmLead;
-use App\Modules\CRM\Infrastructure\Jobs\CrmImportCommitJob;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Schema;
@@ -47,6 +46,9 @@ class CrmImportFlowTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // La migration tenant doit créer la table de sessions d'import
+        // (garde de parité CreatesMvpSchema ↔ migrations, #5443).
+        self::assertTrue(Schema::hasTable('crm_imports'), 'la migration crm_imports doit être exécutée');
         $this->createCrmTargetTables();
 
         /** @var Company $company */

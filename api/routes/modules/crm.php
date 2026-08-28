@@ -10,7 +10,9 @@
  * arrive avec CRM-V0-08 (#5712).
  */
 
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDedupController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmImportController;
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmLeadController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->prefix('crm')->group(function (): void {
@@ -19,4 +21,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/imports/{crmImport}', [CrmImportController::class, 'show']);
     Route::post('/imports/{crmImport}/commit', [CrmImportController::class, 'commit']);
     Route::post('/imports/{crmImport}/cancel', [CrmImportController::class, 'cancel']);
+
+    // ── Leads (issue #5717) ──────────────────────────────────────────────────
+    Route::post('/leads/{crmLead}/convert', [CrmLeadController::class, 'convert']);
+
+    // ── Déduplication & fusion supervisée (issue #5718) ──────────────────────
+    Route::get('/dedup/suggestions', [CrmDedupController::class, 'suggestions']);
+    Route::get('/merge/preview', [CrmDedupController::class, 'preview']);
+    Route::post('/merge', [CrmDedupController::class, 'merge']);
 });
