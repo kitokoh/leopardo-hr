@@ -37,6 +37,8 @@ return [
     'INVITATION_ALREADY_ACCEPTED' => 'Bu davet zaten kabul edildi.',
     'TOO_MANY_PENDING_REQUESTS' => 'Cok fazla bekleyen talep.',
     'SHARE_EXPIRED' => 'Bu paylasim baglantisinin suresi doldu.',
+    'SOLUTION_NOT_FOUND' => 'Bilinmeyen çözüm.',
+    'SOLUTION_MISSING_DEPENDENCY' => 'Bu çözüm için gereken modüller aktif değil.',
     'INVALID_CURRENT_PASSWORD' => 'Mevcut sifre yanlis.',
     'INVALID_PASSWORD' => 'Sifre gecersiz.',
     'SETUP_REQUIRED' => 'Devam etmeden once ilk kurulum gerekli.',

@@ -37,6 +37,8 @@ return [
     'INVITATION_ALREADY_ACCEPTED' => 'تم قبول هذه الدعوة مسبقاً.',
     'TOO_MANY_PENDING_REQUESTS' => 'عدد كبير جداً من الطلبات المعلقة.',
     'SHARE_EXPIRED' => 'انتهت صلاحية رابط المشاركة.',
+    'SOLUTION_NOT_FOUND' => 'حل غير معروف.',
+    'SOLUTION_MISSING_DEPENDENCY' => 'الوحدات المطلوبة لهذا الحل غير مفعّلة.',
     'INVALID_CURRENT_PASSWORD' => 'كلمة المرور الحالية غير صحيحة.',
     'INVALID_PASSWORD' => 'كلمة المرور غير صالحة.',
     'SETUP_REQUIRED' => 'الإعداد الأولي مطلوب قبل المتابعة.',
