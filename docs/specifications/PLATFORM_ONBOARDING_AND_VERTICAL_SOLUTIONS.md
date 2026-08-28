@@ -817,3 +817,303 @@ Les événements `fuel.meter_reading.accepted.v1`, `fuel.meter_interval.calculat
 - Le parcours mobile reste utilisable lorsque le réseau est instable et rejoue sans doublon.
 
 Cette exigence devient une partie de `FUEL-002`, `FUEL-003`, `FUEL-006`, `FUEL-008` et `FUEL-010`. Une version de FuelStation ne peut être considérée fonctionnelle si elle gère les shifts et les caisses mais ne permet pas de tracer les compteurs par pompe, par opérateur et par heure.
+
+## 14. Flux opérationnel prioritaire — session pompiste de bout en bout
+
+### 14.1 Modèle métier corrigé
+
+Une station-service appartient à un tenant et un tenant peut posséder une ou plusieurs stations. Une station possède plusieurs pompes. Une pompe peut être affectée à un ou plusieurs pompistes successivement au cours de la même journée, mais une même pompe ne peut pas avoir deux affectations actives qui se chevauchent sauf si une permission de supervision autorise explicitement le chevauchement.
+
+Le concept central n’est pas simplement le shift : c’est la `fuel_attendant_session`, c’est-à-dire la période pendant laquelle un pompiste est responsable d’une ou plusieurs pompes déterminées. Une session peut couvrir une pompe ou plusieurs pompes, avec une heure de début et une heure de fin, un shift de référence et un responsable de validation.
+
+```text
+Tenant
+ └── Station A
+      ├── Pompe 01 ─┬─ Session pompiste P1 : 06:00–12:00
+      │             └─ Session pompiste P2 : 12:00–18:00
+      ├── Pompe 02 ─┬─ Session pompiste P1 : 06:00–12:00
+      │             └─ Session pompiste P3 : 12:00–18:00
+      └── Pompe 03 ─── Session pompiste P4 : 18:00–06:00
+```
+
+Un pompiste peut donc avoir plusieurs pompes dans sa session. Une pompe peut changer de pompiste à midi sans créer une nouvelle station ni perdre l’historique. Les périodes doivent être comparables aux relevés de compteur et aux dépôts financiers.
+
+### 14.2 Parcours du pompiste — application mobile uniquement
+
+Il n’y a pas d’application web pour le pompiste. Le pompiste utilise une application mobile Flutter dédiée, par exemple `leopardo_pump_operator`, qui réutilise les primitives d’authentification, de synchronisation et de design system de `leopardo_core`, mais possède un parcours extrêmement court et adapté au terrain.
+
+#### Début de session
+
+Le pompiste se connecte ou utilise une session appareil sécurisée. L’application obtient depuis l’API les affectations actives autorisées pour la station et l’intervalle courant. Il sélectionne `Commencer ma session`, vérifie la liste des pompes qui lui sont attribuées et photographie l’écran de chaque compteur.
+
+Pour chaque pompe, l’application conserve :
+
+```text
+station_id
+pump_id
+meter_id
+attendant_session_id
+captured_at_device
+captured_at_utc après synchronisation
+photo_reference chiffrée et à durée de vie limitée
+ocr_raw_result non exposé au pompiste
+reading_value extrait
+reading_unit
+ocr_confidence
+operator_confirmation
+```
+
+L’OCR est une aide à la saisie, pas une autorité aveugle. L’image doit être cadrée, lisible et associée à la pompe sélectionnée. Si la confiance est inférieure au seuil configuré, l’application demande une nouvelle photo ou une confirmation manuelle contrôlée. Le serveur revalide les bornes, le compteur, la séquence et la permission ; il ne fait jamais confiance à `company_id`, `pump_id` ou au résultat OCR envoyé par le client sans résolution serveur.
+
+#### Fin de session
+
+Le pompiste sélectionne `Terminer ma session`. L’application lui présente uniquement les pompes de sa session encore ouvertes. Il photographie l’écran de chaque compteur, récupère les valeurs finales et affiche pour chaque pompe :
+
+```text
+Valeur début
+Valeur fin
+Litres vendus calculés
+Prix applicable si configuré
+Montant théorique attendu
+Montant réellement déposé
+Écart
+Motif obligatoire si écart
+```
+
+Le pompiste saisit le montant réellement déposé, ou le confirme à partir d’une photo/reçu si le mode de caisse le permet. Le système ne considère pas le bilan comme clôturé tant que chaque pompe et le dépôt financier de la session ne sont pas traités ou explicitement soumis à revue.
+
+### 14.3 Modèle de données spécifique
+
+Les tables Laravel doivent au minimum couvrir :
+
+```text
+fuel_attendant_sessions
+- id
+- company_id
+- station_id
+- attendant_employee_id
+- shift_id NULL
+- opened_at_utc
+- opened_at_local
+- closed_at_utc NULL
+- closed_at_local NULL
+- timezone
+- status: draft/open/submitted/under_review/approved/rejected/closed
+- opened_by_device_id
+- closed_by_device_id NULL
+- closing_reviewed_by NULL
+- version
+- idempotency_key UNIQUE(company_id, idempotency_key)
+
+fuel_attendant_session_pumps
+- id
+- company_id
+- session_id
+- pump_id
+- meter_id
+- assignment_started_at_utc
+- assignment_ended_at_utc NULL
+- opening_reading_id NULL
+- closing_reading_id NULL
+- expected_litres NULL
+- expected_amount_minor NULL
+- actual_amount_minor NULL
+- variance_amount_minor NULL
+- variance_reason_code NULL
+- status
+- UNIQUE(company_id, session_id, pump_id)
+- INDEX(company_id, pump_id, assignment_started_at_utc)
+
+fuel_meter_readings
+- id
+- company_id
+- station_id
+- pump_id
+- meter_id
+- session_id
+- reading_kind: opening/closing/intermediate/correction
+- reading_value_minor
+- reading_unit
+- captured_at_device
+- captured_at_utc
+- station_local_date
+- captured_by_employee_id
+- photo_asset_id NULL
+- ocr_attempt_id NULL
+- ocr_confidence NULL
+- operator_confirmed_at NULL
+- validation_status
+- idempotency_key
+- UNIQUE(company_id, idempotency_key)
+- INDEX(company_id, meter_id, captured_at_utc DESC)
+
+fuel_ocr_attempts
+- id
+- company_id
+- reading_id
+- provider_code
+- provider_request_id
+- status
+- extracted_value_minor NULL
+- extracted_unit NULL
+- confidence NULL
+- bounding_boxes_redacted JSONB NULL
+- error_code NULL
+- requested_at / completed_at
+- retention_expires_at
+- UNIQUE(company_id, provider_code, provider_request_id)
+
+fuel_session_cash_deposits
+- id
+- company_id
+- session_id
+- expected_amount_minor
+- actual_amount_minor NULL
+- currency
+- deposit_method
+- receipt_asset_id NULL
+- declared_at_utc NULL
+- declared_by_employee_id NULL
+- verified_at_utc NULL
+- verified_by NULL
+- status: pending/declared/under_review/accepted/rejected
+- variance_amount_minor NULL
+- variance_reason_code NULL
+
+fuel_session_settlements
+- id
+- company_id
+- session_id
+- station_business_date
+- total_litres
+- expected_amount_minor
+- actual_amount_minor
+- variance_amount_minor
+- pumps_count
+- anomalies_count
+- status: draft/submitted/manager_reviewed/approved/closed
+- UNIQUE(company_id, session_id)
+- INDEX(company_id, station_business_date, status)
+```
+
+Toutes les relations vers `company_id`, station, pompe, meter, employé, shift, session et reading doivent être vérifiées par clés composites ou par Policies et requêtes tenant-scoped. Une session clôturée est immuable ; une correction crée une version ou un ajustement audité.
+
+### 14.4 Calcul du volume et du montant attendu
+
+Pour chaque pompe de la session :
+
+```text
+litres = closing_meter_value - opening_meter_value
+expected_amount = litres × applicable_unit_price
+```
+
+Le système doit prendre en compte le produit distribué, l’unité et la précision du compteur. Si le prix a changé pendant la session, le calcul doit être segmenté par période de prix ou soumis à une règle de clôture validée ; il ne faut pas appliquer silencieusement le dernier prix à toute la période.
+
+Un compteur décroissant, une photo illisible, une valeur hors capacité, un trou temporel, un prix manquant ou une affectation qui chevauche une autre session produit une anomalie. L’anomalie empêche la clôture automatique mais ne détruit pas la saisie. Le manager peut demander une correction ou approuver une exception avec motif.
+
+Le montant attendu est le montant théorique calculé à partir des litres validés et des prix applicables. Le montant réellement déposé est une déclaration de caisse distincte. L’écart est :
+
+```text
+variance = actual_amount - expected_amount
+```
+
+Il doit être conservé en unités monétaires mineures, avec devise, méthode de dépôt, preuve éventuelle et motif obligatoire au-delà d’un seuil configuré.
+
+### 14.5 Bilan de journée manager
+
+Le manager ne reçoit pas un message libre non vérifiable : il reçoit un bilan généré depuis les sessions et settlements persistés. Pour une station ou pour toutes les stations de son tenant autorisées, il peut consulter :
+
+- les pompistes présents et leurs horaires ;
+- les pompes attribuées à chacun ;
+- les relevés d’ouverture et de fermeture ;
+- les litres par pompe, pompiste, station et période ;
+- le montant attendu ;
+- le montant réellement déposé ;
+- les écarts et leurs motifs ;
+- les sessions non clôturées ;
+- les anomalies OCR ou compteur ;
+- les corrections et validations ;
+- l’état de synchronisation des appareils.
+
+Le bilan de journée est un read model calculé par un job idempotent après soumission de session et après clôture de la journée commerciale. Une notification est envoyée au manager uniquement si le canal est configuré et autorisé. Elle contient un résumé minimal et un lien authentifié vers l’espace client ; elle ne doit pas exposer les données financières détaillées dans un WhatsApp non sécurisé.
+
+```text
+Manager mobile
+  → sélectionne tenant/station/date autorisés
+  → consulte le bilan calculé
+  → demande revue ou approuve
+  → reçoit alertes de session manquante/anomalie
+  → valide la clôture de station
+```
+
+Un manager ayant plusieurs stations ne voit que les stations qui lui sont attribuées par Policy. Les totaux multi-stations ne doivent jamais être accessibles par simple modification d’un identifiant dans l’URL.
+
+### 14.6 API mobile pompiste
+
+```text
+GET  /api/v1/fuel-station/my/assignments?at={time}
+POST /api/v1/fuel-station/attendant-sessions
+GET  /api/v1/fuel-station/attendant-sessions/{session}
+POST /api/v1/fuel-station/attendant-sessions/{session}/pumps/{pump}/opening-photo
+POST /api/v1/fuel-station/attendant-sessions/{session}/pumps/{pump}/closing-photo
+POST /api/v1/fuel-station/attendant-sessions/{session}/cash-deposit
+POST /api/v1/fuel-station/attendant-sessions/{session}/submit
+POST /api/v1/fuel-station/attendant-sessions/{session}/cancel
+```
+
+Les endpoints photo utilisent upload signé à durée de vie courte ou endpoint multipart contrôlé, type MIME allowlisté, limite de taille, antivirus/scan, suppression EXIF non nécessaire, chiffrement au repos et rétention courte. L’API retourne un `202 Accepted` pour l’OCR asynchrone, puis l’application consulte un statut ou reçoit une notification sécurisée. Une capture échouée peut être rejouée avec la même clé d’idempotence sans créer une seconde lecture.
+
+### 14.7 API manager mobile
+
+```text
+GET  /api/v1/fuel-station/manager/stations
+GET  /api/v1/fuel-station/manager/stations/{station}/daily-settlements?date={date}
+GET  /api/v1/fuel-station/manager/sessions/{session}
+POST /api/v1/fuel-station/manager/sessions/{session}/request-review
+POST /api/v1/fuel-station/manager/sessions/{session}/approve
+POST /api/v1/fuel-station/manager/sessions/{session}/reject
+GET  /api/v1/fuel-station/manager/anomalies
+```
+
+Les routes manager utilisent les Policies serveur, filtrent par stations autorisées et renvoient des Resources explicitement allowlistées. Les totaux sont calculés côté serveur depuis un read model validé, jamais depuis des valeurs agrégées envoyées par le mobile.
+
+### 14.8 États de session
+
+```text
+DRAFT
+  → OPEN
+  → SUBMITTED
+  → UNDER_REVIEW
+  → APPROVED
+  → CLOSED
+
+OPEN → CANCELLED
+SUBMITTED → REJECTED → OPEN
+UNDER_REVIEW → REJECTED → OPEN
+```
+
+Une session ne peut devenir `CLOSED` que si toutes les pompes affectées ont un relevé de début et de fin accepté, le dépôt est déclaré ou explicitement marqué manquant, les anomalies sont résolues ou approuvées et le manager autorisé a validé le bilan.
+
+### 14.9 Critères de recette métier obligatoires
+
+- Un tenant peut gérer plusieurs stations sans mélange de données.
+- Une station peut affecter plusieurs pompes à un pompiste pour une période donnée.
+- Plusieurs pompistes peuvent se succéder sur la même pompe pendant la même journée.
+- Un pompiste peut gérer plusieurs pompes simultanément.
+- Le pompiste utilise uniquement l’application mobile dédiée ; aucun écran web pompiste n’est requis.
+- Le pompiste photographie le compteur au début et à la fin de sa session.
+- L’OCR extrait une valeur, expose sa confiance et demande confirmation ou nouvelle photo si nécessaire.
+- Le serveur calcule les litres par pompe à partir des relevés validés.
+- Le serveur calcule le montant attendu avec le prix applicable et conserve le montant réellement déposé séparément.
+- Un écart impose un motif ou une revue selon le seuil configuré.
+- Le manager voit le bilan de sa ou ses stations dans son application mobile manager.
+- Une session, une photo, un OCR, une synchronisation ou une soumission rejouée ne crée pas de doublon.
+- Une requête forgée vers une autre station, pompe, session ou tenant échoue.
+- Une session clôturée et un relevé corrigé restent entièrement auditables.
+- Le bilan de journée est recalculable et identique après reprise du job.
+
+Cette section rend obsolète toute formulation qui traiterait le relevé de compteur comme une simple saisie isolée. La capacité de référence de FuelStation est désormais : **session pompiste → affectations de pompes → photos compteur ouverture/fermeture → OCR contrôlé → litres → montant attendu → dépôt réel → écart → validation manager → bilan de journée multi-stations**.
+
+## 15. EduManager — clarification de priorité
+
+EduManager reste une solution verticale indépendante et n’est pas modifiée par le flux FuelStation. Ses spécifications élèves, responsables légaux, classes, notes, bulletins, présence, permissions et portail guardian restent valides. Les deux verticales partagent Platform Core, Tenant, Identity, Notifications, CRM client, Marketing et Accounting par contrats, mais ne partagent pas leurs tables métier.
