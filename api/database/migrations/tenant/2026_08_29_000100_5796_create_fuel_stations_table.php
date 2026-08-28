@@ -43,7 +43,7 @@ return new class extends Migration
 
         $schema = resolveTableSchema('fuel_stations');
 
-        if ($schema !== null) {
+        if ($schema !== null && ! $this->constraintExists('fuel_stations_status_check')) {
             DB::statement(
                 "ALTER TABLE {$schema}.fuel_stations ADD CONSTRAINT fuel_stations_status_check CHECK (status IN ('active', 'inactive', 'archived'))"
             );
@@ -53,5 +53,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('fuel_stations');
+    }
+
+    private function constraintExists(string $name): bool
+    {
+        $row = DB::selectOne('SELECT 1 FROM pg_constraint WHERE conname = ?', [$name]);
+
+        return $row !== null;
     }
 };
