@@ -2199,6 +2199,50 @@ trait CreatesMvpSchema
                     ->cascadeOnDelete();
             });
         }
+
+        // Parité fixture ↔ migrations tenant récentes (garde #5443) — tables
+        // CRM mergées (#5714 imports, #5741 outbox) ajoutées à la fixture
+        // pour débloquer la garde sur toutes les PRs.
+        if (! Schema::hasTable($this->moduleTable('crm_imports'))) {
+            Schema::create($this->moduleTable('crm_imports'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->string('entity_type', 20);
+                $table->string('filename', 255);
+                $table->string('status', 20)->default('previewed');
+                $table->unsignedInteger('total_rows')->default(0);
+                $table->unsignedInteger('valid_rows')->default(0);
+                $table->unsignedInteger('error_rows')->default(0);
+                $table->jsonb('columns')->nullable();
+                $table->jsonb('preview_data')->nullable();
+                $table->jsonb('errors')->nullable();
+                $table->jsonb('raw_rows')->nullable();
+                $table->jsonb('result')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->unsignedInteger('committed_by')->nullable();
+                $table->unsignedInteger('cancelled_by')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('crm_outbox_events'))) {
+            Schema::create($this->moduleTable('crm_outbox_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('event_type', 80);
+                $table->string('aggregate_type', 120)->nullable();
+                $table->string('aggregate_id', 120)->nullable();
+                $table->jsonb('payload');
+                $table->string('status', 20)->default('pending');
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->timestampTz('available_at')->useCurrent();
+                $table->text('last_error')->nullable();
+                $table->timestampTz('processed_at')->nullable();
+                $table->string('idempotency_key', 255);
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+            });
+        }
     }
 
     private function dropMvpTables(): void
