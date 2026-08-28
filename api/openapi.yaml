@@ -10113,6 +10113,60 @@ paths:
           description: Shift introuvable ou autre tenant
         '422':
           description: SHIFT_OVERLAP / SHIFT_INACTIVE / EMPLOYEE_OUTSIDE_TENANT
+  /fuel/shifts/{shift}/presence:
+    get:
+      tags:
+      - FuelStation
+      summary: Roster de presence du shift pour une date (manager)
+      description: "FUEL-006 - resout la presence des employes affectes depuis attendance_logs (source canonique Attendance) : present/late/absent/leave/holiday/incomplete + outside_shift si le check_in sort de la fenetre du shift."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2026-09-01'
+      responses:
+        '200':
+          description: Roster de presence
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+        '422':
+          description: Date invalide
+  /fuel/me/presence:
+    get:
+      tags:
+      - FuelStation
+      summary: Presence du pompiste connecte pour une date (self-service)
+      description: FUEL-006 - presence resolue depuis attendance_logs pour le salarie authentifie, avec le shift affecte ce jour.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2026-09-01'
+      responses:
+        '200':
+          description: Presence du pompiste
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Date invalide
   /fuel/shift-assignments/{assignment}:
     delete:
       tags:

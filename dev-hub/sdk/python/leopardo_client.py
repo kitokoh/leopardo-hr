@@ -1764,6 +1764,10 @@ class LeopardoClient:
         """Rapport kilometrage"""
         return self.request("GET", "/fleet/reports/mileage", **kwargs)
 
+    def get_fuel_me_presence(self, **kwargs):
+        """Presence du pompiste connecte pour une date (self-service)"""
+        return self.request("GET", "/fuel/me/presence", **kwargs)
+
     def get_fuel_me_shifts(self, **kwargs):
         """Affectations de shifts du pompiste connecte (self-service)"""
         return self.request("GET", "/fuel/me/shifts", **kwargs)
@@ -1799,6 +1803,10 @@ class LeopardoClient:
     def post_fuel_shifts_by_shift_assignments(self, **kwargs):
         """Affecter un employe a un shift pour une date (manager)"""
         return self.request("POST", "/fuel/shifts/{shift}/assignments", **kwargs)
+
+    def get_fuel_shifts_by_shift_presence(self, **kwargs):
+        """Roster de presence du shift pour une date (manager)"""
+        return self.request("GET", "/fuel/shifts/{shift}/presence", **kwargs)
 
     def post_growth_partner_apply(self, **kwargs):
         """Candidature partenaire"""

@@ -2180,6 +2180,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/fleet/reports/mileage", options);
     },
 
+    /** Presence du pompiste connecte pour une date (self-service) */
+    getFuelMePresence(options = {}) {
+      return request("GET", "/fuel/me/presence", options);
+    },
+
     /** Affectations de shifts du pompiste connecte (self-service) */
     getFuelMeShifts(options = {}) {
       return request("GET", "/fuel/me/shifts", options);
@@ -2223,6 +2228,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Affecter un employe a un shift pour une date (manager) */
     postFuelShiftsByShiftAssignments(options = {}) {
       return request("POST", "/fuel/shifts/{shift}/assignments", options);
+    },
+
+    /** Roster de presence du shift pour une date (manager) */
+    getFuelShiftsByShiftPresence(options = {}) {
+      return request("GET", "/fuel/shifts/{shift}/presence", options);
     },
 
     /** Candidature partenaire */
