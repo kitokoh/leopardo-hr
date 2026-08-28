@@ -6,3 +6,9 @@
 # Les verbes d'action PUT/PATCH dépréciés (#4930) sont désormais documentés
 # dans openapi.yaml avec `deprecated: true` (tags [Deprecated]).
 
+# CRM client — canal email (#5726) : contrat OpenAPI canonique publié par #5712
+# (Périmètre CRM V0-08 « Publier les contrats API et OpenAPI du CRM client »).
+POST /v1/crm/email/transactional
+POST /v1/crm/email/marketing
+POST /v1/crm/email/webhook
+POST /v1/crm/email/unsubscribe
