@@ -2,6 +2,7 @@
 
 use App\Modules\Absence\Providers\AbsenceServiceProvider;
 use App\Modules\Accounting\Providers\AccountingServiceProvider;
+use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\Attendance\Providers\AttendanceServiceProvider;
 use App\Modules\Billing\Providers\BillingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
@@ -39,6 +40,8 @@ return [
     FleetServiceProvider::class,
     BillingServiceProvider::class,
     CamerasServiceProvider::class,
+    // — CRM client (issue #5707, ADR-CRM-DUAL-CONTEXTS)
+    CrmServiceProvider::class,
     // — New DDD modules (Phase 2)
     GrowthServiceProvider::class,
     AbsenceServiceProvider::class,
