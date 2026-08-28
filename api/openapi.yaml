@@ -96,9 +96,9 @@ tags:
 - name: Marketing
   description: Connexion du compte social (agregateur Ayrshare) et gestion des publications reseaux sociaux d'un tenant.
 - name: Platform Admin
+  description: 'Administration super-admin : gestion tenants, plans, metriques globales.'
 - name: FuelStation
   description: 'FuelStation : stations, sites, pompes, cuves, compteurs, relevés (issues #5795-#5798).'
-  description: 'Administration super-admin : gestion tenants, plans, metriques globales.'
 paths:
   /attendance/config:
     get:
