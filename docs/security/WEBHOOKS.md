@@ -5,12 +5,6 @@
 > (signatures Stripe). Registre d'idempotence : table publique
 > `webhook_events` (unique `source + event_id`), service
 > `WebhookEventRegistry` (Platform module).
->
-> **Threat model complet (attaques × contrôles, cycle de vie, runbook) :
-> `docs/security/WEBHOOK_THREAT_MODEL.md` (issue #5740).** Bornes d'entrée
-> ajoutées par #5740 sur les endpoints à secret partagé : taille ≤ 1 MiB
-> (`413`), JSON valide (`400`), fenêtre de rejeu 300 s si `X-Webhook-Timestamp`
-> présent (`400`) — via `InboundWebhookVerifier`.
 
 ## Matrice
 

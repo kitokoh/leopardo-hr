@@ -9,7 +9,6 @@ use App\Modules\Marketing\Application\Actions\CaptureMarketingLead;
 use App\Modules\Marketing\Application\DTOs\CreateMarketingLeadDTO;
 use App\Modules\Marketing\Interfaces\Api\V1\Requests\StoreMarketingLeadRequest;
 use App\Modules\Platform\Infrastructure\Services\WebhookEventRegistry;
-use App\Shared\Services\InboundWebhookVerifier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -68,33 +67,9 @@ class MarketingLeadController extends Controller
         }
 
         // #5444 : idempotence persistée — pas d'identifiant d'événement dans
-        // #5740 — frontière hostile : bornes d'entrée AVANT le registre
-        // d'idempotence (taille max, JSON valide, fenêtre de rejeu
-        // optionnelle si l'en-tête est présent). La clé reste le hash du
-        // payload brut : une redelivrance identique (retry vitrine/réseau)
-        // ne crée pas de lead en double.
+        // le payload, la clé est le hash du payload brut : une redelivrance
+        // identique (retry vitrine/réseau) ne crée pas de lead en double.
         $payload = $request->getContent();
-
-        if (! InboundWebhookVerifier::payloadWithinLimit($payload)) {
-            Log::warning('Marketing lead ingest: payload too large', ['bytes' => strlen($payload)]);
-
-            return new JsonResponse(['error' => 'Payload too large'], 413);
-        }
-
-        if ($request->isJson() && ! InboundWebhookVerifier::isJsonPayload($payload)) {
-            Log::warning('Marketing lead ingest: invalid JSON payload');
-
-            return new JsonResponse(['error' => 'Invalid JSON'], 400);
-        }
-
-        $timestamp = InboundWebhookVerifier::timestampFromHeader($request->header('X-Webhook-Timestamp'));
-
-        if ($timestamp !== null && ! InboundWebhookVerifier::timestampIsFresh($timestamp)) {
-            Log::warning('Marketing lead ingest: expired or skewed timestamp', ['timestamp' => $timestamp]);
-
-            return new JsonResponse(['error' => 'Expired timestamp'], 400);
-        }
-
         $eventId = $this->registry->eventId($payload);
         $replay = $this->registry->begin('marketing-lead', $eventId, hash('sha256', $payload));
 
