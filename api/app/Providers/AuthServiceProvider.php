@@ -12,6 +12,7 @@ use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
+use App\Modules\CRM\Domain\Models\CrmTask;
 use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
 use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use App\Modules\Fleet\Domain\Models\Vehicle;
@@ -57,6 +58,7 @@ use App\Policies\SocialContributionPolicy;
 use App\Policies\TaxSlabPolicy;
 use App\Policies\PositionPolicy;
 use App\Policies\RecruitmentPolicy;
+use App\Policies\CrmTaskPolicy;
 use App\Policies\SchedulePolicy;
 use App\Policies\SitePolicy;
 use App\Policies\SocialAccountPolicy;
@@ -82,6 +84,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);
+
+        // CRM client (issues #5719/#5720)
+        Gate::policy(CrmTask::class, CrmTaskPolicy::class);
         Gate::policy(Site::class, SitePolicy::class);
 
         // HR workflows

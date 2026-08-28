@@ -10,8 +10,9 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
 use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
-use App\Policies\ExportPolicy;
 use App\Policies\CrmSearchPolicy;
+use App\Policies\CrmTaskPolicy;
+use App\Policies\ExportPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -75,6 +76,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Issue #5719 — recherche CRM client tenant-scoped (Policy CRM).
         Gate::define('crm.search', [CrmSearchPolicy::class, 'search']);
+        // Issue #5720 — timeline d'activités d'un account CRM.
+        Gate::define('crm.timeline', [CrmTaskPolicy::class, 'viewTimeline']);
 
         Gate::define('viewApiDocs', function (?Employee $user = null) {
             // Pour l'instant, on autorise l'accès à la doc en dev, ou on peut exiger un accès Super Admin
