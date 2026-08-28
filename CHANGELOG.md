@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- **feat(crm): squelette DDD du module CRM client (Closes #5707, CRM-V0-03).** Nouveau module `api/app/Modules/CRM/` conforme constitution §VI (Application/Domain/Infrastructure/Interfaces/Providers + `CrmServiceProvider` enregistré dans `bootstrap/providers.php`), sans logique métier prématurée et sans import vers Platform/Marketing (garde isolation #5584 verte — le CRM commercial Leopardo n'est pas touché, ADR-CRM-001/002). Docs d'architecture mises à jour ×4 (parité #5589) : `ARCHITECTURE.md`, `docs/ARCHITECTURE_STATUS.md`, `docs/CONTRIBUTING_DDD.md`, `api/ARCHITECTURE.md` — 19 modules actifs. Vérifié localement : `check-architecture-docs-parity.sh` OK, `check-module-isolation.sh` OK (0 nouvel import croisé), structure 5 couches présente.
+
 - **fix(ci): garde inter-PR des préfixes de migrations (#5437) — faux positif sur push main : baseSha vide faisait considérer toutes les migrations de main comme nouvelles et les comparer aux PRs ouvertes (collision fantôme dès quune PR est ouverte).** Le contrôle ne sapplique plus quaux PRs ouvertes ; bug latent du mode --local (currentNewNames) corrigé au passage — tests 8/8.
 - **docs(api): note ops — healthcheck (GET /api/v1/health, match PROGRAM_VERSION, uptime < 900 s), CORS E2E (origine 127.0.0.1:4173 whitelistée, déploiement requis), incident Redis (healthcheck fail-closed).**
 
