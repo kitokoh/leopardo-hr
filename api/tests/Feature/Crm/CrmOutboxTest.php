@@ -247,7 +247,8 @@ final class LedgerConsumer implements CrmOutboxConsumer
 
     public function handle(array $payload): void
     {
-        $accountId = (int) ($payload['account_id'] ?? 0);
+        $rawAccountId = $payload['account_id'] ?? 0;
+        $accountId = is_numeric($rawAccountId) ? (int) $rawAccountId : 0;
         $key = hash('sha256', $this->eventType.'|'.json_encode($payload, JSON_THROW_ON_ERROR));
 
         try {
