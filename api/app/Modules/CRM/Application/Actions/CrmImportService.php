@@ -47,7 +47,13 @@ final class CrmImportService
     ): CrmImport {
         $this->parser->validateUpload($file);
 
-        $result = $this->parser->parse($file->getRealPath(), $entityType);
+        $path = $file->getRealPath();
+
+        if ($path === false) {
+            throw CrmImportException::invalidFile('lecture du fichier impossible');
+        }
+
+        $result = $this->parser->parse($path, $entityType);
 
         $sample = array_slice($result->rows, 0, self::PREVIEW_SAMPLE_SIZE);
         $maskedSample = array_map(

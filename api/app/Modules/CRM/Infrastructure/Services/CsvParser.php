@@ -250,7 +250,11 @@ final class CsvParser
     {
         $cells = str_getcsv($line);
 
-        return array_map(static fn (mixed $cell): string => (string) $cell, $cells ?? []);
+        if ($cells === false) {
+            return [];
+        }
+
+        return array_map(static fn (mixed $cell): string => (string) $cell, $cells);
     }
 
     /**
