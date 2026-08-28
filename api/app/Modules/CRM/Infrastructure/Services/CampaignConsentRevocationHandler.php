@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\CRM\Application\Services;
+namespace App\Modules\CRM\Infrastructure\Services;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;

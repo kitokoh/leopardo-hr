@@ -419,6 +419,7 @@ class CrmConsentTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonPath('data.status', 'withdrawn');
-        $response->assertJsonPath('data.revoked_at', $consent->fresh()->revoked_at?->toIso8601String());
+        $refreshed = $consent->fresh();
+        $response->assertJsonPath('data.revoked_at', $refreshed?->revoked_at?->toIso8601String());
     }
 }

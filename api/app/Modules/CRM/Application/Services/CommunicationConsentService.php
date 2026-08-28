@@ -29,6 +29,9 @@ use Illuminate\Support\Facades\Auth;
  */
 final class CommunicationConsentService
 {
+    /**
+     * @param  array<string, mixed>  $metadata
+     */
     public function grant(
         int $contactId,
         ConsentChannel $channel,
@@ -56,6 +59,9 @@ final class CommunicationConsentService
         return $consent;
     }
 
+    /**
+     * @param  array<string, mixed>  $metadata
+     */
     public function deny(
         int $contactId,
         ConsentChannel $channel,
