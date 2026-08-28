@@ -286,7 +286,7 @@ final class MeterReadingService
         }
 
         $previousValue = (int) $previous->getAttribute('reading_value_minor');
-        $previousAt = Carbon::parse($previous->getAttribute('captured_at_utc'));
+        $previousAt = Carbon::parse((string) $previous->getAttribute('captured_at_utc'));
         $intervalSeconds = max(0, $capturedAtUtc->diffInSeconds($previousAt));
 
         if ($currentValueMinor >= $previousValue) {
@@ -348,7 +348,7 @@ final class MeterReadingService
                 'meter_id' => (int) $reading->getAttribute('meter_id'),
                 'reading_value_minor' => (int) $reading->getAttribute('reading_value_minor'),
                 'reading_unit' => $reading->getAttribute('reading_unit'),
-                'captured_at_utc' => Carbon::parse($reading->getAttribute('captured_at_utc'))->toIso8601String(),
+                'captured_at_utc' => Carbon::parse((string) $reading->getAttribute('captured_at_utc'))->toIso8601String(),
                 'status' => $reading->getAttribute('status'),
                 'source_code' => $reading->getAttribute('source_code'),
             ],
