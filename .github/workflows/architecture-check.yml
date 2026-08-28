@@ -250,6 +250,14 @@ jobs:
         # dev-hub/tools/module-isolation-allowlist.txt.
         run: dev-hub/tools/check-module-isolation.sh
 
+      - name: Check CRM client module boundary imports (issue #5745)
+        # Garde orientée CRM client : HARD BLOCK des imports vers le CRM
+        # commercial (Platform/Marketing), Payroll et Accounting ; tout autre
+        # import inter-module exige une exemption justifiée dans
+        # crm-boundary-allowlist.txt. En veille tant que Modules/CRM
+        # n'existe pas sur main (ADR 0018, ADR-CRM-DUAL-CONTEXTS).
+        run: bash dev-hub/tools/check-crm-boundary-imports.sh api
+
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
 

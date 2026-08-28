@@ -74,6 +74,17 @@ rajoutée « pour passer ». Dérogations structurelles déjà documentées :
 canonique hors de `Core/Auth` (#5584 item 3, chantier à part — 361
 consommateurs).
 
+**Frontières du module CRM client (issue #5745, ADR 0018) :** le futur module
+`CRM` (CRM client tenant, cf. ADR-CRM-DUAL-CONTEXTS) est couvert par une garde
+orientée dédiée, `dev-hub/tools/check-crm-boundary-imports.sh`, en complément
+de la garde symétrique #5584 ci-dessus. Elle interdit en HARD BLOCK tout
+`use App\Modules\{Platform,Marketing,Payroll,Accounting}\` dans
+`api/app/Modules/CRM/**` (CRM commercial, paie, comptabilité — aucun échange
+direct), et exige une exemption justifiée dans
+`dev-hub/tools/crm-boundary-allowlist.txt` pour tout autre import
+inter-module. Les imports `App\Core\*`, `App\Shared\*` et intra-module
+restent libres. La garde est en veille tant que `Modules/CRM` n'existe pas.
+
 ## Modules existants
 
 | Module | Statut routes | Statut code | ServiceProvider |
