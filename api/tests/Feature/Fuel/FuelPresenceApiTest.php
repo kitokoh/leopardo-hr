@@ -28,14 +28,14 @@ class FuelPresenceApiTest extends TestCase
     private function makeCompanyWithTimezone(): Company
     {
         /** @var Company $company */
-        $company = Company::factory()->create(['timezone' => 'Africa/Algiers']);
+        $company = Company::factory()->create(['features' => ['fuel_station' => true], 'timezone' => 'Africa/Algiers']);
 
         return $company;
     }
 
     public function test_unauthenticated_gets_401(): void
     {
-        $this->getJson('/api/v1/fuel/me/presence?date=2026-09-01')->assertStatus(401);
+        $this->getJson('/api/v1/fuel-station/me/presence?date=2026-09-01')->assertStatus(401);
     }
 
     public function test_operator_cannot_read_shift_roster(): void
@@ -52,7 +52,7 @@ class FuelPresenceApiTest extends TestCase
             'end_time' => '14:00',
         ]);
 
-        $this->getJson("/api/v1/fuel/shifts/{$shift->id}/presence?date=2026-09-01")->assertStatus(403);
+        $this->getJson("/api/v1/fuel-station/shifts/{$shift->id}/presence?date=2026-09-01")->assertStatus(403);
     }
 
     public function test_manager_gets_presence_roster_from_attendance_logs(): void
@@ -114,13 +114,13 @@ class FuelPresenceApiTest extends TestCase
             ],
         ]);
 
-        $this->getJson("/api/v1/fuel/shifts/{$shift->id}/presence?date=2026-09-01")
+        $this->getJson("/api/v1/fuel-station/shifts/{$shift->id}/presence?date=2026-09-01")
             ->assertStatus(200)
             ->assertJsonPath('data.date', '2026-09-01')
             ->assertJsonCount(3, 'data.presence');
 
         /** @var list<array<string, mixed>> $presenceRows */
-        $presenceRows = $this->getJson("/api/v1/fuel/shifts/{$shift->id}/presence?date=2026-09-01")->json('data.presence');
+        $presenceRows = $this->getJson("/api/v1/fuel-station/shifts/{$shift->id}/presence?date=2026-09-01")->json('data.presence');
         /** @var array<int, array<string, mixed>> $byEmployee */
         $byEmployee = collect($presenceRows)->keyBy('employee_id')->all();
 
@@ -168,7 +168,7 @@ class FuelPresenceApiTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        $this->getJson("/api/v1/fuel/shifts/{$shift->id}/presence?date=2026-09-01")
+        $this->getJson("/api/v1/fuel-station/shifts/{$shift->id}/presence?date=2026-09-01")
             ->assertStatus(200)
             ->assertJsonPath('data.presence.0.status', 'present')
             ->assertJsonPath('data.presence.0.outside_shift', true);
@@ -212,7 +212,7 @@ class FuelPresenceApiTest extends TestCase
         ]);
 
         Sanctum::actingAs($operator);
-        $this->getJson('/api/v1/fuel/me/presence?date=2026-09-01')
+        $this->getJson('/api/v1/fuel-station/me/presence?date=2026-09-01')
             ->assertStatus(200)
             ->assertJsonCount(1, 'data.presence')
             ->assertJsonPath('data.presence.0.employee_id', $operator->id)
@@ -235,6 +235,6 @@ class FuelPresenceApiTest extends TestCase
             'end_time' => '14:00',
         ]);
 
-        $this->getJson("/api/v1/fuel/shifts/{$shift->id}/presence?date=2026-09-01")->assertStatus(404);
+        $this->getJson("/api/v1/fuel-station/shifts/{$shift->id}/presence?date=2026-09-01")->assertStatus(404);
     }
 }

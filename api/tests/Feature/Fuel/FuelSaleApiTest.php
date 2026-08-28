@@ -26,7 +26,7 @@ class FuelSaleApiTest extends TestCase
 
     public function test_unauthenticated_gets_401(): void
     {
-        $this->postJson('/api/v1/fuel/sales', [
+        $this->postJson('/api/v1/fuel-station/sales', [
             'product' => 'Essence',
             'quantity' => 10,
             'unit_price' => 150,
@@ -36,13 +36,12 @@ class FuelSaleApiTest extends TestCase
     public function test_operator_records_sale_with_server_computed_amount(): void
     {
         /** @var Company $company */
-        $company = Company::factory()->create();
-        /** @var Employee $operator */
+        $company = Company::factory()->create(['features' => ['fuel_station' => true]]);
         /** @var Employee $operator */
         $operator = Employee::factory()->create(['company_id' => $company->id]);
         Sanctum::actingAs($operator);
 
-        $this->postJson('/api/v1/fuel/sales', [
+        $this->postJson('/api/v1/fuel-station/sales', [
             'product' => 'Essence sans plomb',
             'quantity' => 12.5,
             'unit_price' => 150.25,
@@ -62,8 +61,7 @@ class FuelSaleApiTest extends TestCase
     public function test_external_id_is_idempotent(): void
     {
         /** @var Company $company */
-        $company = Company::factory()->create();
-        /** @var Employee $operator */
+        $company = Company::factory()->create(['features' => ['fuel_station' => true]]);
         /** @var Employee $operator */
         $operator = Employee::factory()->create(['company_id' => $company->id]);
         Sanctum::actingAs($operator);
@@ -76,13 +74,13 @@ class FuelSaleApiTest extends TestCase
         ];
 
         /** @var array<string, mixed> $first */
-        $first = $this->postJson('/api/v1/fuel/sales', $payload)
+        $first = $this->postJson('/api/v1/fuel-station/sales', $payload)
             ->assertStatus(200)
             ->json('data');
 
         // Rejeu : même vente renvoyée, aucun doublon.
         /** @var array<string, mixed> $second */
-        $second = $this->postJson('/api/v1/fuel/sales', $payload)
+        $second = $this->postJson('/api/v1/fuel-station/sales', $payload)
             ->assertStatus(200)
             ->json('data');
 
@@ -91,47 +89,45 @@ class FuelSaleApiTest extends TestCase
 
         // Le même external_id dans un AUTRE tenant crée une vente distincte.
         /** @var Company $companyB */
-        $companyB = Company::factory()->create();
-        /** @var Employee $operatorB */
+        $companyB = Company::factory()->create(['features' => ['fuel_station' => true]]);
         /** @var Employee $operatorB */
         $operatorB = Employee::factory()->create(['company_id' => $companyB->id]);
         Sanctum::actingAs($operatorB);
         /** @var array<string, mixed> $other */
-        $other = $this->postJson('/api/v1/fuel/sales', $payload)->assertStatus(200)->json('data');
+        $other = $this->postJson('/api/v1/fuel-station/sales', $payload)->assertStatus(200)->json('data');
         $this->assertNotSame($first['id'], $other['id']);
     }
 
     public function test_invalid_quantity_or_price_rejected(): void
     {
         /** @var Company $company */
-        $company = Company::factory()->create();
-        /** @var Employee $operator */
+        $company = Company::factory()->create(['features' => ['fuel_station' => true]]);
         /** @var Employee $operator */
         $operator = Employee::factory()->create(['company_id' => $company->id]);
         Sanctum::actingAs($operator);
 
-        $this->postJson('/api/v1/fuel/sales', [
+        $this->postJson('/api/v1/fuel-station/sales', [
             'product' => 'Essence',
             'quantity' => 0,
             'unit_price' => 150,
         ])->assertStatus(422);
-        $this->postJson('/api/v1/fuel/sales', [
+        $this->postJson('/api/v1/fuel-station/sales', [
             'product' => 'Essence',
             'quantity' => -3,
             'unit_price' => 150,
         ])->assertStatus(422);
-        $this->postJson('/api/v1/fuel/sales', [
+        $this->postJson('/api/v1/fuel-station/sales', [
             'product' => '',
             'quantity' => 10,
             'unit_price' => 150,
         ])->assertStatus(422);
-        $this->postJson('/api/v1/fuel/sales', [
+        $this->postJson('/api/v1/fuel-station/sales', [
             'product' => 'Essence',
             'quantity' => 10,
             'unit_price' => -1,
         ])->assertStatus(422);
         // Le montant fourni par le client doit être ignoré (calcul serveur).
-        $this->postJson('/api/v1/fuel/sales', [
+        $this->postJson('/api/v1/fuel-station/sales', [
             'product' => 'Essence',
             'quantity' => 10,
             'unit_price' => 100,
@@ -144,13 +140,11 @@ class FuelSaleApiTest extends TestCase
     public function test_cash_session_from_another_tenant_rejected(): void
     {
         /** @var Company $companyA */
-        $companyA = Company::factory()->create();
+        $companyA = Company::factory()->create(['features' => ['fuel_station' => true]]);
         /** @var Company $companyB */
-        $companyB = Company::factory()->create();
-        /** @var Employee $operatorA */
+        $companyB = Company::factory()->create(['features' => ['fuel_station' => true]]);
         /** @var Employee $operatorA */
         $operatorA = Employee::factory()->create(['company_id' => $companyA->id]);
-        /** @var Employee $operatorB */
         /** @var Employee $operatorB */
         $operatorB = Employee::factory()->create(['company_id' => $companyB->id]);
 
@@ -161,7 +155,7 @@ class FuelSaleApiTest extends TestCase
             'status' => 'open',
         ]);
 
-        $this->postJson('/api/v1/fuel/sales', [
+        $this->postJson('/api/v1/fuel-station/sales', [
             'product' => 'Essence',
             'quantity' => 10,
             'unit_price' => 150,
@@ -172,55 +166,52 @@ class FuelSaleApiTest extends TestCase
     public function test_cross_tenant_sale_is_404(): void
     {
         /** @var Company $companyA */
-        $companyA = Company::factory()->create();
+        $companyA = Company::factory()->create(['features' => ['fuel_station' => true]]);
         /** @var Company $companyB */
-        $companyB = Company::factory()->create();
-        /** @var Employee $operatorA */
+        $companyB = Company::factory()->create(['features' => ['fuel_station' => true]]);
         /** @var Employee $operatorA */
         $operatorA = Employee::factory()->create(['company_id' => $companyA->id]);
         /** @var Employee $managerB */
         $managerB = Employee::factory()->manager()->create(['company_id' => $companyB->id]);
 
         Sanctum::actingAs($operatorA);
-        /** @var string $saleId */
-        $saleId = $this->postJson('/api/v1/fuel/sales', [
+        /** @var int $saleId */
+        $saleId = $this->postJson('/api/v1/fuel-station/sales', [
             'product' => 'Essence',
             'quantity' => 10,
             'unit_price' => 150,
         ])->json('data.id');
 
         Sanctum::actingAs($managerB);
-        $this->getJson("/api/v1/fuel/sales/{$saleId}")->assertStatus(404);
+        $this->getJson("/api/v1/fuel-station/sales/{$saleId}")->assertStatus(404);
     }
 
     public function test_manager_gets_paginated_list_and_operator_self_service(): void
     {
         /** @var Company $company */
-        $company = Company::factory()->create();
-        /** @var Employee $operatorA */
+        $company = Company::factory()->create(['features' => ['fuel_station' => true]]);
         /** @var Employee $operatorA */
         $operatorA = Employee::factory()->create(['company_id' => $company->id]);
-        /** @var Employee $operatorB */
         /** @var Employee $operatorB */
         $operatorB = Employee::factory()->create(['company_id' => $company->id]);
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($operatorA);
-        $this->postJson('/api/v1/fuel/sales', ['product' => 'Essence', 'quantity' => 10, 'unit_price' => 150])
+        $this->postJson('/api/v1/fuel-station/sales', ['product' => 'Essence', 'quantity' => 10, 'unit_price' => 150])
             ->assertStatus(200);
         Sanctum::actingAs($operatorB);
-        $this->postJson('/api/v1/fuel/sales', ['product' => 'Gazole', 'quantity' => 20, 'unit_price' => 140])
+        $this->postJson('/api/v1/fuel-station/sales', ['product' => 'Gazole', 'quantity' => 20, 'unit_price' => 140])
             ->assertStatus(200);
 
         Sanctum::actingAs($manager);
-        $this->getJson('/api/v1/fuel/sales?per_page=5')
+        $this->getJson('/api/v1/fuel-station/sales?per_page=5')
             ->assertStatus(200)
             ->assertJsonCount(2, 'data')
             ->assertJsonStructure(['data', 'meta' => ['current_page', 'last_page', 'total']]);
 
         Sanctum::actingAs($operatorA);
-        $this->getJson('/api/v1/fuel/me/sales')
+        $this->getJson('/api/v1/fuel-station/me/sales')
             ->assertStatus(200)
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.product', 'Essence');
@@ -229,23 +220,21 @@ class FuelSaleApiTest extends TestCase
     public function test_operator_cannot_view_another_operators_sale(): void
     {
         /** @var Company $company */
-        $company = Company::factory()->create();
-        /** @var Employee $operatorA */
+        $company = Company::factory()->create(['features' => ['fuel_station' => true]]);
         /** @var Employee $operatorA */
         $operatorA = Employee::factory()->create(['company_id' => $company->id]);
-        /** @var Employee $operatorB */
         /** @var Employee $operatorB */
         $operatorB = Employee::factory()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($operatorA);
-        /** @var string $saleId */
-        $saleId = $this->postJson('/api/v1/fuel/sales', [
+        /** @var int $saleId */
+        $saleId = $this->postJson('/api/v1/fuel-station/sales', [
             'product' => 'Essence',
             'quantity' => 10,
             'unit_price' => 150,
         ])->json('data.id');
 
         Sanctum::actingAs($operatorB);
-        $this->getJson("/api/v1/fuel/sales/{$saleId}")->assertStatus(403);
+        $this->getJson("/api/v1/fuel-station/sales/{$saleId}")->assertStatus(403);
     }
 }
