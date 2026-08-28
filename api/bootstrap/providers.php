@@ -40,6 +40,7 @@ return [
     FleetServiceProvider::class,
     BillingServiceProvider::class,
     CamerasServiceProvider::class,
+    // — CRM client (issue #5707, ADR-CRM-DUAL-CONTEXTS)
     CrmServiceProvider::class,
     // — New DDD modules (Phase 2)
     GrowthServiceProvider::class,
