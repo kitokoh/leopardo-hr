@@ -110,12 +110,12 @@ class CrmRgpdLifecycleTest extends TestCase
         $afterFirst = DB::table('crm_contacts')->where('company_id', $tenantA->id)
             ->orderBy('id')->pluck('email', 'id')->all();
         foreach ($afterFirst as $email) {
-            $this->assertStringEndsWith('@anonymised.invalid', (string) $email, 'Email anonymisé.');
+            $this->assertStringEndsWith('@anonymised.invalid', strval($email), 'Email anonymisé.');
         }
-        $this->assertStringNotContainsString('alice@acme.test', implode(',', $afterFirst));
+        $this->assertStringNotContainsString('alice@acme.test', implode(',', array_map('strval', $afterFirst)));
 
         // Le tenant B n'est PAS touché.
-        $this->assertSame('carol@acme.test', (string) DB::table('crm_contacts')->where('company_id', $tenantB->id)->value('email'));
+        $this->assertSame('carol@acme.test', strval(DB::table('crm_contacts')->where('company_id', $tenantB->id)->value('email')));
 
         // Second passage : idempotent (valeurs strictement identiques) → rejouable.
         $exit = Artisan::call('crm:anonymize', ['--company' => $tenantA->id, '--force' => true]);
@@ -145,7 +145,7 @@ class CrmRgpdLifecycleTest extends TestCase
         $this->assertSame(0, $exit);
 
         // Dry-run : aucune écriture.
-        $this->assertSame('alice@acme.test', (string) DB::table('crm_contacts')->where('company_id', $tenantA->id)->value('email'));
+        $this->assertSame('alice@acme.test', strval(DB::table('crm_contacts')->where('company_id', $tenantA->id)->value('email')));
 
         // Aucune PII dans la sortie de la commande.
         $output = Artisan::output();

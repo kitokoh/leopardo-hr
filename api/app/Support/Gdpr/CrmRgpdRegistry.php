@@ -40,7 +40,12 @@ final class CrmRgpdRegistry
     {
         $registry = Config::get('crm-rgpd.registry', []);
 
-        return is_array($registry) ? $registry : [];
+        if (! is_array($registry)) {
+            return [];
+        }
+
+        /** @var array<string, array<string, mixed>> $registry */
+        return $registry;
     }
 
     /**
@@ -74,7 +79,12 @@ final class CrmRgpdRegistry
         $entry = self::entryForTable($table);
         $columns = is_array($entry) ? ($entry['pii_columns'] ?? []) : [];
 
-        return is_array($columns) ? $columns : [];
+        if (! is_array($columns)) {
+            return [];
+        }
+
+        /** @var array<string, string> $columns */
+        return $columns;
     }
 
     /**

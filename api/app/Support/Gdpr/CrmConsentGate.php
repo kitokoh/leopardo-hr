@@ -63,7 +63,7 @@ final class CrmConsentGate
             return false;
         }
 
-        $status = (string) ($row->status ?? '');
+        $status = strval($row->status ?? '');
 
         return $status === self::STATUS_GRANTED;
     }
