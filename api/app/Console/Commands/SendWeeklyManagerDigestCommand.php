@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\HR\Infrastructure\Jobs\SendWeeklyManagerDigestJob;
+use App\Modules\Notification\Infrastructure\Jobs\SendWeeklyManagerDigestJob;
 use Illuminate\Console\Command;
 
 /**

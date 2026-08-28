@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\HR\Infrastructure\Jobs;
+namespace App\Modules\Notification\Infrastructure\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
 use App\Core\Auth\Domain\Models\Employee;
@@ -14,17 +14,21 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Digest hebdomadaire des managers — Issue #5695.
  *
  * Pour chaque manager actif du tenant (`principal`/`rh` → toute
- * l'entreprise ; `dept`/autre → son équipe managée), envoie un email
- * transactionnel via `CommunicationService::notifyEmployee(..., ['email'])`
- * (template `weekly_manager_digest`, préférences/heures calmes/quotas
- * respectés, événement `communication_events` tracé).
+ * l'entreprise ; `dept` → son département ; `superviseur` → ses équipiers
+ * directs), envoie un email transactionnel via
+ * `CommunicationService::notifyEmployee(..., ['email'])` (template
+ * `weekly_manager_digest`, préférences/heures calmes/quotas respectés,
+ * événement `communication_events` tracé).
+ *
+ * Vit dans le module Notification (hub de communication transverse) :
+ * le job n'importe aucun modèle métier (requêtes DB tenant-scopées), il
+ * ne viole donc pas l'isolation de modules (issue #5584).
  *
  * Tenant-scoped : le middleware `EnsureTenantContext` restaure le contexte
  * (search_path + current_company) avant l'exécution — un job sans
@@ -92,7 +96,10 @@ class SendWeeklyManagerDigestJob implements ShouldQueue, TenantScopedJob
     }
 
     /**
-     * Employés visibles par le manager (même règle que le dashboard manager).
+     * Employés visibles par le manager — mêmes règles que
+     * `Employee::visibleToManager()` (PA2-SEC-002/003) :
+     * principal/rh → toute l'entreprise ; dept → département du manager ;
+     * superviseur → équipiers directs (manager_id) + lui-même.
      *
      * @return list<int>
      */
@@ -102,7 +109,9 @@ class SendWeeklyManagerDigestJob implements ShouldQueue, TenantScopedJob
             ->where('company_id', $manager->company_id)
             ->where('status', 'active');
 
-        if (! in_array($manager->manager_role, ['principal', 'rh'], true)) {
+        if ($manager->manager_role === 'dept') {
+            $query->where('department_id', $manager->department_id ?? -1);
+        } elseif (! in_array($manager->manager_role, ['principal', 'rh'], true)) {
             $query->where(function ($scope) use ($manager): void {
                 $scope->where('manager_id', $manager->id)
                     ->orWhere('id', $manager->id);

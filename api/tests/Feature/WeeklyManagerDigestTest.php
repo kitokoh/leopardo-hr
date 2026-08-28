@@ -8,7 +8,7 @@ use App\Contracts\Queue\TenantScopedJob;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
-use App\Modules\HR\Infrastructure\Jobs\SendWeeklyManagerDigestJob;
+use App\Modules\Notification\Infrastructure\Jobs\SendWeeklyManagerDigestJob;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use Illuminate\Support\Facades\Queue;
 use Mockery;
@@ -66,9 +66,16 @@ class WeeklyManagerDigestTest extends TestCase
         /** @var Employee $principal */
         $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
         /** @var Employee $deptManager */
-        $deptManager = Employee::factory()->managerDept()->create(['company_id' => $company->id]);
+        $deptManager = Employee::factory()->managerDept()->create([
+            'company_id' => $company->id,
+            'department_id' => 10,
+        ]);
         /** @var Employee $employee */
-        $employee = Employee::factory()->create(['company_id' => $company->id, 'manager_id' => $deptManager->id]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'manager_id' => $deptManager->id,
+            'department_id' => 10,
+        ]);
 
         $communication = Mockery::mock(CommunicationService::class);
         $communication->shouldReceive('notifyEmployee')
@@ -103,9 +110,16 @@ class WeeklyManagerDigestTest extends TestCase
         /** @var Employee $principal */
         $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
         /** @var Employee $deptManager */
-        $deptManager = Employee::factory()->managerDept()->create(['company_id' => $company->id]);
+        $deptManager = Employee::factory()->managerDept()->create([
+            'company_id' => $company->id,
+            'department_id' => 10,
+        ]);
         /** @var Employee $employee */
-        $employee = Employee::factory()->create(['company_id' => $company->id, 'manager_id' => $deptManager->id]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'manager_id' => $deptManager->id,
+            'department_id' => 10,
+        ]);
 
         $contexts = [];
 

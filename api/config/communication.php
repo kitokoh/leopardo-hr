@@ -186,7 +186,8 @@ return [
             // Semaine du lundi — contexte : week_start, team_size, present,
             // pending_absences, pending_advances, pending_corrections.
             'vars' => ['week_start', 'team_size', 'present', 'pending_absences', 'pending_advances', 'pending_corrections'],
-        ],        'company_announcement' => [
+        ],
+        'company_announcement' => [
             'category' => 'system',
             'title_key' => 'notifications.company_announcement_title',
             'body_key' => 'notifications.company_announcement_body',
