@@ -131,12 +131,10 @@ class CrmEmailController extends Controller
 
     private function companyId(): string
     {
-        $company = currentCompany();
-
-        if (! $company instanceof Company) {
+        if (! app()->bound('current_company')) {
             abort(403, 'Tenant context missing.');
         }
 
-        return (string) $company->id;
+        return (string) currentCompany()->id;
     }
 }

@@ -18,7 +18,7 @@ use JsonException;
 final class UnsubscribeTokenService
 {
     /**
-     * @return array{company_id: string, contact_id: int, email: string}
+     * Jeton signé (base64url du payload + HMAC-SHA256).
      */
     public function issue(string $companyId, int $contactId, string $email): string
     {
@@ -47,8 +47,13 @@ final class UnsubscribeTokenService
             throw new InvalidUnsubscribeTokenException('Signature invalide.');
         }
 
+        $decoded = base64_decode($payload, true);
+        if ($decoded === false) {
+            throw new InvalidUnsubscribeTokenException('Payload illisible.');
+        }
+
         try {
-            $data = json_decode(base64_decode($payload, true), true, 512, JSON_THROW_ON_ERROR);
+            $data = json_decode($decoded, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException) {
             throw new InvalidUnsubscribeTokenException('Payload illisible.');
         }
