@@ -223,7 +223,6 @@ class CrmChannelSendTest extends TestCase
 
         Http::assertNothingSent();
     }
-}
 
     public function test_provider_400_is_immediately_dead_lettered(): void
     {
@@ -250,3 +249,4 @@ class CrmChannelSendTest extends TestCase
             'status' => 'dead_lettered',
         ]);
     }
+}
