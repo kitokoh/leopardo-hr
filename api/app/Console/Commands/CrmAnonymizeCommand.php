@@ -103,7 +103,7 @@ final class CrmAnonymizeCommand extends Command
 
     private function anonymizeCompany(TenantManager $tenantManager, Company $company, ?string $onlyTable, bool $dryRun): int
     {
-        return $tenantManager->withinTenant($company, function () use ($company, $onlyTable, $dryRun): int {
+        $result = $tenantManager->withinTenant($company, function () use ($company, $onlyTable, $dryRun): int {
             $total = 0;
 
             foreach (array_keys(CrmRgpdRegistry::entries()) as $table) {
@@ -116,6 +116,8 @@ final class CrmAnonymizeCommand extends Command
 
             return $total;
         });
+
+        return is_int($result) ? $result : 0;
     }
 
     private function anonymizeTable(Company $company, string $table, bool $dryRun): int
