@@ -33,18 +33,63 @@ const absencesPayload = {
   ],
 };
 
+const balancesPayload = {
+  data: [
+    {
+      id: 11,
+      employee_id: 501,
+      absence_type_id: 1,
+      balance: 18,
+      used: 4,
+      pending: 2,
+      year: 2026,
+      absence_type: { id: 1, name: 'Congé payé', code: 'CP' },
+    },
+    {
+      id: 12,
+      employee_id: 501,
+      absence_type_id: 2,
+      balance: 10,
+      used: 3,
+      pending: 0,
+      year: 2026,
+      absence_type: { id: 2, name: 'Maladie', code: 'MAL' },
+    },
+  ],
+};
+
+/** Mock apiFetch selon l'URL (liste, soldes, mutation). */
+function mockApiRoutes() {
+  mockedApiFetch.mockImplementation(async (url: string, options?: RequestInit) => {
+    const method = (options?.method ?? 'GET').toUpperCase();
+
+    if (url === '/me/leave-balances' && method === 'GET') {
+      return { json: async () => balancesPayload } as Response;
+    }
+
+    if (url === '/absences' && method === 'GET') {
+      return { json: async () => absencesPayload } as Response;
+    }
+
+    if (url === '/absences' && method === 'POST') {
+      return { json: async () => ({ data: { id: 3 } }) } as Response;
+    }
+
+    return { json: async () => ({ data: [] }) } as Response;
+  });
+}
+
 beforeAll(() => {
   window.localStorage.setItem('preferred_locale', 'fr');
 });
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockApiRoutes();
 });
 
 describe('AbsencesPage (#5019)', () => {
   it('affiche la liste avec statuts localisés et actions pour les demandes en attente', async () => {
-    mockedApiFetch.mockResolvedValue({ json: async () => absencesPayload } as Response);
-
     render(<AbsencesPage />);
 
     expect(await screen.findByText('Congé payé')).toBeInTheDocument();
@@ -55,8 +100,6 @@ describe('AbsencesPage (#5019)', () => {
   });
 
   it('approuve une absence via PUT /absences/{id}/approve et met à jour le statut', async () => {
-    mockedApiFetch.mockResolvedValue({ json: async () => absencesPayload } as Response);
-
     render(<AbsencesPage />);
     await screen.findByText('Congé payé');
 
@@ -69,8 +112,6 @@ describe('AbsencesPage (#5019)', () => {
   });
 
   it('exige un motif avant de refuser (PUT /absences/{id}/reject avec rejected_reason)', async () => {
-    mockedApiFetch.mockResolvedValue({ json: async () => absencesPayload } as Response);
-
     render(<AbsencesPage />);
     await screen.findByText('Congé payé');
 
@@ -91,5 +132,84 @@ describe('AbsencesPage (#5019)', () => {
         expect.objectContaining({ method: 'PUT', body: JSON.stringify({ rejected_reason: 'Absence non justifiée' }) })
       )
     );
+  });
+});
+
+describe('AbsencesPage — formulaire de demande (#5693)', () => {
+  it('liste les types d’absence depuis /me/leave-balances dans le formulaire', async () => {
+    render(<AbsencesPage />);
+    await screen.findByText('Congé payé');
+
+    await userEvent.click(screen.getByRole('button', { name: /Demander/i }));
+
+    expect(await screen.findByText('Nouvelle absence')).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: /Type/i })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Congé payé' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Maladie' })).toBeInTheDocument();
+  });
+
+  it('soumet une demande via POST /absences puis recharge la liste', async () => {
+    render(<AbsencesPage />);
+    await screen.findByText('Congé payé');
+
+    await userEvent.click(screen.getByRole('button', { name: /Demander/i }));
+    await screen.findByText('Nouvelle absence');
+
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: /Type/i }), '1');
+    await userEvent.type(screen.getByLabelText(/Début/i), '2026-09-01');
+    await userEvent.type(screen.getByLabelText(/Fin/i), '2026-09-05');
+    await userEvent.type(screen.getByLabelText(/Motif/i), 'Vacances');
+
+    await userEvent.click(screen.getByRole('button', { name: /Soumettre au RH/i }));
+
+    await waitFor(() =>
+      expect(mockedApiFetch).toHaveBeenCalledWith(
+        '/absences',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({
+            absence_type_id: 1,
+            start_date: '2026-09-01',
+            end_date: '2026-09-05',
+            reason: 'Vacances',
+          }),
+        })
+      )
+    );
+    // Formulaire fermé + confirmation affichée.
+    expect(await screen.findByText("Demande d'absence transmise au RH.")).toBeInTheDocument();
+    await waitFor(() => expect(mockedApiFetch).toHaveBeenCalledWith('/absences', expect.anything()));
+  });
+
+  it('bloque la soumission si les dates sont manquantes ou incohérentes', async () => {
+    render(<AbsencesPage />);
+    await screen.findByText('Congé payé');
+
+    await userEvent.click(screen.getByRole('button', { name: /Demander/i }));
+    await screen.findByText('Nouvelle absence');
+
+    // Type sélectionné mais dates vides → erreur de dates, aucun POST.
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: /Type/i }), '1');
+    await userEvent.click(screen.getByRole('button', { name: /Soumettre au RH/i }));
+    expect(await screen.findByText('Dates de début et fin requises (fin ≥ début).')).toBeInTheDocument();
+    expect(mockedApiFetch).not.toHaveBeenCalledWith('/absences', expect.objectContaining({ method: 'POST' }));
+  });
+
+  it('désactive le bouton Demander quand aucun type n’est disponible', async () => {
+    mockedApiFetch.mockImplementation(async (url: string, options?: RequestInit) => {
+      const method = (options?.method ?? 'GET').toUpperCase();
+      if (url === '/absences' && method === 'GET') {
+        return { json: async () => absencesPayload } as Response;
+      }
+      if (url === '/me/leave-balances' && method === 'GET') {
+        return { json: async () => ({ data: [] }) } as Response;
+      }
+      return { json: async () => ({ data: [] }) } as Response;
+    });
+
+    render(<AbsencesPage />);
+    await screen.findByText('Congé payé');
+
+    expect(screen.getByRole('button', { name: /Demander/i })).toBeDisabled();
   });
 });

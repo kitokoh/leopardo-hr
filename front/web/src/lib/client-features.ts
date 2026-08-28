@@ -14,7 +14,8 @@ export type ClientModuleKey =
   | 'billing'
   | 'integrations'
   | 'marketing'
-  | 'accounting';
+  | 'accounting'
+  | 'crm';
 
 export type FeatureState = 'available' | 'trial' | 'locked';
 
@@ -178,6 +179,19 @@ export const CLIENT_MODULES: ClientModule[] = [
     allowedRoles: ['manager'],
     upgradeLabel: 'Module Comptabilité',
   },
+  // #5715 — CRM Client (tenant-scoped, ADR-CRM-DUAL-CONTEXTS). Le CRM
+  // commercial Leopardo reste dans l'admin plateforme : cette entrée est
+  // l'espace client du tenant, porté par la feature flag `crm`.
+  {
+    key: 'crm',
+    href: '/crm',
+    label: 'CRM Client',
+    group: 'general',
+    capabilityKeys: ['crm', 'can_view_crm'],
+    featureKeys: ['crm'],
+    allowedRoles: ['manager'],
+    upgradeLabel: 'CRM Client',
+  },
 ];
 
 const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
@@ -195,6 +209,11 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/social-marketing': 'marketing',
   '/social': 'marketing',
   '/accounting': 'accounting',
+  '/crm': 'crm',
+  '/crm/accounts': 'crm',
+  '/crm/contacts': 'crm',
+  '/crm/leads': 'crm',
+  '/crm/pipeline': 'crm',
 };
 
 function normalizedRole(user?: StoredAuthUser | null): string {
@@ -216,6 +235,10 @@ function hasRoleAccess(module: ClientModule, user?: StoredAuthUser | null): bool
 
     if (module.key === 'marketing') {
       return ['principal', 'marketing'].includes(managerRole);
+    }
+
+    if (module.key === 'crm') {
+      return ['principal', 'rh'].includes(managerRole);
     }
 
     return true;
