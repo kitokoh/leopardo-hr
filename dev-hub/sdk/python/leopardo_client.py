@@ -1764,6 +1764,42 @@ class LeopardoClient:
         """Rapport kilometrage"""
         return self.request("GET", "/fleet/reports/mileage", **kwargs)
 
+    def get_fuel_me_shifts(self, **kwargs):
+        """Affectations de shifts du pompiste connecte (self-service)"""
+        return self.request("GET", "/fuel/me/shifts", **kwargs)
+
+    def delete_fuel_shift_assignments_by_assignment(self, **kwargs):
+        """Annuler une affectation (manager, statut cancelled)"""
+        return self.request("DELETE", "/fuel/shift-assignments/{assignment}", **kwargs)
+
+    def get_fuel_shifts(self, **kwargs):
+        """Lister les shifts (manager)"""
+        return self.request("GET", "/fuel/shifts", **kwargs)
+
+    def post_fuel_shifts(self, **kwargs):
+        """Creer un shift (manager)"""
+        return self.request("POST", "/fuel/shifts", **kwargs)
+
+    def delete_fuel_shifts_by_shift(self, **kwargs):
+        """Supprimer un shift (manager, refus si affectations actives)"""
+        return self.request("DELETE", "/fuel/shifts/{shift}", **kwargs)
+
+    def get_fuel_shifts_by_shift(self, **kwargs):
+        """Detail d'un shift (manager)"""
+        return self.request("GET", "/fuel/shifts/{shift}", **kwargs)
+
+    def put_fuel_shifts_by_shift(self, **kwargs):
+        """Mettre a jour un shift (manager)"""
+        return self.request("PUT", "/fuel/shifts/{shift}", **kwargs)
+
+    def get_fuel_shifts_by_shift_assignments(self, **kwargs):
+        """Affectations d'un shift (manager)"""
+        return self.request("GET", "/fuel/shifts/{shift}/assignments", **kwargs)
+
+    def post_fuel_shifts_by_shift_assignments(self, **kwargs):
+        """Affecter un employe a un shift pour une date (manager)"""
+        return self.request("POST", "/fuel/shifts/{shift}/assignments", **kwargs)
+
     def post_growth_partner_apply(self, **kwargs):
         """Candidature partenaire"""
         return self.request("POST", "/growth/partner/apply", **kwargs)
