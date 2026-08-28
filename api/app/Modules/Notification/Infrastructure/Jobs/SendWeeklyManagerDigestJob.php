@@ -11,6 +11,7 @@ use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -112,7 +113,7 @@ class SendWeeklyManagerDigestJob implements ShouldQueue, TenantScopedJob
         if ($manager->manager_role === 'dept') {
             $query->where('department_id', $manager->department_id ?? -1);
         } elseif (! in_array($manager->manager_role, ['principal', 'rh'], true)) {
-            $query->where(function ($scope) use ($manager): void {
+            $query->where(function (Builder $scope) use ($manager): void {
                 $scope->where('manager_id', $manager->id)
                     ->orWhere('id', $manager->id);
             });
