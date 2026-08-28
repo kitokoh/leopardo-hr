@@ -20382,6 +20382,66 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: Lead introuvable
+  /crm/leads/{crmLead}/convert:
+    post:
+      tags:
+      - CRM
+      summary: Convertir un lead en account + contact + opportunity
+      description: "Conversion guidée et transactionnelle (#5717). Idempotente : un lead déjà converti répond 409 (CRM_LEAD_ALREADY_CONVERTED). Le compte est réutilisé si un compte du tenant porte le même nom."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: crmLead
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stage:
+                  type: string
+                  enum:
+                  - prospecting
+                  - qualification
+                  - proposal
+                  - negotiation
+                  - won
+                  - lost
+                amount:
+                  type: number
+                  nullable: true
+                currency:
+                  type: string
+                  description: Code ISO 4217 à 3 lettres
+                expected_close_date:
+                  type: string
+                  format: date
+                  nullable: true
+      responses:
+        '200':
+          description: Lead converti
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmLead'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Lead déjà converti
+        '422':
+          $ref: '#/components/responses/Validation422'
   /crm/imports:
     post:
       tags:
@@ -31457,6 +31517,70 @@ components:
         created_at:
           type: string
           format: date-time
+    CrmLead:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        company_name:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        source:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - new
+          - contacted
+          - qualified
+          - converted
+          - lost
+        score:
+          type: integer
+        notes:
+          type: string
+          nullable: true
+        converted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+    CrmOpportunity:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        stage:
+          type: string
+        amount:
+          type: number
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        expected_close_date:
+          type: string
+          format: date
+          nullable: true
+        status:
+          type: string
     CrmImport:
       type: object
       properties:
