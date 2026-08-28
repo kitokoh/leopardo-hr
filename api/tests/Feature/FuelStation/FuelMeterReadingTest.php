@@ -126,7 +126,7 @@ class FuelMeterReadingTest extends TestCase
         string $key,
         ?string $capturedAt = null,
         ?int $rolloverLimit = null,
-    ): \Illuminate\Testing\TestResponse {
+    ): TestResponse {
         if ($rolloverLimit !== null) {
             $meter->forceFill(['rollover_limit' => $rolloverLimit])->save();
         }
