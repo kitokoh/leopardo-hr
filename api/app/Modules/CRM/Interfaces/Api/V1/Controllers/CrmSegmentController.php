@@ -69,10 +69,12 @@ class CrmSegmentController extends Controller
     {
         $this->authorize('create', CrmSegment::class);
 
+        $definitionInput = $request->input('definition');
+
         $segment = $this->segments->create(
             $request->string('name')->toString(),
             $request->filled('description') ? $request->string('description')->toString() : null,
-            $request->input('definition'),
+            is_array($definitionInput) ? $definitionInput : [],
             $this->actorId(),
         );
 
@@ -90,14 +92,21 @@ class CrmSegmentController extends Controller
     {
         $this->authorize('update', $segment);
 
-        $definition = $request->has('definition')
-            ? $request->input('definition')
-            : $segment->definition;
+        $name = $request->filled('name') ? $request->string('name')->toString() : $segment->name;
+        $description = $request->has('description')
+            ? ($request->filled('description') ? $request->string('description')->toString() : null)
+            : $segment->description;
+
+        $definition = $segment->definition;
+        if ($request->has('definition')) {
+            $definitionInput = $request->input('definition');
+            $definition = is_array($definitionInput) ? $definitionInput : $definition;
+        }
 
         $updated = $this->segments->update(
             $segment,
-            $request->input('name', $segment->name),
-            $request->has('description') ? $request->input('description') : $segment->description,
+            $name,
+            $description,
             $definition,
             $this->actorId(),
         );
