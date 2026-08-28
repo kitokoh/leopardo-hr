@@ -1512,3 +1512,8 @@ Note 2026-08-28 (issues #5725/#5727/#5728/#5729) : nouveau module CRM client ten
 - Automatisations : `GET/POST /crm/automations`, `GET/PUT/DELETE /crm/automations/{automation}`, `POST .../activate|pause|simulate`, `GET .../runs`, `POST /crm/automations/emergency-stop`, `POST /crm/automations/events/{event}`.
 - Exports/read models : `GET/POST /crm/exports`, `GET /crm/exports/{export}`, `GET /crm/exports/{export}/download`, `GET /crm/read-models`.
 Scenarios CI requis : RBAC (employee 403), isolation cross-tenant (404), consentement/quota/dead-letter canaux, webhook signature + rejeu, automatisations idempotence/simulation/emergency-stop, exports expiration/allowlist.
+
+Note 2026-08-28 (issues #5795/#5798) : nouveau module FuelStation (`App\Modules\FuelStation`) — surface API ajoutee :
+- Manifest/activation : `GET /fuelstation/manifest`, `POST /fuelstation/activate`, `GET /fuelstation/status` (api.manager:principal,rh) — activation idempotente, dependances refusees (422).
+- Releves de compteur : `POST/GET /fuelstation/meters/{meter}/readings`, `POST /fuelstation/readings/{reading}/correct` — idempotence (company_id, meter_id, reading_at), delta/anomalie/rollover, corrections versionnees.
+Scenarios CI requis : RBAC (employee 403), isolation cross-tenant (404), activation dependances, delta/anomalie, idempotence, correction.
