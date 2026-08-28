@@ -35,28 +35,31 @@ class CrmConsentController extends Controller
     {
         $this->authorize('viewAny', CrmConsent::class);
 
-        $validated = $request->validate([
+        $request->validate([
             'contact_id' => ['nullable', 'integer', 'min:1'],
             'channel' => ['nullable', 'string', 'in:'.implode(',', ConsentChannel::values())],
             'status' => ['nullable', 'string', 'in:'.implode(',', ConsentStatus::values())],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 
-        $perPage = (int) ($validated['per_page'] ?? 20);
+        $perPage = $request->integer('per_page', 20);
+        $contactId = $request->integer('contact_id');
+        $channel = $request->string('channel')->toString();
+        $status = $request->string('status')->toString();
 
         $query = CrmConsent::query()
             ->orderByDesc('id');
 
-        if (! empty($validated['contact_id'])) {
-            $query->where('contact_id', (int) $validated['contact_id']);
+        if ($contactId > 0) {
+            $query->where('contact_id', $contactId);
         }
 
-        if (! empty($validated['channel'])) {
-            $query->where('channel', (string) $validated['channel']);
+        if ($channel !== '') {
+            $query->where('channel', $channel);
         }
 
-        if (! empty($validated['status'])) {
-            $query->where('status', (string) $validated['status']);
+        if ($status !== '') {
+            $query->where('status', $status);
         }
 
         $paginator = $query->paginate($perPage);
@@ -87,6 +90,7 @@ class CrmConsentController extends Controller
         $source = ConsentSource::from($request->string('source')->toString());
         $sourceRef = $request->filled('source_ref') ? $request->string('source_ref')->toString() : null;
         $metadataInput = $request->input('metadata');
+        /** @var array<string, mixed> $metadata */
         $metadata = is_array($metadataInput) ? $metadataInput : [];
 
         $consent = $request->string('action')->toString() === 'granted'
@@ -132,7 +136,7 @@ class CrmConsentController extends Controller
         // AccountingContactController::assertTenantScope).
         $companyId = $request->user()?->getAttribute('company_id');
 
-        if ($companyId !== null && (string) $consent->company_id !== (string) $companyId) {
+        if (is_string($companyId) && (string) $consent->company_id !== $companyId) {
             abort(404);
         }
     }
