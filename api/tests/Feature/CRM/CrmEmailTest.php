@@ -162,8 +162,8 @@ class CrmEmailTest extends TestCase
 
     public function test_transactional_send_respects_suppression(): void
     {
-        $calls = [];
-        $this->app->instance(EmailProviderInterface::class, new RecordingEmailProvider($calls));
+        $provider = new RecordingEmailProvider();
+        $this->app->instance(EmailProviderInterface::class, $provider);
         $this->emailService()->suppress($this->companyA->id, 'supprime@example.com', 'bounce', 'webhook');
 
         Sanctum::actingAs($this->manager($this->companyA));
@@ -176,7 +176,7 @@ class CrmEmailTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonPath('data.status', 'suppressed');
-        $this->assertCount(0, $calls);
+        $this->assertCount(0, $provider->calls);
     }
 
     public function test_company_id_is_prohibited(): void
@@ -240,8 +240,8 @@ class CrmEmailTest extends TestCase
 
     public function test_provider_is_interchangeable(): void
     {
-        $calls = [];
-        $this->app->instance(EmailProviderInterface::class, new RecordingEmailProvider($calls));
+        $provider = new RecordingEmailProvider();
+        $this->app->instance(EmailProviderInterface::class, $provider);
 
         $result = $this->emailService()->sendTransactional(
             new EmailMessage('a@example.com', 'Sujet', 'Corps'),
@@ -250,8 +250,8 @@ class CrmEmailTest extends TestCase
 
         $this->assertTrue($result->isDelivered());
         $this->assertSame('recorder', $this->emailService()->providerName());
-        $this->assertCount(1, $calls);
-        $this->assertSame('a@example.com', $calls[0]->to);
+        $this->assertCount(1, $provider->calls);
+        $this->assertSame('a@example.com', $provider->calls[0]->to);
     }
 
     // ─── Désabonnement (jeton signé) ───────────────────────────────────────
@@ -431,11 +431,6 @@ final class RecordingEmailProvider implements EmailProviderInterface
 {
     /** @var list<EmailMessage> */
     public array $calls = [];
-
-    /**
-     * @param  list<EmailMessage>  $calls
-     */
-    public function __construct(public array &$calls) {}
 
     public function send(EmailMessage $message): EmailDeliveryResult
     {
