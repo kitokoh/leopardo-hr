@@ -100,7 +100,10 @@ class CrmTaskController extends Controller
         if (array_key_exists('status', $data)) {
             if ($data['status'] === CrmTask::STATUS_DONE && $crmTask->completed_at === null) {
                 $data['completed_at'] = now();
-                $data['completed_by'] = $request->user()?->id;
+
+                /** @var Employee $actor */
+                $actor = $request->user();
+                $data['completed_by'] = $actor->id;
             } elseif ($data['status'] !== CrmTask::STATUS_DONE) {
                 $data['completed_at'] = null;
                 $data['completed_by'] = null;
