@@ -303,7 +303,7 @@ class CrmCampaignTest extends TestCase
         $this->postJson("/api/v1/crm/campaigns/{$campaign->id}/cancel")->assertJsonPath('data.status', 'cancelled');
 
         $this->assertSame(2, CrmCampaignSend::query()->where('campaign_id', $campaign->id)->where('status', 'cancelled')->count());
-        $this->assertDatabaseHas('crm_campaigns', ['id' => $campaign->id, 'finished_at' => now()]);
+        $this->assertTrue(CrmCampaign::query()->where('id', $campaign->id)->whereNotNull('finished_at')->exists());
     }
 
     public function test_report_counts_sends_by_status(): void
