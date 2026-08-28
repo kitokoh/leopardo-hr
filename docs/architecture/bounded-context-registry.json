@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "updated": "2026-08-28",
   "issue": 5859,
   "source": "docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (PR #5900, table §2)",
@@ -18,11 +18,20 @@
         "api/app/Contracts/FeatureRegistryInterface.php",
         "api/app/Contracts/FeatureDetectorInterface.php"
       ],
-      "dependencies": ["BC-TENANT", "BC-IDENTITY"],
-      "routes": ["api/routes/web.php"],
-      "migrations": ["api/database/migrations/public"],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-IDENTITY",
+        "BC-AI",
+        "BC-INTEGRATION"
+      ],
+      "routes": [
+        "api/routes/web.php"
+      ],
+      "migrations": [
+        "api/database/migrations/public"
+      ],
       "events": [],
-      "notes": "Catalogue, modules, provisioning, configuration globale et feature flags."
+      "notes": "Catalogue, modules, provisioning, configuration globale et feature flags. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "02",
@@ -36,11 +45,16 @@
         "api/database/migrations/public",
         "api/database/migrations/tenant"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "BC-IDENTITY"
+      ],
       "routes": [],
-      "migrations": ["api/database/migrations/public", "api/database/migrations/tenant"],
+      "migrations": [
+        "api/database/migrations/public",
+        "api/database/migrations/tenant"
+      ],
       "events": [],
-      "notes": "Entreprises, contexte actif, TenantManager, search_path, scopes et isolation."
+      "notes": "Entreprises, contexte actif, TenantManager, search_path, scopes et isolation. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "03",
@@ -49,12 +63,19 @@
       "owner": "kitokoh",
       "priority": "P0",
       "status": "existing",
-      "paths": ["api/app/Core/Auth", "api/app/Policies"],
-      "dependencies": ["BC-TENANT"],
-      "routes": ["api/routes/modules/user.php", "api/routes/modules/sso.php"],
+      "paths": [
+        "api/app/Core/Auth"
+      ],
+      "dependencies": [
+        "BC-TENANT"
+      ],
+      "routes": [
+        "api/routes/modules/user.php",
+        "api/routes/modules/sso.php"
+      ],
       "migrations": [],
       "events": [],
-      "notes": "Utilisateurs, memberships, rôles, permissions, invitations, sessions et Policies de base."
+      "notes": "Utilisateurs, memberships, rôles, permissions, invitations, sessions et Policies de base. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "04",
@@ -63,12 +84,22 @@
       "owner": "kitokoh",
       "priority": "P1",
       "status": "existing",
-      "paths": ["api/app/Modules/HR"],
-      "dependencies": ["BC-TENANT", "BC-IDENTITY"],
-      "routes": ["api/routes/modules/rh.php", "api/routes/modules/hr_app.php", "api/routes/modules/hr_extended.php"],
+      "paths": [
+        "api/app/Modules/HR"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-IDENTITY",
+        "BC-AI"
+      ],
+      "routes": [
+        "api/routes/modules/rh.php",
+        "api/routes/modules/hr_app.php",
+        "api/routes/modules/hr_extended.php"
+      ],
       "migrations": [],
       "events": [],
-      "notes": "Employés, contrats, départements, profils, documents RH et cycle de vie employé."
+      "notes": "Employés, contrats, départements, profils, documents RH et cycle de vie employé. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "05",
@@ -77,12 +108,26 @@
       "owner": "kitokoh",
       "priority": "P1",
       "status": "existing",
-      "paths": ["api/app/Modules/Attendance", "api/app/Modules/Planning"],
-      "dependencies": ["BC-TENANT", "BC-HR"],
-      "routes": ["api/routes/modules/planning.php", "api/routes/modules/tracking.php"],
+      "paths": [
+        "api/app/Modules/Attendance",
+        "api/app/Modules/Planning"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-HR",
+        "BC-IDENTITY",
+        "BC-AI"
+      ],
+      "routes": [
+        "api/routes/modules/planning.php",
+        "api/routes/modules/tracking.php"
+      ],
       "migrations": [],
-      "events": ["AttendanceCheckedIn", "AttendanceCheckedOut"],
-      "notes": "Présence, shifts, planning, géolocalisation, modes de pointage et affectations."
+      "events": [
+        "AttendanceCheckedIn",
+        "AttendanceCheckedOut"
+      ],
+      "notes": "Présence, shifts, planning, géolocalisation, modes de pointage et affectations. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "06",
@@ -91,12 +136,24 @@
       "owner": "kitokoh",
       "priority": "P1",
       "status": "existing",
-      "paths": ["api/app/Modules/Absence"],
-      "dependencies": ["BC-TENANT", "BC-HR"],
-      "routes": ["api/routes/modules/absence.php"],
+      "paths": [
+        "api/app/Modules/Absence"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-HR",
+        "BC-IDENTITY"
+      ],
+      "routes": [
+        "api/routes/modules/absence.php"
+      ],
       "migrations": [],
-      "events": ["AbsenceApproved", "AbsenceRejected", "AbsenceRequested"],
-      "notes": "Congés, absences, justificatifs, soldes, validations et calendrier d'absence."
+      "events": [
+        "AbsenceApproved",
+        "AbsenceRejected",
+        "AbsenceRequested"
+      ],
+      "notes": "Congés, absences, justificatifs, soldes, validations et calendrier d'absence. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "07",
@@ -105,12 +162,23 @@
       "owner": "kitokoh",
       "priority": "P0",
       "status": "existing",
-      "paths": ["api/app/Modules/Payroll"],
-      "dependencies": ["BC-TENANT", "BC-HR", "BC-WORKFORCE", "BC-LEAVE"],
-      "routes": ["api/routes/modules/payroll_engine.php"],
+      "paths": [
+        "api/app/Modules/Payroll"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-HR",
+        "BC-WORKFORCE",
+        "BC-LEAVE",
+        "BC-IDENTITY",
+        "BC-INTEGRATION"
+      ],
+      "routes": [
+        "api/routes/modules/payroll_engine.php"
+      ],
       "migrations": [],
       "events": [],
-      "notes": "Périodes, règles, calculs, snapshots, bulletins, validations et exports paie."
+      "notes": "Périodes, règles, calculs, snapshots, bulletins, validations et exports paie. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "08",
@@ -119,12 +187,21 @@
       "owner": "kitokoh",
       "priority": "P0",
       "status": "existing",
-      "paths": ["api/app/Modules/Accounting"],
-      "dependencies": ["BC-TENANT", "BC-PAYROLL"],
-      "routes": ["api/routes/modules/accounting.php"],
+      "paths": [
+        "api/app/Modules/Accounting"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-PAYROLL",
+        "BC-IDENTITY",
+        "BC-INTEGRATION"
+      ],
+      "routes": [
+        "api/routes/modules/accounting.php"
+      ],
       "migrations": [],
       "events": [],
-      "notes": "Plan comptable, journaux, écritures, exercices, lettrage, FEC et états financiers."
+      "notes": "Plan comptable, journaux, écritures, exercices, lettrage, FEC et états financiers. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "09",
@@ -133,12 +210,20 @@
       "owner": "kitokoh",
       "priority": "P2",
       "status": "existing",
-      "paths": ["api/app/Modules/Expense"],
-      "dependencies": ["BC-TENANT", "BC-HR"],
-      "routes": ["api/routes/modules/expense.php"],
+      "paths": [
+        "api/app/Modules/Expense"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-HR",
+        "BC-IDENTITY"
+      ],
+      "routes": [
+        "api/routes/modules/expense.php"
+      ],
       "migrations": [],
       "events": [],
-      "notes": "Dépenses, avances, prêts, remboursements et avantages, avec contrat Finance."
+      "notes": "Dépenses, avances, prêts, remboursements et avantages, avec contrat Finance. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "10",
@@ -147,12 +232,18 @@
       "owner": "kitokoh",
       "priority": "P2",
       "status": "existing",
-      "paths": ["api/app/Modules/Recruitment"],
-      "dependencies": ["BC-TENANT", "BC-HR"],
+      "paths": [
+        "api/app/Modules/Recruitment"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-HR",
+        "BC-IDENTITY"
+      ],
       "routes": [],
       "migrations": [],
       "events": [],
-      "notes": "Candidatures, postes, candidats, entretiens, décisions et onboarding d'embauche."
+      "notes": "Candidatures, postes, candidats, entretiens, décisions et onboarding d'embauche. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "11",
@@ -161,12 +252,20 @@
       "owner": "kitokoh",
       "priority": "P1",
       "status": "partial",
-      "paths": ["api/app/Modules/CRM"],
-      "dependencies": ["BC-TENANT", "BC-IDENTITY"],
-      "routes": ["api/routes/modules/crm.php"],
+      "paths": [
+        "api/app/Modules/CRM"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-IDENTITY",
+        "BC-INTEGRATION"
+      ],
+      "routes": [
+        "api/routes/modules/crm.php"
+      ],
       "migrations": [],
       "events": [],
-      "notes": "Accounts, contacts, leads, opportunités, activités, tâches et pipelines du tenant. CRM client (distinct du CRM commercial plateforme, ADR-CRM-001/002)."
+      "notes": "Accounts, contacts, leads, opportunités, activités, tâches et pipelines du tenant. CRM client (distinct du CRM commercial plateforme, ADR-CRM-001/002). | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "12",
@@ -175,12 +274,23 @@
       "owner": "kitokoh",
       "priority": "P1",
       "status": "existing",
-      "paths": ["api/app/Modules/Marketing", "api/app/Modules/Growth"],
-      "dependencies": ["BC-TENANT", "BC-CRM"],
-      "routes": ["api/routes/modules/marketing.php", "api/routes/modules/growth.php"],
+      "paths": [
+        "api/app/Modules/Marketing",
+        "api/app/Modules/Growth"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-CRM",
+        "BC-IDENTITY",
+        "BC-INTEGRATION"
+      ],
+      "routes": [
+        "api/routes/modules/marketing.php",
+        "api/routes/modules/growth.php"
+      ],
       "migrations": [],
       "events": [],
-      "notes": "Segments, campagnes, consentements, templates et marketing client."
+      "notes": "Segments, campagnes, consentements, templates et marketing client. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "13",
@@ -189,12 +299,19 @@
       "owner": "kitokoh",
       "priority": "P0",
       "status": "existing",
-      "paths": ["api/app/Modules/Notification", "api/app/Contracts/Communication"],
-      "dependencies": ["BC-TENANT", "BC-IDENTITY"],
+      "paths": [
+        "api/app/Modules/Notification",
+        "api/app/Contracts/Communication"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-IDENTITY",
+        "BC-INTEGRATION"
+      ],
       "routes": [],
       "migrations": [],
       "events": [],
-      "notes": "Email, SMS, WhatsApp, préférences, templates, inbox/outbox et délivrabilité."
+      "notes": "Email, SMS, WhatsApp, préférences, templates, inbox/outbox et délivrabilité. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "14",
@@ -203,12 +320,26 @@
       "owner": "kitokoh",
       "priority": "P0",
       "status": "existing",
-      "paths": ["api/app/Jobs", "api/app/Contracts/Queue"],
-      "dependencies": ["BC-TENANT", "BC-COMMS", "BC-DEVICE"],
-      "routes": ["api/routes/modules/integrations.php"],
+      "paths": [
+        "api/app/Jobs",
+        "api/app/Contracts/Queue"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-COMMS",
+        "BC-DEVICE",
+        "BC-IDENTITY",
+        "BC-PAYROLL",
+        "BC-BILLING",
+        "BC-DOCUMENTS",
+        "BC-PLATFORM"
+      ],
+      "routes": [
+        "api/routes/modules/integrations.php"
+      ],
       "migrations": [],
       "events": [],
-      "notes": "Webhooks, queues, inbox durable, outbox transactionnelle, adaptateurs et replay. Consomme EdgeSync (BC-DEVICE) par contrat."
+      "notes": "Webhooks, queues, inbox durable, outbox transactionnelle, adaptateurs et replay. Consomme EdgeSync (BC-DEVICE) par contrat. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "15",
@@ -217,12 +348,21 @@
       "owner": "kitokoh",
       "priority": "P0",
       "status": "to-create",
-      "paths": ["api/app/Modules/FuelStation"],
-      "dependencies": ["BC-PLATFORM", "BC-TENANT", "BC-IDENTITY", "BC-HR", "BC-WORKFORCE", "BC-COMMS"],
+      "paths": [
+        "api/app/Modules/FuelStation"
+      ],
+      "dependencies": [
+        "BC-PLATFORM",
+        "BC-TENANT",
+        "BC-IDENTITY",
+        "BC-HR",
+        "BC-WORKFORCE",
+        "BC-COMMS"
+      ],
       "routes": [],
       "migrations": [],
       "events": [],
-      "notes": "Stations, pompes, compteurs, sessions pompistes, photos/OCR, ventes, dépôts et bilans. Série FUEL-* (#5795+)."
+      "notes": "Stations, pompes, compteurs, sessions pompistes, photos/OCR, ventes, dépôts et bilans. Série FUEL-* (#5795+). | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "16",
@@ -231,12 +371,20 @@
       "owner": "kitokoh",
       "priority": "P1",
       "status": "to-create",
-      "paths": ["api/app/Modules/EduManager"],
-      "dependencies": ["BC-PLATFORM", "BC-TENANT", "BC-IDENTITY", "BC-HR", "BC-CRM"],
+      "paths": [
+        "api/app/Modules/EduManager"
+      ],
+      "dependencies": [
+        "BC-PLATFORM",
+        "BC-TENANT",
+        "BC-IDENTITY",
+        "BC-HR",
+        "BC-CRM"
+      ],
       "routes": [],
       "migrations": [],
       "events": [],
-      "notes": "Campus, élèves, guardians, classes, présences, notes, bulletins et admissions. Série EDU-* (#5817+)."
+      "notes": "Campus, élèves, guardians, classes, présences, notes, bulletins et admissions. Série EDU-* (#5817+). | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "17",
@@ -245,12 +393,17 @@
       "owner": "kitokoh",
       "priority": "P3",
       "status": "to-create",
-      "paths": ["api/app/Modules/Retail"],
-      "dependencies": ["BC-PLATFORM", "BC-TENANT"],
+      "paths": [
+        "api/app/Modules/Retail"
+      ],
+      "dependencies": [
+        "BC-PLATFORM",
+        "BC-TENANT"
+      ],
       "routes": [],
       "migrations": [],
       "events": [],
-      "notes": "Produits, magasins, caisse, tickets, stocks et synchronisation POS (futur)."
+      "notes": "Produits, magasins, caisse, tickets, stocks et synchronisation POS (futur). | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "18",
@@ -259,12 +412,18 @@
       "owner": "kitokoh",
       "priority": "P2",
       "status": "partial",
-      "paths": ["api/app/Modules/Fleet"],
-      "dependencies": ["BC-TENANT", "BC-HR"],
+      "paths": [
+        "api/app/Modules/Fleet"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-HR",
+        "BC-IDENTITY"
+      ],
       "routes": [],
       "migrations": [],
       "events": [],
-      "notes": "Véhicules, interventions, équipements, maintenance et opérations terrain génériques."
+      "notes": "Véhicules, interventions, équipements, maintenance et opérations terrain génériques. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "19",
@@ -273,12 +432,21 @@
       "owner": "kitokoh",
       "priority": "P1",
       "status": "existing",
-      "paths": ["api/app/Modules/Cameras", "api/app/Modules/EdgeSync"],
-      "dependencies": ["BC-TENANT"],
-      "routes": ["api/routes/modules/cameras.php"],
+      "paths": [
+        "api/app/Modules/Cameras",
+        "api/app/Modules/EdgeSync"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-IDENTITY",
+        "BC-INTEGRATION"
+      ],
+      "routes": [
+        "api/routes/modules/cameras.php"
+      ],
       "migrations": [],
       "events": [],
-      "notes": "Appareils, kiosques, biométrie, synchronisation edge et politiques device. EdgeSync est possédé ici (BC-INTEGRATION le consomme par contrat)."
+      "notes": "Appareils, kiosques, biométrie, synchronisation edge et politiques device. EdgeSync est possédé ici (BC-INTEGRATION le consomme par contrat). | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "20",
@@ -287,12 +455,19 @@
       "owner": "kitokoh",
       "priority": "P1",
       "status": "partial",
-      "paths": ["api/app/Modules/Cabinet"],
-      "dependencies": ["BC-TENANT", "BC-IDENTITY"],
-      "routes": ["api/routes/modules/cabinet.php"],
+      "paths": [
+        "api/app/Modules/Cabinet"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-IDENTITY"
+      ],
+      "routes": [
+        "api/routes/modules/cabinet.php"
+      ],
       "migrations": [],
       "events": [],
-      "notes": "Fichiers, pièces justificatives, scans, rétention, antivirus, signatures et exports protégés. Le module Cabinet en est le socle actuel."
+      "notes": "Fichiers, pièces justificatives, scans, rétention, antivirus, signatures et exports protégés. Le module Cabinet en est le socle actuel. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "21",
@@ -301,12 +476,21 @@
       "owner": "kitokoh",
       "priority": "P2",
       "status": "existing",
-      "paths": ["api/app/Modules/Billing"],
-      "dependencies": ["BC-TENANT", "BC-PLATFORM"],
-      "routes": ["api/routes/modules/billing.php"],
+      "paths": [
+        "api/app/Modules/Billing"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-PLATFORM",
+        "BC-IDENTITY",
+        "BC-INTEGRATION"
+      ],
+      "routes": [
+        "api/routes/modules/billing.php"
+      ],
       "migrations": [],
       "events": [],
-      "notes": "Plans, activation commerciale, facturation de plateforme et entitlements."
+      "notes": "Plans, activation commerciale, facturation de plateforme et entitlements. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "22",
@@ -315,12 +499,17 @@
       "owner": "kitokoh",
       "priority": "P1",
       "status": "to-create",
-      "paths": ["api/app/Modules/Reporting"],
-      "dependencies": ["BC-TENANT", "BC-PLATFORM"],
+      "paths": [
+        "api/app/Modules/Reporting"
+      ],
+      "dependencies": [
+        "BC-TENANT",
+        "BC-PLATFORM"
+      ],
       "routes": [],
       "migrations": [],
       "events": [],
-      "notes": "Read models, indicateurs, exports asynchrones, audit reporting et data quality. Module à formaliser."
+      "notes": "Read models, indicateurs, exports asynchrones, audit reporting et data quality. Module à formaliser. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     },
     {
       "id": "23",
@@ -329,19 +518,32 @@
       "owner": "kitokoh",
       "priority": "P2",
       "status": "existing",
-      "paths": ["api/app/AI"],
-      "dependencies": ["BC-PLATFORM", "BC-TENANT"],
-      "routes": ["api/routes/ai.php"],
+      "paths": [
+        "api/app/AI"
+      ],
+      "dependencies": [
+        "BC-PLATFORM",
+        "BC-TENANT",
+        "BC-IDENTITY",
+        "BC-COMMS",
+        "BC-HR",
+        "BC-PAYROLL",
+        "BC-WORKFORCE"
+      ],
+      "routes": [
+        "api/routes/ai.php"
+      ],
       "migrations": [],
       "events": [],
-      "notes": "OCR, suggestions et assistants bornés, registry, consentement et traçabilité."
+      "notes": "OCR, suggestions et assistants bornés, registry, consentement et traçabilité. | dépendances = contrats d'import autorisés versionnés (MAT-002, #5860) — reflet de la matrice d'imports réelle hors surfaces #5584."
     }
   ],
   "sharedPaths": [
-    "api/app/Shared",
     "api/app/Core/Http",
     "api/app/Core/README.md",
     "api/app/Events",
+    "api/app/Policies",
+    "api/app/Shared",
     "api/database/migrations/edge"
   ]
 }

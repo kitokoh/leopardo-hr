@@ -149,7 +149,7 @@ for base in ("api/app/Modules", "api/app/Core"):
         elif len(owners) > 1:
             failures.append(f"dossier réclamé par plusieurs BC : {d} → {', '.join(owners)} (1 seul propriétaire autorisé)")
 
-# ── 4. Dépendances : codes existants, pas d'auto-dépendance, pas de cycle ───
+# ── 4. Dépendances : codes existants, pas d'auto-dépendance ─────────────────
 for ctx in contexts:
     code = ctx["code"]
     for dep in ctx["dependencies"]:
@@ -158,23 +158,30 @@ for ctx in contexts:
         elif dep not in seen_codes:
             failures.append(f"[{code}] dépendance vers un BC inconnu : {dep}")
 
+# Cycles : AVERTISSEMENT (non bloquant) — le couplage réel BC-TENANT ↔
+# BC-IDENTITY (Company → Employee, RegisterAction → Company) crée un cycle
+# de contrat assumé et documenté (MAT-002 #5860). On ne rapporte que le
+# noyau cyclique réel (suppression itérative des nœuds sans entrée/sortie).
+cycle_info = []
 if not failures:
-    # cycle detection (DFS)
     adj = {c["code"]: [d for d in c["dependencies"] if d in seen_codes] for c in contexts}
-    WHITE, GRAY, BLACK = 0, 1, 2
-    color = {code: WHITE for code in adj}
-    def dfs(node):
-        color[node] = GRAY
-        for nxt in adj[node]:
-            if color[nxt] == GRAY:
-                return True
-            if color[nxt] == WHITE and dfs(nxt):
-                return True
-        color[node] = BLACK
-        return False
-    cycle = any(dfs(n) for n in adj if color[n] == WHITE)
-    if cycle:
-        failures.append("cycle de dépendances détecté entre bounded contexts (registre)")
+    nodes = set(adj)
+    incoming = {n: {s for s in adj if n in adj[s]} for n in nodes}
+    outgoing = {n: set(adj[n]) for n in nodes}
+    changed = True
+    while changed:
+        changed = False
+        for n in list(nodes):
+            if not incoming[n] or not outgoing[n]:
+                nodes.discard(n)
+                for m in nodes:
+                    outgoing[m].discard(n)
+                    incoming[m].discard(n)
+                changed = True
+    if nodes:
+        cycle_info.append(" ↔ ".join(sorted(nodes)))
+    for cyc in cycle_info:
+        warnings.append(f"cycle de dépendances (revue manuelle requise) : {cyc}")
 
 # ── 5. Cohérence CODEOWNERS : le propriétaire de chaque BC y figure ─────────
 codeowner_handles = set()

@@ -101,6 +101,12 @@ jobs:
       - name: Bounded context registry guard self-test (MAT-001, issue #5859)
         run: bash dev-hub/tools/check-bc-registry-test.sh
 
+      - name: BC imports guard — no imports outside declared contracts (MAT-002, issue #5860)
+        run: bash dev-hub/tools/check-bc-imports.sh
+
+      - name: BC imports guard self-test (MAT-002, issue #5860)
+        run: bash dev-hub/tools/check-bc-imports-test.sh
+
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
