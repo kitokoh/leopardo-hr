@@ -88,3 +88,14 @@ php artisan serve
 - ERD : `../docs/dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md`
 - Regles metier : `../docs/dossierdeConception/05_regles_metier/05_REGLES_METIER.md`
 - Prompt MVP actif : `../docs/PROMPTS_EXECUTION/v3/MVP-05_DASHBOARD_WEB.md`
+
+## Healthcheck & opérations
+
+- `GET /api/v1/health` : expose `status`, `version` (PROGRAM_VERSION), `uptime_seconds`
+  et les checks DB / Redis / storage / queue. Utilisé par le gate de déploiement
+  Render (doit matcher PROGRAM_VERSION avec uptime < 900 s).
+- CORS : l'origine `http://127.0.0.1:4173` (admin-dashboard E2E Playwright local) est
+  whitelistée dans `config/cors.php` — un déploiement est requis pour que Web E2E CI
+  redevienne vert après un incident CORS (les E2E tapent la prod depuis le runner).
+- Redis : le healthcheck est fail-closed (les jobs échouent si Redis est down) ;
+  en cas d'incident, relancer le service Redis Render avant de re-tester.
