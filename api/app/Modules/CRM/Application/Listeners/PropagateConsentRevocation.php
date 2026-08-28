@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Application\Listeners;
 
-use App\Modules\CRM\Infrastructure\Services\CampaignConsentRevocationHandler;
 use App\Modules\CRM\Domain\Events\CrmConsentRevoked;
+use App\Modules\CRM\Infrastructure\Services\CampaignConsentRevocationHandler;
 
 /**
  * Propagation du retrait de consentement — Issue #5722.
