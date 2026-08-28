@@ -98,6 +98,9 @@ jobs:
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
+      - name: Runbook coverage guard par BC — backup/restore/rollback (issue #5873, MAT-015)
+        run: bash dev-hub/tools/check-runbooks.sh
+
       - name: Queue strategy coherence guard — database partout (issue #5578)
         run: bash dev-hub/tools/check-queue-strategy-coherence.sh
 
