@@ -40,7 +40,7 @@ final class AutomationEngine
      * @param  array<string, AutomationActionContract>  $actions
      */
     public function __construct(
-        private readonly array $actions,
+        array $actions,
         private readonly CrmConditionEvaluator $evaluator,
     ) {
         foreach ($actions as $type => $action) {
