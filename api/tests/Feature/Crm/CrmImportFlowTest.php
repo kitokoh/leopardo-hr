@@ -104,6 +104,7 @@ class CrmImportFlowTest extends TestCase
         $response->assertStatus(201);
 
         $preview = $response->json('data.preview_data.0');
+        self::assertIsArray($preview);
         self::assertSame('jea***', $preview['email']);
         self::assertSame('060***', $preview['phone']);
         self::assertStringNotContainsString('jean.dupont@example.com', (string) $response->getContent());
@@ -281,7 +282,10 @@ class CrmImportFlowTest extends TestCase
         ]);
         $response->assertStatus(201);
 
-        return (int) $response->json('data.id');
+        $id = $response->json('data.id');
+        self::assertIsInt($id);
+
+        return $id;
     }
 
     private function createCrmTargetTables(): void
