@@ -38,7 +38,13 @@ class PilotSeedCommandTest extends TestCase
 
         foreach (['crm-pilot-alpha', 'crm-pilot-beta'] as $slug) {
             $company = Company::query()->where('slug', $slug)->first();
-            $this->assertNotNull($company, "Pilote [{$slug}] créé");
+
+            if (! $company instanceof Company) {
+                $this->fail("Pilote [{$slug}] absent après seed");
+
+                return;
+            }
+
             $this->assertSame(2, Employee::query()->where('company_id', $company->id)->count());
         }
 
