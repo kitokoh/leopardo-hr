@@ -25,8 +25,8 @@ POST api/v1/user/login
 POST api/v1/user/register
 POST api/v1/user/google-signin
 POST api/v1/platform/auth/login
-GET api/v1/invitation/{token}
-GET api/v1/invitation/{token}/activate
+GET api/v1/onboarding/invitation/{token}
+POST api/v1/onboarding/invitation/{token}/activate
 # ── Sondes de santé / registres publics ─────────────────────────────────────
 GET api/v1/health
 GET api/v1/health/live
@@ -42,7 +42,7 @@ POST api/v1/accounting/payment-webhooks/{gateway}
 GET api/v1/sso/providers
 POST api/v1/sso/saml/{companyId}/callback
 GET api/v1/sso/oidc/{companyId}/authorize
-POST api/v1/sso/oidc/{companyId}/callback
+GET api/v1/sso/oidc/{companyId}/callback
 # ── Portail carrières public (ATS) ──────────────────────────────────────────
 GET api/v1/public/careers/{companySlug}
 GET api/v1/public/careers/{companySlug}/feed.xml
