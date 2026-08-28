@@ -6,17 +6,17 @@ namespace App\Modules\FuelStation\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
-use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Http\Controllers\Controller;
+use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
 use App\Modules\FuelStation\Domain\Models\FuelMeterReading;
 use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
 use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Infrastructure\Services\MeterReadingService;
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreMeterReadingRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\CorrectReadingRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\ReviewIntervalRequest;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreMeterReadingRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -150,7 +150,7 @@ class FuelMeterReadingController extends Controller
     private function assertSolutionActive(): void
     {
         if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
-            throw new FuelSolutionInactiveException();
+            throw new FuelSolutionInactiveException;
         }
     }
 }

@@ -27,10 +27,10 @@ use Illuminate\Support\Carbon;
  * @property string $timezone
  * @property int|null $captured_by_employee_id
  * @property int|null $shift_id
- * @property string $source_code  operator|import|device|correction
+ * @property string $source_code operator|import|device|correction
  * @property string|null $device_reference
  * @property string $idempotency_key
- * @property string $status  submitted|accepted|rejected|corrected
+ * @property string $status submitted|accepted|rejected|corrected
  * @property string|null $correction_reason
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at

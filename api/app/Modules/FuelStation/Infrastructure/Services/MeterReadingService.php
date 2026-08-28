@@ -79,7 +79,7 @@ final class MeterReadingService
             : Carbon::now('UTC');
 
         if ($capturedAtUtc->greaterThan(Carbon::now('UTC')->addSeconds(self::MAX_CLOCK_DRIFT_SECONDS))) {
-            throw new FuelReadingFutureException();
+            throw new FuelReadingFutureException;
         }
 
         $timezone = (string) ($input['timezone'] ?? $station->getAttribute('timezone') ?? 'UTC');
@@ -185,7 +185,7 @@ final class MeterReadingService
         $companyId = (string) $original->getAttribute('company_id');
 
         if (in_array($original->getAttribute('status'), [FuelMeterReading::STATUS_CORRECTED, FuelMeterReading::STATUS_REJECTED], true)) {
-            throw new FuelReadingAlreadyReviewedException();
+            throw new FuelReadingAlreadyReviewedException;
         }
 
         if ($newValueMinor < 0) {
@@ -241,7 +241,7 @@ final class MeterReadingService
     {
         if ($interval->getAttribute('calculation_status') !== FuelMeterInterval::STATUS_PENDING_REVIEW
             && $interval->getAttribute('calculation_status') !== FuelMeterInterval::STATUS_ANOMALY) {
-            throw new FuelReadingAlreadyReviewedException();
+            throw new FuelReadingAlreadyReviewedException;
         }
 
         $status = $decision === 'accept' ? FuelMeterInterval::STATUS_VALID : FuelMeterInterval::STATUS_ANOMALY;
