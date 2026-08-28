@@ -98,6 +98,9 @@ jobs:
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
+      - name: Pilot go/no-go gates guard (issue #5876, MAT-018)
+        run: bash dev-hub/tools/check-pilot-gates.sh
+
       - name: Queue strategy coherence guard — database partout (issue #5578)
         run: bash dev-hub/tools/check-queue-strategy-coherence.sh
 
