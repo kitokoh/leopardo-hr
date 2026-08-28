@@ -71,8 +71,7 @@ class CrmImportController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        // 404 sûr cross-tenant (binding {crmImport} précède le middleware
-        // tenant — le scope global ne filtre pas encore à ce stade).
+        // 404 sûr cross-tenant (binding {crmImport} précède le middleware tenant).
         if ($actor->company_id !== $crmImport->company_id) {
             abort(404);
         }
