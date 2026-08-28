@@ -98,6 +98,9 @@ jobs:
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
+      - name: Golden journeys guard — routes des parcours critiques (issue #5871, MAT-013)
+        run: bash dev-hub/tools/check-golden-journeys.sh api
+
       - name: Queue strategy coherence guard — database partout (issue #5578)
         run: bash dev-hub/tools/check-queue-strategy-coherence.sh
 
