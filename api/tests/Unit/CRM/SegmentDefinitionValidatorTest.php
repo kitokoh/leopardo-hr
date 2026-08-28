@@ -22,7 +22,7 @@ class SegmentDefinitionValidatorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->validator = new SegmentDefinitionValidator();
+        $this->validator = new SegmentDefinitionValidator;
     }
 
     public function test_valid_and_definition_passes(): void
@@ -74,7 +74,7 @@ class SegmentDefinitionValidatorTest extends TestCase
         $definition = [
             'operator' => 'and',
             'conditions' => [
-                ['field' => "1=1; DROP TABLE crm_segments; --", 'op' => 'eq', 'value' => 1],
+                ['field' => '1=1; DROP TABLE crm_segments; --', 'op' => 'eq', 'value' => 1],
             ],
         ];
 

@@ -75,7 +75,6 @@ final class SegmentDefinitionValidator
     }
 
     /**
-     * @param  mixed  $condition
      * @return array{field: string, op: string, value: mixed}
      */
     private function validateCondition(mixed $condition, int $index): array
@@ -103,9 +102,6 @@ final class SegmentDefinitionValidator
         return $normalized;
     }
 
-    /**
-     * @param  mixed  $value
-     */
     private function validateValue(string $field, string $op, mixed $value, int $index): void
     {
         if ($op === SegmentOperator::In->value) {
