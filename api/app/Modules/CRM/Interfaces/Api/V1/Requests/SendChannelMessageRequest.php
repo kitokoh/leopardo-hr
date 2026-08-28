@@ -30,7 +30,7 @@ final class SendChannelMessageRequest extends FormRequest
         ];
     }
 
-    public function withValidator($validator): void
+    public function withValidator(\Illuminate\Validation\Validator $validator): void
     {
         $validator->after(function ($validator): void {
             $body = (string) ($this->input('body') ?? '');

@@ -28,6 +28,7 @@ class CrmChannelSendTest extends TestCase
     {
         parent::setUp();
 
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $this->company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
     }
 
@@ -52,6 +53,9 @@ class CrmChannelSendTest extends TestCase
         return $manager;
     }
 
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
     private function whatsappChannel(array $overrides = []): CrmChannel
     {
         /** @var CrmChannel $channel */

@@ -30,7 +30,9 @@ class CrmChannelCrudTest extends TestCase
     {
         parent::setUp();
 
+        /** @var \App\Core\Tenant\Domain\Models\Company $companyA */
         $this->companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var \App\Core\Tenant\Domain\Models\Company $companyB */
         $this->companyB = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
     }
 

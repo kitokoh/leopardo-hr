@@ -37,6 +37,7 @@ class CrmWhatsAppWebhookTest extends TestCase
         config()->set('crm.webhooks.shared_secret', self::SECRET);
         config()->set('crm.webhooks.whatsapp_verify_token', 'verify-abc');
 
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $this->company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
         $this->channel = CrmChannel::query()->create([
@@ -188,6 +189,9 @@ class CrmWhatsAppWebhookTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $payload
+     */
+    /**
+     * @return \Illuminate\Testing\TestResponse<\Illuminate\Http\Response>
      */
     private function postSigned(array $payload): \Illuminate\Testing\TestResponse
     {

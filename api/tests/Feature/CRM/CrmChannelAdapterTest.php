@@ -34,6 +34,7 @@ class CrmChannelAdapterTest extends TestCase
     {
         parent::setUp();
 
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $this->company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
     }
 

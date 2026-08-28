@@ -47,6 +47,9 @@ final class SmsAdapter implements ChannelAdapterContract
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $settings  configuration non sensible du canal
+     */
     public function verify(string $address, array $settings): bool
     {
         return $this->normalizer->normalizePhone($address) !== null;
@@ -57,6 +60,9 @@ final class SmsAdapter implements ChannelAdapterContract
         return $this->normalizer->normalizePhone($address);
     }
 
+    /**
+     * @param  array<string, mixed>  $settings  configuration non sensible du canal
+     */
     public function revoke(string $providerMessageId, array $settings): bool
     {
         // Aucun fournisseur production : rien à révoquer (best-effort ack).
