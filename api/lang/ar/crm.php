@@ -11,4 +11,8 @@ return [
     'CRM_WEBHOOK_SIGNATURE_INVALID' => 'توقيع webhook لـ CRM غير صالح.',
     'CRM_WEBHOOK_NOT_CONFIGURED' => 'webhook لـ CRM غير مهيأ (السر مفقود).',
     'CRM_WEBHOOK_VERIFY_INVALID' => 'تم رفض التحقق من اشتراك webhook لـ CRM.',
+    'CRM_AUTOMATION_NOT_FOUND' => 'أتمتة CRM غير موجودة في المستأجر الحالي.',
+    'CRM_AUTOMATION_INVALID_TRIGGER' => 'حدث تشغيل أتمتة CRM غير معروف.',
+    'CRM_AUTOMATION_EMERGENCY_STOPPED' => 'تم إيقاف أتمتة CRM طارئ لهذا المستأجر.',
+    'CRM_AUTOMATION_INVALID' => 'أتمتة CRM غير صالحة (قاعدة أو إجراء غير مسموح به).',
 ];

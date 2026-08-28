@@ -47,6 +47,21 @@ class CrmServiceProvider extends ServiceProvider
                 quotaService: $app->make(\App\Modules\CRM\Infrastructure\Services\CrmQuotaService::class),
             );
         });
+
+        // Automatisations CRM (#5728) : actions terminales enregistrées par
+        // type — le moteur ne sait exécuter QUE ces types (whitelist).
+        $this->app->singleton(\App\Modules\CRM\Infrastructure\Services\AutomationEngine::class, function ($app): \App\Modules\CRM\Infrastructure\Services\AutomationEngine {
+            return new \App\Modules\CRM\Infrastructure\Services\AutomationEngine(
+                actions: [
+                    \App\Modules\CRM\Domain\Enums\CrmAutomationActionType::SEND_WHATSAPP => $app->make(\App\Modules\CRM\Application\Actions\AutomationActions\SendWhatsAppAction::class),
+                    \App\Modules\CRM\Domain\Enums\CrmAutomationActionType::SEND_SMS => $app->make(\App\Modules\CRM\Application\Actions\AutomationActions\SendSmsAction::class),
+                    \App\Modules\CRM\Domain\Enums\CrmAutomationActionType::SEND_EMAIL => $app->make(\App\Modules\CRM\Application\Actions\AutomationActions\SendEmailAction::class),
+                    \App\Modules\CRM\Domain\Enums\CrmAutomationActionType::CREATE_TASK => $app->make(\App\Modules\CRM\Application\Actions\AutomationActions\CreateTaskAction::class),
+                    \App\Modules\CRM\Domain\Enums\CrmAutomationActionType::HTTP_WEBHOOK => $app->make(\App\Modules\CRM\Application\Actions\AutomationActions\HttpWebhookAction::class),
+                ],
+                evaluator: $app->make(\App\Modules\CRM\Infrastructure\Services\CrmConditionEvaluator::class),
+            );
+        });
     }
 
     public function boot(): void

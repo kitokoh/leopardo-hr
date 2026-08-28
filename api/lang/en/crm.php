@@ -11,4 +11,8 @@ return [
     'CRM_WEBHOOK_SIGNATURE_INVALID' => 'Invalid CRM webhook signature.',
     'CRM_WEBHOOK_NOT_CONFIGURED' => 'CRM webhook not configured (missing secret).',
     'CRM_WEBHOOK_VERIFY_INVALID' => 'CRM webhook subscription verification refused.',
+    'CRM_AUTOMATION_NOT_FOUND' => 'CRM automation not found in the current tenant.',
+    'CRM_AUTOMATION_INVALID_TRIGGER' => 'Unknown CRM automation trigger event.',
+    'CRM_AUTOMATION_EMERGENCY_STOPPED' => 'CRM automations emergency-stopped for this tenant.',
+    'CRM_AUTOMATION_INVALID' => 'Invalid CRM automation (rule or action not allowlisted).',
 ];

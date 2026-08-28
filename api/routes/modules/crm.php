@@ -8,6 +8,7 @@
  * publics (hors auth) mais protégés par signature HMAC fail-closed.
  */
 
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmAutomationController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmChannelController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmWhatsAppWebhookController;
 use Illuminate\Support\Facades\Route;
@@ -29,4 +30,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/channels/{channel}/messages', [CrmChannelController::class, 'messages']);
         Route::get('/channels/{channel}/conversations', [CrmChannelController::class, 'conversations']);
         Route::get('/channels/{channel}/observability', [CrmChannelController::class, 'observability']);
+
+        // ── Automatisations CRM (#5728) ────────────────────────────────────
+        Route::get('/automations', [CrmAutomationController::class, 'index']);
+        Route::post('/automations', [CrmAutomationController::class, 'store']);
+        Route::get('/automations/{automation}', [CrmAutomationController::class, 'show']);
+        Route::put('/automations/{automation}', [CrmAutomationController::class, 'update']);
+        Route::delete('/automations/{automation}', [CrmAutomationController::class, 'destroy']);
+        Route::post('/automations/{automation}/activate', [CrmAutomationController::class, 'activate']);
+        Route::post('/automations/{automation}/pause', [CrmAutomationController::class, 'pause']);
+        Route::post('/automations/{automation}/simulate', [CrmAutomationController::class, 'simulate']);
+        Route::get('/automations/{automation}/runs', [CrmAutomationController::class, 'runs']);
+        Route::post('/automations/emergency-stop', [CrmAutomationController::class, 'emergencyStop']);
+        Route::post('/automations/events/{event}', [CrmAutomationController::class, 'dispatch']);
     });

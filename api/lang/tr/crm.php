@@ -11,4 +11,8 @@ return [
     'CRM_WEBHOOK_SIGNATURE_INVALID' => 'Geçersiz CRM webhook imzası.',
     'CRM_WEBHOOK_NOT_CONFIGURED' => 'CRM webhook yapılandırılmamış (gizli anahtar eksik).',
     'CRM_WEBHOOK_VERIFY_INVALID' => 'CRM webhook abonelik doğrulaması reddedildi.',
+    'CRM_AUTOMATION_NOT_FOUND' => 'CRM otomasyonu geçerli kiracıda bulunamadı.',
+    'CRM_AUTOMATION_INVALID_TRIGGER' => 'Bilinmeyen CRM otomasyon tetikleyici olayı.',
+    'CRM_AUTOMATION_EMERGENCY_STOPPED' => 'Bu kiracı için CRM otomasyonları acil durduruldu.',
+    'CRM_AUTOMATION_INVALID' => 'Geçersiz CRM otomasyonu (kural veya eylem beyaz listede değil).',
 ];

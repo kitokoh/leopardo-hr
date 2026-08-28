@@ -33,6 +33,14 @@ return [
         ],
     ],
 
+    'automations' => [
+        // Tentatives maximales d'un run avant dead-letter.
+        'max_attempts' => (int) env('CRM_AUTOMATIONS_MAX_ATTEMPTS', 1),
+
+        // Nombre maximal d'actions par règle (borne anti-abus).
+        'max_actions_per_rule' => (int) env('CRM_AUTOMATIONS_MAX_ACTIONS', 5),
+    ],
+
     'webhooks' => [
         // Secret partagé de signature des webhooks CRM entrants (env
         // CRM_WEBHOOKS_SHARED_SECRET) — fail-closed si absent.

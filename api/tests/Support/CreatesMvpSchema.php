@@ -2201,6 +2201,95 @@ trait CreatesMvpSchema
         }
 
         $this->createCrmChannelTables();
+        $this->createCrmAutomationTables();
+        $this->createCrmExportTables();
+    }
+
+    /**
+     * #5728 — Automatisations CRM tenant. Miroir des migrations tenant
+     * 2026_08_28_000003_5728_create_crm_automation_tables.php.
+     */
+    private function createCrmAutomationTables(): void
+    {
+        if (! Schema::hasTable($this->moduleTable('crm_automations'))) {
+            Schema::create($this->moduleTable('crm_automations'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('trigger_event', 80);
+                $table->json('conditions')->nullable();
+                $table->json('actions');
+                $table->string('status', 20)->default('draft');
+                $table->unsignedInteger('version')->default(1);
+                $table->uuid('created_by')->nullable();
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status'], 'crm_automations_company_status_index');
+                $table->index(['company_id', 'trigger_event'], 'crm_automations_company_trigger_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('crm_automation_runs'))) {
+            Schema::create($this->moduleTable('crm_automation_runs'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('automation_id')->index();
+                $table->string('trigger_event', 80);
+                $table->string('entity_type', 40)->nullable();
+                $table->string('entity_id', 64)->nullable();
+                $table->string('run_key', 160);
+                $table->json('conditions_snapshot')->nullable();
+                $table->json('actions_snapshot')->nullable();
+                $table->string('status', 20)->default('pending');
+                $table->unsignedTinyInteger('attempts')->default(0);
+                $table->unsignedTinyInteger('max_attempts')->default(1);
+                $table->boolean('dry_run')->default(false);
+                $table->text('error')->nullable();
+                $table->timestamp('ran_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'run_key'], 'crm_automation_runs_company_run_key_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('crm_automation_states'))) {
+            Schema::create($this->moduleTable('crm_automation_states'), function (Blueprint $table): void {
+                $table->uuid('company_id')->primary();
+                $table->boolean('enabled')->default(true);
+                $table->timestamp('updated_at')->nullable();
+            });
+        }
+    }
+
+    /**
+     * #5729 — Jobs d'export CRM tenant. Miroir de la migration tenant
+     * 2026_08_28_000002_5729_create_crm_export_jobs_table.php.
+     */
+    private function createCrmExportTables(): void
+    {
+        if (! Schema::hasTable($this->moduleTable('crm_export_jobs'))) {
+            Schema::create($this->moduleTable('crm_export_jobs'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('user_id')->nullable()->index();
+                $table->string('entity', 30);
+                $table->string('format', 10)->default('csv');
+                $table->json('filters')->nullable();
+                $table->json('columns')->nullable();
+                $table->string('status', 20)->default('queued');
+                $table->unsignedTinyInteger('progress')->default(0);
+                $table->string('file_path', 500)->nullable();
+                $table->string('file_name', 255)->nullable();
+                $table->timestamp('expires_at')->nullable();
+                $table->string('error', 500)->nullable();
+                $table->timestamp('completed_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status'], 'crm_exports_company_status_index');
+                $table->index(['company_id', 'created_at'], 'crm_exports_company_created_index');
+            });
+        }
     }
 
     /**
