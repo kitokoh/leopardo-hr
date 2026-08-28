@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Interfaces\Api\V1\Controllers;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\CRM\Application\Services\CrmEmailService;
 use App\Modules\CRM\Domain\DTOs\EmailDeliveryResult;
