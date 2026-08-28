@@ -104,7 +104,7 @@ class CrmRgpdLifecycleTest extends TestCase
         ]);
 
         // Premier passage (écrit).
-        $exit = Artisan::call('crm:anonymize', ['--company' => $tenantA->id, '--force']);
+        $exit = Artisan::call('crm:anonymize', ['--company' => $tenantA->id, '--force' => true]);
         $this->assertSame(0, $exit);
 
         $afterFirst = DB::table('crm_contacts')->where('company_id', $tenantA->id)
@@ -118,7 +118,7 @@ class CrmRgpdLifecycleTest extends TestCase
         $this->assertSame('carol@acme.test', (string) DB::table('crm_contacts')->where('company_id', $tenantB->id)->value('email'));
 
         // Second passage : idempotent (valeurs strictement identiques) → rejouable.
-        $exit = Artisan::call('crm:anonymize', ['--company' => $tenantA->id, '--force']);
+        $exit = Artisan::call('crm:anonymize', ['--company' => $tenantA->id, '--force' => true]);
         $this->assertSame(0, $exit);
         $afterSecond = DB::table('crm_contacts')->where('company_id', $tenantA->id)
             ->orderBy('id')->pluck('email', 'id')->all();
@@ -156,13 +156,13 @@ class CrmRgpdLifecycleTest extends TestCase
     public function test_anonymization_requires_tenant_and_skips_missing_tables(): void
     {
         // Sans tenant ciblé → échec (jamais d'anonymisation globale implicite).
-        $exit = Artisan::call('crm:anonymize', ['--force']);
+        $exit = Artisan::call('crm:anonymize', ['--force' => true]);
         $this->assertSame(1, $exit);
 
         // Tables absentes (socle V0 non mergé) → skip propre, exit 0.
         /** @var Company $tenantA */
         $tenantA = Company::factory()->create();
-        $exit = Artisan::call('crm:anonymize', ['--company' => $tenantA->id, '--force']);
+        $exit = Artisan::call('crm:anonymize', ['--company' => $tenantA->id, '--force' => true]);
         $this->assertSame(0, $exit);
         $this->assertStringContainsString('table absente', Artisan::output());
     }
