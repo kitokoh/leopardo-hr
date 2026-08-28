@@ -193,9 +193,13 @@ class TenantManagerStandardizationTest extends TestCase
         $manager->setTenant($company);
         $this->assertTrue($manager->hasTenant());
 
+        $manager->clearTenant();
         $this->assertFalse($manager->hasTenant());
         $this->assertNull($manager->current());
-        $this->assertStringContainsString('shared_tenants', $this->searchPath());
+        // Contrat #5736 : clearTenant() ramène le search_path à `public`
+        // (docs/architecture/TENANT_RUNTIME_CONTRACT.md §1) — plus de schéma tenant.
+        $this->assertStringContainsString('public', $this->searchPath());
+        $this->assertStringNotContainsString($company->schema_name, $this->searchPath());
     }
 
     // ── 5. job CRM sans tenant rejeté avant accès aux données ────────────────
