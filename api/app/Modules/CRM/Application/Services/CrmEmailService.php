@@ -213,7 +213,7 @@ final class CrmEmailService
             'send_id' => $sendId,
             'provider_message_id' => $messageId,
             'event' => $event,
-            'payload' => json_encode($payload),
+            'payload' => json_encode($payload) ?: '{}',
             'received_at' => now(),
             'created_at' => now(),
             'updated_at' => now(),
