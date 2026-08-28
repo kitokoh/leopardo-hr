@@ -169,3 +169,4 @@ destruction de session admin (intercepteur `services/api.js`).
   cross-tenant pourra être ajouté quand la donnée agrégée existera côté plateforme.
 - Test de régression : `front/admin-dashboard/e2e/fleet-no-session-kill.spec.js`
   (ouvrir /fleet connecté → pas de redirect /login).
+| FuelStation manifest/activation `/api/v1/fuelstation/manifest`, `/fuelstation/activate`, `/fuelstation/status` (#5795) | `throttle:api`, `auth:sanctum`, `token.refresh`, `tenant`, `throttle:api-plan`, `api.manager:principal,rh` | P, RH | Manifest de solution (allowlist), activation idempotente avec vérification des dépendances (modules de base via matrice features tenant), statut. CRM commercial hors périmètre. Tests : `FuelStationManifestTest`. |
