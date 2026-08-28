@@ -59,7 +59,7 @@ class CrmPlatformIsolationTest extends TestCase
         $this->actingAs($superAdmin, 'super_admin_api')
             ->getJson('/api/v1/platform/crm/pipeline')
             ->assertStatus(200)
-            ->assertJsonStructure(['pipeline' => ['leads', 'trials', 'active', 'rejected']]);
+            ->assertJsonStructure(['data' => ['leads', 'trials', 'active', 'rejected']]);
     }
 
     public function test_tenant_manager_cannot_reach_platform_company_routes(): void
@@ -77,7 +77,7 @@ class CrmPlatformIsolationTest extends TestCase
         Sanctum::actingAs($manager);
 
         // Autres surfaces platform : également fermées au tenant.
-        $this->getJson('/api/v1/platform/metrics')->assertStatus(401);
+        $this->getJson('/api/v1/platform/metrics/overview')->assertStatus(401);
         $this->getJson('/api/v1/platform/companies')->assertStatus(401);
     }
 }
