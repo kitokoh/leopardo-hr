@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * #5743 (CRM-PRE) — Seed pilote CRM : environnement reproductible, non
@@ -84,7 +85,7 @@ class CrmPilotSeeder extends Seeder
         $now = now();
 
         // Mot de passe DÉMO documenté (parcours pilote) — jamais un secret réel.
-        $demoHash = \Illuminate\Support\Facades\Hash::make('pilot123');
+        $demoHash = Hash::make('pilot123');
 
         DB::table('employees')->insert([
             [
