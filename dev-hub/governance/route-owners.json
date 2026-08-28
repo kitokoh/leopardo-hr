@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "title": "Route Owner Registry — Leopardo HR",
+    "description": "Registre déclaratif du propriétaire d'espace (platform / tenant / public / web) des routes API (MAT-003, issue #5861). Garde CI : dev-hub/tools/check-route-owner-guard.sh — une route platform ne doit pas être exposée dans l'espace tenant et inversement.",
+    "guard": "dev-hub/tools/check-route-owner-guard.sh",
+    "platform_guard_middleware": "Authenticate:super_admin_api",
+    "tenant_middleware": "TenantMiddleware",
+    "baseline": "route:list sur main 8b3609f — 913 routes (109 platform, 678 tenant, 126 public), audit 2026-08-28",
+    "updated": "2026-08-28"
+  },
+  "scope_by_default": "tenant",
+  "route_files": {
+    "api/routes/api.php": "mixed",
+    "api/routes/ai.php": "tenant",
+    "api/routes/web.php": "web",
+    "api/routes/console.php": "console",
+    "api/routes/modules/absence.php": "tenant",
+    "api/routes/modules/accounting.php": "tenant",
+    "api/routes/modules/billing.php": "tenant",
+    "api/routes/modules/cabinet.php": "tenant",
+    "api/routes/modules/cameras.php": "tenant",
+    "api/routes/modules/crm.php": "tenant",
+    "api/routes/modules/dashboard.php": "tenant",
+    "api/routes/modules/expense.php": "tenant",
+    "api/routes/modules/growth.php": "tenant",
+    "api/routes/modules/hr_app.php": "tenant",
+    "api/routes/modules/hr_extended.php": "tenant",
+    "api/routes/modules/integrations.php": "tenant",
+    "api/routes/modules/marketing.php": "tenant",
+    "api/routes/modules/payroll_engine.php": "tenant",
+    "api/routes/modules/planning.php": "tenant",
+    "api/routes/modules/rh.php": "tenant",
+    "api/routes/modules/sso.php": "tenant",
+    "api/routes/modules/tracking.php": "tenant",
+    "api/routes/modules/user.php": "tenant"
+  },
+  "platform_controller_exceptions": [
+    {
+      "controller": "App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\MetricsController",
+      "reason": "Route /api/v1/metrics (super-admin) hors prefixes /platform et /admin — sonde platform historique, documentée issue #1466."
+    }
+  ],
+  "tenant_controller_exceptions": [
+    {
+      "controller": "App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\AIWorkflowController",
+      "reason": "Workflows IA tenant (préparation paie, rapport hebdo) — contrôleur colocalisé dans Modules/Platform (BC-01) mais servi dans l'espace tenant (ai.php, auth:sanctum + AITenantInjector). À migrer vers BC-23 AI (follow-up MAT)."
+    },
+    {
+      "controller": "App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\ClientEventController",
+      "reason": "Événements client tenant (api/v1/client-events) — contrôleur Modules/Platform, scope tenant assumé."
+    },
+    {
+      "controller": "App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\CommunicationAnalyticsController",
+      "reason": "Analytics de communication tenant (api/v1/communication/analytics)."
+    },
+    {
+      "controller": "App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\LaunchReadinessController",
+      "reason": "Launch readiness tenant (api/v1/launch-readiness)."
+    },
+    {
+      "controller": "App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\SupportTicketController",
+      "reason": "Tickets support tenant (api/v1/support-tickets) — Modules/Platform, scope tenant assumé."
+    }
+  ],
+  "platform_uri_prefixes": [
+    "api/v1/platform",
+    "api/v1/admin"
+  ]
+}
