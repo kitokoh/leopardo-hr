@@ -94,38 +94,65 @@ class CrmApiContractTest extends TestCase
 
     public function test_each_crm_route_is_documented_in_openapi_with_matching_parameters(): void
     {
-        $spec = $this->loadOpenApi();
+        $spec = $this->readOpenApi();
 
         foreach (self::CRM_PATHS as $contract) {
             [$method, $path] = explode(' ', $contract, 2);
 
             $this->assertArrayHasKey($path, $spec['paths'], "chemin OpenAPI manquant : {$path}");
-            $operation = $spec['paths'][$path][strtolower($method)] ?? null;
-            $this->assertNotNull($operation, "opération OpenAPI manquante : {$method} {$path}");
+            $this->assertContains(
+                strtolower($method),
+                $spec['paths'][$path]['methods'],
+                "opération OpenAPI manquante : {$method} {$path}"
+            );
 
             // Noms de paramètres de chemin alignés (garde #5583).
             preg_match_all('/\{([^}]+)\}/', $path, $matches);
-            $expectedParams = $matches[1];
-            $documentedParams = array_map(
-                static fn (array $p): string => (string) $p['name'],
-                $operation['parameters'] ?? []
-            );
-            foreach ($expectedParams as $param) {
-                $this->assertContains($param, $documentedParams, "paramètre de chemin {$param} non documenté sur {$path}");
+            foreach ($matches[1] as $param) {
+                $this->assertContains(
+                    $param,
+                    $spec['paths'][$path]['parameters'],
+                    "paramètre de chemin {$param} non documenté sur {$path}"
+                );
             }
         }
     }
 
     public function test_crm_client_surface_is_distinct_from_platform_crm(): void
     {
-        $spec = $this->loadOpenApi();
+        $spec = $this->readOpenApi();
 
         foreach (array_keys($spec['paths']) as $path) {
             $this->assertStringNotContainsString('/platform/crm', $path, 'le CRM client ne doit pas s\'exposer sous /platform');
         }
 
-        $crmPaths = array_filter(array_keys($spec['paths']), static fn (string $p): bool => str_starts_with($p, '/crm/'));
-        $this->assertNotEmpty($crmPaths);
+        $this->assertNotEmpty(array_filter(array_keys($spec['paths']), static fn (string $p): bool => str_starts_with($p, '/crm/')));
+    }
+
+    public function test_openapi_documents_crm_schemas_and_tag(): void
+    {
+        $spec = $this->readOpenApi();
+
+        $expectedSchemas = [
+            'CrmLead',
+            'CrmLeadPayload',
+            'CrmOpportunity',
+            'CrmOpportunityPayload',
+            'CrmPipeline',
+            'CrmPipelinePayload',
+            'CrmPipelineStage',
+            'CrmPipelineStagePayload',
+            'CrmTask',
+            'CrmTaskPayload',
+            'CrmActivity',
+            'CrmActivityPayload',
+            'CrmPaginationMeta',
+        ];
+        foreach ($expectedSchemas as $schema) {
+            $this->assertContains($schema, $spec['schemas'], "schéma OpenAPI manquant : {$schema}");
+        }
+
+        $this->assertContains('CRM', $spec['tags']);
     }
 
     public function test_list_response_uses_laravel_paginated_contract(): void
@@ -155,33 +182,6 @@ class CrmApiContractTest extends TestCase
         $this->getJson('/api/v1/crm/tasks')->assertStatus(401);
     }
 
-    public function test_openapi_documents_crm_schemas_and_tag(): void
-    {
-        $spec = $this->loadOpenApi();
-
-        $expectedSchemas = [
-            'CrmLead',
-            'CrmLeadPayload',
-            'CrmOpportunity',
-            'CrmOpportunityPayload',
-            'CrmPipeline',
-            'CrmPipelinePayload',
-            'CrmPipelineStage',
-            'CrmPipelineStagePayload',
-            'CrmTask',
-            'CrmTaskPayload',
-            'CrmActivity',
-            'CrmActivityPayload',
-            'CrmPaginationMeta',
-        ];
-        foreach ($expectedSchemas as $schema) {
-            $this->assertArrayHasKey($schema, $spec['components']['schemas'], "schéma OpenAPI manquant : {$schema}");
-        }
-
-        $tags = array_column($spec['tags'] ?? [], 'name');
-        $this->assertContains('CRM', $tags);
-    }
-
     public function test_sdk_is_synchronized_with_spec(): void
     {
         $generator = base_path('../dev-hub/tools/generate-openapi-sdk.mjs');
@@ -196,22 +196,91 @@ class CrmApiContractTest extends TestCase
     }
 
     /**
-     * @return array<string, mixed>
+     * Parse api/openapi.yaml sans dépendance externe (symfony/yaml n'est pas
+     * une dépendance directe du dépôt) : extrait les chemins, méthodes,
+     * paramètres de chemin, schémas et tags nécessaires au contrat CRM.
+     *
+     * @return array{paths: array<string, array{methods: list<string>, parameters: list<string>}>, schemas: list<string>, tags: list<string>}
      */
-    private function loadOpenApi(): array
+    private function readOpenApi(): array
     {
         $path = base_path('openapi.yaml');
 
         $this->assertFileExists($path);
 
-        $yaml = file_get_contents($path);
+        $lines = file($path, FILE_IGNORE_NEW_LINES);
+        $this->assertNotFalse($lines);
 
-        $this->assertNotFalse($yaml);
+        $paths = [];
+        $schemas = [];
+        $tags = [];
 
-        /** @var array<string, mixed> $spec */
-        $spec = \Symfony\Component\Yaml\Yaml::parse($yaml);
+        $section = null;
+        $currentPath = null;
+        $currentMethod = null;
+        $inParameters = false;
 
-        return $spec;
+        foreach ($lines as $line) {
+            if ($line === 'tags:' && $section === null) {
+                $section = 'tags';
+
+                continue;
+            }
+            if ($line === 'paths:') {
+                $section = 'paths';
+
+                continue;
+            }
+            if ($line === 'components:') {
+                $section = 'components';
+
+                continue;
+            }
+            if ($section === 'tags' && str_starts_with($line, '- name: ')) {
+                $tags[] = trim(substr($line, strlen('- name: ')));
+            }
+            if ($section === 'components' && str_starts_with($line, '  schemas:')) {
+                $section = 'schemas';
+            }
+            if ($section === 'schemas' && preg_match('/^    ([A-Za-z0-9_]+):$/', $line, $m) === 1) {
+                $schemas[] = $m[1];
+            }
+            if ($section === 'paths') {
+                if (preg_match('/^  (\/[^ ]+):$/', $line, $m) === 1) {
+                    $currentPath = $m[1];
+                    $paths[$currentPath] = ['methods' => [], 'parameters' => []];
+                    $currentMethod = null;
+                    $inParameters = false;
+
+                    continue;
+                }
+                if ($currentPath !== null && preg_match('/^    ([a-z]+):$/', $line, $m) === 1 && in_array($m[1], ['get', 'post', 'put', 'patch', 'delete'], true)) {
+                    $currentMethod = $m[1];
+                    $paths[$currentPath]['methods'][] = $currentMethod;
+                    $inParameters = false;
+
+                    continue;
+                }
+                if ($currentPath !== null && $currentMethod !== null) {
+                    if (trim($line) === 'parameters:') {
+                        $inParameters = true;
+
+                        continue;
+                    }
+                    if (trim($line) === 'responses:') {
+                        $inParameters = false;
+                    }
+                    if ($inParameters && preg_match('/^      - name: ([A-Za-z0-9_]+)$/', $line, $m) === 1) {
+                        $paths[$currentPath]['parameters'][] = $m[1];
+                    }
+                }
+            }
+        }
+
+        return [
+            'paths' => $paths,
+            'schemas' => $schemas,
+            'tags' => $tags,
+        ];
     }
-
 }
