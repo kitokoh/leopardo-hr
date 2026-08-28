@@ -15,6 +15,16 @@ Note 2026-06-28 : Migration des modeles d'authentification (User/Employee) vers 
 
 Note 2026-08-22 (stabilisation CI, PR #5295) : les endpoints publics OIDC `GET /sso/oidc/{companyId}/authorize` et `GET /sso/oidc/{companyId}/callback` portent explicitement `throttle:10,1`; `SsoCallbackThrottleTest` vérifie ce contrat anti-abus. Le contrat `api/openapi.yaml` reste parsable par Redocly après fusion des chemins dupliqués, correction des nullable OpenAPI 3.0 et alignement des paramètres recruitment; le miroir et les SDK JavaScript/Python sont régénérés.
 
+Note 2026-08-28 (lot CRM client V0/V1 — issues #5722/#5723/#5724/#5726) : nouvelle surface API CRM tenant —
+
+- `POST /api/v1/crm/consents` (accord/refus) + `POST /api/v1/crm/consents/{id}/revoke` : consentements par (contact, canal, finalité), historique immuable `audit_logs` (RGPD art. 7), aucun envoi sans consentement (fail-closed) ;
+- `GET/POST/PUT/DELETE /api/v1/crm/segments*` + `POST /api/v1/crm/segments/{id}/rebuild` + `GET /{id}/members` : définitions JSONB strictement allowlistées (aucun SQL utilisateur), versionnées (snapshot reproductible), membership tenant-scopée ;
+- `GET/POST/PUT/DELETE /api/v1/crm/campaigns*` + `start|pause|resume|cancel|finish` + `report` : cycle de vie strict (transitions invalides 422), audience segment OU explicite filtrée au consentement au start, envoi stoppable et observable ;
+- `POST /api/v1/crm/email/transactional|marketing` : marketing soumis au consentement + suppression (adresse hashée SHA-256, aucune PII) + quotas par tenant/heure (429 `EMAIL_RATE_LIMITED`) ;
+- `POST /api/v1/crm/email/webhook` (secret partagé `X-Leopardo-Webhook-Secret`) et `POST /api/v1/crm/email/unsubscribe` (jeton HMAC) : endpoints publics par design, bounce/complaint/unsubscribe → suppression + propagation aux envois de campagne ;
+- RBAC : lecture = `api.manager` (tout manager du tenant) ; écritures/actions = `api.manager:principal,marketing` + Policies dédiées ; isolation tenant `BelongsToCompany` (404 cross-tenant testé).
+- Couverture : `api/tests/Feature/CRM/*` (consentements, segments, campagnes, email) + `api/tests/Unit/CRM/*` (grammaire de segment) — cycle de vie, RBAC, isolation, validation stricte, audit.
+
 ## Perimetre
 
 - API publique
