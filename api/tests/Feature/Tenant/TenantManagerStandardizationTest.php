@@ -61,7 +61,10 @@ class TenantManagerStandardizationTest extends TestCase
         $company = Company::factory()->create();
         $manager = $this->manager();
 
-        $inside = null;
+        $inside = [
+            'company_id' => null,
+            'search_path' => '',
+        ];
         $result = $manager->withinTenant($company, function () use (&$inside): string {
             $inside = [
                 'company_id' => $this->manager()->current()?->id,
@@ -87,16 +90,18 @@ class TenantManagerStandardizationTest extends TestCase
         $company = Company::factory()->create();
         $manager = $this->manager();
 
+        $caughtMessage = null;
         try {
             $manager->withinTenant($company, function (): void {
                 $this->assertTrue($this->manager()->hasTenant());
 
                 throw new \RuntimeException('boom');
             });
-            $this->fail('L’exception devait remonter.');
         } catch (\RuntimeException $e) {
-            $this->assertSame('boom', $e->getMessage());
+            $caughtMessage = $e->getMessage();
         }
+
+        $this->assertSame('boom', $caughtMessage);
 
         // Le finally restaure contexte + search_path même sur exception.
         $this->assertFalse($manager->hasTenant());
