@@ -1772,6 +1772,18 @@ class LeopardoClient:
         """Manifest de la solution FuelStation (catalogue, permissions, dependances)"""
         return self.request("GET", "/fuelstation/manifest", **kwargs)
 
+    def get_fuelstation_meters_by_meter_readings(self, **kwargs):
+        """Lister les relevés d'un compteur"""
+        return self.request("GET", "/fuelstation/meters/{meter}/readings", **kwargs)
+
+    def post_fuelstation_meters_by_meter_readings(self, **kwargs):
+        """Enregistrer un relevé de compteur (idempotent)"""
+        return self.request("POST", "/fuelstation/meters/{meter}/readings", **kwargs)
+
+    def post_fuelstation_readings_by_reading_correct(self, **kwargs):
+        """Corriger un relevé (versionné et audité)"""
+        return self.request("POST", "/fuelstation/readings/{reading}/correct", **kwargs)
+
     def get_fuelstation_status(self, **kwargs):
         """Etat d'activation FuelStation du tenant"""
         return self.request("GET", "/fuelstation/status", **kwargs)

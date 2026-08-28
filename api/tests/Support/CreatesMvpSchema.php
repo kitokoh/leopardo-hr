@@ -2325,6 +2325,48 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('fuel_meter_readings'))) {
+            Schema::create($this->moduleTable('fuel_meter_readings'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('meter_id')->index();
+                $table->uuid('pump_id')->nullable()->index();
+                $table->uuid('site_id')->nullable()->index();
+                $table->uuid('station_id')->nullable()->index();
+                $table->uuid('operator_id')->nullable()->index();
+                $table->uuid('shift_id')->nullable()->index();
+                $table->decimal('reading_value', 16, 3);
+                $table->timestampTz('reading_at');
+                $table->string('reading_at_local', 40)->nullable();
+                $table->decimal('delta', 16, 3)->nullable();
+                $table->boolean('rollover')->default(false);
+                $table->boolean('anomaly')->default(false);
+                $table->string('source', 20)->default('manual');
+                $table->string('note', 255)->nullable();
+                $table->uuid('created_by')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'meter_id', 'reading_at'], 'fuel_readings_company_meter_at_unique');
+                $table->index(['company_id', 'meter_id', 'reading_at'], 'fuel_readings_company_meter_at_index');
+                $table->index(['company_id', 'anomaly'], 'fuel_readings_company_anomaly_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_meter_reading_corrections'))) {
+            Schema::create($this->moduleTable('fuel_meter_reading_corrections'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('reading_id')->index();
+                $table->decimal('old_value', 16, 3);
+                $table->decimal('new_value', 16, 3);
+                $table->string('reason', 255);
+                $table->uuid('corrected_by')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'reading_id'], 'fuel_corrections_company_reading_index');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('fuel_station_activations'))) {
             Schema::create($this->moduleTable('fuel_station_activations'), function (Blueprint $table): void {
                 $table->uuid('company_id')->primary();

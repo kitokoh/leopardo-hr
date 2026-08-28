@@ -24328,6 +24328,106 @@ paths:
         '403':
           $ref: '#/components/responses/Error403'
 
+  /fuelstation/meters/{meter}/readings:
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer un relevé de compteur (idempotent)
+      description: Releve cumule par compteur (heure UTC). Idempotence par (company_id, meter_id, reading_at) — un rejeu est absorbe. Delta calcule vs releve precedent ; valeur decroissante -> anomalie (rollover).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: meter
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reading_value
+              - reading_at
+              properties:
+                reading_value:
+                  type: number
+                  minimum: 0
+                reading_at:
+                  type: string
+                  format: date-time
+                reading_at_local:
+                  type: string
+                operator_id:
+                  type: string
+                shift_id:
+                  type: string
+                source:
+                  type: string
+                  enum: [manual, api, device]
+                note:
+                  type: string
+      responses:
+        '201':
+          description: Releve enregistre (ou existant si rejeu)
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les relevés d'un compteur
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: meter
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Releves du compteur (pagination)
+        '404':
+          $ref: '#/components/responses/Error404'
+  /fuelstation/readings/{reading}/correct:
+    post:
+      tags:
+      - FuelStation
+      summary: Corriger un relevé (versionné et audité)
+      description: Ecrit une ligne de correction (ancienne -> nouvelle valeur, motif, acteur) puis met a jour le releve et recalcule delta/anomalie.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reading
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - new_value
+              - reason
+              properties:
+                new_value:
+                  type: number
+                  minimum: 0
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Releve corrige
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+
 components:
   securitySchemes:
     BearerAuth:

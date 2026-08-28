@@ -2190,6 +2190,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/fuelstation/manifest", options);
     },
 
+    /** Lister les relevés d'un compteur */
+    getFuelstationMetersByMeterReadings(options = {}) {
+      return request("GET", "/fuelstation/meters/{meter}/readings", options);
+    },
+
+    /** Enregistrer un relevé de compteur (idempotent) */
+    postFuelstationMetersByMeterReadings(options = {}) {
+      return request("POST", "/fuelstation/meters/{meter}/readings", options);
+    },
+
+    /** Corriger un relevé (versionné et audité) */
+    postFuelstationReadingsByReadingCorrect(options = {}) {
+      return request("POST", "/fuelstation/readings/{reading}/correct", options);
+    },
+
     /** Etat d'activation FuelStation du tenant */
     getFuelstationStatus(options = {}) {
       return request("GET", "/fuelstation/status", options);
