@@ -121,7 +121,12 @@ class FeatureKillSwitchTest extends TestCase
 
         $row = FeatureKillSwitch::query()->where('feature_key', 'leo_ai')->first();
 
-        $this->assertNotNull($row);
+        if (! $row instanceof FeatureKillSwitch) {
+            $this->fail('Ligne kill switch absente en base');
+
+            return;
+        }
+
         $this->assertTrue((bool) $row->is_active);
         $this->assertSame('Incident LLM', $row->reason);
         $this->assertSame('1', $row->toggled_by);
