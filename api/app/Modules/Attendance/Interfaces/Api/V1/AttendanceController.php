@@ -424,6 +424,7 @@ class AttendanceController extends Controller
         ]);
 
         $query = AttendanceCorrectionRequest::query()
+            ->where('company_id', $actor->company_id)
             ->with(['employee:id,company_id,first_name,last_name,matricule', 'attendanceLog:id,employee_id,date,session_number,status'])
             ->where('company_id', $actor->company_id)
             ->when($validated['status'] ?? 'pending', fn ($builder, string $status) => $builder->where('status', $status))
