@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Tenant\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Feature\Infrastructure\Services\FeatureKillSwitchService;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use Illuminate\Database\Eloquent\Builder;
@@ -106,9 +107,19 @@ class Company extends Model
     /**
      * Indique si un module (ou une sous-feature) est actif pour cette company.
      * Le module RH est actif par defaut (base de l app).
+     *
+     * MAT-010 (#5868) : kill switch global consulté en premier — un
+     * interrupteur actif coupe la feature pour TOUTE la plateforme
+     * (fail-closed), sans suppression de données. Point d'intégration unique :
+     * tous les gates (middleware module, FeatureFlag, resources) héritent du
+     * kill switch via cette méthode.
      */
     public function hasFeature(string $key): bool
     {
+        if (app(FeatureKillSwitchService::class)->isKilled($key)) {
+            return false;
+        }
+
         $features = $this->features ?? [];
 
         if ($key === 'rh') {
