@@ -91,6 +91,7 @@ consommateurs).
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
 | `Modules/Cabinet` | ✅ routes/modules/cabinet.php | ✅ complet | `CabinetServiceProvider` |
 | `Modules/Fleet` | ✅ routes/modules/hr_extended.php | ✅ complet | `FleetServiceProvider` |
+| `Modules/FuelStation` | 🔶 en cours (FUEL #5795/#5796) | 🔶 Domain + couches (squelette) | `FuelStationServiceProvider` |
 | `Modules/Cameras` | ✅ routes/modules/cameras.php | ✅ complet | `CamerasServiceProvider` |
 | `Modules/CRM` | 🔶 en cours (squelette #5707, routes #5712) | 🔶 Application/Domain/Infrastructure/Interfaces + Providers (squelette) | `CrmServiceProvider` |
 | `Modules/Growth` | ✅ routes/modules/growth.php | ✅ complet | `GrowthServiceProvider` |

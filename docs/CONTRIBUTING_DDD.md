@@ -15,7 +15,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (19 modules)
+## Modules existants (20 modules)
 
 | Module | Domaine couvert |
 |---|---|
@@ -28,6 +28,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `EdgeSync` | Synchronisation offline/mobile (structure spécialisée, hors squelette DDD standard) |
 | `Expense` | Notes de frais employés |
 | `Fleet` | Véhicules, trajets, affectations |
+| `FuelStation` | Stations-service : sites, pompes, cuves, relevés de compteur |
 | `Growth` | Programme partenaires, référencement, payout |
 | `HR` | Employés, départements, contrats, évaluations, formations |
 | `Marketing` | Vitrine, leads, campagnes |
