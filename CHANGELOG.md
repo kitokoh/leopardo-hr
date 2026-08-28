@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- **feat(crm): tables tenant-scoped leads / pipelines / opportunités (issue #5709) — company_id uuid non nullable, contraintes CHECK (status/source/score), index scope tenant d'abord, softDeletes (archivage), zero FK inter-lots (découplage #5708 en cours).** Gardes migrations (collision #1962 + convention #1613) verts ; tests fresh + rollback 6/6.
+
 - **fix(ci): garde inter-PR des préfixes de migrations (#5437) — faux positif sur push main : baseSha vide faisait considérer toutes les migrations de main comme nouvelles et les comparer aux PRs ouvertes (collision fantôme dès quune PR est ouverte).** Le contrôle ne sapplique plus quaux PRs ouvertes ; bug latent du mode --local (currentNewNames) corrigé au passage — tests 8/8.
 - **docs(api): note ops — healthcheck (GET /api/v1/health, match PROGRAM_VERSION, uptime < 900 s), CORS E2E (origine 127.0.0.1:4173 whitelistée, déploiement requis), incident Redis (healthcheck fail-closed).**
 
