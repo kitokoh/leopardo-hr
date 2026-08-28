@@ -252,6 +252,7 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - `WebhookListener` dispatche les events vers les endpoints webhook du tenant
 - Les events sont dispatches depuis les services (EmployeeCreated, EmployeeArchived, AttendanceCheckedIn/Out, AbsenceRequested/Approved/Rejected, PayrollValidated)
 - `EventServiceProvider` cable chaque event aux listeners AuditLogger et WebhookListener
+- **Digest email hebdomadaire manager (issue #5695)** : la commande `manager:weekly-digest` (schedulee chaque lundi 07:00, `api/routes/console.php`) dispatche un job `SendWeeklyManagerDigestJob` par entreprise ACTIVE ; le job notifie chaque manager actif du tenant sur le canal email uniquement (template `weekly_manager_digest`, cles i18n `notifications.weekly_manager_digest_*` dans les 4 locales), avec contexte `week_start`/`team_size`/`present`/`pending_absences`/`pending_advances`/`pending_corrections`, scope manager respecte (principal/rh → toute l'entreprise ; dept → son departement ; superviseur → equipe directe, PA2-SEC-002/003) et entreprise inactive ignoree. Couvert par `WeeklyManagerDigestTest`.
 
 ### 11. Resilience et erreurs
 

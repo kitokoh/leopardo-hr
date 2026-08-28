@@ -11,6 +11,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\Notification\Infrastructure\Jobs\SendWeeklyManagerDigestJob;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Testing\PendingCommand;
 use Mockery;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -77,6 +78,7 @@ class WeeklyManagerDigestTest extends TestCase
             'department_id' => 10,
         ]);
 
+        /** @var CommunicationService&Mockery\MockInterface $communication */
         $communication = Mockery::mock(CommunicationService::class);
         $communication->shouldReceive('notifyEmployee')
             ->twice()
@@ -123,6 +125,7 @@ class WeeklyManagerDigestTest extends TestCase
 
         $contexts = [];
 
+        /** @var CommunicationService&Mockery\MockInterface $communication */
         $communication = Mockery::mock(CommunicationService::class);
         $communication->shouldReceive('notifyEmployee')
             ->twice()
@@ -153,6 +156,7 @@ class WeeklyManagerDigestTest extends TestCase
         $company = Company::factory()->create(['status' => 'suspended']);
         Employee::factory()->manager()->create(['company_id' => $company->id]);
 
+        /** @var CommunicationService&Mockery\MockInterface $communication */
         $communication = Mockery::mock(CommunicationService::class);
         $communication->shouldNotReceive('notifyEmployee');
 
@@ -167,12 +171,15 @@ class WeeklyManagerDigestTest extends TestCase
     {
         Queue::fake();
 
+        /** @var Company $activeA */
         $activeA = Company::factory()->create(['status' => 'active']);
+        /** @var Company $activeB */
         $activeB = Company::factory()->create(['status' => 'active']);
         Company::factory()->create(['status' => 'suspended']);
 
-        $this->artisan('manager:weekly-digest', ['--week' => '2026-08-24'])
-            ->assertExitCode(0);
+        /** @var PendingCommand $cmd */
+        $cmd = $this->artisan('manager:weekly-digest', ['--week' => '2026-08-24']);
+        $cmd->assertExitCode(0);
 
         Queue::assertPushed(SendWeeklyManagerDigestJob::class, 2);
         Queue::assertPushed(
