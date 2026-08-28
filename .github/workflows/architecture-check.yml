@@ -98,6 +98,9 @@ jobs:
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
+      - name: Security threat models guard — surfaces uploads/OCR/WhatsApp/POS/devices (issue #5875, MAT-017)
+        run: bash dev-hub/tools/check-security-threat-models.sh
+
       - name: Queue strategy coherence guard — database partout (issue #5578)
         run: bash dev-hub/tools/check-queue-strategy-coherence.sh
 
