@@ -24,7 +24,7 @@ consentement, sans couplage direct entre le module CRM et les canaux.
 
 ## Périmètre
 
-- Migration tenant `2026_08_28_000007_5724_create_crm_campaign_tables.php`
+- Migration tenant `2026_08_28_000502_5724_create_crm_campaign_tables.php`
   (`crm_campaigns` + `crm_campaign_sends`)
 - `api/app/Modules/CRM/` : `Domain/Enums/{CampaignStatus, CampaignSendStatus}`,
   `Domain/Models/{CrmCampaign, CrmCampaignSend}`,
