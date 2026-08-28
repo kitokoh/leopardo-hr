@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Domain\Models;
 
+<<<<<<< HEAD
 use App\Core\Auth\Domain\Models\Employee;
+=======
+>>>>>>> origin/main
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+<<<<<<< HEAD
 use Illuminate\Support\Carbon;
 
 /**
@@ -36,6 +40,24 @@ use Illuminate\Support\Carbon;
  * @property int|null $created_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+=======
+
+/**
+ * #5717/#5709 — Opportunité CRM client (tenant-scoped).
+ *
+ * @property int $id
+ * @property string $company_id
+ * @property string|null $pipeline_id
+ * @property string|null $lead_id
+ * @property string|null $owner_id
+ * @property string $name
+ * @property string $stage
+ * @property string|null $amount
+ * @property string|null $currency
+ * @property string|null $expected_close_date
+ * @property string $status
+ * @property string|null $notes
+>>>>>>> origin/main
  *
  * @mixin Builder<static>
  */
@@ -48,6 +70,7 @@ class CrmOpportunity extends Model
     protected $fillable = [
         'company_id',
         'pipeline_id',
+<<<<<<< HEAD
         'stage_id',
         'name',
         'account_id',
@@ -100,5 +123,26 @@ class CrmOpportunity extends Model
     public function isLost(): bool
     {
         return $this->stage->is_lost ?? false;
+=======
+        'lead_id',
+        'owner_id',
+        'name',
+        'stage',
+        'amount',
+        'currency',
+        'expected_close_date',
+        'status',
+        'notes',
+    ];
+
+    protected $casts = [
+        'expected_close_date' => 'date',
+    ];
+
+    /** @return BelongsTo<CrmLead, $this> */
+    public function lead(): BelongsTo
+    {
+        return $this->belongsTo(CrmLead::class, 'lead_id');
+>>>>>>> origin/main
     }
 }

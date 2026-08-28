@@ -24,7 +24,11 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Billing` | Abonnements, webhooks Stripe, facturation |
 | `Cabinet` | Gestion documentaire, partage |
 | `Cameras` | Surveillance, streaming |
+<<<<<<< HEAD
 | `CRM` | CRM client (tenants) : pipelines, stages, leads, opportunités, activités, tâches — distinct du CRM commercial Platform/Marketing |
+=======
+| `CRM` | CRM client tenant-scoped (V0 #5705→#5716, V1 #5717→#5731) — module DDD isolé du CRM commercial Platform/Marketing |
+>>>>>>> origin/main
 | `EdgeSync` | Synchronisation offline/mobile (structure spécialisée, hors squelette DDD standard) |
 | `Expense` | Notes de frais employés |
 | `Fleet` | Véhicules, trajets, affectations |
