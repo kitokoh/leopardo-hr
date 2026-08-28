@@ -1332,6 +1332,38 @@ class LeopardoClient:
         """Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager)"""
         return self.request("POST", "/cotisation-simulation", **kwargs)
 
+    def get_crm_channels(self, **kwargs):
+        """Lister les canaux de communication du tenant"""
+        return self.request("GET", "/crm/channels", **kwargs)
+
+    def post_crm_channels(self, **kwargs):
+        """Configurer un canal de communication (whatsapp/sms/email)"""
+        return self.request("POST", "/crm/channels", **kwargs)
+
+    def patch_crm_channels_by_channel(self, **kwargs):
+        """Mettre a jour un canal (quota, statut, configuration)"""
+        return self.request("PATCH", "/crm/channels/{channel}", **kwargs)
+
+    def get_crm_channels_by_channel_conversations(self, **kwargs):
+        """Lister les conversations d'un canal (inbox unique)"""
+        return self.request("GET", "/crm/channels/{channel}/conversations", **kwargs)
+
+    def get_crm_channels_by_channel_messages(self, **kwargs):
+        """Lister les messages d'un canal (metadonnees, PII masquee)"""
+        return self.request("GET", "/crm/channels/{channel}/messages", **kwargs)
+
+    def post_crm_channels_by_channel_send(self, **kwargs):
+        """Envoyer un message via un canal CRM (WhatsApp, SMS, email)"""
+        return self.request("POST", "/crm/channels/{channel}/send", **kwargs)
+
+    def get_crm_webhooks_whatsapp(self, **kwargs):
+        """Verification d'abonnement du webhook WhatsApp Business (Meta)"""
+        return self.request("GET", "/crm/webhooks/whatsapp", **kwargs)
+
+    def post_crm_webhooks_whatsapp(self, **kwargs):
+        """Webhook entrant WhatsApp Business Cloud API (messages + statuts)"""
+        return self.request("POST", "/crm/webhooks/whatsapp", **kwargs)
+
     def get_dashboard_admin(self, **kwargs):
         """Synthese dashboard admin (principal)"""
         return self.request("GET", "/dashboard/admin", **kwargs)

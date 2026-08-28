@@ -108,6 +108,8 @@ tags:
   description: Connexion du compte social (agregateur Ayrshare) et gestion des publications reseaux sociaux d'un tenant.
 - name: Platform Admin
   description: 'Administration super-admin : gestion tenants, plans, metriques globales.'
+- name: CRM
+  description: 'CRM client tenant : canaux de communication (WhatsApp/SMS/email), automatisations, exports et read models (issues #5725/#5727/#5728/#5729).'
 paths:
   /attendance/config:
     get:
@@ -24292,6 +24294,234 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: Fichier introuvable
+  /crm/webhooks/whatsapp:
+    get:
+      tags:
+      - CRM
+      summary: Verification d'abonnement du webhook WhatsApp Business (Meta)
+      description: Endpoint public appele par Meta lors de la configuration du webhook (hub.challenge). Fail-closed si le verify_token n'est pas configure.
+      parameters:
+      - name: hub_mode
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: hub_verify_token
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: hub_challenge
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Challenge renvoye (abonnement confirme)
+        '403':
+          description: Token de verification invalide
+    post:
+      tags:
+      - CRM
+      summary: Webhook entrant WhatsApp Business Cloud API (messages + statuts)
+      description: Public, protege par signature X-Hub-Signature-256 (HMAC-SHA256, fail-closed). Tenant resolu via lookup public (phone_number_id), idempotence par (company_id, provider_message_id), dead-letter des erreurs fournisseur.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                object:
+                  type: string
+                entry:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '200':
+          description: Evenement acquitte
+        '401':
+          description: Signature invalide
+        '503':
+          description: Secret non configure (fail-closed)
+  /crm/channels:
+    get:
+      tags:
+      - CRM
+      summary: Lister les canaux de communication du tenant
+      description: Reserve aux managers principal/rh (api.manager:principal,rh). Tenant-scope.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Canaux du tenant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - CRM
+      summary: Configurer un canal de communication (whatsapp/sms/email)
+      description: Entrees strictes (type/provider whitelistes). Les secrets (token, api_key) sont explicitement refuses dans le payload — secret manager uniquement.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              - provider
+              properties:
+                type:
+                  type: string
+                  enum: [whatsapp, sms, email]
+                provider:
+                  type: string
+                is_configured:
+                  type: boolean
+                monthly_quota:
+                  type: integer
+                  nullable: true
+                settings:
+                  type: object
+                  properties:
+                    phone_number_id:
+                      type: string
+                    language_code:
+                      type: string
+      responses:
+        '201':
+          description: Canal configure
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/channels/{channel}:
+    patch:
+      tags:
+      - CRM
+      summary: Mettre a jour un canal (quota, statut, configuration)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: channel
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_configured:
+                  type: boolean
+                monthly_quota:
+                  type: integer
+                  nullable: true
+                settings:
+                  type: object
+      responses:
+        '200':
+          description: Canal mis a jour
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/channels/{channel}/send:
+    post:
+      tags:
+      - CRM
+      summary: Envoyer un message via un canal CRM (WhatsApp, SMS, email)
+      description: Consentement (fail-closed par defaut), quota mensuel, envoi provider avec retry borne + dead-letter. Le corps et les adresses ne sont jamais exposes dans la reponse (PII masquee).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: channel
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - to
+              properties:
+                to:
+                  type: string
+                body:
+                  type: string
+                  maxLength: 4000
+                template_name:
+                  type: string
+                template_parameters:
+                  type: array
+                  items:
+                    type: string
+                contact_id:
+                  type: string
+                purpose:
+                  type: string
+                  enum: [transactional, marketing, service]
+      responses:
+        '201':
+          description: Message accepte par le provider
+        '422':
+          $ref: '#/components/responses/Validation422'
+        '429':
+          description: Quota mensuel du canal depasse
+        '502':
+          description: Erreur fournisseur (dead-letter possible)
+  /crm/channels/{channel}/messages:
+    get:
+      tags:
+      - CRM
+      summary: Lister les messages d'un canal (metadonnees, PII masquee)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: channel
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Messages du canal
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/channels/{channel}/conversations:
+    get:
+      tags:
+      - CRM
+      summary: Lister les conversations d'un canal (inbox unique)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: channel
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Conversations du canal
+        '404':
+          $ref: '#/components/responses/Error404'
+
 components:
   securitySchemes:
     BearerAuth:

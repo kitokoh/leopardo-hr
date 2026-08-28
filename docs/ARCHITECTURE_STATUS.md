@@ -2,7 +2,7 @@
 
 > Mis à jour le 2026-07-19 (audit doc) | Phase 5 en cours — nettoyage legacy (PR #824)
 
-## 1. Tableau de l'état DDD — 18 modules actifs
+## 1. Tableau de l'état DDD — 19 modules actifs
 
 | Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
 |-----------------|:------:|:---------:|:----------:|:-----------:|:----:|:-----:|:----------:|:---------:|:-----:|
@@ -11,6 +11,7 @@
 | **Billing**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Cabinet**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Cameras**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **CRM** 🆕      | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 | **EdgeSync** 🆕  | ✅ | — | — | ✅ | — | — | ✅ | ✅ | ⚠️ |
 | **Expense**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Fleet**       | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -28,7 +29,7 @@
 > ⚠️ = Module créé dans Phase 3–4 ou ajouté depuis, tests Feature à completer/verifier en Phase 5.
 > — = Non applicable (module `EdgeSync` suit une structure specialisee synchro/offline, pas le squelette DDD standard Contracts/Exceptions/DTOs).
 > Corrige lors de l'audit doc du 2026-07-19 : ce tableau omettait `EdgeSync` et `Marketing` (19 au total, pas 16).
-> Corrige le 2026-08-26 (#5589) : `SmartAttendance` (supprimé #5356) et `Training` (jamais créé, #4936) sont retirés du tableau ; le module `Accounting` (129 fichiers PHP, 2ᵉ module du backend, routes `modules/accounting.php`, provider #55 de `bootstrap/providers.php`) est ajouté → 18 modules actifs réels.
+> Corrige le 2026-08-26 (#5589) : `SmartAttendance` (supprimé #5356) et `Training` (jamais créé, #4936) sont retirés du tableau ; le module `Accounting` (129 fichiers PHP, 2ᵉ module du backend, routes `modules/accounting.php`, provider #55 de `bootstrap/providers.php`) est ajouté → 18 modules actifs réels. Ajout du module `CRM` (client tenant, issues #5725/#5727/#5728/#5729) le 2026-08-28 → 19 modules actifs.
 
 ---
 

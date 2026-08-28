@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [Unreleased]
+
+- **feat(crm): canaux de communication tenant — WhatsApp Business officiel + contrat canal commun (Closes #5725, base #5727).** Module `App\Modules\CRM` (Infrastructure/Integrations + Services) : adaptateur `ChannelAdapterContract` (send/verify/normalize/revoke) et client WhatsApp Business Cloud API (Graph API, token secret manager, fail-closed). Orchestration `CrmChannelService` : consentement (opt-in `crm_contact_consents` si présent, fallback `deny` fail-closed), quotas mensuels par tenant, retry borné + dead-letter (429/5xx, jamais de retry infini). Webhook entrant signé HMAC-SHA256 (anti-rejeu par unicité `(company_id, provider_message_id)`, inbox unique, statuts de livraison idempotents, tenant résolu via lookup public `crm_webhook_channel_lookup`). Tables tenant `crm_channels`, `crm_channel_conversations`, `crm_channel_messages` (PII chiffrée au repos) ; API `/crm/channels*` (api.manager:principal,rh), webhooks `/crm/webhooks/whatsapp`. i18n ×4 (9 clés `CRM_*`), OpenAPI 6 chemins + SDK régénérés, RBAC_ROUTE_MATRIX, docs parity (module CRM 19ᵉ module). Tests Feature 16 : CRUD/RBAC/isolation, envoi/consentement/quota/dead-letter, webhook signature/rejeu/statuts.
+
 - **fix(ci): garde inter-PR des préfixes de migrations (#5437) — faux positif sur push main : baseSha vide faisait considérer toutes les migrations de main comme nouvelles et les comparer aux PRs ouvertes (collision fantôme dès quune PR est ouverte).** Le contrôle ne sapplique plus quaux PRs ouvertes ; bug latent du mode --local (currentNewNames) corrigé au passage — tests 8/8.
 - **docs(api): note ops — healthcheck (GET /api/v1/health, match PROGRAM_VERSION, uptime < 900 s), CORS E2E (origine 127.0.0.1:4173 whitelistée, déploiement requis), incident Redis (healthcheck fail-closed).**
 
