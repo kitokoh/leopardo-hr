@@ -209,6 +209,39 @@ class TenantManagerContractTest extends TestCase
         $this->assertFalse($manager->hasTenant());
     }
 
+    public function test_nested_within_tenant_restores_innermost_context(): void
+    {
+        // Cas unique apporté par la contribution parallèle (agent 5862) :
+        // l'imbrication de scopes withinTenant ne doit jamais fuir.
+        $companyA = $this->makeCompany();
+        $companyB = $this->makeCompany();
+        $companyC = $this->makeCompany();
+        $manager = app(TenantManager::class);
+
+        $manager->setTenant($companyA);
+        $pathA = $this->searchPath();
+
+        $manager->withinTenant($companyB, function () use ($companyB, $companyC, $manager): void {
+            $currentB = $manager->current();
+            $this->assertNotNull($currentB);
+            $this->assertSame($companyB->id, $currentB->id);
+
+            // Scope interne : C, puis retour à B.
+            $manager->withinTenant($companyC, function () use ($companyC, $manager): void {
+                $currentC = $manager->current();
+                $this->assertNotNull($currentC);
+                $this->assertSame($companyC->id, $currentC->id);
+            });
+            $currentAfter = $manager->current();
+            $this->assertNotNull($currentAfter);
+            $this->assertSame($companyB->id, $currentAfter->id);
+        });
+
+        // Après tous les scopes : retour au contexte initial A + search_path.
+        $this->assertSame($companyA->id, $manager->current()?->id);
+        $this->assertSame($pathA, $this->searchPath());
+    }
+
     // ── Cache : clés scopées par tenant ───────────────────────────────────────
 
     public function test_cache_keys_are_tenant_scoped(): void
