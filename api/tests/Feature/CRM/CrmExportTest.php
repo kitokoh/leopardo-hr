@@ -207,3 +207,71 @@ class CrmExportTest extends TestCase
             ->assertJsonPath('data.data_quality.overall', 100);
     }
 }
+
+    public function test_exports_index_lists_tenant_jobs(): void
+    {
+        Sanctum::actingAs($this->manager($this->companyA));
+
+        CrmExportJob::query()->create([
+            'company_id' => $this->companyA->id,
+            'entity' => 'accounts',
+            'format' => 'csv',
+            'status' => 'completed',
+            'progress' => 100,
+        ]);
+
+        $this->getJson('/api/v1/crm/exports')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.status', 'completed');
+    }
+
+    public function test_read_models_compute_pipeline_totals_when_v0_tables_exist(): void
+    {
+        Sanctum::actingAs($this->manager($this->companyA));
+
+        if (! Schema::hasTable('crm_pipelines')) {
+            Schema::create('crm_pipelines', function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->json('stages')->nullable();
+                $table->timestamps();
+            });
+        }
+        if (! Schema::hasTable('crm_opportunities')) {
+            Schema::create('crm_opportunities', function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('pipeline_id')->nullable()->index();
+                $table->string('stage', 40)->default('new');
+                $table->decimal('amount', 14, 2)->default(0);
+                $table->timestamp('expected_close_at')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        $pipelineId = (string) \Illuminate\Support\Str::uuid();
+        \Illuminate\Support\Facades\DB::table('crm_pipelines')->insert([
+            'id' => $pipelineId,
+            'company_id' => $this->companyA->id,
+            'name' => 'Ventes',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        \Illuminate\Support\Facades\DB::table('crm_opportunities')->insert([
+            'id' => (string) \Illuminate\Support\Str::uuid(),
+            'company_id' => $this->companyA->id,
+            'pipeline_id' => $pipelineId,
+            'stage' => 'negotiation',
+            'amount' => 5000,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->getJson('/api/v1/crm/read-models')
+            ->assertOk()
+            ->assertJsonPath('data.opportunities.negotiation', 1)
+            ->assertJsonPath('data.pipeline.total', 1)
+            ->assertJsonPath('data.pipeline.weighted', 5000);
+    }
