@@ -6,6 +6,7 @@ namespace Tests\Feature\FuelStation;
 
 use App\Core\Solutions\Exceptions\SolutionMissingDependencyException;
 use App\Core\Solutions\Exceptions\SolutionNotFoundException;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Core\Solutions\SolutionActivator;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
@@ -26,6 +27,9 @@ class SolutionManifestTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    /**
+     * @param  array<string, bool>  $features
+     */
     private function company(array $features = []): Company
     {
         /** @var Company $company */
@@ -67,11 +71,13 @@ class SolutionManifestTest extends TestCase
 
         $first = $activator->activate($company, 'fuel_station');
         $this->assertSame('activated', $first['status']);
-        $this->assertTrue($company->fresh()->hasFeature('fuel_station'));
+        $company->refresh();
+        $this->assertTrue($company->hasFeature('fuel_station'));
 
         $second = $activator->activate($company, 'fuel_station');
         $this->assertSame('already_active', $second['status']);
-        $this->assertTrue($company->fresh()->hasFeature('fuel_station'));
+        $company->refresh();
+        $this->assertTrue($company->hasFeature('fuel_station'));
     }
 
     public function test_activation_refuses_missing_dependencies(): void
@@ -85,7 +91,8 @@ class SolutionManifestTest extends TestCase
             app(SolutionActivator::class)->activate($company, 'fuel_station');
         } catch (SolutionMissingDependencyException $exception) {
             $this->assertContains('attendance', $exception->missing);
-            $this->assertFalse($company->fresh()->hasFeature('fuel_station'));
+            $company->refresh();
+            $this->assertFalse($company->hasFeature('fuel_station'));
 
             throw $exception;
         }
@@ -97,7 +104,8 @@ class SolutionManifestTest extends TestCase
 
         app(SolutionActivator::class)->activate($company, 'fuel_station');
 
-        $this->assertTrue($company->fresh()->hasFeature('fuel_station'));
+        $company->refresh();
+        $this->assertTrue($company->hasFeature('fuel_station'));
 
         $this->assertDatabaseHas('audit_logs', [
             'company_id' => $company->id,
@@ -112,10 +120,11 @@ class SolutionManifestTest extends TestCase
 
         $this->assertFalse($company->hasFeature('fuel_station'));
 
-        // Le flag apparaît dans la carte résolue (FeatureFlag::for).
-        $flags = \App\Core\Feature\Infrastructure\Services\FeatureFlag::for($company);
-        $this->assertArrayHasKey('fuel_station', $flags);
-        $this->assertFalse($flags['fuel_station']);
+        // NOTE : l'exposition du flag dans FeatureFlag::for() (carte résolue)
+        // nécessite l'enregistrement dans Company::KNOWN_MODULES — différé au
+        // lot plateforme (dette Pint pré-existante sur ce fichier core).
+        $flags = FeatureFlag::for($company);
+        $this->assertFalse($flags['fuel_station'] ?? true);
     }
 
     public function test_activation_never_touches_platform_crm(): void

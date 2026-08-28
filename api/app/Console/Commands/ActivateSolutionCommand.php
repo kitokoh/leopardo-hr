@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Core\Solutions\SolutionActivator;
+use App\Exceptions\DomainException;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Console\Command;
 
@@ -40,13 +41,13 @@ class ActivateSolutionCommand extends Command
 
         try {
             $result = $activator->activate($company, (string) $this->argument('solution'), $actorId);
-        } catch (\App\Exceptions\DomainException $exception) {
+        } catch (DomainException $exception) {
             $this->error($exception->getMessage());
 
             return self::FAILURE;
         }
 
-        $this->line(json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $this->line((string) json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         return self::SUCCESS;
     }

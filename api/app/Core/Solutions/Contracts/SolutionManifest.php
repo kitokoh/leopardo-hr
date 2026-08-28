@@ -28,15 +28,27 @@ interface SolutionManifest
     /** Description courte (affichage onboarding). */
     public function description(): string;
 
-    /** Modules transversaux requis — tous doivent être actifs au tenant. */
+    /** Modules transversaux requis — tous doivent être actifs au tenant.
+     *
+     * @return list<string>
+     */
     public function requiredModules(): array;
 
-    /** Modules optionnels (jamais bloquants). */
+    /** Modules optionnels (jamais bloquants).
+     *
+     * @return list<string>
+     */
     public function optionalModules(): array;
 
-    /** Données sensibles manipulées par la solution (RGPD). */
+    /** Données sensibles manipulées par la solution (RGPD).
+     *
+     * @return list<string>
+     */
     public function sensitiveData(): array;
 
-    /** Permissions / rôles spécifiques installés par la solution. */
+    /** Permissions / rôles spécifiques installés par la solution.
+     *
+     * @return array<string, string>
+     */
     public function permissions(): array;
 }

@@ -82,7 +82,8 @@ enum ApiError: string
             self::TENANT_MISMATCH, self::SUPER_ADMIN_REQUIRED, self::POLICY_DENIED => 403,
 
             self::RESOURCE_NOT_FOUND, self::EMPLOYEE_NOT_FOUND,
-            self::COMPANY_NOT_FOUND, self::USER_NOT_FOUND => 404,
+            self::COMPANY_NOT_FOUND, self::USER_NOT_FOUND,
+            self::SOLUTION_NOT_FOUND => 404,
 
             self::ALREADY_APPROVED, self::ALREADY_REJECTED, self::ALREADY_LINKED,
             self::ALREADY_ENABLED, self::DUPLICATE_ENTRY => 409,
@@ -93,7 +94,8 @@ enum ApiError: string
             self::SUBSCRIPTION_INACTIVE, self::TRIAL_EXPIRED,
             self::INVITATION_ALREADY_ACCEPTED, self::TOO_MANY_PENDING_REQUESTS,
             self::SHARE_EXPIRED, self::INVALID_CURRENT_PASSWORD,
-            self::INVALID_PASSWORD, self::SETUP_REQUIRED => 422,
+            self::INVALID_PASSWORD, self::SETUP_REQUIRED,
+            self::SOLUTION_MISSING_DEPENDENCY => 422,
 
             self::RATE_LIMITED => 429,
 
@@ -146,6 +148,8 @@ enum ApiError: string
             self::INVITATION_ALREADY_ACCEPTED => 'This invitation has already been accepted.',
             self::TOO_MANY_PENDING_REQUESTS => 'Too many pending requests.',
             self::SHARE_EXPIRED => 'This share link has expired.',
+            self::SOLUTION_NOT_FOUND => 'Unknown solution.',
+            self::SOLUTION_MISSING_DEPENDENCY => 'Required modules are not active for this solution.',
             self::INVALID_CURRENT_PASSWORD => 'The current password is incorrect.',
             self::INVALID_PASSWORD => 'The password is invalid.',
             self::SETUP_REQUIRED => 'Initial setup is required before proceeding.',

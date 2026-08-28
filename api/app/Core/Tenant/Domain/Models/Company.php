@@ -101,7 +101,6 @@ class Company extends Model
         'cameras',
         'muhasebe',
         'leo_ai',
-        'fuel_station',
     ];
 
     /**

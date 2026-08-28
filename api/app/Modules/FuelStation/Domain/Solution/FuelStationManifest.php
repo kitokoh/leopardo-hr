@@ -38,6 +38,7 @@ final class FuelStationManifest implements SolutionManifest
         return 'Gestion opérationnelle de stations-service : stations, pompes, cuves, shifts, caisses, ventes et incidents.';
     }
 
+    /** @return list<string> */
     public function requiredModules(): array
     {
         // RH est actif par défaut ; Attendance/Documents/Notifications sont
@@ -45,11 +46,13 @@ final class FuelStationManifest implements SolutionManifest
         return ['rh', 'attendance', 'documents', 'notifications'];
     }
 
+    /** @return list<string> */
     public function optionalModules(): array
     {
         return ['crm', 'accounting', 'payroll', 'marketing', 'fleet'];
     }
 
+    /** @return list<string> */
     public function sensitiveData(): array
     {
         return [
@@ -59,6 +62,7 @@ final class FuelStationManifest implements SolutionManifest
         ];
     }
 
+    /** @return array<string, string> */
     public function permissions(): array
     {
         return [
