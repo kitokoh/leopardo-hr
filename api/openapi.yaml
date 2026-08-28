@@ -24281,6 +24281,851 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: Fichier introuvable
+  /crm/pipelines:
+    get:
+      tags:
+      - CRM Client
+      summary: Lister les pipelines CRM du tenant
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      - name: sort_by
+        in: query
+        schema:
+          type: string
+          enum:
+          - name
+          - created_at
+          - updated_at
+      - name: sort_dir
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      responses:
+        '200':
+          description: Pipelines pagines
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CrmPipeline'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    post:
+      tags:
+      - CRM Client
+      summary: Creer un pipeline CRM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmPipelineRequest'
+      responses:
+        '201':
+          description: Pipeline cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmPipeline'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/pipelines/{crmPipeline}:
+    parameters:
+    - name: crmPipeline
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - CRM Client
+      summary: Detail d'un pipeline CRM
+      responses:
+        '200':
+          description: Pipeline
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmPipeline'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    patch:
+      tags:
+      - CRM Client
+      summary: Modifier un pipeline CRM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmPipelineRequest'
+      responses:
+        '200':
+          description: Pipeline modifie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmPipeline'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - CRM Client
+      summary: Supprimer un pipeline CRM
+      responses:
+        '204':
+          description: Pipeline supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/pipelines/{crmPipeline}/stages:
+    parameters:
+    - name: crmPipeline
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - CRM Client
+      summary: Lister les stages d'un pipeline
+      responses:
+        '200':
+          description: Stages pagines
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CrmPipelineStage'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      tags:
+      - CRM Client
+      summary: Creer un stage dans un pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmPipelineStageRequest'
+      responses:
+        '201':
+          description: Stage cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmPipelineStage'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/pipelines/{crmPipeline}/stages/{crmPipelineStage}:
+    parameters:
+    - name: crmPipeline
+      in: path
+      required: true
+      schema:
+        type: integer
+    - name: crmPipelineStage
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      tags:
+      - CRM Client
+      summary: Modifier un stage de pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmPipelineStageRequest'
+      responses:
+        '200':
+          description: Stage modifie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmPipelineStage'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - CRM Client
+      summary: Supprimer un stage de pipeline
+      responses:
+        '204':
+          description: Stage supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/leads:
+    get:
+      tags:
+      - CRM Client
+      summary: Lister les leads CRM du tenant
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      - name: sort_by
+        in: query
+        schema:
+          type: string
+          enum:
+          - created_at
+          - updated_at
+          - first_name
+          - last_name
+          - email
+          - priority
+      - name: sort_dir
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - new
+          - contacted
+          - qualified
+          - converted
+          - rejected
+      - name: priority
+        in: query
+        schema:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+      - name: source
+        in: query
+        schema:
+          type: string
+      - name: owner_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Leads pagines
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CrmLead'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    post:
+      tags:
+      - CRM Client
+      summary: Creer un lead CRM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmLeadRequest'
+      responses:
+        '201':
+          description: Lead cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmLead'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/leads/{crmLead}:
+    parameters:
+    - name: crmLead
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - CRM Client
+      summary: Detail d'un lead CRM
+      responses:
+        '200':
+          description: Lead
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmLead'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    patch:
+      tags:
+      - CRM Client
+      summary: Modifier un lead CRM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmLeadRequest'
+      responses:
+        '200':
+          description: Lead modifie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmLead'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - CRM Client
+      summary: Supprimer un lead CRM
+      responses:
+        '204':
+          description: Lead supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/opportunities:
+    get:
+      tags:
+      - CRM Client
+      summary: Lister les opportunites CRM du tenant
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      - name: sort_by
+        in: query
+        schema:
+          type: string
+          enum:
+          - created_at
+          - updated_at
+          - name
+          - amount
+          - expected_close_date
+      - name: sort_dir
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: pipeline_id
+        in: query
+        schema:
+          type: integer
+      - name: stage_id
+        in: query
+        schema:
+          type: integer
+      - name: owner_id
+        in: query
+        schema:
+          type: integer
+      - name: won
+        in: query
+        schema:
+          type: boolean
+      - name: lost
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Opportunites paginees
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CrmOpportunity'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    post:
+      tags:
+      - CRM Client
+      summary: Creer une opportunite CRM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmOpportunityRequest'
+      responses:
+        '201':
+          description: Opportunite creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmOpportunity'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/opportunities/{crmOpportunity}:
+    parameters:
+    - name: crmOpportunity
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - CRM Client
+      summary: Detail d'une opportunite CRM
+      responses:
+        '200':
+          description: Opportunite
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmOpportunity'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    patch:
+      tags:
+      - CRM Client
+      summary: Modifier une opportunite CRM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmOpportunityRequest'
+      responses:
+        '200':
+          description: Opportunite modifiee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmOpportunity'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - CRM Client
+      summary: Supprimer une opportunite CRM
+      responses:
+        '204':
+          description: Opportunite supprimee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/activities:
+    get:
+      tags:
+      - CRM Client
+      summary: Lister la timeline CRM du tenant
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      - name: sort_by
+        in: query
+        schema:
+          type: string
+          enum:
+          - occurred_at
+          - created_at
+      - name: sort_dir
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: account_id
+        in: query
+        schema:
+          type: integer
+      - name: contact_id
+        in: query
+        schema:
+          type: integer
+      - name: lead_id
+        in: query
+        schema:
+          type: integer
+      - name: opportunity_id
+        in: query
+        schema:
+          type: integer
+      - name: type
+        in: query
+        schema:
+          type: string
+          enum:
+          - note
+          - call
+          - email
+          - meeting
+          - task_created
+          - task_completed
+          - stage_changed
+          - status_changed
+          - system
+      responses:
+        '200':
+          description: Timeline paginee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CrmActivity'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    post:
+      tags:
+      - CRM Client
+      summary: Ajouter une entree de timeline (append-only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmActivityRequest'
+      responses:
+        '201':
+          description: Entree creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmActivity'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/tasks:
+    get:
+      tags:
+      - CRM Client
+      summary: Lister les taches CRM du tenant
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      - name: sort_by
+        in: query
+        schema:
+          type: string
+          enum:
+          - created_at
+          - updated_at
+          - due_at
+          - priority
+      - name: sort_dir
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - todo
+          - in_progress
+          - done
+          - cancelled
+      - name: priority
+        in: query
+        schema:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+      - name: assigned_to
+        in: query
+        schema:
+          type: integer
+      - name: account_id
+        in: query
+        schema:
+          type: integer
+      - name: contact_id
+        in: query
+        schema:
+          type: integer
+      - name: lead_id
+        in: query
+        schema:
+          type: integer
+      - name: opportunity_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Taches paginees
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CrmTask'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    post:
+      tags:
+      - CRM Client
+      summary: Creer une tache CRM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmTaskRequest'
+      responses:
+        '201':
+          description: Tache creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmTask'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/tasks/{crmTask}:
+    parameters:
+    - name: crmTask
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - CRM Client
+      summary: Detail d'une tache CRM
+      responses:
+        '200':
+          description: Tache
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmTask'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    patch:
+      tags:
+      - CRM Client
+      summary: Modifier une tache CRM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmTaskRequest'
+      responses:
+        '200':
+          description: Tache modifiee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmTask'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - CRM Client
+      summary: Supprimer une tache CRM
+      responses:
+        '204':
+          description: Tache supprimee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
 components:
   securitySchemes:
     BearerAuth:
@@ -24458,6 +25303,490 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    CrmPipeline:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        is_default:
+          type: boolean
+        created_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CrmPipelineRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+        is_default:
+          type: boolean
+    CrmPipelineStage:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        pipeline_id:
+          type: integer
+        name:
+          type: string
+        position:
+          type: integer
+          minimum: 0
+        color:
+          type: string
+          nullable: true
+        is_won:
+          type: boolean
+        is_lost:
+          type: boolean
+        created_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CrmPipelineStageRequest:
+      type: object
+      required:
+      - name
+      - position
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        position:
+          type: integer
+          minimum: 0
+        color:
+          type: string
+          nullable: true
+        is_won:
+          type: boolean
+        is_lost:
+          type: boolean
+    CrmLead:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        company_name:
+          type: string
+          nullable: true
+        source:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - new
+          - contacted
+          - qualified
+          - converted
+          - rejected
+        priority:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+        owner_id:
+          type: integer
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        converted_at:
+          type: string
+          format: date-time
+          nullable: true
+        converted_opportunity_id:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CrmLeadRequest:
+      type: object
+      required:
+      - first_name
+      - last_name
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        company_name:
+          type: string
+          nullable: true
+        source:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - new
+          - contacted
+          - qualified
+          - converted
+          - rejected
+        priority:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+        owner_id:
+          type: integer
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+    CrmOpportunity:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        pipeline_id:
+          type: integer
+        stage_id:
+          type: integer
+        name:
+          type: string
+        account_id:
+          type: integer
+          nullable: true
+        converted_from_lead_id:
+          type: integer
+          nullable: true
+        amount:
+          type: number
+          format: float
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        expected_close_date:
+          type: string
+          format: date
+          nullable: true
+        owner_id:
+          type: integer
+          nullable: true
+        source:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        won_at:
+          type: string
+          format: date-time
+          nullable: true
+        lost_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CrmOpportunityRequest:
+      type: object
+      required:
+      - pipeline_id
+      - stage_id
+      - name
+      properties:
+        pipeline_id:
+          type: integer
+        stage_id:
+          type: integer
+        name:
+          type: string
+          maxLength: 150
+        account_id:
+          type: integer
+          nullable: true
+        converted_from_lead_id:
+          type: integer
+          nullable: true
+        amount:
+          type: number
+          format: float
+          minimum: 0
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        expected_close_date:
+          type: string
+          format: date
+          nullable: true
+        owner_id:
+          type: integer
+          nullable: true
+        source:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+    CrmActivity:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        account_id:
+          type: integer
+          nullable: true
+        contact_id:
+          type: integer
+          nullable: true
+        lead_id:
+          type: integer
+          nullable: true
+        opportunity_id:
+          type: integer
+          nullable: true
+        type:
+          type: string
+          enum:
+          - note
+          - call
+          - email
+          - meeting
+          - task_created
+          - task_completed
+          - stage_changed
+          - status_changed
+          - system
+        subject:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        occurred_at:
+          type: string
+          format: date-time
+        created_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CrmActivityRequest:
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - note
+          - call
+          - email
+          - meeting
+          - task_created
+          - task_completed
+          - stage_changed
+          - status_changed
+          - system
+        subject:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        occurred_at:
+          type: string
+          format: date-time
+          nullable: true
+        account_id:
+          type: integer
+          nullable: true
+        contact_id:
+          type: integer
+          nullable: true
+        lead_id:
+          type: integer
+          nullable: true
+        opportunity_id:
+          type: integer
+          nullable: true
+    CrmTask:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        account_id:
+          type: integer
+          nullable: true
+        contact_id:
+          type: integer
+          nullable: true
+        lead_id:
+          type: integer
+          nullable: true
+        opportunity_id:
+          type: integer
+          nullable: true
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - todo
+          - in_progress
+          - done
+          - cancelled
+        priority:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        assigned_to:
+          type: integer
+          nullable: true
+        completed_by:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CrmTaskRequest:
+      type: object
+      required:
+      - title
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - todo
+          - in_progress
+          - done
+          - cancelled
+        priority:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+        assigned_to:
+          type: integer
+          nullable: true
+        account_id:
+          type: integer
+          nullable: true
+        contact_id:
+          type: integer
+          nullable: true
+        lead_id:
+          type: integer
+          nullable: true
+        opportunity_id:
+          type: integer
+          nullable: true
     AccountingChartAccount:
       type: object
       properties:

@@ -1332,6 +1332,110 @@ class LeopardoClient:
         """Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager)"""
         return self.request("POST", "/cotisation-simulation", **kwargs)
 
+    def get_crm_activities(self, **kwargs):
+        """Lister la timeline CRM du tenant"""
+        return self.request("GET", "/crm/activities", **kwargs)
+
+    def post_crm_activities(self, **kwargs):
+        """Ajouter une entree de timeline (append-only)"""
+        return self.request("POST", "/crm/activities", **kwargs)
+
+    def get_crm_leads(self, **kwargs):
+        """Lister les leads CRM du tenant"""
+        return self.request("GET", "/crm/leads", **kwargs)
+
+    def post_crm_leads(self, **kwargs):
+        """Creer un lead CRM"""
+        return self.request("POST", "/crm/leads", **kwargs)
+
+    def delete_crm_leads_by_crmlead(self, **kwargs):
+        """Supprimer un lead CRM"""
+        return self.request("DELETE", "/crm/leads/{crmLead}", **kwargs)
+
+    def get_crm_leads_by_crmlead(self, **kwargs):
+        """Detail d'un lead CRM"""
+        return self.request("GET", "/crm/leads/{crmLead}", **kwargs)
+
+    def patch_crm_leads_by_crmlead(self, **kwargs):
+        """Modifier un lead CRM"""
+        return self.request("PATCH", "/crm/leads/{crmLead}", **kwargs)
+
+    def get_crm_opportunities(self, **kwargs):
+        """Lister les opportunites CRM du tenant"""
+        return self.request("GET", "/crm/opportunities", **kwargs)
+
+    def post_crm_opportunities(self, **kwargs):
+        """Creer une opportunite CRM"""
+        return self.request("POST", "/crm/opportunities", **kwargs)
+
+    def delete_crm_opportunities_by_crmopportunity(self, **kwargs):
+        """Supprimer une opportunite CRM"""
+        return self.request("DELETE", "/crm/opportunities/{crmOpportunity}", **kwargs)
+
+    def get_crm_opportunities_by_crmopportunity(self, **kwargs):
+        """Detail d'une opportunite CRM"""
+        return self.request("GET", "/crm/opportunities/{crmOpportunity}", **kwargs)
+
+    def patch_crm_opportunities_by_crmopportunity(self, **kwargs):
+        """Modifier une opportunite CRM"""
+        return self.request("PATCH", "/crm/opportunities/{crmOpportunity}", **kwargs)
+
+    def get_crm_pipelines(self, **kwargs):
+        """Lister les pipelines CRM du tenant"""
+        return self.request("GET", "/crm/pipelines", **kwargs)
+
+    def post_crm_pipelines(self, **kwargs):
+        """Creer un pipeline CRM"""
+        return self.request("POST", "/crm/pipelines", **kwargs)
+
+    def delete_crm_pipelines_by_crmpipeline(self, **kwargs):
+        """Supprimer un pipeline CRM"""
+        return self.request("DELETE", "/crm/pipelines/{crmPipeline}", **kwargs)
+
+    def get_crm_pipelines_by_crmpipeline(self, **kwargs):
+        """Detail d'un pipeline CRM"""
+        return self.request("GET", "/crm/pipelines/{crmPipeline}", **kwargs)
+
+    def patch_crm_pipelines_by_crmpipeline(self, **kwargs):
+        """Modifier un pipeline CRM"""
+        return self.request("PATCH", "/crm/pipelines/{crmPipeline}", **kwargs)
+
+    def get_crm_pipelines_by_crmpipeline_stages(self, **kwargs):
+        """Lister les stages d'un pipeline"""
+        return self.request("GET", "/crm/pipelines/{crmPipeline}/stages", **kwargs)
+
+    def post_crm_pipelines_by_crmpipeline_stages(self, **kwargs):
+        """Creer un stage dans un pipeline"""
+        return self.request("POST", "/crm/pipelines/{crmPipeline}/stages", **kwargs)
+
+    def delete_crm_pipelines_by_crmpipeline_stages_by_crmpipelinestage(self, **kwargs):
+        """Supprimer un stage de pipeline"""
+        return self.request("DELETE", "/crm/pipelines/{crmPipeline}/stages/{crmPipelineStage}", **kwargs)
+
+    def patch_crm_pipelines_by_crmpipeline_stages_by_crmpipelinestage(self, **kwargs):
+        """Modifier un stage de pipeline"""
+        return self.request("PATCH", "/crm/pipelines/{crmPipeline}/stages/{crmPipelineStage}", **kwargs)
+
+    def get_crm_tasks(self, **kwargs):
+        """Lister les taches CRM du tenant"""
+        return self.request("GET", "/crm/tasks", **kwargs)
+
+    def post_crm_tasks(self, **kwargs):
+        """Creer une tache CRM"""
+        return self.request("POST", "/crm/tasks", **kwargs)
+
+    def delete_crm_tasks_by_crmtask(self, **kwargs):
+        """Supprimer une tache CRM"""
+        return self.request("DELETE", "/crm/tasks/{crmTask}", **kwargs)
+
+    def get_crm_tasks_by_crmtask(self, **kwargs):
+        """Detail d'une tache CRM"""
+        return self.request("GET", "/crm/tasks/{crmTask}", **kwargs)
+
+    def patch_crm_tasks_by_crmtask(self, **kwargs):
+        """Modifier une tache CRM"""
+        return self.request("PATCH", "/crm/tasks/{crmTask}", **kwargs)
+
     def get_dashboard_admin(self, **kwargs):
         """Synthese dashboard admin (principal)"""
         return self.request("GET", "/dashboard/admin", **kwargs)

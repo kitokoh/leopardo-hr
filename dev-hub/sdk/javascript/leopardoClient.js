@@ -1640,6 +1640,136 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/cotisation-simulation", options);
     },
 
+    /** Lister la timeline CRM du tenant */
+    getCrmActivities(options = {}) {
+      return request("GET", "/crm/activities", options);
+    },
+
+    /** Ajouter une entree de timeline (append-only) */
+    postCrmActivities(options = {}) {
+      return request("POST", "/crm/activities", options);
+    },
+
+    /** Lister les leads CRM du tenant */
+    getCrmLeads(options = {}) {
+      return request("GET", "/crm/leads", options);
+    },
+
+    /** Creer un lead CRM */
+    postCrmLeads(options = {}) {
+      return request("POST", "/crm/leads", options);
+    },
+
+    /** Supprimer un lead CRM */
+    deleteCrmLeadsByCrmLead(options = {}) {
+      return request("DELETE", "/crm/leads/{crmLead}", options);
+    },
+
+    /** Detail d'un lead CRM */
+    getCrmLeadsByCrmLead(options = {}) {
+      return request("GET", "/crm/leads/{crmLead}", options);
+    },
+
+    /** Modifier un lead CRM */
+    patchCrmLeadsByCrmLead(options = {}) {
+      return request("PATCH", "/crm/leads/{crmLead}", options);
+    },
+
+    /** Lister les opportunites CRM du tenant */
+    getCrmOpportunities(options = {}) {
+      return request("GET", "/crm/opportunities", options);
+    },
+
+    /** Creer une opportunite CRM */
+    postCrmOpportunities(options = {}) {
+      return request("POST", "/crm/opportunities", options);
+    },
+
+    /** Supprimer une opportunite CRM */
+    deleteCrmOpportunitiesByCrmOpportunity(options = {}) {
+      return request("DELETE", "/crm/opportunities/{crmOpportunity}", options);
+    },
+
+    /** Detail d'une opportunite CRM */
+    getCrmOpportunitiesByCrmOpportunity(options = {}) {
+      return request("GET", "/crm/opportunities/{crmOpportunity}", options);
+    },
+
+    /** Modifier une opportunite CRM */
+    patchCrmOpportunitiesByCrmOpportunity(options = {}) {
+      return request("PATCH", "/crm/opportunities/{crmOpportunity}", options);
+    },
+
+    /** Lister les pipelines CRM du tenant */
+    getCrmPipelines(options = {}) {
+      return request("GET", "/crm/pipelines", options);
+    },
+
+    /** Creer un pipeline CRM */
+    postCrmPipelines(options = {}) {
+      return request("POST", "/crm/pipelines", options);
+    },
+
+    /** Supprimer un pipeline CRM */
+    deleteCrmPipelinesByCrmPipeline(options = {}) {
+      return request("DELETE", "/crm/pipelines/{crmPipeline}", options);
+    },
+
+    /** Detail d'un pipeline CRM */
+    getCrmPipelinesByCrmPipeline(options = {}) {
+      return request("GET", "/crm/pipelines/{crmPipeline}", options);
+    },
+
+    /** Modifier un pipeline CRM */
+    patchCrmPipelinesByCrmPipeline(options = {}) {
+      return request("PATCH", "/crm/pipelines/{crmPipeline}", options);
+    },
+
+    /** Lister les stages d'un pipeline */
+    getCrmPipelinesByCrmPipelineStages(options = {}) {
+      return request("GET", "/crm/pipelines/{crmPipeline}/stages", options);
+    },
+
+    /** Creer un stage dans un pipeline */
+    postCrmPipelinesByCrmPipelineStages(options = {}) {
+      return request("POST", "/crm/pipelines/{crmPipeline}/stages", options);
+    },
+
+    /** Supprimer un stage de pipeline */
+    deleteCrmPipelinesByCrmPipelineStagesByCrmPipelineStage(options = {}) {
+      return request("DELETE", "/crm/pipelines/{crmPipeline}/stages/{crmPipelineStage}", options);
+    },
+
+    /** Modifier un stage de pipeline */
+    patchCrmPipelinesByCrmPipelineStagesByCrmPipelineStage(options = {}) {
+      return request("PATCH", "/crm/pipelines/{crmPipeline}/stages/{crmPipelineStage}", options);
+    },
+
+    /** Lister les taches CRM du tenant */
+    getCrmTasks(options = {}) {
+      return request("GET", "/crm/tasks", options);
+    },
+
+    /** Creer une tache CRM */
+    postCrmTasks(options = {}) {
+      return request("POST", "/crm/tasks", options);
+    },
+
+    /** Supprimer une tache CRM */
+    deleteCrmTasksByCrmTask(options = {}) {
+      return request("DELETE", "/crm/tasks/{crmTask}", options);
+    },
+
+    /** Detail d'une tache CRM */
+    getCrmTasksByCrmTask(options = {}) {
+      return request("GET", "/crm/tasks/{crmTask}", options);
+    },
+
+    /** Modifier une tache CRM */
+    patchCrmTasksByCrmTask(options = {}) {
+      return request("PATCH", "/crm/tasks/{crmTask}", options);
+    },
+
     /** Synthese dashboard admin (principal) */
     getDashboardAdmin(options = {}) {
       return request("GET", "/dashboard/admin", options);

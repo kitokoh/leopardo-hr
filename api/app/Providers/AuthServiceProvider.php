@@ -21,6 +21,12 @@ use App\Modules\HR\Domain\Models\Evaluation;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use App\Modules\HR\Domain\Models\Position;
 use App\Modules\HR\Domain\Models\TrainingCourse;
+use App\Modules\CRM\Domain\Models\CrmActivity;
+use App\Modules\CRM\Domain\Models\CrmLead;
+use App\Modules\CRM\Domain\Models\CrmOpportunity;
+use App\Modules\CRM\Domain\Models\CrmPipeline;
+use App\Modules\CRM\Domain\Models\CrmPipelineStage;
+use App\Modules\CRM\Domain\Models\CrmTask;
 use App\Modules\Marketing\Domain\Models\SocialAccount;
 use App\Modules\Marketing\Domain\Models\SocialPost;
 use App\Modules\Payroll\Domain\Models\EmployeeLoan;
@@ -55,6 +61,12 @@ use App\Policies\PublicHolidayPolicy;
 use App\Policies\RateValidationPolicy;
 use App\Policies\SocialContributionPolicy;
 use App\Policies\TaxSlabPolicy;
+use App\Policies\CrmActivityPolicy;
+use App\Policies\CrmLeadPolicy;
+use App\Policies\CrmOpportunityPolicy;
+use App\Policies\CrmPipelinePolicy;
+use App\Policies\CrmPipelineStagePolicy;
+use App\Policies\CrmTaskPolicy;
 use App\Policies\PositionPolicy;
 use App\Policies\RecruitmentPolicy;
 use App\Policies\SchedulePolicy;
@@ -126,6 +138,14 @@ class AuthServiceProvider extends ServiceProvider
         // Marketing (Phase 2)
         Gate::policy(SocialAccount::class, SocialAccountPolicy::class);
         Gate::policy(SocialPost::class, SocialPostPolicy::class);
+
+        // CRM client — espaces tenant (issues #5709-5712)
+        Gate::policy(CrmPipeline::class, CrmPipelinePolicy::class);
+        Gate::policy(CrmPipelineStage::class, CrmPipelineStagePolicy::class);
+        Gate::policy(CrmLead::class, CrmLeadPolicy::class);
+        Gate::policy(CrmOpportunity::class, CrmOpportunityPolicy::class);
+        Gate::policy(CrmActivity::class, CrmActivityPolicy::class);
+        Gate::policy(CrmTask::class, CrmTaskPolicy::class);
 
         // Gate definitions
         Gate::define('manage-billing', [BillingPolicy::class, 'manageSubscription']);
