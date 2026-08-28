@@ -11,4 +11,7 @@ return [
     'CRM_WEBHOOK_SIGNATURE_INVALID' => 'توقيع webhook لـ CRM غير صالح.',
     'CRM_WEBHOOK_NOT_CONFIGURED' => 'webhook لـ CRM غير مهيأ (السر مفقود).',
     'CRM_WEBHOOK_VERIFY_INVALID' => 'تم رفض التحقق من اشتراك webhook لـ CRM.',
-];
+
+    'merge' => [
+        'unknown_entity' => 'كيان غير معروف (accounts أو contacts أو leads).',
+    ],];

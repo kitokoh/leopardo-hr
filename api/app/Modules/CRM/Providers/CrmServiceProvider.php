@@ -11,17 +11,35 @@ use App\Modules\CRM\Infrastructure\Integrations\WhatsApp\WhatsAppAdapter;
 use App\Modules\CRM\Infrastructure\Integrations\WhatsApp\WhatsAppCloudApiClient;
 use App\Modules\CRM\Infrastructure\Repositories\CrmChannelMessageRepository;
 use App\Modules\CRM\Infrastructure\Services\CrmChannelService;
-use Illuminate\Support\ServiceProvider;
+
+use App\Modules\CRM\Domain\Contracts\CrmImportRepositoryInterface;
+use App\Modules\CRM\Domain\Contracts\CrmImportRowPersisterInterface;
+use App\Modules\CRM\Domain\Contracts\CrmLeadRepositoryInterface;
+use App\Modules\CRM\Infrastructure\Repositories\CrmImportRepository;
+use App\Modules\CRM\Infrastructure\Repositories\CrmLeadRepository;
+use App\Modules\CRM\Infrastructure\Services\CrmImportRowPersister;
+use App\Modules\CRM\Infrastructure\Services\CrmOutboxConsumerRegistry;
+use App\Modules\CRM\Infrastructure\Services\CrmOutboxPublisher;
+use App\Modules\CRM\Policies\CrmImportPolicy;
+use App\Modules\CRM\Policies\CrmLeadPolicy;
+use App\Modules\CRM\Policies\CrmMergePolicy;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\Gate;use Illuminate\Support\ServiceProvider;
 
 /**
- * CRM Client (interne tenant) — provider du module (issue #5707, CRM-V0-03).
+ * #5714/#5717/#5718/#5741 — Provider du module CRM (import CSV, conversion,
+ * déduplication, outbox).
  *
  * Squelette DDD ratifié par l'ADR-CRM-DUAL-CONTEXTS : le CRM client est un
  * module tenant-scoped distinct du CRM commercial Leopardo (Platform/
  * Marketing). Les couches Application/Domain/Infrastructure/Interfaces se
  * remplissent au fil des issues CRM-V0-04+ ; les canaux de communication
  * tenant (WhatsApp/SMS/email) sont livrés par les issues CRM-V1 (#5725+).
- */
+
+ * Enregistre les ports & adapters du module (contrats → implémentations) et
+ * les Policies métier. Le module CRM client est strictement isolé du CRM
+ * commercial Platform/Marketing (ADR-CRM-001, garde d'isolation #5584).
+ * (Squelette CRM-V0-03 #5707 remplacé par les implémentations métier.) */
 class CrmServiceProvider extends ServiceProvider
 {
     public function register(): void
@@ -55,11 +73,19 @@ class CrmServiceProvider extends ServiceProvider
                 quotaService: $app->make(\App\Modules\CRM\Infrastructure\Services\CrmQuotaService::class),
             );
         });
-    }
+
+        $this->app->singleton(CrmImportRepositoryInterface::class, CrmImportRepository::class);
+        $this->app->singleton(CrmImportRowPersisterInterface::class, CrmImportRowPersister::class);
+        $this->app->singleton(CrmLeadRepositoryInterface::class, CrmLeadRepository::class);
+        $this->app->singleton(CrmOutboxPublisher::class);
+        $this->app->singleton(CrmOutboxConsumerRegistry::class);    }
 
     public function boot(): void
     {
         // Routes chargées via require dans routes/api.php
         // (routes/modules/crm.php — issues #5725/#5727/#5728/#5729).
-    }
+
+        Gate::policy(\App\Modules\CRM\Domain\Models\CrmImport::class, CrmImportPolicy::class);
+        Gate::policy(\App\Modules\CRM\Domain\Models\CrmLead::class, CrmLeadPolicy::class);
+        Gate::policy(\App\Modules\CRM\Domain\Models\CrmAccount::class, CrmMergePolicy::class);    }
 }
