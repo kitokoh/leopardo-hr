@@ -92,7 +92,10 @@ class AttendanceMonthlyExportTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.format', 'csv')
             ->assertJsonPath('data.month', $month->format('Y-m'))
-            ->assertJsonPath('data.count', 2);
+            // Même agrégation que /attendance/monthly-report : TOUS les
+            // employés de l'entreprise apparaissent (manager compris, lignes à
+            // zéro sans pointage) → 3 lignes (manager + Amine + Sara).
+            ->assertJsonPath('data.count', 3);
 
         $content = (string) $response->json('data.content');
 
@@ -153,7 +156,10 @@ class AttendanceMonthlyExportTest extends TestCase
 
         $response = $this->getJson('/api/v1/export/attendance/monthly?month='.$month->format('Y-m'))
             ->assertOk()
-            ->assertJsonPath('data.count', 0);
+            // L'export liste les employés de l'entreprise A (le manager seul,
+            // sans pointage → ligne à zéro) : count=1. La propriété de
+            // sécurité clé reste : aucun employé du tenant B ne fuit.
+            ->assertJsonPath('data.count', 1);
 
         $this->assertStringNotContainsString((string) $employeeB->id, (string) $response->json('data.content'));
     }
