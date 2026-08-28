@@ -8,6 +8,8 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
 use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
 use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
@@ -106,29 +108,33 @@ class FuelEquipmentTest extends TestCase
         $foreignStation = $this->station($this->companyB);
 
         // FK composite (station_id, company_id) → refus cross-tenant.
-        $this->expectException(\Illuminate\Database\QueryException::class);
-        FuelPump::query()->create([
-            'company_id' => $this->companyA->id,
-            'station_id' => (int) $foreignStation->getAttribute('id'),
-            'code' => 'P-X',
-            'status' => FuelPump::STATUS_ACTIVE,
-        ]);
+        $this->expectException(QueryException::class);
+        DB::transaction(function () use ($foreignStation): void {
+            FuelPump::query()->create([
+                'company_id' => $this->companyA->id,
+                'station_id' => (int) $foreignStation->getAttribute('id'),
+                'code' => 'P-X',
+                'status' => FuelPump::STATUS_ACTIVE,
+            ]);
+        });
     }
 
     public function test_tank_cannot_link_to_another_tenant_station(): void
     {
         $foreignStation = $this->station($this->companyB);
 
-        $this->expectException(\Illuminate\Database\QueryException::class);
-        FuelTank::query()->create([
-            'company_id' => $this->companyA->id,
-            'station_id' => (int) $foreignStation->getAttribute('id'),
-            'code' => 'T-X',
-            'product_type' => 'gazoil',
-            'capacity_minor' => 1000,
-            'current_level_minor' => 0,
-            'status' => FuelTank::STATUS_ACTIVE,
-        ]);
+        $this->expectException(QueryException::class);
+        DB::transaction(function () use ($foreignStation): void {
+            FuelTank::query()->create([
+                'company_id' => $this->companyA->id,
+                'station_id' => (int) $foreignStation->getAttribute('id'),
+                'code' => 'T-X',
+                'product_type' => 'gazoil',
+                'capacity_minor' => 1000,
+                'current_level_minor' => 0,
+                'status' => FuelTank::STATUS_ACTIVE,
+            ]);
+        });
     }
 
     public function test_only_one_active_meter_per_pump_and_code(): void
@@ -138,8 +144,10 @@ class FuelEquipmentTest extends TestCase
         $this->meter($this->companyA, $station, $pump, 'C-04-A');
 
         // Second compteur ACTIF avec le même code → contrainte unique.
-        $this->expectException(\Illuminate\Database\QueryException::class);
-        $this->meter($this->companyA, $station, $pump, 'C-04-A');
+        $this->expectException(QueryException::class);
+        DB::transaction(function () use ($station, $pump): void {
+            $this->meter($this->companyA, $station, $pump, 'C-04-A');
+        });
     }
 
     public function test_two_active_meters_with_different_codes_are_allowed(): void
@@ -157,30 +165,34 @@ class FuelEquipmentTest extends TestCase
         $station = $this->station($this->companyA);
         $pump = $this->pump($this->companyA, $station);
 
-        $this->expectException(\Illuminate\Database\QueryException::class);
-        FuelMeterRegister::query()->create([
-            'company_id' => $this->companyA->id,
-            'station_id' => (int) $station->getAttribute('id'),
-            'pump_id' => (int) $pump->getAttribute('id'),
-            'meter_code' => 'C-BAD',
-            'meter_type' => 'quantum',
-            'status' => FuelMeterRegister::STATUS_ACTIVE,
-        ]);
+        $this->expectException(QueryException::class);
+        DB::transaction(function () use ($station, $pump): void {
+            FuelMeterRegister::query()->create([
+                'company_id' => $this->companyA->id,
+                'station_id' => (int) $station->getAttribute('id'),
+                'pump_id' => (int) $pump->getAttribute('id'),
+                'meter_code' => 'C-BAD',
+                'meter_type' => 'quantum',
+                'status' => FuelMeterRegister::STATUS_ACTIVE,
+            ]);
+        });
     }
 
     public function test_capacity_is_positive_integer_minor_units(): void
     {
         $station = $this->station($this->companyA);
 
-        $this->expectException(\Illuminate\Database\QueryException::class);
-        FuelTank::query()->create([
-            'company_id' => $this->companyA->id,
-            'station_id' => (int) $station->getAttribute('id'),
-            'code' => 'T-NEG',
-            'product_type' => 'essence',
-            'capacity_minor' => -500, // jamais négatif
-            'current_level_minor' => 0,
-            'status' => FuelTank::STATUS_ACTIVE,
-        ]);
+        $this->expectException(QueryException::class);
+        DB::transaction(function () use ($station): void {
+            FuelTank::query()->create([
+                'company_id' => $this->companyA->id,
+                'station_id' => (int) $station->getAttribute('id'),
+                'code' => 'T-NEG',
+                'product_type' => 'essence',
+                'capacity_minor' => -500, // jamais négatif
+                'current_level_minor' => 0,
+                'status' => FuelTank::STATUS_ACTIVE,
+            ]);
+        });
     }
 }
