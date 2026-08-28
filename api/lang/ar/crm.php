@@ -15,4 +15,7 @@ return [
     'CRM_AUTOMATION_INVALID_TRIGGER' => 'حدث تشغيل أتمتة CRM غير معروف.',
     'CRM_AUTOMATION_EMERGENCY_STOPPED' => 'تم إيقاف أتمتة CRM طارئ لهذا المستأجر.',
     'CRM_AUTOMATION_INVALID' => 'أتمتة CRM غير صالحة (قاعدة أو إجراء غير مسموح به).',
-];
+
+    'merge' => [
+        'unknown_entity' => 'كيان غير معروف (accounts أو contacts أو leads).',
+    ],];

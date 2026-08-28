@@ -15,4 +15,7 @@ return [
     'CRM_AUTOMATION_INVALID_TRIGGER' => 'Bilinmeyen CRM otomasyon tetikleyici olayı.',
     'CRM_AUTOMATION_EMERGENCY_STOPPED' => 'Bu kiracı için CRM otomasyonları acil durduruldu.',
     'CRM_AUTOMATION_INVALID' => 'Geçersiz CRM otomasyonu (kural veya eylem beyaz listede değil).',
-];
+
+    'merge' => [
+        'unknown_entity' => 'Bilinmeyen varlık (accounts, contacts veya leads).',
+    ],];
