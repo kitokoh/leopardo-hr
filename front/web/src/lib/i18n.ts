@@ -178,6 +178,10 @@ export type CopyTree = {
   };
   absences: {
     title: string;
+    subtitle: string;
+    listTitle: string;
+    request: string;
+    loading: string;
     approve: string;
     reject: string;
     cancel: string;
@@ -194,6 +198,20 @@ export type CopyTree = {
     statusCancelled: string;
     loadError: string;
     empty: string;
+    newAbsence: string;
+    newAbsenceHint: string;
+    type: string;
+    typeRequired: string;
+    typeFallback: string;
+    start: string;
+    end: string;
+    reason: string;
+    reasonHint: string;
+    dateMissing: string;
+    submitToHr: string;
+    submittedSnack: string;
+    noTypeAvailable: string;
+    failure: string;
   };
   payrollPage: {
     title: string;
@@ -768,6 +786,10 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     absences: {
       title: 'Absences',
+      subtitle: 'Demandes, soldes et décisions RH',
+      listTitle: 'Mes demandes',
+      request: 'Demander',
+      loading: 'Chargement des absences',
       approve: 'Approuver',
       reject: 'Refuser',
       cancel: 'Annuler',
@@ -784,6 +806,20 @@ const copy: Record<AppLocale, CopyTree> = {
       statusCancelled: 'Annulée',
       loadError: 'Impossible de charger les absences.',
       empty: 'Aucune absence.',
+      newAbsence: 'Nouvelle absence',
+      newAbsenceHint: 'Choisissez le type de solde et la période à transmettre au RH.',
+      type: 'Type',
+      typeRequired: "Type d'absence requis",
+      typeFallback: 'Absence',
+      start: 'Début',
+      end: 'Fin',
+      reason: 'Motif',
+      reasonHint: 'Ex : rendez-vous médical, congé familial…',
+      dateMissing: 'Dates de début et fin requises (fin ≥ début).',
+      submitToHr: 'Soumettre au RH',
+      submittedSnack: "Demande d'absence transmise au RH.",
+      noTypeAvailable: "Aucun type d'absence disponible. Contactez le RH pour configurer les soldes.",
+      failure: 'Échec : ',
     },
     payrollPage: {
       title: 'Paie',
@@ -1348,6 +1384,10 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     absences: {
       title: 'الإجازات',
+      subtitle: 'الطلبات والأرصدة وقرارات الموارد البشرية',
+      listTitle: 'طلباتي',
+      request: 'طلب',
+      loading: 'جارٍ تحميل الإجازات',
       approve: 'موافقة',
       reject: 'رفض',
       cancel: 'إلغاء',
@@ -1364,6 +1404,20 @@ const copy: Record<AppLocale, CopyTree> = {
       statusCancelled: 'ملغى',
       loadError: 'تعذر تحميل الإجازات.',
       empty: 'لا توجد إجازات.',
+      newAbsence: 'غياب جديد',
+      newAbsenceHint: 'اختر نوع الرصيد والفترة لإرسالها إلى الموارد البشرية.',
+      type: 'النوع',
+      typeRequired: 'نوع الغياب مطلوب',
+      typeFallback: 'غياب',
+      start: 'البداية',
+      end: 'النهاية',
+      reason: 'السبب',
+      reasonHint: 'مثال: موعد طبي، إجازة عائلية...',
+      dateMissing: 'تاريخا البداية والنهاية مطلوبان (النهاية ≥ البداية).',
+      submitToHr: 'إرسال إلى الموارد البشرية',
+      submittedSnack: 'تم إرسال طلب الغياب إلى الموارد البشرية.',
+      noTypeAvailable: 'لا يوجد نوع غياب متاح. اتصل بالموارد البشرية لتهيئة الأرصدة.',
+      failure: 'خطأ: ',
     },
     payrollPage: {
       title: 'الرواتب',
@@ -1928,6 +1982,10 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     absences: {
       title: 'İzinler',
+      subtitle: 'Talepler, bakiyeler ve İK kararları',
+      listTitle: 'Taleplerim',
+      request: 'Talep et',
+      loading: 'İzinler yükleniyor',
       approve: 'Onayla',
       reject: 'Reddet',
       cancel: 'İptal',
@@ -1944,6 +2002,20 @@ const copy: Record<AppLocale, CopyTree> = {
       statusCancelled: 'İptal edildi',
       loadError: 'İzinler yüklenemedi.',
       empty: 'İzin yok.',
+      newAbsence: 'Yeni izin',
+      newAbsenceHint: "İK'ya iletilecek bakiye türünü ve dönemi seçin.",
+      type: 'Tür',
+      typeRequired: 'İzin türü zorunlu',
+      typeFallback: 'İzin',
+      start: 'Başlangıç',
+      end: 'Bitiş',
+      reason: 'Gerekçe',
+      reasonHint: 'Örn: doktor randevusu, aile izni...',
+      dateMissing: 'Başlangıç ve bitiş tarihleri zorunludur (bitiş ≥ başlangıç).',
+      submitToHr: "İK'ya gönder",
+      submittedSnack: "İzin talebi İK'ya iletildi.",
+      noTypeAvailable: 'İzin türü yok. Bakiyeleri yapılandırmak için İK ile iletişime geçin.',
+      failure: 'Hata: ',
     },
     payrollPage: {
       title: 'Bordro',
@@ -2508,6 +2580,10 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     absences: {
       title: 'Absences',
+      subtitle: 'Requests, balances and HR decisions',
+      listTitle: 'My requests',
+      request: 'Request',
+      loading: 'Loading absences',
       approve: 'Approve',
       reject: 'Reject',
       cancel: 'Cancel',
@@ -2524,6 +2600,20 @@ const copy: Record<AppLocale, CopyTree> = {
       statusCancelled: 'Cancelled',
       loadError: 'Unable to load absences.',
       empty: 'No absences.',
+      newAbsence: 'New absence',
+      newAbsenceHint: 'Choose the balance type and the period to send to HR.',
+      type: 'Type',
+      typeRequired: 'Absence type is required',
+      typeFallback: 'Absence',
+      start: 'Start',
+      end: 'End',
+      reason: 'Reason',
+      reasonHint: 'e.g. medical appointment, family leave...',
+      dateMissing: 'Start and end dates are required (end after or on start).',
+      submitToHr: 'Submit to HR',
+      submittedSnack: 'Absence request sent to HR.',
+      noTypeAvailable: 'No absence type available. Contact HR to configure balances.',
+      failure: 'Error: ',
     },
     payrollPage: {
       title: 'Payroll',
