@@ -224,3 +224,29 @@ class CrmChannelSendTest extends TestCase
         Http::assertNothingSent();
     }
 }
+
+    public function test_provider_400_is_immediately_dead_lettered(): void
+    {
+        config()->set('crm.channels.consent_fallback', 'allow');
+        Sanctum::actingAs($this->manager());
+
+        $channel = $this->whatsappChannel();
+
+        // 4xx métier (ex. template non approuvé) → non retryable → dead-letter
+        // immédiat, quel que soit max_attempts.
+        Http::fake([
+            'graph.facebook.com/*' => Http::response([
+                'error' => ['message' => 'template not approved', 'code' => 131047],
+            ], 400),
+        ]);
+
+        $this->postJson('/api/v1/crm/channels/'.$channel->id.'/send', [
+            'to' => '+213555010203',
+            'template_name' => 'non_approved_template',
+        ])->assertStatus(502);
+
+        $this->assertDatabaseHas('crm_channel_messages', [
+            'company_id' => $this->company->id,
+            'status' => 'dead_lettered',
+        ]);
+    }
