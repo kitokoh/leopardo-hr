@@ -45,10 +45,14 @@ class TenantContextLockdownTest extends TestCase
 
     public function test_cross_tenant_leave_balance_access_returns_404(): void
     {
+        /** @var Company $companyA */
         $companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Company $companyB */
         $companyB = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
+        /** @var Employee $managerB */
         $managerB = Employee::factory()->manager()->create(['company_id' => $companyB->id]);
+        /** @var Employee $employeeA */
         $employeeA = Employee::factory()->create(['company_id' => $companyA->id]);
 
         Sanctum::actingAs($managerB);
@@ -61,6 +65,7 @@ class TenantContextLockdownTest extends TestCase
 
     public function test_tenant_scoped_job_runs_within_company_context(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
         $job = new ProbeTenantJob($company->id);
 
@@ -105,6 +110,7 @@ class TenantContextLockdownTest extends TestCase
 
     public function test_tenant_scoped_event_dispatches_within_company_context(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
         /** @var array{event_company_id: string|null, current_company_id: string|null, search_path: string}|null $received */
@@ -130,6 +136,7 @@ class TenantContextLockdownTest extends TestCase
 
     public function test_tenant_context_guard_returns_current_company(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
         app()->instance('current_company', $company);
 
