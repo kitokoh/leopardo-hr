@@ -12,6 +12,7 @@ use App\Modules\CRM\Domain\Models\CrmOutboxEvent;
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxConsumerRegistry;
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxPublisher;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -36,6 +37,9 @@ class CrmOutboxTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // La migration tenant doit créer la table d'outbox
+        // (garde de parité CreatesMvpSchema ↔ migrations, #5443).
+        self::assertTrue(Schema::hasTable('crm_outbox_events'), 'la migration crm_outbox_events doit être exécutée');
         $this->createLedgerTable();
 
         /** @var Company $company */
@@ -234,9 +238,7 @@ final class LedgerConsumer implements CrmOutboxConsumer
 {
     public int $applied = 0;
 
-    public function __construct(private readonly string $eventType)
-    {
-    }
+    public function __construct(private readonly string $eventType) {}
 
     public function supports(string $eventType): bool
     {
@@ -256,7 +258,7 @@ final class LedgerConsumer implements CrmOutboxConsumer
                 'updated_at' => now(),
             ]);
             $this->applied++;
-        } catch (\Illuminate\Database\UniqueConstraintViolationException) {
+        } catch (UniqueConstraintViolationException) {
             // Effet déjà appliqué (rejeu) — idempotence.
         }
     }
@@ -271,9 +273,7 @@ final class FlakyConsumer implements CrmOutboxConsumer
 {
     private int $calls = 0;
 
-    public function __construct(private readonly string $eventType)
-    {
-    }
+    public function __construct(private readonly string $eventType) {}
 
     public function supports(string $eventType): bool
     {
@@ -292,9 +292,7 @@ final class FlakyConsumer implements CrmOutboxConsumer
 
 final class PermanentFailConsumer implements CrmOutboxConsumer
 {
-    public function __construct(private readonly string $eventType)
-    {
-    }
+    public function __construct(private readonly string $eventType) {}
 
     public function supports(string $eventType): bool
     {

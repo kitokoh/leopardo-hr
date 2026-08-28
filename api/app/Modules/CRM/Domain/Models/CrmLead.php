@@ -19,12 +19,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $first_name
  * @property string $last_name
  * @property string|null $company_name
+ * @property string|null $title
  * @property string|null $email
  * @property string|null $phone
  * @property string|null $source
  * @property string $status
+ * @property int|null $score
  * @property int|null $owner_id
  * @property string|null $notes
+ * @property \Illuminate\Support\Carbon|null $converted_at
+ * @property \Illuminate\Support\Carbon|null $created_at
  * @property string|null $archived_at
  *
  * @mixin Builder<static>
