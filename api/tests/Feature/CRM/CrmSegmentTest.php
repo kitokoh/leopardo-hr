@@ -174,7 +174,8 @@ class CrmSegmentTest extends TestCase
         ]);
         $create->assertStatus(201);
 
-        $segmentId = $create->json('data.id');
+        $createdId = $create->json('data.id');
+        $segmentId = is_numeric($createdId) ? (int) $createdId : 0;
 
         $newDefinition = [
             'operator' => 'and',
@@ -395,7 +396,8 @@ class CrmSegmentTest extends TestCase
         ]);
         $create->assertStatus(201);
 
-        $segmentId = $create->json('data.id');
+        $createdId = $create->json('data.id');
+        $segmentId = is_numeric($createdId) ? (int) $createdId : 0;
 
         $actions = AuditLog::query()
             ->where('module', 'crm')

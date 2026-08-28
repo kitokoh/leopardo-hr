@@ -48,24 +48,29 @@ final class SegmentDefinitionValidator
      */
     public function validate(array $definition): array
     {
-        $this->failIf(
-            array_keys($definition) !== ['operator', 'conditions'],
-            'La définition doit contenir uniquement `operator` et `conditions`.',
-        );
+        if (array_keys($definition) !== ['operator', 'conditions']) {
+            throw ValidationException::withMessages(['definition' => 'La définition doit contenir uniquement `operator` et `conditions`.']);
+        }
 
-        /** @var mixed $operator */
         $operator = $definition['operator'];
-        $this->failIf(! is_string($operator) || ! in_array($operator, ['and', 'or'], true), 'operator doit être "and" ou "or".');
+        if (! is_string($operator) || ! in_array($operator, ['and', 'or'], true)) {
+            throw ValidationException::withMessages(['definition' => 'operator doit être "and" ou "or".']);
+        }
 
-        /** @var mixed $conditions */
         $conditions = $definition['conditions'];
-        $this->failIf(! is_array($conditions), 'conditions doit être un tableau.');
-        $this->failIf($conditions === [], 'conditions ne peut pas être vide.');
-        $this->failIf(count($conditions) > self::MAX_CONDITIONS, sprintf('Maximum %d conditions par segment.', self::MAX_CONDITIONS));
+        if (! is_array($conditions)) {
+            throw ValidationException::withMessages(['definition' => 'conditions doit être un tableau.']);
+        }
+        if ($conditions === []) {
+            throw ValidationException::withMessages(['definition' => 'conditions ne peut pas être vide.']);
+        }
+        if (count($conditions) > self::MAX_CONDITIONS) {
+            throw ValidationException::withMessages(['definition' => sprintf('Maximum %d conditions par segment.', self::MAX_CONDITIONS)]);
+        }
 
         $normalized = [];
         foreach ($conditions as $index => $condition) {
-            $normalized[] = $this->validateCondition($condition, $index);
+            $normalized[] = $this->validateCondition($condition, (int) $index);
         }
 
         /** @var array{operator: string, conditions: list<array{field: string, op: string, value: mixed}>} $result */
@@ -79,19 +84,22 @@ final class SegmentDefinitionValidator
      */
     private function validateCondition(mixed $condition, int $index): array
     {
-        $this->failIf(! is_array($condition), sprintf('Condition %d doit être un objet.', $index + 1));
-        $this->failIf(
-            array_keys($condition) !== ['field', 'op', 'value'],
-            sprintf('Condition %d : seuls `field`, `op` et `value` sont acceptés.', $index + 1),
-        );
+        if (! is_array($condition)) {
+            throw ValidationException::withMessages(['definition' => sprintf('Condition %d doit être un objet.', $index + 1)]);
+        }
+        if (array_keys($condition) !== ['field', 'op', 'value']) {
+            throw ValidationException::withMessages(['definition' => sprintf('Condition %d : seuls `field`, `op` et `value` sont acceptés.', $index + 1)]);
+        }
 
-        /** @var mixed $field */
         $field = $condition['field'];
-        /** @var mixed $op */
         $op = $condition['op'];
 
-        $this->failIf(! is_string($field) || ! array_key_exists($field, self::ALLOWED_FIELDS), sprintf('Condition %d : champ inconnu.', $index + 1));
-        $this->failIf(! is_string($op) || ! in_array($op, self::ALLOWED_FIELDS[$field], true), sprintf('Condition %d : opérateur non autorisé pour ce champ.', $index + 1));
+        if (! is_string($field) || ! array_key_exists($field, self::ALLOWED_FIELDS)) {
+            throw ValidationException::withMessages(['definition' => sprintf('Condition %d : champ inconnu.', $index + 1)]);
+        }
+        if (! is_string($op) || ! in_array($op, self::ALLOWED_FIELDS[$field], true)) {
+            throw ValidationException::withMessages(['definition' => sprintf('Condition %d : opérateur non autorisé pour ce champ.', $index + 1)]);
+        }
 
         $value = $condition['value'];
         $this->validateValue($field, $op, $value, $index);
@@ -105,41 +113,42 @@ final class SegmentDefinitionValidator
     private function validateValue(string $field, string $op, mixed $value, int $index): void
     {
         if ($op === SegmentOperator::In->value) {
-            $this->failIf(! is_array($value) || $value === [] || count($value) > 50, sprintf('Condition %d : `in` attend 1 à 50 valeurs.', $index + 1));
+            if (! is_array($value) || $value === [] || count($value) > 50) {
+                throw ValidationException::withMessages(['definition' => sprintf('Condition %d : `in` attend 1 à 50 valeurs.', $index + 1)]);
+            }
             foreach ($value as $v) {
-                $this->failIf(! is_scalar($v), sprintf('Condition %d : valeurs du `in` doivent être scalaires.', $index + 1));
+                if (! is_scalar($v)) {
+                    throw ValidationException::withMessages(['definition' => sprintf('Condition %d : valeurs du `in` doivent être scalaires.', $index + 1)]);
+                }
             }
 
             return;
         }
 
         if ($op === SegmentOperator::Between->value) {
-            $this->failIf(! is_array($value) || count($value) !== 2, sprintf('Condition %d : `between` attend exactement 2 valeurs.', $index + 1));
+            if (! is_array($value) || count($value) !== 2) {
+                throw ValidationException::withMessages(['definition' => sprintf('Condition %d : `between` attend exactement 2 valeurs.', $index + 1)]);
+            }
 
             return;
         }
 
         if ($op === SegmentOperator::IsNull->value) {
-            $this->failIf(! is_bool($value), sprintf('Condition %d : `is_null` attend un booléen.', $index + 1));
+            if (! is_bool($value)) {
+                throw ValidationException::withMessages(['definition' => sprintf('Condition %d : `is_null` attend un booléen.', $index + 1)]);
+            }
 
             return;
         }
 
-        $this->failIf(! is_scalar($value), sprintf('Condition %d : valeur scalaire requise.', $index + 1));
+        if (! is_scalar($value)) {
+            throw ValidationException::withMessages(['definition' => sprintf('Condition %d : valeur scalaire requise.', $index + 1)]);
+        }
 
         if ($field === 'crm_consents.has_consent') {
-            /** @var mixed $value */
-            $this->failIf(
-                ! is_string($value) || ! in_array($value, ConsentChannel::values(), true),
-                sprintf('Condition %d : canal de consentement inconnu.', $index + 1),
-            );
-        }
-    }
-
-    private function failIf(bool $condition, string $message): void
-    {
-        if ($condition) {
-            throw ValidationException::withMessages(['definition' => $message]);
+            if (! is_string($value) || ! in_array($value, ConsentChannel::values(), true)) {
+                throw ValidationException::withMessages(['definition' => sprintf('Condition %d : canal de consentement inconnu.', $index + 1)]);
+            }
         }
     }
 }

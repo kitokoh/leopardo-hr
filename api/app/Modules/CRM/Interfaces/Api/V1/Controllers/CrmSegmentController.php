@@ -28,23 +28,24 @@ class CrmSegmentController extends Controller
     {
         $this->authorize('viewAny', CrmSegment::class);
 
-        $validated = $request->validate([
+        $request->validate([
             'search' => ['nullable', 'string', 'max:120'],
             'is_active' => ['nullable', 'boolean'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 
-        $perPage = (int) ($validated['per_page'] ?? 20);
+        $perPage = $request->integer('per_page', 20);
+        $search = $request->string('search')->toString();
 
         $query = CrmSegment::query()
             ->orderBy('name');
 
-        if (! empty($validated['search'])) {
-            $query->where('name', 'like', '%'.addcslashes((string) $validated['search'], '%_\\').'%');
+        if ($search !== '') {
+            $query->where('name', 'like', '%'.addcslashes($search, '%_\\').'%');
         }
 
-        if (array_key_exists('is_active', $validated)) {
-            $query->where('is_active', (bool) $validated['is_active']);
+        if ($request->has('is_active')) {
+            $query->where('is_active', $request->boolean('is_active'));
         }
 
         $paginator = $query->withCount('members')->paginate($perPage);
@@ -70,11 +71,13 @@ class CrmSegmentController extends Controller
         $this->authorize('create', CrmSegment::class);
 
         $definitionInput = $request->input('definition');
+        /** @var array<string, mixed> $definition */
+        $definition = is_array($definitionInput) ? $definitionInput : [];
 
         $segment = $this->segments->create(
             $request->string('name')->toString(),
             $request->filled('description') ? $request->string('description')->toString() : null,
-            is_array($definitionInput) ? $definitionInput : [],
+            $definition,
             $this->actorId(),
         );
 
@@ -102,7 +105,10 @@ class CrmSegmentController extends Controller
         $definition = $segment->definition;
         if ($request->has('definition')) {
             $definitionInput = $request->input('definition');
-            $definition = is_array($definitionInput) ? $definitionInput : $definition;
+            if (is_array($definitionInput)) {
+                /** @var array<string, mixed> $definition */
+                $definition = $definitionInput;
+            }
         }
 
         $updated = $this->segments->update(
@@ -145,19 +151,20 @@ class CrmSegmentController extends Controller
         $this->assertTenantScope($request, $segment);
         $this->authorize('view', $segment);
 
-        $validated = $request->validate([
+        $request->validate([
             'source' => ['nullable', 'string', 'in:computed,manual'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 
-        $perPage = (int) ($validated['per_page'] ?? 50);
+        $perPage = $request->integer('per_page', 50);
+        $source = $request->string('source')->toString();
 
         $query = CrmSegmentMember::query()
             ->where('segment_id', $segment->id)
             ->orderByDesc('id');
 
-        if (! empty($validated['source'])) {
-            $query->where('source', (string) $validated['source']);
+        if ($source !== '') {
+            $query->where('source', $source);
         }
 
         $paginator = $query->paginate($perPage);
@@ -189,7 +196,7 @@ class CrmSegmentController extends Controller
         // (même pattern que AccountingContactController::assertTenantScope).
         $companyId = $request->user()?->getAttribute('company_id');
 
-        if ($companyId !== null && (string) $segment->company_id !== (string) $companyId) {
+        if (is_string($companyId) && (string) $segment->company_id !== $companyId) {
             abort(404);
         }
     }
@@ -216,6 +223,6 @@ class CrmSegmentController extends Controller
     {
         $userId = request()->user()?->getAuthIdentifier();
 
-        return $userId !== null ? (int) $userId : null;
+        return is_numeric($userId) ? (int) $userId : null;
     }
 }

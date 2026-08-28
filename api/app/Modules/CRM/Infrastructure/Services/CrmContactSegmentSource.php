@@ -46,7 +46,9 @@ final class CrmContactSegmentSource implements SegmentContactSourceInterface
 
         $result = [];
         foreach ($ids as $id) {
-            $result[] = (int) $id;
+            if (is_numeric($id)) {
+                $result[] = (int) $id;
+            }
         }
 
         return $result;
@@ -110,7 +112,10 @@ final class CrmContactSegmentSource implements SegmentContactSourceInterface
         $value = $condition['value'];
 
         if ($field === 'crm_consents.has_consent') {
-            $this->applyConsentCondition($builder, (string) $value);
+            if (! is_string($value)) {
+                return;
+            }
+            $this->applyConsentCondition($builder, $value);
 
             return;
         }
@@ -160,7 +165,7 @@ final class CrmContactSegmentSource implements SegmentContactSourceInterface
             $sub->select(DB::raw(1))
                 ->from('crm_consents')
                 ->whereColumn('crm_consents.contact_id', 'crm_contacts.id')
-                ->where('crm_consents.company_id', $company->id)
+                ->where('crm_consents.company_id', (string) $company->id)
                 ->where('crm_consents.channel', $channel)
                 ->where('crm_consents.purpose', 'marketing')
                 ->where('crm_consents.status', 'granted');
