@@ -165,17 +165,16 @@ class CrmSegmentTest extends TestCase
 
     public function test_update_bumps_version_and_freezes_previous(): void
     {
-        app()->instance('current_company', $this->companyA);
+        Sanctum::actingAs($this->manager($this->companyA));
 
-        /** @var CrmSegment $segment */
-        $segment = CrmSegment::query()->create([
+        // Création via l'API : la version 1 est figée par le service.
+        $create = $this->postJson('/api/v1/crm/segments', [
             'name' => 'Segment v1',
             'definition' => $this->validDefinition(),
-            'version' => 1,
-            'is_active' => true,
         ]);
+        $create->assertStatus(201);
 
-        Sanctum::actingAs($this->manager($this->companyA));
+        $segmentId = $create->json('data.id');
 
         $newDefinition = [
             'operator' => 'and',
@@ -184,7 +183,7 @@ class CrmSegmentTest extends TestCase
             ],
         ];
 
-        $response = $this->putJson("/api/v1/crm/segments/{$segment->id}", [
+        $response = $this->putJson("/api/v1/crm/segments/{$segmentId}", [
             'name' => 'Segment v2',
             'definition' => $newDefinition,
         ]);
@@ -193,12 +192,12 @@ class CrmSegmentTest extends TestCase
         $response->assertJsonPath('data.version', 2);
 
         $this->assertDatabaseHas('crm_segment_versions', [
-            'segment_id' => $segment->id,
+            'segment_id' => $segmentId,
             'version' => 1,
             'definition' => json_encode($this->validDefinition()),
         ]);
         $this->assertDatabaseHas('crm_segment_versions', [
-            'segment_id' => $segment->id,
+            'segment_id' => $segmentId,
             'version' => 2,
         ]);
     }

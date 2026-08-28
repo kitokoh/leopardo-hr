@@ -83,6 +83,7 @@ class CrmSegmentController extends Controller
 
     public function show(CrmSegment $segment): JsonResponse
     {
+        $this->assertTenantScope(request(), $segment);
         $this->authorize('view', $segment);
 
         return response()->json(['data' => $this->serialize($segment->loadCount('members'))]);
@@ -90,6 +91,7 @@ class CrmSegmentController extends Controller
 
     public function update(UpdateSegmentRequest $request, CrmSegment $segment): JsonResponse
     {
+        $this->assertTenantScope($request, $segment);
         $this->authorize('update', $segment);
 
         $name = $request->filled('name') ? $request->string('name')->toString() : $segment->name;
@@ -120,6 +122,7 @@ class CrmSegmentController extends Controller
 
     public function destroy(CrmSegment $segment): JsonResponse
     {
+        $this->assertTenantScope(request(), $segment);
         $this->authorize('delete', $segment);
 
         $this->segments->destroy($segment, $this->actorId());
@@ -129,6 +132,7 @@ class CrmSegmentController extends Controller
 
     public function rebuild(CrmSegment $segment): JsonResponse
     {
+        $this->assertTenantScope(request(), $segment);
         $this->authorize('rebuild', $segment);
 
         $rebuild = $this->segments->rebuild($segment, $this->actorId());
@@ -138,6 +142,7 @@ class CrmSegmentController extends Controller
 
     public function members(CrmSegment $segment, Request $request): JsonResponse
     {
+        $this->assertTenantScope($request, $segment);
         $this->authorize('view', $segment);
 
         $validated = $request->validate([
@@ -175,6 +180,18 @@ class CrmSegmentController extends Controller
                 'total' => $paginator->total(),
             ],
         ]);
+    }
+
+    private function assertTenantScope(Request $request, CrmSegment $segment): void
+    {
+        // Binding implicite résolu avant le middleware tenant
+        // (SubstituteBindings global) : garde explicite 404 cross-tenant
+        // (même pattern que AccountingContactController::assertTenantScope).
+        $companyId = $request->user()?->getAttribute('company_id');
+
+        if ($companyId !== null && (string) $segment->company_id !== (string) $companyId) {
+            abort(404);
+        }
     }
 
     /**
