@@ -9,6 +9,7 @@ use App\Modules\Cameras\Providers\CamerasServiceProvider;
 use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
+use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
 use App\Modules\Growth\Providers\GrowthServiceProvider;
 use App\Modules\HR\Providers\HRServiceProvider;
@@ -46,6 +47,7 @@ return [
     GrowthServiceProvider::class,
     AbsenceServiceProvider::class,
     ExpenseServiceProvider::class,
+    FuelStationServiceProvider::class,
     NotificationServiceProvider::class,
     // — New DDD modules (Phase 3–4)
     PlatformServiceProvider::class,

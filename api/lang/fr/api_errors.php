@@ -37,6 +37,8 @@ return [
     'INVITATION_ALREADY_ACCEPTED' => 'Cette invitation a deja ete acceptee.',
     'TOO_MANY_PENDING_REQUESTS' => 'Trop de demandes en attente.',
     'SHARE_EXPIRED' => 'Ce lien de partage a expire.',
+    'SOLUTION_NOT_FOUND' => 'Solution inconnue.',
+    'SOLUTION_MISSING_DEPENDENCY' => 'Des modules requis ne sont pas actifs pour cette solution.',
     'INVALID_CURRENT_PASSWORD' => 'Le mot de passe actuel est incorrect.',
     'INVALID_PASSWORD' => 'Le mot de passe est invalide.',
     'SETUP_REQUIRED' => 'La configuration initiale est requise.',

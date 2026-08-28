@@ -42,6 +42,7 @@ Depuis 2026-08-07, le projet suit le **programme FOCUS** (plan complet : `docs/f
 - [ ] Real-time Mobile Experience (RTMX) components.
 
 ## 🏗 Phase 2: Modular Expansion (Q3 2026)
+- `fuel_station` — FuelStation : solution sectorielle stations-service (manifest FUEL-001, migrations FUEL-002+, API FUEL-006).
 Activation of specialized modules based on customer demand:
 - **Finance & Billing:** Automated invoicing and payment tracking for SMEs.
 - **Security & Vision:** RTSP camera streaming and AI-assisted site monitoring.
