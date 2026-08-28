@@ -21,13 +21,22 @@ class CrmServiceProvider extends ServiceProvider
 
         $this->app->singleton(WhatsAppCloudApiClient::class);
         $this->app->singleton(WhatsAppAdapter::class);
+        $this->app->singleton(\App\Modules\CRM\Infrastructure\Integrations\Sms\SmsAdapter::class);
 
         // Registre des adaptateurs par type de canal (#5727) : chaque
         // nouveau canal (sms, email…) s'ajoute ici sans coupler le CRM.
+        $this->app->singleton(\App\Modules\CRM\Infrastructure\Services\CrmChannelRegistry::class, function ($app): \App\Modules\CRM\Infrastructure\Services\CrmChannelRegistry {
+            return new \App\Modules\CRM\Infrastructure\Services\CrmChannelRegistry([
+                CrmChannelType::WHATSAPP => $app->make(WhatsAppAdapter::class),
+                CrmChannelType::SMS => $app->make(\App\Modules\CRM\Infrastructure\Integrations\Sms\SmsAdapter::class),
+            ]);
+        });
+
         $this->app->singleton(CrmChannelService::class, function ($app): CrmChannelService {
             /** @var array<string, ChannelAdapterContract> $adapters */
             $adapters = [
                 CrmChannelType::WHATSAPP => $app->make(WhatsAppAdapter::class),
+                CrmChannelType::SMS => $app->make(\App\Modules\CRM\Infrastructure\Integrations\Sms\SmsAdapter::class),
             ];
 
             return new CrmChannelService(

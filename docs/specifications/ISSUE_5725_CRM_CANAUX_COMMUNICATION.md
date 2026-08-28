@@ -1,6 +1,6 @@
 # Spécification — Canaux de communication CRM (issues #5725, #5727)
 
-- **Statut :** actif — livré (PR fix/5725), étendu par #5727 (SMS/adaptateurs)
+- **Statut :** actif — livré (PR fix/5725 + fix/5727 : adaptateur SMS audit-only, registre, observabilité)
 - **Date :** 2026-08-28
 - **Plan :** `docs/specifications/PLAN-V0-V1-CRM-CLIENT-SQL-INTEGRATIONS.md`
 - **Module :** `api/app/Modules/CRM/` (Infrastructure/Integrations, Infrastructure/Services)
@@ -121,6 +121,19 @@ de contact.
 - `CrmWhatsAppWebhookTest` : verify token, fail-closed sans secret, signature
   invalide 401, persistance inbound tenant-scoped, rejeu idempotent, statuts
   de livraison, phone_number_id inconnu ignoré.
+
+## 6bis. Extension #5727 (SMS / adaptateurs)
+
+- `CrmChannelRegistry` : types disponibles (whatsapp, sms), résolution par type.
+- `SmsAdapter` : provider **audit-only** (AGENTS.md v4.16.122) — aucun fournisseur
+  production tant que signatures webhook + quotas par plan ne sont pas activés.
+  Le flux complet (consentement, quota, persistance, dead-letter) reste exercé
+  avec un `provider_message_id` déterministe.
+- Webhook idempotent : le pattern générique (lookup public + unicité
+  `(company_id, provider_message_id)`) s'applique tel quel au futur fournisseur SMS.
+- Observabilité : `GET /crm/channels/{channel}/observability` (totaux, échecs,
+  dead-letter, tentatives, coût cumulé — aucune PII).
+- Tests : `CrmChannelAdapterTest` (6).
 
 ## 6. Definition of Done
 
