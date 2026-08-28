@@ -109,6 +109,13 @@ return new class extends Migration
         Schema::dropIfExists('fuel_meter_readings');
     }
 
+    private function constraintExists(string $name): bool
+    {
+        $row = DB::selectOne('SELECT 1 FROM pg_constraint WHERE conname = ?', [$name]);
+
+        return $row !== null;
+    }
+
     private function addChecks(): void
     {
         foreach ([
@@ -127,6 +134,10 @@ return new class extends Migration
             }
 
             foreach ($constraints as $name => $check) {
+                if ($this->constraintExists($name)) {
+                    continue;
+                }
+
                 DB::statement("ALTER TABLE {$schema}.{$table} ADD CONSTRAINT {$name} CHECK ({$check})");
             }
         }
