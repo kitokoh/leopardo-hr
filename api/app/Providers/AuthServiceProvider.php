@@ -13,6 +13,7 @@ use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
+use App\Modules\CRM\Domain\Models\CrmConsent;
 use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\HR\Domain\Models\Contract;
@@ -40,6 +41,7 @@ use App\Policies\AttendancePolicy;
 use App\Policies\BillingPolicy;
 use App\Policies\Cameras\CameraPolicy;
 use App\Policies\ContractPolicy;
+use App\Policies\CrmConsentPolicy;
 use App\Policies\DepartmentPolicy;
 use App\Policies\EmployeePolicy;
 use App\Policies\EvaluationPolicy;
@@ -74,6 +76,7 @@ class AuthServiceProvider extends ServiceProvider
         // Core models
         Gate::policy(Employee::class, EmployeePolicy::class);
         Gate::policy(AttendanceLog::class, AttendancePolicy::class);
+        Gate::policy(CrmConsent::class, CrmConsentPolicy::class);
         Gate::policy(Evaluation::class, EvaluationPolicy::class);
         Gate::policy(Camera::class, CameraPolicy::class);
         Gate::policy(CameraAccessToken::class, CameraPolicy::class);

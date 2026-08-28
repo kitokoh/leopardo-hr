@@ -1,15 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 /**
- * Routes du module CRM client (tenant) — issue #5714 (import CSV).
+ * Routes du module CRM client (tenant) — issues #5714 (import CSV), #5717
+ * (conversion leads), #5718 (déduplication), #5722 (consentements), #5723
+ * (segments), #5724 (campagnes), #5726 (email).
  *
  * Le CRM client est strictement séparé du CRM commercial Leopardo
  * (ADR-CRM-002) : toutes les routes vivent sous /api/v1/crm/* dans le
  * groupe authentifié tenant, protégées par Policies + contexte tenant.
- * Le reste du périmètre API (CRUD accounts/contacts/leads/pipelines/…)
- * arrive avec CRM-V0-08 (#5712).
+ * RBAC : lecture = tout manager du tenant (`api.manager`), écritures =
+ * `principal`/`marketing`. Isolation tenant BelongsToCompany (fail-closed
+ * #3727).
  */
 
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmConsentController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDedupController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmImportController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmLeadController;
@@ -29,4 +35,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/dedup/suggestions', [CrmDedupController::class, 'suggestions']);
     Route::get('/merge/preview', [CrmDedupController::class, 'preview']);
     Route::post('/merge', [CrmDedupController::class, 'merge']);
+
+    // ── Consentements et préférences de communication (#5722) ───────────────
+    Route::middleware('api.manager')->group(function (): void {
+        Route::get('/consents', [CrmConsentController::class, 'index']);
+        Route::get('/consents/{consent}', [CrmConsentController::class, 'show'])->whereNumber('consent');
+    });
+
+    Route::middleware('api.manager:principal,marketing')->group(function (): void {
+        Route::post('/consents', [CrmConsentController::class, 'store']);
+        Route::post('/consents/{consent}/revoke', [CrmConsentController::class, 'revoke'])->whereNumber('consent');
+    });
 });

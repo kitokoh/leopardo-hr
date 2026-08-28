@@ -1,0 +1,142 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\CRM\Interfaces\Api\V1\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Modules\CRM\Application\Services\CommunicationConsentService;
+use App\Modules\CRM\Domain\Enums\ConsentChannel;
+use App\Modules\CRM\Domain\Enums\ConsentPurpose;
+use App\Modules\CRM\Domain\Enums\ConsentStatus;
+use App\Modules\CRM\Domain\Enums\ConsentSource;
+use App\Modules\CRM\Domain\Models\CrmConsent;
+use App\Modules\CRM\Interfaces\Api\V1\Requests\GrantConsentRequest;
+use App\Modules\CRM\Interfaces\Api\V1\Requests\RevokeConsentRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+/**
+ * Consentements et préférences de communication CRM — Issue #5722.
+ *
+ * RBAC : lecture = tout manager du tenant (`api.manager`) ; écritures =
+ * `principal` / `marketing` (middleware + Policy `CrmConsentPolicy`,
+ * jamais de garde inline).
+ *
+ * Isolation tenant : `CrmConsent` porte le trait `BelongsToCompany` (scope
+ * global + auto-remplissage company_id, fail-closed #3727) — un consentement
+ * d'un autre tenant est introuvable (404), jamais visible.
+ */
+class CrmConsentController extends Controller
+{
+    public function __construct(private readonly CommunicationConsentService $consents) {}
+
+    public function index(Request $request): JsonResponse
+    {
+        $this->authorize('viewAny', CrmConsent::class);
+
+        $validated = $request->validate([
+            'contact_id' => ['nullable', 'integer', 'min:1'],
+            'channel' => ['nullable', 'string', 'in:'.implode(',', ConsentChannel::values())],
+            'status' => ['nullable', 'string', 'in:'.implode(',', ConsentStatus::values())],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+
+        $perPage = (int) ($validated['per_page'] ?? 20);
+
+        $query = CrmConsent::query()
+            ->orderByDesc('id');
+
+        if (! empty($validated['contact_id'])) {
+            $query->where('contact_id', (int) $validated['contact_id']);
+        }
+
+        if (! empty($validated['channel'])) {
+            $query->where('channel', (string) $validated['channel']);
+        }
+
+        if (! empty($validated['status'])) {
+            $query->where('status', (string) $validated['status']);
+        }
+
+        $paginator = $query->paginate($perPage);
+
+        $items = [];
+        foreach ($paginator->items() as $consent) {
+            $items[] = $this->serialize($consent);
+        }
+
+        return response()->json([
+            'data' => $items,
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
+        ]);
+    }
+
+    public function store(GrantConsentRequest $request): JsonResponse
+    {
+        $this->authorize('create', CrmConsent::class);
+
+        $contactId = $request->integer('contact_id');
+        $channel = ConsentChannel::from($request->string('channel')->toString());
+        $purpose = ConsentPurpose::from($request->string('purpose')->toString());
+        $source = ConsentSource::from($request->string('source')->toString());
+        $sourceRef = $request->filled('source_ref') ? $request->string('source_ref')->toString() : null;
+        $metadataInput = $request->input('metadata');
+        $metadata = is_array($metadataInput) ? $metadataInput : [];
+
+        $consent = $request->string('action')->toString() === 'granted'
+            ? $this->consents->grant($contactId, $channel, $purpose, $source, $sourceRef, $metadata)
+            : $this->consents->deny($contactId, $channel, $purpose, $source, $sourceRef, $metadata);
+
+        return response()->json(['data' => $this->serialize($consent)], 201);
+    }
+
+    public function show(CrmConsent $consent): JsonResponse
+    {
+        $this->authorize('view', $consent);
+
+        return response()->json(['data' => $this->serialize($consent)]);
+    }
+
+    public function revoke(CrmConsent $consent, RevokeConsentRequest $request): JsonResponse
+    {
+        $this->authorize('revoke', $consent);
+
+        $source = ConsentSource::from($request->string('source')->toString());
+        $sourceRef = $request->filled('source_ref') ? $request->string('source_ref')->toString() : null;
+
+        $updated = $this->consents->withdraw(
+            $consent->contact_id,
+            ConsentChannel::from($consent->channel),
+            ConsentPurpose::from($consent->purpose),
+            $source,
+            $sourceRef,
+        );
+
+        return response()->json(['data' => $this->serialize($updated)]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function serialize(CrmConsent $consent): array
+    {
+        return [
+            'id' => $consent->id,
+            'contact_id' => $consent->contact_id,
+            'channel' => $consent->channel,
+            'purpose' => $consent->purpose,
+            'status' => $consent->status,
+            'source' => $consent->source,
+            'source_ref' => $consent->source_ref,
+            'granted_at' => $consent->granted_at?->toIso8601String(),
+            'revoked_at' => $consent->revoked_at?->toIso8601String(),
+            'metadata' => $consent->metadata,
+        ];
+    }
+}
