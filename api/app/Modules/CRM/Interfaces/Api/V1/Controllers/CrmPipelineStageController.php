@@ -10,6 +10,7 @@ use App\Modules\CRM\Domain\Models\CrmPipeline;
 use App\Modules\CRM\Domain\Models\CrmPipelineStage;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmPipelineStageRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\UpdateCrmPipelineStageRequest;
+use App\Http\Resources\Api\V1\CrmPipelineStageResource;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -35,7 +36,7 @@ class CrmPipelineStageController extends Controller
             ->where('pipeline_id', $crmPipeline->id)
             ->orderBy('position');
 
-        return new JsonResponse($query->paginate($this->perPage($request)));
+        return CrmPipelineStageResource::collection($query->paginate($this->perPage($request)));
     }
 
     public function store(StoreCrmPipelineStageRequest $request, CrmPipeline $crmPipeline): JsonResponse
@@ -66,7 +67,7 @@ class CrmPipelineStageController extends Controller
             throw $exception;
         }
 
-        return new JsonResponse(['data' => $stage], 201);
+        return new JsonResponse(['data' => new CrmPipelineStageResource($stage)], 201);
     }
 
     public function update(UpdateCrmPipelineStageRequest $request, CrmPipeline $crmPipeline, CrmPipelineStage $crmPipelineStage): JsonResponse
@@ -85,7 +86,7 @@ class CrmPipelineStageController extends Controller
             throw $exception;
         }
 
-        return new JsonResponse(['data' => $crmPipelineStage->fresh()]);
+        return new JsonResponse(['data' => new CrmPipelineStageResource($crmPipelineStage->fresh())]);
     }
 
     public function destroy(CrmPipeline $crmPipeline, CrmPipelineStage $crmPipelineStage): JsonResponse

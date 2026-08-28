@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\CRM\Domain\Models\CrmPipeline;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmPipelineRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\UpdateCrmPipelineRequest;
+use App\Http\Resources\Api\V1\CrmPipelineResource;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class CrmPipelineController extends Controller
             'updated_at' => 'updated_at',
         ]);
 
-        return new JsonResponse($query->paginate($this->perPage($request)));
+        return CrmPipelineResource::collection($query->paginate($this->perPage($request)));
     }
 
     public function store(StoreCrmPipelineRequest $request): JsonResponse
@@ -52,7 +53,7 @@ class CrmPipelineController extends Controller
             'created_by' => $actor->id,
         ]);
 
-        return new JsonResponse(['data' => $pipeline], 201);
+        return new JsonResponse(['data' => new CrmPipelineResource($pipeline)], 201);
     }
 
     public function show(CrmPipeline $crmPipeline): JsonResponse
@@ -68,7 +69,7 @@ class CrmPipelineController extends Controller
 
         $crmPipeline->update($request->validated());
 
-        return new JsonResponse(['data' => $crmPipeline->fresh()]);
+        return new JsonResponse(['data' => new CrmPipelineResource($crmPipeline->fresh())]);
     }
 
     public function destroy(CrmPipeline $crmPipeline): JsonResponse

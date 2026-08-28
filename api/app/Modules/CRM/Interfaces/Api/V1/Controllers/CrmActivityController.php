@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\CRM\Domain\Models\CrmActivity;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmActivityRequest;
+use App\Http\Resources\Api\V1\CrmActivityResource;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -45,7 +46,7 @@ class CrmActivityController extends Controller
             'created_at' => 'created_at',
         ]);
 
-        return new JsonResponse($query->paginate($this->perPage($request)));
+        return CrmActivityResource::collection($query->paginate($this->perPage($request)));
     }
 
     public function store(StoreCrmActivityRequest $request): JsonResponse
@@ -68,6 +69,6 @@ class CrmActivityController extends Controller
             'created_by' => $actor->id,
         ]);
 
-        return new JsonResponse(['data' => $activity], 201);
+        return new JsonResponse(['data' => new CrmActivityResource($activity)], 201);
     }
 }

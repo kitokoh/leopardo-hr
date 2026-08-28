@@ -149,3 +149,13 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Manager web/mobile | Run paie — régularisation (DZ-DEPTH #1818) | `POST /api/v1/payroll-runs/{payrollRun}/regularize` | manager principal/comptable | `PayrollRegularizationTest` |
 | Manager web/mobile | Run paie — liste des régularisations | `GET /api/v1/payroll-runs/{payrollRun}/regularizations` | manager principal/comptable | `PayrollRegularizationTest` |
 | Manager web/mobile | Récapitulatif préavis légal par pays (G2 #5325) | `GET /api/v1/employees/{employee}/departure/notice` | manager | `DepartureNoticeTest` |
+| Web client CRM | CRM — liste pipelines | `GET /api/v1/crm/pipelines` | manager principal/RH/marketing | `CrmApiHttpTest`, `FrontendApiContractTest` |
+| Web client CRM | CRM — création pipeline | `POST /api/v1/crm/pipelines` | manager principal/RH/marketing | `CrmApiHttpTest` |
+| Web client CRM | CRM — liste leads | `GET /api/v1/crm/leads` | manager principal/RH/marketing | `CrmApiHttpTest`, `ApiListQueryContractTest` |
+| Web client CRM | CRM — création lead | `POST /api/v1/crm/leads` | manager principal/RH/marketing | `CrmApiHttpTest` |
+| Web client CRM | CRM — détail lead | `GET /api/v1/crm/leads/{crmLead}` | manager principal/RH/marketing (+ owner) | `CrmApiHttpTest`, `CrmPoliciesTest` |
+| Web client CRM | CRM — liste opportunités | `GET /api/v1/crm/opportunities` | manager principal/RH/marketing | `CrmApiHttpTest` |
+| Web client CRM | CRM — création opportunité | `POST /api/v1/crm/opportunities` | manager principal/RH/marketing | `CrmApiHttpTest` |
+| Web client CRM | CRM — timeline (append-only) | `GET/POST /api/v1/crm/activities` | manager principal/RH/marketing | `CrmApiHttpTest` |
+| Web client CRM | CRM — liste tâches | `GET /api/v1/crm/tasks` | manager principal/RH/marketing (+ assigné) | `CrmApiHttpTest`, `ApiListQueryContractTest` |
+| Web client CRM | CRM — mise à jour tâche | `PATCH /api/v1/crm/tasks/{crmTask}` | manager principal/RH/marketing (+ assigné) | `CrmApiHttpTest`, `CrmPoliciesTest` |

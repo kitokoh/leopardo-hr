@@ -10,6 +10,7 @@ use App\Modules\CRM\Domain\Models\CrmOpportunity;
 use App\Modules\CRM\Domain\Models\CrmPipelineStage;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmOpportunityRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\UpdateCrmOpportunityRequest;
+use App\Http\Resources\Api\V1\CrmOpportunityResource;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -57,7 +58,7 @@ class CrmOpportunityController extends Controller
             'expected_close_date' => 'expected_close_date',
         ]);
 
-        return new JsonResponse($query->paginate($this->perPage($request)));
+        return CrmOpportunityResource::collection($query->paginate($this->perPage($request)));
     }
 
     public function store(StoreCrmOpportunityRequest $request): JsonResponse
@@ -87,7 +88,7 @@ class CrmOpportunityController extends Controller
             'created_by' => $actor->id,
         ]);
 
-        return new JsonResponse(['data' => $opportunity], 201);
+        return new JsonResponse(['data' => new CrmOpportunityResource($opportunity)], 201);
     }
 
     public function show(CrmOpportunity $crmOpportunity): JsonResponse
@@ -112,7 +113,7 @@ class CrmOpportunityController extends Controller
 
         $crmOpportunity->update($data);
 
-        return new JsonResponse(['data' => $crmOpportunity->fresh()]);
+        return new JsonResponse(['data' => new CrmOpportunityResource($crmOpportunity->fresh())]);
     }
 
     public function destroy(CrmOpportunity $crmOpportunity): JsonResponse

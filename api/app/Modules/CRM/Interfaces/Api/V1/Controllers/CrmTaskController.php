@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\CRM\Domain\Models\CrmTask;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmTaskRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\UpdateCrmTaskRequest;
+use App\Http\Resources\Api\V1\CrmTaskResource;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -54,7 +55,7 @@ class CrmTaskController extends Controller
             'priority' => 'priority',
         ]);
 
-        return new JsonResponse($query->paginate($this->perPage($request)));
+        return CrmTaskResource::collection($query->paginate($this->perPage($request)));
     }
 
     public function store(StoreCrmTaskRequest $request): JsonResponse
@@ -79,7 +80,7 @@ class CrmTaskController extends Controller
             'created_by' => $actor->id,
         ]);
 
-        return new JsonResponse(['data' => $task], 201);
+        return new JsonResponse(['data' => new CrmTaskResource($task)], 201);
     }
 
     public function show(CrmTask $crmTask): JsonResponse
@@ -108,7 +109,7 @@ class CrmTaskController extends Controller
 
         $crmTask->update($data);
 
-        return new JsonResponse(['data' => $crmTask->fresh()]);
+        return new JsonResponse(['data' => new CrmTaskResource($crmTask->fresh())]);
     }
 
     public function destroy(CrmTask $crmTask): JsonResponse
