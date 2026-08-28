@@ -152,7 +152,7 @@ return new class extends Migration
         foreach (['fuel_pumps' => 'fuel_pumps_status_check', 'fuel_tanks' => 'fuel_tanks_status_check'] as $table => $constraint) {
             $schema = resolveTableSchema($table);
 
-            if ($schema === null) {
+            if ($schema === null || $this->constraintExists($constraint)) {
                 continue;
             }
 
@@ -163,13 +163,23 @@ return new class extends Migration
 
         $schema = resolveTableSchema('fuel_meter_registers');
 
-        if ($schema !== null) {
+        if ($schema !== null && ! $this->constraintExists('fuel_meters_status_check')) {
             DB::statement(
                 "ALTER TABLE {$schema}.fuel_meter_registers ADD CONSTRAINT fuel_meters_status_check CHECK (status IN ('active', 'retired'))"
             );
+        }
+
+        if ($schema !== null && ! $this->constraintExists('fuel_meters_type_check')) {
             DB::statement(
                 "ALTER TABLE {$schema}.fuel_meter_registers ADD CONSTRAINT fuel_meters_type_check CHECK (meter_type IN ('mechanical', 'electronic', 'main_totalizer', 'secondary_totalizer', 'test'))"
             );
         }
+    }
+
+    private function constraintExists(string $name): bool
+    {
+        $row = DB::selectOne('SELECT 1 FROM pg_constraint WHERE conname = ?', [$name]);
+
+        return $row !== null;
     }
 };
