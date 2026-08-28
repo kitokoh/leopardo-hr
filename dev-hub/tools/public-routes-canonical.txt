@@ -53,8 +53,8 @@ POST api/v1/kiosks/{deviceCode}/punch
 GET api/v1/kiosks/{deviceCode}/roster
 POST api/v1/kiosks/{deviceCode}/sync
 GET api/v1/kiosks/{deviceCode}/announcements
-GET api/v1/kiosks/{deviceCode}/employee-info
-GET api/v1/kiosks/{deviceCode}/leave-balance
+POST api/v1/kiosks/{deviceCode}/employee-info
+POST api/v1/kiosks/{deviceCode}/leave-balance
 POST api/v1/kiosks/{deviceCode}/qr-punch
 POST api/v1/zkteco/heartbeat/{serialNumber}
 POST api/v1/zkteco/sync-attendance/{serialNumber}
