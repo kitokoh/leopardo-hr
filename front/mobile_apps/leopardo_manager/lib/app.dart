@@ -42,6 +42,11 @@ import 'package:leopardo_core/features/user_auth/screens/company_integration_req
 import 'package:leopardo_manager/features/ai_chat/screens/ai_chat_screen.dart';
 import 'package:leopardo_manager/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_hub_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_accounts_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_account_detail_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_leads_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_opportunities_screen.dart';
 import 'package:leopardo_core/features/manager/screens/manager_attendance_monitoring_screen.dart';
 import 'package:leopardo_core/features/company_branding/screens/company_branding_screen.dart';
 import 'package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart';
@@ -285,6 +290,29 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/approvals',
+          GoRoute(
+            path: '/crm',
+            builder: (context, state) => const CrmHubScreen(),
+          ),
+          GoRoute(
+            path: '/crm/accounts',
+            builder: (context, state) => const CrmAccountsScreen(),
+          ),
+          GoRoute(
+            path: '/crm/accounts/:id',
+            builder: (context, state) => CrmAccountDetailScreen(
+              accountId: int.parse(state.pathParameters['id'] ?? '0'),
+            ),
+          ),
+          GoRoute(
+            path: '/crm/leads',
+            builder: (context, state) => const CrmLeadsScreen(),
+          ),
+          GoRoute(
+            path: '/crm/opportunities',
+            builder: (context, state) => const CrmOpportunitiesScreen(),
+          ),
+
             builder: (context, state) => const ApprovalScreen(),
           ),
 

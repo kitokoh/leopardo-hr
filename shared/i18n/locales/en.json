@@ -3546,60 +3546,24 @@
   "settingsNotificationsSaveFailed": "Failed to save notification preferences: {error}",
   "companydetailPlanWithPrice": "{planName} — {price}",
   "crm": {
-    "title": "Client CRM",
-    "subtitle": "Manage your prospects, accounts, contacts and opportunities — data isolated per company (tenant).",
-    "isolationNote": "Tenant-scoped data: no access to the Leopardo commercial CRM from this space.",
-    "loading": "Loading…",
-    "featureLocked": "CRM module not enabled for your company.",
-    "errorLoading": "Unable to load data.",
-    "searchPlaceholder": "Search…",
-    "refresh": "Refresh",
-    "paginationPrev": "Previous",
-    "paginationNext": "Next",
-    "paginationPage": "Page",
-    "accounts": {
-      "title": "Accounts",
-      "description": "Client organizations of your company",
-      "subtitle": "Account list (tenant-scoped).",
-      "empty": "No accounts yet.",
-      "colName": "Name",
-      "colStatus": "Status",
-      "colEmail": "Email",
-      "colPhone": "Phone",
-      "colCreated": "Created"
-    },
-    "contacts": {
-      "title": "Contacts",
-      "description": "People linked to your accounts",
-      "subtitle": "Contact list (tenant-scoped).",
-      "empty": "No contacts yet.",
-      "primary": "Primary"
-    },
-    "leads": {
-      "title": "Leads",
-      "description": "Business opportunities to qualify",
-      "subtitle": "Lead list (tenant-scoped).",
-      "empty": "No leads yet.",
-      "colName": "Name",
-      "colCompany": "Company",
-      "colStatus": "Status",
-      "colSource": "Source",
-      "colEmail": "Email",
-      "colCreated": "Created"
-    },
-    "pipeline": {
-      "title": "Pipeline",
-      "description": "Opportunities overview by stage",
-      "subtitle": "Opportunities grouped by stage (tenant-scoped).",
-      "empty": "No opportunities yet.",
-      "stage": {
-        "prospecting": "Prospecting",
-        "qualification": "Qualification",
-        "proposal": "Proposal",
-        "negotiation": "Negotiation",
-        "won": "Won",
-        "lost": "Lost"
-      }
-    }
+    "hub_title": "CRM",
+    "hub_subtitle": "Accounts, contacts, leads and opportunities for your company.",
+    "accounts": "Accounts",
+    "contacts": "Contacts",
+    "leads": "Leads",
+    "opportunities": "Opportunities",
+    "account_detail": "Account",
+    "stage": "Stage",
+    "status": "Status",
+    "tasks": "Tasks",
+    "activities": "Activities",
+    "load_error": "Unable to load CRM data. Please retry.",
+    "empty_accounts": "No accounts yet.",
+    "empty_contacts": "No contacts.",
+    "empty_tasks": "No tasks.",
+    "empty_activities": "No activities.",
+    "empty_leads": "No leads yet.",
+    "empty_opportunities": "No opportunities yet.",
+    "task_completed": "Task completed."
   }
 }
