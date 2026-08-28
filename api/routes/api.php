@@ -263,6 +263,9 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/expense.php';
     require __DIR__.'/modules/marketing.php';
 
+    // CRM client — V1 (issues #5719/#5720/#5721/#5722) — fichier séparé des routes V0 (issue #5712).
+    require __DIR__.'/modules/crm_v1.php';
+
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';
 
