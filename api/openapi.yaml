@@ -67,6 +67,8 @@ tags:
   description: Groupe d'opérations Attendance
 - name: Accounting
   description: Groupe d'opérations Accounting
+- name: FuelStation
+  description: Groupe d'opérations FuelStation (solution stations-service)
 - name: Estimations
   description: Groupe d'opérations Estimations
 - name: Me
@@ -24281,6 +24283,65 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: Fichier introuvable
+  /fuel-station/manifest:
+    get:
+      tags:
+      - FuelStation
+      summary: Manifeste de la solution FuelStation (maturite, dependances, activation)
+      responses:
+        '200':
+          description: Manifeste FuelStation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelStationManifest'
+        '403':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/activate:
+    post:
+      tags:
+      - FuelStation
+      summary: Activer FuelStation pour le tenant courant (idempotent)
+      responses:
+        '200':
+          description: Deja active
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      key:
+                        type: string
+                      active:
+                        type: boolean
+                      activated:
+                        type: boolean
+        '201':
+          description: Activee pour la premiere fois
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      key:
+                        type: string
+                      active:
+                        type: boolean
+                      activated:
+                        type: boolean
+        '422':
+          description: Dependances manquantes ou tenant inactif
+        '403':
+          $ref: '#/components/responses/Error401'
 components:
   securitySchemes:
     BearerAuth:
@@ -31775,3 +31836,46 @@ components:
           type: integer
           nullable: true
           description: Paiement candidat proposé par le matching auto (issue #5523)
+    FuelStationManifest:
+      type: object
+      properties:
+        key:
+          type: string
+          enum:
+          - fuel_station
+        maturity:
+          type: string
+          enum:
+          - pilot
+          - production
+        active:
+          type: boolean
+        requires:
+          type: array
+          items:
+            type: string
+        integrates_with:
+          type: array
+          items:
+            type: string
+        manager_roles:
+          type: array
+          items:
+            type: string
+        features:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              title:
+                type: string
+              endpoint:
+                type: string
+              methods:
+                type: array
+                items:
+                  type: string
+              permissions:
+                type: array
+                items:
+                  type: string

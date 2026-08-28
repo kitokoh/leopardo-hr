@@ -10,6 +10,7 @@ use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
+use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
 use App\Modules\Growth\Providers\GrowthServiceProvider;
 use App\Modules\HR\Providers\HRServiceProvider;
 use App\Modules\Marketing\Providers\MarketingServiceProvider;
@@ -27,6 +28,7 @@ use App\Providers\FeatureRegistryServiceProvider;
 
 return [
     AppServiceProvider::class,
+    FuelStationServiceProvider::class,
     AuthServiceProvider::class,
     EventServiceProvider::class,
     FeatureDetectionServiceProvider::class,

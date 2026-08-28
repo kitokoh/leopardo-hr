@@ -248,6 +248,7 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/cameras.php';
     require __DIR__.'/modules/cabinet.php';
     require __DIR__.'/modules/accounting.php';
+    require __DIR__.'/modules/fuel_station.php';
     require __DIR__.'/modules/user.php';
     require __DIR__.'/modules/tracking.php';
     require __DIR__.'/modules/dashboard.php';
