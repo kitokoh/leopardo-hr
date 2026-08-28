@@ -66,58 +66,73 @@ class CrmImportController extends Controller
      * Commit explicite : claim atomique puis job de persistance.
      * Idempotent — un second commit répond 409.
      */
-    public function commit(Request $request, CrmImport $import): JsonResponse
+    public function commit(Request $request, CrmImport $crmImport): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('commit', $import)) {
+        // 404 sûr cross-tenant (ne jamais divulguer l'existence d'une session
+        // d'un autre tenant — le binding {crmImport} précède le middleware
+        // tenant, le scope global ne filtre pas encore à ce stade).
+        if ($actor->company_id !== $crmImport->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('commit', $crmImport)) {
             abort(403);
         }
 
         try {
-            $import = $this->service->commit($import->id, $actor);
+            $import = $this->service->commit($crmImport->id, $actor);
         } catch (CrmImportException $e) {
             return $this->importError($e);
         }
 
-        return new JsonResponse(new CrmImportResource($import));
+        return (new CrmImportResource($import))->response();
     }
 
     /**
      * Annulation avant commit.
      */
-    public function cancel(Request $request, CrmImport $import): JsonResponse
+    public function cancel(Request $request, CrmImport $crmImport): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('cancel', $import)) {
+        if ($actor->company_id !== $crmImport->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('cancel', $crmImport)) {
             abort(403);
         }
 
         try {
-            $import = $this->service->cancel($import->id, $actor);
+            $import = $this->service->cancel($crmImport->id, $actor);
         } catch (CrmImportException $e) {
             return $this->importError($e);
         }
 
-        return new JsonResponse(new CrmImportResource($import));
+        return (new CrmImportResource($import))->response();
     }
 
     /**
      * Détail d'une session d'import.
      */
-    public function show(Request $request, CrmImport $import): JsonResponse
+    public function show(Request $request, CrmImport $crmImport): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->cannot('view', $import)) {
+        if ($actor->company_id !== $crmImport->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('view', $crmImport)) {
             abort(403);
         }
 
-        return new JsonResponse(new CrmImportResource($import));
+        return (new CrmImportResource($crmImport))->response();
     }
 
     private function importError(CrmImportException $e): JsonResponse

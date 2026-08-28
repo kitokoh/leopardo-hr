@@ -62,7 +62,7 @@ class CsvParserTest extends TestCase
 
     public function test_reports_per_line_errors_without_stopping(): void
     {
-        $csv = "name,email\nAcme,acme@x.fr\n,finance@x.fr\nGlobex,\n";
+        $csv = "name,email\nAcme,acme@x.fr\n,finance@x.fr\n,other@x.fr\n";
 
         $result = $this->parser->parse($this->writeTemp($csv), CrmImportEntityType::Accounts);
 
