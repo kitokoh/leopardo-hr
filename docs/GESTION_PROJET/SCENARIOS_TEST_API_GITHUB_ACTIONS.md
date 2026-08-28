@@ -1519,3 +1519,9 @@ Note 2026-08-28 (issue #5796) : module FuelStation — migrations stations et si
 - Modèles tenant-scoped `FuelStation`/`FuelSite` (`BelongsToCompany`) — références cross-tenant impossibles.
 - Scénarios CI requis : colonnes attendues, unicité par tenant (même code sur 2 tenants OK, doublon intra-tenant rejeté), `company_id` non null, index tenant-first, isolation cross-tenant.
 - Couverture : `api/tests/Feature/FuelStation/FuelStationMigrationsTest.php` (5 tests).
+
+Note 2026-08-28 (issue #5797) : module FuelStation — équipements pompes, cuves, compteurs (tenant-first).
+- Tables `fuel_equipment` (type allowlisté `pump|tank|meter|nozzle|other`), `fuel_pumps`, `fuel_tanks` (produit allowlisté `diesel|essence_95|essence_98|gpl|lubrifiant|autre`, capacité, unité `l|m3`), `fuel_meters` — compteur actif unique par pompe (index partiel PG `(pump_id)` WHERE `is_active`).
+- Codes uniques par tenant (composites), index tenant-first, archivage soft, références cross-tenant impossibles. Enums `FuelEquipmentType`/`FuelProduct`/`FuelUnit`/`FuelStatus` + modèles tenant-scoped.
+- Scénarios CI requis : tables + allowlists, unicité par tenant, compteur actif unique, désactivation libère le slot, isolation cross-tenant, capacité/unités.
+- Couverture : tests Feature équipement (8 tests) — `api/tests/Feature/FuelStation/*`.
