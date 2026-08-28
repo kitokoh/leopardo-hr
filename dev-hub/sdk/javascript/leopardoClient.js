@@ -1640,6 +1640,46 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/cotisation-simulation", options);
     },
 
+    /** Lister les canaux de communication du tenant */
+    getCrmChannels(options = {}) {
+      return request("GET", "/crm/channels", options);
+    },
+
+    /** Configurer un canal de communication (whatsapp/sms/email) */
+    postCrmChannels(options = {}) {
+      return request("POST", "/crm/channels", options);
+    },
+
+    /** Mettre a jour un canal (quota, statut, configuration) */
+    patchCrmChannelsByChannel(options = {}) {
+      return request("PATCH", "/crm/channels/{channel}", options);
+    },
+
+    /** Lister les conversations d'un canal (inbox unique) */
+    getCrmChannelsByChannelConversations(options = {}) {
+      return request("GET", "/crm/channels/{channel}/conversations", options);
+    },
+
+    /** Lister les messages d'un canal (metadonnees, PII masquee) */
+    getCrmChannelsByChannelMessages(options = {}) {
+      return request("GET", "/crm/channels/{channel}/messages", options);
+    },
+
+    /** Envoyer un message via un canal CRM (WhatsApp, SMS, email) */
+    postCrmChannelsByChannelSend(options = {}) {
+      return request("POST", "/crm/channels/{channel}/send", options);
+    },
+
+    /** Verification d'abonnement du webhook WhatsApp Business (Meta) */
+    getCrmWebhooksWhatsapp(options = {}) {
+      return request("GET", "/crm/webhooks/whatsapp", options);
+    },
+
+    /** Webhook entrant WhatsApp Business Cloud API (messages + statuts) */
+    postCrmWebhooksWhatsapp(options = {}) {
+      return request("POST", "/crm/webhooks/whatsapp", options);
+    },
+
     /** Synthese dashboard admin (principal) */
     getDashboardAdmin(options = {}) {
       return request("GET", "/dashboard/admin", options);
