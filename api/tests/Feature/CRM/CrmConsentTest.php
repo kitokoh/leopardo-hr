@@ -16,7 +16,6 @@ use App\Modules\CRM\Domain\Enums\ConsentStatus;
 use App\Modules\CRM\Domain\Events\CrmConsentRevoked;
 use App\Modules\CRM\Domain\Models\CrmConsent;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
@@ -36,7 +35,6 @@ use Tests\TestCase;
 class CrmConsentTest extends TestCase
 {
     use RefreshTenantDatabase;
-    use WithFaker;
 
     private Company $companyA;
 
