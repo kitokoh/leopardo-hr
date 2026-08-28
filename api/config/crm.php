@@ -21,6 +21,7 @@ return [
 
     'kill_switch' => [
         // Frein d'urgence GLOBAL (tous tenants, tous canaux).
+        // En cas de doute : couper CRM_KILL_SWITCH=true prime sur tout.
         'enabled' => (bool) env('CRM_KILL_SWITCH', false),
     ],
 
