@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature\CRM;
 
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Tenant\TenantManager;
 use App\Contracts\Queue\TenantScopedJob;
+use App\Core\Tenant\TenantManager;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use Tests\RefreshTenantDatabase;
-use Tests\Support\CRM\CrossTenantAssertions;
 use Tests\Support\CRM\CrmTenantFixture;
+use Tests\Support\CRM\CrossTenantAssertions;
 use Tests\TestCase;
 
 /**
