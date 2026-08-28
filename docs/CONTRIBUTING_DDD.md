@@ -24,7 +24,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Billing` | Abonnements, webhooks Stripe, facturation |
 | `Cabinet` | Gestion documentaire, partage |
 | `Cameras` | Surveillance, streaming |
-| `CRM` | CRM client tenant : canaux de communication (WhatsApp/SMS/email), automatisations, exports, read models |
+| `CRM` | CRM client tenant : canaux de communication (WhatsApp/SMS/email), automatisations, exports, read models — socle V0 (comptes, contacts, leads, opportunités, programme #5705+) |
 | `EdgeSync` | Synchronisation offline/mobile (structure spécialisée, hors squelette DDD standard) |
 | `Expense` | Notes de frais employés |
 | `Fleet` | Véhicules, trajets, affectations |
