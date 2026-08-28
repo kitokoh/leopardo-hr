@@ -42,6 +42,12 @@ class CrmServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Commandes artisan du module CRM (#5729) : auto-découverte hors
+        // app/Console/Commands → enregistrement explicite.
+        $this->commands([
+            \App\Modules\CRM\Console\Commands\CleanupCrmExports::class,
+        ]);
+
         // Routes chargées via require dans routes/api.php
         // (routes/modules/crm.php — issues #5725/#5727/#5728/#5729).
     }

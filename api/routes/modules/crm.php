@@ -9,6 +9,7 @@
  */
 
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmChannelController;
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmExportController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmWhatsAppWebhookController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,4 +29,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/channels/{channel}/send', [CrmChannelController::class, 'send']);
         Route::get('/channels/{channel}/messages', [CrmChannelController::class, 'messages']);
         Route::get('/channels/{channel}/conversations', [CrmChannelController::class, 'conversations']);
+
+        // ── Exports CRM asynchrones + read models (#5729) ──────────────────
+        Route::get('/exports', [CrmExportController::class, 'index']);
+        Route::post('/exports', [CrmExportController::class, 'store']);
+        Route::get('/exports/{export}', [CrmExportController::class, 'show']);
+        Route::get('/exports/{export}/download', [CrmExportController::class, 'download']);
+        Route::get('/read-models', [CrmExportController::class, 'readModels']);
     });

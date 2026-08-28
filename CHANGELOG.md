@@ -1,4 +1,5 @@
 ## [Unreleased]
+- **feat(crm): exports asynchrones + read models recalculables (Closes #5729).** Jobs d'export CSV tenant-scoped (`crm_export_jobs` : progression, `expires_at` expirant, colonnes allowlistées par entité — manifeste `CrmExportColumns`), génération asynchrone `ExportCrmDataJob` (disque privé, jamais public), téléchargement contrôlé (409 si non prêt, 410 si expiré → statut `expired`), cleanup quotidien `crm:exports:cleanup` (fichiers + audit). Read models `CrmReadModelService` recalculables (compteurs par statut/stage, contacts par compte, totaux pipeline, score qualité des données — schéma-gardés : état vide explicite tant que le socle V0 n'est pas mergé). API `/crm/exports*` + `/crm/read-models` (api.manager:principal,rh). i18n ×4 (7 clés `CRM_EXPORT_*`), OpenAPI 4 chemins + SDK, RBAC matrix, CHANGELOG. Tests Feature 8 (flux complet, allowlist, entité indisponible 422, expiration 410, non-prêt 409, isolation tenant, read models safe-defaults).
 
 ## [Unreleased]
 

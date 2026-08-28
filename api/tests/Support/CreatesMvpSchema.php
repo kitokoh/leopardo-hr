@@ -2281,6 +2281,30 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'provider_message_id'], 'crm_messages_company_provider_msg_unique');
             });
         }
+
+        // #5729 — Jobs d'export CRM (miroir de la migration tenant).
+        if (! Schema::hasTable($this->moduleTable('crm_export_jobs'))) {
+            Schema::create($this->moduleTable('crm_export_jobs'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('user_id')->nullable()->index();
+                $table->string('entity', 30);
+                $table->string('format', 10)->default('csv');
+                $table->json('filters')->nullable();
+                $table->json('columns')->nullable();
+                $table->string('status', 20)->default('queued');
+                $table->unsignedTinyInteger('progress')->default(0);
+                $table->string('file_path', 500)->nullable();
+                $table->string('file_name', 255)->nullable();
+                $table->timestamp('expires_at')->nullable();
+                $table->string('error', 500)->nullable();
+                $table->timestamp('completed_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status'], 'crm_exports_company_status_index');
+                $table->index(['company_id', 'created_at'], 'crm_exports_company_created_index');
+            });
+        }
     }
 
     private function dropMvpTables(): void

@@ -24521,6 +24521,118 @@ paths:
           description: Conversations du canal
         '404':
           $ref: '#/components/responses/Error404'
+  /crm/exports:
+    get:
+      tags:
+      - CRM
+      summary: Lister les jobs d'export CRM du tenant
+      description: Reserve aux managers principal/rh. Tenant-scope, filtre par statut possible.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Jobs d'export du tenant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - CRM
+      summary: Creer un job d'export CRM asynchrone (CSV)
+      description: Colonnes allowlistees par entite, filtres controles (statut/owner), generation asynchrone, acces expirant (expires_at).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - entity
+              properties:
+                entity:
+                  type: string
+                  enum: [accounts, contacts, leads, opportunities, activities, tasks]
+                columns:
+                  type: array
+                  items:
+                    type: string
+                filters:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                    owner_id:
+                      type: string
+      responses:
+        '201':
+          description: Job d'export cree (queued)
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/exports/{export}:
+    get:
+      tags:
+      - CRM
+      summary: Statut et progression d'un job d'export
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: export
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Etat du job d'export
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/exports/{export}/download:
+    get:
+      tags:
+      - CRM
+      summary: Telecharger un export termine (acces expirant)
+      description: Refuse si le job n'est pas completed (409) ou si expires_at est depasse (410, statut passe a expired).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: export
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Fichier CSV
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Export pas encore pret ou en echec
+        '410':
+          description: Export expire
+  /crm/read-models:
+    get:
+      tags:
+      - CRM
+      summary: Read models CRM recalculables (agregats analytiques tenant)
+      description: Compteurs par statut/stage, contacts par compte, totaux pipeline et score qualite des donnees. Aucune donnee personnelle exposee. Chaque agregat est schema-garde (retourne vide si le socle V0 n'est pas merge).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Agregats recalculables
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
 
 components:
   securitySchemes:

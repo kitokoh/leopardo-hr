@@ -1670,6 +1670,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/crm/channels/{channel}/send", options);
     },
 
+    /** Lister les jobs d'export CRM du tenant */
+    getCrmExports(options = {}) {
+      return request("GET", "/crm/exports", options);
+    },
+
+    /** Creer un job d'export CRM asynchrone (CSV) */
+    postCrmExports(options = {}) {
+      return request("POST", "/crm/exports", options);
+    },
+
+    /** Statut et progression d'un job d'export */
+    getCrmExportsByExport(options = {}) {
+      return request("GET", "/crm/exports/{export}", options);
+    },
+
+    /** Telecharger un export termine (acces expirant) */
+    getCrmExportsByExportDownload(options = {}) {
+      return request("GET", "/crm/exports/{export}/download", options);
+    },
+
+    /** Read models CRM recalculables (agregats analytiques tenant) */
+    getCrmReadModels(options = {}) {
+      return request("GET", "/crm/read-models", options);
+    },
+
     /** Verification d'abonnement du webhook WhatsApp Business (Meta) */
     getCrmWebhooksWhatsapp(options = {}) {
       return request("GET", "/crm/webhooks/whatsapp", options);

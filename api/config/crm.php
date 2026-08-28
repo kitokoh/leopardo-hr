@@ -43,4 +43,15 @@ return [
         'whatsapp_verify_token' => env('CRM_WHATSAPP_WEBHOOK_VERIFY_TOKEN', ''),
     ],
 
+    'exports' => [
+        // Durée de vie d'un export avant expiration de l'accès (heures).
+        'ttl_hours' => (int) env('CRM_EXPORTS_TTL_HOURS', 24),
+
+        // Conservation des fichiers après expiration (jours, cleanup).
+        'retention_days' => (int) env('CRM_EXPORTS_RETENTION_DAYS', 7),
+
+        // File d'attente des jobs d'export.
+        'queue' => env('CRM_EXPORTS_QUEUE', 'default'),
+    ],
+
 ];
