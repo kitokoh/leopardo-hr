@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- **test(crm): harness de fixtures et tests cross-tenant (Closes #5738).** Nouveau `Tests\Support\CRM\CrmTenantFixture` (2 tenants + utilisateurs par rôle principal/rh/employee, entités CRM synthétiques activées quand les tables V0 existent, seed avec rapport `{created, missing}`, données 100 % synthétiques et réinitialisables) + `Tests\Support\CRM\CrossTenantAssertions` (détection TenantManager/`company_id`, lecture scopée, mutation scopée, relation indirecte, HTTP 404 sûr, cache tenant-scopé, artefacts d'export étiquetés tenant, isolation 2 tenants) + `Tests\Support\CRM\Performance\` (volumes de charge séparés des fixtures fonctionnelles, jamais chargés en suite Feature) + `api/tests/Feature/CRM/CrmCrossTenantHarnessTest.php` (7 tests couvrant lecture/mutation/relation/job/cache/export/webhook sur l'infrastructure tenant réelle — `webhook_endpoints` — et la détection des absences de contrat).
+
 - **fix(ci): garde inter-PR des préfixes de migrations (#5437) — faux positif sur push main : baseSha vide faisait considérer toutes les migrations de main comme nouvelles et les comparer aux PRs ouvertes (collision fantôme dès quune PR est ouverte).** Le contrôle ne sapplique plus quaux PRs ouvertes ; bug latent du mode --local (currentNewNames) corrigé au passage — tests 8/8.
 - **docs(api): note ops — healthcheck (GET /api/v1/health, match PROGRAM_VERSION, uptime < 900 s), CORS E2E (origine 127.0.0.1:4173 whitelistée, déploiement requis), incident Redis (healthcheck fail-closed).**
 
