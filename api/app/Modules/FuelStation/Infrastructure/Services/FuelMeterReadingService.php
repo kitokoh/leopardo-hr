@@ -46,7 +46,7 @@ final class FuelMeterReadingService
             ->first();
 
         if ($existing !== null) {
-            Log::info('FuelStation: relevé déjà existant (idempotence)', [
+            Log::info('FuelStation: reading already exists (idempotence)', [
                 'reading_id' => $existing->id,
                 'meter_id' => $meter->id,
             ]);
@@ -84,7 +84,7 @@ final class FuelMeterReadingService
         ]);
 
         if ($anomaly) {
-            Log::warning('FuelStation: relevé décroissant (anomalie)', [
+            Log::warning('FuelStation: decreasing reading (anomaly)', [
                 'reading_id' => $reading->id,
                 'meter_id' => $meter->id,
                 'value' => $value,
@@ -129,7 +129,7 @@ final class FuelMeterReadingService
             'anomaly' => $delta !== null && $delta < 0,
         ])->save();
 
-        Log::info('FuelStation: relevé corrigé (versionné)', [
+        Log::info('FuelStation: reading corrected (versioned)', [
             'reading_id' => $reading->id,
             'old_value' => $oldValue,
             'new_value' => $newValue,
