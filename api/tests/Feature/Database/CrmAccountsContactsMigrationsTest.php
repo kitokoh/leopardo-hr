@@ -92,7 +92,7 @@ class CrmAccountsContactsMigrationsTest extends TestCase
         $this->expectException(QueryException::class);
 
         DB::table('crm_accounts')->insert([
-            'company_id' => Company::factory()->create()->id,
+            'company_id' => $this->newCompany()->id,
             'name' => 'Compte invalide',
             'status' => 'bogus-status',
         ]);
@@ -103,7 +103,7 @@ class CrmAccountsContactsMigrationsTest extends TestCase
         $this->expectException(QueryException::class);
 
         DB::table('crm_accounts')->insert([
-            'company_id' => Company::factory()->create()->id,
+            'company_id' => $this->newCompany()->id,
             'name' => 'Compte invalide',
             'source' => 'carrier-pigeon',
         ]);
@@ -126,7 +126,9 @@ class CrmAccountsContactsMigrationsTest extends TestCase
 
     public function test_cross_tenant_contact_reference_is_rejected_by_database(): void
     {
+        /** @var Company $companyA */
         $companyA = Company::factory()->create();
+        /** @var Company $companyB */
         $companyB = Company::factory()->create();
         $accountAId = $this->createAccount($companyA->id, 'Compte tenant A');
 
@@ -194,7 +196,9 @@ class CrmAccountsContactsMigrationsTest extends TestCase
             $this->markTestSkipped('crm_opportunities non migrée (PR #5709 non mergée) — FK additive non posée.');
         }
 
+        /** @var Company $companyA */
         $companyA = Company::factory()->create();
+        /** @var Company $companyB */
         $companyB = Company::factory()->create();
         $accountAId = $this->createAccount($companyA->id, 'Compte tenant A');
 
@@ -249,6 +253,15 @@ class CrmAccountsContactsMigrationsTest extends TestCase
         foreach (self::TABLES as $table) {
             $this->assertSame('shared_tenants', $this->tableSchema($table), "{$table} doit être recréée par up()");
         }
+    }
+
+
+    private function newCompany(): Company
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+
+        return $company;
     }
 
     private function createAccount(string $companyId, string $name): int
