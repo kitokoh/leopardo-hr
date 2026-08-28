@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Policies;
+namespace App\Modules\CRM\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\CRM\Domain\Models\CrmActivity;

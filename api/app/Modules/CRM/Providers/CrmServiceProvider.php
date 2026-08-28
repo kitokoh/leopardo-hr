@@ -44,5 +44,9 @@ class CrmServiceProvider extends ServiceProvider
         Gate::policy(\App\Modules\CRM\Domain\Models\CrmImport::class, CrmImportPolicy::class);
         Gate::policy(\App\Modules\CRM\Domain\Models\CrmLead::class, CrmLeadPolicy::class);
         Gate::policy(\App\Modules\CRM\Domain\Models\CrmAccount::class, CrmMergePolicy::class);
+        Gate::policy(\App\Modules\CRM\Domain\Models\CrmActivity::class, \App\Modules\CRM\Policies\CrmActivityPolicy::class);
+        Gate::policy(\App\Modules\CRM\Domain\Models\CrmOpportunity::class, \App\Modules\CRM\Policies\CrmOpportunityPolicy::class);
+        Gate::policy(\App\Modules\CRM\Domain\Models\CrmPipeline::class, \App\Modules\CRM\Policies\CrmPipelinePolicy::class);
+        Gate::policy(\App\Modules\CRM\Domain\Models\CrmPipelineStage::class, \App\Modules\CRM\Policies\CrmPipelineStagePolicy::class);
     }
 }

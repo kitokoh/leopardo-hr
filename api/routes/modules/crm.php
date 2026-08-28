@@ -24,7 +24,6 @@ use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmLeadController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmOpportunityController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmPipelineController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmPipelineStageController;
-use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmTaskController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
@@ -80,11 +79,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // -----------------------------------------------------------------
         // Tâches
         // -----------------------------------------------------------------
-        Route::get('/tasks', [CrmTaskController::class, 'index']);
-        Route::post('/tasks', [CrmTaskController::class, 'store']);
-        Route::get('/tasks/{crmTask}', [CrmTaskController::class, 'show']);
-        Route::patch('/tasks/{crmTask}', [CrmTaskController::class, 'update']);
-        Route::delete('/tasks/{crmTask}', [CrmTaskController::class, 'destroy']);
 
         // -----------------------------------------------------------------
         // Déduplication & fusion supervisée (issue #5718, mergé sur main)
