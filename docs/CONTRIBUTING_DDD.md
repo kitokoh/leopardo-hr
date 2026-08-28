@@ -15,7 +15,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (18 modules)
+## Modules existants (19 modules)
 
 | Module | Domaine couvert |
 |---|---|
@@ -24,6 +24,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Billing` | Abonnements, webhooks Stripe, facturation |
 | `Cabinet` | Gestion documentaire, partage |
 | `Cameras` | Surveillance, streaming |
+| `CRM` | CRM client tenant-scoped (V0 #5705→#5716, V1 #5717→#5731) — module DDD isolé du CRM commercial Platform/Marketing |
 | `EdgeSync` | Synchronisation offline/mobile (structure spécialisée, hors squelette DDD standard) |
 | `Expense` | Notes de frais employés |
 | `Fleet` | Véhicules, trajets, affectations |
