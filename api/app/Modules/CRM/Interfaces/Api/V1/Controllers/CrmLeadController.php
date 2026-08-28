@@ -6,10 +6,13 @@ namespace App\Modules\CRM\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\V1\CrmLeadResource;
+use App\Modules\CRM\Application\Actions\ConvertLeadAction;
+use App\Modules\CRM\Domain\Exceptions\CrmLeadException;
 use App\Modules\CRM\Domain\Models\CrmLead;
+use App\Modules\CRM\Interfaces\Api\V1\Requests\ConvertLeadRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmLeadRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\UpdateCrmLeadRequest;
+use App\Modules\CRM\Interfaces\Api\V1\Resources\CrmLeadResource;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,11 +22,17 @@ use Illuminate\Http\Request;
  *
  * Filtres et tri strictement allowlistés ; un employé non-manager ne voit
  * que les leads dont il est l'owner (Policy `view`), les mutations restent
- * réservées aux managers `principal`/`rh`/`marketing`.
+ * réservées aux managers `principal`/`rh`/`marketing`. La conversion
+ * lead → account/contact/opportunity (#5717) vit aussi ici.
  */
 class CrmLeadController extends Controller
 {
     use CrmQueryHelpers;
+
+    public function __construct(private readonly ConvertLeadAction $convertLead)
+    {
+    }
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', CrmLead::class);
@@ -56,7 +65,7 @@ class CrmLeadController extends Controller
             'priority' => 'priority',
         ]);
 
-        return CrmLeadResource::collection($query->paginate($this->perPage($request)));
+        return new JsonResponse($query->paginate($this->perPage($request)));
     }
 
     public function store(StoreCrmLeadRequest $request): JsonResponse
@@ -81,7 +90,7 @@ class CrmLeadController extends Controller
             'created_by' => $actor->id,
         ]);
 
-        return new JsonResponse(['data' => new CrmLeadResource($lead)], 201);
+        return new JsonResponse(['data' => $lead], 201);
     }
 
     public function show(CrmLead $crmLead): JsonResponse
@@ -97,7 +106,7 @@ class CrmLeadController extends Controller
 
         $crmLead->update($request->validated());
 
-        return new JsonResponse(['data' => new CrmLeadResource($crmLead->fresh())]);
+        return new JsonResponse(['data' => $crmLead->fresh()]);
     }
 
     public function destroy(CrmLead $crmLead): JsonResponse
@@ -107,5 +116,31 @@ class CrmLeadController extends Controller
         $crmLead->delete();
 
         return new JsonResponse(null, 204);
+    }
+
+    public function convert(ConvertLeadRequest $request, CrmLead $crmLead): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        // 404 sûr cross-tenant (binding {crmLead} précède le middleware tenant).
+        if ($actor->company_id !== $crmLead->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('convert', $crmLead)) {
+            abort(403);
+        }
+
+        try {
+            $converted = $this->convertLead->handle($crmLead->id, $actor, $request->validated());
+        } catch (CrmLeadException $e) {
+            return new JsonResponse([
+                'error' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ], $e->getCode() >= 400 && $e->getCode() < 600 ? $e->getCode() : 422);
+        }
+
+        return (new CrmLeadResource($converted))->response();
     }
 }

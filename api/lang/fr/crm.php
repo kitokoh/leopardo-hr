@@ -1,6 +1,11 @@
 <?php
 
 return [
+    // === branche 5712 ===
     // Issue #5711 — positions de stage de pipeline (contrainte d'unicité en base)
     'pipeline_stage_position_taken' => 'Un stage occupe déjà cette position dans le pipeline.',
+    // === main ===
+    'merge' => [
+        'unknown_entity' => 'Entité inconnue (accounts, contacts ou leads).',
+    ],
 ];
