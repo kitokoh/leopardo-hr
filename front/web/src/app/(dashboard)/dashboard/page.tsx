@@ -23,6 +23,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import LeaveBalancesCard from '@/components/dashboard/LeaveBalancesCard';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getDisplayName, getPreferredLocale, getStoredUser, toIntlLocale, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
 import { getClientModuleAccess } from '@/lib/client-features';
@@ -464,6 +465,8 @@ export default function DashboardPage() {
           </div>
         </section>
       ) : null}
+
+      <LeaveBalancesCard locale={locale} />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, index) => (

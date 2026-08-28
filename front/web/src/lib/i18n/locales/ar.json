@@ -2097,7 +2097,8 @@
     "list": {
       "subtitle": "الطلبات والأرصدة وقرارات الموارد البشرية",
       "title": "غياباتي"
-    }
+    },
+    "dateRequired": "أدخل تاريخي البداية والنهاية."
   },
   "settings": {
     "journey": {
@@ -3544,5 +3545,16 @@
   "settingsQrRejected": "تم رفض الرمز: {error}",
   "settingsBiometricSubmitFailed": "فشل الإرسال: {error}",
   "settingsNotificationsSaveFailed": "تعذّر حفظ تفضيلات الإشعارات: {error}",
-  "companydetailPlanWithPrice": "الخطة {planName} — {price}"
+  "companydetailPlanWithPrice": "الخطة {planName} — {price}",
+  "leaveBalances": {
+    "title": "أرصدة الإجازات",
+    "subtitle": "أيامك المتبقية حسب النوع",
+    "available": "متاح",
+    "used": "مستخدم",
+    "pending": "قيد الانتظار",
+    "daysShort": "ي",
+    "no_data": "لا يوجد رصيد لهذه السنة",
+    "loading": "جارٍ تحميل الأرصدة…",
+    "load_error": "تعذر تحميل أرصدتك."
+  }
 }

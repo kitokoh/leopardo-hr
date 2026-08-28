@@ -2097,7 +2097,8 @@
     "list": {
       "subtitle": "Demandes, soldes et décisions RH",
       "title": "Mes Absences"
-    }
+    },
+    "dateRequired": "Renseignez les dates de début et de fin."
   },
   "settings": {
     "journey": {
@@ -3544,5 +3545,16 @@
   "settingsQrRejected": "QR rejeté : {error}",
   "settingsBiometricSubmitFailed": "Échec de l'envoi : {error}",
   "settingsNotificationsSaveFailed": "Échec de l’enregistrement des préférences : {error}",
-  "companydetailPlanWithPrice": "{planName} — {price}"
+  "companydetailPlanWithPrice": "{planName} — {price}",
+  "leaveBalances": {
+    "title": "Soldes de congés",
+    "subtitle": "Vos jours restants par type",
+    "available": "Disponibles",
+    "used": "Pris",
+    "pending": "En attente",
+    "daysShort": "j",
+    "no_data": "Aucun solde pour cette année",
+    "loading": "Chargement des soldes…",
+    "load_error": "Impossible de charger vos soldes."
+  }
 }

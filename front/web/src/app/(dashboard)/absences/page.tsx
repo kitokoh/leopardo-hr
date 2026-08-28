@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Check, Loader2, X } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import LeaveRequestForm from '@/components/absences/LeaveRequestForm';
 import { getCopy, normalizeLocale } from '@/lib/i18n';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { Button } from '@/components/ui/Button';
@@ -45,38 +46,29 @@ export default function AbsencesPage() {
   const [rejecting, setRejecting] = useState(false);
   const [rejectError, setRejectError] = useState<string | null>(null);
 
+  const load = useCallback(async () => {
+    try {
+      const response = await apiFetch('/absences');
+      const payload = await response.json() as AbsencesPayload;
+      setAbsences(Array.isArray(payload.data) ? payload.data : []);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : labels.loadError);
+    } finally {
+      setLoading(false);
+    }
+  }, [labels.loadError]);
+
   useEffect(() => {
     let active = true;
 
-    async function load() {
-      try {
-        const response = await apiFetch('/absences');
-        const payload = await response.json() as AbsencesPayload;
-
-        if (!active) {
-          return;
-        }
-
-        setAbsences(Array.isArray(payload.data) ? payload.data : []);
-      } catch (err) {
-        if (!active) {
-          return;
-        }
-
-        setError(err instanceof ApiError ? err.message : labels.loadError);
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
-      }
-    }
-
-    void load();
+    void load().then(() => {
+      active = false;
+    });
 
     return () => {
       active = false;
     };
-  }, [labels.loadError]);
+  }, [load]);
 
   const applyStatus = (id: number, status: string) => {
     setAbsences((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
@@ -101,7 +93,7 @@ export default function AbsencesPage() {
     }
     const reason = rejectReason.trim();
     if (!reason) {
-      setRejectError(labels.reasonRequired);
+      setRejectError(labels.rejectReasonRequired);
       return;
     }
     setRejecting(true);
@@ -133,6 +125,8 @@ export default function AbsencesPage() {
       subtitle=""
       accentClassName="from-emerald-500 to-teal-600"
     >
+      <LeaveRequestForm locale={appLocale} onSubmitted={() => { void load(); }} />
+
       <section className="rounded-2xl border border-app-border bg-white/40 shadow-glass-sm backdrop-blur-xl dark:bg-slate-900/40">
         {error && (
           <p role="alert" className="m-4 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700">

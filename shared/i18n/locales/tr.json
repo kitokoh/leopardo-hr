@@ -2097,7 +2097,8 @@
     "list": {
       "subtitle": "Talepler, bakiyeler ve İK kararları",
       "title": "İzinlerim"
-    }
+    },
+    "dateRequired": "Başlangıç ve bitiş tarihlerini girin."
   },
   "settings": {
     "journey": {
@@ -3544,5 +3545,16 @@
   "settingsQrRejected": "QR reddedildi: {error}",
   "settingsBiometricSubmitFailed": "Gönderim başarısız: {error}",
   "settingsNotificationsSaveFailed": "Bildirim tercihleri kaydedilemedi: {error}",
-  "companydetailPlanWithPrice": "{planName} — {price}"
+  "companydetailPlanWithPrice": "{planName} — {price}",
+  "leaveBalances": {
+    "title": "İzin bakiyeleri",
+    "subtitle": "Tür başına kalan günleriniz",
+    "available": "Mevcut",
+    "used": "Kullanılan",
+    "pending": "Bekleyen",
+    "daysShort": "g",
+    "no_data": "Bu yıl için bakiye yok",
+    "loading": "Bakiyeler yükleniyor…",
+    "load_error": "Bakiyeleriniz yüklenemedi."
+  }
 }

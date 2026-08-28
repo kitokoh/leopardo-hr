@@ -2097,7 +2097,8 @@
     "list": {
       "subtitle": "Requests, balances and HR decisions",
       "title": "My absences"
-    }
+    },
+    "dateRequired": "Provide the start and end dates."
   },
   "settings": {
     "journey": {
@@ -3544,5 +3545,16 @@
   "settingsQrRejected": "QR rejected: {error}",
   "settingsBiometricSubmitFailed": "Submission failed: {error}",
   "settingsNotificationsSaveFailed": "Failed to save notification preferences: {error}",
-  "companydetailPlanWithPrice": "{planName} — {price}"
+  "companydetailPlanWithPrice": "{planName} — {price}",
+  "leaveBalances": {
+    "title": "Leave balances",
+    "subtitle": "Your remaining days per type",
+    "available": "Available",
+    "used": "Used",
+    "pending": "Pending",
+    "daysShort": "d",
+    "no_data": "No balance for this year",
+    "loading": "Loading balances…",
+    "load_error": "Unable to load your balances."
+  }
 }
