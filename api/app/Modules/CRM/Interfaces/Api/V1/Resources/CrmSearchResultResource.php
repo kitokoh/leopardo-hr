@@ -13,6 +13,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * Le resource est volontairement discriminant (type account|contact) pour que
  * le client web (#5715) affiche une liste homogène. Les champs PII (email,
  * téléphone) restent exposés aux seuls rôles autorisés (RBAC route).
+ * `owner` n'est rendu que si la relation a été chargée (le modèle de la
+ * fondation #5708 peut ne pas la définir — défensif).
  */
 class CrmSearchResultResource extends JsonResource
 {
@@ -34,8 +36,10 @@ class CrmSearchResultResource extends JsonResource
                 'id' => $account->id,
                 'name' => $account->name,
                 'legal_name' => $account->legal_name,
+                'email' => $account->email,
+                'phone' => $account->phone,
                 'status' => $account->status,
-                'owner' => $account->owner ? [
+                'owner' => $account->relationLoaded('owner') && $account->owner ? [
                     'id' => $account->owner->id,
                     'first_name' => $account->owner->first_name,
                     'last_name' => $account->owner->last_name,
@@ -55,11 +59,8 @@ class CrmSearchResultResource extends JsonResource
             'email' => $contact->email,
             'phone' => $contact->phone,
             'job_title' => $contact->job_title,
-            'account' => $contact->account ? [
-                'id' => $contact->account->id,
-                'name' => $contact->account->name,
-            ] : null,
-            'owner' => $contact->owner ? [
+            'account_id' => $contact->account_id,
+            'owner' => $contact->relationLoaded('owner') && $contact->owner ? [
                 'id' => $contact->owner->id,
                 'first_name' => $contact->owner->first_name,
                 'last_name' => $contact->owner->last_name,

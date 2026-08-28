@@ -27,44 +27,53 @@ trait CreatesCrmSchema
     private function createCrmSchemaIfMissing(): void
     {
         if (! schemaTableExists('crm_accounts')) {
+            // Schéma canonique retenu pour #5708 (PR #5757 — riche).
             Schema::create('crm_accounts', function (Blueprint $table): void {
-                $table->bigIncrements('id');
-                $table->uuid('company_id')->index();
-                $table->string('name', 255);
-                $table->string('legal_name', 255)->nullable();
-                $table->string('industry', 120)->nullable();
+                $table->id();
+                $table->uuid('company_id');
+                $table->string('name', 191);
+                $table->string('legal_name', 191)->nullable();
+                $table->string('industry', 100)->nullable();
                 $table->string('website', 255)->nullable();
-                $table->text('description')->nullable();
+                $table->string('email', 191)->nullable();
+                $table->string('phone', 40)->nullable();
+                $table->string('address', 255)->nullable();
+                $table->string('city', 100)->nullable();
+                $table->char('country', 2)->nullable();
+                $table->string('tax_id', 50)->nullable();
                 $table->string('status', 20)->default('active');
-                $table->unsignedInteger('owner_id')->nullable()->index();
-                $table->timestampTz('archived_at')->nullable();
-                $table->timestampTz('created_at')->useCurrent();
-                $table->timestampTz('updated_at')->useCurrent();
+                $table->string('source', 20)->default('manual');
+                $table->unsignedBigInteger('owner_id')->nullable();
+                $table->jsonb('metadata')->nullable();
+                $table->timestamps();
 
                 $table->index(['company_id', 'status']);
                 $table->index(['company_id', 'owner_id']);
+                $table->index(['company_id', 'name']);
+                $table->index(['company_id', 'email']);
             });
         }
 
         if (! schemaTableExists('crm_contacts')) {
             Schema::create('crm_contacts', function (Blueprint $table): void {
-                $table->bigIncrements('id');
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('account_id')->nullable()->index();
-                $table->string('first_name', 120);
-                $table->string('last_name', 120);
-                $table->string('email', 255)->nullable();
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('account_id')->nullable();
+                $table->string('first_name', 80)->nullable();
+                $table->string('last_name', 80)->nullable();
+                $table->string('email', 191)->nullable();
                 $table->string('phone', 40)->nullable();
+                $table->string('job_title', 120)->nullable();
                 $table->boolean('is_primary')->default(false);
-                $table->unsignedInteger('owner_id')->nullable()->index();
-                $table->string('job_title', 160)->nullable();
                 $table->string('status', 20)->default('active');
-                $table->timestampTz('archived_at')->nullable();
-                $table->timestampTz('created_at')->useCurrent();
-                $table->timestampTz('updated_at')->useCurrent();
+                $table->text('notes')->nullable();
+                $table->jsonb('metadata')->nullable();
+                $table->timestamps();
 
                 $table->index(['company_id', 'status']);
                 $table->index(['company_id', 'account_id']);
+                $table->index(['company_id', 'email']);
+                $table->index(['company_id', 'last_name']);
             });
         }
     }
@@ -83,10 +92,16 @@ trait CreatesCrmSchema
             'legal_name' => null,
             'industry' => 'logistics',
             'website' => null,
-            'description' => null,
+            'email' => null,
+            'phone' => null,
+            'address' => null,
+            'city' => null,
+            'country' => null,
+            'tax_id' => null,
             'status' => 'active',
+            'source' => 'manual',
             'owner_id' => null,
-            'archived_at' => null,
+            'metadata' => null,
             'created_at' => now(),
             'updated_at' => now(),
         ], $overrides));
@@ -107,11 +122,11 @@ trait CreatesCrmSchema
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',
             'phone' => '+213550000000',
-            'is_primary' => false,
-            'owner_id' => null,
             'job_title' => null,
+            'is_primary' => false,
             'status' => 'active',
-            'archived_at' => null,
+            'notes' => null,
+            'metadata' => null,
             'created_at' => now(),
             'updated_at' => now(),
         ], $overrides));
