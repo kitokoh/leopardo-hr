@@ -131,7 +131,9 @@ class CrmConsentTest extends TestCase
     public function test_withdraw_revokes_and_dispatches_event(): void
     {
         app()->instance('current_company', $this->companyA);
-        Event::fake();
+        // Ne fake QUE l'événement de domaine : Event::fake() global désactive
+        // aussi les model events (creating → auto-fill company_id).
+        Event::fake([CrmConsentRevoked::class]);
 
         $this->service()->grant(10, ConsentChannel::Sms, ConsentPurpose::Marketing, ConsentSource::Form);
         $consent = $this->service()->withdraw(

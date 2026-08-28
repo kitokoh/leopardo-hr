@@ -98,6 +98,7 @@ class CrmConsentController extends Controller
 
     public function show(CrmConsent $consent): JsonResponse
     {
+        $this->assertTenantScope(request(), $consent);
         $this->authorize('view', $consent);
 
         return response()->json(['data' => $this->serialize($consent)]);
@@ -105,6 +106,7 @@ class CrmConsentController extends Controller
 
     public function revoke(CrmConsent $consent, RevokeConsentRequest $request): JsonResponse
     {
+        $this->assertTenantScope($request, $consent);
         $this->authorize('revoke', $consent);
 
         $source = ConsentSource::from($request->string('source')->toString());
@@ -119,6 +121,20 @@ class CrmConsentController extends Controller
         );
 
         return response()->json(['data' => $this->serialize($updated)]);
+    }
+
+    private function assertTenantScope(Request $request, CrmConsent $consent): void
+    {
+        // Le binding implicite est résolu AVANT le middleware tenant
+        // (SubstituteBindings global) : le scope BelongsToCompany n'est pas
+        // encore appliqué. Garde explicite — un consentement d'un autre
+        // tenant est introuvable (404), jamais visible (même pattern que
+        // AccountingContactController::assertTenantScope).
+        $companyId = $request->user()?->getAttribute('company_id');
+
+        if ($companyId !== null && (string) $consent->company_id !== (string) $companyId) {
+            abort(404);
+        }
     }
 
     /**
