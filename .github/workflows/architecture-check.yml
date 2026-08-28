@@ -250,6 +250,13 @@ jobs:
         # dev-hub/tools/module-isolation-allowlist.txt.
         run: dev-hub/tools/check-module-isolation.sh
 
+      - name: BC dependency guard — imports inter-contextes hors contrats (issue #5860, MAT-002)
+        # Consomme le registre des bounded contexts (allowed_dependencies) +
+        # l'allowlist de dette gelée bc-dependencies-allowlist.txt. Échoue sur
+        # toute nouvelle paire BC -> BC non contractuelle, avec le détail des
+        # fichiers fautifs et les dépendances autorisées.
+        run: bash dev-hub/tools/check-bc-dependencies.sh api
+
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
 

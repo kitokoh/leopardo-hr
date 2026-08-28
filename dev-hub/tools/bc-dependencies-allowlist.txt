@@ -1,0 +1,65 @@
+# Dette d'imports inter-contextes EXISTANTE et gelée (MAT-002, issue #5860).
+# Format : <BC source> -> <BC cible> — générée mécaniquement depuis main le
+# 2026-08-28 (219 imports, 58 paires). Aucune nouvelle paire n'est acceptée :
+# le garde dev-hub/tools/check-bc-dependencies.sh échoue avec le détail des
+# fichiers fautifs et les dépendances autorisées. Réduire la dette dans le
+# code (événements partagés, contrats, injection de dépendance) plutôt que
+# d'agrandir ce fichier.
+BC-01 -> BC-04
+BC-01 -> BC-05
+BC-01 -> BC-07
+BC-01 -> BC-13
+BC-01 -> BC-14
+BC-01 -> BC-21
+BC-01 -> BC-23
+BC-02 -> BC-05
+BC-03 -> BC-02
+BC-03 -> BC-04
+BC-03 -> BC-05
+BC-03 -> BC-07
+BC-03 -> BC-10
+BC-03 -> BC-12
+BC-03 -> BC-13
+BC-03 -> BC-18
+BC-03 -> BC-19
+BC-03 -> BC-20
+BC-03 -> BC-21
+BC-04 -> BC-07
+BC-04 -> BC-10
+BC-04 -> BC-23
+BC-05 -> BC-07
+BC-05 -> BC-13
+BC-05 -> BC-18
+BC-05 -> BC-23
+BC-06 -> BC-05
+BC-07 -> BC-13
+BC-07 -> BC-14
+BC-07 -> BC-20
+BC-07 -> BC-21
+BC-08 -> BC-12
+BC-08 -> BC-13
+BC-08 -> BC-14
+BC-09 -> BC-05
+BC-11 -> BC-14
+BC-12 -> BC-01
+BC-12 -> BC-07
+BC-12 -> BC-08
+BC-12 -> BC-14
+BC-12 -> BC-21
+BC-13 -> BC-01
+BC-13 -> BC-04
+BC-13 -> BC-05
+BC-13 -> BC-07
+BC-14 -> BC-01
+BC-14 -> BC-07
+BC-14 -> BC-13
+BC-14 -> BC-20
+BC-14 -> BC-21
+BC-18 -> BC-05
+BC-21 -> BC-01
+BC-21 -> BC-07
+BC-21 -> BC-14
+BC-23 -> BC-04
+BC-23 -> BC-05
+BC-23 -> BC-07
+BC-23 -> BC-13
