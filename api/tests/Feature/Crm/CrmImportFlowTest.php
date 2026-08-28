@@ -188,7 +188,7 @@ class CrmImportFlowTest extends TestCase
 
         $this->postJson("/api/v1/crm/imports/{$importId}/commit")
             ->assertStatus(409)
-            ->assertJsonPath('error', 'CRM_IMPORT_ALREADY_COMMITTED');
+            ->assertJsonPath('error', 'CRM_IMPORT_ALREADY_CANCELLED');
 
         self::assertSame(0, CrmAccount::query()->count());
     }

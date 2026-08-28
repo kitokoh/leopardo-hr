@@ -96,6 +96,10 @@ final class CrmImportService
             ?? throw CrmImportException::notFound();
 
         if (! $this->imports->claimCommit($import)) {
+            if ($import->status === CrmImportStatus::Cancelled) {
+                throw CrmImportException::alreadyCancelled();
+            }
+
             throw CrmImportException::alreadyCommitted();
         }
 
