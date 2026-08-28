@@ -97,7 +97,7 @@ final class SegmentService
 
         if (! $this->source->supports($definition)) {
             throw ValidationException::withMessages([
-                'segment' => 'Source de contacts CRM indisponible (tables CRM pas encore migrées).',
+                'segment' => 'CRM contact source unavailable (CRM tables not migrated yet).',
             ]);
         }
 
