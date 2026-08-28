@@ -145,7 +145,7 @@ final class ExportCrmDataJob implements ShouldQueue, TenantScopedJob
             $line = [];
             foreach (array_keys($columns) as $column) {
                 $value = $row->{$column} ?? null;
-                $line[] = is_scalar($value) ? (string) $value : json_encode($value) ?: '';
+                $line[] = is_scalar($value) ? (string) $value : (json_encode($value) ?: '');
             }
             fputcsv($handle, $line);
         }

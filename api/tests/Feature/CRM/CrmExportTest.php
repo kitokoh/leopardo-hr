@@ -206,7 +206,6 @@ class CrmExportTest extends TestCase
             ->assertJsonPath('data.opportunities', [])
             ->assertJsonPath('data.data_quality.overall', 100);
     }
-}
 
     public function test_exports_index_lists_tenant_jobs(): void
     {
@@ -275,3 +274,4 @@ class CrmExportTest extends TestCase
             ->assertJsonPath('data.pipeline.total', 1)
             ->assertJsonPath('data.pipeline.weighted', 5000);
     }
+}

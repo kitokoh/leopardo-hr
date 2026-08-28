@@ -1,15 +1,20 @@
 <?php
 
 /**
- * Routes CRM client tenant (issues #5725, #5727, #5728, #5729).
+ * Routes CRM client tenant (issues #5714, #5717, #5718, #5725, #5727, #5728, #5729).
  *
- * Toutes les routes CRM sont tenant-scoped et réservées aux managers
- * `principal`/`rh` (RBAC_ROUTE_MATRIX.md). Les webhooks fournisseur sont
- * publics (hors auth) mais protégés par signature HMAC fail-closed.
+ * Le CRM client est strictement séparé du CRM commercial Leopardo
+ * (ADR-CRM-002) : toutes les routes vivent sous /api/v1/crm/* dans le
+ * groupe authentifié tenant, protégées par Policies + contexte tenant.
+ * Les webhooks fournisseur sont publics (hors auth) mais protégés par
+ * signature HMAC fail-closed.
  */
 
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmChannelController;
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDedupController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmExportController;
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmImportController;
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmLeadController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmWhatsAppWebhookController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,15 +43,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/read-models', [CrmExportController::class, 'readModels']);
     });
 
- * Routes du module CRM client (tenant) — issue #5714 (import CSV).
- * Le CRM client est strictement séparé du CRM commercial Leopardo
- * (ADR-CRM-002) : toutes les routes vivent sous /api/v1/crm/* dans le
- * groupe authentifié tenant, protégées par Policies + contexte tenant.
- * Le reste du périmètre API (CRUD accounts/contacts/leads/pipelines/…)
- * arrive avec CRM-V0-08 (#5712).
-use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDedupController;
-use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmImportController;
-use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmLeadController;
+// ── Import CSV / leads / déduplication (issues #5714, #5717, #5718) ─────────
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->prefix('crm')->group(function (): void {
     // ── Import CSV (issue #5714) ─────────────────────────────────────────────
     Route::post('/imports', [CrmImportController::class, 'store']);
@@ -59,3 +56,4 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/dedup/suggestions', [CrmDedupController::class, 'suggestions']);
     Route::get('/merge/preview', [CrmDedupController::class, 'preview']);
     Route::post('/merge', [CrmDedupController::class, 'merge']);
+});
