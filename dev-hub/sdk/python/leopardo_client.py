@@ -1796,9 +1796,25 @@ class LeopardoClient:
         """Presence du pompiste connecte pour une date (self-service)"""
         return self.request("GET", "/fuel/me/presence", **kwargs)
 
+    def get_fuel_me_sales(self, **kwargs):
+        """Ventes du pompiste connecte (self-service, pagine)"""
+        return self.request("GET", "/fuel/me/sales", **kwargs)
+
     def get_fuel_me_shifts(self, **kwargs):
         """Affectations de shifts du pompiste connecte (self-service)"""
         return self.request("GET", "/fuel/me/shifts", **kwargs)
+
+    def get_fuel_sales(self, **kwargs):
+        """Lister les ventes (manager, pagine)"""
+        return self.request("GET", "/fuel/sales", **kwargs)
+
+    def post_fuel_sales(self, **kwargs):
+        """Enregistrer une vente (pompiste, idempotent via external_id)"""
+        return self.request("POST", "/fuel/sales", **kwargs)
+
+    def get_fuel_sales_by_sale(self, **kwargs):
+        """Detail d'une vente (proprietaire ou manager)"""
+        return self.request("GET", "/fuel/sales/{sale}", **kwargs)
 
     def delete_fuel_shift_assignments_by_assignment(self, **kwargs):
         """Annuler une affectation (manager, statut cancelled)"""

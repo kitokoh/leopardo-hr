@@ -2220,9 +2220,29 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/fuel/me/presence", options);
     },
 
+    /** Ventes du pompiste connecte (self-service, pagine) */
+    getFuelMeSales(options = {}) {
+      return request("GET", "/fuel/me/sales", options);
+    },
+
     /** Affectations de shifts du pompiste connecte (self-service) */
     getFuelMeShifts(options = {}) {
       return request("GET", "/fuel/me/shifts", options);
+    },
+
+    /** Lister les ventes (manager, pagine) */
+    getFuelSales(options = {}) {
+      return request("GET", "/fuel/sales", options);
+    },
+
+    /** Enregistrer une vente (pompiste, idempotent via external_id) */
+    postFuelSales(options = {}) {
+      return request("POST", "/fuel/sales", options);
+    },
+
+    /** Detail d'une vente (proprietaire ou manager) */
+    getFuelSalesBySale(options = {}) {
+      return request("GET", "/fuel/sales/{sale}", options);
     },
 
     /** Annuler une affectation (manager, statut cancelled) */

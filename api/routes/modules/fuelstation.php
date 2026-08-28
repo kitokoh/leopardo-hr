@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/me/presence', [FuelPresenceController::class, 'myPresence']);
         // FUEL-007 (#5801) : sessions de caisse du pompiste connecté.
         Route::get('/me/cash-sessions', [FuelCashSessionController::class, 'mySessions']);
+        // FUEL-008 (#5802) : ventes du pompiste connecté + enregistrement.
+        Route::get('/me/sales', [FuelSaleController::class, 'mySales']);
+        Route::post('/sales', [FuelSaleController::class, 'store']);
         // FUEL-007 (#5801) : cycle de vie (ouverture/mouvements/clôture) —
         // policy par opened_by ; approbation manager.
         Route::post('/cash-sessions', [FuelCashSessionController::class, 'store']);
@@ -47,5 +51,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/cash-sessions', [FuelCashSessionController::class, 'index']);
             Route::get('/cash-sessions/{session}', [FuelCashSessionController::class, 'show'])->whereUuid('session');
             Route::post('/cash-sessions/{session}/approve', [FuelCashSessionController::class, 'approve'])->whereUuid('session');
+            // FUEL-008 (#5802) : ventes (manager).
+            Route::get('/sales', [FuelSaleController::class, 'index']);
+            Route::get('/sales/{sale}', [FuelSaleController::class, 'show'])->whereUuid('sale');
         });
     });

@@ -16,6 +16,8 @@ use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
 use App\Modules\FuelStation\Domain\Models\FuelShift;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Policies\FuelCashSessionPolicy;
+use App\Modules\FuelStation\Domain\Models\FuelSale;
+use App\Modules\FuelStation\Domain\Policies\FuelSalePolicy;
 use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment;
 use App\Modules\FuelStation\Domain\Policies\FuelShiftPolicy;
 use App\Modules\Planning\Domain\Models\ExpenseClaim;
@@ -107,6 +109,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(FuelShift::class, FuelShiftPolicy::class);
         Gate::policy(FuelShiftAssignment::class, FuelShiftPolicy::class);
         Gate::policy(FuelCashSession::class, FuelCashSessionPolicy::class);
+        Gate::policy(FuelSale::class, FuelSalePolicy::class);
         Gate::policy(PayrollRun::class, PayrollPolicy::class);
         Gate::policy(PaySlip::class, PayrollPolicy::class);
 
