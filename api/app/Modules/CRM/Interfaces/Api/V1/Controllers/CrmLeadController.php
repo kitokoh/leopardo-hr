@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\CRM\Domain\Models\CrmLead;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmLeadRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\UpdateCrmLeadRequest;
+use App\Http\Resources\Api\V1\CrmLeadResource;
 use App\Modules\CRM\Interfaces\Api\V1\Support\CrmQueryHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -55,7 +56,7 @@ class CrmLeadController extends Controller
             'priority' => 'priority',
         ]);
 
-        return new JsonResponse($query->paginate($this->perPage($request)));
+        return CrmLeadResource::collection($query->paginate($this->perPage($request)));
     }
 
     public function store(StoreCrmLeadRequest $request): JsonResponse
@@ -80,7 +81,7 @@ class CrmLeadController extends Controller
             'created_by' => $actor->id,
         ]);
 
-        return new JsonResponse(['data' => $lead], 201);
+        return new JsonResponse(['data' => new CrmLeadResource($lead)], 201);
     }
 
     public function show(CrmLead $crmLead): JsonResponse
@@ -96,7 +97,7 @@ class CrmLeadController extends Controller
 
         $crmLead->update($request->validated());
 
-        return new JsonResponse(['data' => $crmLead->fresh()]);
+        return new JsonResponse(['data' => new CrmLeadResource($crmLead->fresh())]);
     }
 
     public function destroy(CrmLead $crmLead): JsonResponse

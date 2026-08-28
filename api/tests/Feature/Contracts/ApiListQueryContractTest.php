@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Contracts;
 
+use App\Modules\CRM\Domain\Models\CrmLead;
+use App\Modules\CRM\Domain\Models\CrmTask;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
@@ -328,5 +330,72 @@ class ApiListQueryContractTest extends TestCase
 
         return [$run, $slip];
     }
-}
 
+    public function test_crm_leads_index_supports_allowlisted_filters_sorting_pagination(): void
+    {
+        [$company, $manager] = $this->actors();
+
+        CrmLead::query()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Amina',
+            'last_name' => 'Benali',
+            'email' => 'amina.benali@example.test',
+            'status' => 'new',
+            'priority' => 'high',
+        ]);
+        CrmLead::query()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Karim',
+            'last_name' => 'Haddad',
+            'email' => 'karim.haddad@example.test',
+            'status' => 'qualified',
+            'priority' => 'low',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        // Filtre + tri + pagination allowlistés.
+        $response = $this->getJson('/api/v1/crm/leads?status=new&sort_by=last_name&sort_dir=asc&per_page=10');
+        $response->assertOk();
+        $this->assertCount(1, $response->json('data'));
+
+        // Tri interdit → 422 (aucune injection de colonne).
+        $this->getJson('/api/v1/crm/leads?sort_by=password_hash')->assertStatus(422);
+
+        // Filtre inconnu → 422.
+        $this->getJson('/api/v1/crm/leads?evil=1')->assertStatus(422);
+
+        // Liste vide → payload stable.
+        $this->getJson('/api/v1/crm/leads?status=converted')->assertOk()->assertJsonCount(0, 'data');
+    }
+
+    public function test_crm_tasks_index_supports_allowlisted_filters_sorting_pagination(): void
+    {
+        [$company, $manager] = $this->actors();
+
+        CrmTask::query()->create([
+            'company_id' => $company->id,
+            'title' => 'Relancer client A',
+            'status' => 'todo',
+            'priority' => 'high',
+            'due_at' => Carbon::now()->addDays(2),
+        ]);
+        CrmTask::query()->create([
+            'company_id' => $company->id,
+            'title' => 'Préparer proposition B',
+            'status' => 'done',
+            'priority' => 'low',
+            'due_at' => Carbon::now()->subDay(),
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->getJson('/api/v1/crm/tasks?status=todo&sort_by=due_at&sort_dir=asc&per_page=10');
+        $response->assertOk();
+        $this->assertCount(1, $response->json('data'));
+        $this->assertSame('Relancer client A', $response->json('data.0.title'));
+
+        $this->getJson('/api/v1/crm/tasks?sort_by=title;DROP TABLE')->assertStatus(422);
+        $this->getJson('/api/v1/crm/tasks?status=archived')->assertStatus(422);
+    }
+}
