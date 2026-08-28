@@ -94,11 +94,11 @@ class CrmOpportunity extends Model
 
     public function isWon(): bool
     {
-        return $this->stage?->is_won ?? false;
+        return $this->stage->is_won ?? false;
     }
 
     public function isLost(): bool
     {
-        return $this->stage?->is_lost ?? false;
+        return $this->stage->is_lost ?? false;
     }
 }
