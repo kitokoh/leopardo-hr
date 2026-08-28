@@ -52,6 +52,9 @@ class CrmAccountsContactsMigrationsTest extends TestCase
         return $row ? (string) $row->table_schema : null;
     }
 
+    /**
+     * @return Migration&object{up(): void, down(): void}
+     */
     private function migration(string $basename): Migration
     {
         $path = database_path("migrations/tenant/{$basename}.php");
@@ -61,7 +64,7 @@ class CrmAccountsContactsMigrationsTest extends TestCase
 
         $this->assertInstanceOf(Migration::class, $migration);
 
-        /** @var Migration $migration */
+        /** @var Migration&object{up(): void, down(): void} $migration */
         return $migration;
     }
 
@@ -111,6 +114,7 @@ class CrmAccountsContactsMigrationsTest extends TestCase
 
     public function test_contact_status_check_rejects_unknown_status(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
         $accountId = $this->createAccount($company->id, 'Compte A');
 
@@ -146,6 +150,7 @@ class CrmAccountsContactsMigrationsTest extends TestCase
 
     public function test_only_one_primary_contact_per_account(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
         $accountId = $this->createAccount($company->id, 'Compte A');
 
@@ -168,6 +173,7 @@ class CrmAccountsContactsMigrationsTest extends TestCase
 
     public function test_primary_contact_is_scoped_per_account(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
         $accountAId = $this->createAccount($company->id, 'Compte A');
         $accountBId = $this->createAccount($company->id, 'Compte B');
