@@ -6,3 +6,9 @@
 # Les verbes d'action PUT/PATCH dépréciés (#4930) sont désormais documentés
 # dans openapi.yaml avec `deprecated: true` (tags [Deprecated]).
 
+# CRM client — consentements (#5722) : contrat OpenAPI canonique publié par #5712
+# (Périmètre CRM V0-08 « Publier les contrats API et OpenAPI du CRM client »).
+GET /v1/crm/consents
+GET /v1/crm/consents/{param}
+POST /v1/crm/consents
+POST /v1/crm/consents/{param}/revoke
