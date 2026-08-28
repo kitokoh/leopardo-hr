@@ -109,8 +109,16 @@ class CrmImportCommitJob implements ShouldQueue, TenantScopedJob
 
             DB::transaction(function () use ($import, $entityType, $persister, &$rowErrors, &$persisted): void {
                 foreach ($import->raw_rows as $index => $row) {
+                    if (! is_array($row)) {
+                        continue;
+                    }
+
+                    // Le parser produit des chaînes ; garantie de typage pour
+                    // le port de persistance (PHPStan strict level 8).
+                    $safeRow = array_map(static fn (mixed $value): string => (string) $value, $row);
+
                     try {
-                        $persister->persistRow($entityType, $row);
+                        $persister->persistRow($entityType, $safeRow);
                         $persisted++;
                     } catch (Throwable $e) {
                         $rowErrors[] = [
