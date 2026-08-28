@@ -263,6 +263,9 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/expense.php';
     require __DIR__.'/modules/marketing.php';
 
+    // FuelStation — manifest/activation + données station (issues #5795-5798)
+    require __DIR__.'/modules/fuelstation.php';
+
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';
 

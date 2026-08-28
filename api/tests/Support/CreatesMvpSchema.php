@@ -2199,8 +2199,68 @@ trait CreatesMvpSchema
                     ->cascadeOnDelete();
             });
         }
+
+        $this->createFuelStationTables();
     }
 
+
+    /**
+     * #5795 — FuelStation activations tenant. Miroir de la migration
+     * 2026_08_28_000004_5795_create_fuel_station_activations_table.php.
+     */
+    private function createFuelStationTables(): void
+    {
+        if (! Schema::hasTable($this->moduleTable('fuel_stations'))) {
+            Schema::create($this->moduleTable('fuel_stations'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 160);
+                $table->string('address', 255)->nullable();
+                $table->string('city', 120)->nullable();
+                $table->string('country', 2)->nullable();
+                $table->string('timezone', 64)->default('UTC');
+                $table->string('status', 20)->default('draft');
+                $table->json('metadata')->nullable();
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'fuel_stations_company_code_unique');
+                $table->index(['company_id', 'status'], 'fuel_stations_company_status_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_sites'))) {
+            Schema::create($this->moduleTable('fuel_sites'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('station_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 160);
+                $table->string('address', 255)->nullable();
+                $table->string('city', 120)->nullable();
+                $table->decimal('geo_lat', 10, 7)->nullable();
+                $table->decimal('geo_lng', 10, 7)->nullable();
+                $table->string('status', 20)->default('draft');
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'fuel_sites_company_code_unique');
+                $table->index(['company_id', 'station_id'], 'fuel_sites_company_station_index');
+                $table->index(['company_id', 'status'], 'fuel_sites_company_status_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_station_activations'))) {
+            Schema::create($this->moduleTable('fuel_station_activations'), function (Blueprint $table): void {
+                $table->uuid('company_id')->primary();
+                $table->string('manifest_version', 30);
+                $table->string('status', 20)->default('active');
+                $table->timestamp('activated_at')->nullable();
+                $table->timestamps();
+            });
+        }
+    }
     private function dropMvpTables(): void
     {
         if (DB::getDriverName() === 'pgsql') {

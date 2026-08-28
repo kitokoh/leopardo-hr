@@ -94,6 +94,7 @@ consommateurs).
 | `Modules/Cameras` | ✅ routes/modules/cameras.php | ✅ complet | `CamerasServiceProvider` |
 | `Modules/CRM` | 🔶 en cours (squelette #5707, routes #5712) | 🔶 Application/Domain/Infrastructure/Interfaces + Providers (squelette) | `CrmServiceProvider` |
 | `Modules/Growth` | ✅ routes/modules/growth.php | ✅ complet | `GrowthServiceProvider` |
+| `Modules/FuelStation` | ✅ routes/modules/fuelstation.php | 🔶 V0 en construction (manifest #5795, stations #5796) | `FuelStationServiceProvider` |
 | `Modules/Marketing` | ✅ routes/modules/marketing.php | ✅ complet | `MarketingServiceProvider` |
 | `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
 

@@ -2180,6 +2180,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/fleet/reports/mileage", options);
     },
 
+    /** Activer FuelStation sur le tenant (idempotent) */
+    postFuelstationActivate(options = {}) {
+      return request("POST", "/fuelstation/activate", options);
+    },
+
+    /** Manifest de la solution FuelStation (catalogue, permissions, dependances) */
+    getFuelstationManifest(options = {}) {
+      return request("GET", "/fuelstation/manifest", options);
+    },
+
+    /** Etat d'activation FuelStation du tenant */
+    getFuelstationStatus(options = {}) {
+      return request("GET", "/fuelstation/status", options);
+    },
+
     /** Candidature partenaire */
     postGrowthPartnerApply(options = {}) {
       return request("POST", "/growth/partner/apply", options);
