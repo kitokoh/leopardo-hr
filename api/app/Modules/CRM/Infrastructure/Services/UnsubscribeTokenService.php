@@ -87,6 +87,8 @@ final class UnsubscribeTokenService
 
     private function sign(string $payload): string
     {
-        return hash_hmac('sha256', $payload, (string) Config::get('app.key'));
+        $key = Config::get('app.key');
+
+        return hash_hmac('sha256', $payload, is_string($key) ? $key : '');
     }
 }

@@ -46,7 +46,9 @@ class CrmServiceProvider extends ServiceProvider
 
         // #5726 — fournisseur email interchangeable (log | mail).
         $this->app->bind(EmailProviderInterface::class, function (): EmailProviderInterface {
-            return (string) config('crm.email.provider', 'log') === 'mail'
+            $provider = config('crm.email.provider', 'log');
+
+            return is_string($provider) && $provider === 'mail'
                 ? new MailEmailProvider
                 : new LogEmailProvider;
         });

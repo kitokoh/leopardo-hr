@@ -21,7 +21,8 @@ final class EmailRateLimiter
         }
 
         $key = $this->key($companyId, $bucket);
-        $used = (int) Cache::get($key, 0);
+        $cached = Cache::get($key, 0);
+        $used = is_numeric($cached) ? (int) $cached : 0;
 
         if ($used >= $limitPerHour) {
             return false;

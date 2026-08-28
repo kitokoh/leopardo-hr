@@ -23,13 +23,16 @@ class CrmEmailWebhookController extends Controller
 
     public function handle(Request $request): JsonResponse
     {
-        $expectedSecret = (string) config('crm.email.webhook_secret', '');
+        $configuredSecret = config('crm.email.webhook_secret', '');
+        $expectedSecret = is_string($configuredSecret) ? $configuredSecret : '';
+        $header = $request->header('X-Leopardo-Webhook-Secret');
+        $providedSecret = is_string($header) ? $header : '';
 
-        if ($expectedSecret === ''
-            || ! hash_equals($expectedSecret, (string) $request->header('X-Leopardo-Webhook-Secret', ''))) {
+        if ($expectedSecret === '' || ! hash_equals($expectedSecret, $providedSecret)) {
             return response()->json(['error' => 'INVALID_WEBHOOK_SECRET'], 403);
         }
 
+        /** @var array<string, mixed> $payload */
         $payload = $request->validate([
             'company_id' => ['required', 'string'],
             'event' => ['required', 'string', 'in:sent,delivered,bounced,complained,opened,clicked,unsubscribed'],

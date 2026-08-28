@@ -49,7 +49,8 @@ final class CrmEmailService
             return EmailDeliveryResult::suppressed('suppressed');
         }
 
-        $limit = (int) config('crm.email.transactional_rate_limit_per_hour', 2000);
+        $configuredLimit = config('crm.email.transactional_rate_limit_per_hour', 2000);
+        $limit = is_numeric($configuredLimit) ? (int) $configuredLimit : 2000;
         if (! $this->rateLimiter->consume($companyId, 'transactional', $limit)) {
             throw new EmailRateLimitExceededException('Transactional email quota exceeded.');
         }
@@ -75,7 +76,8 @@ final class CrmEmailService
             return EmailDeliveryResult::suppressed('suppressed');
         }
 
-        $limit = (int) config('crm.email.rate_limit_per_hour', 500);
+        $configuredLimit = config('crm.email.rate_limit_per_hour', 500);
+        $limit = is_numeric($configuredLimit) ? (int) $configuredLimit : 500;
         if (! $this->rateLimiter->consume($companyId, 'marketing', $limit)) {
             throw new EmailRateLimitExceededException('Marketing email quota exceeded.');
         }
@@ -205,8 +207,10 @@ final class CrmEmailService
         $messageId = $payload['message_id'] ?? null;
         /** @var string|null $email */
         $email = isset($payload['email']) && is_string($payload['email']) ? $payload['email'] : null;
-        /** @var int|null $sendId */
-        $sendId = isset($payload['send_id']) ? (int) $payload['send_id'] : null;
+        $sendId = null;
+        if (isset($payload['send_id']) && is_numeric($payload['send_id'])) {
+            $sendId = (int) $payload['send_id'];
+        }
 
         DB::table('crm_email_events')->insert([
             'company_id' => $companyId,
