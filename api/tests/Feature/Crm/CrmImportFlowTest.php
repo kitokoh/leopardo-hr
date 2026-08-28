@@ -245,8 +245,9 @@ class CrmImportFlowTest extends TestCase
             'au plus un contact primaire par compte'
         );
         self::assertSame(
-            1,
-            CrmContact::query()->where('account_id', CrmAccount::query()->where('name', 'Acme')->firstOrFail()->id)->count()
+            2,
+            CrmContact::query()->where('account_id', CrmAccount::query()->where('name', 'Acme')->firstOrFail()->id)->count(),
+            'les deux contacts importés résolvent le compte Acme existant (pas de doublon de compte)'
         );
     }
 
