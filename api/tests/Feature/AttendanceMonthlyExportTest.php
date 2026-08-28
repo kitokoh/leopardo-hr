@@ -36,6 +36,7 @@ class AttendanceMonthlyExportTest extends TestCase
 
     public function test_ordinary_employee_gets_403(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
         /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
@@ -48,6 +49,7 @@ class AttendanceMonthlyExportTest extends TestCase
 
     public function test_invalid_month_is_rejected(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
@@ -58,6 +60,7 @@ class AttendanceMonthlyExportTest extends TestCase
 
     public function test_manager_gets_monthly_csv_summary(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
@@ -102,6 +105,7 @@ class AttendanceMonthlyExportTest extends TestCase
 
     public function test_export_history_is_recorded(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
@@ -121,7 +125,9 @@ class AttendanceMonthlyExportTest extends TestCase
 
     public function test_cross_tenant_employee_is_not_leaked_into_csv(): void
     {
+        /** @var Company $companyA */
         $companyA = Company::factory()->create();
+        /** @var Company $companyB */
         $companyB = Company::factory()->create();
         /** @var Employee $managerA */
         $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
