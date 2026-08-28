@@ -41,9 +41,15 @@ class CrmImportController extends Controller
             abort(403);
         }
 
+        $file = $request->file('file');
+
+        if (! $file instanceof \Illuminate\Http\UploadedFile) {
+            abort(422, 'Un fichier CSV est requis.');
+        }
+
         try {
             $import = $this->service->preview(
-                $request->file('file'),
+                $file,
                 CrmImportEntityType::from($request->input('entity_type')),
                 $actor,
             );
