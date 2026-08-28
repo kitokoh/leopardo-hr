@@ -45,8 +45,6 @@ class QueueCorrelationTest extends TestCase
 
         if (! is_string($captured)) {
             $this->fail('Expected a captured correlation string');
-
-            return;
         }
 
         $this->assertTrue(Str::isUuid($captured), "Expected UUID, got [{$captured}]");

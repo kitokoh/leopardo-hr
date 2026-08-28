@@ -69,7 +69,7 @@ final class QueueCorrelationServiceProvider extends ServiceProvider
     {
         $payload = $job->payload();
 
-        if (! is_array($payload) || ! array_key_exists('correlation_id', $payload)) {
+        if (! array_key_exists('correlation_id', $payload)) {
             return null;
         }
 
