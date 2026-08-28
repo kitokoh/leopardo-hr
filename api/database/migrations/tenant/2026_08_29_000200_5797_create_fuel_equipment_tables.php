@@ -140,7 +140,7 @@ return new class extends Migration
     private function uniqueExists(string $constraint): bool
     {
         $row = DB::selectOne(
-            "SELECT 1 FROM pg_constraint WHERE conname = ?",
+            'SELECT 1 FROM pg_constraint WHERE conname = ?',
             [$constraint]
         );
 

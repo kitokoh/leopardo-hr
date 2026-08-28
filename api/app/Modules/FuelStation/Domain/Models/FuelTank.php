@@ -20,7 +20,7 @@ use Illuminate\Support\Carbon;
  * @property string $product_type
  * @property int $capacity_minor
  * @property int $current_level_minor
- * @property string $status  active|inactive|retired
+ * @property string $status active|inactive|retired
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *

@@ -28,7 +28,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $rollover_limit
  * @property Carbon|null $installed_at
  * @property Carbon|null $retired_at
- * @property string $status  active|retired
+ * @property string $status active|retired
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *

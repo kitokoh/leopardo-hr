@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
  * @property int $station_id
  * @property string $code
  * @property array<int, string>|null $product_types
- * @property string $status  active|inactive|retired
+ * @property string $status active|inactive|retired
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
