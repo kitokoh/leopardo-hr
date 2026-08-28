@@ -28,4 +28,5 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/channels/{channel}/send', [CrmChannelController::class, 'send']);
         Route::get('/channels/{channel}/messages', [CrmChannelController::class, 'messages']);
         Route::get('/channels/{channel}/conversations', [CrmChannelController::class, 'conversations']);
+        Route::get('/channels/{channel}/observability', [CrmChannelController::class, 'observability']);
     });

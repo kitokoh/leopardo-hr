@@ -1,4 +1,5 @@
 ## [Unreleased]
+- **feat(crm): canaux par adaptateur — SMS audit-only + registre + observabilité (Closes #5727).** Registre de canaux (`CrmChannelRegistry` : whatsapp, sms) et adaptateur SMS provider audit-only (AGENTS.md v4.16.122 : aucun envoi réel tant qu'aucun fournisseur production n'est activé — journalisation sans PII, message persiste via le flux complet consentement/quota/dead-letter). Contrat commun send/verify/normalize/revoke testé pour chaque adaptateur. Endpoint d'observabilité `/crm/channels/{channel}/observability` (totaux, échecs, dead-letter, tentatives, coût cumulé). i18n inchangée (réutilise les clés CRM_*), OpenAPI 1 chemin + SDK, RBAC matrix, CHANGELOG. Tests Feature 6 (registre, contrat, SMS audit-only sans HTTP, consentement/quota, observabilité, isolation).
 
 ## [Unreleased]
 

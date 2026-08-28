@@ -1352,6 +1352,10 @@ class LeopardoClient:
         """Lister les messages d'un canal (metadonnees, PII masquee)"""
         return self.request("GET", "/crm/channels/{channel}/messages", **kwargs)
 
+    def get_crm_channels_by_channel_observability(self, **kwargs):
+        """Observabilite d'un canal (cout et erreurs agreges)"""
+        return self.request("GET", "/crm/channels/{channel}/observability", **kwargs)
+
     def post_crm_channels_by_channel_send(self, **kwargs):
         """Envoyer un message via un canal CRM (WhatsApp, SMS, email)"""
         return self.request("POST", "/crm/channels/{channel}/send", **kwargs)

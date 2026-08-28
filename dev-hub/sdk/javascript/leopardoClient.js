@@ -1665,6 +1665,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/crm/channels/{channel}/messages", options);
     },
 
+    /** Observabilite d'un canal (cout et erreurs agreges) */
+    getCrmChannelsByChannelObservability(options = {}) {
+      return request("GET", "/crm/channels/{channel}/observability", options);
+    },
+
     /** Envoyer un message via un canal CRM (WhatsApp, SMS, email) */
     postCrmChannelsByChannelSend(options = {}) {
       return request("POST", "/crm/channels/{channel}/send", options);
