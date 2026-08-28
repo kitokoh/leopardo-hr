@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PlatformCompanyFeatureController extends Controller
 {
@@ -51,6 +52,11 @@ class PlatformCompanyFeatureController extends Controller
         // #5742 (CRM PRE) : l'activation/désactivation du CRM est une mutation
         // sensible — journalisée (ADR-CRM-004 : préfixe crm.feature.*).
         if ($company->hasFeature('crm') !== $oldCrm) {
+            // PlatformCompanyLookup a posé `SET search_path TO public` (la
+            // table audit_logs est une table TENANT : shared_tenants en mode
+            // shared) — restaurer le search_path du tenant avant l'écriture.
+            DB::statement('SET search_path TO '.$company->getSafeSearchPath());
+
             AuditLog::create([
                 'company_id' => $company->id,
                 'user_id' => $request->user()?->id,
