@@ -145,6 +145,8 @@ jobs:
 
       - name: Pilot go/no-go gates guard (issue #5876, MAT-018)
         run: bash dev-hub/tools/check-pilot-gates.sh
+      - name: Release Train compat matrix guard (issue #5874, MAT-016)
+        run: bash dev-hub/tools/check-release-compat.sh api
 
       - name: Performance budgets guard — scans lents, N+1, index (issue #5872, MAT-014)
         run: bash dev-hub/tools/check-performance-budgets.sh api
