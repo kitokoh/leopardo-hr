@@ -487,6 +487,18 @@
       "to": "BC-13",
       "baseline": true,
       "note": "AI → COMMS"
+    },
+    {
+      "from": "BC-02",
+      "to": "BC-14",
+      "baseline": false,
+      "note": "TENANT → INTEGRATION : TenantScopedEvent importe App\\Contracts\\Queue\\TenantScopedJob (contrat queue partagé, #5706)."
+    },
+    {
+      "from": "BC-02",
+      "to": "BC-01",
+      "baseline": false,
+      "note": "TENANT → PLATFORM : Company::hasFeature() consulte FeatureKillSwitchService (kill switch global, #5868)."
     }
   ]
 }
