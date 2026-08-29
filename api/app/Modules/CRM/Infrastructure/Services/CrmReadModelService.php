@@ -149,6 +149,7 @@ final class CrmReadModelService
      * @return array{total: int, filled: int, fields: int}
      */
     /** @param array<string> $requiredColumns */
+    /** @return array<string, int> */
     private function completenessScore(string $table, array $requiredColumns): array
     {
         if (! $this->tableExists($table)) {

@@ -31,7 +31,7 @@ final class StoreCrmExportRequest extends FormRequest
         ];
     }
 
-    public function withValidator($validator): void
+    public function withValidator(\Illuminate\Contracts\Validation\Validator $validator): void
     {
         $validator->after(function ($validator): void {
             $entity = (string) ($this->input('entity') ?? '');

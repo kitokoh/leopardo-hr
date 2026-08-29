@@ -44,7 +44,8 @@ class SearchCrmQuery
      *     page?: int,
      * }  $input
      */
-    /** @return LengthAwarePaginator<int, array{type: string, model: CrmAccount|CrmContact}> */
+    /** @param array{q: string, type?: string, status?: string, owner_id?: int, per_page?: int, page?: int} $input
+     * @return LengthAwarePaginator<int, array{type: string, model: CrmAccount|CrmContact}> */
     public function execute(array $input): LengthAwarePaginator
     {
         $term = $this->escapeLike(trim((string) $input['q']));

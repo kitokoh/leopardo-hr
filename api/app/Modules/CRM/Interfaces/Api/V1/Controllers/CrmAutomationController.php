@@ -51,7 +51,7 @@ class CrmAutomationController extends Controller
             'actions' => $request->input('actions'),
             'status' => (string) $request->input('status', 'draft'),
             'version' => 1,
-            'created_by' => (string) ($request->user()?->id ?? ''),
+            'created_by' => (string) ($request->user()->id ?? ''),
         ]);
 
         return (new CrmAutomationResource($automation))->response()->setStatusCode(201);

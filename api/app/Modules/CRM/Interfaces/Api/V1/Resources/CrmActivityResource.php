@@ -10,6 +10,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * Issue #5720 — Ressource activité CRM (timeline d'account, append-only).
  */
+/**
+ * @property int $id
+ * @property string $type
+ * @property string $subject
+ * @property string|null $description
+ * @property string $created_at
+ */
 class CrmActivityResource extends JsonResource
 {
     /** @return array<string, mixed> */

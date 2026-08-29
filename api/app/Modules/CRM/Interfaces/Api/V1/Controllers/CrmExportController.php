@@ -51,7 +51,7 @@ class CrmExportController extends Controller
         $dto = CreateCrmExportDTO::fromArray($request->validated());
 
         try {
-            $job = $this->createCrmExport->execute($dto, (string) ($request->user()?->id ?? ''));
+            $job = $this->createCrmExport->execute($dto, (string) ($request->user()->id ?? ''));
         } catch (CrmExportException $e) {
             return new JsonResponse(['error' => $e->errorCode()], $e->httpStatus());
         }
