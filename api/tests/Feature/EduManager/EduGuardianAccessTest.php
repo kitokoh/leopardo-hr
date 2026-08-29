@@ -209,10 +209,11 @@ class EduGuardianAccessTest extends TestCase
             ->where('id', $student->id)
             ->value('birth_date_encrypted');
 
-        // Au repos : valeur chiffrée, jamais la date en clair.
+        // Au repos : valeur chiffrée (enveloppe Laravel base64), jamais la date en clair.
         $this->assertIsString($raw);
         $this->assertNotSame('1999-01-01', $raw);
-        $this->assertStringStartsWith('{', (string) $raw);
+        $this->assertStringStartsWith('eyJ', (string) $raw); // base64('{"iv":...') — cast `encrypted`
+        $this->assertSame('1999-01-01', \Illuminate\Support\Facades\Crypt::decryptString((string) $raw));
     }
 
     private function student(Company $company, string $number): EduStudent

@@ -108,34 +108,49 @@ class EduManagerMigrationsTest extends TestCase
     {
         $this->expectException(QueryException::class);
 
-        DB::table('edu_campuses')->insert([
-            'company_id' => $this->newCompany()->id,
-            'code' => 'MAIN',
-            'name' => 'Campus invalide',
-            'status' => 'bogus-status',
-        ]);
+        // Transaction imbriquée = savepoint (#4978) : le RAISE PostgreSQL
+        // n'empoisonne pas la transaction RefreshDatabase (sinon 25P02
+        // en cascade sur le tearDown).
+        DB::transaction(function (): void {
+            DB::table('edu_campuses')->insert([
+                'company_id' => $this->newCompany()->id,
+                'code' => 'MAIN',
+                'name' => 'Campus invalide',
+                'status' => 'bogus-status',
+            ]);
+        });
     }
 
     public function test_student_status_check_rejects_unknown_status(): void
     {
         $this->expectException(QueryException::class);
 
-        DB::table('edu_students')->insert([
-            'company_id' => $this->newCompany()->id,
-            'student_number' => 'S-001',
-            'display_name' => 'Élève invalide',
-            'status' => 'bogus-status',
-        ]);
+        // Transaction imbriquée = savepoint (#4978) : le RAISE PostgreSQL
+        // n'empoisonne pas la transaction RefreshDatabase (sinon 25P02
+        // en cascade sur le tearDown).
+        DB::transaction(function (): void {
+            DB::table('edu_students')->insert([
+                'company_id' => $this->newCompany()->id,
+                'student_number' => 'S-001',
+                'display_name' => 'Élève invalide',
+                'status' => 'bogus-status',
+            ]);
+        });
     }
 
     public function test_guardian_relationship_check_rejects_unknown_code(): void
     {
         $this->expectException(QueryException::class);
 
-        DB::table('edu_guardians')->insert([
-            'company_id' => $this->newCompany()->id,
-            'relationship_code' => 'uncle-unknown',
-        ]);
+        // Transaction imbriquée = savepoint (#4978) : le RAISE PostgreSQL
+        // n'empoisonne pas la transaction RefreshDatabase (sinon 25P02
+        // en cascade sur le tearDown).
+        DB::transaction(function (): void {
+            DB::table('edu_guardians')->insert([
+                'company_id' => $this->newCompany()->id,
+                'relationship_code' => 'uncle-unknown',
+            ]);
+        });
     }
 
     public function test_student_guardian_relationship_check_rejects_unknown_code(): void
@@ -147,12 +162,17 @@ class EduManagerMigrationsTest extends TestCase
 
         $this->expectException(QueryException::class);
 
-        DB::table('edu_student_guardians')->insert([
-            'company_id' => $company->id,
-            'student_id' => $studentId,
-            'guardian_id' => $guardianId,
-            'relationship_code' => 'cousin-unknown',
-        ]);
+        // Transaction imbriquée = savepoint (#4978) : le RAISE PostgreSQL
+        // n'empoisonne pas la transaction RefreshDatabase (sinon 25P02
+        // en cascade sur le tearDown).
+        DB::transaction(function () use ($company, $studentId, $guardianId): void {
+            DB::table('edu_student_guardians')->insert([
+                'company_id' => $company->id,
+                'student_id' => $studentId,
+                'guardian_id' => $guardianId,
+                'relationship_code' => 'cousin-unknown',
+            ]);
+        });
     }
 
     public function test_campus_code_is_unique_per_tenant(): void
@@ -176,11 +196,16 @@ class EduManagerMigrationsTest extends TestCase
         // Même code sur le MÊME tenant : rejeté.
         $this->expectException(QueryException::class);
 
-        DB::table('edu_campuses')->insert([
-            'company_id' => $company->id,
-            'code' => 'MAIN',
-            'name' => 'Campus doublon',
-        ]);
+        // Transaction imbriquée = savepoint (#4978) : le RAISE PostgreSQL
+        // n'empoisonne pas la transaction RefreshDatabase (sinon 25P02
+        // en cascade sur le tearDown).
+        DB::transaction(function () use ($company): void {
+            DB::table('edu_campuses')->insert([
+                'company_id' => $company->id,
+                'code' => 'MAIN',
+                'name' => 'Campus doublon',
+            ]);
+        });
     }
 
     public function test_student_number_is_unique_per_tenant(): void
@@ -195,11 +220,16 @@ class EduManagerMigrationsTest extends TestCase
 
         $this->expectException(QueryException::class);
 
-        DB::table('edu_students')->insert([
-            'company_id' => $company->id,
-            'student_number' => 'S-001',
-            'display_name' => 'Élève doublon',
-        ]);
+        // Transaction imbriquée = savepoint (#4978) : le RAISE PostgreSQL
+        // n'empoisonne pas la transaction RefreshDatabase (sinon 25P02
+        // en cascade sur le tearDown).
+        DB::transaction(function () use ($company): void {
+            DB::table('edu_students')->insert([
+                'company_id' => $company->id,
+                'student_number' => 'S-001',
+                'display_name' => 'Élève doublon',
+            ]);
+        });
     }
 
     public function test_cross_tenant_student_guardian_link_is_rejected_by_database(): void
@@ -212,11 +242,16 @@ class EduManagerMigrationsTest extends TestCase
         // (guardian_id, company_id) doit rejeter l'insertion.
         $this->expectException(QueryException::class);
 
-        DB::table('edu_student_guardians')->insert([
-            'company_id' => $companyB->id,
-            'student_id' => $studentAId,
-            'guardian_id' => $this->createGuardian($companyB->id, 'gardienB@exemple.test'),
-        ]);
+        // Transaction imbriquée = savepoint (#4978) : le RAISE PostgreSQL
+        // n'empoisonne pas la transaction RefreshDatabase (sinon 25P02
+        // en cascade sur le tearDown).
+        DB::transaction(function () use ($companyB, $studentAId): void {
+            DB::table('edu_student_guardians')->insert([
+                'company_id' => $companyB->id,
+                'student_id' => $studentAId,
+                'guardian_id' => $this->createGuardian($companyB->id, 'gardienB@exemple.test'),
+            ]);
+        });
     }
 
     public function test_duplicate_student_guardian_link_is_rejected(): void
@@ -234,11 +269,16 @@ class EduManagerMigrationsTest extends TestCase
 
         $this->expectException(QueryException::class);
 
-        DB::table('edu_student_guardians')->insert([
-            'company_id' => $company->id,
-            'student_id' => $studentId,
-            'guardian_id' => $guardianId,
-        ]);
+        // Transaction imbriquée = savepoint (#4978) : le RAISE PostgreSQL
+        // n'empoisonne pas la transaction RefreshDatabase (sinon 25P02
+        // en cascade sur le tearDown).
+        DB::transaction(function () use ($company, $studentId, $guardianId): void {
+            DB::table('edu_student_guardians')->insert([
+                'company_id' => $company->id,
+                'student_id' => $studentId,
+                'guardian_id' => $guardianId,
+            ]);
+        });
     }
 
     public function test_up_is_idempotent(): void
