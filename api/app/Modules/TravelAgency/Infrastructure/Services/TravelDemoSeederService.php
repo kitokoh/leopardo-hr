@@ -97,7 +97,7 @@ final class TravelDemoSeederService
      * Première ville seedée d'un pays donné — pour la démo, n'importe quelle
      * ville du pays convient.
      *
-     * @param array<int, string> $iso2s
+     * @param  array<int, string>  $iso2s
      * @return array<string, int>
      */
     private function cityIdsByCountry(Company $company, array $iso2s): array
