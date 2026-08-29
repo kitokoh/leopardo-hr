@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class TravelCountry extends Model
 {
     use BelongsToCompany;
-    /** @use HasFactory<TravelCountry> */
+    /** @use HasFactory<Database\Factories\TravelCountryFactory> */
     use HasFactory;
 
     protected $fillable = [
