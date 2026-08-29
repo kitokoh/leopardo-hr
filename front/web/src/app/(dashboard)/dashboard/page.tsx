@@ -27,6 +27,7 @@ import { trackClientEvent } from '@/lib/client-analytics';
 import { getDisplayName, getPreferredLocale, getStoredUser, toIntlLocale, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
 import { getClientModuleAccess } from '@/lib/client-features';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
+import { LeaveBalanceCard } from './_components/LeaveBalanceCard';
 
 const emptySubscribe = () => () => {};
 
@@ -744,6 +745,10 @@ function EmployeeDashboard({ user }: { user: StoredAuthUser | null }) {
           {i18nT(locale, 'dashboard.employee_intro')}
         </p>
       </section>
+
+      {/* #5694 : carte « solde de congés » — jours restants par type pour
+          l'employé connecté (GET /me/leave-balances). */}
+      <LeaveBalanceCard />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {cards.map((card) => (
