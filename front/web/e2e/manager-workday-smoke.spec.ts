@@ -166,6 +166,34 @@ async function mockManagerSession(page: Page) {
       }),
     });
   });
+
+  // #5693 : la page /absences charge les soldes pour alimenter le formulaire
+  // de demande (types d'absence disponibles). Mock requis pour garder le
+  // smoke déterministe.
+  await page.route('**/api/v1/me/leave-balances', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: [
+          {
+            id: 5011,
+            employee_id: 501,
+            absence_type_id: 1,
+            balance: 18,
+            used: 4,
+            pending: 2,
+            year: 2026,
+            absence_type: {
+              id: 1,
+              name: 'Conges payes',
+              code: 'CP',
+            },
+          },
+        ],
+      }),
+    });
+  });
 }
 
 test.describe('Client web manager workday smoke', () => {
