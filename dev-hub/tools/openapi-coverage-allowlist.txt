@@ -21,3 +21,16 @@ POST /v1/crm/segments
 PUT /v1/crm/segments/{param}
 DELETE /v1/crm/segments/{param}
 POST /v1/crm/segments/{param}/rebuild
+# CRM client — campagnes (#5724) : contrat OpenAPI canonique publié par #5712
+# (Périmètre CRM V0-08 « Publier les contrats API et OpenAPI du CRM client »).
+GET /v1/crm/campaigns
+GET /v1/crm/campaigns/{param}
+GET /v1/crm/campaigns/{param}/report
+POST /v1/crm/campaigns
+PUT /v1/crm/campaigns/{param}
+DELETE /v1/crm/campaigns/{param}
+POST /v1/crm/campaigns/{param}/start
+POST /v1/crm/campaigns/{param}/pause
+POST /v1/crm/campaigns/{param}/resume
+POST /v1/crm/campaigns/{param}/cancel
+POST /v1/crm/campaigns/{param}/finish

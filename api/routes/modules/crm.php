@@ -15,6 +15,7 @@ declare(strict_types=1);
  * #3727).
  */
 
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmCampaignController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmChannelController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmConsentController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDedupController;
@@ -56,6 +57,24 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/dedup/suggestions', [CrmDedupController::class, 'suggestions']);
     Route::get('/merge/preview', [CrmDedupController::class, 'preview']);
     Route::post('/merge', [CrmDedupController::class, 'merge']);
+
+    // ── Campagnes marketing (#5724) ──────────────────────────────────────────
+    Route::middleware('api.manager')->group(function (): void {
+        Route::get('/campaigns', [CrmCampaignController::class, 'index']);
+        Route::get('/campaigns/{campaign}', [CrmCampaignController::class, 'show'])->whereNumber('campaign');
+        Route::get('/campaigns/{campaign}/report', [CrmCampaignController::class, 'report'])->whereNumber('campaign');
+    });
+
+    Route::middleware('api.manager:principal,marketing')->group(function (): void {
+        Route::post('/campaigns', [CrmCampaignController::class, 'store']);
+        Route::put('/campaigns/{campaign}', [CrmCampaignController::class, 'update'])->whereNumber('campaign');
+        Route::delete('/campaigns/{campaign}', [CrmCampaignController::class, 'destroy'])->whereNumber('campaign');
+        Route::post('/campaigns/{campaign}/start', [CrmCampaignController::class, 'start'])->whereNumber('campaign');
+        Route::post('/campaigns/{campaign}/pause', [CrmCampaignController::class, 'pause'])->whereNumber('campaign');
+        Route::post('/campaigns/{campaign}/resume', [CrmCampaignController::class, 'resume'])->whereNumber('campaign');
+        Route::post('/campaigns/{campaign}/cancel', [CrmCampaignController::class, 'cancel'])->whereNumber('campaign');
+        Route::post('/campaigns/{campaign}/finish', [CrmCampaignController::class, 'finish'])->whereNumber('campaign');
+    });
 
     // ── Consentements et préférences de communication (#5722) ───────────────
     Route::middleware('api.manager')->group(function (): void {
