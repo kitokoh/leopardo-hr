@@ -76,6 +76,64 @@ trait CreatesCrmSchema
                 $table->index(['company_id', 'last_name']);
             });
         }
+
+        if (! schemaTableExists('crm_activities')) {
+            // Schéma réel #5710 (PR #5753) : append-only, occurred_at, created_by.
+            Schema::create('crm_activities', function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('account_id')->nullable();
+                $table->unsignedBigInteger('contact_id')->nullable();
+                $table->unsignedBigInteger('lead_id')->nullable();
+                $table->unsignedBigInteger('opportunity_id')->nullable();
+                $table->string('type', 40);
+                $table->string('subject', 200)->nullable();
+                $table->text('description')->nullable();
+                $table->timestamp('occurred_at')->useCurrent();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'account_id', 'occurred_at']);
+            });
+        }
+
+        if (! schemaTableExists('crm_tasks')) {
+            Schema::create('crm_tasks', function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('account_id')->nullable();
+                $table->unsignedBigInteger('contact_id')->nullable();
+                $table->unsignedBigInteger('lead_id')->nullable();
+                $table->unsignedBigInteger('opportunity_id')->nullable();
+                $table->string('title', 200);
+                $table->text('description')->nullable();
+                $table->string('status', 20)->default('todo');
+                $table->string('priority', 10)->default('medium');
+                $table->timestamp('due_at')->nullable();
+                $table->timestamp('completed_at')->nullable();
+                $table->unsignedBigInteger('assigned_to')->nullable();
+                $table->unsignedBigInteger('completed_by')->nullable();
+                $table->unsignedBigInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status']);
+                $table->index(['company_id', 'due_at']);
+                $table->index(['assigned_to']);
+            });
+        }
+
+        if (! schemaTableExists('crm_task_reminders')) {
+            // Issue #5720 — relances internes (table portée par ce batch).
+            Schema::create('crm_task_reminders', function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('task_id')->index();
+                $table->date('remind_date');
+                $table->timestampTz('created_at')->useCurrent();
+
+                $table->unique(['task_id', 'remind_date'], 'crm_task_reminders_task_date_unique');
+            });
+        }
     }
 
     /**
@@ -131,4 +189,57 @@ trait CreatesCrmSchema
             'updated_at' => now(),
         ], $overrides));
     }
+
+    /**
+     * Insère une ligne crm_tasks de test (schéma canonique, cf. #5710).
+     *
+     * @param  array<string, mixed>  $overrides
+     * @return int
+     */
+    private function createCrmTask(array $overrides = []): int
+    {
+        return DB::table('crm_tasks')->insertGetId(array_merge([
+            'company_id' => '00000000-0000-0000-0000-000000000000',
+            'account_id' => null,
+            'contact_id' => null,
+            'lead_id' => null,
+            'opportunity_id' => null,
+            'title' => 'Relancer le client',
+            'description' => null,
+            'status' => 'todo',
+            'priority' => 'medium',
+            'due_at' => null,
+            'completed_at' => null,
+            'assigned_to' => null,
+            'completed_by' => null,
+            'created_by' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ], $overrides));
+    }
+
+    /**
+     * Insère une ligne crm_activities de test (schéma canonique, cf. #5710).
+     *
+     * @param  array<string, mixed>  $overrides
+     * @return int
+     */
+    private function createCrmActivity(array $overrides = []): int
+    {
+        return DB::table('crm_activities')->insertGetId(array_merge([
+            'company_id' => '00000000-0000-0000-0000-000000000000',
+            'account_id' => 1,
+            'contact_id' => null,
+            'lead_id' => null,
+            'opportunity_id' => null,
+            'type' => 'call',
+            'subject' => null,
+            'description' => null,
+            'occurred_at' => now(),
+            'created_by' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ], $overrides));
+    }
 }
+

@@ -1222,6 +1222,19 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('crm_task_reminders'))) {
+            // Issue #5720 — relances internes des tâches CRM (idempotence).
+            Schema::create($this->moduleTable('crm_task_reminders'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('task_id')->index();
+                $table->date('remind_date');
+                $table->timestampTz('created_at')->useCurrent();
+
+                $table->unique(['task_id', 'remind_date'], 'crm_task_reminders_task_date_unique');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('employee_documents'))) {
             Schema::create($this->moduleTable('employee_documents'), function (Blueprint $table): void {
                 $table->bigIncrements('id');

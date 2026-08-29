@@ -6019,6 +6019,232 @@ paths:
                           type: integer
                         month:
                           type: integer
+  /crm/tasks:
+    get:
+      tags:
+      - CRM
+      summary: Lister les tâches CRM du tenant (issue #5720)
+      description: Filtres strictement allowlistes (status/overdue/priority/owner_id/account_id), tri fixe due_at ASC. Roles manager principal/rh/marketing.
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - todo
+          - in_progress
+          - done
+          - cancelled
+      - name: overdue
+        in: query
+        schema:
+          type: boolean
+      - name: priority
+        in: query
+        schema:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+      - name: owner_id
+        in: query
+        schema:
+          type: integer
+      - name: account_id
+        in: query
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/PerPage'
+      - $ref: '#/components/parameters/Page'
+      responses:
+        '200':
+          description: Liste paginee des taches CRM
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CrmTask'
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - CRM
+      summary: Creer une tache CRM (issue #5720)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmTaskPayload'
+      responses:
+        '201':
+          description: Tache creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmTask'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/tasks/{task}:
+    get:
+      tags:
+      - CRM
+      summary: Detail d'une tache CRM
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tache
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmTask'
+        '404':
+          $ref: '#/components/responses/Error404'
+    patch:
+      tags:
+      - CRM
+      summary: Mettre a jour une tache CRM (transitions de statut controlees)
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmTaskPayload'
+      responses:
+        '200':
+          description: Tache mise a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmTask'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - CRM
+      summary: Supprimer une tache CRM
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Tache supprimee
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/tasks/{task}/complete:
+    post:
+      tags:
+      - CRM
+      summary: Cloturer une tache CRM (status -> done)
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tache cloturee
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/tasks/{task}/reopen:
+    post:
+      tags:
+      - CRM
+      summary: Rouvrir une tache CRM (status -> todo)
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tache rouverte
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/accounts/{account}/timeline:
+    get:
+      tags:
+      - CRM
+      summary: Timeline d'activites d'un account CRM (issue #5720)
+      description: Cursor pagination keyset (before_id, ordre id DESC). Append-only.
+      parameters:
+      - name: account
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+      - name: before_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Activities paginees
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CrmActivity'
+                  meta:
+                    type: object
+                    properties:
+                      next_cursor:
+                        type: integer
+                        nullable: true
+        '404':
+          $ref: '#/components/responses/Error404'
   /crm/search:
     get:
       tags:
@@ -28991,6 +29217,137 @@ components:
           type: string
           format: date-time
           nullable: true
+    CrmTask:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - todo
+          - in_progress
+          - done
+          - cancelled
+        priority:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+        assignee:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+        account:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        contact_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CrmTaskPayload:
+      type: object
+      required:
+      - title
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 2000
+          nullable: true
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+          enum:
+          - todo
+          - in_progress
+          - done
+          - cancelled
+        priority:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+        assignee_id:
+          type: integer
+          nullable: true
+        account_id:
+          type: integer
+          nullable: true
+        contact_id:
+          type: integer
+          nullable: true
+    CrmActivity:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        subject:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        contact_id:
+          type: integer
+          nullable: true
+        lead_id:
+          type: integer
+          nullable: true
+        opportunity_id:
+          type: integer
+          nullable: true
+        occurred_at:
+          type: string
+          format: date-time
+          nullable: true
+        actor:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+        created_at:
+          type: string
+          format: date-time
     AccountingContactPayload:
       type: object
       required:
