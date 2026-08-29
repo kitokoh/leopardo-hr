@@ -102,6 +102,7 @@ consommateurs).
 | `Modules/Onboarding` | ✅ routes/api.php | ✅ complet | `OnboardingServiceProvider` |
 | `Modules/Platform` | ✅ routes/api.php | ✅ complet | `PlatformServiceProvider` |
 | `Modules/Accounting` | ✅ routes/modules/accounting.php | ✅ complet | `AccountingServiceProvider` |
+| `Modules/TravelAgency` | ✅ routes/modules/travelagency.php | 🔶 fondations verticale (squelette DDD complet + manifest, TRAVEL-101..108, 201..203) | `TravelAgencyServiceProvider` |
 
 **Légende :** ✅ complet | 🔄 migration partielle en cours
 

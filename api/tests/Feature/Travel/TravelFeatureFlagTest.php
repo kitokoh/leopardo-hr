@@ -52,6 +52,7 @@ class TravelFeatureFlagTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $company->setFeature('travelagency', true);
+        $company->save();
 
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
