@@ -3415,6 +3415,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "travel_rental_vehicles"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_outbox_events"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_customer_contacts"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_outbox_events"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_payments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_tickets"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_passengers"'.$cascade);
