@@ -34,7 +34,8 @@ class PilotSeedCommandTest extends TestCase
 
     public function test_pilot_seed_creates_pilots_and_is_idempotent(): void
     {
-        $this->artisan('pilot:seed', ['vertical' => 'crm'])->assertExitCode(0);
+        $cmd = $this->artisan('pilot:seed', ['vertical' => 'crm']);
+        $cmd->assertExitCode(0);
 
         foreach (['crm-pilot-alpha', 'crm-pilot-beta'] as $slug) {
             $company = Company::query()->where('slug', $slug)->first();
@@ -47,7 +48,8 @@ class PilotSeedCommandTest extends TestCase
         }
 
         // Réentrance : second run sans erreur, aucun doublon.
-        $this->artisan('pilot:seed', ['vertical' => 'crm'])->assertExitCode(0);
+        $cmd = $this->artisan('pilot:seed', ['vertical' => 'crm']);
+        $cmd->assertExitCode(0);
         $this->assertSame(1, Company::query()->where('slug', 'crm-pilot-alpha')->count());
     }
 
@@ -55,29 +57,34 @@ class PilotSeedCommandTest extends TestCase
     {
         $this->seed(CrmPilotSeeder::class);
 
-        $this->artisan('pilot:cleanup', ['vertical' => 'crm'])->assertExitCode(0);
+        $cmd = $this->artisan('pilot:cleanup', ['vertical' => 'crm']);
+        $cmd->assertExitCode(0);
 
         $this->assertNull(Company::query()->where('slug', 'crm-pilot-alpha')->first());
         $this->assertNull(Company::query()->where('slug', 'crm-pilot-beta')->first());
         $this->assertSame(0, DB::table('crm_accounts')->count());
 
         // Second run : no-op.
-        $this->artisan('pilot:cleanup', ['vertical' => 'crm'])->assertExitCode(0);
+        $cmd = $this->artisan('pilot:cleanup', ['vertical' => 'crm']);
+        $cmd->assertExitCode(0);
     }
 
     public function test_pilot_cleanup_targets_only_allowlisted_slugs(): void
     {
         Company::factory()->create(['slug' => 'acme-real-client', 'name' => 'Acme Real']);
 
-        $this->artisan('pilot:cleanup', ['vertical' => 'crm', '--tenant' => 'acme-real-client'])->assertFailed();
+        $cmd = $this->artisan('pilot:cleanup', ['vertical' => 'crm', '--tenant' => 'acme-real-client']);
+        $cmd->assertFailed();
 
         $this->assertNotNull(Company::query()->where('slug', 'acme-real-client')->first());
     }
 
     public function test_pilot_seed_unknown_vertical_fails_cleanly(): void
     {
-        $this->artisan('pilot:seed', ['vertical' => 'nope'])->assertFailed();
-        $this->artisan('pilot:cleanup', ['vertical' => 'nope'])->assertFailed();
+        $cmd = $this->artisan('pilot:seed', ['vertical' => 'nope']);
+        $cmd->assertFailed();
+        $cmd = $this->artisan('pilot:cleanup', ['vertical' => 'nope']);
+        $cmd->assertFailed();
     }
 
     public function test_guard_refuses_production_without_force(): void
