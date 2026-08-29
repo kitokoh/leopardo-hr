@@ -455,7 +455,16 @@
     "platform_dashboard_hint": "Platform panelinde mevcuttur.",
     "searchPlaceholder": "Ara...",
     "modulesActiveSentence": "{active} aktif modül, planınıza göre {locked} etkinleştirilecek.",
-    "yourCompany": "Şirketiniz"
+    "yourCompany": "Şirketiniz",
+    "leave_balance_title": "İzin bakiyem",
+    "leave_balance_subtitle": "Türe göre kalan günler, cari yıl",
+    "leave_balance_loading": "Bakiye yükleniyor…",
+    "leave_balance_error": "İzin bakiyesi yüklenemedi.",
+    "leave_balance_empty": "Bu hesap için bakiye yapılandırılmamış.",
+    "leave_balance_available": "{days} gün kullanılabilir",
+    "leave_balance_used": "{days} kullanıldı",
+    "see_absences": "İzinlerimi gör",
+    "leave_balance_unknown": "İzin"
   },
   "marketing": {
     "oauth": {
