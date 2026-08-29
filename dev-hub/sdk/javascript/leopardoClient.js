@@ -4115,6 +4115,121 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/sessions/{trainingSession}/enroll", options);
     },
 
+    /** Liste des compagnies de transport (TRAVEL-304/#6034) */
+    getTravelCarriers(options = {}) {
+      return request("GET", "/travel/carriers", options);
+    },
+
+    /** Création d'une compagnie de transport (TRAVEL-304/#6034) */
+    postTravelCarriers(options = {}) {
+      return request("POST", "/travel/carriers", options);
+    },
+
+    /** Suppression d'une compagnie de transport (TRAVEL-304/#6034) */
+    deleteTravelCarriersByTravelCarrier(options = {}) {
+      return request("DELETE", "/travel/carriers/{travelCarrier}", options);
+    },
+
+    /** Détail d'une compagnie de transport (TRAVEL-304/#6034) */
+    getTravelCarriersByTravelCarrier(options = {}) {
+      return request("GET", "/travel/carriers/{travelCarrier}", options);
+    },
+
+    /** Modification d'une compagnie de transport (TRAVEL-304/#6034) */
+    putTravelCarriersByTravelCarrier(options = {}) {
+      return request("PUT", "/travel/carriers/{travelCarrier}", options);
+    },
+
+    /** Référentiel villes en lecture (TRAVEL-301/#6031) */
+    getTravelCities(options = {}) {
+      return request("GET", "/travel/cities", options);
+    },
+
+    /** Liste des classes de service (TRAVEL-305/#6035) */
+    getTravelClasses(options = {}) {
+      return request("GET", "/travel/classes", options);
+    },
+
+    /** Création d'une classe de service (TRAVEL-305/#6035) */
+    postTravelClasses(options = {}) {
+      return request("POST", "/travel/classes", options);
+    },
+
+    /** Suppression d'une classe de service (TRAVEL-305/#6035) */
+    deleteTravelClassesByTravelClass(options = {}) {
+      return request("DELETE", "/travel/classes/{travelClass}", options);
+    },
+
+    /** Détail d'une classe de service (TRAVEL-305/#6035) */
+    getTravelClassesByTravelClass(options = {}) {
+      return request("GET", "/travel/classes/{travelClass}", options);
+    },
+
+    /** Modification d'une classe de service (TRAVEL-305/#6035) */
+    putTravelClassesByTravelClass(options = {}) {
+      return request("PUT", "/travel/classes/{travelClass}", options);
+    },
+
+    /** Référentiel pays en lecture (TRAVEL-301/#6031) */
+    getTravelCountries(options = {}) {
+      return request("GET", "/travel/countries", options);
+    },
+
+    /** Liste des bureaux de vente (TRAVEL-303/#6033) */
+    getTravelOffices(options = {}) {
+      return request("GET", "/travel/offices", options);
+    },
+
+    /** Création d'un bureau de vente (TRAVEL-303/#6033) */
+    postTravelOffices(options = {}) {
+      return request("POST", "/travel/offices", options);
+    },
+
+    /** Suppression d'un bureau de vente (TRAVEL-303/#6033) */
+    deleteTravelOfficesByTravelOffice(options = {}) {
+      return request("DELETE", "/travel/offices/{travelOffice}", options);
+    },
+
+    /** Détail d'un bureau de vente (TRAVEL-303/#6033) */
+    getTravelOfficesByTravelOffice(options = {}) {
+      return request("GET", "/travel/offices/{travelOffice}", options);
+    },
+
+    /** Modification d'un bureau de vente (TRAVEL-303/#6033) */
+    putTravelOfficesByTravelOffice(options = {}) {
+      return request("PUT", "/travel/offices/{travelOffice}", options);
+    },
+
+    /** Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977) */
+    getTravelPing(options = {}) {
+      return request("GET", "/travel/ping", options);
+    },
+
+    /** Liste des gares/terminaux (TRAVEL-302/#6032) */
+    getTravelStations(options = {}) {
+      return request("GET", "/travel/stations", options);
+    },
+
+    /** Création d'une gare/terminal (TRAVEL-302/#6032) */
+    postTravelStations(options = {}) {
+      return request("POST", "/travel/stations", options);
+    },
+
+    /** Suppression d'une gare/terminal (TRAVEL-302/#6032) */
+    deleteTravelStationsByTravelStation(options = {}) {
+      return request("DELETE", "/travel/stations/{travelStation}", options);
+    },
+
+    /** Détail d'une gare/terminal (TRAVEL-302/#6032) */
+    getTravelStationsByTravelStation(options = {}) {
+      return request("GET", "/travel/stations/{travelStation}", options);
+    },
+
+    /** Modification d'une gare/terminal (TRAVEL-302/#6032) */
+    putTravelStationsByTravelStation(options = {}) {
+      return request("PUT", "/travel/stations/{travelStation}", options);
+    },
+
     /** Demande d'essai guidé / auto-service (onboarding) */
     postTrialSignup(options = {}) {
       return request("POST", "/trial/signup", options);

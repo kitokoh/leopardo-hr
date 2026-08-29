@@ -3312,6 +3312,98 @@ class LeopardoClient:
         """Inscrire un employe"""
         return self.request("POST", "/training/sessions/{trainingSession}/enroll", **kwargs)
 
+    def get_travel_carriers(self, **kwargs):
+        """Liste des compagnies de transport (TRAVEL-304/#6034)"""
+        return self.request("GET", "/travel/carriers", **kwargs)
+
+    def post_travel_carriers(self, **kwargs):
+        """Création d'une compagnie de transport (TRAVEL-304/#6034)"""
+        return self.request("POST", "/travel/carriers", **kwargs)
+
+    def delete_travel_carriers_by_travelcarrier(self, **kwargs):
+        """Suppression d'une compagnie de transport (TRAVEL-304/#6034)"""
+        return self.request("DELETE", "/travel/carriers/{travelCarrier}", **kwargs)
+
+    def get_travel_carriers_by_travelcarrier(self, **kwargs):
+        """Détail d'une compagnie de transport (TRAVEL-304/#6034)"""
+        return self.request("GET", "/travel/carriers/{travelCarrier}", **kwargs)
+
+    def put_travel_carriers_by_travelcarrier(self, **kwargs):
+        """Modification d'une compagnie de transport (TRAVEL-304/#6034)"""
+        return self.request("PUT", "/travel/carriers/{travelCarrier}", **kwargs)
+
+    def get_travel_cities(self, **kwargs):
+        """Référentiel villes en lecture (TRAVEL-301/#6031)"""
+        return self.request("GET", "/travel/cities", **kwargs)
+
+    def get_travel_classes(self, **kwargs):
+        """Liste des classes de service (TRAVEL-305/#6035)"""
+        return self.request("GET", "/travel/classes", **kwargs)
+
+    def post_travel_classes(self, **kwargs):
+        """Création d'une classe de service (TRAVEL-305/#6035)"""
+        return self.request("POST", "/travel/classes", **kwargs)
+
+    def delete_travel_classes_by_travelclass(self, **kwargs):
+        """Suppression d'une classe de service (TRAVEL-305/#6035)"""
+        return self.request("DELETE", "/travel/classes/{travelClass}", **kwargs)
+
+    def get_travel_classes_by_travelclass(self, **kwargs):
+        """Détail d'une classe de service (TRAVEL-305/#6035)"""
+        return self.request("GET", "/travel/classes/{travelClass}", **kwargs)
+
+    def put_travel_classes_by_travelclass(self, **kwargs):
+        """Modification d'une classe de service (TRAVEL-305/#6035)"""
+        return self.request("PUT", "/travel/classes/{travelClass}", **kwargs)
+
+    def get_travel_countries(self, **kwargs):
+        """Référentiel pays en lecture (TRAVEL-301/#6031)"""
+        return self.request("GET", "/travel/countries", **kwargs)
+
+    def get_travel_offices(self, **kwargs):
+        """Liste des bureaux de vente (TRAVEL-303/#6033)"""
+        return self.request("GET", "/travel/offices", **kwargs)
+
+    def post_travel_offices(self, **kwargs):
+        """Création d'un bureau de vente (TRAVEL-303/#6033)"""
+        return self.request("POST", "/travel/offices", **kwargs)
+
+    def delete_travel_offices_by_traveloffice(self, **kwargs):
+        """Suppression d'un bureau de vente (TRAVEL-303/#6033)"""
+        return self.request("DELETE", "/travel/offices/{travelOffice}", **kwargs)
+
+    def get_travel_offices_by_traveloffice(self, **kwargs):
+        """Détail d'un bureau de vente (TRAVEL-303/#6033)"""
+        return self.request("GET", "/travel/offices/{travelOffice}", **kwargs)
+
+    def put_travel_offices_by_traveloffice(self, **kwargs):
+        """Modification d'un bureau de vente (TRAVEL-303/#6033)"""
+        return self.request("PUT", "/travel/offices/{travelOffice}", **kwargs)
+
+    def get_travel_ping(self, **kwargs):
+        """Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977)"""
+        return self.request("GET", "/travel/ping", **kwargs)
+
+    def get_travel_stations(self, **kwargs):
+        """Liste des gares/terminaux (TRAVEL-302/#6032)"""
+        return self.request("GET", "/travel/stations", **kwargs)
+
+    def post_travel_stations(self, **kwargs):
+        """Création d'une gare/terminal (TRAVEL-302/#6032)"""
+        return self.request("POST", "/travel/stations", **kwargs)
+
+    def delete_travel_stations_by_travelstation(self, **kwargs):
+        """Suppression d'une gare/terminal (TRAVEL-302/#6032)"""
+        return self.request("DELETE", "/travel/stations/{travelStation}", **kwargs)
+
+    def get_travel_stations_by_travelstation(self, **kwargs):
+        """Détail d'une gare/terminal (TRAVEL-302/#6032)"""
+        return self.request("GET", "/travel/stations/{travelStation}", **kwargs)
+
+    def put_travel_stations_by_travelstation(self, **kwargs):
+        """Modification d'une gare/terminal (TRAVEL-302/#6032)"""
+        return self.request("PUT", "/travel/stations/{travelStation}", **kwargs)
+
     def post_trial_signup(self, **kwargs):
         """Demande d'essai guidé / auto-service (onboarding)"""
         return self.request("POST", "/trial/signup", **kwargs)

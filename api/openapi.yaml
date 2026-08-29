@@ -764,6 +764,831 @@ paths:
           description: Non authentifié
         '403':
           description: Contexte tenant absent ou feature flag travelagency inactif
+  /travel/countries:
+    get:
+      tags:
+      - Travel
+      summary: Référentiel pays en lecture (TRAVEL-301/#6031)
+      description: |
+        Liste paginée du référentiel pays tenant-scoped, destinée aux listes
+        déroulantes. Filtres : statut, recherche par nom. Lecture pure.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [active, disabled]
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 120
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des pays
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        iso2:
+                          type: string
+                        iso3:
+                          type: string
+                        name:
+                          type: string
+                        phone_code:
+                          type: integer
+                          nullable: true
+                        status:
+                          type: string
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+  /travel/cities:
+    get:
+      tags:
+      - Travel
+      summary: Référentiel villes en lecture (TRAVEL-301/#6031)
+      description: |
+        Liste paginée du référentiel villes tenant-scoped, destinée aux listes
+        déroulantes. Filtres : pays (ISO2), statut, recherche par nom. Lecture
+        pure.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: country_iso2
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 2
+          maxLength: 2
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [active, disabled]
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 120
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des villes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        country_iso2:
+                          type: string
+                        name:
+                          type: string
+                        region:
+                          type: string
+                          nullable: true
+                        latitude:
+                          type: number
+                          nullable: true
+                        longitude:
+                          type: number
+                          nullable: true
+                        status:
+                          type: string
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+  /travel/stations:
+    get:
+      tags:
+      - Travel
+      summary: Liste des gares/terminaux (TRAVEL-302/#6032)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des gares/terminaux
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelStation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag inactif, ou permission travel.manage/travel.agent manquante
+    post:
+      tags:
+      - Travel
+      summary: Création d'une gare/terminal (TRAVEL-302/#6032)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - city_id
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 120
+                city_id:
+                  type: integer
+                address:
+                  type: string
+                  nullable: true
+                contact_phone:
+                  type: string
+                  nullable: true
+                timezone:
+                  type: string
+                is_terminal:
+                  type: boolean
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '201':
+          description: Gare créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelStation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée (code/nom/city_id invalide, ville d'un autre tenant)
+  /travel/stations/{travelStation}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'une gare/terminal (TRAVEL-302/#6032)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelStation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Gare trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelStation'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Gare introuvable ou appartenant à un autre tenant
+    put:
+      tags:
+      - Travel
+      summary: Modification d'une gare/terminal (TRAVEL-302/#6032)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelStation
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 120
+                city_id:
+                  type: integer
+                address:
+                  type: string
+                  nullable: true
+                contact_phone:
+                  type: string
+                  nullable: true
+                timezone:
+                  type: string
+                is_terminal:
+                  type: boolean
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '200':
+          description: Gare modifiée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelStation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Gare introuvable ou appartenant à un autre tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une gare/terminal (TRAVEL-302/#6032)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelStation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Gare supprimée
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Gare introuvable ou appartenant à un autre tenant
+  /travel/offices:
+    get:
+      tags:
+      - Travel
+      summary: Liste des bureaux de vente (TRAVEL-303/#6033)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des bureaux de vente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelOffice'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'un bureau de vente (TRAVEL-303/#6033)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - city_id
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                city_id:
+                  type: integer
+                address:
+                  type: string
+                  nullable: true
+                contact_phone:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '201':
+          description: Bureau créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelOffice'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée (ville d'un autre tenant)
+  /travel/offices/{travelOffice}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un bureau de vente (TRAVEL-303/#6033)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelOffice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Bureau trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelOffice'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Bureau introuvable ou appartenant à un autre tenant
+    put:
+      tags:
+      - Travel
+      summary: Modification d'un bureau de vente (TRAVEL-303/#6033)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelOffice
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                city_id:
+                  type: integer
+                address:
+                  type: string
+                  nullable: true
+                contact_phone:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '200':
+          description: Bureau modifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelOffice'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Bureau introuvable ou appartenant à un autre tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un bureau de vente (TRAVEL-303/#6033)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelOffice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Bureau supprimé
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Bureau introuvable ou appartenant à un autre tenant
+  /travel/carriers:
+    get:
+      tags:
+      - Travel
+      summary: Liste des compagnies de transport (TRAVEL-304/#6034)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des compagnies de transport
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelCarrier'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'une compagnie de transport (TRAVEL-304/#6034)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 120
+                type:
+                  type: string
+                  enum: [bus, train, plane, boat]
+                contact_phone:
+                  type: string
+                  nullable: true
+                logo_asset_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '201':
+          description: Compagnie créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelCarrier'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée (type inconnu)
+  /travel/carriers/{travelCarrier}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'une compagnie de transport (TRAVEL-304/#6034)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCarrier
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Compagnie trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelCarrier'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Compagnie introuvable ou appartenant à un autre tenant
+    put:
+      tags:
+      - Travel
+      summary: Modification d'une compagnie de transport (TRAVEL-304/#6034)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCarrier
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 120
+                type:
+                  type: string
+                  enum: [bus, train, plane, boat]
+                contact_phone:
+                  type: string
+                  nullable: true
+                logo_asset_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '200':
+          description: Compagnie modifiée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelCarrier'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Compagnie introuvable ou appartenant à un autre tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une compagnie de transport (TRAVEL-304/#6034)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCarrier
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Compagnie supprimée
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Compagnie introuvable ou appartenant à un autre tenant
+  /travel/classes:
+    get:
+      tags:
+      - Travel
+      summary: Liste des classes de service (TRAVEL-305/#6035)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des classes de service
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelClass'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'une classe de service (TRAVEL-305/#6035)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+                color:
+                  type: string
+                  nullable: true
+                priority:
+                  type: integer
+                  minimum: 0
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '201':
+          description: Classe créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelClass'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée (code déjà utilisé par le tenant)
+  /travel/classes/{travelClass}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'une classe de service (TRAVEL-305/#6035)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelClass
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Classe trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelClass'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Classe introuvable ou appartenant à un autre tenant
+    put:
+      tags:
+      - Travel
+      summary: Modification d'une classe de service (TRAVEL-305/#6035)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelClass
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+                color:
+                  type: string
+                  nullable: true
+                priority:
+                  type: integer
+                  minimum: 0
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '200':
+          description: Classe modifiée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelClass'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Classe introuvable ou appartenant à un autre tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une classe de service (TRAVEL-305/#6035)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelClass
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Classe supprimée
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Classe introuvable ou appartenant à un autre tenant
   /health:
     get:
       tags:
@@ -24889,6 +25714,110 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    TravelClass:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        label:
+          type: string
+        color:
+          type: string
+          nullable: true
+        priority:
+          type: integer
+        status:
+          type: string
+          enum: [active, disabled]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelCarrier:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [bus, train, plane, boat]
+        contact_phone:
+          type: string
+          nullable: true
+        logo_asset_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [active, disabled]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelOffice:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        city_id:
+          type: integer
+        address:
+          type: string
+          nullable: true
+        contact_phone:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, disabled]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelStation:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        city_id:
+          type: integer
+        address:
+          type: string
+          nullable: true
+        contact_phone:
+          type: string
+          nullable: true
+        timezone:
+          type: string
+        is_terminal:
+          type: boolean
+        status:
+          type: string
+          enum: [active, disabled]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
     AccountingChartAccount:
       type: object
       properties:
