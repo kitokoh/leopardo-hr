@@ -160,6 +160,8 @@ jobs:
         run: bash dev-hub/tools/check-runbooks.sh
       - name: Golden journeys guard — routes des parcours critiques (issue #5871, MAT-013)
         run: bash dev-hub/tools/check-golden-journeys.sh api
+      - name: Security threat models guard — surfaces uploads/OCR/WhatsApp/POS/devices (issue #5875, MAT-017)
+        run: bash dev-hub/tools/check-security-threat-models.sh
       - name: Release Train compat matrix guard (issue #5874, MAT-016)
         run: bash dev-hub/tools/check-release-compat.sh api
 
