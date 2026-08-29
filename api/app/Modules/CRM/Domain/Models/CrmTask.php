@@ -29,6 +29,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $due_at
  * @property int|null $assignee_id
  * @property bool $done
+ * @property string $status
+ * @property string|null $priority
+ * @property int|null $account_id
+ * @property int|null $contact_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -48,6 +52,10 @@ class CrmTask extends Model
         'due_at',
         'assignee_id',
         'done',
+        'status',
+        'priority',
+        'account_id',
+        'contact_id',
     ];
 
     protected $casts = [

@@ -15,7 +15,7 @@ use Illuminate\Validation\ValidationException;
  */
 final class UpdateCrmTaskAction
 {
-    /** @var array<string, string> */
+    /** @var array<string, list<string>> */
     private const STATUS_TRANSITIONS = [
         'todo' => ['in_progress', 'done', 'cancelled'],
         'in_progress' => ['todo', 'done', 'cancelled'],
@@ -40,7 +40,7 @@ final class UpdateCrmTaskAction
             'description' => $dto->description,
             'due_at' => $dto->dueAt,
             'priority' => $dto->priority,
-            'assigned_to' => $dto->assigneeId,
+            'assignee_id' => $dto->assigneeId,
             'account_id' => $dto->accountId,
             'contact_id' => $dto->contactId,
         ];

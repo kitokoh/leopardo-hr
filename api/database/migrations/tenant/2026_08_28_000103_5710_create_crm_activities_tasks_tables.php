@@ -73,7 +73,17 @@ return new class extends Migration
                 $table->timestampTz('due_at')->nullable();
                 $table->unsignedBigInteger('assignee_id')->nullable();
                 $table->boolean('done')->default(false);
+
+                // V1 (#5720) : machine à états + priorité + liens compte/contact.
+                $table->string('status', 20)->default('todo');
+                $table->string('priority', 20)->nullable();
+                $table->unsignedBigInteger('account_id')->nullable();
+                $table->unsignedBigInteger('contact_id')->nullable();
+
                 $table->timestamps();
+
+                $table->foreign('account_id')->references('id')->on('crm_accounts')->nullOnDelete();
+                $table->foreign('contact_id')->references('id')->on('crm_contacts')->nullOnDelete();
 
                 $table->index(['company_id', 'due_at'], 'crm_tasks_company_due_idx');
                 $table->index(['company_id', 'done'], 'crm_tasks_company_done_idx');

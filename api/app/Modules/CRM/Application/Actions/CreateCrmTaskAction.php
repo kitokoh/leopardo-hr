@@ -37,7 +37,7 @@ final class CreateCrmTaskAction
             'due_at' => $dto->dueAt,
             'status' => 'todo',
             'priority' => $dto->priority,
-            'assigned_to' => $dto->assigneeId,
+            'assignee_id' => $dto->assigneeId,
             'account_id' => $dto->accountId,
             'contact_id' => $dto->contactId,
         ]);
@@ -50,7 +50,7 @@ final class CreateCrmTaskAction
         /** @var Employee|null $assignee */
         $assignee = Employee::query()->find($assigneeId);
 
-        return $assignee !== null && $assignee->company_id === currentCompany()?->id;
+        return $assignee !== null && $assignee->company_id === currentCompany()->id;
     }
 
     private function accountInTenant(int $accountId): bool
