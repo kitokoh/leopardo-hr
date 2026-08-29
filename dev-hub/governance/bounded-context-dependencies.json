@@ -1,0 +1,492 @@
+{
+  "_meta": {
+    "title": "Bounded Context Dependency Matrix — Leopardo HR",
+    "description": "Dépendances inter-contextes autorisées (MAT-002, issue #5860). Politique : deny-by-default — toute arête cross-BC absente de cette matrice fait échouer la CI. Baseline v1 : graphe réel de main (audit 2026-08-28).",
+    "policy": "deny-by-default",
+    "registry": "dev-hub/governance/bounded-context-registry.json",
+    "guard": "dev-hub/tools/check-bounded-context-dependencies.sh",
+    "updated": "2026-08-28"
+  },
+  "edges": [
+    {
+      "from": "BC-01",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "PLATFORM → TENANT"
+    },
+    {
+      "from": "BC-01",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "PLATFORM → IDENTITY"
+    },
+    {
+      "from": "BC-01",
+      "to": "BC-04",
+      "baseline": true,
+      "note": "PLATFORM → HR"
+    },
+    {
+      "from": "BC-01",
+      "to": "BC-05",
+      "baseline": true,
+      "note": "PLATFORM → WORKFORCE"
+    },
+    {
+      "from": "BC-01",
+      "to": "BC-07",
+      "baseline": true,
+      "note": "PLATFORM → PAYROLL"
+    },
+    {
+      "from": "BC-01",
+      "to": "BC-13",
+      "baseline": true,
+      "note": "PLATFORM → COMMS"
+    },
+    {
+      "from": "BC-01",
+      "to": "BC-14",
+      "baseline": true,
+      "note": "PLATFORM → INTEGRATION"
+    },
+    {
+      "from": "BC-01",
+      "to": "BC-21",
+      "baseline": true,
+      "note": "PLATFORM → BILLING"
+    },
+    {
+      "from": "BC-01",
+      "to": "BC-23",
+      "baseline": true,
+      "note": "PLATFORM → AI"
+    },
+    {
+      "from": "BC-02",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "TENANT → IDENTITY"
+    },
+    {
+      "from": "BC-02",
+      "to": "BC-05",
+      "baseline": true,
+      "note": "TENANT → WORKFORCE"
+    },
+    {
+      "from": "BC-03",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "IDENTITY → TENANT"
+    },
+    {
+      "from": "BC-03",
+      "to": "BC-04",
+      "baseline": true,
+      "note": "IDENTITY → HR"
+    },
+    {
+      "from": "BC-03",
+      "to": "BC-05",
+      "baseline": true,
+      "note": "IDENTITY → WORKFORCE"
+    },
+    {
+      "from": "BC-03",
+      "to": "BC-13",
+      "baseline": true,
+      "note": "IDENTITY → COMMS"
+    },
+    {
+      "from": "BC-03",
+      "to": "BC-20",
+      "baseline": true,
+      "note": "IDENTITY → DOCUMENTS"
+    },
+    {
+      "from": "BC-04",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "HR → TENANT"
+    },
+    {
+      "from": "BC-04",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "HR → IDENTITY"
+    },
+    {
+      "from": "BC-04",
+      "to": "BC-05",
+      "baseline": true,
+      "note": "HR → WORKFORCE"
+    },
+    {
+      "from": "BC-04",
+      "to": "BC-07",
+      "baseline": true,
+      "note": "HR → PAYROLL"
+    },
+    {
+      "from": "BC-04",
+      "to": "BC-10",
+      "baseline": true,
+      "note": "HR → RECRUITMENT"
+    },
+    {
+      "from": "BC-04",
+      "to": "BC-23",
+      "baseline": true,
+      "note": "HR → AI"
+    },
+    {
+      "from": "BC-05",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "WORKFORCE → TENANT"
+    },
+    {
+      "from": "BC-05",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "WORKFORCE → IDENTITY"
+    },
+    {
+      "from": "BC-05",
+      "to": "BC-04",
+      "baseline": true,
+      "note": "WORKFORCE → HR"
+    },
+    {
+      "from": "BC-05",
+      "to": "BC-07",
+      "baseline": true,
+      "note": "WORKFORCE → PAYROLL"
+    },
+    {
+      "from": "BC-05",
+      "to": "BC-13",
+      "baseline": true,
+      "note": "WORKFORCE → COMMS"
+    },
+    {
+      "from": "BC-05",
+      "to": "BC-18",
+      "baseline": true,
+      "note": "WORKFORCE → FIELD"
+    },
+    {
+      "from": "BC-05",
+      "to": "BC-23",
+      "baseline": true,
+      "note": "WORKFORCE → AI"
+    },
+    {
+      "from": "BC-06",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "LEAVE → IDENTITY"
+    },
+    {
+      "from": "BC-06",
+      "to": "BC-05",
+      "baseline": true,
+      "note": "LEAVE → WORKFORCE"
+    },
+    {
+      "from": "BC-07",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "PAYROLL → TENANT"
+    },
+    {
+      "from": "BC-07",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "PAYROLL → IDENTITY"
+    },
+    {
+      "from": "BC-07",
+      "to": "BC-05",
+      "baseline": true,
+      "note": "PAYROLL → WORKFORCE"
+    },
+    {
+      "from": "BC-07",
+      "to": "BC-13",
+      "baseline": true,
+      "note": "PAYROLL → COMMS"
+    },
+    {
+      "from": "BC-07",
+      "to": "BC-14",
+      "baseline": true,
+      "note": "PAYROLL → INTEGRATION"
+    },
+    {
+      "from": "BC-07",
+      "to": "BC-20",
+      "baseline": true,
+      "note": "PAYROLL → DOCUMENTS"
+    },
+    {
+      "from": "BC-07",
+      "to": "BC-21",
+      "baseline": true,
+      "note": "PAYROLL → BILLING"
+    },
+    {
+      "from": "BC-08",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "ACCOUNTING → TENANT"
+    },
+    {
+      "from": "BC-08",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "ACCOUNTING → IDENTITY"
+    },
+    {
+      "from": "BC-08",
+      "to": "BC-12",
+      "baseline": true,
+      "note": "ACCOUNTING → GROWTH"
+    },
+    {
+      "from": "BC-08",
+      "to": "BC-13",
+      "baseline": true,
+      "note": "ACCOUNTING → COMMS"
+    },
+    {
+      "from": "BC-08",
+      "to": "BC-14",
+      "baseline": true,
+      "note": "ACCOUNTING → INTEGRATION"
+    },
+    {
+      "from": "BC-09",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "EXPENSE → IDENTITY"
+    },
+    {
+      "from": "BC-09",
+      "to": "BC-05",
+      "baseline": true,
+      "note": "EXPENSE → WORKFORCE"
+    },
+    {
+      "from": "BC-10",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "RECRUITMENT → TENANT"
+    },
+    {
+      "from": "BC-10",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "RECRUITMENT → IDENTITY"
+    },
+    {
+      "from": "BC-10",
+      "to": "BC-04",
+      "baseline": true,
+      "note": "RECRUITMENT → HR"
+    },
+    {
+      "from": "BC-11",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "CRM → TENANT"
+    },
+    {
+      "from": "BC-11",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "CRM → IDENTITY"
+    },
+    {
+      "from": "BC-11",
+      "to": "BC-14",
+      "baseline": true,
+      "note": "CRM → INTEGRATION"
+    },
+    {
+      "from": "BC-12",
+      "to": "BC-01",
+      "baseline": true,
+      "note": "GROWTH → PLATFORM"
+    },
+    {
+      "from": "BC-12",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "GROWTH → IDENTITY"
+    },
+    {
+      "from": "BC-12",
+      "to": "BC-07",
+      "baseline": true,
+      "note": "GROWTH → PAYROLL"
+    },
+    {
+      "from": "BC-12",
+      "to": "BC-08",
+      "baseline": true,
+      "note": "GROWTH → ACCOUNTING"
+    },
+    {
+      "from": "BC-12",
+      "to": "BC-14",
+      "baseline": true,
+      "note": "GROWTH → INTEGRATION"
+    },
+    {
+      "from": "BC-12",
+      "to": "BC-21",
+      "baseline": true,
+      "note": "GROWTH → BILLING"
+    },
+    {
+      "from": "BC-13",
+      "to": "BC-01",
+      "baseline": true,
+      "note": "COMMS → PLATFORM"
+    },
+    {
+      "from": "BC-13",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "COMMS → IDENTITY"
+    },
+    {
+      "from": "BC-13",
+      "to": "BC-04",
+      "baseline": true,
+      "note": "COMMS → HR"
+    },
+    {
+      "from": "BC-13",
+      "to": "BC-05",
+      "baseline": true,
+      "note": "COMMS → WORKFORCE"
+    },
+    {
+      "from": "BC-13",
+      "to": "BC-07",
+      "baseline": true,
+      "note": "COMMS → PAYROLL"
+    },
+    {
+      "from": "BC-13",
+      "to": "BC-14",
+      "baseline": true,
+      "note": "COMMS → INTEGRATION"
+    },
+    {
+      "from": "BC-18",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "FIELD → IDENTITY"
+    },
+    {
+      "from": "BC-18",
+      "to": "BC-05",
+      "baseline": true,
+      "note": "FIELD → WORKFORCE"
+    },
+    {
+      "from": "BC-19",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "DEVICE → TENANT"
+    },
+    {
+      "from": "BC-19",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "DEVICE → IDENTITY"
+    },
+    {
+      "from": "BC-19",
+      "to": "BC-14",
+      "baseline": true,
+      "note": "DEVICE → INTEGRATION"
+    },
+    {
+      "from": "BC-20",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "DOCUMENTS → IDENTITY"
+    },
+    {
+      "from": "BC-20",
+      "to": "BC-04",
+      "baseline": true,
+      "note": "DOCUMENTS → HR"
+    },
+    {
+      "from": "BC-21",
+      "to": "BC-01",
+      "baseline": true,
+      "note": "BILLING → PLATFORM"
+    },
+    {
+      "from": "BC-21",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "BILLING → TENANT"
+    },
+    {
+      "from": "BC-21",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "BILLING → IDENTITY"
+    },
+    {
+      "from": "BC-21",
+      "to": "BC-07",
+      "baseline": true,
+      "note": "BILLING → PAYROLL"
+    },
+    {
+      "from": "BC-21",
+      "to": "BC-14",
+      "baseline": true,
+      "note": "BILLING → INTEGRATION"
+    },
+    {
+      "from": "BC-23",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "AI → IDENTITY"
+    },
+    {
+      "from": "BC-23",
+      "to": "BC-04",
+      "baseline": true,
+      "note": "AI → HR"
+    },
+    {
+      "from": "BC-23",
+      "to": "BC-05",
+      "baseline": true,
+      "note": "AI → WORKFORCE"
+    },
+    {
+      "from": "BC-23",
+      "to": "BC-07",
+      "baseline": true,
+      "note": "AI → PAYROLL"
+    },
+    {
+      "from": "BC-23",
+      "to": "BC-13",
+      "baseline": true,
+      "note": "AI → COMMS"
+    }
+  ]
+}
