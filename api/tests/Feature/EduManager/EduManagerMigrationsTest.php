@@ -68,7 +68,7 @@ class EduManagerMigrationsTest extends TestCase
     }
 
     /**
-     * @return Migration&object{up(): void, down(): void}
+     * @return Migration
      */
     private function migration(string $basename): Migration
     {
@@ -79,7 +79,6 @@ class EduManagerMigrationsTest extends TestCase
 
         $this->assertInstanceOf(Migration::class, $migration);
 
-        /** @var Migration&object{up(): void, down(): void} $migration */
         return $migration;
     }
 
@@ -246,7 +245,7 @@ class EduManagerMigrationsTest extends TestCase
     {
         foreach (self::MIGRATIONS as $basename) {
             $migration = $this->migration($basename);
-            $migration->up(); // rejouer up() sans erreur (gardes F-17)
+            $this->callMigrationMethod($migration, 'up'); // rejouer up() sans erreur (gardes F-17)
         }
 
         foreach (self::TABLES as $table) {
@@ -259,7 +258,7 @@ class EduManagerMigrationsTest extends TestCase
         // down() dans l'ordre inverse des dépendances, puis up() complet.
         foreach (array_reverse(self::MIGRATIONS) as $basename) {
             $migration = $this->migration($basename);
-            $migration->down();
+            $this->callMigrationMethod($migration, 'down');
         }
 
         foreach (self::TABLES as $table) {
@@ -268,7 +267,7 @@ class EduManagerMigrationsTest extends TestCase
 
         foreach (self::MIGRATIONS as $basename) {
             $migration = $this->migration($basename);
-            $migration->up();
+            $this->callMigrationMethod($migration, 'up');
         }
 
         foreach (self::TABLES as $table) {
@@ -293,3 +292,13 @@ class EduManagerMigrationsTest extends TestCase
         ]);
     }
 }
+
+    private function callMigrationMethod(Migration $migration, string $method): void
+    {
+        // Les migrations du repo sont des classes anonymes `return new class extends Migration` :
+        // invocation réflexive pour le cycle up/down de test (les méthodes ne sont pas
+        // déclarées sur le type de base).
+        $reflection = new \ReflectionMethod($migration, $method);
+        $reflection->invoke($migration);
+    }
+
