@@ -84,6 +84,27 @@ class CrmServiceProvider extends ServiceProvider
         $this->app->singleton(CrmImportRepositoryInterface::class, CrmImportRepository::class);
         $this->app->singleton(CrmImportRowPersisterInterface::class, CrmImportRowPersister::class);
         $this->app->singleton(CrmLeadRepositoryInterface::class, CrmLeadRepository::class);
+        $this->app->singleton(CrmChannelRegistry::class, function ($app): CrmChannelRegistry {
+            return new CrmChannelRegistry([
+                CrmChannelType::WHATSAPP => $app->make(WhatsAppAdapter::class),
+                CrmChannelType::SMS => $app->make(SmsAdapter::class),
+            ]);
+        });
+
+        // #5728 — moteur d'automatisations (actions bornées par whitelist).
+        $this->app->singleton(AutomationEngine::class, function ($app): AutomationEngine {
+            return new AutomationEngine(
+                actions: [
+                    \App\Modules\CRM\Domain\Enums\CrmAutomationActionType::SEND_WHATSAPP => $app->make(\App\Modules\CRM\Application\Actions\AutomationActions\SendWhatsAppAction::class),
+                    \App\Modules\CRM\Domain\Enums\CrmAutomationActionType::SEND_SMS => $app->make(\App\Modules\CRM\Application\Actions\AutomationActions\SendSmsAction::class),
+                    \App\Modules\CRM\Domain\Enums\CrmAutomationActionType::SEND_EMAIL => $app->make(\App\Modules\CRM\Application\Actions\AutomationActions\SendEmailAction::class),
+                    \App\Modules\CRM\Domain\Enums\CrmAutomationActionType::CREATE_TASK => $app->make(\App\Modules\CRM\Application\Actions\AutomationActions\CreateTaskAction::class),
+                    \App\Modules\CRM\Domain\Enums\CrmAutomationActionType::HTTP_WEBHOOK => $app->make(\App\Modules\CRM\Application\Actions\AutomationActions\HttpWebhookAction::class),
+                ],
+                evaluator: $app->make(CrmConditionEvaluator::class),
+            );
+        });
+
         $this->app->singleton(CrmOutboxPublisher::class);
         $this->app->singleton(CrmOutboxConsumerRegistry::class);
 

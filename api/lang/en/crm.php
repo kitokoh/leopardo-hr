@@ -14,4 +14,11 @@ return [
 
     'merge' => [
         'unknown_entity' => 'Unknown entity (accounts, contacts or leads).',
-    ],];
+    ],
+
+    'CRM_AUTOMATION_NOT_FOUND' => 'CRM automation not found in the current tenant.',
+    'CRM_AUTOMATION_INVALID_TRIGGER' => 'Unknown CRM automation trigger event.',
+    'CRM_AUTOMATION_EMERGENCY_STOPPED' => 'CRM automations emergency-stopped for this tenant.',
+    'CRM_AUTOMATION_INVALID' => 'Invalid CRM automation (rule or action not allowlisted).',
+
+];

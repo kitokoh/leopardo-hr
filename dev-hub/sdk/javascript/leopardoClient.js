@@ -1640,44 +1640,61 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/cotisation-simulation", options);
     },
 
-    /** Suggestions de doublons (explicables, tenant-scoped) */
-    getCrmDedupSuggestions(options = {}) {
-      return request("GET", "/crm/dedup/suggestions", options);
+    /** Lister les automatisations CRM du tenant */
+    getCrmAutomations(options = {}) {
+      return request("GET", "/crm/automations", options);
     },
 
-    /** Uploader et prévisualiser un import CSV CRM (preview sans écriture) */
-    postCrmImports(options = {}) {
-      return request("POST", "/crm/imports", options);
+    /** Creer une automatisation (event/conditions/actions) */
+    postCrmAutomations(options = {}) {
+      return request("POST", "/crm/automations", options);
     },
 
-    /** Détail d'une session d'import CSV */
-    getCrmImportsByCrmImport(options = {}) {
-      return request("GET", "/crm/imports/{crmImport}", options);
+    /** Archiver une automatisation (soft delete) */
+    deleteCrmAutomationsByAutomation(options = {}) {
+      return request("DELETE", "/crm/automations/{automation}", options);
     },
 
-    /** Annuler un import CSV avant commit */
-    postCrmImportsByCrmImportCancel(options = {}) {
-      return request("POST", "/crm/imports/{crmImport}/cancel", options);
+    /** Detail d'une automatisation */
+    getCrmAutomationsByAutomation(options = {}) {
+      return request("GET", "/crm/automations/{automation}", options);
     },
 
-    /** Committer un import CSV prévisualisé (explicite, idempotent) */
-    postCrmImportsByCrmImportCommit(options = {}) {
-      return request("POST", "/crm/imports/{crmImport}/commit", options);
+    /** Mettre a jour une automatisation (version incrementee) */
+    putCrmAutomationsByAutomation(options = {}) {
+      return request("PUT", "/crm/automations/{automation}", options);
     },
 
-    /** Convertir un lead en account + contact + opportunity */
-    postCrmLeadsByCrmLeadConvert(options = {}) {
-      return request("POST", "/crm/leads/{crmLead}/convert", options);
+    /** Activer une automatisation */
+    postCrmAutomationsByAutomationActivate(options = {}) {
+      return request("POST", "/crm/automations/{automation}/activate", options);
     },
 
-    /** Fusion supervisée (principal uniquement) */
-    postCrmMerge(options = {}) {
-      return request("POST", "/crm/merge", options);
+    /** Mettre en pause une automatisation */
+    postCrmAutomationsByAutomationPause(options = {}) {
+      return request("POST", "/crm/automations/{automation}/pause", options);
     },
 
-    /** Preview d'une fusion (aucune écriture) */
-    getCrmMergePreview(options = {}) {
-      return request("GET", "/crm/merge/preview", options);
+    /** Historique d'execution d'une automatisation */
+    getCrmAutomationsByAutomationRuns(options = {}) {
+      return request("GET", "/crm/automations/{automation}/runs", options);
+    },
+
+    /** Simuler une automatisation sans effet de bord */
+    postCrmAutomationsByAutomationSimulate(options = {}) {
+      return request("POST", "/crm/automations/{automation}/simulate", options);
+    },
+
+    /** Arret d'urgence des automatisations du tenant */
+    postCrmAutomationsEmergencyStop(options = {}) {
+      return request("POST", "/crm/automations/emergency-stop", options);
+    },
+
+    /** Emettre un evenement metier CRM (declenche les automatisations) */
+    postCrmAutomationsEventsByEvent(options = {}) {
+      return request("POST", "/crm/automations/events/{event}", options);
+    },
+
     /** Lister les canaux de communication du tenant */
     getCrmChannels(options = {}) {
       return request("GET", "/crm/channels", options);

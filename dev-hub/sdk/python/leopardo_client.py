@@ -1332,37 +1332,50 @@ class LeopardoClient:
         """Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager)"""
         return self.request("POST", "/cotisation-simulation", **kwargs)
 
-    def get_crm_dedup_suggestions(self, **kwargs):
-        """Suggestions de doublons (explicables, tenant-scoped)"""
-        return self.request("GET", "/crm/dedup/suggestions", **kwargs)
+    def get_crm_automations(self, **kwargs):
+        """Lister les automatisations CRM du tenant"""
+        return self.request("GET", "/crm/automations", **kwargs)
 
-    def post_crm_imports(self, **kwargs):
-        """Uploader et prévisualiser un import CSV CRM (preview sans écriture)"""
-        return self.request("POST", "/crm/imports", **kwargs)
+    def post_crm_automations(self, **kwargs):
+        """Creer une automatisation (event/conditions/actions)"""
+        return self.request("POST", "/crm/automations", **kwargs)
 
-    def get_crm_imports_by_crmimport(self, **kwargs):
-        """Détail d'une session d'import CSV"""
-        return self.request("GET", "/crm/imports/{crmImport}", **kwargs)
+    def delete_crm_automations_by_automation(self, **kwargs):
+        """Archiver une automatisation (soft delete)"""
+        return self.request("DELETE", "/crm/automations/{automation}", **kwargs)
 
-    def post_crm_imports_by_crmimport_cancel(self, **kwargs):
-        """Annuler un import CSV avant commit"""
-        return self.request("POST", "/crm/imports/{crmImport}/cancel", **kwargs)
+    def get_crm_automations_by_automation(self, **kwargs):
+        """Detail d'une automatisation"""
+        return self.request("GET", "/crm/automations/{automation}", **kwargs)
 
-    def post_crm_imports_by_crmimport_commit(self, **kwargs):
-        """Committer un import CSV prévisualisé (explicite, idempotent)"""
-        return self.request("POST", "/crm/imports/{crmImport}/commit", **kwargs)
+    def put_crm_automations_by_automation(self, **kwargs):
+        """Mettre a jour une automatisation (version incrementee)"""
+        return self.request("PUT", "/crm/automations/{automation}", **kwargs)
 
-    def post_crm_leads_by_crmlead_convert(self, **kwargs):
-        """Convertir un lead en account + contact + opportunity"""
-        return self.request("POST", "/crm/leads/{crmLead}/convert", **kwargs)
+    def post_crm_automations_by_automation_activate(self, **kwargs):
+        """Activer une automatisation"""
+        return self.request("POST", "/crm/automations/{automation}/activate", **kwargs)
 
-    def post_crm_merge(self, **kwargs):
-        """Fusion supervisée (principal uniquement)"""
-        return self.request("POST", "/crm/merge", **kwargs)
+    def post_crm_automations_by_automation_pause(self, **kwargs):
+        """Mettre en pause une automatisation"""
+        return self.request("POST", "/crm/automations/{automation}/pause", **kwargs)
 
-    def get_crm_merge_preview(self, **kwargs):
-        """Preview d'une fusion (aucune écriture)"""
-        return self.request("GET", "/crm/merge/preview", **kwargs)
+    def get_crm_automations_by_automation_runs(self, **kwargs):
+        """Historique d'execution d'une automatisation"""
+        return self.request("GET", "/crm/automations/{automation}/runs", **kwargs)
+
+    def post_crm_automations_by_automation_simulate(self, **kwargs):
+        """Simuler une automatisation sans effet de bord"""
+        return self.request("POST", "/crm/automations/{automation}/simulate", **kwargs)
+
+    def post_crm_automations_emergency_stop(self, **kwargs):
+        """Arret d'urgence des automatisations du tenant"""
+        return self.request("POST", "/crm/automations/emergency-stop", **kwargs)
+
+    def post_crm_automations_events_by_event(self, **kwargs):
+        """Emettre un evenement metier CRM (declenche les automatisations)"""
+        return self.request("POST", "/crm/automations/events/{event}", **kwargs)
+
     def get_crm_channels(self, **kwargs):
         """Lister les canaux de communication du tenant"""
         return self.request("GET", "/crm/channels", **kwargs)

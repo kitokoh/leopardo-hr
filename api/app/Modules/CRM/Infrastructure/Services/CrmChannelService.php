@@ -89,6 +89,8 @@ final class CrmChannelService
                 'provider_message_id' => $result['provider_message_id'],
             ]);
 
+            $this->dispatchAutomationEvent('crm.message.sent', $channel->type, $message->refresh());
+
             return $message->refresh();
         } catch (CrmProviderException $e) {
             $this->handleProviderFailure($message, $e, $channel);
@@ -180,8 +182,11 @@ final class CrmChannelService
                 $from = is_string($message['from'] ?? null) ? (string) $message['from'] : null;
                 $body = $this->extractTextBody($message);
                 $conversation = $this->resolveConversation($channel, $providerMessageId, $from);
-                $this->messages->createInbound($channel->id, $conversation?->id, $provider, $providerMessageId, $from, $body);
+                $inbound = $this->messages->createInbound($channel->id, $conversation?->id, $provider, $providerMessageId, $from, $body);
                 $this->touchConversation($conversation);
+
+                // Déclenche les automatisations CRM sur message entrant (#5728).
+                $this->dispatchAutomationEvent('crm.message.inbound', $channel->type, $inbound);
             });
         }
     }
@@ -330,5 +335,35 @@ final class CrmChannelService
         }
 
         return $this->adapters[$type];
+    }
+
+    /**
+     * Déclenche les automatisations CRM sur événement canal (#5728).
+     * Résolution paresseuse du moteur (évite le cycle Service → Engine →
+     * Actions → Service). Les exceptions du moteur ne bloquent jamais
+     * l'envoi (fire-and-forget, journalisé).
+     */
+    private function dispatchAutomationEvent(string $event, string $channelType, CrmChannelMessage $message): void
+    {
+        try {
+            /** @var \App\Modules\CRM\Infrastructure\Services\AutomationEngine $engine */
+            $engine = app(\App\Modules\CRM\Infrastructure\Services\AutomationEngine::class);
+            $engine->dispatch($event, [
+                'entity_type' => 'channel_message',
+                'entity_id' => (string) $message->id,
+                'channel' => $channelType,
+                'contact_id' => null,
+                'data' => [
+                    'message_id' => (string) $message->id,
+                    'channel' => $channelType,
+                    'status' => $message->status,
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('CRM automation: dispatch canal ignoré (non bloquant)', [
+                'event' => $event,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }
