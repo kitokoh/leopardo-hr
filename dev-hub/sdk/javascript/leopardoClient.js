@@ -1640,6 +1640,46 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/cotisation-simulation", options);
     },
 
+    /** Suggestions de doublons (explicables, tenant-scoped) */
+    getCrmDedupSuggestions(options = {}) {
+      return request("GET", "/crm/dedup/suggestions", options);
+    },
+
+    /** Uploader et prévisualiser un import CSV CRM (preview sans écriture) */
+    postCrmImports(options = {}) {
+      return request("POST", "/crm/imports", options);
+    },
+
+    /** Détail d'une session d'import CSV */
+    getCrmImportsByCrmImport(options = {}) {
+      return request("GET", "/crm/imports/{crmImport}", options);
+    },
+
+    /** Annuler un import CSV avant commit */
+    postCrmImportsByCrmImportCancel(options = {}) {
+      return request("POST", "/crm/imports/{crmImport}/cancel", options);
+    },
+
+    /** Committer un import CSV prévisualisé (explicite, idempotent) */
+    postCrmImportsByCrmImportCommit(options = {}) {
+      return request("POST", "/crm/imports/{crmImport}/commit", options);
+    },
+
+    /** Convertir un lead en account + contact + opportunity */
+    postCrmLeadsByCrmLeadConvert(options = {}) {
+      return request("POST", "/crm/leads/{crmLead}/convert", options);
+    },
+
+    /** Fusion supervisée (principal uniquement) */
+    postCrmMerge(options = {}) {
+      return request("POST", "/crm/merge", options);
+    },
+
+    /** Preview d'une fusion (aucune écriture) */
+    getCrmMergePreview(options = {}) {
+      return request("GET", "/crm/merge/preview", options);
+    },
+
     /** Synthese dashboard admin (principal) */
     getDashboardAdmin(options = {}) {
       return request("GET", "/dashboard/admin", options);
