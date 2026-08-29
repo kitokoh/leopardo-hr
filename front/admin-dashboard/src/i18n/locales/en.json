@@ -505,7 +505,16 @@
     "details": "Details",
     "pendingRequestsTitle": "Pending requests",
     "platformMrr": "Platform MRR",
-    "processRequests": "Process requests"
+    "processRequests": "Process requests",
+    "leave_balance_title": "My leave balance",
+    "leave_balance_subtitle": "Remaining days by type, current year",
+    "leave_balance_loading": "Loading balance…",
+    "leave_balance_error": "Unable to load leave balance.",
+    "leave_balance_empty": "No balance configured for this account.",
+    "leave_balance_available": "{days} day(s) available",
+    "leave_balance_used": "{days} used",
+    "see_absences": "View my absences",
+    "leave_balance_unknown": "Leave"
   },
   "marketing": {
     "oauth": {
