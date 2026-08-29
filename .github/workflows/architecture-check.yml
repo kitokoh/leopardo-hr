@@ -80,6 +80,8 @@ jobs:
 
       - name: Migrations tenant — convention #1613 (search_path, audit PM 2026-08-17)
         run: bash dev-hub/tools/check-migrations-tenant-schema.sh
+      - name: Migrations BC conventions guard (MAT-005 #5863)
+        run: bash dev-hub/tools/check-migrations-bc-conventions.sh
       - name: Geofence single usage path guard (ADR-0016 Phase 2, issue #5353)
         run: bash dev-hub/tools/check-geofence-single-usage.sh
 
@@ -97,6 +99,9 @@ jobs:
 
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
+
+      - name: Performance budgets guard — scans lents, N+1, index (issue #5872, MAT-014)
+        run: bash dev-hub/tools/check-performance-budgets.sh api
 
       - name: Queue strategy coherence guard — database partout (issue #5578)
         run: bash dev-hub/tools/check-queue-strategy-coherence.sh
