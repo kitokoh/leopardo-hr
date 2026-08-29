@@ -1600,6 +1600,7 @@ paths:
           description: Permission travel.manage requise
         '404':
           description: Classe introuvable ou appartenant à un autre tenant
+<<<<<<< HEAD
   /travel/vehicles:
     get:
       tags:
@@ -4760,6 +4761,8 @@ paths:
                     example: Demande envoyée.
         '422':
           description: Validation échouée (consentement manquant, message hors bornes, email/téléphone absents)
+=======
+>>>>>>> e62cf4be5 (feat(travel): API back-office référentiel — countries/cities/stations/offices/carriers/classes (Closes #6031, #6032, #6033, #6034, #6035))
   /health:
     get:
       tags:
@@ -29871,6 +29874,7 @@ components:
         updated_at:
           type: string
           nullable: true
+<<<<<<< HEAD
     TravelVehicle:
       type: object
       properties:
@@ -30430,6 +30434,8 @@ components:
         updated_at:
           type: string
           nullable: true
+=======
+>>>>>>> e62cf4be5 (feat(travel): API back-office référentiel — countries/cities/stations/offices/carriers/classes (Closes #6031, #6032, #6033, #6034, #6035))
     TravelCarrier:
       type: object
       properties:
