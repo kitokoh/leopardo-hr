@@ -1,0 +1,700 @@
+{
+  "_meta": {
+    "title": "Bounded Context Registry — Leopardo HR",
+    "description": "Registre canonique machine-readable des bounded contexts (MAT-001, issue #5859). Référence humaine : docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (plan de gouvernance, PR agent-readiness).",
+    "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
+    "updated": "2026-08-28"
+  },
+  "_shared_exceptions": [
+    {
+      "path": "api/app/Core/Http",
+      "reason": "Infrastructure HTTP partagée (middleware, bootstrap) — aucun BC propriétaire unique."
+    },
+    {
+      "path": "api/app/Core/Shared",
+      "reason": "Building blocks partagés (DTOs, Enums, Events, Models, Traits) — volontairement hors BC."
+    }
+  ],
+  "bounded_contexts": [
+    {
+      "code": "BC-01",
+      "name": "PLATFORM",
+      "context": "Platform Core",
+      "responsibility": "Catalogue, modules, provisioning, configuration globale et feature flags.",
+      "owner": "Agent 01 — BC-PLATFORM",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Platform",
+          "status": "active"
+        },
+        {
+          "path": "api/app/Modules/Onboarding",
+          "status": "active"
+        },
+        {
+          "path": "api/app/Core/Feature",
+          "status": "active"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/public"
+      ],
+      "events": [
+        "App\\Modules\\Platform\\Domain\\Events",
+        "App\\Modules\\Onboarding\\Domain\\Events"
+      ],
+      "dependencies": []
+    },
+    {
+      "code": "BC-02",
+      "name": "TENANT",
+      "context": "Tenant & Isolation",
+      "responsibility": "Entreprises, contexte actif, TenantManager, search path, scopes et isolation.",
+      "owner": "Agent 02 — BC-TENANT",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Core/Tenant",
+          "status": "active"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Core\\Tenant\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-01"
+      ]
+    },
+    {
+      "code": "BC-03",
+      "name": "IDENTITY",
+      "context": "Identity & Access",
+      "responsibility": "Utilisateurs, memberships, rôles, permissions, invitations, sessions et Policies de base.",
+      "owner": "Agent 03 — BC-IDENTITY",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Core/Auth",
+          "status": "active"
+        },
+        {
+          "path": "api/app/Policies",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/sso.php",
+        "api/routes/modules/user.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Core\\Auth\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02"
+      ]
+    },
+    {
+      "code": "BC-04",
+      "name": "HR",
+      "context": "Human Resources",
+      "responsibility": "Employés, contrats, départements, profils, documents RH et cycle de vie employé.",
+      "owner": "Agent 04 — BC-HR",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/HR",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/hr_app.php",
+        "api/routes/modules/hr_extended.php",
+        "api/routes/modules/rh.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\HR\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-03"
+      ]
+    },
+    {
+      "code": "BC-05",
+      "name": "WORKFORCE",
+      "context": "Attendance, Planning & Workforce",
+      "responsibility": "Présence, shifts, planning, géolocalisation, modes de pointage et affectations.",
+      "owner": "Agent 05 — BC-WORKFORCE",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Attendance",
+          "status": "active"
+        },
+        {
+          "path": "api/app/Modules/Planning",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/planning.php",
+        "api/routes/modules/tracking.php",
+        "api/routes/modules/dashboard.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\Attendance\\Domain\\Events",
+        "App\\Modules\\Planning\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-04"
+      ]
+    },
+    {
+      "code": "BC-06",
+      "name": "LEAVE",
+      "context": "Leave & Absence",
+      "responsibility": "Congés, absences, justificatifs, soldes, validations et calendrier d'absence.",
+      "owner": "Agent 06 — BC-LEAVE",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Absence",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/absence.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\Absence\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-05"
+      ]
+    },
+    {
+      "code": "BC-07",
+      "name": "PAYROLL",
+      "context": "Payroll",
+      "responsibility": "Périodes, règles, calculs, snapshots, bulletins, validations et exports paie.",
+      "owner": "Agent 07 — BC-PAYROLL",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Payroll",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/payroll_engine.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\Payroll\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-05",
+        "BC-06"
+      ]
+    },
+    {
+      "code": "BC-08",
+      "name": "ACCOUNTING",
+      "context": "Accounting & Finance",
+      "responsibility": "Plan comptable, journaux, écritures, exercices, lettrage, FEC et états financiers.",
+      "owner": "Agent 08 — BC-ACCOUNTING",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Accounting",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/accounting.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\Accounting\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-07"
+      ]
+    },
+    {
+      "code": "BC-09",
+      "name": "EXPENSE",
+      "context": "Expenses & Benefits",
+      "responsibility": "Dépenses, avances, prêts, remboursements et avantages, avec contrat Finance.",
+      "owner": "Agent 09 — BC-EXPENSE",
+      "priority": "P2",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Expense",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/expense.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\Expense\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-08"
+      ]
+    },
+    {
+      "code": "BC-10",
+      "name": "RECRUITMENT",
+      "context": "Recruitment",
+      "responsibility": "Candidatures, postes, candidats, entretiens, décisions et onboarding d'embauche.",
+      "owner": "Agent 10 — BC-RECRUITMENT",
+      "priority": "P2",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Recruitment",
+          "status": "active"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\Recruitment\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-04"
+      ]
+    },
+    {
+      "code": "BC-11",
+      "name": "CRM",
+      "context": "Customer CRM",
+      "responsibility": "Accounts, contacts, leads, opportunités, activités, tâches et pipelines du tenant.",
+      "owner": "Agent 11 — BC-CRM",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/CRM",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/crm.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\CRM\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-01"
+      ]
+    },
+    {
+      "code": "BC-12",
+      "name": "GROWTH",
+      "context": "Marketing & Growth",
+      "responsibility": "Segments, campagnes, consentements, templates et marketing client.",
+      "owner": "Agent 12 — BC-GROWTH",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Marketing",
+          "status": "active"
+        },
+        {
+          "path": "api/app/Modules/Growth",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/marketing.php",
+        "api/routes/modules/growth.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\Marketing\\Domain\\Events",
+        "App\\Modules\\Growth\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-11"
+      ]
+    },
+    {
+      "code": "BC-13",
+      "name": "COMMS",
+      "context": "Notifications & Communications",
+      "responsibility": "Email, SMS, WhatsApp, préférences, templates, inbox/outbox et délivrabilité.",
+      "owner": "Agent 13 — BC-COMMS",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Notification",
+          "status": "active"
+        },
+        {
+          "path": "api/app/Contracts/Communication",
+          "status": "active"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\Notification\\Domain\\Events",
+        "App\\Contracts\\Communication"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-03"
+      ]
+    },
+    {
+      "code": "BC-14",
+      "name": "INTEGRATION",
+      "context": "Integration Runtime",
+      "responsibility": "Webhooks, queues, inbox durable, outbox transactionnelle, adaptateurs et replay.",
+      "owner": "Agent 14 — BC-INTEGRATION",
+      "priority": "P0",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Jobs",
+          "status": "active"
+        },
+        {
+          "path": "api/app/Contracts/Queue",
+          "status": "active"
+        },
+        {
+          "path": "api/app/Modules/EdgeSync",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/integrations.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Contracts\\Queue",
+        "App\\Modules\\EdgeSync\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-13"
+      ]
+    },
+    {
+      "code": "BC-15",
+      "name": "FUEL",
+      "context": "FuelStation",
+      "responsibility": "Stations, pompes, compteurs, sessions pompistes, photos/OCR, ventes, dépôts et bilans.",
+      "owner": "Agent 15 — BC-FUEL",
+      "priority": "P0",
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Solutions/FuelStation",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Solutions\\FuelStation\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-05",
+        "BC-14",
+        "BC-20"
+      ]
+    },
+    {
+      "code": "BC-16",
+      "name": "EDU",
+      "context": "EduManager",
+      "responsibility": "Campus, élèves, guardians, classes, présences, notes, bulletins et admissions.",
+      "owner": "Agent 16 — BC-EDU",
+      "priority": "P1",
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Solutions/EduManager",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Solutions\\EduManager\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-05",
+        "BC-14",
+        "BC-20"
+      ]
+    },
+    {
+      "code": "BC-17",
+      "name": "RETAIL",
+      "context": "Retail & POS",
+      "responsibility": "Produits, magasins, caisse, tickets, stocks et synchronisation POS.",
+      "owner": "Agent 17 — BC-RETAIL",
+      "priority": "P3",
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Solutions/Retail",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Solutions\\Retail\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-08",
+        "BC-14"
+      ]
+    },
+    {
+      "code": "BC-18",
+      "name": "FIELD",
+      "context": "Field Service & Fleet",
+      "responsibility": "Véhicules, interventions, équipements, maintenance et opérations terrain génériques.",
+      "owner": "Agent 18 — BC-FIELD",
+      "priority": "P2",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Fleet",
+          "status": "active"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\Fleet\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-05"
+      ]
+    },
+    {
+      "code": "BC-19",
+      "name": "DEVICE",
+      "context": "Devices, Cameras & Edge",
+      "responsibility": "Appareils, kiosques, biométrie, synchronisation edge et politiques device.",
+      "owner": "Agent 19 — BC-DEVICE",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Cameras",
+          "status": "active"
+        },
+        {
+          "path": "api/app/Modules/EdgeSync",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/cameras.php"
+      ],
+      "migrations": [
+        "api/database/migrations/edge"
+      ],
+      "events": [
+        "App\\Modules\\Cameras\\Domain\\Events",
+        "App\\Modules\\EdgeSync\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-14"
+      ]
+    },
+    {
+      "code": "BC-20",
+      "name": "DOCUMENTS",
+      "context": "Documents & Evidence",
+      "responsibility": "Fichiers, pièces justificatives, scans, rétention, antivirus, signatures et exports protégés.",
+      "owner": "Agent 20 — BC-DOCUMENTS",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Cabinet",
+          "status": "active"
+        },
+        {
+          "path": "api/app/Modules/Documents",
+          "status": "planned"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/cabinet.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\Cabinet\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-03"
+      ]
+    },
+    {
+      "code": "BC-21",
+      "name": "BILLING",
+      "context": "Billing & Subscription",
+      "responsibility": "Plans, activation commerciale, facturation de plateforme et entitlements.",
+      "owner": "Agent 21 — BC-BILLING",
+      "priority": "P2",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Billing",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/billing.php"
+      ],
+      "migrations": [
+        "api/database/migrations/public"
+      ],
+      "events": [
+        "App\\Modules\\Billing\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-01",
+        "BC-08"
+      ]
+    },
+    {
+      "code": "BC-22",
+      "name": "ANALYTICS",
+      "context": "Reporting & Analytics",
+      "responsibility": "Read models, indicateurs, exports asynchrones, audit reporting et data quality.",
+      "owner": "Agent 22 — BC-ANALYTICS",
+      "priority": "P1",
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Modules/Reporting",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\Reporting\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-07",
+        "BC-08"
+      ]
+    },
+    {
+      "code": "BC-23",
+      "name": "AI",
+      "context": "AI Assistive Services",
+      "responsibility": "OCR, suggestions et assistants bornés, registry, consentement et traçabilité.",
+      "owner": "Agent 23 — BC-AI",
+      "priority": "P2",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/AI",
+          "status": "active"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/public"
+      ],
+      "events": [
+        "App\\AI"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-13",
+        "BC-20"
+      ]
+    }
+  ]
+}

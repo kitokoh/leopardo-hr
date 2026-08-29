@@ -1141,6 +1141,37 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dashboardYourcompany => 'Votre entreprise';
 
   @override
+  String get dashboardLeaveBalanceTitle => 'Mon solde de congés';
+
+  @override
+  String get dashboardLeaveBalanceSubtitle => 'Jours restants par type, année courante';
+
+  @override
+  String get dashboardLeaveBalanceLoading => 'Chargement du solde…';
+
+  @override
+  String get dashboardLeaveBalanceError => 'Impossible de charger le solde de congés.';
+
+  @override
+  String get dashboardLeaveBalanceEmpty => 'Aucun solde configuré pour ce compte.';
+
+  @override
+  String dashboardLeaveBalanceAvailable(Object days) {
+    return '$days j disponibles';
+  }
+
+  @override
+  String dashboardLeaveBalanceUsed(Object days) {
+    return '$days utilisés';
+  }
+
+  @override
+  String get dashboardSeeAbsences => 'Voir mes absences';
+
+  @override
+  String get dashboardLeaveBalanceUnknown => 'Congés';
+
+  @override
   String get marketingOauthNavTitle => 'Marketing OAuth';
 
   @override
