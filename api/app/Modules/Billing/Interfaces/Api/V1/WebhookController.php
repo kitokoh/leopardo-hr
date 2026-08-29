@@ -11,6 +11,7 @@ use App\Http\Resources\Api\V1\WebhookEndpointResource;
 use App\Jobs\DispatchWebhook;
 use App\Modules\Billing\Domain\Models\WebhookDelivery;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
+use App\Modules\Billing\Infrastructure\Services\WebhookEnvelopeBuilder;
 use App\Modules\Billing\Interfaces\Api\V1\Requests\StoreWebhookEndpointRequest;
 use App\Modules\Billing\Interfaces\Api\V1\Requests\UpdateWebhookEndpointRequest;
 use App\Rules\NotPrivateUrl;
@@ -28,6 +29,7 @@ class WebhookController extends Controller
         'employee.created',
         'employee.updated',
         'employee.archived',
+        'employee.departed',
         'attendance.checked_in',
         'attendance.checked_out',
         'absence.requested',
@@ -151,31 +153,34 @@ class WebhookController extends Controller
             ], 422);
         }
 
-        $body = [
-            'event' => 'test',
-            'timestamp' => now()->toIso8601String(),
-            'data' => [
+        // Issue #5744 : enveloppe canonique identique à DispatchWebhook
+        // (event_version, company_id, correlation_id, occurred_at) pour que le
+        // test endpoint reflète exactement la forme des livraisons réelles.
+        $body = WebhookEnvelopeBuilder::build(
+            'test',
+            WebhookEnvelopeBuilder::CURRENT_VERSION,
+            $webhookEndpoint->company_id,
+            (string) Str::uuid(),
+            now()->toIso8601String(),
+            [
                 'test' => true,
                 'message' => 'Leopardo HR webhook test',
             ],
-        ];
+        );
 
-        $jsonBody = json_encode($body, JSON_THROW_ON_ERROR);
         $timestamp = time();
-        $signedPayload = "{$timestamp}.{$jsonBody}";
-        $signature = hash_hmac('sha256', $signedPayload, (string) $webhookEndpoint->secret);
 
         $start = microtime(true);
 
         try {
             $response = Http::timeout(10)
-                ->withHeaders([
-                    'Webhook-Id' => Str::uuid()->toString(),
-                    'Webhook-Timestamp' => (string) $timestamp,
-                    'Webhook-Signature' => "v1={$signature},t={$timestamp}",
-                    'X-Leopardo-Event' => 'test',
-                    'Content-Type' => 'application/json',
-                ])
+                ->withHeaders(WebhookEnvelopeBuilder::headers(
+                    'test',
+                    (string) WebhookEnvelopeBuilder::CURRENT_VERSION,
+                    (string) $webhookEndpoint->secret,
+                    $body,
+                    $timestamp,
+                ))
                 ->post($url, $body);
 
             $durationMs = (int) ((microtime(true) - $start) * 1000);

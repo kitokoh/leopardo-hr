@@ -327,6 +327,13 @@ jobs:
         # dev-hub/tools/module-isolation-allowlist.txt.
         run: dev-hub/tools/check-module-isolation.sh
 
+      - name: Check webhook event catalog drift (issue #5744)
+        # Contrat partenaire : AVAILABLE_EVENTS ↔ WebhookListener::EVENT_NAMES.
+        # Annoncé non émis = contrat fantôme ; émis non annoncé = contrat
+        # implicite ; nom invalide = contrat cassé. Allowlist justifiée pour
+        # les événements planifiés (ADR 0010).
+        run: bash dev-hub/tools/check-webhook-event-catalog.sh api
+
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
 

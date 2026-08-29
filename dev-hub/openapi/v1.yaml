@@ -25631,6 +25631,58 @@ components:
           type: string
           nullable: true
           example: req_01HYZ4VY9K7M1A2B3C4D5E6F7G
+    WebhookDeliveryEnvelope:
+      type: object
+      description: >-
+        Enveloppe canonique des webhooks sortants (issue #5744). Livrée à
+        l'endpoint partenaire pour chaque événement métier. Contrat ADDITIVE :
+        les champs heredités (timestamp, data) restent émis ; les champs
+        versionnés (event_version, company_id, correlation_id, occurred_at)
+        sont ajoutés sans rupture. Version courante : 1.
+      required:
+      - event
+      - event_version
+      - company_id
+      - correlation_id
+      - occurred_at
+      - timestamp
+      - data
+      properties:
+        event:
+          type: string
+          description: >-
+            Nom stable de l'événement (catalogue AVAILABLE_EVENTS). Renommer
+            ou supprimer un événement = changement incompatible → CI bloquée
+            (garde check-webhook-event-catalog.sh).
+          example: employee.created
+        event_version:
+          type: integer
+          description: >-
+            Version de l'événement. Incrémentée uniquement pour un changement
+            incompatible (procédure de dépréciation docs/api/VERSIONING.md § 5).
+          example: 1
+        company_id:
+          type: string
+          description: Identifiant du tenant propriétaire de l'événement (uuid).
+          example: 8f14e45f-ceea-4b0a-9d0e-3c9b3a0f5c12
+        correlation_id:
+          type: string
+          description: >-
+            Identifiant de corrélation de l'occurrence métier — identique pour
+            tous les endpoints d'un même tenant lors d'un même dispatch.
+          example: 0f7c3a2e-4d1b-4a5c-9e8f-6a7b8c9d0e1f
+        occurred_at:
+          type: string
+          format: date-time
+          description: Moment métier de l'occurrence (ISO 8601).
+        timestamp:
+          type: string
+          format: date-time
+          description: Horodatage de livraison (champ hérité, rétro-compatible).
+        data:
+          type: object
+          description: Données métier de l'événement.
+          additionalProperties: true
     ValidationErrorResponse:
       type: object
       required:

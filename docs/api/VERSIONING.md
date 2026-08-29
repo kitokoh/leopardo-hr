@@ -97,6 +97,138 @@ Link: </api/v2/employees>; rel="successor-version"
 - Chaque version de l'API a sa propre section dans la spec
 - Tout nouvel endpoint doit etre documente AVANT le merge du PR
 
+## 5bis. Versioning des evenements sortants (webhooks) — issue #5744
+
+Les evenements webhook sortants suivent un contrat **additif et versionne**
+(`WebhookEnvelopeBuilder`, schéma OpenAPI `WebhookDeliveryEnvelope`) :
+
+```json
+{
+  "event": "employee.created",
+  "event_version": 1,
+  "company_id": "8f14e45f-...",
+  "correlation_id": "0f7c3a2e-...",
+  "occurred_at": "2026-08-28T09:00:00+00:00",
+  "timestamp": "2026-08-28T09:00:01+00:00",
+  "data": { "...": "..." }
+}
+```
+
+Regles :
+
+1. **`event`** est un nom stable `^[a-z]+\.[a-z_]+# Politique de versioning API — Leopardo RH
+
+> Derniere mise a jour : 2026-05-15
+
+---
+
+## 1. Schema de versioning
+
+L'API Leopardo RH suit un versioning par **prefixe URL** :
+
+```
+/api/v1/employees
+/api/v1/payroll-runs
+/api/v1/ai/chat
+```
+
+### Version actuelle : `v1`
+
+Toutes les routes sont sous `/api/v1/`. Il n'y a pas encore de `v2`.
+
+## 2. Regles de compatibilite
+
+### Changements compatibles (pas de nouvelle version)
+
+- Ajouter un champ optionnel a une reponse JSON
+- Ajouter un nouvel endpoint
+- Ajouter un parametre optionnel a une requete
+- Ajouter une nouvelle valeur a un enum (cote reponse uniquement)
+- Ameliorer les messages d'erreur
+
+### Changements incompatibles (necessitent une nouvelle version)
+
+- Supprimer ou renommer un champ de reponse existant
+- Modifier le type d'un champ existant
+- Rendre obligatoire un parametre auparavant optionnel
+- Supprimer un endpoint
+- Changer la semantique d'un endpoint (meme URL, comportement different)
+- Modifier la structure d'authentification
+
+## 3. Cycle de deprecation
+
+Quand un changement incompatible est necessaire :
+
+### Etape 1 — Annonce (J-90)
+
+- Ajouter le header `Deprecation: true` + `Sunset: <date ISO 8601>` aux reponses de l'ancien endpoint
+- Documenter dans `CHANGELOG.md` et `api/openapi.yaml`
+- Envoyer une notification aux clients API via webhook `api.deprecation` (si configure)
+
+### Etape 2 — Coexistence (90 jours)
+
+- L'ancienne version et la nouvelle coexistent
+- Routes dans des fichiers separes : `routes/api_v1.php`, `routes/api_v2.php`
+- Controllers dans des namespaces separes : `App\Http\Controllers\Api\V1\*`, `App\Http\Controllers\Api\V2\*`
+- Les deux versions partagent les memes modeles et services (seule la couche presentation change)
+
+### Etape 3 — Retrait (J+0)
+
+- Supprimer les routes v1 obsoletes
+- Les anciens endpoints retournent `410 Gone` avec un body JSON explicatif
+- Mettre a jour OpenAPI
+
+## 4. Headers de versioning
+
+Chaque reponse API inclut :
+
+```
+X-API-Version: v1
+X-API-Supported-Versions: v1
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 999
+```
+
+Si un client envoie `X-API-Version` avec une version non supportee pour la route appelee, l'API retourne :
+
+```json
+{
+  "error": "UNSUPPORTED_API_VERSION",
+  "message": "UNSUPPORTED_API_VERSION",
+  "supported_versions": ["v1"],
+  "requested_version": "v2"
+}
+```
+
+En cas de deprecation :
+
+```
+Deprecation: true
+Sunset: 2026-09-01T00:00:00Z
+Link: </api/v2/employees>; rel="successor-version"
+```
+
+ du catalogue
+   `WebhookController::AVAILABLE_EVENTS`. Le catalogue est garde par la CI
+   (`check-webhook-event-catalog.sh`) : tout evenement annonce non emis
+   (contrat fantome) ou emis non annonce (contrat implicite) fait echouer la
+   PR.
+2. **`event_version`** (entier) est incrementee UNIQUEMENT pour un changement
+   incompatible de la forme d'un evenement (suppression/renommage de champ).
+   L'ajout de champs optionnels reste compatible (pas de bump).
+3. **`company_id`** porte le tenant de l'occurrence — jamais deduit d'un
+   champ non authentifie cote entrant (voir `docs/security/WEBHOOKS.md`).
+4. **`correlation_id`** trace l'occurrence metier de bout en bout : identique
+   pour tous les endpoints d'un meme tenant lors d'un meme dispatch ; chaque
+   livraison porte en plus son `Webhook-Id` propre.
+5. **Retro-compatibilite** : `timestamp` et `data` restent emis tels quels ;
+   les en-tetes herites `X-Leopardo-Event` / `X-Leopardo-Signature` sont
+   conserves, aux cotes de `X-Leopardo-Event-Version`.
+6. **Procedure de deprecation d'un evenement** : meme cycle que l'API
+   (annonce J-90, coexistence, retrait) — documenter dans le catalogue, garder
+   l'ancien nom dans l'allowlist justifiee du garde, puis supprimer apres
+   echeance.
+
 ## 6. Versioning semantique du produit
 
 Le produit Leopardo RH suit SemVer dans `CHANGELOG.md` :
