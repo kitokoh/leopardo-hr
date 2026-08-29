@@ -34,32 +34,20 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Support\Facades\Gate;use Illuminate\Support\ServiceProvider;
 
 /**
  * Provider du module CRM client — #5714/#5717/#5718/#5741 (import CSV,
- * conversion, déduplication, outbox) + #5722 (consentements).
+ * conversion, déduplication, outbox) + #5722 (consentements), #5723
+ * (segments), #5725/#5727/#5728/#5729 (canaux, imports, automatisations).
  *
  * Enregistre les ports & adapters du module (contrats → implémentations),
  * les Policies métier et les écouteurs locaux (Event::listen, anti-
  * collision). Le module CRM client est strictement isolé du CRM commercial
  * Platform/Marketing (ADR-CRM-001, garde d'isolation #5584).
- * conversion, déduplication, outbox) + #5723 (segments).
  *
- * Enregistre les ports & adapters du module (contrats → implémentations)
- * et les Policies métier. Le module CRM client est strictement isolé du
- * CRM commercial Platform/Marketing (ADR-CRM-001, garde d'isolation #5584).
+ * Le squelette DDD ratifié par l'ADR-CRM-DUAL-CONTEXTS est remplacé par les
+ * implémentations métier au fil des issues CRM-V0/V1.
  */
- * Squelette DDD ratifié par l'ADR-CRM-DUAL-CONTEXTS : le CRM client est un
- * module tenant-scoped distinct du CRM commercial Leopardo (Platform/
- * Marketing). Les couches Application/Domain/Infrastructure/Interfaces se
- * remplissent au fil des issues CRM-V0-04+ ; les canaux de communication
- * tenant (WhatsApp/SMS/email) sont livrés par les issues CRM-V1 (#5725+).
-
- * Enregistre les ports & adapters du module (contrats → implémentations) et
- * les Policies métier. Le module CRM client est strictement isolé du CRM
- * commercial Platform/Marketing (ADR-CRM-001, garde d'isolation #5584).
- * (Squelette CRM-V0-03 #5707 remplacé par les implémentations métier.) */
 class CrmServiceProvider extends ServiceProvider
 {
     public function register(): void
@@ -105,14 +93,4 @@ class CrmServiceProvider extends ServiceProvider
         // (#5724) : annulation des envois pending/queued du contact.
         Event::listen(CrmConsentRevoked::class, PropagateConsentRevocation::class);
     }
-        $this->app->singleton(CrmOutboxConsumerRegistry::class);    }
-
-    public function boot(): void
-    {
-        // Routes chargées via require dans routes/api.php
-        // (routes/modules/crm.php — issues #5725/#5727/#5728/#5729).
-
-        Gate::policy(\App\Modules\CRM\Domain\Models\CrmImport::class, CrmImportPolicy::class);
-        Gate::policy(\App\Modules\CRM\Domain\Models\CrmLead::class, CrmLeadPolicy::class);
-        Gate::policy(\App\Modules\CRM\Domain\Models\CrmAccount::class, CrmMergePolicy::class);    }
 }
