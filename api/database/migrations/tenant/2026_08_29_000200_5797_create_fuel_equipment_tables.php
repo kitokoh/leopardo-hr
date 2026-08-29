@@ -157,6 +157,7 @@ return new class extends Migration
 
                 $table->timestamps();
 
+                $table->unique(['id', 'company_id'], 'fuel_meter_registers_id_company_unique');
                 $table->unique(['company_id', 'pump_id', 'meter_code'], 'fuel_meters_company_pump_code_unique');
                 $table->index(['company_id', 'pump_id'], 'fuel_meters_company_pump_idx');
                 $table->index(['company_id', 'station_id'], 'fuel_meters_company_station_idx');
