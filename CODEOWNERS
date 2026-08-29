@@ -9,6 +9,36 @@
 # Backend (Laravel API)
 /api/                       @kitokoh
 
+# Bounded contexts — lignes documentaires alignées sur le registre
+# dev-hub/governance/bounded-context-registry.json (MAT-001 / issue #5859),
+# gardées cohérentes par dev-hub/tools/check-bounded-context-registry.sh.
+/api/app/Modules/Platform/  @kitokoh
+/api/app/Modules/Onboarding/ @kitokoh
+/api/app/Core/Feature/      @kitokoh
+/api/app/Core/Tenant/       @kitokoh
+/api/app/Core/Auth/         @kitokoh
+/api/app/Modules/HR/        @kitokoh
+/api/app/Modules/Attendance/ @kitokoh
+/api/app/Modules/Planning/  @kitokoh
+/api/app/Modules/Absence/   @kitokoh
+/api/app/Modules/Payroll/   @kitokoh
+/api/app/Modules/Accounting/ @kitokoh
+/api/app/Modules/Expense/   @kitokoh
+/api/app/Modules/Recruitment/ @kitokoh
+/api/app/Modules/CRM/       @kitokoh
+/api/app/Modules/Marketing/ @kitokoh
+/api/app/Modules/Growth/    @kitokoh
+/api/app/Modules/Notification/ @kitokoh
+/api/app/Contracts/Communication/ @kitokoh
+/api/app/Jobs/              @kitokoh
+/api/app/Contracts/Queue/   @kitokoh
+/api/app/Modules/EdgeSync/  @kitokoh
+/api/app/Modules/Cameras/   @kitokoh
+/api/app/Modules/Cabinet/   @kitokoh
+/api/app/Modules/Billing/   @kitokoh
+/api/app/Modules/Fleet/     @kitokoh
+/api/app/AI/                @kitokoh
+
 # Frontend web (Next.js)
 /front/web/                 @kitokoh
 
