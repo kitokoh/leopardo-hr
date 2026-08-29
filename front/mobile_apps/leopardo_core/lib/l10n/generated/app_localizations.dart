@@ -2220,6 +2220,60 @@ abstract class AppLocalizations {
   /// **'Votre entreprise'**
   String get dashboardYourcompany;
 
+  /// No description provided for @dashboardLeaveBalanceTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon solde de congés'**
+  String get dashboardLeaveBalanceTitle;
+
+  /// No description provided for @dashboardLeaveBalanceSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jours restants par type, année courante'**
+  String get dashboardLeaveBalanceSubtitle;
+
+  /// No description provided for @dashboardLeaveBalanceLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement du solde…'**
+  String get dashboardLeaveBalanceLoading;
+
+  /// No description provided for @dashboardLeaveBalanceError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger le solde de congés.'**
+  String get dashboardLeaveBalanceError;
+
+  /// No description provided for @dashboardLeaveBalanceEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun solde configuré pour ce compte.'**
+  String get dashboardLeaveBalanceEmpty;
+
+  /// No description provided for @dashboardLeaveBalanceAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'{days} j disponibles'**
+  String dashboardLeaveBalanceAvailable(Object days);
+
+  /// No description provided for @dashboardLeaveBalanceUsed.
+  ///
+  /// In fr, this message translates to:
+  /// **'{days} utilisés'**
+  String dashboardLeaveBalanceUsed(Object days);
+
+  /// No description provided for @dashboardSeeAbsences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir mes absences'**
+  String get dashboardSeeAbsences;
+
+  /// No description provided for @dashboardLeaveBalanceUnknown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Congés'**
+  String get dashboardLeaveBalanceUnknown;
+
   /// No description provided for @marketingOauthNavTitle.
   ///
   /// In fr, this message translates to:
