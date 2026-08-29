@@ -141,6 +141,15 @@ jobs:
       - name: Duplicate routes guard (issue #5577)
         run: bash dev-hub/tools/check-duplicate-routes.sh api
 
+      - name: Public routes canonical guard — route:list doit contenir le portail public (issue #5519)
+        run: bash dev-hub/tools/check-public-routes.sh api
+
+      - name: Duplicate use imports guard — routes/ + Providers/ (issue #5519)
+        run: bash dev-hub/tools/check-duplicate-use-imports.sh api
+
+      - name: Providers syntax guard — php -l sur *ServiceProvider.php (issue #5519)
+        run: bash dev-hub/tools/check-providers-syntax.sh api
+
       - name: Module isolation guard — no new cross-module imports (issue #5584)
         run: bash dev-hub/tools/check-module-isolation.sh api
 
