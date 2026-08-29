@@ -2300,6 +2300,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/export/attendance", options);
     },
 
+    /** Export CSV mensuel des presences par employe */
+    getExportAttendanceMonthly(options = {}) {
+      return request("GET", "/export/attendance/monthly", options);
+    },
+
     /** Exporter les contrats */
     getExportContracts(options = {}) {
       return request("GET", "/export/contracts", options);
