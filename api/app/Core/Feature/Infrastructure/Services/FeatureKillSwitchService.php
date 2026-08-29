@@ -116,7 +116,7 @@ final class FeatureKillSwitchService
             return $keys;
         });
 
-        return is_array($cached) ? $cached : [];
+        return $cached;
     }
 
     private function forgetCache(): void
