@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\CabinetDocumentResource;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
+use App\Modules\Cabinet\Infrastructure\Services\CabinetAuditLogger;
 use App\Modules\Cabinet\Infrastructure\Services\CabinetService;
 use App\Modules\Cabinet\Interfaces\Api\V1\Requests\MoveDocumentRequest;
 use App\Modules\Cabinet\Interfaces\Api\V1\Requests\StoreDocumentRequest;
@@ -20,7 +21,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CabinetDocumentController extends Controller
 {
-    public function __construct(private readonly CabinetService $cabinetService) {}
+    public function __construct(
+        private readonly CabinetService $cabinetService,
+        private readonly CabinetAuditLogger $auditLogger,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -76,6 +80,21 @@ class CabinetDocumentController extends Controller
 
         $document = $this->cabinetService->uploadDocument($actor, $file, $request->validated());
 
+        // Piste d'audit (DEP-BC20) : upload documenté (nom, taille, MIME).
+        $this->auditLogger->record(
+            $actor,
+            'cabinet.document.uploaded',
+            $document,
+            metadata: [
+                'name' => $document->name,
+                'original_name' => $document->original_name,
+                'size' => $document->size,
+                'mime_type' => $document->mime_type,
+            ],
+            ipAddress: $request->ip(),
+            userAgent: $request->userAgent(),
+        );
+
         return (new CabinetDocumentResource($document))
             ->response()
             ->setStatusCode(201);
@@ -103,6 +122,25 @@ class CabinetDocumentController extends Controller
 
         $this->cabinetService->deleteDocument($cabinetDocument);
 
+        // Piste d'audit (DEP-BC20) : la suppression est auditable — l'entrée
+        // est écrite APRÈS succès (un refus read_only n'est pas audité comme
+        // suppression), les références sont conservées depuis le modèle en
+        // mémoire (nom, chemin, taille, MIME).
+        $this->auditLogger->record(
+            $this->employee($request),
+            'cabinet.document.deleted',
+            $cabinetDocument,
+            oldValues: [
+                'name' => $cabinetDocument->name,
+                'original_name' => $cabinetDocument->original_name,
+                'path' => $cabinetDocument->path,
+                'size' => $cabinetDocument->size,
+                'mime_type' => $cabinetDocument->mime_type,
+            ],
+            ipAddress: $request->ip(),
+            userAgent: $request->userAgent(),
+        );
+
         return response()->json(null, 204);
     }
 
@@ -125,8 +163,20 @@ class CabinetDocumentController extends Controller
 
         /** @var int|null $folderId */
         $folderId = $request->validated('folder_id');
+        $previousFolderId = $cabinetDocument->folder_id;
 
         $document = $this->cabinetService->moveDocument($cabinetDocument, $folderId);
+
+        // Piste d'audit (DEP-BC20) : déplacement documenté (après succès).
+        $this->auditLogger->record(
+            $this->employee($request),
+            'cabinet.document.moved',
+            $document,
+            oldValues: ['folder_id' => $previousFolderId],
+            newValues: ['folder_id' => $document->folder_id],
+            ipAddress: $request->ip(),
+            userAgent: $request->userAgent(),
+        );
 
         return (new CabinetDocumentResource($document))->response();
     }
