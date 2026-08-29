@@ -126,6 +126,12 @@ class CrmServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Commandes artisan du module CRM (#5729) : auto-découverte hors
+        // app/Console/Commands → enregistrement explicite.
+        $this->commands([
+            \App\Modules\CRM\Console\Commands\CleanupCrmExports::class,
+        ]);
+
         Gate::policy(CrmImport::class, CrmImportPolicy::class);
         Gate::policy(CrmLead::class, CrmLeadPolicy::class);
         Gate::policy(CrmAccount::class, CrmMergePolicy::class);

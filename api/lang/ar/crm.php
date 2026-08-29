@@ -21,4 +21,12 @@ return [
     'CRM_AUTOMATION_EMERGENCY_STOPPED' => 'تم إيقاف أتمتة CRM طارئ لهذا المستأجر.',
     'CRM_AUTOMATION_INVALID' => 'أتمتة CRM غير صالحة (قاعدة أو إجراء غير مسموح به).',
 
+    'CRM_EXPORT_NOT_FOUND' => 'مهمة تصدير CRM غير موجودة في المستأجر الحالي.',
+    'CRM_EXPORT_NOT_READY' => 'تصدير CRM غير جاهز بعد (قيد المعالجة) أو فشل.',
+    'CRM_EXPORT_EXPIRED' => 'انتهت صلاحية تصدير CRM — أنشئ تصديرًا جديدًا.',
+    'CRM_EXPORT_ENTITY_UNAVAILABLE' => 'كيان تصدير CRM غير متاح (أساس V0 لم يُدمج بعد في هذه البيئة).',
+    'CRM_EXPORT_INVALID_REQUEST' => 'طلب تصدير CRM غير صالح (كيان أو عمود غير مسموح به).',
+    'CRM_EXPORT_FAILED' => 'فشل إنشاء تصدير CRM.',
+    'CRM_EXPORT_ENTITY_INVALID' => 'كيان تصدير CRM غير معروف.',
+
 ];

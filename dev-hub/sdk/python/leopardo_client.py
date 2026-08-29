@@ -1404,6 +1404,26 @@ class LeopardoClient:
         """Envoyer un message via un canal CRM (WhatsApp, SMS, email)"""
         return self.request("POST", "/crm/channels/{channel}/send", **kwargs)
 
+    def get_crm_exports(self, **kwargs):
+        """Lister les jobs d'export CRM du tenant"""
+        return self.request("GET", "/crm/exports", **kwargs)
+
+    def post_crm_exports(self, **kwargs):
+        """Creer un job d'export CRM asynchrone (CSV)"""
+        return self.request("POST", "/crm/exports", **kwargs)
+
+    def get_crm_exports_by_export(self, **kwargs):
+        """Statut et progression d'un job d'export"""
+        return self.request("GET", "/crm/exports/{export}", **kwargs)
+
+    def get_crm_exports_by_export_download(self, **kwargs):
+        """Telecharger un export termine (acces expirant)"""
+        return self.request("GET", "/crm/exports/{export}/download", **kwargs)
+
+    def get_crm_read_models(self, **kwargs):
+        """Read models CRM recalculables (agregats analytiques tenant)"""
+        return self.request("GET", "/crm/read-models", **kwargs)
+
     def get_crm_webhooks_whatsapp(self, **kwargs):
         """Verification d'abonnement du webhook WhatsApp Business (Meta)"""
         return self.request("GET", "/crm/webhooks/whatsapp", **kwargs)

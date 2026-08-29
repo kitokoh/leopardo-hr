@@ -60,4 +60,15 @@ return [
         'transactional_rate_limit_per_hour' => (int) env('CRM_EMAIL_TRANSACTIONAL_RATE_LIMIT_PER_HOUR', 2000),
     ],
 
+    'exports' => [
+        // Durée de vie d'un export avant expiration de l'accès (heures).
+        'ttl_hours' => (int) env('CRM_EXPORTS_TTL_HOURS', 24),
+
+        // Conservation des fichiers après expiration (jours, cleanup).
+        'retention_days' => (int) env('CRM_EXPORTS_RETENTION_DAYS', 7),
+
+        // File d'attente des jobs d'export.
+        'queue' => env('CRM_EXPORTS_QUEUE', 'default'),
+    ],
+
 ];

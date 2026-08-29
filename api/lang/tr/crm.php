@@ -21,4 +21,12 @@ return [
     'CRM_AUTOMATION_EMERGENCY_STOPPED' => 'Bu kiracı için CRM otomasyonları acil durduruldu.',
     'CRM_AUTOMATION_INVALID' => 'Geçersiz CRM otomasyonu (kural veya eylem beyaz listede değil).',
 
+    'CRM_EXPORT_NOT_FOUND' => 'CRM dışa aktarma işi geçerli kiracıda bulunamadı.',
+    'CRM_EXPORT_NOT_READY' => 'CRM dışa aktarma henüz hazır değil (işleniyor) veya başarısız.',
+    'CRM_EXPORT_EXPIRED' => 'CRM dışa aktarma süresi doldu — yeni bir dışa aktarma oluşturun.',
+    'CRM_EXPORT_ENTITY_UNAVAILABLE' => 'CRM dışa aktarma varlığı kullanılamıyor (V0 tabanı bu ortamda henüz birleştirilmedi).',
+    'CRM_EXPORT_INVALID_REQUEST' => 'Geçersiz CRM dışa aktarma isteği (varlık veya sütun beyaz listede değil).',
+    'CRM_EXPORT_FAILED' => 'CRM dışa aktarma oluşturma başarısız.',
+    'CRM_EXPORT_ENTITY_INVALID' => 'Bilinmeyen CRM dışa aktarma varlığı.',
+
 ];

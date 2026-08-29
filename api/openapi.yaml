@@ -24868,30 +24868,12 @@ paths:
           description: Conversations du canal
         '404':
           $ref: '#/components/responses/Error404'
-  /crm/channels/{channel}/observability:
+  /crm/exports:
     get:
       tags:
       - CRM
-      summary: Observabilite d'un canal (cout et erreurs agreges)
-      description: Totaux messages, echecs, dead-letter, tentatives et cout cumule — aucune donnee personnelle. Reserve aux managers principal/rh.
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: channel
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Agregats d'observabilite
-        '404':
-          $ref: '#/components/responses/Error404'
-  /crm/automations:
-    get:
-      tags:
-      - CRM
-      summary: Lister les automatisations CRM du tenant
+      summary: Lister les jobs d'export CRM du tenant
+      description: Reserve aux managers principal/rh. Tenant-scope, filtre par statut possible.
       security:
       - BearerAuth: []
       parameters:
@@ -24902,7 +24884,7 @@ paths:
           type: string
       responses:
         '200':
-          description: Automatisations du tenant
+          description: Jobs d'export du tenant
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -24910,8 +24892,8 @@ paths:
     post:
       tags:
       - CRM
-      summary: Creer une automatisation (event/conditions/actions)
-      description: Trigger/actions/operateurs whitelistes (moteur borne), versionnage automatique, statut draft|active|paused.
+      summary: Creer un job d'export CRM asynchrone (CSV)
+      description: Colonnes allowlistees par entite, filtres controles (statut/owner), generation asynchrone, acces expirant (expires_at).
       security:
       - BearerAuth: []
       requestBody:
@@ -24921,251 +24903,83 @@ paths:
             schema:
               type: object
               required:
-              - name
-              - trigger_event
-              - actions
+              - entity
               properties:
-                name:
+                entity:
                   type: string
-                trigger_event:
-                  type: string
-                  enum: [crm.lead.created, crm.contact.created, crm.account.created, crm.opportunity.stage_changed, crm.message.inbound, crm.message.sent]
-                conditions:
+                  enum: [accounts, contacts, leads, opportunities, activities, tasks]
+                columns:
                   type: array
                   items:
-                    type: object
-                    properties:
-                      field:
-                        type: string
-                      operator:
-                        type: string
-                        enum: [equals, not_equals, contains, exists, greater_than, less_than]
-                      value:
-                        type: string
-                actions:
-                  type: array
-                  maxItems: 5
-                  items:
-                    type: object
-                    properties:
-                      type:
-                        type: string
-                        enum: [send_whatsapp, send_sms, send_email, create_task, http_webhook]
-                      config:
-                        type: object
-                status:
-                  type: string
-                  enum: [draft, active, paused]
+                    type: string
+                filters:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                    owner_id:
+                      type: string
       responses:
         '201':
-          description: Automatisation creee
+          description: Job d'export cree (queued)
         '422':
           $ref: '#/components/responses/Validation422'
-  /crm/automations/{automation}:
+  /crm/exports/{export}:
     get:
       tags:
       - CRM
-      summary: Detail d'une automatisation
+      summary: Statut et progression d'un job d'export
       security:
       - BearerAuth: []
       parameters:
-      - name: automation
+      - name: export
         in: path
         required: true
         schema:
           type: string
       responses:
         '200':
-          description: Automatisation
+          description: Etat du job d'export
         '404':
           $ref: '#/components/responses/Error404'
-    put:
-      tags:
-      - CRM
-      summary: Mettre a jour une automatisation (version incrementee)
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: automation
-        in: path
-        required: true
-        schema:
-          type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - name
-              - trigger_event
-              - actions
-              properties:
-                name:
-                  type: string
-                trigger_event:
-                  type: string
-                conditions:
-                  type: array
-                actions:
-                  type: array
-                status:
-                  type: string
-      responses:
-        '200':
-          description: Automatisation mise a jour
-        '404':
-          $ref: '#/components/responses/Error404'
-    delete:
-      tags:
-      - CRM
-      summary: Archiver une automatisation (soft delete)
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: automation
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Automatisation archivee (statut disabled)
-        '404':
-          $ref: '#/components/responses/Error404'
-  /crm/automations/{automation}/activate:
-    post:
-      tags:
-      - CRM
-      summary: Activer une automatisation
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: automation
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Automatisation activee
-        '404':
-          $ref: '#/components/responses/Error404'
-  /crm/automations/{automation}/pause:
-    post:
-      tags:
-      - CRM
-      summary: Mettre en pause une automatisation
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: automation
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Automatisation en pause
-        '404':
-          $ref: '#/components/responses/Error404'
-  /crm/automations/{automation}/simulate:
-    post:
-      tags:
-      - CRM
-      summary: Simuler une automatisation sans effet de bord
-      description: Evalue les conditions et decrit les actions (dry-run, aucun envoi/ecriture). Un run dry_run est historise.
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: automation
-        in: path
-        required: true
-        schema:
-          type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                context:
-                  type: object
-      responses:
-        '200':
-          description: Resultat de simulation (matched + effets)
-        '404':
-          $ref: '#/components/responses/Error404'
-  /crm/automations/{automation}/runs:
+  /crm/exports/{export}/download:
     get:
       tags:
       - CRM
-      summary: Historique d'execution d'une automatisation
+      summary: Telecharger un export termine (acces expirant)
+      description: Refuse si le job n'est pas completed (409) ou si expires_at est depasse (410, statut passe a expired).
       security:
       - BearerAuth: []
       parameters:
-      - name: automation
+      - name: export
         in: path
         required: true
         schema:
           type: string
       responses:
         '200':
-          description: Runs (succeeded|skipped|failed|dead_lettered, dry_run)
+          description: Fichier CSV
         '404':
           $ref: '#/components/responses/Error404'
-  /crm/automations/emergency-stop:
-    post:
+        '409':
+          description: Export pas encore pret ou en echec
+        '410':
+          description: Export expire
+  /crm/read-models:
+    get:
       tags:
       - CRM
-      summary: Arret d'urgence des automatisations du tenant
-      description: enabled=false coupe tout dispatch immediatement (423) ; enabled=true reactive.
+      summary: Read models CRM recalculables (agregats analytiques tenant)
+      description: Compteurs par statut/stage, contacts par compte, totaux pipeline et score qualite des donnees. Aucune donnee personnelle exposee. Chaque agregat est schema-garde (retourne vide si le socle V0 n'est pas merge).
       security:
       - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                enabled:
-                  type: boolean
       responses:
         '200':
-          description: Etat de l'interrupteur
-  /crm/automations/events/{event}:
-    post:
-      tags:
-      - CRM
-      summary: Emettre un evenement metier CRM (declenche les automatisations)
-      description: Point d'entree des triggers (utilise par le module CRM et le futur socle V0). Idempotent par (automation, evenement, entite).
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: event
-        in: path
-        required: true
-        schema:
-          type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                context:
-                  type: object
-      responses:
-        '200':
-          description: Evenement recu et traite
-        '422':
-          description: Evenement inconnu (non allowliste)
-        '423':
-          description: Automatisations arretees d'urgence
+          description: Agregats recalculables
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
 
 components:
   securitySchemes:

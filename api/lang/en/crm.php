@@ -21,4 +21,12 @@ return [
     'CRM_AUTOMATION_EMERGENCY_STOPPED' => 'CRM automations emergency-stopped for this tenant.',
     'CRM_AUTOMATION_INVALID' => 'Invalid CRM automation (rule or action not allowlisted).',
 
+    'CRM_EXPORT_NOT_FOUND' => 'CRM export job not found in the current tenant.',
+    'CRM_EXPORT_NOT_READY' => 'CRM export not ready yet (processing) or failed.',
+    'CRM_EXPORT_EXPIRED' => 'CRM export expired — generate a new export.',
+    'CRM_EXPORT_ENTITY_UNAVAILABLE' => 'CRM export entity unavailable (V0 base not merged yet on this environment).',
+    'CRM_EXPORT_INVALID_REQUEST' => 'Invalid CRM export request (entity or column not allowlisted).',
+    'CRM_EXPORT_FAILED' => 'CRM export generation failed.',
+    'CRM_EXPORT_ENTITY_INVALID' => 'Unknown CRM export entity.',
+
 ];

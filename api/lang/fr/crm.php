@@ -21,4 +21,12 @@ return [
     'CRM_AUTOMATION_EMERGENCY_STOPPED' => 'Automatisations CRM arrêtées d\'urgence pour ce tenant.',
     'CRM_AUTOMATION_INVALID' => 'Automatisation CRM invalide (règle ou action non allowlistée).',
 
+    'CRM_EXPORT_NOT_FOUND' => 'Job d\'export CRM introuvable dans le tenant courant.',
+    'CRM_EXPORT_NOT_READY' => 'Export CRM pas encore prêt (traitement en cours) ou échoué.',
+    'CRM_EXPORT_EXPIRED' => 'Export CRM expiré — générer un nouvel export.',
+    'CRM_EXPORT_ENTITY_UNAVAILABLE' => 'Entité d\'export CRM indisponible (socle V0 non encore mergé sur cet environnement).',
+    'CRM_EXPORT_INVALID_REQUEST' => 'Requête d\'export CRM invalide (entité ou colonne non allowlistée).',
+    'CRM_EXPORT_FAILED' => 'Génération de l\'export CRM en échec.',
+    'CRM_EXPORT_ENTITY_INVALID' => 'Entité d\'export CRM inconnue.',
+
 ];

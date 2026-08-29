@@ -20,6 +20,7 @@ use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmAutomationController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmChannelController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmConsentController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDedupController;
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmExportController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmEmailController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmEmailWebhookController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmImportController;
@@ -60,6 +61,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     });
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->prefix('crm')->group(function (): void {
+    // ── Exports asynchrones + read models (#5729) ─────────────────────────────
+    Route::get('/exports', [CrmExportController::class, 'index']);
+    Route::post('/exports', [CrmExportController::class, 'store']);
+    Route::get('/exports/{export}', [CrmExportController::class, 'show']);
+    Route::get('/exports/{export}/download', [CrmExportController::class, 'download']);
+    Route::get('/read-models', [CrmExportController::class, 'readModels']);
+
     // ── Import CSV (issue #5714) ─────────────────────────────────────────────
     Route::post('/imports', [CrmImportController::class, 'store']);
     Route::get('/imports/{crmImport}', [CrmImportController::class, 'show']);
