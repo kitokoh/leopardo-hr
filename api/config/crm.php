@@ -43,4 +43,13 @@ return [
         'whatsapp_verify_token' => env('CRM_WHATSAPP_WEBHOOK_VERIFY_TOKEN', ''),
     ],
 
+    'email' => [
+        // Fournisseur interchangeable (contrat EmailProviderInterface) : log
+        // (défaut, aucun envoi réel) ou mail (Laravel Mail).
+        'provider' => env('CRM_EMAIL_PROVIDER', 'log'),
+        'webhook_secret' => env('CRM_EMAIL_WEBHOOK_SECRET'),
+        'rate_limit_per_hour' => (int) env('CRM_EMAIL_RATE_LIMIT_PER_HOUR', 500),
+        'transactional_rate_limit_per_hour' => (int) env('CRM_EMAIL_TRANSACTIONAL_RATE_LIMIT_PER_HOUR', 2000),
+    ],
+
 ];
