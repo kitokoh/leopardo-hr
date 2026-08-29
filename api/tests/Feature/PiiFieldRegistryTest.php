@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Privacy\PiiFieldRegistry;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -31,6 +32,7 @@ class PiiFieldRegistryTest extends TestCase
     {
         parent::setUp();
         $this->setUpMvpSchema();
+        $this->ensureRecentEmployeeColumns();
         $this->registry = app(PiiFieldRegistry::class);
     }
 
@@ -128,5 +130,19 @@ class PiiFieldRegistryTest extends TestCase
         $this->assertFalse($this->registry->isPii('employee', 'nonexistent_field'));
         $this->assertSame([], $this->registry->entityFields('nonexistent_entity'));
         $this->assertFalse($this->registry->isPii('nonexistent_entity', 'email'));
+    }
+
+    /**
+     * La fixture MVP ne porte pas les colonnes 2FA ajoutées par la migration
+     * `2026_08_25_000006_5454` — on les ajoute pour que le test « champs
+     * déclarés = colonnes réelles » reste strict sur l'état de production.
+     */
+    private function ensureRecentEmployeeColumns(): void
+    {
+        if (! Schema::hasColumn('employees', 'two_fa_recovery_codes')) {
+            Schema::table('employees', function (Blueprint $table): void {
+                $table->json('two_fa_recovery_codes')->nullable();
+            });
+        }
     }
 }
