@@ -291,7 +291,6 @@ class EduManagerMigrationsTest extends TestCase
             'contact_reference' => $contactReference,
         ]);
     }
-}
 
     private function callMigrationMethod(Migration $migration, string $method): void
     {
@@ -301,4 +300,5 @@ class EduManagerMigrationsTest extends TestCase
         $reflection = new \ReflectionMethod($migration, $method);
         $reflection->invoke($migration);
     }
+}
 
