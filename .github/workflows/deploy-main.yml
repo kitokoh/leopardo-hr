@@ -199,6 +199,16 @@ jobs:
           fetch-depth: 2
           persist-credentials: false
 
+      # The trusted checkout above uses sparse mode. Disable it explicitly so
+      # the shared filter file is present after the full deployment checkout.
+      - name: Ensure full deployment checkout
+        if: steps.context.outputs.should_deploy == 'pending-validation' && steps.decision.outputs.should_deploy == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git sparse-checkout disable 2>/dev/null || true
+          git config --local core.sparseCheckout false
+
       - name: Resolve parent commit for change detection
         if: steps.context.outputs.should_deploy == 'pending-validation' && steps.decision.outputs.should_deploy == 'true'
         id: parent
