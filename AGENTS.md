@@ -71,6 +71,29 @@ Protocol OBLIGATOIRE avant de commencer a coder :
 4. **Fermeture des doublons** : toute PR dupliquee sur une meme issue est
    fermee avec un commentaire de renvoi vers la PR canonique (1 PR = 1 issue).
 
+### Affectation par Bounded Context (labels BC — registre #5859)
+
+Le registre automatise des bounded contexts (`dev-hub/governance/
+bounded-context-registry.json`, BC-01 PLATFORM .. BC-23 AI) est la carte
+canonique. Toute issue ouverte est etiquettee avec son BC (`BC-01 PLATFORM`,
+`BC-02 TENANT`, `BC-11 CRM`, `BC-15 FUEL`, `BC-16 EDU`, ...).
+
+1. **Affectation par BC, jamais par surface vague** : le fondateur/chef de
+   projet confie le travail par BC — ex. « travaille sur les issues
+   etiquetees BC-15 FUEL » ou « issues du BC-01 PLATFORM ». Un agent
+   selectionne UNIQUEMENT des issues du BC qui lui a ete confie.
+2. **Un seul agent par BC a la fois** : deux agents peuvent travailler en
+   parallele sur des BC DIFFERENTS, jamais sur le meme BC. Le verrou
+   reste la regle anti-doublon ci-dessus (`fix/<issue>-<slug>` + claim
+   marker) : si une branche existe deja pour une issue du BC, contribuer
+   dessus ou s'arreter.
+3. **Nouvelle issue sans label BC** : verifier le registre
+   `bounded-context-registry.json` (chemin racine -> BC) et ajouter le
+   label avant de commencer.
+4. **Une branche reste dans son BC** : pas d'import cross-BC (garde Module
+   Structure Validator), pas de migration tenant sans `company_id` (garde
+   Hygiene Guards).
+
 ### Garde migrations AVANT push (issue #1962 — 3 occurrences le 2026-08-24)
 
 Toute PR ajoutant ou renommant une migration (`api/database/migrations/*`)
@@ -149,6 +172,8 @@ vert alors que le correctif n'existe pas (vague du 2026-08-17 : #4690/#4687/
   le bilan du vendredi.
 
 ## Regles obligatoires
+
+- **Protocole branches CRM (#5746)** : pour toute issue du programme CRM (#5705→#5731, #5735→#5746), suivre `docs/GOUVERNANCE/CRM_BRANCH_PROTOCOL.md` — une issue = une branche = une PR ; marker branch immédiat après claim ; base `main` à jour ; migrations avec réf issue dans le nom ; jamais d'auto-merge d'une PR rouge ; arrêt si `main` rouge. Le garde `dev-hub/tools/check-crm-branch-protocol.sh` (workflow `crm-branch-protocol.yml`) signale doublons de branches, PRs sans `Closes #N` et PRs trop grosses.
 
 - **Lecon 2026-08-16 (#4164)** : le garde `validate-mobile-workflow-contracts.ps1`
   (scan forbidden-route) ne doit matcher que des ROUTES DE NAVIGATION, pas les
