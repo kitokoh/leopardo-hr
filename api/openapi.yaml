@@ -18513,6 +18513,47 @@ paths:
           description: Donnees export
         '401':
           $ref: '#/components/responses/Error401'
+  /export/attendance/monthly:
+    get:
+      tags:
+      - Exports
+      summary: Export CSV mensuel des presences par employe
+      description: "Synthese mensuelle par employe (jours travailles, heures, HS, retards, sorties manquantes, corrections, estimation brute) - meme agregation que /attendance/monthly-report, surface d'export canonique avec historique. Manager uniquement."
+      parameters:
+      - name: month
+        in: query
+        description: "Mois au format YYYY-MM (defaut : mois courant)"
+        schema:
+          type: string
+          example: '2026-08'
+      responses:
+        '200':
+          description: Enveloppe JSON {format, content, filename, count, month}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      format:
+                        type: string
+                        example: csv
+                      content:
+                        type: string
+                      filename:
+                        type: string
+                      count:
+                        type: integer
+                      month:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Mois invalide
   /export/absences:
     get:
       tags:
