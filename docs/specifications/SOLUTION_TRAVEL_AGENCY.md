@@ -1,15 +1,16 @@
 # SOLUTION TRAVEL AGENCY — Spécification technique de la verticale « Agence de Voyage »
 
-> **Statut :** Proposition technique prête pour implémentation par lots (issues `TRAVEL-*`)
+> **Statut :** Proposition **validée par le propriétaire** (2026-08-29) — prête pour implémentation par lots
 > **Base :** dernière tête de `main` vérifiée le 29 août 2026 (`a66aae3b3`)
 > **Origine :** portage de l'ancien projet `gv-back` (fork `kitokoh/gv-back` de `lesphinx/gv-back-unified`,
 > Laravel 5.6 / PHP 7.1) vers l'architecture DDD multi-tenant Leopardo HR.
 > **Périmètre :** verticale opérationnelle « Agence de Voyage » = vente de billets en ligne (voyages
 > interurbains), gestion du réseau (routes, trajets, gares, compagnies), réservations & passagers,
-> paiements mobile money, billets PDF, location de véhicules, hôtellerie, rapports. S'appuie sur la
+> paiements mobile money, billets PDF, location de véhicules, hôtellerie, rapports, contenu &
+> monétisation, applications mobiles, portail client et extensions métier. S'appuie sur la
 > plateforme (tenant, identité, RBAC, HR, CRM, notifications, documents, comptabilité) sans la dupliquer.
-> **Règle d'or AGENTS.md :** ce document doit être **validé par le propriétaire** avant que les issues
-> GitHub du module soient créées — il constitue la source de vérité des issues `TRAVEL-*`.
+> **Règle d'or AGENTS.md :** ce document a été validé par le propriétaire ; il constitue la source de
+> vérité des issues `TRAVEL-*`.
 
 ---
 
@@ -26,9 +27,10 @@
 9. [Sécurité & RGPD](#9-sécurité--rgpd)
 10. [Activation, provisioning & onboarding](#10-activation-provisioning--onboarding)
 11. [Tests, qualité & Definition of Done](#11-tests-qualité--definition-of-done)
-12. [Plan de livraison par lots (TRAVEL-*)](#12-plan-de-livraison-par-lots-travel-)
-13. [Hors périmètre v1 (Phase 2)](#13-hors-périmètre-v1-phase-2)
-14. [Références](#14-références)
+12. [Plan de livraison (plan complet)](#12-plan-de-livraison-plan-complet--29-lots--110-tâches-fines)
+13. [Ordre de priorité & séquencement](#13-ordre-de-priorité--séquencement)
+14. [Éléments non prévus](#14-éléments-non-prévus-volontairement-exclus)
+15. [Références](#15-références)
 
 ---
 
@@ -71,7 +73,12 @@ espace client, multi-appareils.
 4. **Aucun secret en dur** : clés PVIT/ConvertAPI → configuration + contrat de passerelle ; la
    génération PDF est locale (suppression de la dépendance à l'API externe).
 5. **Tout ce qui existait est planifié** : chaque fonctionnalité de gv-back est cartographiée
-   (section 3) ; celles qui ne sont pas en v1 sont explicitement planifiées en Phase 2 (section 13).
+   (section 3) et détaillée en tâches (section 12) — y compris contenu, annonces, quiz, sites
+   touristiques, notifications.
+6. **Exhaustivité et dépassement** : le plan absorbe **toutes** les fonctionnalités legacy **et va
+   au-delà** — mobile agent, portail client, assignation automatique des sièges, aller-retour,
+   groupes/corporate, multi-devise, webhooks transporteurs, remboursements partiels,
+   correspondances, fidélité (section 12, épics 7xx/8xx).
 
 ---
 
@@ -164,6 +171,30 @@ Résumé de l'inventaire complet (voir rapport d'analyse joint au dossier de con
 | multilingue (users.langue) | i18n plateforme (fr/en v1) | v1 |
 | devise FCFA implicite | Devise du tenant + montants minor units | v1 |
 | SPA front consommant l'API | UI web admin (admin-dashboard) v1 ; boutique publique dédiée P2 | v1 UI / P2 shop public |
+
+### 3.2 Fonctionnalités nouvelles (au-delà de gv-back)
+
+Pour répondre à l'ambition « absorber tout ce qui existe et même plus », le plan ajoute :
+
+| Fonctionnalité | Description | Épic |
+|---|---|---|
+| App mobile agent/vendeur (Flutter) | Vente guichet, check-in, encaissement cash sur `leopardo_core` | 7xx |
+| Portail client voyageur | Suivi de réservation, e-billets, historique, annulation en ligne | 7xx |
+| Notifications push agents (FCM) | Alertes nouvelles réservations | 7xx |
+| Synchronisation offline mobile | File d'attente idempotente | 7xx |
+| Assignation automatique des sièges | Algorithme simple, surclassable | 8xx |
+| Billets aller-retour | Réservation combinée + tarif | 8xx |
+| Réservations de groupe / corporate | Devis, facturation, plafonds | 8xx |
+| Recherche flexible (dates ± N jours) | Résultats groupés par date | 8xx |
+| Multi-devise | Taux configuré par tenant, affichage + paiement | 8xx |
+| Webhooks sortants transporteurs | Contrat partenaire signé, retries | 8xx |
+| Synchronisation trajets transporteurs | API entrante compagnies | 8xx |
+| Remboursements partiels | Règles par classe/élasticité | 8xx |
+| Correspondances (multi-trajets) | Recherche + vente combinée | 8xx |
+| Point de vente tablette | Caisse + impression | 8xx |
+| Fidélité voyageur | Points, récompenses, opt-in RGPD | 8xx |
+| Annulation de trajet par l'agence | Remboursement auto + notification massive | 8xx |
+| Politique d'annulation configurable | Délais, pénalités par trajet/classe | 8xx |
 
 ---
 
@@ -720,96 +751,226 @@ logs sans PII inutile · PR courte fusionnable sur `main` · entrée `CHANGELOG.
 
 ---
 
-## 12. Plan de livraison par lots (TRAVEL-*)
+## 12. Plan de livraison (plan complet — 29 lots + ~110 tâches fines)
 
-> Chaque ligne devient une **issue GitHub dédiée** (template Agent-Ready : Contexte / Périmètre /
-> Exigences / Critères d'acceptation / Dépendances / DoD). Les dépendances sont exprimées en
-> `TRAVEL-xxx` et en issues existantes.
+> **Structure :** les issues `TRAVEL-001..064` (déjà créées, #5976→#6004) sont le **roadmap par lot**
+> (feuille de route lisible). Les issues `TRAVEL-1xx..10xx` (créées en complément) sont les **tâches
+> fines Agent-Ready** ; chacune référence son lot parent (ex. `TRAVEL-201` → parent `#5980 TRAVEL-010`).
+> Chaque tâche fine respecte le template : Contexte / Périmètre / Exigences / Critères d'acceptation /
+> Dépendances / DoD (§11.3).
 
-### Lot 0 — Fondations & gouvernance
+### Épic 1xx — Fondations & gouvernance (parents TRAVEL-001..004)
 
-| ID | Tâche | Dépendances |
+| ID | Tâche fine | Parent |
 |---|---|---|
-| TRAVEL-001 | **Spécification & décisions** : valider ce document (source de vérité), créer le label `BC-24 TRAVEL` | — |
-| TRAVEL-002 | **Squelette module DDD** `TravelAgency` (stub, provider, routes file, enregistrement `bootstrap/providers.php`, feature flag + middleware `EnsureTravelAgencyModuleMiddleware`, contrat `PaymentGatewayInterface` vide) | TRAVEL-001 |
-| TRAVEL-003 | **Registre BC-24 TRAVEL** : entrée `planned` (path `api/app/Modules/TravelAgency`) + ligne CODEOWNERS + garde CI verte + maturité `DEP-BC24` | TRAVEL-002 |
-| TRAVEL-004 | **Activation & onboarding** : secteur « travel » au catalogue, étape provisioning `install_solution`, commande de seed démo idempotente, interface manifest (préparée pour PLAT-001) | TRAVEL-003 |
+| TRAVEL-101 | Squelette module DDD `TravelAgency` (stub, provider, enregistrement `bootstrap/providers.php`, fichier routes) | TRAVEL-002 |
+| TRAVEL-102 | Middleware `EnsureTravelAgencyModuleMiddleware` + feature flag `travelagency` + route smoke + test | TRAVEL-002 |
+| TRAVEL-103 | Registre BC-24 TRAVEL + CODEOWNERS + gardes CI vertes | TRAVEL-003 |
+| TRAVEL-104 | Rapport de maturité `DEP_BC24_TRAVEL_MATURITY.md` (statut Planifié) | TRAVEL-003 |
+| TRAVEL-105 | Catalogue onboarding : secteur « travel » + étape provisioning `install_solution` | TRAVEL-004 |
+| TRAVEL-106 | `TravelAgencyManifest` + interface prête pour le catalogue de solutions PLAT-001 | TRAVEL-004 |
+| TRAVEL-107 | Commande `leopardo:travel:seed-demo` idempotente (données synthétiques) | TRAVEL-004 |
+| TRAVEL-108 | Harness de test verticale : extension `CreatesMvpSchema` (parité #5443), factories de base, tests cross-tenant génériques | TRAVEL-003 |
 
-### Lot 1 — Schéma & domaine (migrations + models + enums + contracts + factories)
+### Épic 2xx — Schéma & domaine (parents TRAVEL-010..014)
 
-| ID | Tâche | Dépendances |
+| ID | Tâche fine | Parent |
 |---|---|---|
-| TRAVEL-010 | **Référentiel géographique** : migrations `travel_countries`/`travel_cities` + seeds idempotents + models + tests | TRAVEL-003 |
-| TRAVEL-011 | **Réseau** : `travel_stations`, `travel_offices`, `travel_carriers`, `travel_classes`, `travel_vehicles` + models + enums + tests | TRAVEL-010 |
-| TRAVEL-012 | **Routes & trajets** : `travel_routes`, `travel_route_stops`, `travel_trips`, `travel_trip_prices`, `travel_trip_seats` + enums de statut + tests (contraintes, index) | TRAVEL-011 |
-| TRAVEL-013 | **Ventes** : `travel_bookings`, `travel_passengers`, `travel_tickets`, `travel_payments`, `travel_outbox_events` + contracts + tests | TRAVEL-012 |
-| TRAVEL-014 | **Location & hôtels** : `travel_rental_vehicles` (+ images), `travel_rental_bookings`, `travel_hotels`, `travel_hotel_rooms` + tests | TRAVEL-011 |
+| TRAVEL-201 | Migration `travel_countries` (+ modèle, contraintes) | TRAVEL-010 |
+| TRAVEL-202 | Migration `travel_cities` + seed géographique idempotent (source `pays.sql` de gv-back convertie) | TRAVEL-010 |
+| TRAVEL-203 | Migrations `travel_stations` + `travel_offices` (+ modèles) | TRAVEL-011 |
+| TRAVEL-204 | Migrations `travel_carriers` + `travel_classes` (+ modèles, enums) | TRAVEL-011 |
+| TRAVEL-205 | Migration `travel_vehicles` (+ modèle) | TRAVEL-011 |
+| TRAVEL-206 | Migrations `travel_routes` + `travel_route_stops` (+ modèles, contraintes de rang) | TRAVEL-012 |
+| TRAVEL-207 | Migrations `travel_trips` + `travel_trip_prices` (+ modèles, minor units) | TRAVEL-012 |
+| TRAVEL-208 | Migration `travel_trip_seats` + génération transactionnelle des sièges | TRAVEL-012 |
+| TRAVEL-209 | Migrations `travel_bookings` + `travel_passengers` (+ modèles, PII chiffrée) | TRAVEL-013 |
+| TRAVEL-210 | Migrations `travel_tickets` + `travel_payments` (+ modèles) | TRAVEL-013 |
+| TRAVEL-211 | Migration `travel_outbox_events` (pattern `crm_outbox_events` #5741) | TRAVEL-013 |
+| TRAVEL-212 | Migrations `travel_rental_vehicles` + `travel_rental_vehicle_images` | TRAVEL-014 |
+| TRAVEL-213 | Migration `travel_rental_bookings` (+ contrainte de chevauchement applicative) | TRAVEL-014 |
+| TRAVEL-214 | Migrations `travel_hotels` + `travel_hotel_rooms` | TRAVEL-014 |
+| TRAVEL-215 | Enums & Value Objects du domaine (`TripStatus`, `SeatStatus`, `PaymentStatus`, `Money`, `BookingReference`, `TicketNumber`, `ValidationCode`) | TRAVEL-010..014 |
+| TRAVEL-216 | Contracts & interfaces du domaine (repositories, services) + bindings provider | TRAVEL-010..014 |
+| TRAVEL-217 | Factories de tests + ajout de toutes les tables à `CreatesMvpSchema` (parité #5443) | TRAVEL-010..014 |
 
-### Lot 2 — API back-office
+### Épic 3xx — API back-office (parents TRAVEL-020..024)
 
-| ID | Tâche | Dépendances |
+| ID | Tâche fine | Parent |
 |---|---|---|
-| TRAVEL-020 | **API référentiel & réseau** : countries/cities/stations/offices/carriers/classes/vehicles + Policies + tests | TRAVEL-011 |
-| TRAVEL-021 | **API routes & trips** : CRUD + tarifs + publish/cancel + recherche interne + tests | TRAVEL-012 |
-| TRAVEL-022 | **API réservations back-office** : création guichet, confirmation, annulation, remboursement, check-in, manifeste, gestion du stock (verrous + expiration) + tests de concurrence | TRAVEL-013 |
-| TRAVEL-023 | **API locations** : véhicules + images + réservations + tests | TRAVEL-014 |
-| TRAVEL-024 | **API hôtels** : catalogue + chambres + tests | TRAVEL-014 |
+| TRAVEL-301 | `GET /travel/countries` + `GET /travel/cities` (lecture tenant, filtres) + tests | TRAVEL-020 |
+| TRAVEL-302 | CRUD `/travel/stations` + Policy + tests | TRAVEL-020 |
+| TRAVEL-303 | CRUD `/travel/offices` + Policy + tests | TRAVEL-020 |
+| TRAVEL-304 | CRUD `/travel/carriers` + Policy + tests | TRAVEL-020 |
+| TRAVEL-305 | CRUD `/travel/classes` + Policy + tests | TRAVEL-020 |
+| TRAVEL-306 | CRUD `/travel/vehicles` + Policy + tests | TRAVEL-020 |
+| TRAVEL-307 | CRUD `/travel/routes` + `/travel/routes/{route}/stops` (tri par rang, escales) + tests | TRAVEL-021 |
+| TRAVEL-308 | CRUD `/travel/trips` (génération sièges, dates/heures, moyens de transport) + tests | TRAVEL-021 |
+| TRAVEL-309 | CRUD `/travel/trips/{trip}/prices` (tarifs par classe, minor units, devise) + tests | TRAVEL-021 |
+| TRAVEL-310 | `POST /travel/trips/{trip}/publish` · `/cancel` (transitions validées, événements outbox) + tests | TRAVEL-021 |
+| TRAVEL-311 | `GET /travel/trips/search` (recherche interne, filtres, pagination, pas de N+1) + tests | TRAVEL-021 |
+| TRAVEL-312 | `POST /travel/bookings` (guichet : passagers, classes, sièges, source office/phone) + tests | TRAVEL-022 |
+| TRAVEL-313 | `POST /travel/bookings/{booking}/confirm` (comptant, sièges sold, événement) + tests | TRAVEL-022 |
+| TRAVEL-314 | `POST /travel/bookings/{booking}/cancel` (motif, libération sièges, événement) + tests | TRAVEL-022 |
+| TRAVEL-315 | `POST /travel/bookings/{booking}/refund` (réservé manage, motif, audit, événement) + tests | TRAVEL-022 |
+| TRAVEL-316 | `POST /travel/bookings/{booking}/issue-ticket` (génération tickets + PDF, cf. 412) + tests | TRAVEL-022 |
+| TRAVEL-317 | `POST /travel/tickets/{ticket}/check-in` + permission dédiée + tests | TRAVEL-022 |
+| TRAVEL-318 | `GET /travel/trips/{trip}/manifest` (liste passagers, tri par siège) + tests | TRAVEL-022 |
+| TRAVEL-319 | CRUD `/travel/rental-vehicles` + gestion images + tests | TRAVEL-023 |
+| TRAVEL-320 | Réservations de location (create/confirm/cancel, contrôle chevauchement, 409) + tests | TRAVEL-023 |
+| TRAVEL-321 | CRUD `/travel/hotels` + `/travel/hotels/{hotel}/rooms` + recherche par ville + tests | TRAVEL-024 |
+| TRAVEL-322 | Matrice des permissions `travel.*` (manage/agent/checkin/reports) + tests RBAC globaux | TRAVEL-020..024 |
 
-### Lot 3 — Vente en ligne, paiements & billetterie
+### Épic 4xx — Vente en ligne, paiements, billetterie (parents TRAVEL-030..033)
 
-| ID | Tâche | Dépendances |
+| ID | Tâche fine | Parent |
 |---|---|---|
-| TRAVEL-030 | **API shop** : recherche/détail/réservation en ligne/statut par référence + expiration des pending + tests | TRAVEL-012, TRAVEL-013 |
-| TRAVEL-031 | **Paiements** : adapters Cash + PVIT sandbox, initiate, callback signé idempotent, verify/refund, retries + tests (rejeu, signature, référence inconnue) | TRAVEL-013, TRAVEL-022 |
-| TRAVEL-032 | **Billet PDF** : générateur local, QR, template versionné, URL signée, révocation, contrat documents (fallback disque) + tests | TRAVEL-013, TRAVEL-022 |
-| TRAVEL-033 | **Intégrations événementielles** : outbox publisher, événements `travel.*.v1`, notifications (confirm/annuler), formulaire contact → lead CRM, synthèse Accounting + tests | TRAVEL-013 |
+| TRAVEL-401 | `GET /travel/shop/trips` (recherche publique tenant, filtres combinés, places restantes dérivées) + tests | TRAVEL-030 |
+| TRAVEL-402 | `GET /travel/shop/trips/{trip}` (détail, étapes, tarifs, disponibilité) + tests | TRAVEL-030 |
+| TRAVEL-403 | `POST /travel/shop/bookings` (réservation en ligne, idempotency, expiration 15 min, sièges réservés) + tests | TRAVEL-030 |
+| TRAVEL-404 | `GET /travel/shop/bookings/{reference}` (suivi par référence + code de validation) + tests | TRAVEL-030 |
+| TRAVEL-405 | `PaymentGatewayInterface` + `PaymentGatewayRegistry` + tests | TRAVEL-031 |
+| TRAVEL-406 | `CashPaymentGateway` (confirmation manuelle agent) + tests | TRAVEL-031 |
+| TRAVEL-407 | `PvitPaymentGateway` (sandbox, identifiants en config, initiation + verify) + tests | TRAVEL-031 |
+| TRAVEL-408 | `POST /travel/payments/initiate` + tests | TRAVEL-031 |
+| TRAVEL-409 | `POST /travel/payments/callback` (signature HMAC, idempotence, montant, référence — corrige le bug gv-back) + tests | TRAVEL-031 |
+| TRAVEL-410 | Re-conciliation `verify()` + retry/backoff bornés + tests | TRAVEL-031 |
+| TRAVEL-411 | Workflow de remboursement (`refund()`, partiel 808) + tests | TRAVEL-031 |
+| TRAVEL-412 | `TravelTicketPdfGenerator` (template versionné, QR, génération locale) + tests | TRAVEL-032 |
+| TRAVEL-413 | Stockage asset PDF (contrat documents BC-20 / fallback disque) + URL signée + révocation + tests | TRAVEL-032 |
+| TRAVEL-414 | Outbox publisher + consumer tenant-scoped + événements `travel.*.v1` + tests (dédup, replay) | TRAVEL-033 |
+| TRAVEL-415 | Notifications (confirmation/annulation/paiement, canaux BC-13 + consentement) + tests | TRAVEL-033 |
+| TRAVEL-416 | Formulaire de contact → lead CRM (événement, jamais d'import direct) + tests | TRAVEL-033 |
+| TRAVEL-417 | Synthèse Accounting (événement de synthèse validé, écritures côté Accounting) + tests | TRAVEL-033 |
+| TRAVEL-418 | Job d'expiration des réservations pending (libération sièges, idempotent, retry) + tests | TRAVEL-022/030 |
 
-### Lot 4 — Rapports, UI, documentation
+### Épic 5xx — Rapports & analytics (parent TRAVEL-040)
 
-| ID | Tâche | Dépendances |
+| ID | Tâche fine | Parent |
 |---|---|---|
-| TRAVEL-040 | **Rapports & exports** : sales/occupancy/revenue/cancellations + export CSV job idempotent + tests | TRAVEL-022 |
-| TRAVEL-041 | **UI admin web** (admin-dashboard) : navigation verticale TravelAgency, écrans réseau/trajets/réservations/billets/rapports, i18n fr/en | TRAVEL-021, TRAVEL-022, TRAVEL-040 |
-| TRAVEL-042 | **OpenAPI & docs** : endpoints `travel.*` documentés (coverage CI), collection Postman, guide intégration | TRAVEL-020 → TRAVEL-033 |
-| TRAVEL-043 | **Golden journey & E2E** : `GJ-TRAVEL-01` (recherche → billet → check-in) + tests E2E Playwright admin | TRAVEL-030 → TRAVEL-032, TRAVEL-041 |
+| TRAVEL-501 | `GET /travel/reports/sales` (ventes par période/trajet/route/source/statut) + tests | TRAVEL-040 |
+| TRAVEL-502 | `GET /travel/reports/occupancy` (taux d'occupation par trajet) + tests | TRAVEL-040 |
+| TRAVEL-503 | `GET /travel/reports/revenue` (recettes encaissées, remboursements déduits) + tests | TRAVEL-040 |
+| TRAVEL-504 | `GET /travel/reports/cancellations` (annulations + motifs agrégés) + tests | TRAVEL-040 |
+| TRAVEL-505 | Export CSV (job tenant-scoped idempotent + URL signée) + tests | TRAVEL-040 |
+| TRAVEL-506 | Read models recalculables (jobs idempotents, même résultat après reprise) + tests | TRAVEL-040 |
+| TRAVEL-507 | Dashboard KPIs (endpoint agrégé pour l'UI, permission `travel.reports`) + tests | TRAVEL-040 |
 
-### Lot 5 — Pilote & mise en production
+### Épic 6xx — UI web admin (parent TRAVEL-041)
 
-| ID | Tâche | Dépendances |
+| ID | Tâche fine | Parent |
 |---|---|---|
-| TRAVEL-050 | **Maturité & runbook** : `DEP-BC24_TRAVEL_MATURITY.md` (scorecard 12 dimensions), runbook pilote, recette UAT, pilot gates (MAT-018) | TRAVEL-040 → TRAVEL-043 |
-| TRAVEL-051 | **Pilote** : tenant pilote synthétique, seeds démo, kill switch vérifié, rapport de recette signé | TRAVEL-050 |
+| TRAVEL-601 | Entrée de navigation « Agence de voyage » + gate feature flag + gestion 403 | TRAVEL-041 |
+| TRAVEL-602 | Écrans référentiel (pays/villes/stations/offices/compagnies/classes/véhicules) | TRAVEL-041 |
+| TRAVEL-603 | Écrans routes & trajets (étapes, tarifs, publication/annulation) | TRAVEL-041 |
+| TRAVEL-604 | Écran réservations (liste, détail, confirmer/annuler/rembourser, émettre billet) | TRAVEL-041 |
+| TRAVEL-605 | Écran check-in & manifeste | TRAVEL-041 |
+| TRAVEL-606 | Écran billets (téléchargement PDF, révocation) | TRAVEL-041 |
+| TRAVEL-607 | Écrans rapports (cartes + tableaux, exports) | TRAVEL-041 |
+| TRAVEL-608 | Écrans locations & hôtels | TRAVEL-041 |
+| TRAVEL-609 | i18n fr/en des écrans (système centralisé, zéro chaîne codée) | TRAVEL-041 |
 
-### Phase 2 (planifiée, non bloquante pour v1)
+### Épic 7xx — Mobile & portail client (nouveau, au-delà de gv-back)
 
-| ID | Tâche | Dépendances |
+| ID | Tâche fine | Parent |
 |---|---|---|
-| TRAVEL-060 | Contenu communautaire (articles, catégories, commentaires, likes, partages, notes) | v1 |
-| TRAVEL-061 | Annonces payantes (types, positions, tarifs, transactions, modération) | v1 |
-| TRAVEL-062 | Sites touristiques & quiz | v1 |
-| TRAVEL-063 | Boutique publique multi-tenant (site dédié billets, token public signé) | v1 |
-| TRAVEL-064 | Import des données legacy gv-back (dump → outil de migration contrôlé) | v1 |
+| TRAVEL-701 | App mobile agent/vendeur (Flutter, `leopardo_core`) : vente guichet + check-in + encaissement cash | TRAVEL-051 |
+| TRAVEL-702 | Portail client voyageur (web) : suivi réservation, e-billets, historique, annulation en ligne | TRAVEL-051 |
+| TRAVEL-703 | Notifications push (FCM) pour les agents (nouvelles réservations, alertes) | TRAVEL-051 |
+| TRAVEL-704 | Synchronisation offline mobile (file d'attente idempotente, rejeu sans doublon) | TRAVEL-051 |
+
+### Épic 8xx — Extensions métier (nouveau, « et même plus »)
+
+| ID | Tâche fine | Parent |
+|---|---|---|
+| TRAVEL-801 | Assignation automatique des sièges (algorithme simple, surclassable manuellement) | TRAVEL-022 |
+| TRAVEL-802 | Billets aller-retour (round-trip : réservation combinée + tarif) | TRAVEL-030 |
+| TRAVEL-803 | Réservations de groupe / corporate (compte, devis, facturation, plafonds) | TRAVEL-022 |
+| TRAVEL-804 | Recherche flexible (dates ± N jours, résultats groupés) | TRAVEL-401 |
+| TRAVEL-805 | Multi-devise (taux de conversion configuré par tenant, affichage + paiement) | TRAVEL-031 |
+| TRAVEL-806 | Webhooks sortants transporteurs (contrat partenaire, signature HMAC, retries) | TRAVEL-414 |
+| TRAVEL-807 | Synchronisation des trajets transporteurs (API entrante compagnies, idempotente) | TRAVEL-414 |
+| TRAVEL-808 | Remboursements partiels (règle par classe/élasticité, motif, audit) | TRAVEL-411 |
+| TRAVEL-809 | Correspondances (recherche multi-trajets avec changement, vente combinée) | TRAVEL-401 |
+| TRAVEL-810 | Point de vente tablette (extension du mobile agent : caisse, impression) | TRAVEL-701 |
+| TRAVEL-811 | Fidélité voyageur (points par trajet, récompenses, opt-in RGPD) | TRAVEL-702 |
+| TRAVEL-812 | Annulation d'un trajet par l'agence (remboursement auto + notification massive) | TRAVEL-310 |
+| TRAVEL-813 | Politique d'annulation configurable par trajet/classe (délais, pénalités) | TRAVEL-314 |
+
+### Épic 9xx — Contenu & monétisation (parents TRAVEL-060..062, désormais détaillés)
+
+| ID | Tâche fine | Parent |
+|---|---|---|
+| TRAVEL-901 | `travel_articles` + catégories (CRUD, statuts, modération) | TRAVEL-060 |
+| TRAVEL-902 | Commentaires (CRUD, modération, signalement) | TRAVEL-060 |
+| TRAVEL-903 | Likes / partages / notes (agrégats, anti-spam) | TRAVEL-060 |
+| TRAVEL-904 | Quiz & jeu-concours (création, participation, résultats, bonus) | TRAVEL-060 |
+| TRAVEL-905 | Annonces : référentiels types + positions | TRAVEL-061 |
+| TRAVEL-906 | Annonces : tarifs (prix image/caractère, devise, minor units) | TRAVEL-061 |
+| TRAVEL-907 | Annonces : cycle de paiement (transaction) + validation + modération | TRAVEL-061 |
+| TRAVEL-908 | Annonces : expiration + renouvellement (jobs) | TRAVEL-061 |
+| TRAVEL-909 | Sites touristiques (annuaire géolocalisé, images, villes) | TRAVEL-062 |
+| TRAVEL-910 | Notifications legacy gv-back (file mail/SMS) → canaux plateforme BC-13 | TRAVEL-033 |
+
+### Épic 10xx — Boutique publique, import legacy, qualité, pilote
+
+| ID | Tâche fine | Parent |
+|---|---|---|
+| TRAVEL-1001 | Boutique publique (token public signé par tenant, rate limiting renforcé, anti-bot) | TRAVEL-063 |
+| TRAVEL-1002 | Tunnel d'achat public complet (recherche → panier → paiement → e-billet) | TRAVEL-063 |
+| TRAVEL-1003 | Import des données legacy gv-back (CLI, dry-run, mapping documenté, idempotent, rapport) | TRAVEL-064 |
+| TRAVEL-1004 | Import géographique legacy (pays/villes → seeds) | TRAVEL-064 |
+| TRAVEL-1005 | OpenAPI complet des endpoints travel + coverage CI vert | TRAVEL-042 |
+| TRAVEL-1006 | Collection Postman + guide d'intégration partenaires (transporteurs) | TRAVEL-042 |
+| TRAVEL-1007 | Golden journey GJ-TRAVEL-01 (recherche → réservation → paiement → billet → check-in) | TRAVEL-043 |
+| TRAVEL-1008 | Tests E2E Playwright admin (navigation + réservation guichet) | TRAVEL-043 |
+| TRAVEL-1009 | i18n complet (fr/en/ar/tr) + RTL arabe des surfaces travel | TRAVEL-042 |
+| TRAVEL-1010 | Runbook pilote + recette UAT TravelAgency | TRAVEL-050 |
+| TRAVEL-1011 | Pilot gates (MAT-018) + drill log + gardes runbooks | TRAVEL-050 |
+| TRAVEL-1012 | Pilote : tenant synthétique + recette signée + kill switch + rollback | TRAVEL-051 |
+| TRAVEL-1013 | Audit sécurité & RGPD avant pilote (PII passagers, paiements, exports) | TRAVEL-051 |
+
+### Dépendances transversales
+
+- **Obligatoires avant tout code** : TRAVEL-101, TRAVEL-102, TRAVEL-103, TRAVEL-108.
+- **Schéma avant API** : épic 2xx → épic 3xx ; **vente en ligne après back-office** : 3xx → 4xx.
+- **Paiements & billet** (4xx) avant le pilote ; **mobile/portail** (7xx) après stabilisation API.
+- **Extensions 8xx** : indépendantes entre elles, chacune adossée à un socle 3xx/4xx stable.
+- **Contenu 9xx** : ne dépend que du socle 1xx/2xx (tables dédiées, conventions identiques).
+- **10xx** : après stabilisation ; l'import legacy (1003) requiert un **dump de production** fourni par le propriétaire.
 
 ---
 
-## 13. Hors périmètre v1 (Phase 2)
+## 13. Ordre de priorité & séquencement
 
-Justification et périmètre de chaque sujet repoussé (tous planifiés, rien n'est oublié) :
+Le plan complet (§12) est séquencé en **vagues** (chaque vague laisse `main` vert et fusionnable) :
 
-| Sujet | Pourquoi P2 | Issue |
+| Vague | Contenu | Sortie |
 |---|---|---|
-| Contenu communautaire | Le cœur v1 est la vente de billets ; le contenu était secondaire dans gv-back (faible usage). À re-confirmer avec le produit. | TRAVEL-060 |
-| Annonces payantes | Fonction de monétisation à part (paiement à la publication) ; nécessite modération et fraude-conscience. | TRAVEL-061 |
-| Sites touristiques & quiz | Valeur marginale, contenu éditorial. | TRAVEL-062 |
-| Boutique publique dédiée | Le produit a explicitement indiqué qu'un site dédié billets viendrait plus tard ; l'API shop v1 est conçue pour être exposable sans rupture. | TRAVEL-063 |
-| Import données legacy | Nécessite un dump de production (le schéma réel diffère des migrations, zéro FK) ; outil contrôlé + mapping documenté. | TRAVEL-064 |
-| Réservation hôtelière (au-delà du catalogue) | Dépend de disponibilités multi-nuits et de paiements ; catalogue v1 d'abord. | (dans TRAVEL-024/041 P2) |
-| Mobile pompiste-like (app agent) | Après validation du flux web ; le mobile réutilisera `leopardo_core`. | P2 |
-| Découpages administratifs 3 niveaux | Non requis pour la v1 (pays + villes suffisent). | P2 |
+| **V1** | Fondations (1xx) + schéma (2xx) + API back-office (3xx) + vente en ligne & paiements & billets (4xx) | Verticale utilisable en back-office + vente en ligne |
+| **V2** | Rapports (5xx) + UI admin web (6xx) + qualité (1005-1009) | Utilisation web complète |
+| **V3** | Mobile & portail (7xx) + extensions métier (8xx) | Multi-canal (agent mobile, client web) |
+| **V4** | Contenu & monétisation (9xx) | Portail riche (annonces, articles, quiz) |
+| **V5** | Boutique publique (1001-1002), import legacy (1003-1004), pilote (1010-1013) | Mise en production & site dédié |
+
+**Règle :** une vague ne commence pas avant la précédente fusionnée ; chaque PR reste courte,
+fusionnable et garde la CI verte. Le pilote (V5) requiert les pilot gates (MAT-018).
+
+## 14. Éléments non prévus (volontairement exclus)
+
+| Sujet | Justification |
+|---|---|
+| CRM commercial plateforme | Reste dans Platform/Marketing (ADR dual contexts) — jamais fusionné |
+| Comptabilité détaillée dans la verticale | Accounting reste propriétaire des écritures ; la verticale émet des synthèses |
+| Réservation hôtelière complète (multi-nuits, disponibilités temps réel) | Catalogue v1 ; réservation évaluée après V3 |
+| Moteur de tarification dynamique (yield management) | Hors périmètre — tarifs par classe gérés manuellement (extensible) |
+| Intégration GDS/Amadeus | Non pertinent pour le transport interurbain terrestre |
+| Blockchain / NFTs | Sans objet |
+
 
 ---
 
-## 14. Références
+## 15. Références
 
 - `docs/specifications/PLATFORM_ONBOARDING_AND_VERTICAL_SOLUTIONS.md` — cadre des solutions verticales (PLAT-001..012, FUEL-*, EDU-*).
 - `docs/architecture/BOUNDED-CONTEXT-REGISTRY.md` + `dev-hub/governance/bounded-context-registry.json` — registre BC (MAT-001).
