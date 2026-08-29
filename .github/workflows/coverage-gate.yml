@@ -121,7 +121,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          # Quota Git LFS épuisé (2026-08-29, budget mensuel) : les jobs
+          # backend/architecture n'ont pas besoin des assets LFS (design,
+          # icônes mobiles) — checkout sans LFS pour débloquer les checks
+          # requis. Les workflows mobiles/web gardent lfs:true.
+          lfs: false
 
       - name: Setup backend (PHP + Composer + multi-tenant DB)
         uses: ./.github/actions/setup-backend-db
