@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TravelStation extends Model
 {
     use BelongsToCompany;
-    /** @use HasFactory<TravelStation> */
+    /** @use HasFactory<Database\Factories\TravelStationFactory> */
     use HasFactory;
 
     protected $fillable = [
