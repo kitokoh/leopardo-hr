@@ -145,6 +145,8 @@ jobs:
 
       - name: Runbook coverage guard par BC — backup/restore/rollback (issue #5873, MAT-015)
         run: bash dev-hub/tools/check-runbooks.sh
+      - name: Release Train compat matrix guard (issue #5874, MAT-016)
+        run: bash dev-hub/tools/check-release-compat.sh api
 
       - name: Performance budgets guard — scans lents, N+1, index (issue #5872, MAT-014)
         run: bash dev-hub/tools/check-performance-budgets.sh api
