@@ -48,7 +48,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          lfs: false
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
@@ -71,7 +71,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          lfs: false
 
       # Audit §2.3 / Plan P1: GitHub CodeQL has no native PHP support in this
       # workflow environment, so this job used to be a no-op status stub.
