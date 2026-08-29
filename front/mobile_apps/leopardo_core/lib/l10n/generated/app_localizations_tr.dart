@@ -1126,6 +1126,37 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dashboardYourcompany => 'Şirketiniz';
 
   @override
+  String get dashboardLeaveBalanceTitle => 'İzin bakiyem';
+
+  @override
+  String get dashboardLeaveBalanceSubtitle => 'Türe göre kalan günler, cari yıl';
+
+  @override
+  String get dashboardLeaveBalanceLoading => 'Bakiye yükleniyor…';
+
+  @override
+  String get dashboardLeaveBalanceError => 'İzin bakiyesi yüklenemedi.';
+
+  @override
+  String get dashboardLeaveBalanceEmpty => 'Bu hesap için bakiye yapılandırılmamış.';
+
+  @override
+  String dashboardLeaveBalanceAvailable(Object days) {
+    return '$days gün kullanılabilir';
+  }
+
+  @override
+  String dashboardLeaveBalanceUsed(Object days) {
+    return '$days kullanıldı';
+  }
+
+  @override
+  String get dashboardSeeAbsences => 'İzinlerimi gör';
+
+  @override
+  String get dashboardLeaveBalanceUnknown => 'İzin';
+
+  @override
   String get marketingOauthNavTitle => 'Pazarlama OAuth';
 
   @override

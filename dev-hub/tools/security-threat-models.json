@@ -1,0 +1,89 @@
+{
+  "$comment": "Registre des threat models par surface sensible (MAT-017, issue #5875). Chaque surface liste les contrôles couverts (type/taille/MIME, secrets, signatures, replay, permissions, audit) et le document de référence. Vérifié par check-security-threat-models.sh : document existant + couverture des contrôles.",
+  "surfaces": [
+    {
+      "id": "uploads",
+      "label": "Uploads de fichiers (documents RH, preuves, pièces jointes)",
+      "doc": "docs/security/THREAT_MODELS_MAT017.md",
+      "controls": [
+        "type_taille_mime",
+        "secrets",
+        "permissions",
+        "audit"
+      ],
+      "notes": "Validation Requests (mimes/max), stockage privé, scans antivirus, retention documentée."
+    },
+    {
+      "id": "ocr",
+      "label": "OCR (photos compteurs FuelStation, documents)",
+      "doc": "docs/security/THREAT_MODELS_MAT017.md",
+      "controls": [
+        "type_taille_mime",
+        "secrets",
+        "permissions",
+        "audit",
+        "replay"
+      ],
+      "notes": "Fichiers entrants validés avant OCR, pas de PII dans les logs, idempotence."
+    },
+    {
+      "id": "whatsapp",
+      "label": "WhatsApp / canaux de communication externes",
+      "doc": "docs/security/THREAT_MODELS_MAT017.md",
+      "controls": [
+        "secrets",
+        "signatures",
+        "permissions",
+        "audit"
+      ],
+      "notes": "Provider audit-only tant que non activé ; signatures webhook vérifiées ; préférences utilisateur."
+    },
+    {
+      "id": "pos_payments",
+      "label": "Paiements et POS (Stripe, Chargily, Accounting)",
+      "doc": "docs/security/THREAT_MODELS_MAT017.md",
+      "controls": [
+        "signatures",
+        "replay",
+        "secrets",
+        "audit",
+        "permissions"
+      ],
+      "notes": "Webhooks signés (fail-closed), idempotence, clés jamais en clair dans les logs."
+    },
+    {
+      "id": "devices_kiosks",
+      "label": "Devices, kiosques et edge (ZKTeco, device_code)",
+      "doc": "docs/security/THREAT_MODELS_MAT017.md",
+      "controls": [
+        "secrets",
+        "signatures",
+        "replay",
+        "permissions",
+        "audit"
+      ],
+      "notes": "Auth par device_code (token dérivé haché au repos #5588), sync edge, rotatabilité."
+    },
+    {
+      "id": "webhooks",
+      "label": "Webhooks entrants/sortants",
+      "doc": "docs/security/THREAT_MODELS_MAT017.md",
+      "controls": [
+        "signatures",
+        "replay",
+        "secrets",
+        "audit",
+        "permissions"
+      ],
+      "notes": "Signature provider vérifiée avant traitement (fail-closed), idempotence, journal webhook_deliveries."
+    }
+  ],
+  "control_catalog": {
+    "type_taille_mime": "Validation du type MIME, de la taille et de l'extension avant traitement (Requests Laravel mimes/max, liste blanche).",
+    "secrets": "Aucun secret/PII en clair dans les logs, fixtures, réponses d'erreur ou commits (gardes secret-scan + TruffleHog).",
+    "signatures": "Signatures des callbacks vérifiées cryptographiquement avant traitement (fail-closed).",
+    "replay": "Idempotence et anti-rejeu (clés d'idempotence, événements dédupliqués, horodatage).",
+    "permissions": "Autorisation explicite (Policies, RBAC) — pas de company_id client comme preuve d'autorité.",
+    "audit": "Traçabilité (audit_logs, webhook_deliveries, registres) avec métadonnées sans données sensibles."
+  }
+}
