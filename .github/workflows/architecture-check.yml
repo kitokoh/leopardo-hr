@@ -24,6 +24,49 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}  # #5629 : annuler les runs PR obsolètes pour libérer les runners
 
 jobs:
+  # Fast-path CI (#5629/#2131) : ce workflow porte 3 checks REQUIS (PHPStan
+  # Strict, Module Structure Validator, Frontend ESLint+TS) qui doivent
+  # tourner sur CHAQUE PR (leçon #1125/#2032). Mais les jobs lourds
+  # (composer install + analyse complète PHPStan, npm ci + tsc) sont inutiles
+  # quand le PR ne touche ni api/ ni front/web/ (docs, gouvernance,
+  # workflows) : ils sont alors SKIPPÉS (job skip dans un workflow qui tourne
+  # = succès pour le check requis) et le statut est posté en ~1 min. Le job
+  # hygiene-guards reste TOUJOURS exécuté (gardes migrations #1962/#5437
+  # critiques pour les PRs gouvernance). Push main et merge_group re-toujours
+  # tout vérifier (pas de base PR).
+  detect-changes:
+    name: Detect changed paths (fast-path CI)
+    runs-on: ubuntu-latest
+    outputs:
+      api_changed: ${{ steps.diff.outputs.api_changed }}
+      web_changed: ${{ steps.diff.outputs.web_changed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - name: Compute changed paths
+        id: diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.pull_request.base.sha }}"
+          if [[ -z "${BASE}" || "${BASE}" == "null" ]]; then
+            echo "api_changed=true" >> "$GITHUB_OUTPUT"
+            echo "web_changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git diff --name-only "${BASE}...HEAD" > /tmp/changed.txt
+          if grep -qE '^api/' /tmp/changed.txt; then
+            echo "api_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "api_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+          if grep -qE '^front/web/' /tmp/changed.txt; then
+            echo "web_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "web_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
   # Issue #3708 : les gardes dev-hub (bash pur) n'étaient appelées par aucun
   # workflow — la dérive APP_VERSION (#3528, régression b0630dd5) et la
   # parité .env.example (#1487) sont passées inaperçues sur main. Ce job
@@ -152,6 +195,8 @@ jobs:
   # See api/ARCHITECTURE.md "Trajectoire PHPStan" for the per-module
   # breakdown and the plan to shrink the baseline over time.
   phpstan-strict:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.api_changed == 'true'
     timeout-minutes: 45
     name: PHPStan — Strict (Core/Modules/Shared, level 8)
     runs-on: ubuntu-latest
@@ -176,6 +221,8 @@ jobs:
         run: vendor/bin/phpstan analyse --configuration=phpstan-strict.neon --memory-limit=1G --no-progress
 
   module-structure-check:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.api_changed == 'true'
     timeout-minutes: 45
     name: Module Structure Validator
     runs-on: ubuntu-latest
@@ -389,6 +436,8 @@ jobs:
           dev-hub/tools/check-phpstan-baseline-debt.sh guard "${base_sha}" "${head_sha}" api
 
   frontend-lint:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.web_changed == 'true'
     timeout-minutes: 15
     name: Frontend — ESLint + TypeScript
     runs-on: ubuntu-latest
