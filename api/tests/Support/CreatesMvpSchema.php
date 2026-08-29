@@ -2666,6 +2666,105 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'trip_id', 'seat_number'], 'travel_trip_seats_company_trip_seat_unique');
             });
         }
+
+        // ── BC-24 TRAVEL — TRAVEL-209 (issue #6022) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_bookings'))) {
+            Schema::create($this->moduleTable('travel_bookings'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('reference', 40);
+                $table->unsignedBigInteger('trip_id');
+                $table->string('status', 20)->default('pending');
+                $table->unsignedInteger('passenger_count');
+                $table->unsignedInteger('total_amount_minor');
+                $table->char('currency', 3);
+                $table->string('booking_source', 20)->default('office');
+                $table->unsignedBigInteger('customer_contact_id')->nullable();
+                $table->unsignedBigInteger('booked_by_user_id')->nullable();
+                $table->string('payment_status', 20)->default('pending');
+                $table->timestamp('expires_at')->nullable();
+                $table->string('idempotency_key', 255);
+                $table->unsignedInteger('version')->default(1);
+                $table->timestamps();
+                $table->unique(['company_id', 'reference'], 'travel_bookings_company_reference_unique');
+                $table->unique(['company_id', 'idempotency_key'], 'travel_bookings_company_idempotency_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_passengers'))) {
+            Schema::create($this->moduleTable('travel_passengers'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('booking_id');
+                $table->string('full_name', 160);
+                $table->date('birth_date')->nullable();
+                $table->string('document_type', 20)->nullable();
+                $table->text('document_number_encrypted')->nullable();
+                $table->string('document_number_hash', 64)->nullable();
+                $table->string('age_category', 20)->default('adult');
+                $table->unsignedBigInteger('class_id');
+                $table->unsignedInteger('seat_number')->nullable();
+                $table->unsignedInteger('unit_price_minor');
+                $table->timestamps();
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-210 (issue #6023) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_tickets'))) {
+            Schema::create($this->moduleTable('travel_tickets'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('ticket_number', 40);
+                $table->unsignedBigInteger('booking_id');
+                $table->unsignedBigInteger('passenger_id');
+                $table->string('validation_code', 64);
+                $table->unsignedBigInteger('pdf_asset_id')->nullable();
+                $table->timestamp('issued_at')->nullable();
+                $table->timestamp('valid_from')->nullable();
+                $table->timestamp('valid_until')->nullable();
+                $table->string('status', 20)->default('issued');
+                $table->timestamp('checked_in_at')->nullable();
+                $table->unsignedBigInteger('checked_in_by_user_id')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'ticket_number'], 'travel_tickets_company_number_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_payments'))) {
+            Schema::create($this->moduleTable('travel_payments'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('reference', 40);
+                $table->unsignedBigInteger('booking_id');
+                $table->string('provider_code', 20);
+                $table->unsignedInteger('amount_minor');
+                $table->char('currency', 3);
+                $table->string('status', 20)->default('pending');
+                $table->string('provider_reference', 120)->nullable();
+                $table->jsonb('callback_payload_redacted')->nullable();
+                $table->string('idempotency_key', 255);
+                $table->timestamps();
+                $table->unique(['company_id', 'reference'], 'travel_payments_company_reference_unique');
+                $table->unique(['company_id', 'idempotency_key'], 'travel_payments_company_idempotency_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-211 (issue #6024) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_outbox_events'))) {
+            Schema::create($this->moduleTable('travel_outbox_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('event_type', 80);
+                $table->jsonb('payload_redacted');
+                $table->string('status', 20)->default('pending');
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->timestampTz('available_at')->useCurrent();
+                $table->text('last_error')->nullable();
+                $table->string('idempotency_key', 255);
+                $table->timestamps();
+                $table->unique(['company_id', 'idempotency_key'], 'travel_outbox_company_key_unique');
+            });
+        }
     }
 
     private function dropMvpTables(): void
@@ -2741,6 +2840,11 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "invoices"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
         // BC-24 TRAVEL (verticale TravelAgency)
+        DB::statement('DROP TABLE IF EXISTS "travel_outbox_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_payments"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_tickets"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_passengers"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_bookings"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_trip_seats"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_trip_prices"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_trips"'.$cascade);
