@@ -1,0 +1,559 @@
+# Catalogue d'événements versionnés — Leopardo HR (MAT-006).
+#
+# Référentiel : docs/architecture/EVENT_CATALOGUE.md
+# Garde CI : dev-hub/tools/check-event-catalogue.sh
+# Test : api/tests/Feature/Events/EventCatalogueTest.php
+#
+# Chaque événement : nom stable (snake_case pointé), version semver, BC
+# propriétaire, classe PHP, schema (JSON Schema draft-07, sous-ensemble),
+# sample (payload concret — doit valider le schema), consumers, dépréciation.
+# Aucun champ PII en clair dans les payloads (identifiants uniquement).
+
+version: "1.0"
+owner: platform
+conventions:
+  versioning: semver (major = rupture, minor = ajout compatible, patch = doc)
+  deprecation: période de dépréciation d'au moins deux majors avant suppression
+  consumer_compat: un consumer déclare consumes.from ; CI bloque une version incompatible
+
+events:
+  - name: company.created
+    version: 1.0.0
+    bc: platform
+    class: App\Events\CompanyCreated
+    description: Un tenant (entreprise) est créé sur la plateforme.
+    consumers:
+      - App\Listeners\LinkPartnerToNewCompany
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [company.created] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [company_name]
+          properties:
+            company_name: { type: string, minLength: 1 }
+    sample:
+      event_name: company.created
+      version: "1.0.0"
+      occurred_at: "2026-08-28T12:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { company_name: "Entreprise Pilote SARL" }
+    deprecation: null
+
+  - name: employee.created
+    version: 1.0.0
+    bc: hr
+    class: App\Events\EmployeeCreated
+    description: Un employé est créé dans un tenant.
+    consumers:
+      - App\Listeners\AuditLogger
+      - App\Listeners\WebhookListener
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [employee.created] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [employee_id]
+          properties:
+            employee_id: { type: string, format: uuid }
+    sample:
+      event_name: employee.created
+      version: "1.0.0"
+      occurred_at: "2026-08-28T12:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { employee_id: "22222222-2222-4222-8222-222222222222" }
+    deprecation: null
+
+  - name: employee.archived
+    version: 1.0.0
+    bc: hr
+    class: App\Events\EmployeeArchived
+    description: Un employé est archivé (sortie RH, rétention).
+    consumers:
+      - App\Listeners\AuditLogger
+      - App\Listeners\WebhookListener
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [employee.archived] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [employee_id, archived_at]
+          properties:
+            employee_id: { type: string, format: uuid }
+            archived_at: { type: string, format: date-time }
+    sample:
+      event_name: employee.archived
+      version: "1.0.0"
+      occurred_at: "2026-08-28T12:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data:
+        employee_id: "22222222-2222-4222-8222-222222222222"
+        archived_at: "2026-08-28T12:00:00+00:00"
+    deprecation: null
+
+  - name: employee.departed
+    version: 1.0.0
+    bc: hr
+    class: App\Events\EmployeeDeparted
+    description: Un employé a une date de départ enregistrée.
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [employee.departed] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [employee_id, departure_date]
+          properties:
+            employee_id: { type: string, format: uuid }
+            departure_date: { type: string, format: date }
+    sample:
+      event_name: employee.departed
+      version: "1.0.0"
+      occurred_at: "2026-08-28T12:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data:
+        employee_id: "22222222-2222-4222-8222-222222222222"
+        departure_date: "2026-09-30"
+    deprecation: null
+
+  - name: employee.last_contract_terminated
+    version: 1.0.0
+    bc: hr
+    class: App\Events\EmployeeLastContractTerminated
+    description: Le dernier contrat actif d'un employé est terminé.
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [employee.last_contract_terminated] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [employee_id]
+          properties:
+            employee_id: { type: string, format: uuid }
+    sample:
+      event_name: employee.last_contract_terminated
+      version: "1.0.0"
+      occurred_at: "2026-08-28T12:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { employee_id: "22222222-2222-4222-8222-222222222222" }
+    deprecation: null
+
+  - name: employee.role_assigned
+    version: 1.0.0
+    bc: hr
+    class: App\Events\EmployeeRoleAssigned
+    description: Un rôle (employé / manager / rh) est assigné à un employé.
+    consumers:
+      - App\Listeners\AuditLogger
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [employee.role_assigned] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [employee_id, role]
+          properties:
+            employee_id: { type: string, format: uuid }
+            role: { type: string, enum: [employee, manager, rh] }
+    sample:
+      event_name: employee.role_assigned
+      version: "1.0.0"
+      occurred_at: "2026-08-28T12:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { employee_id: "22222222-2222-4222-8222-222222222222", role: "manager" }
+    deprecation: null
+
+  - name: attendance.checked_in
+    version: 1.0.0
+    bc: attendance
+    class: App\Events\AttendanceCheckedIn
+    description: Un pointage d'entrée est enregistré.
+    consumers:
+      - App\Listeners\AuditLogger
+      - App\Listeners\WebhookListener
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [attendance.checked_in] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [attendance_log_id, employee_id, checked_at]
+          properties:
+            attendance_log_id: { type: integer, minimum: 1 }
+            employee_id: { type: string, format: uuid }
+            checked_at: { type: string, format: date-time }
+    sample:
+      event_name: attendance.checked_in
+      version: "1.0.0"
+      occurred_at: "2026-08-28T08:02:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data:
+        attendance_log_id: 4242
+        employee_id: "22222222-2222-4222-8222-222222222222"
+        checked_at: "2026-08-28T08:02:00+00:00"
+    deprecation: null
+
+  - name: attendance.checked_out
+    version: 1.0.0
+    bc: attendance
+    class: App\Events\AttendanceCheckedOut
+    description: Un pointage de sortie est enregistré.
+    consumers:
+      - App\Listeners\AuditLogger
+      - App\Listeners\WebhookListener
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [attendance.checked_out] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [attendance_log_id, employee_id, checked_at]
+          properties:
+            attendance_log_id: { type: integer, minimum: 1 }
+            employee_id: { type: string, format: uuid }
+            checked_at: { type: string, format: date-time }
+    sample:
+      event_name: attendance.checked_out
+      version: "1.0.0"
+      occurred_at: "2026-08-28T17:03:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data:
+        attendance_log_id: 4243
+        employee_id: "22222222-2222-4222-8222-222222222222"
+        checked_at: "2026-08-28T17:03:00+00:00"
+    deprecation: null
+
+  - name: absence.requested
+    version: 1.0.0
+    bc: planning
+    class: App\Events\AbsenceRequested
+    description: Une demande d'absence est soumise.
+    consumers:
+      - App\Listeners\AuditLogger
+      - App\Listeners\WebhookListener
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [absence.requested] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [absence_id, employee_id]
+          properties:
+            absence_id: { type: integer, minimum: 1 }
+            employee_id: { type: string, format: uuid }
+    sample:
+      event_name: absence.requested
+      version: "1.0.0"
+      occurred_at: "2026-08-28T09:15:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data:
+        absence_id: 88
+        employee_id: "22222222-2222-4222-8222-222222222222"
+    deprecation: null
+
+  - name: absence.approved
+    version: 1.0.0
+    bc: planning
+    class: App\Events\AbsenceApproved
+    description: Une demande d'absence est approuvée.
+    consumers:
+      - App\Listeners\AuditLogger
+      - App\Listeners\WebhookListener
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [absence.approved] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [absence_id, employee_id]
+          properties:
+            absence_id: { type: integer, minimum: 1 }
+            employee_id: { type: string, format: uuid }
+    sample:
+      event_name: absence.approved
+      version: "1.0.0"
+      occurred_at: "2026-08-28T10:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data:
+        absence_id: 88
+        employee_id: "22222222-2222-4222-8222-222222222222"
+    deprecation: null
+
+  - name: absence.rejected
+    version: 1.0.0
+    bc: planning
+    class: App\Events\AbsenceRejected
+    description: Une demande d'absence est refusée.
+    consumers:
+      - App\Listeners\AuditLogger
+      - App\Listeners\WebhookListener
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [absence.rejected] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [absence_id, employee_id]
+          properties:
+            absence_id: { type: integer, minimum: 1 }
+            employee_id: { type: string, format: uuid }
+    sample:
+      event_name: absence.rejected
+      version: "1.0.0"
+      occurred_at: "2026-08-28T10:05:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data:
+        absence_id: 88
+        employee_id: "22222222-2222-4222-8222-222222222222"
+    deprecation: null
+
+  - name: candidate.hired
+    version: 1.0.0
+    bc: recruitment
+    class: App\Events\CandidateHired
+    description: Un candidat est embauché.
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [candidate.hired] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [candidate_id, job_id]
+          properties:
+            candidate_id: { type: integer, minimum: 1 }
+            job_id: { type: integer, minimum: 1 }
+    sample:
+      event_name: candidate.hired
+      version: "1.0.0"
+      occurred_at: "2026-08-28T11:30:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { candidate_id: 7, job_id: 3 }
+    deprecation: null
+
+  - name: marketing.lead_qualified
+    version: 1.0.0
+    bc: marketing
+    class: App\Events\MarketingLeadQualified
+    description: Un lead marketing est qualifié (prêt à convertir).
+    consumers:
+      - App\Listeners\ConvertMarketingLeadToContact
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [marketing.lead_qualified] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [lead_id]
+          properties:
+            lead_id: { type: integer, minimum: 1 }
+    sample:
+      event_name: marketing.lead_qualified
+      version: "1.0.0"
+      occurred_at: "2026-08-28T13:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { lead_id: 42 }
+    deprecation: null
+
+  - name: payroll.validated
+    version: 1.0.0
+    bc: payroll
+    class: App\Events\PayrollValidated
+    description: Une paie est validée pour un tenant et une période.
+    consumers:
+      - App\Listeners\AuditLogger
+      - App\Listeners\WebhookListener
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [payroll.validated] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [payroll_id, period]
+          properties:
+            payroll_id: { type: integer, minimum: 1 }
+            period: { type: string, pattern: "^[0-9]{4}-[0-9]{2}$" }
+    sample:
+      event_name: payroll.validated
+      version: "1.0.0"
+      occurred_at: "2026-08-28T14:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { payroll_id: 512, period: "2026-08" }
+    deprecation: null
+
+  - name: billing.subscription_paid
+    version: 1.0.0
+    bc: billing
+    class: App\Events\SubscriptionPaid
+    description: Un abonnement est payé.
+    consumers:
+      - App\Listeners\ProcessCommissionOnPayment
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [billing.subscription_paid] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [subscription_id, amount]
+          properties:
+            subscription_id: { type: integer, minimum: 1 }
+            amount: { type: number, minimum: 0 }
+    sample:
+      event_name: billing.subscription_paid
+      version: "1.0.0"
+      occurred_at: "2026-08-28T15:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { subscription_id: 9, amount: 199.0 }
+    deprecation: null
+
+  - name: payroll.tax_rate.submitted
+    version: 1.0.0
+    bc: payroll
+    class: App\Events\TaxRateSubmitted
+    description: Un taux fiscal est soumis pour validation.
+    consumers:
+      - App\Listeners\NotifyTaxRateValidation
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [payroll.tax_rate.submitted] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [tax_rate_id, country]
+          properties:
+            tax_rate_id: { type: integer, minimum: 1 }
+            country: { type: string, minLength: 2, maxLength: 2 }
+    sample:
+      event_name: payroll.tax_rate.submitted
+      version: "1.0.0"
+      occurred_at: "2026-08-28T16:00:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { tax_rate_id: 3, country: "DZ" }
+    deprecation: null
+
+  - name: payroll.tax_rate.approved
+    version: 1.0.0
+    bc: payroll
+    class: App\Events\TaxRateApproved
+    description: Un taux fiscal est approuvé.
+    consumers:
+      - App\Listeners\NotifyTaxRateValidation
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [payroll.tax_rate.approved] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [tax_rate_id, country]
+          properties:
+            tax_rate_id: { type: integer, minimum: 1 }
+            country: { type: string, minLength: 2, maxLength: 2 }
+    sample:
+      event_name: payroll.tax_rate.approved
+      version: "1.0.0"
+      occurred_at: "2026-08-28T16:30:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { tax_rate_id: 3, country: "DZ" }
+    deprecation: null
+
+  - name: payroll.tax_rate.rejected
+    version: 1.0.0
+    bc: payroll
+    class: App\Events\TaxRateRejected
+    description: Un taux fiscal est refusé.
+    consumers:
+      - App\Listeners\NotifyTaxRateValidation
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [payroll.tax_rate.rejected] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [tax_rate_id, country]
+          properties:
+            tax_rate_id: { type: integer, minimum: 1 }
+            country: { type: string, minLength: 2, maxLength: 2 }
+    sample:
+      event_name: payroll.tax_rate.rejected
+      version: "1.0.0"
+      occurred_at: "2026-08-28T16:45:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data: { tax_rate_id: 3, country: "DZ" }
+    deprecation: null
