@@ -1,0 +1,71 @@
+name: Fix/Feat Ratio Report
+
+# Anciennement "PLAN_ACTION2 Weekly Report" — renommé et réduit au seul KPI
+# encore actif (nettoyage CI, PLAN_ACTION2 clos depuis le 2026-07-26, cf.
+# PILOTAGE.md « Gouvernance documentaire »). Les sections "merges PA2-*",
+# "PR PA2-* bloquées" et "tickets P0 du CSV PLAN_ACTION2" ont été retirées
+# avec le script sous-jacent — elles rapportaient sur un backlog gelé. Le
+# ratio fix/feat, lui, porte sur TOUTES les PR mergées et reste suivi
+# activement (AGENTS.md § Discipline merge, issue #5634).
+#
+# `vars.PLAN_ACTION2_WEEKLY_REPORT_ISSUE` (nom inchangé pour ne pas casser une
+# éventuelle configuration existante dans les settings du repo) reste le
+# commutateur optionnel qui poste le rapport en commentaire sur une issue de
+# suivi ; sans elle, seul le step summary est produit.
+
+on:
+  schedule:
+    # Chaque lundi 07:00 UTC.
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+    inputs:
+      since_days:
+        description: "Fenetre en jours pour le calcul du ratio"
+        required: false
+        default: "7"
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: fix-feat-ratio-report-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  report:
+    timeout-minutes: 15
+    name: Generate weekly fix/feat ratio report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Generate report
+        id: report
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x dev-hub/tools/fix-feat-ratio-report.sh
+          SINCE="${{ inputs.since_days }}"
+          SINCE="${SINCE:-7}"
+          dev-hub/tools/fix-feat-ratio-report.sh \
+            --repo "${{ github.repository }}" \
+            --since-days "$SINCE" \
+            --output report.md
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Post report as issue comment (optional)
+        if: ${{ vars.PLAN_ACTION2_WEEKLY_REPORT_ISSUE != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment "${{ vars.PLAN_ACTION2_WEEKLY_REPORT_ISSUE }}" \
+            --repo "${{ github.repository }}" \
+            --body-file report.md
