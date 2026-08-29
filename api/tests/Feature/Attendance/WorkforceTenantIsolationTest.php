@@ -175,10 +175,10 @@ class WorkforceTenantIsolationTest extends TestCase
 
         Sanctum::actingAs($this->managerA);
 
-        // Fail-closed cross-tenant : 403 (Policy) — jamais de décision sur un
-        // autre tenant, même si les IDs coïncident.
+        // Fail-closed cross-tenant : 404 (convention anti-existence) — jamais
+        // de décision sur un autre tenant, même si les IDs coïncident.
         $this->postJson("/api/v1/attendance/corrections/{$correctionB->id}/approve")
-            ->assertForbidden();
+            ->assertNotFound();
     }
 
     public function test_manager_cannot_update_other_tenants_attendance_log(): void
