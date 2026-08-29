@@ -147,6 +147,12 @@ jobs:
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
+      - name: Check CRM client module boundary imports (issue #5745)
+        # Garde orientée CRM client : HARD BLOCK des imports vers le CRM
+        # commercial (Platform/Marketing), Payroll et Accounting ; tout autre
+        # import inter-module exige une exemption justifiée dans
+        # crm-boundary-allowlist.txt.
+        run: bash dev-hub/tools/check-crm-boundary-imports.sh api
       - name: Release Train compat matrix guard (issue #5874, MAT-016)
         run: bash dev-hub/tools/check-release-compat.sh api
 

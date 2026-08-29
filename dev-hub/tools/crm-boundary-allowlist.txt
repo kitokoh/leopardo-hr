@@ -1,0 +1,12 @@
+# Issue #5745 (CRM PRE) — exemptions de frontière du module CRM client.
+#
+# Règle : AUCUNE entrée par défaut. Le module `App\Modules\CRM` ne doit pas
+# importer un autre module métier ; si un échange est indispensable, il passe
+# par un contrat partagé (App\Shared), un événement ou un service injecté.
+#
+# Format : CRM -> <Target> | <justification obligatoire>
+# Toute ligne ajoutée ici doit être justifiée dans la PR qui l'introduit et
+# revue par le mainteneur (aucune exemption silencieuse).
+#
+# HARD BLOCK (aucune exemption possible, cf. ADR-CRM-001 + issue #5745) :
+#   Platform, Marketing, Payroll, Accounting
