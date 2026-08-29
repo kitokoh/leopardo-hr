@@ -194,7 +194,7 @@ jobs:
         if: steps.context.outputs.should_deploy == 'pending-validation' && steps.decision.outputs.should_deploy == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          lfs: false
           ref: ${{ steps.context.outputs.sha }}
           fetch-depth: 2
           persist-credentials: false
