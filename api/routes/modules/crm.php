@@ -25,6 +25,7 @@ use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmEmailController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmEmailWebhookController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmImportController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmLeadController;
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmSearchController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmSegmentController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmWhatsAppWebhookController;
 use Illuminate\Support\Facades\Route;
@@ -129,6 +130,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/segments/{segment}', [CrmSegmentController::class, 'destroy'])->whereNumber('segment');
         Route::post('/segments/{segment}/rebuild', [CrmSegmentController::class, 'rebuild'])->whereNumber('segment');
     });
+    // ── Recherche tenant-scoped accounts/contacts (#5719) ─────────────────────
+    Route::get('/search', [CrmSearchController::class, 'index']);
+
 });
 
 // Endpoints publics du canal email : webhook provider (secret partagé) et
