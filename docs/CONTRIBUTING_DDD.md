@@ -24,7 +24,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Billing` | Abonnements, webhooks Stripe, facturation |
 | `Cabinet` | Gestion documentaire, partage |
 | `Cameras` | Surveillance, streaming |
-| `CRM` | CRM client tenant-scoped (V0 #5705→#5716, V1 #5717→#5731) — module DDD isolé du CRM commercial Platform/Marketing |
+| `CRM` | CRM client : consentements, segments, campagnes, canaux de communication (issues #5722/#5723/#5724/#5726) |
 | `EdgeSync` | Synchronisation offline/mobile (structure spécialisée, hors squelette DDD standard) |
 | `Expense` | Notes de frais employés |
 | `Fleet` | Véhicules, trajets, affectations |

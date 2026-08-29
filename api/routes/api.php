@@ -1,12 +1,13 @@
 <?php
 
 use App\Core\Auth\Interfaces\Api\V1\AuthController;
-use App\Core\Auth\Interfaces\Api\V1\TwoFactorAuthController;
 use App\Core\Auth\Interfaces\Api\V1\PasswordResetController;
 use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
+use App\Core\Auth\Interfaces\Api\V1\TwoFactorAuthController;
 use App\Core\Feature\Interfaces\Api\V1\FeatureManifestController;
 use App\Http\Controllers\AI\VoiceController;
 use App\Http\Controllers\Web\PlatformCompanyController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentWebhookController;
 use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
 use App\Modules\Billing\Interfaces\Api\V1\CompanyRequestController;
 use App\Modules\Billing\Interfaces\Api\V1\PaymentWebhookController;
@@ -21,7 +22,6 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentWebhookController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
 use App\Modules\Payroll\Interfaces\Api\V1\IslamicCalendarController;
