@@ -131,4 +131,10 @@ return [
         'ios' => json_decode((string) env('LEOPARDO_IOS_APP_LINKS', '{}'), true) ?: [],
     ],
 
+    'whatsapp' => [
+        // #5725 — Token système WhatsApp Business Cloud API (Meta Graph API).
+        // Secret manager uniquement : jamais en frontend, DB ou logs.
+        'token' => env('WHATSAPP_CLOUD_API_TOKEN', ''),
+    ],
+
 ];

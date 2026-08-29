@@ -2242,6 +2242,88 @@ trait CreatesMvpSchema
                     ->cascadeOnDelete();
             });
         }
+
+        $this->createCrmChannelTables();
+    }
+
+    /**
+     * #5725/#5727 — Canaux de communication CRM tenant. Miroir des
+     * migrations tenant (garde mvp-parity #5443) : toute table CRM ajoutée
+     * ici DOIT correspondre aux migrations de
+     * api/database/migrations/tenant/2026_08_28_000001_5725_*.php.
+     */
+    private function createCrmChannelTables(): void
+    {
+        if (! Schema::hasTable($this->moduleTable('crm_channels'))) {
+            Schema::create($this->moduleTable('crm_channels'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->string('type', 20);
+                $table->string('provider', 60);
+                $table->string('status', 20)->default('inactive');
+                $table->boolean('is_configured')->default(false);
+                $table->unsignedInteger('monthly_quota')->nullable();
+                $table->unsignedInteger('used_this_month')->default(0);
+                $table->string('quota_period', 7)->nullable();
+                $table->json('settings')->nullable();
+                $table->string('last_error_message', 255)->nullable();
+                $table->timestamp('last_error_at')->nullable();
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'type', 'provider'], 'crm_channels_company_type_provider_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('crm_channel_conversations'))) {
+            Schema::create($this->moduleTable('crm_channel_conversations'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('channel_id')->index();
+                $table->string('provider_conversation_id', 160)->nullable();
+                $table->string('contact_ref_type', 20)->nullable();
+                $table->uuid('contact_ref_id')->nullable();
+                $table->timestamp('last_message_at')->nullable();
+                $table->unsignedInteger('unread_count')->default(0);
+                $table->string('status', 20)->default('open');
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'provider_conversation_id'], 'crm_convs_company_provider_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('crm_channel_messages'))) {
+            Schema::create($this->moduleTable('crm_channel_messages'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('channel_id')->index();
+                $table->uuid('conversation_id')->nullable()->index();
+                $table->string('provider', 60);
+                $table->string('provider_message_id', 160)->nullable();
+                $table->string('direction', 10)->default('outbound');
+                $table->string('to_address', 255)->nullable();
+                $table->string('from_address', 255)->nullable();
+                $table->text('body')->nullable();
+                $table->string('template_name', 100)->nullable();
+                $table->string('status', 20)->default('queued');
+                $table->unsignedTinyInteger('attempts')->default(0);
+                $table->unsignedTinyInteger('max_attempts')->default(3);
+                $table->string('error_code', 60)->nullable();
+                $table->text('error_message')->nullable();
+                $table->decimal('cost', 12, 4)->nullable();
+                $table->timestamp('sent_at')->nullable();
+                $table->timestamp('delivered_at')->nullable();
+                $table->timestamp('read_at')->nullable();
+                $table->timestamp('failed_at')->nullable();
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status'], 'crm_messages_company_status_index');
+                $table->index(['company_id', 'direction'], 'crm_messages_company_direction_index');
+                $table->unique(['company_id', 'provider_message_id'], 'crm_messages_company_provider_msg_unique');
+            });
+        }
     }
 
     private function dropMvpTables(): void
