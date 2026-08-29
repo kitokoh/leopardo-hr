@@ -1112,6 +1112,37 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dashboardYourcompany => 'شركتك';
 
   @override
+  String get dashboardLeaveBalanceTitle => 'رصيد إجازاتي';
+
+  @override
+  String get dashboardLeaveBalanceSubtitle => 'الأيام المتبقية حسب النوع، السنة الحالية';
+
+  @override
+  String get dashboardLeaveBalanceLoading => 'جارٍ تحميل الرصيد…';
+
+  @override
+  String get dashboardLeaveBalanceError => 'تعذر تحميل رصيد الإجازات.';
+
+  @override
+  String get dashboardLeaveBalanceEmpty => 'لا يوجد رصيد مهيأ لهذا الحساب.';
+
+  @override
+  String dashboardLeaveBalanceAvailable(Object days) {
+    return '$days أيام متاحة';
+  }
+
+  @override
+  String dashboardLeaveBalanceUsed(Object days) {
+    return '$days مستخدمة';
+  }
+
+  @override
+  String get dashboardSeeAbsences => 'عرض إجازاتي';
+
+  @override
+  String get dashboardLeaveBalanceUnknown => 'إجازة';
+
+  @override
   String get marketingOauthNavTitle => 'تسويق OAuth';
 
   @override

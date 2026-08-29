@@ -505,7 +505,16 @@
     "details": "Ayrıntılar",
     "pendingRequestsTitle": "Bekleyen talepler",
     "platformMrr": "Platform MRR",
-    "processRequests": "Talepleri işle"
+    "processRequests": "Talepleri işle",
+    "leave_balance_title": "İzin bakiyem",
+    "leave_balance_subtitle": "Türe göre kalan günler, cari yıl",
+    "leave_balance_loading": "Bakiye yükleniyor…",
+    "leave_balance_error": "İzin bakiyesi yüklenemedi.",
+    "leave_balance_empty": "Bu hesap için bakiye yapılandırılmamış.",
+    "leave_balance_available": "{days} gün kullanılabilir",
+    "leave_balance_used": "{days} kullanıldı",
+    "see_absences": "İzinlerimi gör",
+    "leave_balance_unknown": "İzin"
   },
   "marketing": {
     "oauth": {
