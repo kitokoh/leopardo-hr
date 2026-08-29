@@ -53,7 +53,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          # Quota Git LFS épuisé (2026-08-29) : actionlint/shellcheck n'ont pas
+          # besoin des assets LFS — checkout sans LFS.
+          lfs: false
 
       - name: Run actionlint
         uses: reviewdog/action-actionlint@e0207a28405ecad11953ba625a95d92f7889572a # v1
