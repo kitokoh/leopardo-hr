@@ -6,6 +6,7 @@ namespace App\Modules\CRM\Providers;
 
 use App\Modules\CRM\Application\Listeners\PropagateConsentRevocation;
 use App\Modules\CRM\Domain\Contracts\CampaignConsentCheckerInterface;
+use App\Modules\CRM\Domain\Contracts\EmailProviderInterface;
 use App\Modules\CRM\Domain\Contracts\ChannelAdapterContract;
 use App\Modules\CRM\Domain\Contracts\CrmChannelMessageRepositoryInterface;
 use App\Modules\CRM\Domain\Enums\CrmChannelType;
@@ -14,6 +15,8 @@ use App\Modules\CRM\Infrastructure\Integrations\WhatsApp\WhatsAppCloudApiClient;
 use App\Modules\CRM\Infrastructure\Repositories\CrmChannelMessageRepository;
 use App\Modules\CRM\Infrastructure\Services\ConsentTableCampaignConsentChecker;
 use App\Modules\CRM\Infrastructure\Services\CrmChannelService;
+use App\Modules\CRM\Infrastructure\Services\LogEmailProvider;
+use App\Modules\CRM\Infrastructure\Services\MailEmailProvider;
 
 use App\Modules\CRM\Domain\Contracts\CrmImportRepositoryInterface;
 use App\Modules\CRM\Domain\Contracts\CrmImportRowPersisterInterface;
@@ -83,6 +86,15 @@ class CrmServiceProvider extends ServiceProvider
 
         // #5723 — source de contacts par défaut pour l'évaluation des segments.
         $this->app->bind(SegmentContactSourceInterface::class, CrmContactSegmentSource::class);
+
+        // #5726 — fournisseur email interchangeable (log | mail).
+        $this->app->bind(EmailProviderInterface::class, function (): EmailProviderInterface {
+            $provider = config('crm.email.provider', 'log');
+
+            return is_string($provider) && $provider === 'mail'
+                ? new MailEmailProvider
+                : new LogEmailProvider;
+        });
 
         // #5724 — garde de consentement avant tout envoi de campagne.
         $this->app->bind(CampaignConsentCheckerInterface::class, ConsentTableCampaignConsentChecker::class);

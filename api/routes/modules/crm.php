@@ -19,6 +19,8 @@ use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmCampaignController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmChannelController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmConsentController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDedupController;
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmEmailController;
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmEmailWebhookController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmImportController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmLeadController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmSegmentController;
@@ -58,6 +60,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/merge/preview', [CrmDedupController::class, 'preview']);
     Route::post('/merge', [CrmDedupController::class, 'merge']);
 
+    // ── Canal email (#5726) ──────────────────────────────────────────────────
+    Route::middleware('api.manager:principal,marketing')->group(function (): void {
+        Route::post('/email/transactional', [CrmEmailController::class, 'sendTransactional']);
+        Route::post('/email/marketing', [CrmEmailController::class, 'sendMarketing']);
+    });
     // ── Campagnes marketing (#5724) ──────────────────────────────────────────
     Route::middleware('api.manager')->group(function (): void {
         Route::get('/campaigns', [CrmCampaignController::class, 'index']);
@@ -101,3 +108,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/segments/{segment}/rebuild', [CrmSegmentController::class, 'rebuild'])->whereNumber('segment');
     });
 });
+
+// Endpoints publics du canal email : webhook provider (secret partagé) et
+// désabonnement (jeton signé) — volontairement hors auth:sanctum/tenant.
+Route::middleware(['throttle:api'])
+    ->prefix('crm')
+    ->group(function (): void {
+        Route::post('/email/webhook', [CrmEmailWebhookController::class, 'handle']);
+        Route::post('/email/unsubscribe', [CrmEmailController::class, 'unsubscribe']);
+    });
