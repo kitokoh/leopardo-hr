@@ -58,11 +58,15 @@ class FeatureKillSwitchTest extends TestCase
     {
         $company = Company::factory()->create(['features' => ['cameras' => true]]);
 
-        $this->assertTrue($company->refresh()->hasFeature('cameras'));
+        /** @var \App\Core\Tenant\Domain\Models\Company $fresh */
+        $fresh = $company->refresh();
+        $this->assertTrue($fresh->hasFeature('cameras'));
 
         app(FeatureKillSwitchService::class)->kill('cameras', 'Incident en cours');
 
-        $this->assertFalse($company->refresh()->hasFeature('cameras'));
+        /** @var \App\Core\Tenant\Domain\Models\Company $fresh */
+        $fresh = $company->refresh();
+        $this->assertFalse($fresh->hasFeature('cameras'));
         $this->assertTrue(app(FeatureKillSwitchService::class)->isKilled('cameras'));
     }
 
@@ -74,8 +78,12 @@ class FeatureKillSwitchTest extends TestCase
 
         app(FeatureKillSwitchService::class)->kill('cameras', 'Maintenance');
 
-        $this->assertFalse($company->refresh()->hasFeature('cameras'));
-        $this->assertTrue($company->refresh()->hasFeature('finance'));
+        /** @var \App\Core\Tenant\Domain\Models\Company $fresh */
+        $fresh = $company->refresh();
+        $this->assertFalse($fresh->hasFeature('cameras'));
+        /** @var \App\Core\Tenant\Domain\Models\Company $fresh */
+        $fresh = $company->refresh();
+        $this->assertTrue($fresh->hasFeature('finance'));
     }
 
     public function test_kill_and_revive_are_idempotent(): void
@@ -101,7 +109,9 @@ class FeatureKillSwitchTest extends TestCase
 
         $company = Company::factory()->create(['features' => ['finance' => true]]);
 
-        $this->assertTrue($company->refresh()->hasFeature('finance'));
+        /** @var \App\Core\Tenant\Domain\Models\Company $fresh */
+        $fresh = $company->refresh();
+        $this->assertTrue($fresh->hasFeature('finance'));
     }
 
     public function test_platform_api_requires_super_admin(): void

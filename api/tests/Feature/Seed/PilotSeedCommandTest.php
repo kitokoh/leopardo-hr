@@ -57,14 +57,14 @@ class PilotSeedCommandTest extends TestCase
     {
         $this->seed(CrmPilotSeeder::class);
 
-        $this->artisan('pilot:cleanup', ['vertical' => 'crm'])->assertSuccessful();
+        $this->assertSame(0, $this->artisan('pilot:cleanup', ['vertical' => 'crm']));
 
         $this->assertNull(Company::query()->where('slug', 'crm-pilot-alpha')->first());
         $this->assertNull(Company::query()->where('slug', 'crm-pilot-beta')->first());
         $this->assertSame(0, DB::table('crm_accounts')->count());
 
         // Second run : no-op.
-        $this->artisan('pilot:cleanup', ['vertical' => 'crm'])->assertSuccessful();
+        $this->assertSame(0, $this->artisan('pilot:cleanup', ['vertical' => 'crm']));
     }
 
     public function test_pilot_cleanup_targets_only_allowlisted_slugs(): void
@@ -79,8 +79,8 @@ class PilotSeedCommandTest extends TestCase
 
     public function test_pilot_seed_unknown_vertical_fails_cleanly(): void
     {
-        $this->artisan('pilot:seed', ['vertical' => 'nope'])->assertFailed();
-        $this->artisan('pilot:cleanup', ['vertical' => 'nope'])->assertFailed();
+        $this->assertNotSame(0, $this->artisan('pilot:seed', ['vertical' => 'nope']));
+        $this->assertNotSame(0, $this->artisan('pilot:cleanup', ['vertical' => 'nope']));
     }
 
     public function test_guard_refuses_production_without_force(): void
