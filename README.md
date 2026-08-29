@@ -1,241 +1,388 @@
 <div align="center">
 
-# 🐆 Leopardo RH
+# Leopardo
 
-### The open-source, AI-native HR & Payroll OS for high-growth companies
+### Open-source business operations platform for multi-site and field-based companies
 
-Leopardo RH is an open-source, mobile-first HR and payroll operating system for growing companies with field teams and multiple sites. It replaces fragmented spreadsheets and messaging workflows with a unified platform for employee records, attendance, leave, schedules, documents, payroll preparation and workforce analytics.
-
-The project is designed for self-hosting or SaaS deployment and includes web dashboards, native Flutter apps, a biometric kiosk path, multi-tenant isolation, RBAC, SSO options and an OpenAPI integration layer.
-
-**Multi-tenant · Modular Monolith (DDD) · Biometric Time Tracking · Automated Multi-Country Payroll**
+**Leopardo RH** is the core HR and payroll experience inside a broader modular platform for running people, workforce, financial and customer operations.
 
 [![CI/CD](https://img.shields.io/github/actions/workflow/status/kitokoh/leopardo-hr/tests.yml?branch=main&style=for-the-badge&logo=github&label=CI%2FCD)](https://github.com/kitokoh/leopardo-hr/actions)
 [![Coverage](https://img.shields.io/badge/coverage-71%25-30a14e?style=for-the-badge&logo=php&label=Backend)](https://github.com/kitokoh/leopardo-hr/actions/workflows/coverage-gate.yml)
 [![Release](https://img.shields.io/github/v/release/kitokoh/leopardo-hr?sort=semver&style=for-the-badge&logo=github&label=Release)](https://github.com/kitokoh/leopardo-hr/releases/latest)
-[![Security](https://img.shields.io/badge/security-Enterprise--Grade-brightgreen?style=for-the-badge&logo=anchor)](docs/security/SECURITY.md)
 [![License: MIT](https://img.shields.io/github/license/kitokoh/leopardo-hr?style=for-the-badge&label=License)](LICENSE)
+[![Security](https://img.shields.io/badge/security-security--first-brightgreen?style=for-the-badge)](SECURITY.md)
 
-[![Stars](https://img.shields.io/github/stars/kitokoh/leopardo-hr?style=for-the-badge&logo=github&label=Stars)](https://github.com/kitokoh/leopardo-hr/stargazers)
-[![Forks](https://img.shields.io/github/forks/kitokoh/leopardo-hr?style=for-the-badge&logo=github&label=Forks)](https://github.com/kitokoh/leopardo-hr/forks)
-[![Contributors](https://img.shields.io/github/contributors/kitokoh/leopardo-hr?style=for-the-badge&logo=github&label=Contributors)](https://github.com/kitokoh/leopardo-hr/graphs/contributors)
-[![Commit activity](https://img.shields.io/github/commit-activity/m/kitokoh/leopardo-hr?style=for-the-badge&logo=github&label=Commits%2Fmonth)](https://github.com/kitokoh/leopardo-hr/commits/main)
+**HR & Payroll · Workforce · Accounting · Customer CRM · Marketing · Mobile · Open API**
 
-**PHP 8.4 · Laravel 12 · PostgreSQL 16 · Redis 7 · Next.js 16 · React 19 · Vue 3 · Flutter · Dart 3 · ZKTeco**
+[Product site](https://kitokoh.github.io/leopardo-hr) · [Documentation](docs/README.md) · [Architecture](ARCHITECTURE.md) · [API](api/openapi.yaml) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 </div>
 
-![Leopardo RH — open-source HR & Payroll OS](assets/branding/og-banner.png)
+![Leopardo — open-source modular business operations platform](assets/branding/og-banner.png)
 
 ---
 
-## 👥 Who is it for?
+## What is Leopardo?
 
-Leopardo RH is built for **everyone who keeps a company running** — not only IT teams.
+Leopardo is an **open-source, self-hostable and SaaS-ready modular platform** for companies that manage people, sites, schedules, customers and operational processes across multiple locations.
 
-| Audience | What they get |
+Its historical foundation is **Leopardo RH**: employee records, attendance, leave, documents, payroll preparation and workforce operations. The platform now extends that foundation with accounting capabilities, customer relationship management, marketing integrations and an API ecosystem.
+
+The objective is not to force every company into one monolithic workflow. Leopardo provides a shared security, identity, tenant and integration foundation while each business capability remains isolated in its own bounded context.
+
+> **One platform. Several business domains. Explicit boundaries. Secure tenant isolation.**
+
+## Why Leopardo?
+
+Growing companies often coordinate HR, attendance, payroll, customer follow-up and operational communication through disconnected spreadsheets, messaging applications and local tools. Leopardo brings the most important workflows together while keeping the platform modular enough to evolve safely.
+
+| Need | Leopardo capability |
 | :--- | :--- |
-| 👩‍💼 **HR teams** | Employee records, contracts, onboarding, leave, schedules and documents in one place — no more spreadsheet chasing. |
-| 🏗 **Managers & field operations** | Real-time attendance (mobile, GPS-fenced check-in, biometric kiosk), team schedules, approvals and alerts for multi-site teams. |
-| 🧮 **Accountants & payroll teams** | A payroll preparation engine with multi-country rules (DZ, MA, TN, FR, TR, CM, SN, CI…), validation workflows and compliant documents. |
-| 💻 **Developers** | A modular monolith (DDD), an OpenAPI spec with 700+ endpoints, JS/Python SDKs, webhooks and a clean multi-tenant core to extend. |
-| 🎓 **Students & learners** | A real-world HR/payroll codebase to study: architecture, 1,900+ tests, CI/CD and native mobile apps. |
-| 📱 **Employees** | Native mobile apps for attendance, leave requests, payslips and HR self-service — built for field workers. |
+| Manage employees and contracts | HR records, onboarding, documents, roles and self-service. |
+| Coordinate field teams | Mobile attendance, GPS-aware workflows, schedules, approvals and kiosk paths. |
+| Prepare payroll | Multi-country payroll rules, validation workflows, payslips and audit trails. |
+| Manage company finances | Accounting documents, journals, currencies, VAT and payment-related workflows. |
+| Manage customers | Tenant-scoped accounts, contacts, leads, opportunities, activities and tasks. |
+| Activate customer marketing | Segments, consent, campaigns and official channel adapters. |
+| Integrate existing systems | OpenAPI contracts, SDKs, webhooks and explicit domain events. |
+| Operate securely | Multi-tenant isolation, RBAC, audit, secret scanning and security testing. |
+
+## Product map
+
+Leopardo is a platform, not a single undifferentiated application. Each module has a clear owner, data boundary and maturity level.
+
+| Domain | Product surface | Maturity | Responsibility |
+| :--- | :--- | :--- | :--- |
+| **Leopardo RH** | Web, mobile and admin | Core | Employees, contracts, onboarding, documents, leave and HR workflows. |
+| **Payroll** | Web and accounting/RH workflows | Core / evolving | Payroll preparation, country rules, validation and compliant outputs. |
+| **Attendance & Workforce** | Mobile, web, kiosk and edge | Core / evolving | Attendance, schedules, sites, GPS-aware and biometric paths. |
+| **Accounting** | Admin and finance workspaces | Evolving | Documents, journals, currencies, VAT, payments and reports. |
+| **Customer CRM** | Client workspaces and tenant API | Planned V0/V1 | Customer accounts, contacts, leads, opportunities, activities and tasks. |
+| **Customer Marketing** | Client workspaces and channel API | Planned V1 | Segments, consent, campaigns, email/SMS and official WhatsApp integration. |
+| **Platform Administration** | Leopardo admin | Core | Platform configuration, tenant lifecycle, support and commercial operations. |
+| **Commercial CRM** | Leopardo admin only | Existing / evolving | Leopardo’s own acquisition, trials, onboarding and customer conversion pipeline. |
+| **Mobile suite** | Flutter apps | Core / evolving | Employee, manager, HR, marketing and platform administration experiences. |
+| **Desktop clients** | Future targeted clients | Planned | Only justified desktop workflows such as intensive accounting or kiosk operation. |
+
+### Two CRM contexts — deliberately separate
+
+Leopardo has two CRM contexts that evolve in parallel:
+
+```text
+Leopardo Platform Administration
+└── Commercial CRM
+    ├── MarketingLead
+    ├── acquisition pipeline
+    ├── trials and onboarding
+    └── conversion into a Leopardo customer tenant
+
+Customer Workspace
+└── Customer CRM
+    ├── customer accounts and contacts
+    ├── tenant leads and opportunities
+    ├── activities and tasks
+    ├── customer marketing
+    └── WhatsApp/email/SMS integrations
+```
+
+The **commercial CRM belongs to the Leopardo platform administration layer**. The **customer CRM belongs to each customer’s workspace and tenant API**. Their tables, routes, permissions and business rules are not interchangeable.
 
 ---
 
-## 📊 Project Stats
+## Core capabilities
 
-> Measured on `main`, 2026-08-17 — see the [full audit](docs/audits/AUDIT.md) for methodology.
+### HR and payroll
 
-| Metric | Value |
-| :--- | :--- |
-| 🧪 **Backend tests passing** | **1 917** (dernier run complet 2026-08-15 · 462 fichiers `*Test.php` sur main au 17/08) |
-| 📈 **Backend code coverage** | **71,11 %** (blocking CI gate ≥ 65 %) |
-| 🧩 **DDD business modules** | **18** + shared core (Auth, Tenant, Feature) |
-| 🔌 **API endpoints** (OpenAPI spec) | **744** (couverture 100 %, allowlist vide au 18/08) |
-| 📱 **Native mobile apps** (Flutter) | **5** + shared design-system package |
-| ⚙️ **CI/CD pipelines** | **43** (tests, CodeQL, TruffleHog, OWASP ZAP, Lighthouse, coverage gate…) |
-| 📚 **Documentation files** | **685** (architecture, security, specs, runbooks, GTM) |
-| 🕒 **Commit history** | **5 216 commits** since 2026-03-28 |
-| 🌍 **Regions covered** (payroll) | 🇩🇿 🇲🇦 🇹🇳 🇫🇷 🇹🇷 🇨🇲 🇬🇦 🇨🇬 🇨🇮 🇸🇳 🇧🇫 🇲🇱 (+ 19 codes au catalogue, voir `docs/payroll/`) |
-| 📦 **License** | MIT — open source, self-hostable or SaaS |
+Leopardo provides a foundation for employee lifecycle management, contracts, onboarding, leave, documents, attendance and payroll preparation. Payroll rules are treated as regulated domain logic: calculations require versioned inputs, validation, traceability and tests rather than opaque business logic inside controllers.
 
-> Coverage per module is tracked in CI ([issue #1726](https://github.com/kitokoh/leopardo-hr/issues/1726)) with a **Payroll ≥ 80 %** target.
+### Workforce and attendance
 
----
+Field teams can use native mobile applications, GPS-aware attendance workflows and kiosk/edge paths. The platform is designed for multi-site organizations where attendance, schedules and approvals must remain linked to the right company and operational context.
 
-## 💎 Why Leopardo RH?
+### Accounting
 
-Traditional HR & payroll suites are either **too expensive** (SAP, Oracle), **not adapted** to
-local regulations, or **closed**. Leopardo RH is built for the next wave of high-growth
-companies — with absolute data isolation, biometric-grade attendance, automated payroll, and
-AI-native insights, **open source from day one**.
+The accounting domain includes documents, currencies, journals, VAT-oriented reporting, payment workflows and reconciliation capabilities. Accounting is a separate bounded context from Payroll and CRM; integrations are made through contracts and audited events rather than direct table access.
 
-- 🌍 **True multi-tenancy** — PostgreSQL `search_path` schema isolation + logical isolation, for high-compliance enterprises.
-- 🤖 **AI-native** — predictive workforce analytics, anomaly detection, LLM-driven HR insights.
-- 💰 **Automated payroll engine** — one-click multi-country payroll (DZ, MA, FR, TR), validation, PDFs, compliance-first.
-- 🕒 **Biometric attendance** — ZKTeco cloud bridge, on-prem edge kiosk, GPS-fenced mobile check-in.
-- 📱 **Omnichannel** — 5 native apps Flutter (Employee, Manager, HR, Marketing, Platform Admin) + web dashboards + PWA offline + kiosk biometrique web (`front/zkteco-kiosk`).
-- 🔐 **Security-first** — RBAC matrix, SSO SAML/OIDC, encrypted-at-rest sensitive data, GDPR / law 18-07 posture, Secret Scanning + full-history secret audit (Spec A-2).
+### Customer CRM
+
+The customer CRM is designed for each tenant’s own commercial operations. It includes accounts, contacts, leads, pipelines, opportunities, activities, tasks, ownership, imports, exports, dashboards and data quality controls.
+
+The CRM is tenant-scoped by design. A customer tenant cannot access the Leopardo commercial CRM, and one customer tenant cannot access another customer tenant.
+
+### Customer marketing and communications
+
+The marketing context connects to the customer CRM through explicit IDs and versioned events. It can manage segments, campaigns, templates, consent and delivery state. WhatsApp is designed around the official Business/Cloud API or an approved BSP, with signed webhooks, durable inbox storage, idempotent consumers, rate limits and dead-letter handling.
+
+No channel integration is allowed to bypass consent, tenant policies, secret management or audit requirements.
 
 ---
 
-## 🖼 Product preview
+## Architecture
 
-Real product visuals — web dashboards, mobile employee apps and the biometric kiosk path.
-
-| Web platform | Mobile employee app | Biometric kiosk |
-| :--- | :--- | :--- |
-| ![Web platform](assets/screenshots/admin/payroll.png) | ![Mobile employee app](assets/screenshots/mobile_employee/attendance.png) | ![Biometric kiosk](assets/design/mockups/mockup-pilier-d-kiosk.png) |
-
----
-
-## 🏗 Architecture at a glance
-
-**Modular Monolith (Domain-Driven Design)** — every business capability lives in its own
-module under `api/app/Modules/`, with explicit Application / Domain / Infrastructure /
-Interfaces layers.
+Leopardo uses a **modular monolith with Domain-Driven Design**. This keeps deployment and local development manageable while enforcing boundaries that can later support separate services where there is a real operational reason.
 
 ```mermaid
 graph TB
-    subgraph "Omnichannel Layer"
-        Web[Next.js 16 Dashboard]
-        Mobile[Flutter Native Suite x5]
-        Kiosk[ZKTeco Cloud Bridge + Edge Kiosk]
+    subgraph Clients[Client surfaces]
+        Web[Customer and platform web workspaces]
+        Mobile[Flutter mobile suite]
+        Kiosk[Web kiosk and edge paths]
+        Desktop[Future targeted desktop clients]
     end
 
-    subgraph "Enterprise Gateway"
-        API[Laravel 12 / PHP 8.4]
-        Sec[RBAC & JWT Shield + SSO]
+    subgraph Gateway[Secure API gateway]
+        Auth[Identity, RBAC, SSO and tenant context]
+        API[Laravel API and OpenAPI contracts]
     end
 
-    subgraph "Core Business Logic — 18 DDD Modules"
-        HRM[HR Core]
-        PAY[Payroll Engine]
-        ATT[Smart Attendance]
-        AI[AI Analytics Layer]
+    subgraph Domains[Bounded contexts]
+        Platform[Platform administration and commercial CRM]
+        HR[HR and employee lifecycle]
+        Workforce[Attendance and workforce]
+        Payroll[Payroll]
+        Accounting[Accounting]
+        CRM[Customer CRM]
+        Marketing[Customer marketing and channels]
     end
 
-    subgraph "Data Infrastructure (0 €, résiliente)"
-        DB[(PostgreSQL 16<br/>Multi-tenant + queue database)]
-        Cache[(Cache Redis ou fichier<br/>selon dispo Upstash)]
-        Workers[Worker web Render<br/>+ drain GitHub Actions]
-        Store[S3-Compatible Storage]
+    subgraph Infrastructure[Shared infrastructure]
+        DB[(PostgreSQL tenant-aware data)]
+        Queue[Durable queues and workers]
+        Cache[Redis or file fallback]
+        Storage[S3-compatible storage]
+        Audit[Audit and observability]
     end
 
-    Web & Mobile & Kiosk --> Sec
-    Sec --> API
-    API --> HRM & PAY & ATT & AI
-    HRM & PAY & ATT & AI --> DB & Cache & Store
-    DB --> Workers
+    Web & Mobile & Kiosk & Desktop --> Auth
+    Auth --> API
+    API --> Platform & HR & Workforce & Payroll & Accounting & CRM & Marketing
+    HR --> Payroll
+    CRM --> Marketing
+    Platform -. tenant activation contract .-> CRM
+    Platform & HR & Workforce & Payroll & Accounting & CRM & Marketing --> DB
+    Domains --> Queue & Cache & Storage & Audit
 ```
 
-📐 Full architecture: [ARCHITECTURE.md](ARCHITECTURE.md) · [C4 diagrams](docs/architecture/C4_ARCHITECTURE.md) · [Multi-tenancy](docs/architecture/MULTITENANCY.md) · [ADR log](docs/architecture/adr/)
+### Technical stack
+
+| Layer | Technology |
+| :--- | :--- |
+| Backend | PHP 8.4, Laravel 12, modular monolith and REST/OpenAPI. |
+| Database | PostgreSQL 16 with tenant schema isolation and logical isolation. |
+| Queues | Laravel queue abstractions, database-backed fallback and worker supervision. |
+| Cache/session | Redis when available, with a documented fallback strategy. |
+| Web | Next.js/React and Vue 3 surfaces already present in the repository. |
+| Mobile | Flutter and Dart with shared core packages. |
+| Desktop | Not enabled globally; Flutter Desktop is the primary candidate for justified workflows. |
+| Storage | S3-compatible object storage for controlled documents and exports. |
+| Quality | PHPUnit, Playwright, Flutter analysis/tests, PHPStan, OpenAPI checks and security scanners. |
+
+### Data boundaries
+
+Each domain owns its models and rules. Shared code is limited to true platform capabilities such as identity, tenant context, validation primitives, contracts, notifications, audit and observability.
+
+The following boundaries are intentional:
+
+- CRM does not calculate payroll.
+- Payroll does not read CRM tables directly.
+- Accounting does not become a shared utility folder for all financial logic.
+- The commercial CRM does not become the customer CRM.
+- Customer marketing does not send messages without consent and channel policy.
+- Client applications never connect directly to PostgreSQL.
+- Desktop and mobile clients consume the API; they do not duplicate authoritative business rules.
+
+Full details are available in [ARCHITECTURE.md](ARCHITECTURE.md), the [C4 architecture](docs/architecture/C4_ARCHITECTURE.md), the [multi-tenancy guide](docs/architecture/MULTITENANCY.md) and the [ADR index](docs/architecture/adr/).
 
 ---
 
-## 🚀 Live ecosystem
+## Security and data protection
 
-> 💸 **Architecture 0 € assumée (2026-08-21)** — le domaine `leopardo-rh.com` **n'est pas acheté**
-> (état délibéré, #3452 → wontfix) ; on tourne sur les **tiers gratuits** Render / Vercel /
-> Cloudflare Pages. Les URLs ci-dessous sont **officielles et actives**. La queue vit dans
-> PostgreSQL (driver `database`, zéro quota) avec un drain de secours **GitHub Actions toutes les
-> 5 min** ; le cache/session basculent automatiquement **Redis ↔ fichier** au boot selon la
-> disponibilité d'Upstash (voir « ⚡ Infrastructure & résilience »).
+Security is a design constraint for every module, not a release-stage checklist. Leopardo combines tenant context, logical scopes, Policies, RBAC, audit, protected secrets and automated analysis.
 
-| Layer | Access | Stack |
-| :--- | :--- | :--- |
-| **API Backend** | [gestionemployerbackend.onrender.com](https://gestionemployerbackend.onrender.com) | Laravel 12 · PostgreSQL 16 · queue `database` + worker GH Actions |
-| **Corporate Web** | [gestionemployer-backend.vercel.app](https://gestionemployer-backend.vercel.app) | Next.js 16 · Tailwind |
-| **Admin Panel** | [leo-admin.pages.dev](https://leo-admin.pages.dev) | Vue 3 · Cloudflare Pages |
-| **Mobile Suite** | [Employee / Manager / HR / Marketing / Platform Admin](docs/mobile/README.md) | Flutter · Riverpod |
-| **Product site** | [kitokoh.github.io/leopardo-hr](https://kitokoh.github.io/leopardo-hr) | Static landing page (GitHub Pages) |
+The security model includes:
+
+- server-derived tenant context rather than client-supplied tenant authority;
+- PostgreSQL schema/search-path isolation plus logical `company_id` checks;
+- cross-tenant negative tests for reads, writes, jobs, caches, exports and webhooks;
+- strict request validation, allowlisted filters and bounded payloads;
+- encrypted or minimized sensitive data and masked logs;
+- signed webhook verification and replay protection;
+- expiring export URLs and controlled file handling;
+- CodeQL, secret scanning, dependency audit, Semgrep and OWASP ZAP workflows;
+- a private responsible disclosure process in [SECURITY.md](SECURITY.md).
+
+> Security controls reduce risk; they do not replace operational review, backups, monitoring and responsible deployment.
+
+Read the [security policy](SECURITY.md), [authentication documentation](docs/security/AUTH_SYSTEM.md), [RBAC matrix](docs/security/RBAC_SYSTEM.md) and [multi-tenant architecture](docs/architecture/MULTITENANCY.md) before changing authentication, tenant, payroll, payment, webhook or export code.
 
 ---
 
-## ⚡ Infrastructure & résilience (0 €)
+## Project status
 
-> Décisions 2026-08-21 (issues #5204/#5205/#5206/#5207) — objectif : **zéro coût à vie**,
-> résilience « meilleur → pire » selon la disponibilité réelle des fournisseurs.
+Leopardo is an active and evolving open-source project. The repository contains production-oriented foundations, but not every module has the same maturity. Check the relevant specification and pilot status before using a domain for a critical production workflow.
 
-| Brique | Choix | Pourquoi |
+| Status | Meaning |
+| :--- | :--- |
+| **Core** | Existing capability with dedicated tests and operational ownership. |
+| **Evolving** | Existing capability receiving stabilization, convergence or feature work. |
+| **Planned** | Architecture and issues prepared; implementation is not yet complete. |
+| **Pilot** | Enabled for selected tenants or workflows with explicit monitoring and rollback. |
+
+Current project metrics are maintained in the repository audit and operational documents. They should not be copied into long-lived marketing claims without updating their measurement date.
+
+---
+
+## Live ecosystem
+
+The project currently uses a low-cost, resilient deployment approach. Availability and URLs may change; consult [deployment URLs](docs/ops/DEPLOYMENT_URLS.md) before integrating.
+
+| Surface | Access | Role |
 | :--- | :--- | :--- |
-| **Queue** | driver `database` (PostgreSQL) | Zéro quota (le polling Redis brûlait la quota Upstash 500k/mois en ~2 jours — incident 2026-08-19) ; drainable partout |
-| **Worker principal** | en arrière-plan du conteneur web Render | Latence faible : provisioning trial < 10 s quand le conteneur est réveillé |
-| **Worker de secours** | GitHub Actions `queue-worker-fallback.yml` (cron `*/5`) | Repo **public** = minutes illimitées → la file se vide même quand Render dort (veille 15 min) ou a épuisé ses 750 h/mois |
-| **Cache / Session** | `infra:probe-availability` au boot → **Redis** (Upstash) si joignable, sinon **file** | Le rapide quand il est dispo, le fiable (0 quota) sinon ; retour automatique au redéploiement |
-| **Emails** | transport **Mailgun HTTP API** (port 443 — l'egress Render bloque SMTP) | Sandbox = destinataires whitelistés (phase pilote) ; au passage du domaine → **Resend** (3 000/mois gratuits, transport natif Laravel) |
+| API backend | [gestionemployerbackend.onrender.com](https://gestionemployerbackend.onrender.com) | Laravel API and tenant services. |
+| Corporate web | [gestionemployer-backend.vercel.app](https://gestionemployer-backend.vercel.app) | Public/product web surface. |
+| Platform admin | [leo-admin.pages.dev](https://leo-admin.pages.dev) | Leopardo platform administration and commercial CRM. |
+| Mobile suite | [Mobile documentation](docs/mobile/README.md) | Employee, Manager, HR, Marketing and Platform Admin apps. |
+| Product site | [kitokoh.github.io/leopardo-hr](https://kitokoh.github.io/leopardo-hr) | Static project and product landing page. |
 
-Liens : [DEPLOYMENT_URLS.md](docs/ops/DEPLOYMENT_URLS.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · workflow [`queue-worker-fallback.yml`](.github/workflows/queue-worker-fallback.yml)
+Queue and cache behavior is described in [deployment documentation](docs/deployment/DEPLOYMENT_GUIDE.md) and [architecture documentation](ARCHITECTURE.md). Do not assume that a free-tier environment has production-grade availability for a customer deployment.
 
-## 🧑‍💻 Quick start — full environment in ~5 minutes
+---
+
+## Quick start
+
+### Requirements
+
+Install Git, Docker Compose, PHP 8.4, Composer, Node.js and Flutter if you intend to work on the corresponding surfaces. The backend and database are the primary starting point.
+
+### Run locally
 
 ```bash
-# 1. Clone
-git clone https://github.com/kitokoh/leopardo-hr.git && cd leopardo-hr
+git clone https://github.com/kitokoh/leopardo-hr.git
+cd leopardo-hr
 
-# 2. Launch infrastructure (PostgreSQL + Redis)
-docker-compose up -d
+docker compose up -d
 
-# 3. Bootstrap the backend
 cd api
 composer install
 php artisan leopardo:migrate --seed
 ```
 
-Developer guide: [DEVELOPMENT.md](DEVELOPMENT.md) · [Conventions](CONVENTIONS.md) · [Makefile](Makefile)
+Then follow the [development guide](DEVELOPMENT.md) for environment variables, frontend commands, mobile setup, tests and troubleshooting.
+
+> Never use production credentials in local development. Copy `.env.example` where available, keep secrets outside Git and verify the active tenant context in local tests.
 
 ---
 
-## 📚 Documentation hub
+## API and integrations
 
-| Area | Guides |
+The API is the shared contract for web, mobile, desktop and external integrations. The source OpenAPI document is available at [`api/openapi.yaml`](api/openapi.yaml), with additional references in [`docs/api/API_REFERENCE.md`](docs/api/API_REFERENCE.md), [`postman/`](postman/) and [`dev-hub/`](dev-hub/).
+
+API changes must include:
+
+1. strict request validation and stable error responses;
+2. authentication, authorization and tenant tests;
+3. OpenAPI updates and route/contract parity checks;
+4. idempotency for retryable mutations and external events;
+5. audit and changelog updates where behavior changes;
+6. migration collision checks when database files change;
+7. performance evidence for lists, exports, dashboards and timelines.
+
+For WhatsApp, payment providers and other inbound integrations, the endpoint must persist an authenticated event durably before acknowledging successful receipt. Processing happens asynchronously and must be idempotent.
+
+---
+
+## Repository map
+
+```text
+leopardo-hr/
+├── api/                 Laravel backend and domain modules
+├── front/               Web, mobile and future desktop surfaces
+├── shared/              Shared contracts, design system and tooling
+├── edge/                Edge and kiosk-related components
+├── marketing/           Platform marketing and acquisition assets
+├── docs/                Architecture, security, specifications and runbooks
+├── dev-hub/             Quality gates, scripts and engineering tools
+├── assets/              Product visuals and documentation assets
+├── postman/             API collections
+└── examples/            Integration and usage examples
+```
+
+Important entry points:
+
+| Topic | Document |
 | :--- | :--- |
-| 🏗 **Architecture** | [System](docs/architecture/ARCHITECTURE.md) · [Multi-tenancy](docs/architecture/MULTITENANCY.md) · [Performance](docs/architecture/PERFORMANCE.md) · [Scaling](docs/architecture/SCALABILITY.md) |
-| 🔑 **Security** | [Policy](docs/security/SECURITY.md) · [Auth](docs/security/AUTH_SYSTEM.md) · [RBAC matrix](docs/security/RBAC_SYSTEM.md) · [Secret history](docs/security/HISTORIQUE_SECRETS.md) |
-| 🤖 **AI** | [AI architecture](docs/ai/AI_ARCHITECTURE.md) · [Predictive analytics](docs/ai/AI_ARCHITECTURE.md) |
-| 🌐 **API & SDK** | [Reference](docs/api/API_REFERENCE.md) · [OpenAPI](api/openapi.yaml) · [Postman](postman/) · [dev-hub](dev-hub/) |
-| 📱 **Interfaces** | [Mobile](docs/mobile/README.md) · [Kiosk](docs/kiosk/README.md) · [Admin](docs/admin/README.md) |
-| 🚀 **Ops** | [Deployment](docs/deployment/DEPLOYMENT_GUIDE.md) · [Testing](docs/testing/TESTING.md) · [Observability](docs/architecture/OBSERVABILITY.md) |
-| 📐 **Specs & project** | [Specifications](docs/specifications/README.md) · [Design dossier](docs/dossierdeConception/README.md) · [Full docs index](docs/README.md) |
+| Platform architecture | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| Multi-tenancy | [docs/architecture/MULTITENANCY.md](docs/architecture/MULTITENANCY.md) |
+| Security | [SECURITY.md](SECURITY.md) and [docs/security/SECURITY.md](docs/security/SECURITY.md) |
+| API | [api/openapi.yaml](api/openapi.yaml) and [docs/api/API_REFERENCE.md](docs/api/API_REFERENCE.md) |
+| Development | [DEVELOPMENT.md](DEVELOPMENT.md) |
+| Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Specs | [docs/specifications/README.md](docs/specifications/README.md) |
+| Testing | [docs/testing/TESTING.md](docs/testing/TESTING.md) |
+| Operations | [PILOTAGE.md](PILOTAGE.md) and [docs/ops/DEPLOYMENT_URLS.md](docs/ops/DEPLOYMENT_URLS.md) |
+| Mobile | [docs/mobile/README.md](docs/mobile/README.md) |
+| Kiosk | [docs/kiosk/README.md](docs/kiosk/README.md) |
 
 ---
 
-## 🗺 Roadmap
+## Roadmap
 
-- [x] **Phase 1** — Core HRM + multi-tenant isolation
-- [x] **Phase 2** — AI-driven salary estimation layer
-- [x] **Phase 3 (partial)** — OpenAPI spec + JS/Python SDKs + Postman collection
-- [ ] **Phase 4** — Public API ecosystem, billing & app marketplace
-- [ ] **Phase 5** — Global financial integrations (SEPA / SWIFT / mobile money)
-- [x] **v1.0 release** — tag sémantique `v4.24.0` + release notes automatiques via `release.yml` ([issue #1722](https://github.com/kitokoh/leopardo-hr/issues/1722))
+The roadmap is deliberately staged to protect reliability while the platform expands.
 
-Operational reality is tracked in [PILOTAGE.md](PILOTAGE.md) (source of truth, FR).
+### Foundation
+
+- Stabilize `main`, CI and deployment observability.
+- Keep tenant isolation fail-closed across every endpoint, job, cache, export and webhook.
+- Maintain Payroll and Accounting golden tests.
+- Keep the commercial CRM in the platform admin and evolve it independently.
+
+### Customer CRM V0
+
+- Deliver the tenant-scoped CRM module and API.
+- Add accounts, contacts, leads, pipelines, opportunities, activities and tasks.
+- Add strict validation, Policies, audit, import preview and cross-tenant tests.
+- Provide a minimal client workspace without changing the platform admin CRM.
+
+### Customer CRM V1
+
+- Add conversion, deduplication, dashboards, consent, segments and campaigns.
+- Add official WhatsApp Business, email and additional channel adapters.
+- Add durable inbox/outbox, idempotency, queues, rate limits and dead letters.
+- Add mobile field workflows and a reversible tenant pilot.
+
+### Platform evolution
+
+- Continue commercial CRM acquisition, trial, onboarding and customer lifecycle features.
+- Add public API ecosystem and integrations only after contract governance is reliable.
+- Evaluate desktop clients only where measured usage justifies them.
+- Expand countries and modules from validated operational evidence, not from feature count alone.
+
+See the [CRM programme](docs/specifications/PROGRAMME-CRM-INTERNE-CLIENT-COMPLET.md), [V0/V1 SQL and integration plan](docs/specifications/PLAN-V0-V1-CRM-CLIENT-SQL-INTEGRATIONS.md) and [refactoring roadmap](docs/architecture/refactoring/ROADMAP-BACKLOG-REFACTORING.md).
 
 ---
 
-## 🛡 Security & compliance
+## Contributing
 
-- ISO 27001-ready architecture, GDPR & law 18-07 (Algeria) posture
-- **Automated scanning** : CodeQL · TruffleHog (PR/push + weekly full-history Spec A-2) · OWASP ZAP · Composer audit · Dependency review · Semgrep
-- **Responsible disclosure** : [SECURITY.md](SECURITY.md) — private reporting, 72 h ack
-- 🔒 **Full git-history secret purge executed 2026-08-11** — post-mortem: [POST_MORTEM_PURGE_2026-08-11.md](docs/security/POST_MORTEM_PURGE_2026-08-11.md)
+Before starting significant work, read [`AGENTS.md`](AGENTS.md) and [`.specify/constitution.md`](.specify/constitution.md). Leopardo uses a spec-driven workflow:
+
+```text
+specify → clarify → plan → analyze → tasks → implement
+```
+
+Every significant change needs a focused issue, a clear owner, a unique branch, tests and a reviewable pull request. Do not implement the same issue on multiple branches. Database work must pass migration collision guards. Security, tenant and payroll changes require negative tests and explicit review.
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md) and use [SECURITY.md](SECURITY.md) for private vulnerability reports.
 
 ---
 
-## 🤝 Community & contributing
+## License
 
-- **Contribute** : [CONTRIBUTING.md](CONTRIBUTING.md) · [Code of Conduct](CODE_OF_CONDUCT.md)
-- **Report a bug** : [Issues](https://github.com/kitokoh/leopardo-hr/issues) — always reference `Closes #X`
-- **Security issue** : private disclosure via [SECURITY.md](SECURITY.md)
-- **Documentation** : [docs/README.md](docs/README.md) (685 files, FR/EN)
-- **Product site** : [kitokoh.github.io/leopardo-hr](https://kitokoh.github.io/leopardo-hr) · **Demo guide** : [docs/DEMARRAGE_RAPIDE.md](docs/DEMARRAGE_RAPIDE.md)
+Leopardo is released under the [MIT License](LICENSE). It can be self-hosted or adapted into a managed service, subject to the responsibilities described in the security, deployment and operational documentation.
 
 <div align="center">
 
-**Made with precision by the Leopardo RH Engineering Team — open source, forever.**
+**Leopardo — one modular platform for people, workforce and customer operations.**
 
-⭐ Star this repo to support the project ⭐
+[Star the repository](https://github.com/kitokoh/leopardo-hr) · [Explore the documentation](docs/README.md) · [Join the project](CONTRIBUTING.md)
 
 </div>
