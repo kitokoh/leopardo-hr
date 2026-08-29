@@ -118,6 +118,12 @@ class GdprAnonymizeEmployeeCommand extends Command
             'emergency_contact_phone' => null,
             'emergency_contact_relation' => null,
             'extra_data' => null,
+            // MAT-011 (#5869) : le secret 2FA et les codes de récupération
+            // doivent être effacés avec le reste des PII (le compte est
+            // inutilisable : mot de passe invalidé + 2FA désactivée).
+            'two_fa_secret' => null,
+            'two_fa_recovery_codes' => null,
+            'two_fa_enabled_at' => null,
             'status' => 'archived',
         ];
 
