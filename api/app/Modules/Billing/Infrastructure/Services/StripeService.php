@@ -340,7 +340,10 @@ class StripeService
             'active' => 'active',
             'past_due' => 'past_due',
             'canceled', 'cancelled' => 'cancelled',
-            'unpaid' => 'unpaid',
+            // DEP-BC21 #5897 : Stripe `unpaid` = paiement échoué, la
+            // souscription continue en défaut → `past_due` (l'écriture
+            // `unpaid` violait subscriptions_status_check).
+            'unpaid' => 'past_due',
             default => $sub->status,
         };
 
