@@ -161,6 +161,11 @@ jobs:
 
       - name: Routes tenant/platform guard self-test (MAT-003, issue #5861)
         run: bash dev-hub/tools/check-routes-tenant-platform-test.sh
+      - name: Route owner guard — platform/tenant (MAT-003 / issue #5861)
+        # Une route platform ne doit pas être exposée dans l'espace tenant et
+        # inversement. Couche statique (fichiers de routes) + classification
+        # route:list (middleware résolus) — bloque si violation, warning sinon.
+        run: bash dev-hub/tools/check-route-owner-guard.sh
 
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
