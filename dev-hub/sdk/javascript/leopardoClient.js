@@ -2225,141 +2225,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/fleet/reports/mileage", options);
     },
 
-    /** Lister les sessions de caisse (manager) */
-    getFuelStationCashSessions(options = {}) {
-      return request("GET", "/fuel-station/cash-sessions", options);
-    },
-
-    /** Ouvrir une session de caisse (pompiste) */
-    postFuelStationCashSessions(options = {}) {
-      return request("POST", "/fuel-station/cash-sessions", options);
-    },
-
-    /** Detail d'une session (proprietaire ou manager) */
-    getFuelStationCashSessionsBySession(options = {}) {
-      return request("GET", "/fuel-station/cash-sessions/{session}", options);
-    },
-
-    /** Approuver une cloture (manager, verrouille l'ecart) */
-    postFuelStationCashSessionsBySessionApprove(options = {}) {
-      return request("POST", "/fuel-station/cash-sessions/{session}/approve", options);
-    },
-
-    /** Cloturer une session (proprietaire, idempotente) */
-    postFuelStationCashSessionsBySessionClose(options = {}) {
-      return request("POST", "/fuel-station/cash-sessions/{session}/close", options);
-    },
-
-    /** Ajouter un mouvement in/out (proprietaire, session ouverte) */
-    postFuelStationCashSessionsBySessionMovements(options = {}) {
-      return request("POST", "/fuel-station/cash-sessions/{session}/movements", options);
-    },
-
-    /** Sessions de caisse du pompiste connecte (self-service) */
-    getFuelStationMeCashSessions(options = {}) {
-      return request("GET", "/fuel-station/me/cash-sessions", options);
-    },
-
-    /** Presence du pompiste connecte pour une date (self-service) */
-    getFuelStationMePresence(options = {}) {
-      return request("GET", "/fuel-station/me/presence", options);
-    },
-
-    /** Ventes du pompiste connecte (self-service, pagine) */
-    getFuelStationMeSales(options = {}) {
-      return request("GET", "/fuel-station/me/sales", options);
-    },
-
-    /** Affectations de shifts du pompiste connecte (self-service) */
-    getFuelStationMeShifts(options = {}) {
-      return request("GET", "/fuel-station/me/shifts", options);
-    },
-
-    /** Revoir un intervalle en anomalie (accept/reject) — manager principal/rh */
-    postFuelStationMeterIntervalsByIntervalReview(options = {}) {
-      return request("POST", "/fuel-station/meter-intervals/{interval}/review", options);
-    },
-
-    /** Corriger un releve (versionne, audite) — manager principal/rh */
-    postFuelStationMeterReadingsByReadingCorrections(options = {}) {
-      return request("POST", "/fuel-station/meter-readings/{reading}/corrections", options);
-    },
-
-    /** Lister les ventes (manager, pagine) */
-    getFuelStationSales(options = {}) {
-      return request("GET", "/fuel-station/sales", options);
-    },
-
-    /** Enregistrer une vente (pompiste, idempotent via external_id) */
-    postFuelStationSales(options = {}) {
-      return request("POST", "/fuel-station/sales", options);
-    },
-
-    /** Detail d'une vente (proprietaire ou manager) */
-    getFuelStationSalesBySale(options = {}) {
-      return request("GET", "/fuel-station/sales/{sale}", options);
-    },
-
-    /** Annuler une affectation (manager, statut cancelled) */
-    deleteFuelStationShiftAssignmentsByAssignment(options = {}) {
-      return request("DELETE", "/fuel-station/shift-assignments/{assignment}", options);
-    },
-
-    /** Lister les shifts (manager) */
-    getFuelStationShifts(options = {}) {
-      return request("GET", "/fuel-station/shifts", options);
-    },
-
-    /** Creer un shift (manager) */
-    postFuelStationShifts(options = {}) {
-      return request("POST", "/fuel-station/shifts", options);
-    },
-
-    /** Supprimer un shift (manager, refus si affectations actives) */
-    deleteFuelStationShiftsByShift(options = {}) {
-      return request("DELETE", "/fuel-station/shifts/{shift}", options);
-    },
-
-    /** Detail d'un shift (manager) */
-    getFuelStationShiftsByShift(options = {}) {
-      return request("GET", "/fuel-station/shifts/{shift}", options);
-    },
-
-    /** Mettre a jour un shift (manager) */
-    putFuelStationShiftsByShift(options = {}) {
-      return request("PUT", "/fuel-station/shifts/{shift}", options);
-    },
-
-    /** Affectations d'un shift (manager) */
-    getFuelStationShiftsByShiftAssignments(options = {}) {
-      return request("GET", "/fuel-station/shifts/{shift}/assignments", options);
-    },
-
-    /** Affecter un employe a un shift pour une date (manager) */
-    postFuelStationShiftsByShiftAssignments(options = {}) {
-      return request("POST", "/fuel-station/shifts/{shift}/assignments", options);
-    },
-
-    /** Roster de presence du shift pour une date (manager) */
-    getFuelStationShiftsByShiftPresence(options = {}) {
-      return request("GET", "/fuel-station/shifts/{shift}/presence", options);
-    },
-
-    /** Lister les intervalles calcules d'un compteur */
-    getFuelStationStationsByStationPumpsByPumpMetersByMeterIntervals(options = {}) {
-      return request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals", options);
-    },
-
-    /** Lister les releves d'un compteur */
-    getFuelStationStationsByStationPumpsByPumpMetersByMeterReadings(options = {}) {
-      return request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", options);
-    },
-
-    /** Enregistrer un releve de compteur (cumulatif, idempotent) */
-    postFuelStationStationsByStationPumpsByPumpMetersByMeterReadings(options = {}) {
-      return request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", options);
-    },
-
     /** Candidature partenaire */
     postGrowthPartnerApply(options = {}) {
       return request("POST", "/growth/partner/apply", options);
@@ -4250,9 +4115,119 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/sessions/{trainingSession}/enroll", options);
     },
 
+    /** Liste des compagnies de transport (TRAVEL-304/#6034) */
+    getTravelCarriers(options = {}) {
+      return request("GET", "/travel/carriers", options);
+    },
+
+    /** Création d'une compagnie de transport (TRAVEL-304/#6034) */
+    postTravelCarriers(options = {}) {
+      return request("POST", "/travel/carriers", options);
+    },
+
+    /** Suppression d'une compagnie de transport (TRAVEL-304/#6034) */
+    deleteTravelCarriersByTravelCarrier(options = {}) {
+      return request("DELETE", "/travel/carriers/{travelCarrier}", options);
+    },
+
+    /** Détail d'une compagnie de transport (TRAVEL-304/#6034) */
+    getTravelCarriersByTravelCarrier(options = {}) {
+      return request("GET", "/travel/carriers/{travelCarrier}", options);
+    },
+
+    /** Modification d'une compagnie de transport (TRAVEL-304/#6034) */
+    putTravelCarriersByTravelCarrier(options = {}) {
+      return request("PUT", "/travel/carriers/{travelCarrier}", options);
+    },
+
+    /** Référentiel villes en lecture (TRAVEL-301/#6031) */
+    getTravelCities(options = {}) {
+      return request("GET", "/travel/cities", options);
+    },
+
+    /** Liste des classes de service (TRAVEL-305/#6035) */
+    getTravelClasses(options = {}) {
+      return request("GET", "/travel/classes", options);
+    },
+
+    /** Création d'une classe de service (TRAVEL-305/#6035) */
+    postTravelClasses(options = {}) {
+      return request("POST", "/travel/classes", options);
+    },
+
+    /** Suppression d'une classe de service (TRAVEL-305/#6035) */
+    deleteTravelClassesByTravelClass(options = {}) {
+      return request("DELETE", "/travel/classes/{travelClass}", options);
+    },
+
+    /** Détail d'une classe de service (TRAVEL-305/#6035) */
+    getTravelClassesByTravelClass(options = {}) {
+      return request("GET", "/travel/classes/{travelClass}", options);
+    },
+
+    /** Modification d'une classe de service (TRAVEL-305/#6035) */
+    putTravelClassesByTravelClass(options = {}) {
+      return request("PUT", "/travel/classes/{travelClass}", options);
+    },
+
+    /** Référentiel pays en lecture (TRAVEL-301/#6031) */
+    getTravelCountries(options = {}) {
+      return request("GET", "/travel/countries", options);
+    },
+
+    /** Liste des bureaux de vente (TRAVEL-303/#6033) */
+    getTravelOffices(options = {}) {
+      return request("GET", "/travel/offices", options);
+    },
+
+    /** Création d'un bureau de vente (TRAVEL-303/#6033) */
+    postTravelOffices(options = {}) {
+      return request("POST", "/travel/offices", options);
+    },
+
+    /** Suppression d'un bureau de vente (TRAVEL-303/#6033) */
+    deleteTravelOfficesByTravelOffice(options = {}) {
+      return request("DELETE", "/travel/offices/{travelOffice}", options);
+    },
+
+    /** Détail d'un bureau de vente (TRAVEL-303/#6033) */
+    getTravelOfficesByTravelOffice(options = {}) {
+      return request("GET", "/travel/offices/{travelOffice}", options);
+    },
+
+    /** Modification d'un bureau de vente (TRAVEL-303/#6033) */
+    putTravelOfficesByTravelOffice(options = {}) {
+      return request("PUT", "/travel/offices/{travelOffice}", options);
+    },
+
     /** Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977) */
     getTravelPing(options = {}) {
       return request("GET", "/travel/ping", options);
+    },
+
+    /** Liste des gares/terminaux (TRAVEL-302/#6032) */
+    getTravelStations(options = {}) {
+      return request("GET", "/travel/stations", options);
+    },
+
+    /** Création d'une gare/terminal (TRAVEL-302/#6032) */
+    postTravelStations(options = {}) {
+      return request("POST", "/travel/stations", options);
+    },
+
+    /** Suppression d'une gare/terminal (TRAVEL-302/#6032) */
+    deleteTravelStationsByTravelStation(options = {}) {
+      return request("DELETE", "/travel/stations/{travelStation}", options);
+    },
+
+    /** Détail d'une gare/terminal (TRAVEL-302/#6032) */
+    getTravelStationsByTravelStation(options = {}) {
+      return request("GET", "/travel/stations/{travelStation}", options);
+    },
+
+    /** Modification d'une gare/terminal (TRAVEL-302/#6032) */
+    putTravelStationsByTravelStation(options = {}) {
+      return request("PUT", "/travel/stations/{travelStation}", options);
     },
 
     /** Demande d'essai guidé / auto-service (onboarding) */
