@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TravelOffice extends Model
 {
     use BelongsToCompany;
+
     /** @use HasFactory<Database\Factories\TravelOfficeFactory> */
     use HasFactory;
 
