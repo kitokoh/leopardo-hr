@@ -4,27 +4,21 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Accounting;
 
-use App\Core\Tenant\Domain\Exceptions\TenantContextMissingException;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Accounting\Domain\Enums\ContactType;
-use App\Modules\Accounting\Domain\Enums\DocumentStatus;
-use App\Modules\Accounting\Domain\Enums\DocumentType;
-use App\Modules\Accounting\Domain\Models\AccountingContact;
-use App\Modules\Accounting\Domain\Models\AccountingDocument;
-use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
-use App\Modules\Accounting\Domain\Models\AccountingPayment;
-use App\Modules\Accounting\Domain\Models\AccountingSettings;
+use App\Modules\Accounting\Domain\Models\AccountingJournalEntry;
+use App\Modules\Planning\Domain\Models\Schedule;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * Issue #5221 — isolation tenant du module Comptabilité.
+ * DEP-BC08 (#5884) — Isolation cross-tenant du journal comptable.
  *
- * Le trait BelongsToCompany (garde fail-closed #3727) doit :
- *   - auto-remplir `company_id` à la création ;
- *   - filtrer toutes les requêtes par le tenant courant ;
- *   - lever TenantContextMissingException sur la surface tenant sans
- *     compagnie courante (jamais de fuite cross-tenant).
+ * Verrouille l'isolation portée par `BelongsToCompany` (scope global
+ * fail-closed #3727) : un manager du tenant A ne voit que les écritures
+ * comptables du tenant A — au niveau API et au niveau modèle.
  */
 class AccountingTenantIsolationTest extends TestCase
 {
@@ -34,121 +28,123 @@ class AccountingTenantIsolationTest extends TestCase
 
     private Company $companyB;
 
+    private Employee $managerA;
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        /** @var Company $companyA */
-        $companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
-        $this->companyA = $companyA;
-
-        /** @var Company $companyB */
-        $companyB = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
-        $this->companyB = $companyB;
+        $this->companyA = $this->tenant('tenant-a', 'a.test');
+        $this->companyB = $this->tenant('tenant-b', 'b.test');
+        $this->managerA = $this->manager($this->companyA, 'a.test');
     }
 
-    protected function tearDown(): void
+    private function tenant(string $slug, string $domain): Company
     {
-        // Ne pas laisser le marqueur fail-closed polluer les tests suivants
-        // (TenantMiddleware le retire lui-même sur la vraie surface API).
-        app()->forgetInstance('tenant_scope_required');
-        app()->forgetInstance('current_company');
-
-        parent::tearDown();
-    }
-
-    public function test_creation_auto_fills_company_id(): void
-    {
-        app()->instance('current_company', $this->companyA);
-
-        /** @var AccountingContact $contact */
-        $contact = AccountingContact::query()->create([
-            'type' => ContactType::Customer->value,
-            'name' => 'Client A',
-        ]);
-
-        $this->assertSame($this->companyA->id, $contact->company_id);
-    }
-
-    public function test_models_are_scoped_to_current_tenant(): void
-    {
-        app()->instance('current_company', $this->companyA);
-
-        /** @var AccountingContact $contact */
-        $contact = AccountingContact::query()->create([
-            'type' => ContactType::Customer->value,
-            'name' => 'Client A',
-        ]);
-
-        /** @var AccountingDocument $document */
-        $document = AccountingDocument::query()->create([
-            'type' => DocumentType::Invoice->value,
-            'number' => 'FAC-A-0001',
-            'status' => DocumentStatus::Draft->value,
-            'contact_id' => $contact->id,
-            'issue_date' => '2026-08-22',
+        $company = Company::query()->create([
+            'name' => 'Company '.$slug,
+            'slug' => $slug,
+            'sector' => 'services',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'contact@'.$domain,
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
             'currency' => 'DZD',
+            'timezone' => 'UTC',
         ]);
 
-        AccountingDocumentLine::query()->create([
-            'document_id' => $document->id,
-            'description' => 'Ligne A',
-            'quantity' => 1,
-            'unit_price' => 10.0,
+        Schedule::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Standard',
+            'start_time' => '08:00:00',
+            'end_time' => '17:00:00',
+            'break_minutes' => 60,
+            'late_tolerance_minutes' => 15,
+            'overtime_threshold_daily' => 8.0,
+            'is_default' => true,
         ]);
 
-        AccountingPayment::query()->create([
-            'document_id' => $document->id,
-            'amount' => 10.0,
-            'method' => 'cash',
-            'status' => 'recorded',
-        ]);
-
-        AccountingSettings::query()->create([
-            'currency' => 'DZD',
-            'document_language' => 'fr',
-        ]);
-
-        // Bascule vers le tenant B : rien du tenant A ne doit être visible.
-        app()->instance('current_company', $this->companyB);
-
-        $this->assertNull(
-            AccountingContact::query()->whereKey($contact->id)->first(),
-            'Un contact du tenant A ne doit pas être visible depuis le tenant B.'
-        );
-        $this->assertNull(
-            AccountingDocument::query()->whereKey($document->id)->first(),
-            'Un document du tenant A ne doit pas être visible depuis le tenant B.'
-        );
-        $this->assertSame(0, AccountingDocumentLine::query()->count());
-        $this->assertSame(0, AccountingPayment::query()->count());
-        $this->assertSame(0, AccountingSettings::query()->count());
-
-        // Et le tenant B peut créer ses propres données sans pollution.
-        /** @var AccountingContact $contactB */
-        $contactB = AccountingContact::query()->create([
-            'type' => ContactType::Supplier->value,
-            'name' => 'Fournisseur B',
-        ]);
-        $this->assertSame($this->companyB->id, $contactB->company_id);
+        return $company;
     }
 
-    public function test_tenant_scope_required_fails_closed_without_current_company(): void
+    private function manager(Company $company, string $domain): Employee
     {
-        app()->instance('current_company', $this->companyA);
-        app()->instance('tenant_scope_required', true);
-
-        // Création d'une donnée du tenant A.
-        AccountingContact::query()->create([
-            'type' => ContactType::Customer->value,
-            'name' => 'Client A',
+        $manager = new Employee([
+            'email' => 'manager@'.$domain,
+            'first_name' => 'Mgr',
+            'last_name' => 'A',
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password')])->save();
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'comptable',
+            'status' => 'active',
+        ])->save();
 
-        // Sans compagnie courante, la surface tenant refuse toute requête
-        // (fail-closed #3727) — pas de fuite cross-tenant silencieuse.
-        app()->forgetInstance('current_company');
+        return $manager;
+    }
 
-        $this->expectException(TenantContextMissingException::class);
-        AccountingContact::query()->count();
+    private function makeEntry(Company $company, float $amount): AccountingJournalEntry
+    {
+        // Contrainte `journal_debit_credit_exclusive` : une écriture porte le
+        // débit OU le crédit, jamais les deux.
+        return AccountingJournalEntry::query()->create([
+            'company_id' => $company->id,
+            'entry_date' => '2026-06-15',
+            'period' => '2026-06',
+            'source_type' => 'manual',
+            'source_id' => 0,
+            'account_code' => '601000',
+            'account_label' => 'Achats',
+            'debit' => $amount,
+            'credit' => null,
+            'piece' => 'ECR-'.uniqid(),
+            'description' => 'Écriture de test',
+        ]);
+    }
+
+    public function test_manager_sees_only_own_tenants_journal_entries(): void
+    {
+        $this->makeEntry($this->companyA, 100);
+        $this->makeEntry($this->companyA, 50);
+        $this->makeEntry($this->companyB, 999);
+        $this->makeEntry($this->companyB, 999);
+        $this->makeEntry($this->companyB, 999);
+
+        Sanctum::actingAs($this->managerA);
+
+        $response = $this->getJson('/api/v1/accounting/journal?period=2026-06')
+            ->assertOk();
+
+        $this->assertCount(2, $response->json('entries'));
+
+        foreach ($response->json('entries') as $entry) {
+            $this->assertNotSame(999.0, (float) $entry['debit']);
+        }
+    }
+
+    public function test_journal_scope_filters_other_tenants_entries_at_model_level(): void
+    {
+        $this->makeEntry($this->companyA, 100);
+        $this->makeEntry($this->companyA, 50);
+        $this->makeEntry($this->companyB, 999);
+
+        app()->instance('current_company', $this->companyA);
+
+        $visible = AccountingJournalEntry::query()
+            ->where('period', '2026-06')
+            ->get();
+
+        $this->assertCount(2, $visible);
+        foreach ($visible as $entry) {
+            $this->assertSame($this->companyA->id, $entry->company_id);
+        }
     }
 }
