@@ -39,6 +39,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Platform` | Super-admin plateforme, gestion tenants |
 | `Recruitment` | Offres, candidats, entretiens |
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
+| `TravelAgency` | Verticale agences de voyages : référentiel pays/villes/gare/bureaux, manifest de solution activable par tenant (TRAVEL-101..108, 201..203) |
 
 > Liste vivante — voir `docs/ARCHITECTURE_STATUS.md` section 1 pour l'état de complétude
 > (Domain/Contracts/Application/Infra/Interfaces/Tests) de chaque module.
