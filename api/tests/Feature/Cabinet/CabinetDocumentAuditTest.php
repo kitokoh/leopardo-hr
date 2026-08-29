@@ -35,8 +35,13 @@ class CabinetDocumentAuditTest extends TestCase
         parent::setUp();
         Storage::fake('local');
 
-        $this->company = Company::factory()->create();
-        $this->manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        $this->company = $company;
+
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        $this->manager = $manager;
     }
 
     public function test_upload_is_audited_with_document_metadata(): void
@@ -109,7 +114,9 @@ class CabinetDocumentAuditTest extends TestCase
             ->firstOrFail();
 
         self::assertNull($audit->old_values['folder_id'] ?? null);
-        self::assertSame((string) $folder->id, (string) ($audit->new_values['folder_id'] ?? null));
+        $newFolderId = $audit->new_values['folder_id'] ?? null;
+        self::assertIsString($newFolderId);
+        self::assertSame((string) $folder->id, $newFolderId);
     }
 
     public function test_read_only_document_deletion_is_refused_and_not_audited(): void
