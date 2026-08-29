@@ -18,13 +18,13 @@ class CrmSendOverdueTaskReminders extends Command
 {
     protected $signature = 'crm:tasks:send-overdue-reminders';
 
-    protected $description = 'Emet les relances internes des tâches CRM en retard (une par tâche et par jour).';
+    protected $description = 'Emet les relances internes des taches CRM en retard (une par tache et par jour).';
 
     public function handle(CrmOverdueReminderService $service): int
     {
         $count = $service->run();
 
-        $this->info("Relances CRM émises : {$count}.");
+        $this->info("Relances CRM emises : {$count}.");
 
         return self::SUCCESS;
     }
