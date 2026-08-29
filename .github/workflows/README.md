@@ -14,6 +14,16 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 
 ---
 
+### 🛡 Gardes anti-régression du job Hygiene Guards (`architecture-check.yml`)
+
+| Garde | Détecte | Issue |
+|---|---|---|
+| `check-public-routes.sh` | Route publique canonique perdue dans `route:list` (controller non routé) | #5519 |
+| `check-duplicate-use-imports.sh` | Double `use` / alias `as` dupliqué dans `routes/**` + `Providers/**` | #5519 |
+| `check-providers-syntax.sh` | `*ServiceProvider.php` avec erreur de syntaxe (`php -l`) | #5519 |
+
+---
+
 ### ✅ Workflows principaux (déclenchés sur PR/push)
 
 | Fichier | Déclencheur | Rôle |
