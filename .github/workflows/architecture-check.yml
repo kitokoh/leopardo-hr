@@ -141,12 +141,35 @@ jobs:
       - name: Duplicate routes guard (issue #5577)
         run: bash dev-hub/tools/check-duplicate-routes.sh api
 
+      - name: Public routes canonical guard — route:list doit contenir le portail public (issue #5519)
+        run: bash dev-hub/tools/check-public-routes.sh api
+
+      - name: Duplicate use imports guard — routes/ + Providers/ (issue #5519)
+        run: bash dev-hub/tools/check-duplicate-use-imports.sh api
+
+      - name: Providers syntax guard — php -l sur *ServiceProvider.php (issue #5519)
+        run: bash dev-hub/tools/check-providers-syntax.sh api
+
       - name: Module isolation guard — no new cross-module imports (issue #5584)
         run: bash dev-hub/tools/check-module-isolation.sh api
+
+      - name: Routes tenant/platform separation guard (MAT-003, issue #5861)
+        run: bash dev-hub/tools/check-routes-tenant-platform.sh
+
+      - name: Routes tenant/platform guard self-test (MAT-003, issue #5861)
+        run: bash dev-hub/tools/check-routes-tenant-platform-test.sh
 
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
+      - name: Runbook coverage guard par BC — backup/restore/rollback (issue #5873, MAT-015)
+        run: bash dev-hub/tools/check-runbooks.sh
+      - name: Golden journeys guard — routes des parcours critiques (issue #5871, MAT-013)
+        run: bash dev-hub/tools/check-golden-journeys.sh api
+      - name: Security threat models guard — surfaces uploads/OCR/WhatsApp/POS/devices (issue #5875, MAT-017)
+        run: bash dev-hub/tools/check-security-threat-models.sh
+      - name: Pilot go/no-go gates guard (issue #5876, MAT-018)
+        run: bash dev-hub/tools/check-pilot-gates.sh
       - name: Release Train compat matrix guard (issue #5874, MAT-016)
         run: bash dev-hub/tools/check-release-compat.sh api
 
@@ -261,7 +284,6 @@ jobs:
         run: |
           echo "Checking Clean Architecture module structure..."
           ERRORS=0
-
           # Discover modules dynamically instead of a hard-coded list, so new
           # modules (or renamed ones) are covered automatically (PA2-ARCH-006).
           MODULES=$(find api/app/Modules -maxdepth 1 -mindepth 1 -type d -printf '%f\n' | sort)
@@ -313,6 +335,13 @@ jobs:
             exit 1
           fi
           echo "✅ All module structures valid ($(echo "$MODULES" | wc -l) modules checked)."
+
+      - name: Bounded context registry guard (MAT-001 / issue #5859)
+        # Registre canonique des bounded contexts : tout répertoire métier doit
+        # être déclaré (chemins actifs existants, planned tolérés), CODEOWNERS
+        # cohérent, dépendances référencées valides, routes/migrations déclarées
+        # présentes. Échoue avec un message actionnable sinon.
+        run: bash dev-hub/tools/check-bounded-context-registry.sh
 
       - name: Check module isolation (issue #5584)
         # Garde archunit-style : bloque TOUT nouvel import croisé
