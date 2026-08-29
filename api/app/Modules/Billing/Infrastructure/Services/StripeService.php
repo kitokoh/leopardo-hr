@@ -35,12 +35,14 @@ class StripeService
 
     public function __construct()
     {
-        $this->secretKey = (string) config('services.stripe.secret');
-        $this->webhookSecret = (string) config('services.stripe.webhook_secret');
+        // strval() plutôt que (string) : PHPStan (diff-gate) refuse le cast de
+        // `mixed` retourné par config() — strval accepte mixed sans élargir la baseline.
+        $this->secretKey = strval(config('services.stripe.secret'));
+        $this->webhookSecret = strval(config('services.stripe.webhook_secret'));
         $this->priceIds = [
-            'pilot' => (string) config('services.stripe.price_pilot'),
-            'operations' => (string) config('services.stripe.price_operations'),
-            'enterprise' => (string) config('services.stripe.price_enterprise'),
+            'pilot' => strval(config('services.stripe.price_pilot')),
+            'operations' => strval(config('services.stripe.price_operations')),
+            'enterprise' => strval(config('services.stripe.price_enterprise')),
         ];
     }
 
@@ -86,9 +88,17 @@ class StripeService
 
         $data = $response->json();
 
+        if (! is_array($data) || ! isset($data['url'], $data['id'])) {
+            Log::error('Stripe: Réponse checkout invalide', [
+                'status' => $response->status(),
+                'company_id' => $company->id,
+            ]);
+            throw new RuntimeException('Invalid Stripe checkout response.');
+        }
+
         return [
-            'url' => $data['url'],
-            'session_id' => $data['id'],
+            'url' => strval($data['url']),
+            'session_id' => strval($data['id']),
         ];
     }
 
@@ -340,7 +350,10 @@ class StripeService
             'active' => 'active',
             'past_due' => 'past_due',
             'canceled', 'cancelled' => 'cancelled',
-            'unpaid' => 'unpaid',
+            // DEP-BC21 #5897 : Stripe `unpaid` = paiement échoué, la
+            // souscription continue en défaut → `past_due` (l'écriture
+            // `unpaid` violait subscriptions_status_check).
+            'unpaid' => 'past_due',
             default => $sub->status,
         };
 
