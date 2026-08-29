@@ -143,6 +143,16 @@ return new class extends Migration
      */
     private function addEquipmentGuards(): void
     {
+        $meterSchema = resolveTableSchema('fuel_meter_registers');
+
+        // FUEL-003 — un seul compteur ACTIF par pompe (décision porteur d'idée) :
+        // index partiel PG (company_id, pump_id) WHERE status = 'active'.
+        if ($meterSchema !== null && ! $this->indexExists('fuel_meters_active_per_pump_unique')) {
+            DB::statement(
+                "CREATE UNIQUE INDEX fuel_meters_active_per_pump_unique ON {$meterSchema}.fuel_meter_registers (company_id, pump_id) WHERE status = 'active'"
+            );
+        }
+
         $tankSchema = resolveTableSchema('fuel_tanks');
 
         if ($tankSchema !== null && ! $this->constraintExists('fuel_tanks_capacity_check')) {

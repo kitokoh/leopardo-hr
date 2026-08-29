@@ -149,11 +149,25 @@ class FuelEquipmentTest extends TestCase
         });
     }
 
-    public function test_two_active_meters_with_different_codes_are_allowed(): void
+    public function test_only_one_active_meter_per_pump_regardless_of_code(): void
     {
         $station = $this->station($this->companyA);
         $pump = $this->pump($this->companyA, $station);
-        $this->meter($this->companyA, $station, $pump, 'C-04-A');
+        $meterA = $this->meter($this->companyA, $station, $pump, 'C-04-A');
+
+        // Décision porteur d'idée (FUEL-003) : un seul compteur ACTIF par pompe,
+        // quel que soit le code (index partiel fuel_meters_active_per_pump_unique).
+        try {
+            DB::transaction(function () use ($station, $pump): void {
+                $this->meter($this->companyA, $station, $pump, 'C-04-B');
+            });
+            $this->fail("L'index partiel fuel_meters_active_per_pump_unique aurait dû rejeter le 2e compteur actif.");
+        } catch (QueryException $exception) {
+            $this->assertStringContainsString('fuel_meters_active_per_pump_unique', $exception->getMessage());
+        }
+
+        // Un compteur RETIRÉ libère la place : remplacement propre (retire + nouvel actif).
+        $meterA->update(['status' => FuelMeterRegister::STATUS_RETIRED]);
         $this->meter($this->companyA, $station, $pump, 'C-04-B');
 
         $this->assertSame(2, FuelMeterRegister::query()->count());
