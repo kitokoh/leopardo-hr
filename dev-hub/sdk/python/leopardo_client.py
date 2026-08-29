@@ -1332,49 +1332,9 @@ class LeopardoClient:
         """Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager)"""
         return self.request("POST", "/cotisation-simulation", **kwargs)
 
-    def get_crm_automations(self, **kwargs):
-        """Lister les automatisations CRM du tenant"""
-        return self.request("GET", "/crm/automations", **kwargs)
-
-    def post_crm_automations(self, **kwargs):
-        """Creer une automatisation (event/conditions/actions)"""
-        return self.request("POST", "/crm/automations", **kwargs)
-
-    def delete_crm_automations_by_automation(self, **kwargs):
-        """Archiver une automatisation (soft delete)"""
-        return self.request("DELETE", "/crm/automations/{automation}", **kwargs)
-
-    def get_crm_automations_by_automation(self, **kwargs):
-        """Detail d'une automatisation"""
-        return self.request("GET", "/crm/automations/{automation}", **kwargs)
-
-    def put_crm_automations_by_automation(self, **kwargs):
-        """Mettre a jour une automatisation (version incrementee)"""
-        return self.request("PUT", "/crm/automations/{automation}", **kwargs)
-
-    def post_crm_automations_by_automation_activate(self, **kwargs):
-        """Activer une automatisation"""
-        return self.request("POST", "/crm/automations/{automation}/activate", **kwargs)
-
-    def post_crm_automations_by_automation_pause(self, **kwargs):
-        """Mettre en pause une automatisation"""
-        return self.request("POST", "/crm/automations/{automation}/pause", **kwargs)
-
-    def get_crm_automations_by_automation_runs(self, **kwargs):
-        """Historique d'execution d'une automatisation"""
-        return self.request("GET", "/crm/automations/{automation}/runs", **kwargs)
-
-    def post_crm_automations_by_automation_simulate(self, **kwargs):
-        """Simuler une automatisation sans effet de bord"""
-        return self.request("POST", "/crm/automations/{automation}/simulate", **kwargs)
-
-    def post_crm_automations_emergency_stop(self, **kwargs):
-        """Arret d'urgence des automatisations du tenant"""
-        return self.request("POST", "/crm/automations/emergency-stop", **kwargs)
-
-    def post_crm_automations_events_by_event(self, **kwargs):
-        """Emettre un evenement metier CRM (declenche les automatisations)"""
-        return self.request("POST", "/crm/automations/events/{event}", **kwargs)
+    def get_crm_accounts_by_account_timeline(self, **kwargs):
+        """Timeline d'activites d'un account CRM (issue #5720)"""
+        return self.request("GET", "/crm/accounts/{account}/timeline", **kwargs)
 
     def get_crm_channels(self, **kwargs):
         """Lister les canaux de communication du tenant"""
@@ -1396,13 +1356,21 @@ class LeopardoClient:
         """Lister les messages d'un canal (metadonnees, PII masquee)"""
         return self.request("GET", "/crm/channels/{channel}/messages", **kwargs)
 
-    def get_crm_channels_by_channel_observability(self, **kwargs):
-        """Observabilite d'un canal (cout et erreurs agreges)"""
-        return self.request("GET", "/crm/channels/{channel}/observability", **kwargs)
-
     def post_crm_channels_by_channel_send(self, **kwargs):
         """Envoyer un message via un canal CRM (WhatsApp, SMS, email)"""
         return self.request("POST", "/crm/channels/{channel}/send", **kwargs)
+
+    def get_crm_dashboard_pipeline(self, **kwargs):
+        """Dashboard pipeline CRM (issue #5721)"""
+        return self.request("GET", "/crm/dashboard/pipeline", **kwargs)
+
+    def get_crm_dashboard_quality(self, **kwargs):
+        """Qualite des donnees CRM (issue #5721)"""
+        return self.request("GET", "/crm/dashboard/quality", **kwargs)
+
+    def get_crm_dedup_suggestions(self, **kwargs):
+        """Suggestions de doublons (explicables, tenant-scoped)"""
+        return self.request("GET", "/crm/dedup/suggestions", **kwargs)
 
     def get_crm_exports(self, **kwargs):
         """Lister les jobs d'export CRM du tenant"""
@@ -1420,9 +1388,69 @@ class LeopardoClient:
         """Telecharger un export termine (acces expirant)"""
         return self.request("GET", "/crm/exports/{export}/download", **kwargs)
 
+    def post_crm_imports(self, **kwargs):
+        """Uploader et prévisualiser un import CSV CRM (preview sans écriture)"""
+        return self.request("POST", "/crm/imports", **kwargs)
+
+    def get_crm_imports_by_crmimport(self, **kwargs):
+        """Détail d'une session d'import CSV"""
+        return self.request("GET", "/crm/imports/{crmImport}", **kwargs)
+
+    def post_crm_imports_by_crmimport_cancel(self, **kwargs):
+        """Annuler un import CSV avant commit"""
+        return self.request("POST", "/crm/imports/{crmImport}/cancel", **kwargs)
+
+    def post_crm_imports_by_crmimport_commit(self, **kwargs):
+        """Committer un import CSV prévisualisé (explicite, idempotent)"""
+        return self.request("POST", "/crm/imports/{crmImport}/commit", **kwargs)
+
+    def post_crm_leads_by_crmlead_convert(self, **kwargs):
+        """Convertir un lead en account + contact + opportunity"""
+        return self.request("POST", "/crm/leads/{crmLead}/convert", **kwargs)
+
+    def post_crm_merge(self, **kwargs):
+        """Fusion supervisée (principal uniquement)"""
+        return self.request("POST", "/crm/merge", **kwargs)
+
+    def get_crm_merge_preview(self, **kwargs):
+        """Preview d'une fusion (aucune écriture)"""
+        return self.request("GET", "/crm/merge/preview", **kwargs)
+
     def get_crm_read_models(self, **kwargs):
         """Read models CRM recalculables (agregats analytiques tenant)"""
         return self.request("GET", "/crm/read-models", **kwargs)
+
+    def get_crm_search(self, **kwargs):
+        """Rechercher accounts et contacts du tenant courant (issue #5719)"""
+        return self.request("GET", "/crm/search", **kwargs)
+
+    def get_crm_tasks(self, **kwargs):
+        """Lister les tâches CRM du tenant (issue #5720)"""
+        return self.request("GET", "/crm/tasks", **kwargs)
+
+    def post_crm_tasks(self, **kwargs):
+        """Creer une tache CRM (issue #5720)"""
+        return self.request("POST", "/crm/tasks", **kwargs)
+
+    def delete_crm_tasks_by_task(self, **kwargs):
+        """Supprimer une tache CRM"""
+        return self.request("DELETE", "/crm/tasks/{task}", **kwargs)
+
+    def get_crm_tasks_by_task(self, **kwargs):
+        """Detail d'une tache CRM"""
+        return self.request("GET", "/crm/tasks/{task}", **kwargs)
+
+    def patch_crm_tasks_by_task(self, **kwargs):
+        """Mettre a jour une tache CRM (transitions de statut controlees)"""
+        return self.request("PATCH", "/crm/tasks/{task}", **kwargs)
+
+    def post_crm_tasks_by_task_complete(self, **kwargs):
+        """Cloturer une tache CRM (status -> done)"""
+        return self.request("POST", "/crm/tasks/{task}/complete", **kwargs)
+
+    def post_crm_tasks_by_task_reopen(self, **kwargs):
+        """Rouvrir une tache CRM (status -> todo)"""
+        return self.request("POST", "/crm/tasks/{task}/reopen", **kwargs)
 
     def get_crm_webhooks_whatsapp(self, **kwargs):
         """Verification d'abonnement du webhook WhatsApp Business (Meta)"""
