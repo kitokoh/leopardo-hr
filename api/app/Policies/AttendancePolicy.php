@@ -50,18 +50,8 @@ class AttendancePolicy
         return true;
     }
 
-    /**
-     * Fail-closed cross-tenant (pattern EmployeePolicy::view, #3232) : un
-     * manager ne peut modifier un log/correction que de SON tenant, même si
-     * les IDs coïncident. DEP-BC05 (#5881) — le check company_id manquait,
-     * la liste des corrections fuyait cross-tenant (PII).
-     */
     public function update(Employee $actor, AttendanceLog $log): bool
     {
-        if ($log->company_id !== $actor->company_id) {
-            return false;
-        }
-
         return $actor->hasManagerRole('principal', 'rh');
     }
 }

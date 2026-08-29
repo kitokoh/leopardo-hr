@@ -38,8 +38,6 @@ class WorkforceTenantIsolationTest extends TestCase
 
     private Employee $managerA;
 
-    private Employee $managerB;
-
     private Employee $employeeA;
 
     private Employee $employeeB;
@@ -49,7 +47,7 @@ class WorkforceTenantIsolationTest extends TestCase
         parent::setUp();
 
         [$this->companyA, $this->managerA, $this->employeeA] = $this->tenant('tenant-a', 'a.test');
-        [$this->companyB, $this->managerB, $this->employeeB] = $this->tenant('tenant-b', 'b.test');
+        [$this->companyB, , $this->employeeB] = $this->tenant('tenant-b', 'b.test');
     }
 
     /**
@@ -116,11 +114,12 @@ class WorkforceTenantIsolationTest extends TestCase
         return [$company, $manager, $employee];
     }
 
-    private function makeLog(Company $company, Employee $employee): AttendanceLog
+    private function makeLog(Company $company, Employee $employee, int $session = 1): AttendanceLog
     {
         return AttendanceLog::factory()->create([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
+            'session_number' => $session,
         ]);
     }
 
@@ -139,11 +138,11 @@ class WorkforceTenantIsolationTest extends TestCase
 
     public function test_manager_sees_only_own_tenants_attendance_logs(): void
     {
-        $this->makeLog($this->companyA, $this->employeeA);
-        $this->makeLog($this->companyA, $this->employeeA);
-        $this->makeLog($this->companyB, $this->employeeB);
-        $this->makeLog($this->companyB, $this->employeeB);
-        $this->makeLog($this->companyB, $this->employeeB);
+        $this->makeLog($this->companyA, $this->employeeA, 1);
+        $this->makeLog($this->companyA, $this->employeeA, 2);
+        $this->makeLog($this->companyB, $this->employeeB, 1);
+        $this->makeLog($this->companyB, $this->employeeB, 2);
+        $this->makeLog($this->companyB, $this->employeeB, 3);
 
         Sanctum::actingAs($this->managerA);
 
@@ -190,6 +189,6 @@ class WorkforceTenantIsolationTest extends TestCase
 
         $this->putJson("/api/v1/attendance/{$logB->id}", [
             'notes' => 'modification cross-tenant',
-        ])->assertForbidden();
+        ])->assertNotFound();
     }
 }
