@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Domain\Models\FeatureKillSwitch;
 use App\Core\Feature\Infrastructure\Services\FeatureKillSwitchService;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
-use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
+use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -21,22 +22,36 @@ use Tests\TestCase;
  * (point d'intégration unique des gates modules), idempotence, API
  * super-admin (401 pour l'espace tenant), persistance + audit.
  *
- * Harness : schéma `public` migré (feature_kill_switches + companies +
- * super_admins) — aucune dépendance tenant.
+ * Harness : fixture `CreatesMvpSchema` (schéma partagé + companies) + table
+ * `feature_kill_switches` créée à la volée — aucun `migrate:fresh` (qui
+ * purgerait le schéma tenant partagé et casserait les autres tests du run).
  */
 class FeatureKillSwitchTest extends TestCase
 {
+    use CreatesMvpSchema;
+
     protected function setUp(): void
     {
         parent::setUp();
+        $this->setUpMvpSchema();
 
-        DB::statement('SET search_path TO public,shared_tenants');
+        if (! Schema::hasTable('feature_kill_switches')) {
+            Schema::create('feature_kill_switches', function (Blueprint $table): void {
+                $table->id();
+                $table->string('feature_key', 64)->unique();
+                $table->boolean('is_active')->default(false);
+                $table->string('reason', 500)->nullable();
+                $table->string('toggled_by', 191)->nullable();
+                $table->timestampTz('toggled_at')->nullable();
+                $table->timestamps();
+            });
+        }
+    }
 
-        $this->artisan('migrate:fresh', [
-            '--path' => 'database/migrations/public',
-        ]);
-
-        $this->app[Kernel::class]->setArtisan(null);
+    protected function tearDown(): void
+    {
+        $this->tearDownMvpSchema();
+        parent::tearDown();
     }
 
     public function test_kill_switch_makes_a_feature_fail_closed(): void
@@ -80,8 +95,8 @@ class FeatureKillSwitchTest extends TestCase
 
     public function test_kill_switch_is_graceful_when_table_is_missing(): void
     {
-        // Harness public migré SANS feature_kill_switches (simulation) : la
-        // résolution retombe sur l'ancien comportement (aucun kill actif).
+        // Harness sans feature_kill_switches (simulation) : la résolution
+        // retombe sur l'ancien comportement (aucun kill actif).
         DB::statement('DROP TABLE IF EXISTS feature_kill_switches');
 
         $company = Company::factory()->create(['features' => ['finance' => true]]);
@@ -93,9 +108,12 @@ class FeatureKillSwitchTest extends TestCase
     {
         $this->getJson('/api/v1/platform/feature-kill-switches')->assertUnauthorized();
 
-        $company = Company::factory()->create();
-        $employee = Employee::factory()->create(['company_id' => $company->id]);
-        Sanctum::actingAs($employee);
+        // Un utilisateur authentifié hors garde super-admin (espace tenant)
+        // ne peut pas accéder aux routes kill switch.
+        Sanctum::actingAs(
+            new SuperAdmin(['id' => 1, 'name' => 'Tenant', 'email' => 'tenant@leopardo.test']),
+            ['*']
+        );
 
         $this->getJson('/api/v1/platform/feature-kill-switches')->assertUnauthorized();
         $this->postJson('/api/v1/platform/feature-kill-switches', [
@@ -111,6 +129,9 @@ class FeatureKillSwitchTest extends TestCase
             ['*'],
             'super_admin_api'
         );
+
+        // Contrôle positif : le super-admin lit la liste (200).
+        $this->getJson('/api/v1/platform/feature-kill-switches')->assertOk();
 
         $this->postJson('/api/v1/platform/feature-kill-switches', [
             'feature_key' => 'leo_ai',
