@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Logging;
 
 use App\Logging\PiiRedactionProcessor;
+use App\Logging\RedactingJsonFormatter;
 use Monolog\Level;
 use Monolog\LogRecord;
 use PHPUnit\Framework\TestCase;
@@ -109,6 +110,20 @@ final class PiiRedactionProcessorTest extends TestCase
         $this->assertNull($out->context['note']);
         $this->assertSame(3, $out->context['count']);
         $this->assertTrue($out->context['flag']);
+    }
+
+    public function test_redacting_json_formatter_masks_secrets_in_serialized_output(): void
+    {
+        $formatter = new RedactingJsonFormatter();
+
+        $out = $formatter->format($this->record([
+            'password' => 'hunter2',
+            'request_id' => 'keep-this-id',
+        ]));
+
+        $this->assertStringNotContainsString('hunter2', $out);
+        $this->assertStringContainsString(PiiRedactionProcessor::REDACTED, $out);
+        $this->assertStringContainsString('keep-this-id', $out);
     }
 
     /**
