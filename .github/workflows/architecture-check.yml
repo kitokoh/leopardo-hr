@@ -80,6 +80,8 @@ jobs:
 
       - name: Migrations tenant — convention #1613 (search_path, audit PM 2026-08-17)
         run: bash dev-hub/tools/check-migrations-tenant-schema.sh
+      - name: Migrations BC conventions guard (MAT-005 #5863)
+        run: bash dev-hub/tools/check-migrations-bc-conventions.sh
       - name: Geofence single usage path guard (ADR-0016 Phase 2, issue #5353)
         run: bash dev-hub/tools/check-geofence-single-usage.sh
 
