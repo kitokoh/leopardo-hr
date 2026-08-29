@@ -26,15 +26,27 @@ interface SolutionManifest
     /** Maturité déclarée : pilot | stable. */
     public function maturity(): string;
 
-    /** Modules transversaux requis (codes) pour que la solution fonctionne. */
+    /** Modules transversaux requis (codes) pour que la solution fonctionne.
+     *
+     * @return array<int, string>
+     */
     public function requiredModules(): array;
 
-    /** Modules transversaux optionnels (codes). */
+    /** Modules transversaux optionnels (codes).
+     *
+     * @return array<int, string>
+     */
     public function optionalModules(): array;
 
-    /** Catégories de données sensibles traitées (RGPD / audit). */
+    /** Catégories de données sensibles traitées (RGPD / audit).
+     *
+     * @return array<int, string>
+     */
     public function sensitiveData(): array;
 
-    /** Permissions déclarées par la solution (ex. travel.manage). */
+    /** Permissions déclarées par la solution (ex. travel.manage).
+     *
+     * @return array<int, string>
+     */
     public function permissions(): array;
 }

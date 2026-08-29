@@ -30,21 +30,33 @@ final class TravelAgencyManifest implements SolutionManifest
         return 'pilot';
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function requiredModules(): array
     {
         return ['rh', 'documents', 'notifications', 'crm'];
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function optionalModules(): array
     {
         return ['accounting', 'marketing'];
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function sensitiveData(): array
     {
         return ['passenger_pii', 'payments'];
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function permissions(): array
     {
         return [
