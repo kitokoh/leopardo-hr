@@ -115,8 +115,8 @@ class CabinetDocumentAuditTest extends TestCase
 
         self::assertNull($audit->old_values['folder_id'] ?? null);
         $newFolderId = $audit->new_values['folder_id'] ?? null;
-        self::assertIsString($newFolderId);
-        self::assertSame((string) $folder->id, $newFolderId);
+        // folder_id stocké en int natif (JSON) — comparaison typée via (string).
+        self::assertSame((string) $folder->id, (string) $newFolderId);
     }
 
     public function test_read_only_document_deletion_is_refused_and_not_audited(): void

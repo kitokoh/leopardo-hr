@@ -134,11 +134,10 @@ class FeatureKillSwitchTest extends TestCase
 
     public function test_super_admin_can_activate_and_deactivate_a_kill_switch(): void
     {
-        Sanctum::actingAs(
-            new SuperAdmin(['id' => 1, 'name' => 'Ops', 'email' => 'ops@leopardo.test']),
-            ['*'],
-            'super_admin_api'
-        );
+        $admin = new SuperAdmin(['name' => 'Ops', 'email' => 'ops@leopardo.test']);
+        $admin->id = 1; // `id` n'est pas fillable — attribution directe pour l'acteur
+
+        Sanctum::actingAs($admin, ['*'], 'super_admin_api');
 
         // Contrôle positif : le super-admin lit la liste (200).
         $this->getJson('/api/v1/platform/feature-kill-switches')->assertOk();

@@ -100,11 +100,13 @@ class AccountingTenantIsolationTest extends TestCase
             'entry_date' => '2026-06-15',
             'period' => '2026-06',
             'source_type' => 'manual',
-            'source_id' => 0,
+            // Contrainte `journal_source_account_unique` (company_id, source_type,
+            // source_id, account_code) : un source_id distinct par écriture.
+            'source_id' => random_int(1000, 999999),
             'account_code' => '601000',
             'account_label' => 'Achats',
             'debit' => $amount,
-            'credit' => null,
+            'credit' => 0, // colonne NOT NULL default 0 (migration 5234)
             'piece' => 'ECR-'.uniqid(),
             'description' => 'Écriture de test',
         ]);
