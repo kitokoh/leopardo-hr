@@ -163,7 +163,7 @@ class FuelSaleController extends Controller
             'quantity' => $sale->quantity,
             'unit_price' => $sale->unit_price,
             'amount' => $sale->amount,
-            'sale_time' => $sale->sale_time?->toISOString(),
+            'sale_time' => $sale->sale_time->toISOString(),
             'source' => $sale->source,
             'external_id' => $sale->external_id,
             'notes' => $sale->notes,

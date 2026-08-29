@@ -74,7 +74,7 @@ final class MeterReadingService
         $this->assertOperatorInTenant($actor, $companyId);
 
         // 3. Horodatage.
-        $capturedAtUtc = ($input['captured_at'] ?? null) !== null && ($input['captured_at'] ?? '') !== ''
+        $capturedAtUtc = $input['captured_at'] !== null && $input['captured_at'] !== ''
             ? Carbon::parse((string) $input['captured_at'])->utc()
             : Carbon::now('UTC');
 

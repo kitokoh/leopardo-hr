@@ -115,6 +115,7 @@ class FuelMeterReadingTest extends TestCase
             .'/meters/'.(int) $meter->getAttribute('id').'/readings';
     }
 
+    private /** @return \Illuminate\Testing\TestResponse */
     private function recordReading(
         Company $company,
         FuelStation $station,

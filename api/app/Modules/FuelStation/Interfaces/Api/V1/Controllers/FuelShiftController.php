@@ -220,8 +220,8 @@ class FuelShiftController extends Controller
             'status' => $shift->status,
             'notes' => $shift->notes,
             'assignments_count' => $shift->assignments_count ?? null,
-            'created_at' => $shift->created_at->toISOString(),
-            'updated_at' => $shift->updated_at->toISOString(),
+            'created_at' => $shift->created_at?->toISOString(),
+            'updated_at' => $shift->updated_at?->toISOString(),
         ];
     }
 
@@ -253,8 +253,8 @@ class FuelShiftController extends Controller
             'assignment_date' => $assignment->assignment_date->toDateString(),
             'status' => $assignment->status,
             'notes' => $assignment->notes,
-            'created_at' => $assignment->created_at->toISOString(),
-            'updated_at' => $assignment->updated_at->toISOString(),
+            'created_at' => $assignment->created_at?->toISOString(),
+            'updated_at' => $assignment->updated_at?->toISOString(),
         ];
     }
 

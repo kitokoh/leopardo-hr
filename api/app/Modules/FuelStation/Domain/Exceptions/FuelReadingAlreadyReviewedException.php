@@ -14,7 +14,7 @@ class FuelReadingAlreadyReviewedException extends DomainException
     public function __construct()
     {
         parent::__construct(
-            'Ce relevé a déjà été corrigé ou revu.',
+            'Ce releve a deja ete corrige ou revu.',
             409,
             'FUEL_READING_REVIEWED'
         );

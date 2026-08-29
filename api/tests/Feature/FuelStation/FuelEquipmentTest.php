@@ -68,21 +68,6 @@ class FuelEquipmentTest extends TestCase
         return $pump;
     }
 
-    private function tank(Company $company, FuelStation $station, string $code = 'T-01'): FuelTank
-    {
-        /** @var FuelTank $tank */
-        $tank = FuelTank::query()->create([
-            'company_id' => $company->id,
-            'station_id' => (int) $station->getAttribute('id'),
-            'code' => $code,
-            'product_type' => 'essence',
-            'capacity_minor' => 5000000,
-            'current_level_minor' => 2500000,
-            'status' => FuelTank::STATUS_ACTIVE,
-        ]);
-
-        return $tank;
-    }
 
     private function meter(Company $company, FuelStation $station, FuelPump $pump, string $code = 'C-04-A'): FuelMeterRegister
     {
