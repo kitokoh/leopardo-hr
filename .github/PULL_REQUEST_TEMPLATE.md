@@ -1,9 +1,8 @@
 ## 📝 Pull Request Overview
 
 **Issue Reference:** Fixes #
-> ⚠️ **Obligatoire (PA2-OPS-008) :** cette PR doit obligatoirement inclure `Closes #XXX` (ou `Fixes #XXX` / `Resolves #XXX`) dans son titre ou sa description, sauf si elle est explicitement typee `docs:`/`chore:`. Un garde CI bloquant (`.github/workflows/plan-action2-claim-guard.yml`, `dev-hub/tools/check-pr-closes-issue.sh`) refuse toute PR qui ne le fait pas.
+> ⚠️ **Obligatoire (PA2-OPS-008) :** cette PR doit obligatoirement inclure `Closes #XXX` (ou `Fixes #XXX` / `Resolves #XXX`) dans son titre ou sa description, sauf si elle est explicitement typee `docs:`/`chore:`. Un garde CI bloquant (`.github/workflows/pr-issue-guard.yml`, `dev-hub/tools/check-pr-closes-issue.sh`) refuse toute PR qui ne le fait pas.
 **Category:** [Feature / Bug Fix / Documentation / Refactor]
-**PA2 Ticket ID:** `PA2-XXX-000` (laisser vide/supprimer si cette PR ne livre aucun ticket du backlog `docs/PLAN_ACTION2/`; voir PA2-AUTO-004 pour le garde CI correspondant)
 
 ---
 
@@ -18,7 +17,7 @@ Please provide a clear and concise description of the changes introduced by this
 
 ## 🗺️ Surfaces touchees
 
-Cocher toutes les surfaces reellement modifiees par cette PR (aide au triage/rapport hebdo PA2-AUTO-005 et au dashboard PA2-AUTO-007) :
+Cocher toutes les surfaces reellement modifiees par cette PR (aide au triage) :
 
 -   [ ] API (`api/app`)
 -   [ ] Web (`front/web`)

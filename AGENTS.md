@@ -1032,5 +1032,5 @@ Deux collisions de préfixe le même jour (2026-08-24) ont bloqué toutes les PR
 - **main cassé = alerte immédiate** : ne pas empiler un merge sur un main rouge ; signaler et
   corriger d'abord (`fix/main-green-backend` est le lot dédié).
 - **Ticket créé = ticket assigné** : pas de création d'issue orpheline.
-- **Ratio fix/feat** : suivi hebdo dans `plan-action2-weekly-report.sh` (section 1bis, alerte > 3,
+- **Ratio fix/feat** : suivi hebdo dans `dev-hub/tools/fix-feat-ratio-report.sh` (alerte > 3,
   cible <= 2.5).

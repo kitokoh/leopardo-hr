@@ -1,21 +1,28 @@
 # Architecture CI/CD — Leopardo RH
 
-> Dernière mise à jour : 2026-07-26
+> Dernière mise à jour : 2026-08-29
 
 ## Vue d'ensemble
 
 Le repo est en **trunk-based development** : il n'existe pas de branche `develop` ni de
 branche `staging` (vérifié via `git ls-remote` — seules `main` et des branches
 `feature/*`/`fix/*` courte durée de vie existent). Tout part de branches courtes
-fusionnées dans `main` par PR (branche protégée), et les déploiements staging/production
-sont enchaînés automatiquement après les checks CI sur `main` via `workflow_run`
-(pas de push direct déclenchant un déploiement) :
+fusionnées dans `main` par PR (branche protégée).
+
+> ⚠️ **Mise à jour (2026-08-29)** : la section ci-dessous décrivait un déclenchement des
+> déploiements via `workflow_run` sur les checks de `main`. Ce mécanisme a été remplacé par un
+> déclenchement direct sur `push: main` (issues #3545/#4359) — un `workflow_run` empilé sur les
+> checks requis provoquait des runs annulés en cascade sous rafale de merges, laissant `main`
+> sans déploiement (voir `docs/infra/02_alignement/CI_SATURATION.md`). `workflow_run` reste géré
+> en défense en profondeur dans le script de `deploy-main.yml`/`deploy-staging.yml`, mais n'est
+> plus le déclencheur principal. Le doc canonique et à jour des workflows est
+> `.github/workflows/README.md` — s'y référer en cas de doute.
 
 ```
-PR → merge sur main
+PR → merge sur main (push)
     │
-    ├─ workflow_run("Tests - Leopardo RH" sur main) → deploy-staging.yml → Render staging
-    └─ workflow_run("Tests - Leopardo RH" / "Web CI - Leopardo Admin") → deploy-main.yml → Render production
+    ├─ push: main → deploy-staging.yml → Render staging (fail-fast si non configuré, #1485)
+    └─ push: main → deploy-main.yml → Render production (après vérification des checks requis du SHA)
 ```
 
 ## Workflows GitHub Actions
@@ -28,20 +35,23 @@ PR → merge sur main
 | `web-ci.yml` | PR + push (front/admin-dashboard/) | Build + lint admin-dashboard (Vue/Vite) |
 | `openapi-ci.yml` | PR + push (api/openapi.yaml, dev-hub/openapi/) | Validation spec OpenAPI |
 | `architecture-check.yml` | PR | Vérification DDD boundaries + PHPStan modules/strict |
-| `deploy-staging.yml` | `workflow_run` sur "Tests - Leopardo RH" (branche main) | Deploy staging Render |
-| `deploy-main.yml` | `workflow_run` sur "Tests - Leopardo RH" / "Web CI - Leopardo Admin" | Deploy production Render |
+| `deploy-staging.yml` | `push: main` (unique déclencheur depuis #3545/#4359) | Deploy staging Render |
+| `deploy-main.yml` | `push: main` (unique déclencheur depuis #3545/#4359) | Deploy production Render |
 | `secret-scan.yml` | PR | Scan fuites secrets (TruffleHog) |
 | `codeql.yml` | schedule + PR | Analyse sécurité statique |
 
 ## Environnements
 
 ### Production (Render)
-- **API** : `leopardo-api` (Web Service, Docker)
-- **Queue Worker** : `leopardo-queue-worker` (Background Worker)
-  - Queues : `notifications`, `emails`, `pdf`, `payroll`, `default`
-- **Scheduler** : `leopardo-scheduler` (Background Worker, every 60s)
-- **Base de données** : PostgreSQL 16 (Render managed)
-- **Cache/Queue** : Redis Upstash (TLS)
+- **API** : `gestionemployerbackend` (Web Service, Docker, plan starter)
+- **Queue Worker** : `leopardo-queue-worker` (Background Worker, plan starter)
+  - Queues : `webhooks`, `audit`, `notifications`, `emails`, `pdf`, `payroll`, `documents`, `default`
+- **Scheduler** : `leopardo-scheduler` (Background Worker, `schedule:run` every 60s, plan starter)
+- **Base de données** : PostgreSQL 16 (Render managed, plan starter)
+- **Cache/Session** : Redis interne Render (`leopardo-redis`, plan free, issue #3774)
+- **Queue** : `QUEUE_CONNECTION=database` (table Postgres `jobs`, pas Redis — décision #5578 pour
+  ne pas dépendre d'un quota Redis externe ; drainée par le worker dédié + le fallback GitHub
+  Actions `queue-worker-fallback.yml`)
 
 ### Staging
 - Même architecture, variables `APP_ENV=staging`
@@ -106,16 +116,24 @@ SENTRY_AUTH_TOKEN        # Upload sourcemaps
 
 Voir aussi `docs/CI_CD_SECRETS.md` pour le détail complet des secrets et de leur rotation.
 
-## Architecture Redis
+## Architecture Queue
 
-Toutes les queues partagent la même instance Upstash Redis (TLS).
-Priority par queue :
+> ⚠️ Mise à jour (2026-08-29) : cette section décrivait une instance Upstash Redis partagée.
+> Depuis #5578, la queue tourne sur `database` (table Postgres `jobs`), pas Redis — voir
+> `docs/OPS/RENDER_QUEUE_WORKERS.md` et `docs/GESTION_PROJET/RUNBOOK_RENDER_WORKERS.md`. Redis
+> (interne Render, `leopardo-redis`) ne sert plus qu'au cache/session.
 
-1. `notifications` — push mobile temps réel
-2. `emails` — envoi d'emails
-3. `pdf` — génération de bulletins de salaire
-4. `payroll` — calculs de paie (jobs lourds)
-5. `default` — tout le reste
+Toutes les queues sont drainées par le même worker (`leopardo-queue-worker`), consommées dans
+l'ordre déclaré au démarrage (`--queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default`) :
+
+1. `webhooks` — accusés de réception webhooks entrants
+2. `audit` — journalisation d'audit
+3. `notifications` — push mobile temps réel
+4. `emails` — envoi d'emails
+5. `pdf` — génération de bulletins de salaire
+6. `payroll` — calculs de paie (jobs lourds)
+7. `documents` — traitement de documents
+8. `default` — tout le reste
 
 ## Modèle de branches
 
