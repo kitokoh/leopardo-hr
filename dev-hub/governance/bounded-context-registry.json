@@ -707,14 +707,16 @@
       "responsibility": "Agences, compagnies, routes, trajets, réservations, passagers, billets, paiements, locations, hôtels, rapports.",
       "owner": "Agent 24 — BC-TRAVEL",
       "priority": "P1",
-      "status": "planned",
+      "status": "active",
       "paths": [
         {
           "path": "api/app/Modules/TravelAgency",
-          "status": "planned"
+          "status": "active"
         }
       ],
-      "routes": [],
+      "routes": [
+        "api/routes/modules/travelagency.php"
+      ],
       "migrations": [
         "api/database/migrations/tenant"
       ],
