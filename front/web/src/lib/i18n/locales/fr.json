@@ -455,7 +455,16 @@
     "platform_dashboard_hint": "Disponible dans le dashboard plateforme.",
     "searchPlaceholder": "Rechercher...",
     "modulesActiveSentence": "{active} modules actifs, {locked} a activer selon votre plan.",
-    "yourCompany": "Votre entreprise"
+    "yourCompany": "Votre entreprise",
+    "leave_balance_title": "Mon solde de congés",
+    "leave_balance_subtitle": "Jours restants par type, année courante",
+    "leave_balance_loading": "Chargement du solde…",
+    "leave_balance_error": "Impossible de charger le solde de congés.",
+    "leave_balance_empty": "Aucun solde configuré pour ce compte.",
+    "leave_balance_available": "{days} j disponibles",
+    "leave_balance_used": "{days} utilisés",
+    "see_absences": "Voir mes absences",
+    "leave_balance_unknown": "Congés"
   },
   "marketing": {
     "oauth": {
