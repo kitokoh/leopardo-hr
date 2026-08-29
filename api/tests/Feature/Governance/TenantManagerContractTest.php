@@ -44,8 +44,13 @@ class TenantManagerContractTest extends TestCase
     private function searchPath(): string
     {
         $row = DB::selectOne('SHOW search_path');
+        if (! is_object($row)) {
+            return '';
+        }
 
-        return $row->search_path ?? '';
+        $value = get_object_vars($row)['search_path'] ?? null;
+
+        return is_string($value) ? $value : '';
     }
 
     private function makeManager(Company $company): Employee
