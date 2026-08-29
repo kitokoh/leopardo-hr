@@ -150,6 +150,38 @@ class CrmChannelController extends Controller
         );
     }
 
+    /**
+     * Observabilité d'un canal (issue #5727) : coûts et erreurs agrégés,
+     * sans aucune donnée personnelle.
+     *
+     * @return array<string, mixed>
+     */
+    public function observability(string $channel): array
+    {
+        $this->channelOrFail($channel);
+
+        $aggregates = CrmChannelMessage::query()
+            ->where('channel_id', $channel)
+            ->selectRaw('count(*) as total')
+            ->selectRaw('sum(case when status = ? then 1 else 0 end) as failed', ['failed'])
+            ->selectRaw('sum(case when status = ? then 1 else 0 end) as dead_lettered', ['dead_lettered'])
+            ->selectRaw('coalesce(sum(cost), 0) as total_cost')
+            ->selectRaw('coalesce(sum(attempts), 0) as total_attempts')
+            ->first();
+
+        return [
+            'data' => [
+                'channel_id' => $channel,
+                'total_messages' => (int) ($aggregates->total ?? 0),
+                'failed' => (int) ($aggregates->failed ?? 0),
+                'dead_lettered' => (int) ($aggregates->dead_lettered ?? 0),
+                'total_attempts' => (int) ($aggregates->total_attempts ?? 0),
+                'total_cost' => round((float) ($aggregates->total_cost ?? 0), 4),
+                'generated_at' => now()->toIso8601String(),
+            ],
+        ];
+    }
+
     private function channelOrFail(string $channelId): CrmChannel
     {
         $channel = CrmChannel::query()->where('id', $channelId)->first();

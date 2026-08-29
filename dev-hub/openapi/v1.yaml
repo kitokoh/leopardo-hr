@@ -24879,6 +24879,25 @@ paths:
           description: Conversations du canal
         '404':
           $ref: '#/components/responses/Error404'
+  /crm/channels/{channel}/observability:
+    get:
+      tags:
+      - CRM
+      summary: Observabilite d'un canal (cout et erreurs agreges)
+      description: Totaux messages, echecs, dead-letter, tentatives et cout cumule — aucune donnee personnelle. Reserve aux managers principal/rh.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: channel
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Agregats d'observabilite
+        '404':
+          $ref: '#/components/responses/Error404'
 
 components:
   securitySchemes:

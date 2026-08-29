@@ -11,6 +11,7 @@ use App\Modules\CRM\Domain\Contracts\ChannelAdapterContract;
 use App\Modules\CRM\Domain\Contracts\CrmChannelMessageRepositoryInterface;
 use App\Modules\CRM\Domain\Enums\CrmChannelType;
 use App\Modules\CRM\Infrastructure\Integrations\WhatsApp\WhatsAppAdapter;
+use App\Modules\CRM\Infrastructure\Integrations\Sms\SmsAdapter;
 use App\Modules\CRM\Infrastructure\Integrations\WhatsApp\WhatsAppCloudApiClient;
 use App\Modules\CRM\Infrastructure\Repositories\CrmChannelMessageRepository;
 use App\Modules\CRM\Infrastructure\Services\ConsentTableCampaignConsentChecker;
@@ -61,6 +62,7 @@ class CrmServiceProvider extends ServiceProvider
 
         $this->app->singleton(WhatsAppCloudApiClient::class);
         $this->app->singleton(WhatsAppAdapter::class);
+        $this->app->singleton(SmsAdapter::class);
 
         // Registre des adaptateurs par type de canal (#5727) : chaque
         // nouveau canal (sms, email…) s'ajoute ici sans coupler le CRM.
@@ -68,6 +70,7 @@ class CrmServiceProvider extends ServiceProvider
             /** @var array<string, ChannelAdapterContract> $adapters */
             $adapters = [
                 CrmChannelType::WHATSAPP => $app->make(WhatsAppAdapter::class),
+                CrmChannelType::SMS => $app->make(SmsAdapter::class),
             ];
 
             return new CrmChannelService(
