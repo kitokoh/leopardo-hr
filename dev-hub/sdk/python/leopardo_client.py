@@ -1332,6 +1332,38 @@ class LeopardoClient:
         """Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager)"""
         return self.request("POST", "/cotisation-simulation", **kwargs)
 
+    def get_crm_dedup_suggestions(self, **kwargs):
+        """Suggestions de doublons (explicables, tenant-scoped)"""
+        return self.request("GET", "/crm/dedup/suggestions", **kwargs)
+
+    def post_crm_imports(self, **kwargs):
+        """Uploader et prévisualiser un import CSV CRM (preview sans écriture)"""
+        return self.request("POST", "/crm/imports", **kwargs)
+
+    def get_crm_imports_by_crmimport(self, **kwargs):
+        """Détail d'une session d'import CSV"""
+        return self.request("GET", "/crm/imports/{crmImport}", **kwargs)
+
+    def post_crm_imports_by_crmimport_cancel(self, **kwargs):
+        """Annuler un import CSV avant commit"""
+        return self.request("POST", "/crm/imports/{crmImport}/cancel", **kwargs)
+
+    def post_crm_imports_by_crmimport_commit(self, **kwargs):
+        """Committer un import CSV prévisualisé (explicite, idempotent)"""
+        return self.request("POST", "/crm/imports/{crmImport}/commit", **kwargs)
+
+    def post_crm_leads_by_crmlead_convert(self, **kwargs):
+        """Convertir un lead en account + contact + opportunity"""
+        return self.request("POST", "/crm/leads/{crmLead}/convert", **kwargs)
+
+    def post_crm_merge(self, **kwargs):
+        """Fusion supervisée (principal uniquement)"""
+        return self.request("POST", "/crm/merge", **kwargs)
+
+    def get_crm_merge_preview(self, **kwargs):
+        """Preview d'une fusion (aucune écriture)"""
+        return self.request("GET", "/crm/merge/preview", **kwargs)
+
     def get_dashboard_admin(self, **kwargs):
         """Synthese dashboard admin (principal)"""
         return self.request("GET", "/dashboard/admin", **kwargs)
