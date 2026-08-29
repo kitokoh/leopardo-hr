@@ -153,6 +153,12 @@ jobs:
       - name: Module isolation guard — no new cross-module imports (issue #5584)
         run: bash dev-hub/tools/check-module-isolation.sh api
 
+      - name: Routes tenant/platform separation guard (MAT-003, issue #5861)
+        run: bash dev-hub/tools/check-routes-tenant-platform.sh
+
+      - name: Routes tenant/platform guard self-test (MAT-003, issue #5861)
+        run: bash dev-hub/tools/check-routes-tenant-platform-test.sh
+
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
