@@ -2212,11 +2212,32 @@ trait CreatesMvpSchema
                 $table->string('code', 40);
                 $table->string('name', 150);
                 $table->string('address', 255)->nullable();
+                $table->string('phone', 40)->nullable();
                 $table->string('timezone', 64)->default('UTC');
+                $table->string('currency', 10)->nullable();
+                $table->text('metadata')->nullable();
                 $table->string('status', 20)->default('active');
                 $table->timestamps();
 
                 $table->unique(['company_id', 'code'], 'fuel_stations_company_code_unique');
+            });
+        }
+
+        // FUEL-002 — sites opérationnels (parité migration 000100).
+        if (! Schema::hasTable($this->moduleTable('fuel_sites'))) {
+            Schema::create($this->moduleTable('fuel_sites'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id');
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->string('address', 255)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->text('metadata')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'fuel_sites_company_code_unique');
+                $table->index(['company_id', 'station_id'], 'fuel_sites_company_station_idx');
             });
         }
 

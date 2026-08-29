@@ -68,7 +68,8 @@ return new class extends Migration
                 $table->string('code', 40);
                 $table->string('product_type', 40);
                 // Capacité et niveau en unités mineures entières (ex. centilitres).
-                $table->unsignedBigInteger('capacity_minor')->default(0);
+                // Capacité obligatoire et strictement positive (CHECK fuel_tanks_capacity_check).
+                $table->unsignedBigInteger('capacity_minor');
                 $table->unsignedBigInteger('current_level_minor')->default(0);
 
                 // active | inactive | retired
@@ -127,8 +128,36 @@ return new class extends Migration
             });
         }
 
+        // FUEL-003 — critères d'acceptation : compteur ACTIF unique par pompe
+        // (index partiel), capacité strictement positive, unités allowlistées.
+        $this->addEquipmentGuards();
+
         $this->addChecks();
     }
+
+    /**
+     * Contraintes supplémentaires exigées par FUEL-003 (spec §13.2) :
+     *  - un seul compteur actif par pompe (index partiel WHERE status='active') ;
+     *  - capacité de cuve strictement positive ;
+     *  - unités de comptage allowlistées.
+     */
+    private function addEquipmentGuards(): void
+    {
+        $tankSchema = resolveTableSchema('fuel_tanks');
+
+        if ($tankSchema !== null && ! $this->constraintExists('fuel_tanks_capacity_check')) {
+            DB::statement(
+                "ALTER TABLE {$tankSchema}.fuel_tanks ADD CONSTRAINT fuel_tanks_capacity_check CHECK (capacity_minor > 0)"
+            );
+        }
+
+        if ($meterSchema !== null && ! $this->constraintExists('fuel_meters_unit_check')) {
+            DB::statement(
+                "ALTER TABLE {$meterSchema}.fuel_meter_registers ADD CONSTRAINT fuel_meters_unit_check CHECK (unit_code IN ('l', 'gal'))"
+            );
+        }
+    }
+
 
     public function down(): void
     {
