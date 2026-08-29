@@ -2199,6 +2199,66 @@ trait CreatesMvpSchema
                     ->cascadeOnDelete();
             });
         }
+
+        // ── BC-24 TRAVEL (verticale TravelAgency, TRAVEL-201/202/203) ──────
+        if (! Schema::hasTable($this->moduleTable('travel_countries'))) {
+            Schema::create($this->moduleTable('travel_countries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->char('iso2', 2);
+                $table->char('iso3', 3);
+                $table->string('name', 120);
+                $table->unsignedSmallInteger('phone_code')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->unique(['company_id', 'iso2'], 'travel_countries_company_iso2_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_cities'))) {
+            Schema::create($this->moduleTable('travel_cities'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->char('country_iso2', 2);
+                $table->string('name', 120);
+                $table->string('region', 120)->nullable();
+                $table->double('latitude')->nullable();
+                $table->double('longitude')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->unique(['company_id', 'country_iso2', 'name'], 'travel_cities_company_country_name_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_stations'))) {
+            Schema::create($this->moduleTable('travel_stations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 120);
+                $table->unsignedBigInteger('city_id');
+                $table->string('address', 255)->nullable();
+                $table->string('contact_phone', 40)->nullable();
+                $table->string('timezone', 50)->default('UTC');
+                $table->boolean('is_terminal')->default(false);
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_stations_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_offices'))) {
+            Schema::create($this->moduleTable('travel_offices'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 120);
+                $table->unsignedBigInteger('city_id');
+                $table->string('address', 255)->nullable();
+                $table->string('contact_phone', 40)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+            });
+        }
     }
 
     private function dropMvpTables(): void
@@ -2271,6 +2331,11 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "payments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "invoices"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
+        // BC-24 TRAVEL (verticale TravelAgency)
+        DB::statement('DROP TABLE IF EXISTS "travel_offices"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_stations"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_cities"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_countries"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_correction_requests"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_period_closures"'.$cascade);
