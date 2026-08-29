@@ -2620,6 +2620,18 @@ class LeopardoClient:
         """Forcer la synchronisation d'un nœud edge (super-admin)"""
         return self.request("POST", "/platform/edge/nodes/{nodeId}/sync", **kwargs)
 
+    def get_platform_feature_kill_switches(self, **kwargs):
+        """Lister les kill switches des features (super-admin)"""
+        return self.request("GET", "/platform/feature-kill-switches", **kwargs)
+
+    def post_platform_feature_kill_switches(self, **kwargs):
+        """Activer un kill switch de feature (super-admin)"""
+        return self.request("POST", "/platform/feature-kill-switches", **kwargs)
+
+    def delete_platform_feature_kill_switches_by_key(self, **kwargs):
+        """Désactiver un kill switch de feature (super-admin)"""
+        return self.request("DELETE", "/platform/feature-kill-switches/{key}", **kwargs)
+
     def get_platform_growth_history(self, **kwargs):
         """Historique des opérations growth (super-admin)"""
         return self.request("GET", "/platform/growth/history", **kwargs)

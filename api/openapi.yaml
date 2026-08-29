@@ -3662,6 +3662,86 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
+  /platform/feature-kill-switches:
+    get:
+      tags:
+      - Platform
+      summary: Lister les kill switches des features (super-admin)
+      description: |-
+        MAT-010 (#5868) — état complet des interrupteurs globaux de features.
+        Une entrée active signifie que le module est stoppé pour toute la
+        plateforme (fail-closed dans Company::hasFeature), sans suppression
+        de données. Réservé au super-admin.
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Liste des kill switches
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureKillSwitchListResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Platform
+      summary: Activer un kill switch de feature (super-admin)
+      description: |-
+        MAT-010 (#5868) — stoppe une feature/module pour toute la plateforme.
+        Idempotent, horodaté et audité (feature_kill_switches + canal audit).
+        Aucune donnée n'est supprimée : la résolution est simplement fail-closed.
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeatureKillSwitchActivateRequest'
+      responses:
+        '200':
+          description: Kill switch activé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureKillSwitchMutationResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/feature-kill-switches/{key}:
+    delete:
+      tags:
+      - Platform
+      summary: Désactiver un kill switch de feature (super-admin)
+      description: |-
+        MAT-010 (#5868) — réactive une feature/module pour toute la plateforme.
+        Idempotent (ne fait rien si déjà inactif) et audité.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: key
+        in: path
+        required: true
+        description: Clé de la feature (ex. cameras, leo_ai)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Kill switch désactivé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureKillSwitchMutationResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /platform/users:
     get:
       tags:
@@ -26648,6 +26728,52 @@ components:
           type: object
           additionalProperties:
             type: boolean
+    FeatureKillSwitch:
+      type: object
+      properties:
+        feature_key:
+          type: string
+        is_active:
+          type: boolean
+        reason:
+          type: string
+          nullable: true
+        toggled_by:
+          type: string
+          nullable: true
+        toggled_at:
+          type: string
+          format: date-time
+          nullable: true
+    FeatureKillSwitchActivateRequest:
+      type: object
+      required:
+      - feature_key
+      properties:
+        feature_key:
+          type: string
+          maxLength: 64
+        reason:
+          type: string
+          maxLength: 500
+          nullable: true
+    FeatureKillSwitchListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureKillSwitch'
+    FeatureKillSwitchMutationResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature_key:
+              type: string
+            is_active:
+              type: boolean
     PlatformHealthCompany:
       type: object
       properties:

@@ -3250,6 +3250,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/platform/edge/nodes/{nodeId}/sync", options);
     },
 
+    /** Lister les kill switches des features (super-admin) */
+    getPlatformFeatureKillSwitches(options = {}) {
+      return request("GET", "/platform/feature-kill-switches", options);
+    },
+
+    /** Activer un kill switch de feature (super-admin) */
+    postPlatformFeatureKillSwitches(options = {}) {
+      return request("POST", "/platform/feature-kill-switches", options);
+    },
+
+    /** Désactiver un kill switch de feature (super-admin) */
+    deletePlatformFeatureKillSwitchesByKey(options = {}) {
+      return request("DELETE", "/platform/feature-kill-switches/{key}", options);
+    },
+
     /** Historique des opérations growth (super-admin) */
     getPlatformGrowthHistory(options = {}) {
       return request("GET", "/platform/growth/history", options);

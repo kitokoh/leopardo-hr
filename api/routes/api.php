@@ -47,6 +47,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureCon
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformFeatureKillSwitchController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformHrReportController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
@@ -295,6 +296,14 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'update']);
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);
+
+        // MAT-010 (#5868) — Feature kill switches : stopper un module pour
+        // toute la plateforme (fail-closed, sans suppression de données).
+        // Bascules idempotentes + audit (feature_kill_switches + canal audit).
+        Route::get('/feature-kill-switches', [PlatformFeatureKillSwitchController::class, 'index']);
+        Route::post('/feature-kill-switches', [PlatformFeatureKillSwitchController::class, 'activate']);
+        Route::delete('/feature-kill-switches/{key}', [PlatformFeatureKillSwitchController::class, 'deactivate'])
+            ->where('key', '[A-Za-z0-9_.-]+');
         Route::get('/metrics/overview', PlatformMetricsOverviewController::class);
 
         // PA2-QA-006 — Redis/jobs observability (queue depth, failed jobs,
