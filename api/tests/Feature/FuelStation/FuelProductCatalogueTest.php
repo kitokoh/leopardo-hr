@@ -90,7 +90,11 @@ class FuelProductCatalogueTest extends TestCase
     {
         $this->expectException(QueryException::class);
 
-        FuelProduct::query()->create(['code' => 'GPL', 'name' => 'Sans tenant']);
+        // Savepoint (#4978) : le RAISE ne doit pas empoisonner la transaction
+        // RefreshDatabase (sinon 25P02 en cascade sur le tearDown).
+        DB::transaction(function (): void {
+            FuelProduct::query()->create(['code' => 'GPL', 'name' => 'Sans tenant']);
+        });
     }
 
     public function test_product_status_is_allowlisted(): void
@@ -136,6 +140,7 @@ class FuelProductCatalogueTest extends TestCase
             'code' => 'GAZOIL',
             'name' => 'Gasoil',
             'unit_code' => 'l',
+            'status' => FuelProduct::STATUS_ACTIVE, // default DB 'active' — explicite pour l'objet mémoire
         ]);
 
         $this->assertTrue($product->isActive());

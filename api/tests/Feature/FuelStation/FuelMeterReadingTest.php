@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
 use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
+use Illuminate\Testing\TestResponse;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -188,8 +189,8 @@ class FuelMeterReadingTest extends TestCase
         $second = $this->recordReading($this->companyA, $station, $pump, $meter, 5000000, 'reading-0021', '2026-08-28T16:00:00+01:00', rolloverLimit: 100000000);
         $second->assertStatus(201);
         $second->assertJsonPath('data.interval.calculation_status', 'rollover');
-        // delta = (100 000 000 − 99 990 000) + 5 000 000 = 5 100 000
-        $this->assertSame(5100000, (int) $second->json('data.interval.delta_minor'));
+        // delta = (100 000 000 − 99 990 000) + 5 000 000 = 5 010 000
+        $this->assertSame(5010000, (int) $second->json('data.interval.delta_minor'));
     }
 
     public function test_same_idempotency_key_replays_without_duplicates(): void

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\FuelStation;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\FuelStation\Domain\Enums\FuelSiteStatus;
 use App\Modules\FuelStation\Domain\Models\FuelSite;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
 use Illuminate\Database\QueryException;
@@ -74,7 +75,11 @@ class FuelSitesInvariantTest extends TestCase
     {
         $this->expectException(QueryException::class);
 
-        FuelSite::query()->create(['code' => 'S-1', 'name' => 'Sans tenant']);
+        // Savepoint (#4978) : le RAISE ne doit pas empoisonner la transaction
+        // RefreshDatabase (sinon 25P02 en cascade sur le tearDown).
+        DB::transaction(function (): void {
+            FuelSite::query()->create(['code' => 'S-1', 'name' => 'Sans tenant']);
+        });
     }
 
     public function test_site_cannot_link_to_another_tenant_station(): void
@@ -127,6 +132,7 @@ class FuelSitesInvariantTest extends TestCase
             'code' => 'S-1',
             'name' => 'Site principal',
             'address' => '12 rue des pompes',
+            'status' => FuelSiteStatus::Active->value, // default DB — explicite pour l'objet mémoire
         ]);
 
         $this->assertTrue($site->isActive());

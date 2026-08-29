@@ -45,6 +45,13 @@ class FuelMeterReadingController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        // Fail-closed cross-tenant (convention #5445) : toute référence hors
+        // tenant est introuvable → 404 AVANT validation (ne pas révéler
+        // l'existence d'une station d'un autre tenant).
+        $station = $this->stationInTenant($station, $actor);
+        $pump = $this->pumpInStation($pump, $station);
+        $meter = $this->meterInTenant($meter, $station, $pump);
+
         /** @var array{reading_value_minor: int, reading_unit?: string, captured_at?: string|null, timezone?: string, shift_id?: int|null, device_reference?: string|null, idempotency_key: string} $validated */
         $validated = $request->validated();
 
@@ -69,6 +76,12 @@ class FuelMeterReadingController extends Controller
         FuelMeterRegister $meter,
     ): JsonResponse {
         $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $station = $this->stationInTenant($station, $actor);
+        $pump = $this->pumpInStation($pump, $station);
+        $meter = $this->meterInTenant($meter, $station, $pump);
 
         $readings = FuelMeterReading::query()
             ->where('meter_id', (int) $meter->getAttribute('id'))
@@ -95,6 +108,12 @@ class FuelMeterReadingController extends Controller
         FuelMeterRegister $meter,
     ): JsonResponse {
         $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $station = $this->stationInTenant($station, $actor);
+        $pump = $this->pumpInStation($pump, $station);
+        $meter = $this->meterInTenant($meter, $station, $pump);
 
         $intervals = FuelMeterInterval::query()
             ->where('meter_id', (int) $meter->getAttribute('id'))
@@ -148,6 +167,49 @@ class FuelMeterReadingController extends Controller
         );
 
         return response()->json(['data' => $result]);
+    }
+
+    private function stationInTenant(FuelStation $station, Employee $actor): FuelStation
+    {
+        /** @var FuelStation|null $scoped */
+        $scoped = FuelStation::query()
+            ->where('company_id', (string) $actor->getAttribute('company_id'))
+            ->find((int) $station->getAttribute('id'));
+
+        if ($scoped === null) {
+            abort(404, 'Station introuvable dans le tenant.');
+        }
+
+        return $scoped;
+    }
+
+    private function pumpInStation(FuelPump $pump, FuelStation $station): FuelPump
+    {
+        /** @var FuelPump|null $scoped */
+        $scoped = FuelPump::query()
+            ->where('station_id', (int) $station->getAttribute('id'))
+            ->find((int) $pump->getAttribute('id'));
+
+        if ($scoped === null) {
+            abort(404, 'Pompe introuvable dans le tenant.');
+        }
+
+        return $scoped;
+    }
+
+    private function meterInTenant(FuelMeterRegister $meter, FuelStation $station, FuelPump $pump): FuelMeterRegister
+    {
+        /** @var FuelMeterRegister|null $scoped */
+        $scoped = FuelMeterRegister::query()
+            ->where('company_id', (string) $station->getAttribute('company_id'))
+            ->where('pump_id', (int) $pump->getAttribute('id'))
+            ->find((int) $meter->getAttribute('id'));
+
+        if ($scoped === null) {
+            abort(404, 'Compteur introuvable dans le tenant.');
+        }
+
+        return $scoped;
     }
 
     private function assertSolutionActive(): void
