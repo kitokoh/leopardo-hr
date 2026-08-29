@@ -96,6 +96,22 @@ class LeopardoMigrateRunnerTest extends TestCase
         self::assertNotNull($this->tableSchema('crm_runner_probe'), 'recréation après rollback');
     }
 
+    public function test_fresh_cycle_recreates_schemas_and_rerun_is_stable(): void
+    {
+        // MAT-005 (#5863) — critère d'acceptation « fresh, rerun et rollback
+        // passent » : `leopardo:migrate --fresh` recrée les deux schémas
+        // (public + shared_tenants) et ré-applique TOUTES les migrations ;
+        // une exécution simple ensuite est un no-op propre.
+        $code = Artisan::call('leopardo:migrate', ['--fresh' => true]);
+        self::assertSame(0, $code, 'leopardo:migrate --fresh doit réussir (schémas recréés)');
+
+        self::assertSame('shared_tenants', $this->tableSchema('employees'), 'table tenant après --fresh');
+        self::assertSame('public', $this->tableSchema('companies'), 'table public après --fresh');
+
+        $rerun = Artisan::call('leopardo:migrate');
+        self::assertSame(0, $rerun, 'rerun après --fresh doit être stable (réentrance)');
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private function tableSchema(string $table): ?string
