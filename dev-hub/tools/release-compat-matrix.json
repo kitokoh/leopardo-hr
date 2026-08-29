@@ -1,0 +1,23 @@
+{
+  "$comment": "Matrice de compatibilité Release Train (MAT-016, issue #5874). Source de vérité pour check-release-compat.sh. Toute modification passe par une PR : version API, versions des apps, planchers min_api. Une app ancienne reçoit une réponse compatible (features/compatible/{version}) ou un blocage explicite — jamais de breaking change silencieux.",
+  "api": "4.24.0",
+  "api_min_supported": "4.20.0",
+  "policy": {
+    "versioning": "SemVer stricte : MAJEUR = breaking change API/événements ; MINEUR = additif rétro-compatible ; PATCH = correctif. Les événements (outbox/webhooks) sont versionnés par contrat additif.",
+    "breaking_change": "Interdit sans (1) migration documentée, (2) période de compatibilité sur api_min_supported, (3) blocage explicite pour les clients hors plancher (réponse 426 ou manifeste incompatible), jamais de casse silencieuse.",
+    "compat_contract": "GET /api/v1/features/compatible/{version} (FeatureManifestController) : un client mobile hors plancher reçoit un manifeste incompatible (blocage explicite côté app).",
+    "release_cadence": "Train hebdomadaire : backend puis apps mobiles/kiosk/web dans la même fenêtre ; matrice mise à jour dans la PR qui bump la version API."
+  },
+  "components": {
+    "mobile_apps": {
+      "leopardo_employee":     { "current": "1.0.0+1", "min_api": "4.20.0" },
+      "leopardo_manager":      { "current": "1.0.0+1", "min_api": "4.20.0" },
+      "leopardo_hr":           { "current": "1.0.0+1", "min_api": "4.20.0" },
+      "leopardo_marketing":    { "current": "1.0.0+1", "min_api": "4.20.0" },
+      "leopardo_accounting":   { "current": "1.0.0+1", "min_api": "4.20.0" },
+      "leopardo_platform_admin": { "current": "1.0.0+1", "min_api": "4.20.0" }
+    },
+    "kiosk": { "current": "1.0.0", "min_api": "4.20.0" },
+    "web_portal": { "current": "16", "min_api": "4.20.0" }
+  }
+}

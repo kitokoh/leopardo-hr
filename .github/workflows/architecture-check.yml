@@ -146,6 +146,9 @@ jobs:
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
+      - name: Release Train compat matrix guard (issue #5874, MAT-016)
+        run: bash dev-hub/tools/check-release-compat.sh api
+
       - name: Performance budgets guard — scans lents, N+1, index (issue #5872, MAT-014)
         run: bash dev-hub/tools/check-performance-budgets.sh api
 
