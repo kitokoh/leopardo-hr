@@ -20393,6 +20393,364 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: Lead introuvable
+  /crm/leads/{crmLead}/convert:
+    post:
+      tags:
+      - CRM
+      summary: Convertir un lead en account + contact + opportunity
+      description: "Conversion guidée et transactionnelle (#5717). Idempotente : un lead déjà converti répond 409 (CRM_LEAD_ALREADY_CONVERTED). Le compte est réutilisé si un compte du tenant porte le même nom."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: crmLead
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stage:
+                  type: string
+                  enum:
+                  - prospecting
+                  - qualification
+                  - proposal
+                  - negotiation
+                  - won
+                  - lost
+                amount:
+                  type: number
+                  nullable: true
+                currency:
+                  type: string
+                  description: Code ISO 4217 à 3 lettres
+                expected_close_date:
+                  type: string
+                  format: date
+                  nullable: true
+      responses:
+        '200':
+          description: Lead converti
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmLead'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Lead déjà converti
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/dedup/suggestions:
+    get:
+      tags:
+      - CRM
+      summary: Suggestions de doublons (explicables, tenant-scoped)
+      description: "Déduplication supervisée (#5718) : paires par email normalisé identique ou nom similaire (Levenshtein ≤ 2). Jamais cross-tenant. Permission : principal/rh."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: entity
+        in: query
+        schema:
+          type: string
+          enum:
+          - accounts
+          - contacts
+          - leads
+          default: accounts
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+          default: 20
+      responses:
+        '200':
+          description: Liste de suggestions bornée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        entity:
+                          type: string
+                        reason:
+                          type: string
+                          enum:
+                          - same_email
+                          - similar_name
+                        score:
+                          type: number
+                        winner:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            label:
+                              type: string
+                        loser:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            label:
+                              type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /crm/merge/preview:
+    get:
+      tags:
+      - CRM
+      summary: Preview d'une fusion (aucune écriture)
+      description: "Diff de champs + relations à transférer avant fusion (#5718). Permission : principal/rh."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: entity
+        in: query
+        schema:
+          type: string
+          enum:
+          - accounts
+          - contacts
+          - leads
+          default: accounts
+      - name: winner_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: loser_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Preview (aucune écriture)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/merge:
+    post:
+      tags:
+      - CRM
+      summary: Fusion supervisée (principal uniquement)
+      description: "Fusion transactionnelle : champs complétés, relations transférées, perdant ARCHIVÉ (jamais supprimé — rollback logique), audit crm.merge.* (#5718)."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - entity
+              - winner_id
+              - loser_id
+              properties:
+                entity:
+                  type: string
+                  enum:
+                  - accounts
+                  - contacts
+                  - leads
+                winner_id:
+                  type: integer
+                loser_id:
+                  type: integer
+      responses:
+        '200':
+          description: Fusion effectuée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      entity:
+                        type: string
+                      winner_id:
+                        type: integer
+                      loser_id:
+                        type: integer
+                      updated_fields:
+                        type: array
+                        items:
+                          type: string
+                      transferred_contacts:
+                        type: integer
+                      archived_loser:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/imports:
+    post:
+      tags:
+      - CRM
+      summary: Uploader et prévisualiser un import CSV CRM (preview sans écriture)
+      description: "Parse et valide structurellement un fichier CSV (accounts/contacts/leads) sans rien écrire dans les tables cibles. Retourne une session d'import en statut previewed avec compteurs, erreurs par ligne et aperçu PII masqué. Issue #5714."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - entity_type
+              - file
+              properties:
+                entity_type:
+                  type: string
+                  enum:
+                  - accounts
+                  - contacts
+                  - leads
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Session previewed (aucune écriture cible)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmImport'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/imports/{crmImport}:
+    get:
+      tags:
+      - CRM
+      summary: Détail d'une session d'import CSV
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: crmImport
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Session d'import
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmImport'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/imports/{crmImport}/commit:
+    post:
+      tags:
+      - CRM
+      summary: Committer un import CSV prévisualisé (explicite, idempotent)
+      description: "Claim atomique puis persistance asynchrone des lignes validées. Un second commit répond 409 (CRM_IMPORT_ALREADY_COMMITTED). Issue #5714."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: crmImport
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commit accepté (statut committed en queue sync, committing sinon)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmImport'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Session déjà committed/cancelled (idempotence)
+  /crm/imports/{crmImport}/cancel:
+    post:
+      tags:
+      - CRM
+      summary: Annuler un import CSV avant commit
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: crmImport
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Import annulé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmImport'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Session déjà committed/cancelled
   /marketing/leads:
     post:
       tags:
@@ -31330,6 +31688,132 @@ components:
           type: array
           items:
             type: object
+        created_at:
+          type: string
+          format: date-time
+    CrmLead:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        company_name:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        source:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - new
+          - contacted
+          - qualified
+          - converted
+          - lost
+        score:
+          type: integer
+        notes:
+          type: string
+          nullable: true
+        converted_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+    CrmOpportunity:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        stage:
+          type: string
+        amount:
+          type: number
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        expected_close_date:
+          type: string
+          format: date
+          nullable: true
+        status:
+          type: string
+    CrmImport:
+      type: object
+      properties:
+        id:
+          type: integer
+        entity_type:
+          type: string
+          enum:
+          - accounts
+          - contacts
+          - leads
+        filename:
+          type: string
+        status:
+          type: string
+          enum:
+          - previewed
+          - committing
+          - committed
+          - failed
+          - cancelled
+        total_rows:
+          type: integer
+        valid_rows:
+          type: integer
+        error_rows:
+          type: integer
+        columns:
+          type: array
+          items:
+            type: string
+        preview_data:
+          type: array
+          description: Aperçu PII masqué (email/phone tronqués)
+          items:
+            type: object
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              line:
+                type: integer
+              message:
+                type: string
+        result:
+          type: object
+          nullable: true
+        created_by:
+          type: object
+          nullable: true
+        committed_at:
+          type: string
+          format: date-time
+          nullable: true
+        cancelled_at:
+          type: string
+          format: date-time
+          nullable: true
         created_at:
           type: string
           format: date-time
