@@ -245,8 +245,7 @@ class ExportController extends Controller
     }
 
     public function history(Request $request): JsonResponse
-    {
-        /** @var Employee $user */
+    {        /** @var Employee $user */
         $user = $request->user();
         if (! $user->isManager()) {
             abort(403);
