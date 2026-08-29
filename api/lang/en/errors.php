@@ -182,6 +182,8 @@ return [
     'ENTERPRISE_SCHEMA_FROZEN' => 'Enterprise schema mode is frozen. Contact support.',
     'COMPANY_SCHEMA_MODE_LOCKED' => 'Enterprise schema mode is frozen. Contact support.',
     'AI_FEATURE_DISABLED' => 'AI features are disabled for this workspace.',
+    'CRM_FEATURE_DISABLED' => 'The CRM module is not enabled for this workspace.',
+    'CRM_KILL_SWITCH_ACTIVE' => 'The CRM module is temporarily unavailable (maintenance).',
 
     // Manager roles (audit SWEQA-3, #4812)
     'MANAGER_ROLE_REQUIRED' => 'Manager access required.',

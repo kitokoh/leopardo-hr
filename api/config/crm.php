@@ -1,8 +1,25 @@
-<?php
-
-declare(strict_types=1);
-
 return [
+
+    'enabled' => (bool) env('CRM_ENABLED', true),
+
+    'kill_switch' => [
+        // Frein d'urgence GLOBAL (tous tenants, tous canaux).
+        // En cas de doute : couper CRM_KILL_SWITCH=true prime sur tout.
+        'enabled' => (bool) env('CRM_KILL_SWITCH', false),
+    ],
+
+    'integrations' => [
+        'whatsapp' => [
+            'enabled' => (bool) env('CRM_WHATSAPP_ENABLED', false),
+        ],
+        'email' => [
+            'enabled' => (bool) env('CRM_EMAIL_ENABLED', false),
+        ],
+        'sms' => [
+            'enabled' => (bool) env('CRM_SMS_ENABLED', false),
+        ],
+    ],
+
 
     /*
     |--------------------------------------------------------------------------

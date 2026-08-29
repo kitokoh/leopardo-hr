@@ -181,6 +181,8 @@ return [
     'ENTERPRISE_SCHEMA_FROZEN' => 'وضع مخطط المؤسسة مجمد. اتصل بالدعم.',
     'COMPANY_SCHEMA_MODE_LOCKED' => 'وضع مخطط المؤسسة مجمد. اتصل بالدعم.',
     'AI_FEATURE_DISABLED' => 'ميزات الذكاء الاصطناعي معطلة لهذه المساحة.',
+    'CRM_FEATURE_DISABLED' => 'وحدة إدارة علاقات العملاء غير مفعّلة لهذه المساحة.',
+    'CRM_KILL_SWITCH_ACTIVE' => 'وحدة إدارة علاقات العملاء غير متاحة مؤقتًا (صيانة).',
 
     // Manager roles (audit SWEQA-3, #4812)
     'MANAGER_ROLE_REQUIRED' => 'الوصول مخصص للمديرين.',

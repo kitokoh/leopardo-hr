@@ -181,6 +181,8 @@ return [
     'ENTERPRISE_SCHEMA_FROZEN' => 'Kurumsal şema modu donduruldu. Destek ile iletişime geçin.',
     'COMPANY_SCHEMA_MODE_LOCKED' => 'Kurumsal şema modu donduruldu. Destek ile iletişime geçin.',
     'AI_FEATURE_DISABLED' => 'Bu çalışma alanı için yapay zeka özellikleri devre dışı.',
+    'CRM_FEATURE_DISABLED' => 'CRM modülü bu çalışma alanı için etkin değil.',
+    'CRM_KILL_SWITCH_ACTIVE' => 'CRM modülü geçici olarak kullanılamıyor (bakım).',
 
     // Manager roles (audit SWEQA-3, #4812)
     'MANAGER_ROLE_REQUIRED' => 'Yalnızca yöneticiler erişebilir.',

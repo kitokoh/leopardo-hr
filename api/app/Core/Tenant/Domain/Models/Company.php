@@ -101,6 +101,10 @@ class Company extends Model
         'cameras',
         'muhasebe',
         'leo_ai',
+        // #5742 (CRM PRE) : module CRM client — opt-in plateforme, désactivé
+        // par défaut (ADR-CRM-004). Activation = PATCH features plateforme ;
+        // gate serveur `crm.enabled` sur les routes /api/v1/crm/*.
+        'crm',
     ];
 
     /**
