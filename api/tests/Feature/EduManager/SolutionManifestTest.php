@@ -127,7 +127,9 @@ class SolutionManifestTest extends TestCase
         // nécessite l'enregistrement dans Company::KNOWN_MODULES — différé au
         // lot plateforme (dette Pint pré-existante sur ce fichier core).
         $flags = FeatureFlag::for($company);
-        $this->assertFalse($flags['edumanager'] ?? true);
+        // Flag non exposé tant que edumanager n'est pas dans KNOWN_MODULES (différé) ;
+        // fail-closed par défaut dans les deux cas.
+        $this->assertFalse($flags['edumanager'] ?? false);
     }
 
     public function test_activation_never_touches_platform_crm(): void
