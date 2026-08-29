@@ -24,12 +24,20 @@ FK composite `(station_id, company_id)` → `fuel_stations` (cascade) — réfé
 cross-tenant physiquement impossible. Statut CHECK `active|inactive`.
 `UNIQUE (company_id, code)` ; `metadata` chiffré.
 
+### `fuel_products` (#5797, FUEL-003) — catalogue produits
+Produits vendus par la station (carburants, GPL…), tenant-scoped :
+`UNIQUE (company_id, code)` ; `unit_code` CHECK `l|gal` ; `status` CHECK
+`active|inactive` ; `metadata` chiffré. Les équipements référencent les codes
+produits au niveau application (pas de FK).
+
 ### `fuel_pumps` / `fuel_tanks` / `fuel_meter_registers` (#5797, FUEL-003)
 - FK composites `(station_id, company_id)` → `fuel_stations` (pompes/cuves) et
   `(pump_id, company_id)` → `fuel_pumps` (compteurs) — cross-tenant impossible.
 - `fuel_pumps.status` CHECK `active|inactive|retired` ; `fuel_tanks.status` idem.
 - `fuel_tanks.capacity_minor` CHECK `> 0` (capacité obligatoire, unités mineures).
-- `fuel_meter_registers` : `meter_type` CHECK
+- `fuel_meter_registers` : **un seul compteur ACTIF par pompe** (index partiel
+  `fuel_meters_active_per_pump_unique` sur `(company_id, pump_id) WHERE status='active'`
+  — décision porteur d'idée, FUEL-003) ; `meter_type` CHECK
   `mechanical|electronic|main_totalizer|secondary_totalizer|test` ; `status`
   CHECK `active|retired` ; `unit_code` CHECK `l|gal` ;
   `UNIQUE (company_id, pump_id, meter_code)` (un compteur par code et par pompe).

@@ -2241,6 +2241,22 @@ trait CreatesMvpSchema
             });
         }
 
+        // FUEL-003 — catalogue produits (parité migration 000200).
+        if (! Schema::hasTable($this->moduleTable('fuel_products'))) {
+            Schema::create($this->moduleTable('fuel_products'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->string('unit_code', 20)->default('l');
+                $table->string('status', 20)->default('active');
+                $table->text('metadata')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'fuel_products_company_code_unique');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('fuel_pumps'))) {
             Schema::create($this->moduleTable('fuel_pumps'), function (Blueprint $table): void {
                 $table->id();

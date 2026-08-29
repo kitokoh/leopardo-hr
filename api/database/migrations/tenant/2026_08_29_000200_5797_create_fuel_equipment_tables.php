@@ -33,6 +33,45 @@ return new class extends Migration
             );
         }
 
+        // FUEL-003 — catalogue des produits vendus par la station (tenant-scoped).
+        // Les colonnes product_types/product_code/product_type des équipements
+        // référencent ces codes au niveau application (pas de FK : les codes
+        // produits sont stables par tenant).
+        if (! schemaTableExists('fuel_products')) {
+            Schema::create('fuel_products', function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->string('unit_code', 20)->default('l');
+
+                // active | inactive
+                $table->string('status', 20)->default('active');
+
+                // Métadonnées opérationnelles chiffrées (RGPD).
+                $table->text('metadata')->nullable();
+
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'fuel_products_company_code_unique');
+                $table->index(['company_id', 'status'], 'fuel_products_company_status_idx');
+            });
+
+            $productSchema = resolveTableSchema('fuel_products');
+
+            if ($productSchema !== null && ! $this->constraintExists('fuel_products_unit_check')) {
+                DB::statement(
+                    "ALTER TABLE {$productSchema}.fuel_products ADD CONSTRAINT fuel_products_unit_check CHECK (unit_code IN ('l', 'gal'))"
+                );
+            }
+
+            if ($productSchema !== null && ! $this->constraintExists('fuel_products_status_check')) {
+                DB::statement(
+                    "ALTER TABLE {$productSchema}.fuel_products ADD CONSTRAINT fuel_products_status_check CHECK (status IN ('active', 'inactive'))"
+                );
+            }
+        }
+
         if (! schemaTableExists('fuel_pumps')) {
             Schema::create('fuel_pumps', function (Blueprint $table): void {
                 $table->id();
@@ -174,6 +213,7 @@ return new class extends Migration
         Schema::dropIfExists('fuel_meter_registers');
         Schema::dropIfExists('fuel_tanks');
         Schema::dropIfExists('fuel_pumps');
+        Schema::dropIfExists('fuel_products');
     }
 
     private function uniqueExists(string $constraint): bool
