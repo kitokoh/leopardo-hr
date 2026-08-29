@@ -479,6 +479,10 @@
         {
           "path": "api/app/Solutions/EduManager",
           "status": "planned"
+        },
+        {
+          "path": "api/app/Modules/EduManager",
+          "status": "active"
         }
       ],
       "routes": [],
