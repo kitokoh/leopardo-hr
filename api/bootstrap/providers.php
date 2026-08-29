@@ -19,6 +19,7 @@ use App\Modules\Onboarding\Providers\OnboardingServiceProvider;
 use App\Modules\Payroll\Providers\PayrollServiceProvider;
 use App\Modules\Planning\Providers\PlanningServiceProvider;
 use App\Modules\Platform\Providers\PlatformServiceProvider;
+use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
 use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
@@ -62,4 +63,6 @@ return [
     AccountingServiceProvider::class,
     // — FuelStation module (solution verticale, issue #5795)
     FuelStationServiceProvider::class,
+    // — TravelAgency vertical (BC-24 TRAVEL, TRAVEL-101/#5977)
+    TravelAgencyServiceProvider::class,
 ];
