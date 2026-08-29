@@ -98,7 +98,7 @@ class AccountingTenantIsolationTest extends TestCase
             'entry_date' => '2026-06-15',
             'period' => '2026-06',
             'source_type' => 'manual',
-            'source_id' => null,
+            'source_id' => 0,
             'account_code' => '601000',
             'account_label' => 'Achats',
             'debit' => $debit,
