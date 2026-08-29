@@ -163,7 +163,8 @@ class FeatureKillSwitchTest extends TestCase
         $this->deleteJson('/api/v1/platform/feature-kill-switches/leo_ai')->assertOk();
 
         $this->assertFalse(app(FeatureKillSwitchService::class)->isKilled('leo_ai'));
-        $this->assertFalse((bool) $row->refresh()->is_active);
+        $row->refresh();
+        $this->assertFalse((bool) $row->is_active);
     }
 
     public function test_activate_requires_feature_key(): void
