@@ -24,7 +24,7 @@ api/app/Modules/CRM/
 │   ├── Contracts/          # interfaces repos/services (ports)
 │   ├── Enums/              # statuts, sources, types (whitelists)
 │   ├── Exceptions/         # domain exceptions (404/422 métier)
-│   └── Models/             # Eloquent tenant-scoped (AbstractTenantModel)
+│   └── Models/             # Eloquent tenant-scoped (BelongsToCompany)
 ├── Infrastructure/
 │   ├── Repositories/       # implémentations Eloquent des contrats
 │   └── Services/           # services techniques (dédup, recherche, PII)
