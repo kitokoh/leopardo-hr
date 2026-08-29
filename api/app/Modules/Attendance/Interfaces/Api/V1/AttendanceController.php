@@ -574,7 +574,9 @@ class AttendanceController extends Controller
         // scope global ; sans ce garde, un manager pouvait modifier un log d'un
         // autre tenant (l'authorize ne vérifie que le rôle). 404 (convention
         // anti-existence, pattern show/approve/reject).
-        if ($attendanceLog->company_id !== $request->user()->company_id) {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($attendanceLog->company_id !== $actor->company_id) {
             abort(404);
         }
 
