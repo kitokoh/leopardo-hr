@@ -91,8 +91,10 @@ class AccountingTenantIsolationTest extends TestCase
         return $manager;
     }
 
-    private function makeEntry(Company $company, float $debit, float $credit): AccountingJournalEntry
+    private function makeEntry(Company $company, float $amount): AccountingJournalEntry
     {
+        // Contrainte `journal_debit_credit_exclusive` : une écriture porte le
+        // débit OU le crédit, jamais les deux.
         return AccountingJournalEntry::query()->create([
             'company_id' => $company->id,
             'entry_date' => '2026-06-15',
@@ -101,8 +103,8 @@ class AccountingTenantIsolationTest extends TestCase
             'source_id' => 0,
             'account_code' => '601000',
             'account_label' => 'Achats',
-            'debit' => $debit,
-            'credit' => $credit,
+            'debit' => $amount,
+            'credit' => null,
             'piece' => 'ECR-'.uniqid(),
             'description' => 'Écriture de test',
         ]);
@@ -110,11 +112,11 @@ class AccountingTenantIsolationTest extends TestCase
 
     public function test_manager_sees_only_own_tenants_journal_entries(): void
     {
-        $this->makeEntry($this->companyA, 100, 100);
-        $this->makeEntry($this->companyA, 50, 50);
-        $this->makeEntry($this->companyB, 999, 999);
-        $this->makeEntry($this->companyB, 999, 999);
-        $this->makeEntry($this->companyB, 999, 999);
+        $this->makeEntry($this->companyA, 100);
+        $this->makeEntry($this->companyA, 50);
+        $this->makeEntry($this->companyB, 999);
+        $this->makeEntry($this->companyB, 999);
+        $this->makeEntry($this->companyB, 999);
 
         Sanctum::actingAs($this->managerA);
 
@@ -130,9 +132,9 @@ class AccountingTenantIsolationTest extends TestCase
 
     public function test_journal_scope_filters_other_tenants_entries_at_model_level(): void
     {
-        $this->makeEntry($this->companyA, 100, 100);
-        $this->makeEntry($this->companyA, 50, 50);
-        $this->makeEntry($this->companyB, 999, 999);
+        $this->makeEntry($this->companyA, 100);
+        $this->makeEntry($this->companyA, 50);
+        $this->makeEntry($this->companyB, 999);
 
         app()->instance('current_company', $this->companyA);
 
