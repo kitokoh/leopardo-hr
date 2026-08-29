@@ -21,6 +21,7 @@ use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\StructuredLogging;
 use App\Http\Middleware\TenantMiddleware;
+use App\Http\Middleware\Travel\EnsureTravelAgencyModuleMiddleware;
 use App\Http\Middleware\TokenAutoRefreshMiddleware;
 use App\Http\Middleware\Travel\EnsureTravelAgencyModuleMiddleware;
 use App\Http\Middleware\Travel\TravelPartnerAuthMiddleware;
@@ -150,8 +151,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.cameras' => EnsureCameraModuleMiddleware::class,
             // BC-24 TRAVEL — gate feature flag travelagency (TRAVEL-102/#6007).
             'module.travelagency' => EnsureTravelAgencyModuleMiddleware::class,
+<<<<<<< HEAD
             // BC-24 TRAVEL — API entrante transporteurs (TRAVEL-807/#6086).
             'travel.partner' => TravelPartnerAuthMiddleware::class,
+=======
+>>>>>>> 28bdbef34 (feat(travel): fondations verticale TravelAgency — BC-24 TRAVEL (TRAVEL-101..108, 201..203))
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
