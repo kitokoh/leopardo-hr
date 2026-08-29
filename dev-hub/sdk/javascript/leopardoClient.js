@@ -1645,6 +1645,61 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/crm/accounts/{account}/timeline", options);
     },
 
+    /** Lister les automatisations CRM du tenant */
+    getCrmAutomations(options = {}) {
+      return request("GET", "/crm/automations", options);
+    },
+
+    /** Creer une automatisation (event/conditions/actions) */
+    postCrmAutomations(options = {}) {
+      return request("POST", "/crm/automations", options);
+    },
+
+    /** Archiver une automatisation (soft delete) */
+    deleteCrmAutomationsByAutomation(options = {}) {
+      return request("DELETE", "/crm/automations/{automation}", options);
+    },
+
+    /** Detail d'une automatisation */
+    getCrmAutomationsByAutomation(options = {}) {
+      return request("GET", "/crm/automations/{automation}", options);
+    },
+
+    /** Mettre a jour une automatisation (version incrementee) */
+    putCrmAutomationsByAutomation(options = {}) {
+      return request("PUT", "/crm/automations/{automation}", options);
+    },
+
+    /** Activer une automatisation */
+    postCrmAutomationsByAutomationActivate(options = {}) {
+      return request("POST", "/crm/automations/{automation}/activate", options);
+    },
+
+    /** Mettre en pause une automatisation */
+    postCrmAutomationsByAutomationPause(options = {}) {
+      return request("POST", "/crm/automations/{automation}/pause", options);
+    },
+
+    /** Historique d'execution d'une automatisation */
+    getCrmAutomationsByAutomationRuns(options = {}) {
+      return request("GET", "/crm/automations/{automation}/runs", options);
+    },
+
+    /** Simuler une automatisation sans effet de bord */
+    postCrmAutomationsByAutomationSimulate(options = {}) {
+      return request("POST", "/crm/automations/{automation}/simulate", options);
+    },
+
+    /** Arret d'urgence des automatisations du tenant */
+    postCrmAutomationsEmergencyStop(options = {}) {
+      return request("POST", "/crm/automations/emergency-stop", options);
+    },
+
+    /** Emettre un evenement metier CRM (declenche les automatisations) */
+    postCrmAutomationsEventsByEvent(options = {}) {
+      return request("POST", "/crm/automations/events/{event}", options);
+    },
+
     /** Lister les canaux de communication du tenant */
     getCrmChannels(options = {}) {
       return request("GET", "/crm/channels", options);
@@ -1668,6 +1723,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Lister les messages d'un canal (metadonnees, PII masquee) */
     getCrmChannelsByChannelMessages(options = {}) {
       return request("GET", "/crm/channels/{channel}/messages", options);
+    },
+
+    /** Observabilite d'un canal (cout et erreurs agreges) */
+    getCrmChannelsByChannelObservability(options = {}) {
+      return request("GET", "/crm/channels/{channel}/observability", options);
     },
 
     /** Envoyer un message via un canal CRM (WhatsApp, SMS, email) */

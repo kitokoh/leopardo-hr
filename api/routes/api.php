@@ -264,9 +264,6 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/expense.php';
     require __DIR__.'/modules/marketing.php';
 
-    // CRM client tenant — canaux/automatisations/exports (issues #5725, #5727,
-    // #5728, #5729). Webhooks publics signature HMAC + routes api.manager.
-    require __DIR__.'/modules/crm.php';
 
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';
