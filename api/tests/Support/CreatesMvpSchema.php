@@ -3438,6 +3438,9 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "travel_quiz_participations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_quiz_questions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_quizzes"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_offices"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_stations"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_cities"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_countries"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_correction_requests"'.$cascade);
