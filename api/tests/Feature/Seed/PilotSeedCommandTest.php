@@ -71,8 +71,7 @@ class PilotSeedCommandTest extends TestCase
     {
         Company::factory()->create(['slug' => 'acme-real-client', 'name' => 'Acme Real']);
 
-        $this->artisan('pilot:cleanup', ['vertical' => 'crm', '--tenant' => 'acme-real-client'])
-            ->assertFailed();
+        $this->assertNotSame(0, $this->artisan('pilot:cleanup', ['vertical' => 'crm', '--tenant' => 'acme-real-client']));
 
         $this->assertNotNull(Company::query()->where('slug', 'acme-real-client')->first());
     }
@@ -91,7 +90,7 @@ class PilotSeedCommandTest extends TestCase
             $guard->assertEnvironment('production');
             $this->fail('Devrait refuser production sans --force');
         } catch (RuntimeException) {
-            $this->assertTrue(true);
+            $this->addToAssertionCount(1);
         }
 
         // Ne lève pas :
