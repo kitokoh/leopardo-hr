@@ -58,11 +58,11 @@ class FeatureKillSwitchTest extends TestCase
     {
         $company = Company::factory()->create(['features' => ['cameras' => true]]);
 
-        $this->assertTrue($company->fresh()->hasFeature('cameras'));
+        $this->assertTrue($company->refresh()->hasFeature('cameras'));
 
         app(FeatureKillSwitchService::class)->kill('cameras', 'Incident en cours');
 
-        $this->assertFalse($company->fresh()->hasFeature('cameras'));
+        $this->assertFalse($company->refresh()->hasFeature('cameras'));
         $this->assertTrue(app(FeatureKillSwitchService::class)->isKilled('cameras'));
     }
 
@@ -74,8 +74,8 @@ class FeatureKillSwitchTest extends TestCase
 
         app(FeatureKillSwitchService::class)->kill('cameras', 'Maintenance');
 
-        $this->assertFalse($company->fresh()->hasFeature('cameras'));
-        $this->assertTrue($company->fresh()->hasFeature('finance'));
+        $this->assertFalse($company->refresh()->hasFeature('cameras'));
+        $this->assertTrue($company->refresh()->hasFeature('finance'));
     }
 
     public function test_kill_and_revive_are_idempotent(): void
@@ -101,7 +101,7 @@ class FeatureKillSwitchTest extends TestCase
 
         $company = Company::factory()->create(['features' => ['finance' => true]]);
 
-        $this->assertTrue($company->fresh()->hasFeature('finance'));
+        $this->assertTrue($company->refresh()->hasFeature('finance'));
     }
 
     public function test_platform_api_requires_super_admin(): void
@@ -144,8 +144,6 @@ class FeatureKillSwitchTest extends TestCase
 
         if (! $row instanceof FeatureKillSwitch) {
             $this->fail('Ligne kill switch absente en base');
-
-            return;
         }
 
         $this->assertTrue((bool) $row->is_active);
@@ -155,7 +153,7 @@ class FeatureKillSwitchTest extends TestCase
         $this->deleteJson('/api/v1/platform/feature-kill-switches/leo_ai')->assertOk();
 
         $this->assertFalse(app(FeatureKillSwitchService::class)->isKilled('leo_ai'));
-        $this->assertFalse((bool) $row->fresh()->is_active);
+        $this->assertFalse((bool) $row->refresh()->is_active);
     }
 
     public function test_activate_requires_feature_key(): void

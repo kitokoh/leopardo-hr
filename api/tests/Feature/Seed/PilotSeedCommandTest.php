@@ -34,22 +34,22 @@ class PilotSeedCommandTest extends TestCase
 
     public function test_pilot_seed_creates_pilots_and_is_idempotent(): void
     {
-        $this->artisan('pilot:seed', ['vertical' => 'crm'])->assertSuccessful();
+        $exitCode = $this->artisan('pilot:seed', ['vertical' => 'crm']);
+        $this->assertSame(0, $exitCode);
 
         foreach (['crm-pilot-alpha', 'crm-pilot-beta'] as $slug) {
             $company = Company::query()->where('slug', $slug)->first();
 
             if (! $company instanceof Company) {
                 $this->fail("Pilote [{$slug}] absent après seed");
-
-                return;
             }
 
             $this->assertSame(2, Employee::query()->where('company_id', $company->id)->count());
         }
 
         // Réentrance : second run sans erreur, aucun doublon.
-        $this->artisan('pilot:seed', ['vertical' => 'crm'])->assertSuccessful();
+        $exitCode = $this->artisan('pilot:seed', ['vertical' => 'crm']);
+        $this->assertSame(0, $exitCode);
         $this->assertSame(1, Company::query()->where('slug', 'crm-pilot-alpha')->count());
     }
 
