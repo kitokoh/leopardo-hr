@@ -1,0 +1,71 @@
+name: CRM Branch Protocol Guard
+
+# #5746 (CRM PRE) — garde du protocole de branches du programme CRM.
+# Vérifie sur le dépôt : doublons de branches par issue (#2400), claim
+# markers orphelins, PRs sans `Closes #N` (#2512), taille des PRs,
+# collisions de migrations inter-PR (#1962) et état de `main`.
+# Rôle = RAPPORT (comme branch-hygiene.yml / issue-governance-guard.yml) :
+# les violations sont publiées en artefact pour arbitrage manuel ; le mode
+# --strict (sortie 1) n'est utilisé que via workflow_dispatch (review de
+# protocole ou crise de parallélisation).
+#
+# Référence : docs/GOUVERNANCE/CRM_BRANCH_PROTOCOL.md
+
+on:
+  schedule:
+    # Quotidien à 05:23 UTC (décalé des autres gardes).
+    - cron: "23 5 * * *"
+  workflow_dispatch:
+    inputs:
+      strict:
+        description: "Mode strict (sortie 1 sur violation)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: crm-branch-protocol
+  cancel-in-progress: false
+
+jobs:
+  check-protocol:
+    timeout-minutes: 15
+    name: CRM branch protocol (issue #5746)
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Run CRM branch protocol guard
+        id: guard
+        shell: bash
+        run: |
+          chmod +x dev-hub/tools/check-crm-branch-protocol.sh
+          if [ "${{ github.event.inputs.strict }}" = "true" ]; then
+            dev-hub/tools/check-crm-branch-protocol.sh "${{ github.repository }}" --strict 2>&1 | tee /tmp/crm-branch-protocol-report.txt
+          else
+            dev-hub/tools/check-crm-branch-protocol.sh "${{ github.repository }}" 2>&1 | tee /tmp/crm-branch-protocol-report.txt
+          fi
+          echo "report_file=/tmp/crm-branch-protocol-report.txt" >> "$GITHUB_OUTPUT"
+        # Le rapport est publié même quand des violations sont détectées
+        # (le script sort 0 par défaut ; --strict peut sortir 1).
+        continue-on-error: true
+
+      - name: Publier le rapport en artefact
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: crm-branch-protocol-report
+          path: /tmp/crm-branch-protocol-report.txt
+          if-no-files-found: warn
