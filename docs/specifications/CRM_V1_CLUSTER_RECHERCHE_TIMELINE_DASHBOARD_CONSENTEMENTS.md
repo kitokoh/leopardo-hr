@@ -93,12 +93,24 @@ Ce cluster couvre les quatre premières issues **CRM V1** du plan, dans le
 ## 7. Contrats de schéma (coordination inter-agents)
 
 Noms canoniques convenus avec la fondation V0 (commentaires #5708/#5709/#5710) :
-`crm_accounts`, `crm_contacts`, `crm_leads`, `crm_pipelines`, `crm_stages`,
+`crm_accounts`, `crm_contacts`, `crm_leads`, `crm_pipelines`, `crm_pipeline_stages`,
 `crm_opportunities`, `crm_activities`, `crm_tasks` (schéma tenant) ; modèles
 `App\Modules\CRM\Domain\Models\{CrmAccount, CrmContact, CrmLead, CrmPipeline,
 CrmStage, CrmOpportunity, CrmActivity, CrmTask}`.
 
-## 8. Definition of Done (transverse)
+## 8. Ajustements post-coordination (2026-08-28)
+
+- Schémas réels de la fondation intégrés : stages = `crm_pipeline_stages`
+  (is_won/is_lost, pas de colonne `status` sur `crm_opportunities` — statut
+  dérivé du stage) ; tasks = `assigned_to`/`completed_at`/`created_by` ;
+  activities = `occurred_at`/`created_by` (relation `actor`).
+- #5708 a deux variantes de schéma concurrentes (PR #5754 vs #5757) : le code
+  de recherche/qualité est défensif (Schema::hasColumn) en attendant la
+  décision.
+- #5722 : implémentation canonique = PR #5756 (swarm) ; ce cluster ne porte
+  plus les consentements (ma branche yieldée).
+
+## 9. Definition of Done (transverse)
 
 Tests écrits avant l'implémentation (Pest/Feature), contrôles tenant,
 validations d'entrée, absence de N+1 critique, OpenAPI aligné, matrice RBAC

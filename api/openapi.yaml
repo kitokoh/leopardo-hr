@@ -6019,6 +6019,99 @@ paths:
                           type: integer
                         month:
                           type: integer
+  /crm/dashboard/pipeline:
+    get:
+      tags:
+      - CRM
+      summary: Dashboard pipeline CRM (issue #5721)
+      description: "Agregats tenant-scoped : totaux par statut, valeur par stage, opportunites stagnantes (sans activite depuis 30 jours), owners sans opportunite ouverte, taches en retard. Roles manager principal/rh/marketing."
+      responses:
+        '200':
+          description: Agregats pipeline
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totals:
+                        type: object
+                        properties:
+                          open_count:
+                            type: integer
+                          open_value:
+                            type: number
+                          won_count:
+                            type: integer
+                          lost_count:
+                            type: integer
+                      by_stage:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            stage_id:
+                              type: integer
+                            stage_name:
+                              type: string
+                            count:
+                              type: integer
+                            value:
+                              type: number
+                      stagnant_opportunities:
+                        type: integer
+                      owners_without_open_opportunities:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            owner_id:
+                              type: integer
+                            open_opportunities:
+                              type: integer
+                      overdue_tasks:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /crm/dashboard/quality:
+    get:
+      tags:
+      - CRM
+      summary: Qualite des donnees CRM (issue #5721)
+      description: "Metriques tenant-scoped : accounts sans contact primaire, contacts incomplets, doublons estimes (email normalise)."
+      responses:
+        '200':
+          description: Metriques de qualite
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      accounts_total:
+                        type: integer
+                      accounts_archived:
+                        type: integer
+                      accounts_without_primary_contact:
+                        type: integer
+                      contacts_total:
+                        type: integer
+                      contacts_without_email:
+                        type: integer
+                      contacts_without_phone:
+                        type: integer
+                      duplicate_contacts_estimate:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /crm/tasks:
     get:
       tags:
@@ -33072,3 +33165,4 @@ components:
           type: integer
           nullable: true
           description: Paiement candidat proposé par le matching auto (issue #5523)
+

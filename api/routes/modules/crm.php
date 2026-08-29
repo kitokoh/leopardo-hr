@@ -19,6 +19,7 @@ use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmCampaignController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmAutomationController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmChannelController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmConsentController;
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDashboardController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDedupController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmExportController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmEmailController;
@@ -134,6 +135,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     });
     // ── Recherche tenant-scoped accounts/contacts (#5719) ─────────────────────
     Route::get('/search', [CrmSearchController::class, 'index']);
+    // ── Dashboard pipeline & qualité (#5721) ────────────────────────────────
+        Route::get('/dashboard/pipeline', [CrmDashboardController::class, 'pipeline']);
+        Route::get('/dashboard/quality', [CrmDashboardController::class, 'quality']);
+
     // ── Tâches, timeline (#5720) ──────────────────────────────────────────────
         Route::get('/tasks', [CrmTaskController::class, 'index']);
         Route::post('/tasks', [CrmTaskController::class, 'store']);
