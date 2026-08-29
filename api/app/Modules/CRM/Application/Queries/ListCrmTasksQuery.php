@@ -28,8 +28,6 @@ class ListCrmTasksQuery
      *     page?: int,
      * }  $input
      */
-    /** @param array{status?: string, assignee_id?: int, per_page?: int, page?: int} $input
-     * @return LengthAwarePaginator<int, CrmTask> */
     public function execute(array $input): LengthAwarePaginator
     {
         $query = CrmTask::query()

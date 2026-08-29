@@ -26,7 +26,9 @@ class CrmSearchController extends Controller
     {
         $this->authorize('crm.search');
 
-        $results = $this->searchCrmQuery->execute($request->validated());
+        /** @var array{q: string, type?: string, status?: string, owner_id?: int, per_page?: int, page?: int} $input */
+        $input = $request->validated();
+        $results = $this->searchCrmQuery->execute($input);
 
         return CrmSearchResultResource::collection($results)->response();
     }

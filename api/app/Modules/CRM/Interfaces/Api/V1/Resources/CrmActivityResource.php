@@ -15,7 +15,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $type
  * @property string $subject
  * @property string|null $description
- * @property string $created_at
+ * @property int|null $contact_id
+ * @property int|null $lead_id
+ * @property int|null $opportunity_id
+ * @property \Illuminate\Support\Carbon|null $occurred_at
+ * @property \Illuminate\Support\Carbon $created_at
  */
 class CrmActivityResource extends JsonResource
 {
