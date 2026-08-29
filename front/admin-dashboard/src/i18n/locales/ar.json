@@ -505,7 +505,16 @@
     "details": "التفاصيل",
     "pendingRequestsTitle": "الطلبات المعلقة",
     "platformMrr": "إيرادات المنصة الشهرية",
-    "processRequests": "معالجة الطلبات"
+    "processRequests": "معالجة الطلبات",
+    "leave_balance_title": "رصيد إجازاتي",
+    "leave_balance_subtitle": "الأيام المتبقية حسب النوع، السنة الحالية",
+    "leave_balance_loading": "جارٍ تحميل الرصيد…",
+    "leave_balance_error": "تعذر تحميل رصيد الإجازات.",
+    "leave_balance_empty": "لا يوجد رصيد مهيأ لهذا الحساب.",
+    "leave_balance_available": "{days} أيام متاحة",
+    "leave_balance_used": "{days} مستخدمة",
+    "see_absences": "عرض إجازاتي",
+    "leave_balance_unknown": "إجازة"
   },
   "marketing": {
     "oauth": {
