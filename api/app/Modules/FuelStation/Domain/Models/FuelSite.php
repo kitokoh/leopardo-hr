@@ -56,6 +56,7 @@ class FuelSite extends Model
         ];
     }
 
+    /** @return BelongsTo<FuelStation, $this> */
     public function station(): BelongsTo
     {
         return $this->belongsTo(FuelStation::class, 'station_id');

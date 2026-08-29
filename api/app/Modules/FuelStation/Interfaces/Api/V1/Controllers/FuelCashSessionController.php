@@ -221,8 +221,8 @@ class FuelCashSessionController extends Controller
             'movements' => $session->relationLoaded('movements')
                 ? $session->movements->map(fn (FuelCashSessionMovement $movement): array => $this->movementPayload($movement))->values()
                 : null,
-            'created_at' => $session->created_at->toISOString(),
-            'updated_at' => $session->updated_at->toISOString(),
+            'created_at' => $session->created_at?->toISOString(),
+            'updated_at' => $session->updated_at?->toISOString(),
         ];
     }
 

@@ -45,11 +45,14 @@ class FuelMeterReadingController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        /** @var array{reading_value_minor: int, reading_unit?: string, captured_at?: string|null, timezone?: string, shift_id?: int|null, device_reference?: string|null, idempotency_key: string} $validated */
+        $validated = $request->validated();
+
         $result = $this->service->record(
             $station,
             $pump,
             $meter,
-            $request->validated(),
+            $validated,
             $actor,
         );
 

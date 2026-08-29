@@ -74,7 +74,7 @@ final class MeterReadingService
         $this->assertOperatorInTenant($actor, $companyId);
 
         // 3. Horodatage.
-        $capturedAtUtc = $input['captured_at'] !== null && $input['captured_at'] !== ''
+        $capturedAtUtc = ($input['captured_at'] ?? null) !== null && ($input['captured_at'] ?? '') !== ''
             ? Carbon::parse((string) $input['captured_at'])->utc()
             : Carbon::now('UTC');
 
@@ -293,7 +293,7 @@ final class MeterReadingService
             return [
                 'previous_value_minor' => $previousValue,
                 'delta_minor' => $currentValueMinor - $previousValue,
-                'interval_seconds' => $intervalSeconds,
+                'interval_seconds' => (int) $intervalSeconds,
                 'status' => FuelMeterInterval::STATUS_VALID,
             ];
         }
@@ -307,7 +307,7 @@ final class MeterReadingService
             return [
                 'previous_value_minor' => $previousValue,
                 'delta_minor' => $delta,
-                'interval_seconds' => $intervalSeconds,
+                'interval_seconds' => (int) $intervalSeconds,
                 'status' => FuelMeterInterval::STATUS_ROLLOVER,
             ];
         }
@@ -315,7 +315,7 @@ final class MeterReadingService
         return [
             'previous_value_minor' => $previousValue,
             'delta_minor' => $currentValueMinor - $previousValue,
-            'interval_seconds' => $intervalSeconds,
+            'interval_seconds' => (int) $intervalSeconds,
             'status' => FuelMeterInterval::STATUS_PENDING_REVIEW,
         ];
     }
