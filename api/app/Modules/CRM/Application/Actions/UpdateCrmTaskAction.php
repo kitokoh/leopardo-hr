@@ -73,7 +73,7 @@ final class UpdateCrmTaskAction
         /** @var Employee|null $assignee */
         $assignee = Employee::query()->find($assigneeId);
 
-        return $assignee !== null && $assignee->company_id === currentCompany()?->id;
+        return $assignee !== null && $assignee->company_id === currentCompany()->id;
     }
 
     private function accountInTenant(int $accountId): bool

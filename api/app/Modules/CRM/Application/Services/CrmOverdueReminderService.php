@@ -57,7 +57,7 @@ class CrmOverdueReminderService
             CrmTaskOverdue::dispatch(
                 (int) $task->company_id,
                 (int) $task->id,
-                $task->assigned_to !== null ? (int) $task->assigned_to : null,
+                $task->assignee_id !== null ? (int) $task->assignee_id : null,
                 (string) $task->title,
                 $task->due_at?->toIso8601String(),
             );

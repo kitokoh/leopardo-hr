@@ -44,6 +44,7 @@ class SearchCrmQuery
      *     page?: int,
      * }  $input
      */
+    /** @return LengthAwarePaginator<int, array{type: string, model: CrmAccount|CrmContact}> */
     public function execute(array $input): LengthAwarePaginator
     {
         $term = $this->escapeLike(trim((string) $input['q']));
@@ -68,7 +69,7 @@ class SearchCrmQuery
         }
 
         $rows = $rows
-            ->sortByDesc(fn (array $row) => $row['model']->created_at?->timestamp ?? 0)
+            ->sortByDesc(fn (array $row) => $row['model']->created_at->timestamp ?? 0)
             ->values();
 
         $perPage = min((int) ($input['per_page'] ?? 25), 50);
@@ -88,9 +89,7 @@ class SearchCrmQuery
     {
         $query = CrmAccount::query();
 
-        if (method_exists(CrmAccount::class, 'owner')) {
-            $query->with('owner:id,first_name,last_name');
-        }
+        $query->with('owner:id,first_name,last_name');
 
         $query->where(function ($builder) use ($pattern): void {
             $builder->where('name', 'ilike', $pattern);
@@ -115,10 +114,6 @@ class SearchCrmQuery
     private function searchContacts(string $pattern, ?string $status, ?int $ownerId): \Illuminate\Database\Eloquent\Collection
     {
         $query = CrmContact::query();
-
-        if (method_exists(CrmContact::class, 'owner')) {
-            $query->with('owner:id,first_name,last_name');
-        }
 
         $query->where(function ($builder) use ($pattern): void {
             $builder->where('first_name', 'ilike', $pattern)

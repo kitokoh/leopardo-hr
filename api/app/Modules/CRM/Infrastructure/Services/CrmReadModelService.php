@@ -54,7 +54,7 @@ final class CrmReadModelService
         return $this->countGrouped('crm_leads', 'status');
     }
 
-    /** @return array<string, int> */
+    /** @return array<string, int|float> */
     public function contactsPerAccount(): array
     {
         if (! $this->tableExists('crm_contacts')) {
@@ -148,6 +148,7 @@ final class CrmReadModelService
     /**
      * @return array{total: int, filled: int, fields: int}
      */
+    /** @param array<string> $requiredColumns */
     private function completenessScore(string $table, array $requiredColumns): array
     {
         if (! $this->tableExists($table)) {

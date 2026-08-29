@@ -47,6 +47,7 @@ final class WhatsAppCloudApiClient
         return is_string($data['messages'][0]['id'] ?? null) ? $data['messages'][0]['id'] : '';
     }
 
+    /** @param array<string, mixed> $parameters */
     public function sendTemplate(string $phoneNumberId, string $to, string $templateName, string $languageCode, array $parameters, string $accessToken): string
     {
         $components = [];
