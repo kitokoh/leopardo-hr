@@ -187,7 +187,7 @@ return new class extends Migration
 
         // FUEL-003 — un seul compteur ACTIF par pompe (décision porteur d'idée) :
         // index partiel PG (company_id, pump_id) WHERE status = 'active'.
-        if ($meterSchema !== null && ! $this->indexExists('fuel_meters_active_per_pump_unique')) {
+        if ($meterSchema !== null && ! $this->indexExists('fuel_meter_registers', 'fuel_meters_active_per_pump_unique')) {
             DB::statement(
                 "CREATE UNIQUE INDEX fuel_meters_active_per_pump_unique ON {$meterSchema}.fuel_meter_registers (company_id, pump_id) WHERE status = 'active'"
             );
@@ -261,5 +261,10 @@ return new class extends Migration
         $row = DB::selectOne('SELECT 1 FROM pg_constraint WHERE conname = ?', [$name]);
 
         return $row !== null;
+    }
+
+    private function indexExists(string $table, string $index): bool
+    {
+        return Schema::hasIndex($table, $index);
     }
 };
