@@ -1716,6 +1716,10 @@ class LeopardoClient:
         """Exporter le pointage"""
         return self.request("GET", "/export/attendance", **kwargs)
 
+    def get_export_attendance_monthly(self, **kwargs):
+        """Export CSV mensuel des presences par employe"""
+        return self.request("GET", "/export/attendance/monthly", **kwargs)
+
     def get_export_contracts(self, **kwargs):
         """Exporter les contrats"""
         return self.request("GET", "/export/contracts", **kwargs)

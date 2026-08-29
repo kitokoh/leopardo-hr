@@ -53,7 +53,7 @@ jobs:
       # échouait sur chaque push main (git rev-parse: not a git repository).
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          lfs: false
 
       - uses: dorny/paths-filter@v4
         id: filter
@@ -73,7 +73,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 0
 
       - name: Guard PROD_API_BASE_URL (#4524)
@@ -179,7 +179,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          lfs: false
 
       - name: Setup Flutter + Java
         uses: ./.github/actions/setup-flutter-android
@@ -291,7 +291,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          lfs: false
 
       - name: Setup Flutter + Java
         uses: ./.github/actions/setup-flutter-android
