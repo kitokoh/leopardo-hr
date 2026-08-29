@@ -33,7 +33,7 @@ class EnsureTravelAgencyModuleMiddleware
             ], 403);
         }
 
-        if (! method_exists($company, 'hasFeature') || ! $company->hasFeature('travelagency')) {
+        if (! $company->hasFeature('travelagency')) {
             return new JsonResponse([
                 'error' => 'FEATURE_NOT_ENABLED',
                 'message' => 'Your plan does not include the TravelAgency module.',
