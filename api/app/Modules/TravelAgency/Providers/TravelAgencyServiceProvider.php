@@ -26,6 +26,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelRentalVehicle;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelStation;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
+use App\Modules\TravelAgency\Domain\Models\TravelTouristSite;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelNotificationConsumer;
@@ -46,6 +47,7 @@ use App\Modules\TravelAgency\Policies\TravelReportPolicy;
 use App\Modules\TravelAgency\Policies\TravelRoutePolicy;
 use App\Modules\TravelAgency\Policies\TravelStationPolicy;
 use App\Modules\TravelAgency\Policies\TravelTicketPolicy;
+use App\Modules\TravelAgency\Policies\TravelTouristSitePolicy;
 use App\Modules\TravelAgency\Policies\TravelTripPolicy;
 use App\Modules\TravelAgency\Policies\TravelVehiclePolicy;
 use Illuminate\Support\Facades\Gate;
@@ -119,5 +121,6 @@ class TravelAgencyServiceProvider extends ServiceProvider
         // Quiz & annonces payantes (TRAVEL-904..908, #6107..#6111).
         Gate::policy(TravelQuiz::class, TravelQuizPolicy::class);
         Gate::policy(TravelAdvert::class, TravelAdvertPolicy::class);
+        Gate::policy(TravelTouristSite::class, TravelTouristSitePolicy::class);
     }
 }
