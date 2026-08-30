@@ -58,6 +58,13 @@ class TravelTicket extends Model
             if (empty($ticket->ticket_number)) {
                 $ticket->ticket_number = self::generateTicketNumber();
             }
+
+            // La colonne est NOT NULL en base : on enregistre le hash d'un
+            // code aléatoire dès la création. `issueValidationCode()` reste
+            // le seul chemin qui retourne le code EN CLAIR (QR), à l'émission.
+            if (empty($ticket->validation_code)) {
+                $ticket->validation_code = hash('sha256', strtoupper(Str::random(16)));
+            }
         });
     }
 

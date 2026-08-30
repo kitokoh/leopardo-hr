@@ -4115,6 +4115,41 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/sessions/{trainingSession}/enroll", options);
     },
 
+    /** Liste des réservations (TRAVEL-312/#6042) */
+    getTravelBookings(options = {}) {
+      return request("GET", "/travel/bookings", options);
+    },
+
+    /** Création d'une réservation guichet (TRAVEL-312/#6042) */
+    postTravelBookings(options = {}) {
+      return request("POST", "/travel/bookings", options);
+    },
+
+    /** Détail d'une réservation (TRAVEL-312/#6042) */
+    getTravelBookingsByTravelBooking(options = {}) {
+      return request("GET", "/travel/bookings/{travelBooking}", options);
+    },
+
+    /** Annulation d'une réservation (TRAVEL-314/#6044) */
+    postTravelBookingsByTravelBookingCancel(options = {}) {
+      return request("POST", "/travel/bookings/{travelBooking}/cancel", options);
+    },
+
+    /** Confirmation d'une réservation (TRAVEL-313/#6043) */
+    postTravelBookingsByTravelBookingConfirm(options = {}) {
+      return request("POST", "/travel/bookings/{travelBooking}/confirm", options);
+    },
+
+    /** Émission des billets (TRAVEL-316/#6046) */
+    postTravelBookingsByTravelBookingIssueTicket(options = {}) {
+      return request("POST", "/travel/bookings/{travelBooking}/issue-ticket", options);
+    },
+
+    /** Remboursement d'une réservation (TRAVEL-315/#6045) */
+    postTravelBookingsByTravelBookingRefund(options = {}) {
+      return request("POST", "/travel/bookings/{travelBooking}/refund", options);
+    },
+
     /** Liste des compagnies de transport (TRAVEL-304/#6034) */
     getTravelCarriers(options = {}) {
       return request("GET", "/travel/carriers", options);
@@ -4275,6 +4310,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/travel/stations/{travelStation}", options);
     },
 
+    /** Check-in / embarquement (TRAVEL-317/#6047) */
+    postTravelTicketsByTravelTicketCheckIn(options = {}) {
+      return request("POST", "/travel/tickets/{travelTicket}/check-in", options);
+    },
+
     /** Liste des trajets (TRAVEL-308/#6038) */
     getTravelTrips(options = {}) {
       return request("GET", "/travel/trips", options);
@@ -4303,6 +4343,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Annulation d'un trajet (TRAVEL-310/#6040) */
     postTravelTripsByTravelTripCancel(options = {}) {
       return request("POST", "/travel/trips/{travelTrip}/cancel", options);
+    },
+
+    /** Manifeste des passagers d'un trajet (TRAVEL-318/#6048) */
+    getTravelTripsByTravelTripManifest(options = {}) {
+      return request("GET", "/travel/trips/{travelTrip}/manifest", options);
     },
 
     /** Tarifs d'un trajet par classe (TRAVEL-309/#6039) */

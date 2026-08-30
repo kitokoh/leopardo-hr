@@ -88,4 +88,20 @@ class TravelBooking extends Model
     {
         return $this->hasMany(TravelPassenger::class, 'booking_id');
     }
+
+    /**
+     * @return HasMany<TravelTicket, $this>
+     */
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(TravelTicket::class, 'booking_id');
+    }
+
+    /**
+     * @return HasMany<TravelPayment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(TravelPayment::class, 'booking_id');
+    }
 }
