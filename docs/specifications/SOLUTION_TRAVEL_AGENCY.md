@@ -700,6 +700,13 @@ rejouables.
   manuel via canaux plateforme (email / in-app BC-13) + consentement
   (`travel_customer_contacts`), endpoint `POST /travel/contacts/{contact}/notify`.
 
+### 8.9 Import legacy & qualité livrés (TRAVEL-1003/1004, #6116/#6117)
+
+- CLI `leopardo:travel:import-legacy` (mapping documenté, idempotent,
+  dry-run, rapport ; consentement jamais accordé par l'import).
+- Qualité du seed géographique versionné (ISO 3166-1, rejouable, zéro
+  ville orpheline).
+
 ## 9. Sécurité & RGPD
 
 | Sujet | Mesure |
