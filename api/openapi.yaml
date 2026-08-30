@@ -23558,6 +23558,189 @@ paths:
                     $ref: '#/components/schemas/DeliveryRoute'
         '409':
           description: Livreur déjà affecté ce jour
+  /delivery/deliveries/routes/{route}/settlement:
+    post:
+      tags:
+      - Delivery
+      summary: Crée le règlement COD d'une tournée close (DELIVERY-205/#6289)
+      description: |
+        Idempotent (unique company+route). Exige une tournée close (409
+        ROUTE_NOT_CLOSED). expected_minor = COD collecté de la tournée.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Règlement créé (ou existant)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+        '409':
+          description: Tournée non close
+  /delivery/deliveries/cod-settlements:
+    get:
+      tags:
+      - Delivery
+      summary: Liste des règlements COD (DELIVERY-205/#6289)
+      description: |
+        Paginée, filtres statut/driver_id. RBAC admin|manager.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: driver_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Règlements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryCodSettlement'
+  /delivery/deliveries/cod-settlements/{settlement}/collect:
+    post:
+      tags:
+      - Delivery
+      summary: Remise caisse (DELIVERY-205/#6289)
+      description: |
+        Idempotente, plafonnée à l'attendu (422 OVER_COLLECTION). Exige
+        pending. RBAC admin|manager.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: settlement
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - collected_minor
+              properties:
+                collected_minor:
+                  type: integer
+                  minimum: 0
+                commission_minor:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: Règlement collecté
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+        '422':
+          description: OVER_COLLECTION
+  /delivery/deliveries/cod-settlements/{settlement}/settle:
+    post:
+      tags:
+      - Delivery
+      summary: Posting BC-08 + settled (DELIVERY-205/#6289)
+      description: |
+        Idempotent, exige collected (409 SETTLEMENT_NOT_COLLECTED). Écriture
+        comptable source-référencée via contrat BC-08. RBAC admin.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: settlement
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Règlement settled (accounting_ref)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+  /delivery/deliveries/cod-settlements/{settlement}/reconcile:
+    post:
+      tags:
+      - Delivery
+      summary: Réconciliation (DELIVERY-205/#6289)
+      description: |
+        Idempotente, exige settled (409 SETTLEMENT_NOT_SETTLED). RBAC admin.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: settlement
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Règlement reconciled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+  /delivery/deliveries/cod-settlements/report:
+    get:
+      tags:
+      - Delivery
+      summary: Réconciliation attendu vs collecté (DELIVERY-205/#6289)
+      description: |
+        Totaux expected/collected/gap + ventilation par statut. RBAC
+        admin|manager.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Rapport de réconciliation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totals:
+                        type: object
+                        properties:
+                          expected_minor:
+                            type: integer
+                          collected_minor:
+                            type: integer
+                          gap_minor:
+                            type: integer
+
   /delivery/deliveries/routes/{route}/close:
     post:
       tags:
@@ -25550,6 +25733,37 @@ components:
           type: string
         payload:
           type: object
+          nullable: true
+
+    DeliveryCodSettlement:
+      type: object
+      properties:
+        id:
+          type: integer
+        route_id:
+          type: integer
+        driver_id:
+          type: integer
+          nullable: true
+        expected_minor:
+          type: integer
+        collected_minor:
+          type: integer
+        commission_minor:
+          type: integer
+        status:
+          type: string
+          enum: [pending, collected, settled, reconciled]
+        accounting_ref:
+          type: string
+          nullable: true
+        collected_at:
+          type: string
+          format: date-time
+          nullable: true
+        settled_at:
+          type: string
+          format: date-time
           nullable: true
 
     DeliveryRoute:
