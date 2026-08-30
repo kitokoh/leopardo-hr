@@ -66,6 +66,9 @@ final class CreateBookingAction
         bool $notifyConsent = false,
         ?int $returnTripId = null,
         ?array $returnPassengers = null,
+        ?int $corporateAccountId = null,
+        ?int $quoteId = null,
+        bool $billingDeferred = false,
     ): TravelBooking {
         $existing = TravelBooking::query()
             ->where('trip_id', $trip->id)
@@ -95,6 +98,9 @@ final class CreateBookingAction
             roundTripGroupId: $group,
             returnBookingId: null,
             isReturnLeg: false,
+            corporateAccountId: $corporateAccountId,
+            quoteId: $quoteId,
+            billingDeferred: $billingDeferred,
         );
 
         // TRAVEL-802 — leg retour (tarif combiné optionnel).
@@ -123,6 +129,9 @@ final class CreateBookingAction
                 roundTripGroupId: $group,
                 returnBookingId: $booking->id,
                 isReturnLeg: true,
+                corporateAccountId: $corporateAccountId,
+                quoteId: $quoteId,
+                billingDeferred: $billingDeferred,
             );
 
             $booking->forceFill(['return_booking_id' => $returnBooking->id])->save();
@@ -147,6 +156,9 @@ final class CreateBookingAction
         string $roundTripGroupId,
         ?int $returnBookingId,
         bool $isReturnLeg,
+        ?int $corporateAccountId = null,
+        ?int $quoteId = null,
+        bool $billingDeferred = false,
     ): TravelBooking {
         $booking = DB::transaction(function () use (
             $trip,
@@ -161,6 +173,9 @@ final class CreateBookingAction
             $roundTripGroupId,
             $returnBookingId,
             $isReturnLeg,
+            $corporateAccountId,
+            $quoteId,
+            $billingDeferred,
         ): TravelBooking {
             // Verrouille le trajet : empeche deux reservations concurrentes
             // de lire le meme inventaire.
@@ -199,6 +214,10 @@ final class CreateBookingAction
                 'round_trip_group_id' => $roundTripGroupId,
                 'return_booking_id' => $returnBookingId,
                 'leg' => $isReturnLeg ? 'return' : 'outbound',
+                // TRAVEL-803 (#6094) — réservation corporate (facturation différée).
+                'corporate_account_id' => $corporateAccountId,
+                'quote_id' => $quoteId,
+                'billing_deferred' => $billingDeferred,
             ]);
 
             foreach ($passengers as $index => $passengerData) {

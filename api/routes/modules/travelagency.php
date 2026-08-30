@@ -43,6 +43,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTouristSiteController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCorporateController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
@@ -209,6 +210,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/hotels/{travelHotel}/rooms', [TravelHotelController::class, 'storeRoom']);
         Route::put('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'updateRoom']);
         Route::delete('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'destroyRoom']);
+        // Réservations corporate (TRAVEL-803/#6094) — travel.manage.
+        Route::get('/corporate-accounts', [TravelCorporateController::class, 'indexAccounts']);
+        Route::post('/corporate-accounts', [TravelCorporateController::class, 'storeAccount']);
+        Route::put('/corporate-accounts/{account}', [TravelCorporateController::class, 'updateAccount']);
+        Route::get('/corporate-quotes', [TravelCorporateController::class, 'indexQuotes']);
+        Route::post('/corporate-quotes', [TravelCorporateController::class, 'storeQuote']);
+        Route::post('/corporate-quotes/{quote}/accept', [TravelCorporateController::class, 'acceptQuote']);
+        Route::post('/corporate-quotes/{quote}/cancel', [TravelCorporateController::class, 'cancelQuote']);
+
         // Contenu communautaire (TRAVEL-901..909, issues #6104..#6112).
         Route::prefix('community')->group(function (): void {
             // Catégories d'articles (TRAVEL-901/#6104).

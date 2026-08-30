@@ -52,6 +52,9 @@ class TravelBooking extends Model
         'round_trip_group_id',
         'return_booking_id',
         'leg',
+        'corporate_account_id',
+        'quote_id',
+        'billing_deferred',
     ];
 
     protected $casts = [
@@ -66,6 +69,9 @@ class TravelBooking extends Model
         'notify_consent' => 'boolean',
         'consent_recorded_at' => 'datetime',
         'return_booking_id' => 'integer',
+        'corporate_account_id' => 'integer',
+        'quote_id' => 'integer',
+        'billing_deferred' => 'boolean',
     ];
 
     protected static function booted(): void
