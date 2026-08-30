@@ -681,6 +681,17 @@ rejouables.
 - Notifications voyageur : registre `travel_customer_contacts` (consentement
   par canal) + consommateur in-app BC-13 / email transactionnel externe.
 
+### 8.7 Contenu & monétisation livrés (TRAVEL-904..908, #6107..#6111)
+
+- Quiz & jeu-concours : `travel_quizzes`/`travel_quiz_questions`/
+  `travel_quiz_participations` ; notation serveur, participation unique par
+  (quiz, email), la bonne réponse n'est jamais exposée.
+- Annonces payantes : référentiels `travel_advert_types`/`travel_advert_positions`
+  (code unique par tenant), grille `travel_advert_prices` (minor units, devise
+  tenant), `travel_adverts` — prix calculé serveur, paiement idempotent,
+  validation `travel.manage`, visible uniquement payée+validée+non expirée,
+  expiration (`travel:expire-adverts`) et renouvellement payé.
+
 ## 9. Sécurité & RGPD
 
 | Sujet | Mesure |
