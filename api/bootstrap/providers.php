@@ -65,4 +65,6 @@ return [
     TravelAgencyServiceProvider::class,
     // — FuelStation module (solution verticale, issue #5795)
     FuelStationServiceProvider::class,
+    // — TravelAgency vertical (BC-24 TRAVEL, TRAVEL-101/#5977)
+    TravelAgencyServiceProvider::class,
 ];

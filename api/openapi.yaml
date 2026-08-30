@@ -4749,6 +4749,510 @@ paths:
                     example: Demande envoyée.
         '422':
           description: Validation échouée (consentement manquant, message hors bornes, email/téléphone absents)
+
+  /travel/article-categories:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-901 — Catégories d''articles'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Catégories
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-901 — Création d''une catégorie'
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Catégorie créée
+        '401':
+          description: Non authentifié
+
+  /travel/articles:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-901 — Liste des articles'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Articles
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-901 — Création d''un article'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - slug
+              - title
+              - body_redacted
+              properties:
+                slug:
+                  type: string
+                title:
+                  type: string
+                body_redacted:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - draft
+                  - published
+                  - flagged
+      responses:
+        '201':
+          description: Article créé
+        '401':
+          description: Non authentifié
+        '422':
+          description: Validation échouée
+
+  /travel/articles/{travelArticle}:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-901 — Détail d''un article'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Article
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-901 — Mise à jour d''un article'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Article mis à jour
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-901 — Suppression d''un article'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Article supprimé
+        '401':
+          description: Non authentifié
+
+  /travel/articles/{travelArticle}/engagement:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-903 — Agrégats d''engagement'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Likes/partages/notes agrégés
+        '401':
+          description: Non authentifié
+
+  /travel/articles/{travelArticle}/like:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-903 — Like (unicité acteur/article)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Like enregistré
+        '401':
+          description: Non authentifié
+
+  /travel/articles/{travelArticle}/moderate:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-901 — Modération d''un article (draft/published/flagged)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Article modéré
+        '401':
+          description: Non authentifié
+        '422':
+          description: Statut invalide
+
+  /travel/articles/{travelArticle}/rate:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-903 — Note 1..5 (unicité, agrégats)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Note enregistrée
+        '401':
+          description: Non authentifié
+        '422':
+          description: Note hors bornes
+
+  /travel/articles/{travelArticle}/share:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-903 — Partage (canal)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Partage enregistré
+        '401':
+          description: Non authentifié
+        '422':
+          description: Canal inconnu
+
+  /travel/articles/{travelArticle}/unlike:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-903 — Unlike'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Like retiré
+        '401':
+          description: Non authentifié
+
+  /travel/comments:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-902 — Liste des commentaires'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Commentaires
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-902 — Création d''un commentaire (pending)'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - article_id
+              - content
+              properties:
+                article_id:
+                  type: integer
+                content:
+                  type: string
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Commentaire créé
+        '401':
+          description: Non authentifié
+        '422':
+          description: Contenu invalide
+
+  /travel/comments/{travelComment}:
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-902 — Suppression d''un commentaire'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelComment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Commentaire supprimé
+        '401':
+          description: Non authentifié
+
+  /travel/comments/{travelComment}/moderate:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-902 — Modération (approved/rejected/flagged)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelComment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commentaire modéré
+        '401':
+          description: Non authentifié
+        '422':
+          description: Statut invalide
+
+  /travel/comments/{travelComment}/report:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-902 — Signalement d''un commentaire'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelComment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commentaire signalé
+        '401':
+          description: Non authentifié
+
+  /travel/reports/cancellations:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-504 — Annulations sur période'
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/TravelReportPeriod'
+      - $ref: '#/components/parameters/TravelReportPeriodTo'
+      responses:
+        '200':
+          description: Annulations par source
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.reports requise
+
+  /travel/reports/dashboard:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-507 — Dashboard KPIs'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: KPIs du jour
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.reports requise
+
+  /travel/reports/export:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-505 — Export CSV idempotent'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - report_type
+              - from
+              - to
+              - idempotency_key
+              properties:
+                report_type:
+                  type: string
+                  enum:
+                  - sales
+                from:
+                  type: string
+                  format: date-time
+                to:
+                  type: string
+                  format: date-time
+                idempotency_key:
+                  type: string
+                  maxLength: 100
+      responses:
+        '202':
+          description: Export accepté
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.reports requise
+
+  /travel/reports/export/{travelExportAsset}:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-505 — Lecture d''un export (URL signée éphémère)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelExportAsset
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Asset d'export
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant
+
+  /travel/reports/occupancy:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-502 — Occupation par trajet'
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/TravelReportPeriod'
+      - $ref: '#/components/parameters/TravelReportPeriodTo'
+      responses:
+        '200':
+          description: Taux d'occupation par trajet
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.reports requise
+
+  /travel/reports/revenue:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-503 — Recettes (confirmés − remboursements)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/TravelReportPeriod'
+      - $ref: '#/components/parameters/TravelReportPeriodTo'
+      responses:
+        '200':
+          description: Recettes nettes
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.reports requise
+
+  /travel/reports/sales:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-501 — Ventes (réservations nettes) sur période'
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/TravelReportPeriod'
+      - $ref: '#/components/parameters/TravelReportPeriodTo'
+      responses:
+        '200':
+          description: Agrégat de ventes
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.reports requise
   /health:
     get:
       tags:

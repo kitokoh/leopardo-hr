@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Providers;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\TravelAgency\Console\Commands\RecalculateTravelReadModelsCommand;
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
+use App\Modules\TravelAgency\Domain\Models\TravelArticle;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrierApiKey;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
+use App\Modules\TravelAgency\Domain\Models\TravelComment;
 use App\Modules\TravelAgency\Domain\Models\TravelCurrencyRate;
 use App\Modules\TravelAgency\Domain\Models\TravelHotel;
 use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyAccount;
@@ -24,11 +28,13 @@ use App\Modules\TravelAgency\Domain\Models\TravelStation;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
+use App\Modules\TravelAgency\Policies\TravelArticlePolicy;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelCancellationPolicyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierApiKeyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
 use App\Modules\TravelAgency\Policies\TravelClassPolicy;
+use App\Modules\TravelAgency\Policies\TravelCommentPolicy;
 use App\Modules\TravelAgency\Policies\TravelCurrencyRatePolicy;
 use App\Modules\TravelAgency\Policies\TravelHotelPolicy;
 use App\Modules\TravelAgency\Policies\TravelLoyaltyPolicy;
@@ -36,6 +42,7 @@ use App\Modules\TravelAgency\Policies\TravelOfficePolicy;
 use App\Modules\TravelAgency\Policies\TravelQuotePolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalVehiclePolicy;
+use App\Modules\TravelAgency\Policies\TravelReportPolicy;
 use App\Modules\TravelAgency\Policies\TravelRoundTripPolicy;
 use App\Modules\TravelAgency\Policies\TravelRoutePolicy;
 use App\Modules\TravelAgency\Policies\TravelStationPolicy;
@@ -53,8 +60,8 @@ use Illuminate\Support\ServiceProvider;
  * l'architecture DDD multi-tenant Leopardo HR.
  *
  * `register()` enregistre les ports & adapters du module (contrats →
- * implémentations) ; les Policies métier seront enregistrées dans `boot()`
- * au fil des lots API (épic 3xx).
+ * implémentations) ; les Policies métier sont enregistrées dans `boot()`
+ * au fil des lots API (épic 3xx) et des extensions 8xx.
  *
  * L'activation par tenant passe par le feature flag `travelagency`
  * (companies.features) — voir EnsureTravelAgencyModuleMiddleware (TRAVEL-102)
@@ -65,6 +72,11 @@ class TravelAgencyServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(SolutionManifest::class, TravelAgencyManifest::class);
+
+        // TRAVEL-506 (#6076) — recalcul des read models de reporting.
+        $this->commands([
+            RecalculateTravelReadModelsCommand::class,
+        ]);
     }
 
     public function boot(): void
@@ -87,5 +99,12 @@ class TravelAgencyServiceProvider extends ServiceProvider
         Gate::policy(TravelCarrierApiKey::class, TravelCarrierApiKeyPolicy::class);
         Gate::policy(TravelCancellationPolicy::class, TravelCancellationPolicyPolicy::class);
         Gate::policy(TravelLoyaltyAccount::class, TravelLoyaltyPolicy::class);
+
+        // Contenu éditorial (TRAVEL-901/902, #6104/#6105) + rapports
+        // (TRAVEL-501..507, #6071..#6077) — ability `travel.reports`
+        // ouverte aux rôles opérationnels de l'agence.
+        Gate::policy(TravelArticle::class, TravelArticlePolicy::class);
+        Gate::policy(TravelComment::class, TravelCommentPolicy::class);
+        Gate::define('travel.reports', fn (Employee $actor): bool => TravelReportPolicy::authorize($actor));
     }
 }
