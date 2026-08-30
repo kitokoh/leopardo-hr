@@ -38,10 +38,7 @@ class SectorTemplateSeedAbsenceTypesTest extends TestCase
     public function two_tenants_can_seed_the_same_standard_absence_type_codes(): void
     {
         $companyA = Company::factory()->create(['sector' => 'standard']);
-        assert($companyA instanceof Company);
         $companyB = Company::factory()->create(['sector' => 'standard']);
-        assert($companyA instanceof Company);
-        assert($companyB instanceof Company);
 
         $service = new SectorTemplateService;
 
@@ -72,7 +69,6 @@ class SectorTemplateSeedAbsenceTypesTest extends TestCase
     public function duplicate_code_within_the_same_company_is_rejected(): void
     {
         $company = Company::factory()->create(['sector' => 'standard']);
-        assert($company instanceof Company);
 
         $service = new SectorTemplateService;
         $service->applyTemplate($company);

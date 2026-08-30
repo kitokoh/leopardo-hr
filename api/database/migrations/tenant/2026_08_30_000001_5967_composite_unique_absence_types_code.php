@@ -30,7 +30,11 @@ return new class extends Migration
 
         // Retrait de l'index unique global sur `code` seul (nom par défaut
         // Laravel pour `$table->string('code', 20)->unique()`).
-        DB::statement('DROP INDEX IF EXISTS absence_types_code_unique');
+        // Postgres 2BP01 : un index unique peut porter une contrainte dépendante
+        // (ou être la contrainte elle-même) — on retire la contrainte si présente,
+        // puis on supprime l'index avec CASCADE pour absorber tout dépendant.
+        DB::statement('ALTER TABLE absence_types DROP CONSTRAINT IF EXISTS absence_types_code_unique');
+        DB::statement('DROP INDEX IF EXISTS absence_types_code_unique CASCADE');
 
         // Index unique composite (company_id, code) — pas de dédoublonnage
         // préalable nécessaire : l'ancien index global empêchait déjà tout
@@ -45,7 +49,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        DB::statement('DROP INDEX IF EXISTS absence_types_company_id_code_unique');
+        DB::statement('DROP INDEX IF EXISTS absence_types_company_id_code_unique CASCADE');
 
         if (schemaTableExists('absence_types')) {
             DB::statement(
