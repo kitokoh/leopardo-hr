@@ -4393,8 +4393,31 @@
       "count": "Nombre"
     },
     "catalog": {
-      "title": "Locations & hôtels",
-      "subtitle": "Véhicules en location, réservations et catalogue hôtelier."
+      "title": "Intitulé",
+      "subtitle": "Véhicules en location, réservations et catalogue hôtelier.",
+      "tabRentals": "Véhicules en location",
+      "tabRentalBookings": "Réservations location",
+      "tabHotels": "Hôtels",
+      "images": "Images",
+      "rentalImagesTitle": "Images du véhicule",
+      "noImages": "Aucune image",
+      "rooms": "Chambres",
+      "hotelRoomsTitle": "Chambres de l’hôtel",
+      "addRoom": "Ajouter une chambre",
+      "priceDay": "Prix / jour",
+      "start": "Début",
+      "end": "Fin",
+      "hotelName": "Nom",
+      "classification": "Classification",
+      "roomType": "Type",
+      "roomNumber": "N°",
+      "capacity": "Capacité",
+      "priceNight": "Prix / nuit",
+      "code": "Code",
+      "availableFrom": "Disponible du",
+      "availableUntil": "Disponible jusqu'au",
+      "owner": "Propriétaire",
+      "description": "Description"
     },
     "countries": {
       "name": "Nom",

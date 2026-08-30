@@ -4393,8 +4393,31 @@
       "count": "Count"
     },
     "catalog": {
-      "title": "Rentals & hotels",
-      "subtitle": "Rental vehicles, bookings and hotel catalog."
+      "title": "Title",
+      "subtitle": "Rental vehicles, bookings and hotel catalog.",
+      "tabRentals": "Rental vehicles",
+      "tabRentalBookings": "Rental bookings",
+      "tabHotels": "Hotels",
+      "images": "Images",
+      "rentalImagesTitle": "Vehicle images",
+      "noImages": "No images",
+      "rooms": "Rooms",
+      "hotelRoomsTitle": "Hotel rooms",
+      "addRoom": "Add room",
+      "priceDay": "Price / day",
+      "start": "Start",
+      "end": "End",
+      "hotelName": "Name",
+      "classification": "Classification",
+      "roomType": "Type",
+      "roomNumber": "No.",
+      "capacity": "Capacity",
+      "priceNight": "Price / night",
+      "code": "Code",
+      "availableFrom": "Available from",
+      "availableUntil": "Available until",
+      "owner": "Owner",
+      "description": "Description"
     },
     "countries": {
       "name": "Name",
