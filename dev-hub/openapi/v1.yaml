@@ -29061,6 +29061,22 @@ components:
       scheme: bearer
       bearerFormat: Sanctum
   parameters:
+    TravelReportPeriod:
+      name: from
+      in: query
+      required: false
+      description: 'Borne basse de la période (YYYY-MM-DD)'
+      schema:
+        type: string
+        format: date
+    TravelReportPeriodTo:
+      name: to
+      in: query
+      required: false
+      description: 'Borne haute de la période (YYYY-MM-DD)'
+      schema:
+        type: string
+        format: date
     ProjectId:
       name: project
       in: path
