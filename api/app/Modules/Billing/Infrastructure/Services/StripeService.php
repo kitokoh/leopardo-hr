@@ -6,6 +6,7 @@ namespace App\Modules\Billing\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Events\SubscriptionPaid;
+use App\Modules\Billing\Domain\Enums\InvoiceStatus;
 use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
@@ -267,8 +268,7 @@ class StripeService
                 $amountPaid = (float) ($invoiceModel->total ?? $invoiceModel->amount ?? 0);
             }
 
-            $invoiceModel->update([
-                'status' => 'paid',
+            $this->transitionInvoice($invoiceModel, InvoiceStatus::Paid, [
                 'paid_at' => now(),
                 'payment_method' => 'stripe',
             ]);
@@ -329,7 +329,7 @@ class StripeService
             return;
         }
 
-        $invoiceModel->update(['status' => 'overdue']);
+        $this->transitionInvoice($invoiceModel, InvoiceStatus::Overdue);
 
         if ($invoiceModel->subscription) {
             $invoiceModel->subscription->update(['status' => 'past_due']);
@@ -407,6 +407,29 @@ class StripeService
                     'error' => $e->getMessage(),
                 ]);
             }
+        }
+    }
+
+    /**
+     * Transition d'état GARDÉE pour les factures (DEP-BC21 #6248) — même
+     * contrat que les souscriptions : jamais d'exception remontée au webhook,
+     * un refus de transition (ex. facture déjà payée ou annulée) est
+     * journalisé et l'état courant est conservé.
+     *
+     * @param  array<string, mixed>  $extra  attributs additionnels (paid_at, payment_method…)
+     */
+    private function transitionInvoice(Invoice $invoice, InvoiceStatus $target, array $extra = []): void
+    {
+        try {
+            $invoice->transitionTo($target, $extra);
+        } catch (InvalidArgumentException $e) {
+            Log::warning('Stripe: Transition de facture refusée par la machine à états', [
+                'company_id' => $invoice->company_id,
+                'invoice_id' => $invoice->id,
+                'from' => $invoice->status,
+                'to' => $target->value,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 }
