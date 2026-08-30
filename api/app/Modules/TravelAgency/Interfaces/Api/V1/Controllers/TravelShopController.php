@@ -273,6 +273,8 @@ class TravelShopController extends Controller
         // Le code de validation en clair n'est JAMAIS renvoyé : seul le
         // statut et le numéro de billet sont exposés ici.
         $data['ticket_numbers'] = $booking->tickets->map(fn (TravelTicket $t): string => $t->ticket_number);
+        // Portail client (TRAVEL-702) : ids nécessaires pour l'e-billet PDF.
+        $data['ticket_ids'] = $booking->tickets->map(fn (TravelTicket $t): int => (int) $t->getAttribute('id'))->values();
 
         return response()->json(['data' => $data]);
     }
