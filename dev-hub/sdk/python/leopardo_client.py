@@ -3384,6 +3384,10 @@ class LeopardoClient:
         """Modification d'une classe de service (TRAVEL-305/#6035)"""
         return self.request("PUT", "/travel/classes/{travelClass}", **kwargs)
 
+    def post_travel_contact(self, **kwargs):
+        """Formulaire de contact → lead CRM (TRAVEL-416/#6068)"""
+        return self.request("POST", "/travel/contact", **kwargs)
+
     def get_travel_countries(self, **kwargs):
         """Référentiel pays en lecture (TRAVEL-301/#6031)"""
         return self.request("GET", "/travel/countries", **kwargs)

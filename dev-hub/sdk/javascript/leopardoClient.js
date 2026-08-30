@@ -4205,6 +4205,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/travel/classes/{travelClass}", options);
     },
 
+    /** Formulaire de contact → lead CRM (TRAVEL-416/#6068) */
+    postTravelContact(options = {}) {
+      return request("POST", "/travel/contact", options);
+    },
+
     /** Référentiel pays en lecture (TRAVEL-301/#6031) */
     getTravelCountries(options = {}) {
       return request("GET", "/travel/countries", options);

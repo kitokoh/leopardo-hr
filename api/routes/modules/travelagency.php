@@ -32,6 +32,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleCo
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
@@ -127,6 +128,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // Billets PDF (TRAVEL-412/413/#6064/#6065).
         Route::get('/tickets/{travelTicket}/pdf', [TravelTicketController::class, 'pdf']);
         Route::post('/tickets/{travelTicket}/revoke', [TravelTicketController::class, 'revoke']);
+
+        // Formulaire de contact → lead CRM (TRAVEL-416/#6068).
+        Route::post('/contact', [TravelContactController::class, 'store']);
 
         // Boutique en ligne (TRAVEL-401..404/#6053..#6056).
         Route::get('/shop/trips', [TravelShopController::class, 'search']);

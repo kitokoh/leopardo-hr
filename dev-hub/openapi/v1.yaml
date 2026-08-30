@@ -4238,6 +4238,59 @@ paths:
           description: Permission de check-in requise
         '422':
           description: Billet déjà enregistré (check-in)
+  /travel/contact:
+    post:
+      tags:
+      - Travel
+      summary: Formulaire de contact → lead CRM (TRAVEL-416/#6068)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - email
+              - message
+              - consent
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                email:
+                  type: string
+                  format: email
+                  maxLength: 160
+                phone:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                message:
+                  type: string
+                  minLength: 3
+                  maxLength: 2000
+                consent:
+                  type: boolean
+      responses:
+        '202':
+          description: Contact accepté (événement travel.contact.submitted.v1 publié)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      accepted:
+                        type: boolean
+        '401':
+          description: Non authentifié
+        '422':
+          description: Validation échouée (consentement requis, message borné)
   /health:
     get:
       tags:
