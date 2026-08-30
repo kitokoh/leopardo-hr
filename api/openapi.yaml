@@ -30060,6 +30060,22 @@ components:
       scheme: bearer
       bearerFormat: Sanctum
   parameters:
+    TravelReportPeriod:
+      name: period
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [today, week, month, quarter, year, range]
+      description: Période du rapport travel (TRAVEL-501..504)
+    TravelReportPeriodTo:
+      name: period_to
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+      description: Fin de période (YYYY-MM-DD) quand period=range
     ProjectId:
       name: project
       in: path
