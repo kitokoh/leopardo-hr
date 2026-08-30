@@ -73,7 +73,8 @@ import {
   NewspaperIcon,
   QrCodeIcon,
   TicketIcon,
-  ChartBarIcon
+  ChartBarIcon,
+  MegaphoneIcon
 } from '@heroicons/vue/24/outline'
 
 const localeStore = useLocaleStore()
@@ -132,6 +133,13 @@ const sections = computed(() => [
     icon: ChartBarIcon,
     title: t('travel.reports.title', 'Rapports'),
     description: t('travel.reports.subtitle', 'Ventes, occupation, recettes, annulations et exports CSV.')
+  },
+  {
+    name: 'travel-content',
+    path: '/travel/content',
+    icon: MegaphoneIcon,
+    title: t('travel.content.title', 'Contenu & annonces'),
+    description: t('travel.content.subtitle', 'Quiz, annonces payantes et sites touristiques.')
   },
   {
     name: 'travel-catalog',
