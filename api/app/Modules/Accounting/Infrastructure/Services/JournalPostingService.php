@@ -247,7 +247,7 @@ final class JournalPostingService
 
         $period = $entryDate->format('Y-m');
 
-        return DB::transaction(function () use ($sourceType, $sourceId, $entryDate, $period, $piece, $description, $lines): int {
+        return DB::transaction(function () use ($companyId, $sourceType, $sourceId, $entryDate, $period, $piece, $description, $lines): int {
             $count = 0;
 
             foreach ($lines as $line) {
