@@ -1509,17 +1509,11 @@ Note 2026-08-26 (PM hygiene, PR #5597) : retour au vert des checks backend — R
 - Payroll : `PayrollPaymentOrder::items()` a une FK explicite `payment_order_id` → l'ordre de virement prépare ses lignes sans QueryException (`column payroll_payment_order_id does not exist`).
 - Couverture : `VatDeclarationTest`, `AccountingMultiCurrencyTest`, `WebhookIdempotenceTest`, `EmailBounceWebhookControllerTest`, `ShareAccessAuditTest`, `PayrollPaymentOrderFlowTest`, `TwoFactorAuthTest`, `AccountingActivationTest` (route `/activation/complete`), `LangCatalogParityTest` (fins de fichier `];` tolérées), `OpenApiDocsTest` (`openapi: "3.0.3"` quoté).
 
-<<<<<<< HEAD
-<!-- updated for Governance Gate -->
-=======
+## Billing ops — recouvrement & supervision (DEP-BC21, #6251/#6249/#6248)
+
+- Scheduler billing dédupliqué (PR #6263) : les commandes `billing:check-trials`, `billing:check-overdue`, `billing:generate-invoices` ne sont plus déclarées dans `api/routes/console.php` (source canonique : `bootstrap/app.php` → `withSchedule`) ; `billing:enforce-delinquency` planifié quotidien (06:30). Scénarios : `php artisan schedule:list` ne liste chaque commande billing QU'UNE fois ; rejouer la commande deux fois → aucun effet double (idempotence).
+- `billing:report` : agrège des compteurs non nominatifs (souscriptions/factures/paiements par statut) ; base vide → exit 0 sans erreur. Couverture : `BillingReportCommandTest`.
+- `billing:reconcile-payments` : dry-run par défaut (aucune mutation) ; `--apply` corrige uniquement les écarts sûrs (montant + company concordants, via `Invoice::transitionTo(Paid)`) ; doublons `provider_reference` et factures `paid` orphelines signalés (jamais corrigés) ; code retour 0 = aucun écart / 2 = écarts ; rejoué → idempotent. Couverture : `BillingReconcilePaymentsTest`.
+- Grace period par facture (`billing:enforce-delinquency`) : `active` avec facture due impayée → `past_due` ; `past_due` dont `due_date` + grâce dépassée → `expired` (repli `current_period_end` si aucune facture). Couverture : `InvoiceStateMachineTest`.
+
 Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (manifest + stations/sites + équipements + relevés + shifts + présence + caisse + ventes).
-- Manifest de solution : `App\Core\Solutions` (contrat `SolutionManifest`, catalogue allowlist fail-closed, activateur audité, commande `leopardo:solution:activate`) + `FuelStationManifest` (FUEL-001). Activation idempotente par feature flag, dépendances manquantes → 422 `SOLUTION_MISSING_DEPENDENCY`, code inconnu → 404 `SOLUTION_NOT_FOUND`. Tests : `SolutionManifestTest`.
-- Stations et sites tenant-first (FUEL-002) : tables `fuel_stations` (code unique par tenant, timezone, statut CHECK active|inactive|archived) et `fuel_sites` (FK composite `(station_id, company_id)` → `fuel_stations`, statut CHECK active|inactive) — company_id non nullable partout, références cross-tenant physiquement impossibles. Tests : `FuelStationMigrationTest`, `FuelSitesInvariantTest`.
-- Équipements (FUEL-003) : `fuel_pumps`, `fuel_tanks` (capacity_minor CHECK > 0, unit_code CHECK l|gal), `fuel_meter_registers` (meter_type/status/unit CHECKs, `UNIQUE (company_id, pump_id, meter_code)`) — FK composites anti cross-tenant. Tests : `FuelEquipmentTest`.
-- Relevés de compteur (FUEL-004) : `POST/GET /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings` — cumul en unités mineures, heure UTC + locale, delta/rollover/anomalie, idempotence par `UNIQUE (company_id, idempotency_key)` (zéro doublon au rejeu), correction versionnée `POST /fuel-station/meter-readings/{reading}/corrections` et revue `POST /fuel-station/meter-intervals/{interval}/review` (RBAC `api.manager`). Tests : `FuelMeterReadingTest`.
-- Shifts et affectations (FUEL-005) : `GET/POST /fuel-station/shifts`, affectations par date, chevauchements contrôlés (`FuelShiftService::assertNoOverlap`), self-service pompiste `GET /fuel-station/me/shifts`. Tests : `FuelShiftApiTest`.
-- Présence opérateur (FUEL-006) : `GET /fuel-station/me/presence`, `GET /fuel-station/shifts/{shift}/presence` — résolue via la logique Attendance (pas de duplication). Tests : `FuelPresenceApiTest`.
-- Sessions de caisse (FUEL-007) : ouverture `POST /fuel-station/cash-sessions`, mouvements, clôture idempotente `POST /fuel-station/cash-sessions/{session}/close` (écarts + approbation manager, événement `FuelCashSessionClosed`). Tests : `FuelCashSessionApiTest`.
-- Ventes (FUEL-008) : `POST/GET /fuel-station/sales` — transactions par pompe liées shift/session. Tests : `FuelSaleApiTest`.
-- Couverture globale : solution inactive → 403 `FUEL_SOLUTION_INACTIVE` (fail-closed) ; OpenAPI 3 chemins `/fuel-station/*` + SDK régénérés (885 ops) ; i18n ×4 (`FUEL_*`).
->>>>>>> origin/main
