@@ -9,9 +9,12 @@ use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\ParticipateQuizAction;
 use App\Modules\TravelAgency\Domain\Enums\QuizStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelQuiz;
+use App\Modules\TravelAgency\Domain\Models\TravelQuizQuestion;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\ParticipateTravelQuizRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelQuizQuestionRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelQuizRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelQuizQuestionRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelQuizRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -123,6 +126,80 @@ class TravelQuizController extends Controller
         ]);
 
         return response()->json(['data' => ['id' => $question->id]], 201);
+    }
+
+    /**
+     * TRAVEL-914 (#6422) — Mise à jour d'un quiz (gestion admin).
+     * La bonne réponse n'est jamais exposée en lecture ; elle n'est
+     * acceptée qu'en écriture (requests dédiées).
+     */
+    public function update(UpdateTravelQuizRequest $request, TravelQuiz $travelQuiz): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('update', $travelQuiz)) {
+            abort(403);
+        }
+
+        $travelQuiz->forceFill([
+            'title' => trim((string) $request->validated('title')),
+            'description_redacted' => $request->validated('description'),
+            'starts_at' => $request->validated('starts_at'),
+            'ends_at' => $request->validated('ends_at'),
+            'max_participations_per_contact' => (int) ($request->validated('max_participations_per_contact') ?? $travelQuiz->max_participations_per_contact),
+            'status' => $request->validated('status') ?? $travelQuiz->status->value,
+        ])->save();
+
+        return response()->json(['data' => ['id' => $travelQuiz->id, 'status' => $travelQuiz->status->value]]);
+    }
+
+    /**
+     * TRAVEL-914 (#6422) — Mise à jour d'une question de quiz (gestion admin).
+     */
+    public function updateQuestion(UpdateTravelQuizQuestionRequest $request, TravelQuiz $travelQuiz, TravelQuizQuestion $travelQuizQuestion): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('update', $travelQuiz)) {
+            abort(403);
+        }
+
+        if ($travelQuizQuestion->quiz_id !== $travelQuiz->id || $travelQuizQuestion->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $travelQuizQuestion->forceFill([
+            'question' => trim((string) $request->validated('question')),
+            'options' => $request->validated('options'),
+            'correct_option_index' => (int) $request->validated('correct_option_index'),
+            'points' => (int) ($request->validated('points') ?? $travelQuizQuestion->points),
+            'position' => (int) ($request->validated('position') ?? $travelQuizQuestion->position),
+        ])->save();
+
+        return response()->json(['data' => ['id' => $travelQuizQuestion->id]]);
+    }
+
+    /**
+     * TRAVEL-914 (#6422) — Suppression d'une question de quiz (gestion admin).
+     */
+    public function destroyQuestion(Request $request, TravelQuiz $travelQuiz, TravelQuizQuestion $travelQuizQuestion): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('update', $travelQuiz)) {
+            abort(403);
+        }
+
+        if ($travelQuizQuestion->quiz_id !== $travelQuiz->id || $travelQuizQuestion->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $travelQuizQuestion->delete();
+
+        return response()->json(null, 204);
     }
 
     public function participate(ParticipateTravelQuizRequest $request, TravelQuiz $travelQuiz): JsonResponse
