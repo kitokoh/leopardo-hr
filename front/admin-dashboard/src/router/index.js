@@ -4,6 +4,7 @@ import { useLocaleStore } from '@/stores/locale'
 import { translate } from '@/i18n/index.js'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import FuelManagerView from '@/views/fuel/FuelManagerView.vue'
 
 // Configuration NProgress
 NProgress.configure({
@@ -213,7 +214,7 @@ const routes = [
       {
         path: '/fuel-station',
         name: 'fuelStation',
-        component: () => import('../../views/fuel/FuelManagerView.vue'),
+        component: FuelManagerView,
         meta: {
           title: 'navigation.fuelStation',
           icon: 'BoltIcon'
