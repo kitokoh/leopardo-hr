@@ -81,7 +81,6 @@ jobs:
 
   backend-coverage:
     needs: detect-changes
-    if: needs.detect-changes.outputs.api_changed == 'true'
     name: Backend Coverage (PHP 8.4 + PostgreSQL 16)
     runs-on: ubuntu-latest
     # Issue #4111 : timeout déterministe — un job bloqué (infra, saturation CI,
@@ -119,6 +118,7 @@ jobs:
 
     steps:
       - name: Checkout code
+        if: needs.detect-changes.outputs.api_changed == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           # Quota Git LFS épuisé (2026-08-29, budget mensuel) : les jobs
@@ -128,11 +128,13 @@ jobs:
           lfs: false
 
       - name: Setup backend (PHP + Composer + multi-tenant DB)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         uses: ./.github/actions/setup-backend-db
         with:
           coverage: pcov
 
       - name: Run tests with coverage
+        if: needs.detect-changes.outputs.api_changed == 'true'
         working-directory: ./api
         shell: bash
         env:
@@ -212,6 +214,7 @@ jobs:
           PY
 
       - name: Parse coverage percentage
+        if: needs.detect-changes.outputs.api_changed == 'true'
         id: coverage
         working-directory: ./api
         shell: bash
@@ -243,6 +246,7 @@ jobs:
           echo "Backend coverage: ${PERCENT}%"
 
       - name: Compute per-module coverage
+        if: needs.detect-changes.outputs.api_changed == 'true'
         id: modules
         working-directory: ./api
         shell: bash
@@ -300,6 +304,7 @@ jobs:
           fi
 
       - name: Evaluate coverage gate
+        if: needs.detect-changes.outputs.api_changed == 'true'
         id: gate
         shell: bash
         env:

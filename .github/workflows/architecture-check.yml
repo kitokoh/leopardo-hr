@@ -230,7 +230,6 @@ jobs:
   # breakdown and the plan to shrink the baseline over time.
   phpstan-strict:
     needs: detect-changes
-    if: needs.detect-changes.outputs.api_changed == 'true'
     timeout-minutes: 45
     name: PHPStan — Strict (Core/Modules/Shared, level 8)
     runs-on: ubuntu-latest
@@ -245,22 +244,24 @@ jobs:
           lfs: false
 
       - name: Setup PHP
+        if: needs.detect-changes.outputs.api_changed == 'true'
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
         with:
           php-version: '8.4'
           tools: composer
 
       - name: Install dependencies
+        if: needs.detect-changes.outputs.api_changed == 'true'
         working-directory: api
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Run PHPStan (strict, blocking on delta vs baseline)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         working-directory: api
         run: vendor/bin/phpstan analyse --configuration=phpstan-strict.neon --memory-limit=1G --no-progress
 
   module-structure-check:
     needs: detect-changes
-    if: needs.detect-changes.outputs.api_changed == 'true'
     timeout-minutes: 45
     name: Module Structure Validator
     runs-on: ubuntu-latest
@@ -281,6 +282,7 @@ jobs:
           fetch-depth: 0
 
       - name: Check module structure
+        if: needs.detect-changes.outputs.api_changed == 'true'
         run: |
           echo "Checking Clean Architecture module structure..."
           ERRORS=0
@@ -337,6 +339,7 @@ jobs:
           echo "✅ All module structures valid ($(echo "$MODULES" | wc -l) modules checked)."
 
       - name: Bounded context registry guard (MAT-001 / issue #5859)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         # Registre canonique des bounded contexts : tout répertoire métier doit
         # être déclaré (chemins actifs existants, planned tolérés), CODEOWNERS
         # cohérent, dépendances référencées valides, routes/migrations déclarées
@@ -344,6 +347,7 @@ jobs:
         run: bash dev-hub/tools/check-bounded-context-registry.sh
 
       - name: Check module isolation (issue #5584)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         # Garde archunit-style : bloque TOUT nouvel import croisé
         # (`use App\Modules\<X>\` dans un autre module ou dans Core/) — la
         # dette existante (16/18 modules, 57 paires) est actée dans
@@ -351,12 +355,15 @@ jobs:
         run: dev-hub/tools/check-module-isolation.sh
 
       - name: Check for orphan (unrouted) controllers
+        if: needs.detect-changes.outputs.api_changed == 'true'
         run: dev-hub/tools/check-unrouted-controllers.sh api
 
       - name: Architecture docs parity guard — modules réels ↔ docs (issue #5589)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         run: bash dev-hub/tools/check-architecture-docs-parity.sh
 
       - name: Cross-module import guard — no new inter-module imports (issue #5584)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         env:
           DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -373,13 +380,16 @@ jobs:
           bash dev-hub/tools/check-cross-module-imports.sh "${base_sha}" "${head_sha}" api
 
       - name: Check migration basename collisions (issue #1962)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         run: dev-hub/tools/check-migration-basename-collisions.sh
 
       - name: Report test-schema drift vs migrations (issue #1489, non blocking)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         continue-on-error: true
         run: dev-hub/tools/check-test-schema-drift.sh api
 
       - name: Check newly added files declare strict_types (PA2-ARCH-009)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         env:
           DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -403,6 +413,7 @@ jobs:
           dev-hub/tools/check-strict-types-new-files.sh "${base_sha}" "${head_sha}" api
 
       - name: Check no new hardcoded accented messages in controllers (PA2-I18N-007)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         env:
           DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -426,6 +437,7 @@ jobs:
           dev-hub/tools/check-hardcoded-accented-messages.sh "${base_sha}" "${head_sha}" api
 
       - name: Check no touched module regresses its PHPStan baseline count (PA2-ARCH-005)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         env:
           DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -449,6 +461,7 @@ jobs:
           dev-hub/tools/check-phpstan-baseline-delta.sh "${base_sha}" "${head_sha}" api
 
       - name: Check no PR adds PHPStan baseline debt (#5448 - garde 0 nouvelle entree)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         env:
           DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -473,7 +486,6 @@ jobs:
 
   frontend-lint:
     needs: detect-changes
-    if: needs.detect-changes.outputs.web_changed == 'true'
     timeout-minutes: 15
     name: Frontend — ESLint + TypeScript
     runs-on: ubuntu-latest
@@ -488,6 +500,7 @@ jobs:
           lfs: false
 
       - name: Setup Node.js
+        if: needs.detect-changes.outputs.web_changed == 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '20'
@@ -495,13 +508,16 @@ jobs:
           cache-dependency-path: front/web/package-lock.json
 
       - name: Install dependencies
+        if: needs.detect-changes.outputs.web_changed == 'true'
         working-directory: front/web
         run: npm ci
 
       - name: TypeScript check
+        if: needs.detect-changes.outputs.web_changed == 'true'
         working-directory: front/web
         run: npx tsc --noEmit
 
       - name: ESLint
+        if: needs.detect-changes.outputs.web_changed == 'true'
         working-directory: front/web
         run: npx eslint src --ext .ts,.tsx --max-warnings 0
