@@ -2307,6 +2307,8 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'student_id', 'guardian_id'], 'edu_student_guardians_company_student_guardian_unique');
                 $table->index(['company_id', 'student_id'], 'edu_student_guardians_company_student_idx');
                 $table->index(['company_id', 'guardian_id'], 'edu_student_guardians_company_guardian_idx');
+            });
+        }
 
         // — FuelStation (solution verticale, FUEL-002..008, issues #5795..#5802) :
         // parité fixture ↔ migrations tenant récentes (garde #5443) — mêmes
