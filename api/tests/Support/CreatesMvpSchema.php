@@ -2507,6 +2507,7 @@ trait CreatesMvpSchema
             });
         }
 
+>>>>>>> faa902b2c (feat(delivery): schéma tenant delivery_* — 5 tables + parité + isolation (DELIVERY-102, Closes #6283))
         // ── BC-26 DELIVERY (delivery_deliveries) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('delivery_deliveries'))) {
             Schema::create($this->moduleTable('delivery_deliveries'), function (Blueprint $table): void {
@@ -2618,6 +2619,7 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'route_id'], 'delivery_cod_settlements_company_route_unique');
             });
         }
+<<<<<<< HEAD
 
         // ── BC-24 TRAVEL (verticale TravelAgency, TRAVEL-201/202/203) ──────
         if (! Schema::hasTable($this->moduleTable('travel_countries'))) {
@@ -3323,6 +3325,7 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'hotel_id', 'room_number'], 'travel_hotel_rooms_company_hotel_room_unique');
             });
         }
+=======
     }
 
     private function dropMvpTables(): void
