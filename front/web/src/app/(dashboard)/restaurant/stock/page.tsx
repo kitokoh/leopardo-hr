@@ -78,9 +78,23 @@ export default function RestaurantStockPage() {
   const poAction = async (id: number, action: 'send' | 'receive') => {
     setError('');
     try {
+      let body: string | undefined;
+      if (action === 'receive') {
+        // Réception complète : on reprend les lignes du bon (quantités identiques).
+        const detail = await apiFetch(`/restaurant/purchase-orders/${id}`);
+        if (!detail.ok) throw new Error(`HTTP ${detail.status}`);
+        const payload = (await detail.json()) as { data?: { items?: { ingredient_id: number; quantity: string; unit_price_minor: number }[] } };
+        const items = (payload.data?.items ?? []).map((it) => ({
+          ingredient_id: it.ingredient_id,
+          quantity: Number(it.quantity),
+          unit_price_minor: it.unit_price_minor,
+        }));
+        if (items.length === 0) throw new Error('Aucune ligne à réceptionner.');
+        body = JSON.stringify({ items });
+      }
       const res = await apiFetch(`/restaurant/purchase-orders/${id}/${action}`, {
         method: 'POST',
-        body: action === 'receive' ? JSON.stringify({ items: [] }) : undefined,
+        body,
       });
       if (!res.ok) {
         const payload = await res.json().catch(() => ({}));

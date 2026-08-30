@@ -77,7 +77,13 @@ export default function RestaurantDeliveryPage() {
   const transition = async (id: number, action: string) => {
     setError('');
     try {
-      const res = await apiFetch(`/restaurant/deliveries/${id}/${action}`, { method: 'POST' });
+      let body: string | undefined;
+      if (action === 'assign') {
+        const riderId = window.prompt(t(locale, 'restaurant.del.riderPrompt', 'ID du livreur à assigner :'));
+        if (!riderId) return;
+        body = JSON.stringify({ rider_id: Number(riderId) });
+      }
+      const res = await apiFetch(`/restaurant/deliveries/${id}/${action}`, { method: 'POST', body });
       if (!res.ok) {
         const payload = await res.json().catch(() => ({}));
         throw new Error((payload as { message?: string }).message ?? `HTTP ${res.status}`);
