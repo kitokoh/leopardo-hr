@@ -65,7 +65,8 @@ return [
     'EDU_IMPORT_SUBJECT_UNKNOWN' => 'Matière introuvable (code).',
     'EDU_IMPORT_ASSESSMENT_UNKNOWN' => 'Aucune évaluation publiable pour cette matière.',
     'EDU_EXPORT_KIND' => 'Type d\'export inconnu.',
-    'FUEL_READING_FUTURE' => 'Le relevé est daté dans le futur.',
+
+    'EDU_FEE_TERMINAL' => 'Ce frais est déjà soldé (payé, remis ou annulé).',    'FUEL_READING_FUTURE' => 'Le relevé est daté dans le futur.',
     'FUEL_READING_REJECTED' => 'Le relevé a été rejeté.',
     'FUEL_READING_REVIEWED' => 'Ce relevé a déjà été corrigé ou revu.',
     'INVALID_CURRENT_PASSWORD' => 'Le mot de passe actuel est incorrect.',
