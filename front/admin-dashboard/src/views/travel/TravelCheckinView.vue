@@ -20,6 +20,7 @@
           <select
             v-model="selectedTripId"
             class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            :aria-label="t('travel.checkin.trip', 'Trajet')"
             @change="loadManifest"
           >
             <option value="">{{ t('travel.checkin.selectTrip', 'Sélectionner un trajet…') }}</option>
@@ -32,8 +33,9 @@
           v-if="manifest.length"
           class="rounded-xl bg-slate-50 px-4 py-2 text-sm dark:bg-slate-800/50"
         >
-          <span class="font-semibold text-slate-900 dark:text-white">{{ boardedCount }}</span>
-          <span class="text-slate-500 dark:text-slate-400"> / {{ manifest.length }} {{ t('travel.checkin.boarded', 'embarqués') }}</span>
+          <span class="text-sm text-slate-500 dark:text-slate-400">
+            {{ boardedCount }} / {{ manifest.length }} {{ t('travel.checkin.boarded', 'embarqués') }}
+          </span>
         </div>
       </div>
 
