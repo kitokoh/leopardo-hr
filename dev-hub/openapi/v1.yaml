@@ -52,6 +52,8 @@ tags:
   description: Groupe d'opérations Health
 - name: Auth
   description: Groupe d'opérations Auth
+- name: Restaurant
+  description: Groupe d'opérations Restaurant (BC-25 RESTAURANT)
 - name: Payrolls
   description: Groupe d'opérations Payrolls
 - name: HR Referentials
@@ -743,6 +745,7 @@ paths:
                 properties:
                   data:
                     type: array
+<<<<<<< HEAD
   /travel/ping:
     get:
       tags:
@@ -751,6 +754,16 @@ paths:
       description: |
         Route de contrôle : prouve que le module est chargé, que le feature flag
         `travelagency` est actif pour le tenant courant et que le pipeline
+=======
+  /restaurant/ping:
+    get:
+      tags:
+      - Restaurant
+      summary: Smoke test de la verticale RestaurantManager (BC-25 RESTAURANT, RESTO-101/#6158)
+      description: |
+        Route de contrôle : prouve que le module est chargé, que le feature flag
+        `restaurantmanager` est actif pour le tenant courant et que le pipeline
+>>>>>>> 22b1f1143 (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
         middleware (auth → tenant → module) est opérationnel. Lecture pure.
       security:
       - BearerAuth: []
@@ -770,6 +783,7 @@ paths:
                     example: ok
                   service:
                     type: string
+<<<<<<< HEAD
                     example: travelagency
         '401':
           description: Non authentifié
@@ -4760,6 +4774,13 @@ paths:
                     example: Demande envoyée.
         '422':
           description: Validation échouée (consentement manquant, message hors bornes, email/téléphone absents)
+=======
+                    example: restaurantmanager
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag restaurantmanager inactif
+>>>>>>> 22b1f1143 (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
   /health:
     get:
       tags:
