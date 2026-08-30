@@ -3789,7 +3789,7 @@ class LeopardoClient:
         return self.request("GET", "/travel/quizzes/{travelQuiz}", **kwargs)
 
     def put_travel_quizzes_by_travelquiz(self, **kwargs):
-        """TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut)"""
+        """TRAVEL-914 — Mise à jour d''un quiz (titre, période, statut)"""
         return self.request("PUT", "/travel/quizzes/{travelQuiz}", **kwargs)
 
     def post_travel_quizzes_by_travelquiz_participate(self, **kwargs):
@@ -3797,7 +3797,7 @@ class LeopardoClient:
         return self.request("POST", "/travel/quizzes/{travelQuiz}/participate", **kwargs)
 
     def get_travel_quizzes_by_travelquiz_questions(self, **kwargs):
-        """TRAVEL-914 — Questions d'un quiz (admin, bonne réponse exposée)"""
+        """TRAVEL-914 — Questions d''un quiz (admin, bonne réponse exposée)"""
         return self.request("GET", "/travel/quizzes/{travelQuiz}/questions", **kwargs)
 
     def post_travel_quizzes_by_travelquiz_questions(self, **kwargs):
@@ -3805,11 +3805,11 @@ class LeopardoClient:
         return self.request("POST", "/travel/quizzes/{travelQuiz}/questions", **kwargs)
 
     def delete_travel_quizzes_by_travelquiz_questions_by_travelquizquestion(self, **kwargs):
-        """TRAVEL-914 — Suppression d'une question"""
+        """TRAVEL-914 — Suppression d''une question"""
         return self.request("DELETE", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", **kwargs)
 
     def put_travel_quizzes_by_travelquiz_questions_by_travelquizquestion(self, **kwargs):
-        """TRAVEL-914 — Mise à jour d'une question"""
+        """TRAVEL-914 — Mise à jour d''une question"""
         return self.request("PUT", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", **kwargs)
 
     def get_travel_quizzes_by_travelquiz_results(self, **kwargs):
