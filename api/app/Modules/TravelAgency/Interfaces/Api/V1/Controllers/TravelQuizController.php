@@ -129,6 +129,33 @@ class TravelQuizController extends Controller
     }
 
     /**
+     * TRAVEL-914 (#6422) — Liste admin des questions d'un quiz AVEC la
+     * bonne réponse (réservée aux rôles gestion via TravelQuizPolicy::update).
+     * L'endpoint public `show` reste la seule surface côté participants
+     * (sans correct_option_index).
+     */
+    public function questionsIndex(Request $request, TravelQuiz $travelQuiz): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('update', $travelQuiz)) {
+            abort(403);
+        }
+
+        $questions = $travelQuiz->questions()->orderBy('position')->get()->map(fn ($q) => [
+            'id' => $q->id,
+            'question' => $q->question,
+            'options' => $q->options,
+            'correct_option_index' => $q->correct_option_index,
+            'points' => $q->points,
+            'position' => $q->position,
+        ]);
+
+        return response()->json(['data' => $questions]);
+    }
+
+    /**
      * TRAVEL-914 (#6422) — Mise à jour d'un quiz (gestion admin).
      * La bonne réponse n'est jamais exposée en lecture ; elle n'est
      * acceptée qu'en écriture (requests dédiées).

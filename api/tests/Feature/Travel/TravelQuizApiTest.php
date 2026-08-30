@@ -276,4 +276,31 @@ class TravelQuizApiTest extends TestCase
         $this->deleteJson("/api/v1/travel/quizzes/{$quiz->id}/questions/{$foreignQuestion->id}")
             ->assertStatus(404);
     }
+
+    public function test_questions_admin_list_exposes_correct_answer_only_to_manager(): void
+    {
+        $this->actingManager();
+        $quiz = $this->makeQuizWithQuestions();
+
+        $this->getJson("/api/v1/travel/quizzes/{$quiz->id}/questions")
+            ->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.correct_option_index', 1)
+            ->assertJsonPath('data.1.correct_option_index', 1);
+    }
+
+    public function test_questions_admin_list_requires_manager_role(): void
+    {
+        /** @var Employee $agent */
+        $agent = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'agent',
+            'manager_role' => null,
+        ]);
+        Sanctum::actingAs($agent);
+
+        $quiz = $this->makeQuizWithQuestions();
+
+        $this->getJson("/api/v1/travel/quizzes/{$quiz->id}/questions")->assertStatus(403);
+    }
 }

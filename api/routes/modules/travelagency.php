@@ -195,6 +195,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/quizzes', [TravelQuizController::class, 'store']);
         Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
         Route::post('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'storeQuestion']);
+        Route::get('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'questionsIndex']); // TRAVEL-914/#6422 — admin (avec bonne réponse)
         Route::put('/quizzes/{travelQuiz}/questions/{travelQuizQuestion}', [TravelQuizController::class, 'updateQuestion']); // TRAVEL-914/#6422
         Route::delete('/quizzes/{travelQuiz}/questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']); // TRAVEL-914/#6422
         Route::put('/quizzes/{travelQuiz}', [TravelQuizController::class, 'update']); // TRAVEL-914/#6422
