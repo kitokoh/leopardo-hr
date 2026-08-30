@@ -3631,5 +3631,24 @@
     "loadError": "Unable to load the kitchen queue.",
     "actionError": "Action failed, please retry.",
     "loading": "Loading kitchen queue…"
+  },
+  "travel": {
+    "publicContact": {
+      "title": "Contact the travel agency",
+      "subtitle": "A question about your trips, bookings or tickets? Write to us.",
+      "noLink": "This form requires the contact link provided by the agency (signed link).",
+      "invalidLink": "Invalid or expired contact link. Ask the agency for a new link.",
+      "sendFailed": "Sending failed. Try again.",
+      "ackTitle": "Request received",
+      "ackBody": "Thank you! The agency will get back to you shortly.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone",
+      "message": "Message",
+      "consent": "I agree to be contacted by email about my request.",
+      "sending": "Sending…",
+      "send": "Send request"
+    }
   }
 }
