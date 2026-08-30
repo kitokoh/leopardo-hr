@@ -142,7 +142,9 @@ async function mockTravelApi(page, { pingStatus = 200 } = {}) {
       contentType: 'application/json',
       body: JSON.stringify({
         data: [
-          { id: 1, title: 'Annonce pilote', content: 'Visitez le Cameroun', price_minor: 500000, currency: 'XAF', expires_at: null },
+          { id: 1, title: 'Annonce soumise', content: 'Nouvelle campagne', status: 'submitted', price_minor: 250000, currency: 'XAF', expires_at: null },
+          { id: 2, title: 'Annonce pilote', content: 'Visitez le Cameroun', status: 'paid', price_minor: 500000, currency: 'XAF', expires_at: null },
+          { id: 3, title: 'Annonce active', content: 'Offre spéciale', status: 'validated', price_minor: 300000, currency: 'XAF', expires_at: '2026-12-31T00:00:00+00:00' },
         ],
       }),
     }),
@@ -341,8 +343,20 @@ test.describe('TravelAgency — contenu & monétisation (TRAVEL-911/#6416)', () 
 
     await page.getByRole('tab', { name: /Annonces/i }).last().click()
     await expect(page.getByRole('heading', { name: /Annonces payantes/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText('Annonce soumise')).toBeVisible()
     await expect(page.getByText('Annonce pilote')).toBeVisible()
-    await expect(page.getByRole('button', { name: /Renouveler/i })).toBeVisible()
+    // Cycle de vie (mode gestion) : pay sur submitted, validate sur paid, renew sur validated
+    const submittedRow = page.locator('tr', { hasText: 'Annonce soumise' })
+    await expect(submittedRow.getByRole('button', { name: /Encaisser/i })).toBeVisible()
+    const paidRow = page.locator('tr', { hasText: 'Annonce pilote' })
+    await expect(paidRow.getByRole('button', { name: /Valider/i })).toBeVisible()
+    const activeRow = page.locator('tr', { hasText: 'Annonce active' })
+    await expect(activeRow.getByRole('button', { name: /Renouveler/i })).toBeVisible()
+    // Rejet avec motif (mock POST /reject via catch-all)
+    await paidRow.getByRole('button', { name: /Rejeter/i }).click()
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 15_000 })
+    await page.locator('#travel-advert-reject-reason').fill('Contenu non conforme')
+    await page.getByRole('dialog').getByRole('button', { name: 'Rejeter', exact: true }).click()
   })
 
   test('onglet Sites touristiques : CRUD + filtre par ville', async ({ page }) => {
@@ -377,8 +391,10 @@ test.describe('TravelAgency — contacts voyageurs (TRAVEL-912/#6417)', () => {
     await page.getByRole('button', { name: /Envoyer la demande/i }).click()
     await expect(page.getByText(/Demande reçue/i)).toBeVisible({ timeout: 15_000 })
 
-    // Registre + consentements + notification manuelle
+    // Registre + consentements (POST /consent) + notification manuelle
     await expect(page.getByText('awa@test.cm')).toBeVisible()
+    const consentSms = page.getByRole('button', { name: /SMS/i })
+    await consentSms.click()
     await expect(page.getByRole('button', { name: /Notifier/i })).toBeVisible()
     await page.getByRole('button', { name: /Notifier/i }).click()
     await expect(page.getByRole('dialog')).toBeVisible({ timeout: 15_000 })

@@ -3971,7 +3971,7 @@
       "tabPrices": "Grille tarifaire",
       "tabAdverts": "Annonces",
       "title": "Annonces payantes",
-      "subtitle": "Soumettre une annonce et suivre les annonces visibles.",
+      "subtitle": "Soumettre, encaisser, valider/rejeter et renouveler les annonces.",
       "createTitle": "Soumettre une annonce",
       "types": "Types d’annonces",
       "positions": "Emplacements publicitaires",
@@ -3984,12 +3984,18 @@
         "price": "Prix",
         "pricePerImage": "Prix par image",
         "pricePerCharacter": "Prix par caractère",
-        "expiresAt": "Expire le"
+        "expiresAt": "Expire le",
+        "rejectReason": "Motif du rejet"
       },
       "action": {
         "renew": "Renouveler",
-        "submit": "Soumettre"
-      }
+        "submit": "Soumettre",
+        "pay": "Encaisser",
+        "validate": "Valider",
+        "reject": "Rejeter"
+      },
+      "rejectTitle": "Rejeter l’annonce",
+      "rejectTarget": "Annonce"
     },
     "sites": {
       "title": "Sites touristiques",
@@ -4031,6 +4037,15 @@
         "notify": "Notifier",
         "send": "Envoyer"
       }
+    },
+    "advertStatus": {
+      "draft": "Brouillon",
+      "submitted": "Soumise",
+      "paid": "Payée",
+      "validated": "Validée",
+      "rejected": "Rejetée",
+      "expired": "Expirée",
+      "archived": "Archivée"
     }
   }
 }

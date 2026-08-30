@@ -4573,7 +4573,7 @@
       "tabPrices": "Fiyat tablosu",
       "tabAdverts": "Reklamlar",
       "title": "Ücretli reklamlar",
-      "subtitle": "Reklam gönderin ve görünür olanları takip edin.",
+      "subtitle": "Reklam gönderin, ödemeyi tahsil edin, onaylayın/reddedin ve yenileyin.",
       "createTitle": "Reklam gönder",
       "types": "Reklam türleri",
       "positions": "Reklam konumları",
@@ -4586,12 +4586,18 @@
         "price": "Fiyat",
         "pricePerImage": "Görsel başına fiyat",
         "pricePerCharacter": "Karakter başına fiyat",
-        "expiresAt": "Bitiş"
+        "expiresAt": "Bitiş",
+        "rejectReason": "Reddetme nedeni"
       },
       "action": {
         "renew": "Yenile",
-        "submit": "Gönder"
-      }
+        "submit": "Gönder",
+        "pay": "Tahsil et",
+        "validate": "Onayla",
+        "reject": "Reddet"
+      },
+      "rejectTitle": "Reklamı reddet",
+      "rejectTarget": "Reklam"
     },
     "sites": {
       "title": "Turistik yerler",
@@ -4633,6 +4639,15 @@
         "notify": "Bildir",
         "send": "Gönder"
       }
+    },
+    "advertStatus": {
+      "draft": "Taslak",
+      "submitted": "Gönderildi",
+      "paid": "Ödendi",
+      "validated": "Onaylandı",
+      "rejected": "Reddedildi",
+      "expired": "Süresi doldu",
+      "archived": "Arşivlendi"
     }
   }
 }

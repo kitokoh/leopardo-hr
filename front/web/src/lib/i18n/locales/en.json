@@ -3971,7 +3971,7 @@
       "tabPrices": "Price grid",
       "tabAdverts": "Adverts",
       "title": "Paid adverts",
-      "subtitle": "Submit an advert and track visible ones.",
+      "subtitle": "Submit, collect payment, validate/reject and renew adverts.",
       "createTitle": "Submit an advert",
       "types": "Advert types",
       "positions": "Advert positions",
@@ -3984,12 +3984,18 @@
         "price": "Price",
         "pricePerImage": "Price per image",
         "pricePerCharacter": "Price per character",
-        "expiresAt": "Expires on"
+        "expiresAt": "Expires on",
+        "rejectReason": "Rejection reason"
       },
       "action": {
         "renew": "Renew",
-        "submit": "Submit"
-      }
+        "submit": "Submit",
+        "pay": "Collect payment",
+        "validate": "Validate",
+        "reject": "Reject"
+      },
+      "rejectTitle": "Reject advert",
+      "rejectTarget": "Advert"
     },
     "sites": {
       "title": "Tourist sites",
@@ -4031,6 +4037,15 @@
         "notify": "Notify",
         "send": "Send"
       }
+    },
+    "advertStatus": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "paid": "Paid",
+      "validated": "Validated",
+      "rejected": "Rejected",
+      "expired": "Expired",
+      "archived": "Archived"
     }
   }
 }

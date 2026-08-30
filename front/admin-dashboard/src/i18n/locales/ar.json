@@ -4573,7 +4573,7 @@
       "tabPrices": "جدول الأسعار",
       "tabAdverts": "الإعلانات",
       "title": "الإعلانات المدفوعة",
-      "subtitle": "أرسل إعلانًا وتابع الإعلانات المرئية.",
+      "subtitle": "أرسل، تحصّل الدفع، صدّق/ارفض وجدّد الإعلانات.",
       "createTitle": "إرسال إعلان",
       "types": "أنواع الإعلانات",
       "positions": "المواضع الإعلانية",
@@ -4586,12 +4586,18 @@
         "price": "السعر",
         "pricePerImage": "السعر لكل صورة",
         "pricePerCharacter": "السعر لكل حرف",
-        "expiresAt": "ينتهي في"
+        "expiresAt": "ينتهي في",
+        "rejectReason": "سبب الرفض"
       },
       "action": {
         "renew": "تجديد",
-        "submit": "إرسال"
-      }
+        "submit": "إرسال",
+        "pay": "تحصيل الدفع",
+        "validate": "تصديق",
+        "reject": "رفض"
+      },
+      "rejectTitle": "رفض الإعلان",
+      "rejectTarget": "الإعلان"
     },
     "sites": {
       "title": "المواقع السياحية",
@@ -4633,6 +4639,15 @@
         "notify": "إشعار",
         "send": "إرسال"
       }
+    },
+    "advertStatus": {
+      "draft": "مسودة",
+      "submitted": "مقدمة",
+      "paid": "مدفوعة",
+      "validated": "مُصدَّقة",
+      "rejected": "مرفوضة",
+      "expired": "منتهية",
+      "archived": "مؤرشفة"
     }
   }
 }
