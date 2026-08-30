@@ -166,6 +166,46 @@
         </div>
       </section>
 
+      <!-- ══════════ CONTACTS ══════════ -->
+      <section v-if="activeTab === 'contacts'">
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="text-lg font-medium text-slate-800 dark:text-slate-100">
+            {{ t('travel.contacts.title', 'Contacts voyageurs') }}
+          </h2>
+          <input v-model="contactSearch" type="text" class="input w-64" :placeholder="t('travel.contacts.search', 'Rechercher par email')" @keyup.enter="loadContacts" />
+        </div>
+        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+          <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+            <thead class="bg-slate-50 dark:bg-slate-800">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">{{ t('travel.contacts.name', 'Nom') }}</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Email</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">{{ t('travel.contacts.consents', 'Consentements') }}</th>
+                <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">{{ t('travel.common.actions', 'Actions') }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+              <tr v-for="c in contacts" :key="c.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                <td class="px-4 py-3 text-sm text-slate-800 dark:text-slate-100">{{ c.first_name || '' }} {{ c.last_name || '' }}</td>
+                <td class="px-4 py-3 text-sm text-slate-500">{{ c.email }}</td>
+                <td class="px-4 py-3 text-sm">
+                  <label v-for="ch in consentChannels" :key="ch.key" class="mr-3 inline-flex cursor-pointer items-center gap-1">
+                    <input type="checkbox" class="h-4 w-4 rounded" :checked="c[ch.key + '_consent_given']" @change="toggleConsent(c, ch.key, $event.target.checked)" />
+                    <span class="text-xs text-slate-500 dark:text-slate-400">{{ ch.label }}</span>
+                  </label>
+                </td>
+                <td class="px-4 py-3 text-right">
+                  <button type="button" class="btn-secondary" @click="openContactNotify(c)">{{ t('travel.contacts.notify', 'Notifier') }}</button>
+                </td>
+              </tr>
+              <tr v-if="contacts.length === 0">
+                <td colspan="4" class="px-4 py-8 text-center text-sm text-slate-400">{{ t('travel.common.empty', 'Aucune donnée.') }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <!-- ══════════ SITES TOURISTIQUES ══════════ -->
       <section v-if="activeTab === 'sites'">
         <div class="mb-3 flex items-center justify-between">
@@ -255,6 +295,16 @@
       </div>
     </div>
 
+    <!-- Modale notification contact -->
+    <TravelFormModal
+      v-if="notifyOpen"
+      :title="t('travel.contacts.notify', 'Notifier le contact')"
+      :fields="notifyFields"
+      :initial="null"
+      @save="saveNotify"
+      @cancel="notifyOpen = false"
+    />
+
     <!-- Modale rejet annonce -->
     <TravelFormModal
       v-if="rejectOpen"
@@ -297,6 +347,7 @@ const tabs = computed(() => [
   { key: 'quiz', label: t('travel.content.tabs.quiz', 'Quiz') },
   { key: 'adverts', label: t('travel.content.tabs.adverts', 'Annonces') },
   { key: 'sites', label: t('travel.content.tabs.sites', 'Sites touristiques') },
+  { key: 'contacts', label: t('travel.content.tabs.contacts', 'Contacts') },
 ])
 
 const advertTabs = computed(() => [
@@ -521,6 +572,7 @@ function switchTab(key) {
   if (key === 'quiz') loadQuizzes()
   if (key === 'adverts' && advertTab.value === 'adverts') loadAdverts()
   if (key === 'sites') loadList('sites')
+  if (key === 'contacts') loadContacts()
 }
 
 function openCreate(key) {
@@ -612,6 +664,52 @@ async function saveReject(payload) {
     await loadAdverts()
   } catch {
     rejectOpen.value = false
+  }
+}
+
+// ── Contacts voyageurs (TRAVEL-912/#6417) ─────────────────────────────
+const contacts = ref([])
+const contactSearch = ref('')
+const notifyOpen = ref(false)
+const notifyTarget = ref(null)
+const notifyFields = computed(() => [
+  { key: 'message', label: 'travel.contacts.message', type: 'text', required: true, max: 2000 },
+])
+const consentChannels = computed(() => [
+  { key: 'email', label: t('travel.contacts.channelEmail', 'Email') },
+  { key: 'sms', label: t('travel.contacts.channelSms', 'SMS') },
+  { key: 'whatsapp', label: t('travel.contacts.channelWhatsapp', 'WhatsApp') },
+])
+
+async function loadContacts() {
+  try {
+    const response = await listTravel('contacts', { search: contactSearch.value || undefined })
+    contacts.value = travelList(response)
+  } catch {
+    contacts.value = []
+  }
+}
+
+async function toggleConsent(contact, channel, given) {
+  try {
+    await travelAction('contacts', contact.id, 'consent', { [`${channel}_consent`]: given })
+    contact[`${channel}_consent_given`] = given
+  } catch {
+    // best-effort
+  }
+}
+
+function openContactNotify(contact) {
+  notifyTarget.value = contact
+  notifyOpen.value = true
+}
+
+async function saveNotify(payload) {
+  try {
+    await travelAction('contacts', notifyTarget.value.id, 'notify', payload)
+    notifyOpen.value = false
+  } catch {
+    notifyOpen.value = false
   }
 }
 
