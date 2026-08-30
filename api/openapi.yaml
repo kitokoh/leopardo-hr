@@ -4540,6 +4540,55 @@ paths:
           description: Résultats triés par score
         '403':
           description: Rôle insuffisant
+  /travel/contacts:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-912 — Contacts voyageurs (gestion, consentements)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Contacts + consentements par canal
+        '403':
+          description: Rôle insuffisant
+  /travel/contacts/{travelCustomerContact}/consent:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-912 — Mise à jour des consentements par canal'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email_consent:
+                  type: boolean
+                sms_consent:
+                  type: boolean
+                whatsapp_consent:
+                  type: boolean
+      responses:
+        '200':
+          description: Consentements mis à jour
+        '404':
+          description: Contact introuvable
   /travel/contacts/{travelCustomerContact}/notify:
     post:
       tags:
