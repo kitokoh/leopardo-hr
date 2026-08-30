@@ -1432,6 +1432,14 @@ class LeopardoClient:
         """Enregistre un événement de tracking (DELIVERY-204/#6288)"""
         return self.request("POST", "/delivery/deliveries/events", **kwargs)
 
+    def get_delivery_deliveries_reports_export(self, **kwargs):
+        """Export CSV des livraisons (DELIVERY-207/#6291)"""
+        return self.request("GET", "/delivery/deliveries/reports/export", **kwargs)
+
+    def get_delivery_deliveries_reports_summary(self, **kwargs):
+        """KPIs livraison du tenant (DELIVERY-207/#6291)"""
+        return self.request("GET", "/delivery/deliveries/reports/summary", **kwargs)
+
     def post_delivery_deliveries_routes(self, **kwargs):
         """Crée une tournée (DELIVERY-202/#6286)"""
         return self.request("POST", "/delivery/deliveries/routes", **kwargs)

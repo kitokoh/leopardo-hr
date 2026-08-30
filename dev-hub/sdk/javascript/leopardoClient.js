@@ -1765,6 +1765,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/delivery/deliveries/events", options);
     },
 
+    /** Export CSV des livraisons (DELIVERY-207/#6291) */
+    getDeliveryDeliveriesReportsExport(options = {}) {
+      return request("GET", "/delivery/deliveries/reports/export", options);
+    },
+
+    /** KPIs livraison du tenant (DELIVERY-207/#6291) */
+    getDeliveryDeliveriesReportsSummary(options = {}) {
+      return request("GET", "/delivery/deliveries/reports/summary", options);
+    },
+
     /** Crée une tournée (DELIVERY-202/#6286) */
     postDeliveryDeliveriesRoutes(options = {}) {
       return request("POST", "/delivery/deliveries/routes", options);
