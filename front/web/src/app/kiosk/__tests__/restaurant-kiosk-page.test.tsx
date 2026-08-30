@@ -49,11 +49,13 @@ const branches = { data: [{ id: 1, code: 'MAIN', name: 'Branche Centrale' }] };
 describe('RestaurantKioskPage (RESTO-807)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: { ...window.location, search: '?token=rshop_test' },
+    window.localStorage.setItem('preferred_locale', 'fr');
+    window.history.pushState({}, '', '/kiosk?token=rshop_test');
+    mockedApiFetch.mockImplementation(async (endpoint: string) => {
+      if (endpoint === '/public/restaurant/menu') return jsonResponse(menu);
+      if (endpoint === '/public/restaurant/branches') return jsonResponse(branches);
+      throw new Error(`Unexpected endpoint: ${endpoint}`);
     });
-    mockedApiFetch.mockResolvedValueOnce(jsonResponse(menu)).mockResolvedValueOnce(jsonResponse(branches));
   });
 
   it('affiche le menu public après chargement', async () => {
@@ -76,7 +78,7 @@ describe('RestaurantKioskPage (RESTO-807)', () => {
     await userEvent.click(addButtons[0]);
 
     expect(screen.getByText('1 articles')).toBeInTheDocument();
-    expect(screen.getByText('35.00 XAF')).toBeInTheDocument();
+    expect(screen.getAllByText('35.00 XAF').length).toBeGreaterThanOrEqual(2);
   });
 
   it('passe une commande complète et paie en espèces', async () => {
@@ -92,11 +94,13 @@ describe('RestaurantKioskPage (RESTO-807)', () => {
     };
     const payment = { data: { id: 1, status: 'confirmed' } };
 
-    mockedApiFetch
-      .mockResolvedValueOnce(jsonResponse(menu))
-      .mockResolvedValueOnce(jsonResponse(branches))
-      .mockResolvedValueOnce(jsonResponse(order))
-      .mockResolvedValueOnce(jsonResponse(payment));
+    mockedApiFetch.mockImplementation(async (endpoint: string, options?: RequestInit) => {
+      if (endpoint === '/public/restaurant/menu') return jsonResponse(menu);
+      if (endpoint === '/public/restaurant/branches') return jsonResponse(branches);
+      if (endpoint === '/public/restaurant/orders' && options?.method === 'POST') return jsonResponse(order);
+      if (endpoint.endsWith('/pay') && options?.method === 'POST') return jsonResponse(payment);
+      throw new Error(`Unexpected endpoint: ${endpoint}`);
+    });
 
     render(<RestaurantKioskPage />);
 
@@ -117,10 +121,7 @@ describe('RestaurantKioskPage (RESTO-807)', () => {
   });
 
   it('affiche une erreur explicite si le jeton est absent', async () => {
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: { ...window.location, search: '' },
-    });
+    window.history.pushState({}, '', '/kiosk');
 
     render(<RestaurantKioskPage />);
 

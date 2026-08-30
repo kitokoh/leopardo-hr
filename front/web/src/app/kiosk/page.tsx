@@ -62,8 +62,7 @@ interface KioskBranch {
 type PaymentState =
   | { step: 'idle' }
   | { step: 'placing' }
-  | { step: 'paying' }
-  | { step: 'order_placed'; order: KioskOrder; payment: 'cash' | 'mobile_money' | null }
+  | { step: 'placed'; order: KioskOrder; payment: 'cash' | 'mobile_money' | null; paying: boolean }
   | { step: 'error'; message: string };
 
 const formatPrice = (minor: number, currency: string): string =>
@@ -200,28 +199,32 @@ export default function RestaurantKioskPage() {
         return;
       }
 
-      setPayment({ step: 'order_placed', order: json.data, payment: null });
+      setPayment({ step: 'placed', order: json.data, payment: null, paying: false });
     } catch {
       setPayment({ step: 'error', message: t(locale, 'restaurant.kiosk.orderError') });
     }
   };
 
   const pay = async (provider: 'cash' | 'mobile_money'): Promise<void> => {
-    if (payment.step !== 'order_placed') {
+    setPayment((current) =>
+      current.step === 'placed' && current.payment === null ? { ...current, paying: true } : current,
+    );
+
+    const current = payment;
+
+    if (current.step !== 'placed' || current.payment !== null) {
       return;
     }
 
-    setPayment({ step: 'paying' });
-
     try {
       const res = await apiFetch(
-        `/public/restaurant/orders/${payment.order.reference}/pay`,
+        `/public/restaurant/orders/${current.order.reference}/pay`,
         {
           method: 'POST',
           headers: { 'X-Restaurant-Shop-Token': token },
           body: JSON.stringify({
             provider_code: provider,
-            amount_minor: payment.order.total_minor,
+            amount_minor: current.order.total_minor,
           }),
         },
       );
@@ -231,7 +234,9 @@ export default function RestaurantKioskPage() {
         return;
       }
 
-      setPayment({ ...payment, payment: provider });
+      setPayment((state) =>
+        state.step === 'placed' ? { ...state, payment: provider, paying: false } : state,
+      );
     } catch {
       setPayment({ step: 'error', message: t(locale, 'restaurant.kiosk.paymentError') });
     }
@@ -286,7 +291,7 @@ export default function RestaurantKioskPage() {
         </div>
       </header>
 
-      {payment.step === 'order_placed' ? (
+      {payment.step === 'placed' ? (
         <section className="mx-auto flex max-w-2xl flex-col items-center px-6 py-20 text-center">
           <BadgeCheck className="mb-6 h-16 w-16 text-emerald-400" />
           <h2 className="text-3xl font-semibold">{t(locale, 'restaurant.kiosk.orderPlaced')}</h2>
@@ -303,10 +308,10 @@ export default function RestaurantKioskPage() {
               <button
                 type="button"
                 onClick={() => void pay('cash')}
-                disabled={payment.step === 'paying'}
+                disabled={payment.paying}
                 className="rounded-2xl bg-emerald-500 px-6 py-4 text-lg font-semibold text-emerald-950 transition hover:bg-emerald-400 disabled:opacity-60"
               >
-                {payment.step === 'paying' ? (
+                {payment.paying ? (
                   <Loader2 className="mx-auto h-6 w-6 animate-spin" />
                 ) : (
                   t(locale, 'restaurant.kiosk.payCash')
@@ -315,7 +320,7 @@ export default function RestaurantKioskPage() {
               <button
                 type="button"
                 onClick={() => void pay('mobile_money')}
-                disabled={payment.step === 'paying'}
+                disabled={payment.paying}
                 className="rounded-2xl bg-amber-500 px-6 py-4 text-lg font-semibold text-amber-950 transition hover:bg-amber-400 disabled:opacity-60"
               >
                 {t(locale, 'restaurant.kiosk.payMobileMoney')}
@@ -460,7 +465,7 @@ export default function RestaurantKioskPage() {
             <button
               type="button"
               onClick={() => void placeOrder()}
-              disabled={cartLines.length === 0 || payment.step === 'placing' || payment.step === 'paying'}
+              disabled={cartLines.length === 0 || payment.step === 'placing'}
               className="w-full rounded-2xl bg-amber-500 px-6 py-4 text-lg font-semibold text-amber-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {payment.step === 'placing' ? (
