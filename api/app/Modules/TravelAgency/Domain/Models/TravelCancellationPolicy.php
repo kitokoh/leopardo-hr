@@ -13,8 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * Politique d'annulation configurable (TRAVEL-813, issue #6103).
  *
- * Appliquée côté serveur lors d'une annulation/remboursement : la pénalité
- * est toujours calculée par le serveur, jamais acceptée du client.
+ * Spécificité décroissante : (trajet, classe) > (classe) > (trajet) >
+ * défaut tenant. Consommée par TravelRefundPolicyResolver (TRAVEL-808).
  */
 class TravelCancellationPolicy extends Model
 {
@@ -24,23 +24,18 @@ class TravelCancellationPolicy extends Model
     use HasFactory;
 
     protected $fillable = [
-        'company_id',
         'trip_id',
         'class_id',
-        'cancel_before_hours',
+        'hours_before_departure',
         'penalty_percent',
         'refundable',
-        'is_active',
-        'description',
+        'created_by_user_id',
     ];
 
     protected $casts = [
-        'trip_id' => 'integer',
-        'class_id' => 'integer',
-        'cancel_before_hours' => 'integer',
+        'hours_before_departure' => 'integer',
         'penalty_percent' => 'integer',
         'refundable' => 'boolean',
-        'is_active' => 'boolean',
     ];
 
     /**
@@ -54,7 +49,7 @@ class TravelCancellationPolicy extends Model
     /**
      * @return BelongsTo<TravelClass, $this>
      */
-    public function travelClass(): BelongsTo
+    public function class(): BelongsTo
     {
         return $this->belongsTo(TravelClass::class, 'class_id');
     }

@@ -1,9 +1,9 @@
 {
   "source": "api/openapi.yaml",
-  "spec_sha256": "b649c61caac25ab13d306f657f0cbc1db4df3e444b3385d99e0186dcaf530104",
+  "spec_sha256": "7c4002aa784e3fbe9901c4a679ebc4da69de88f4bc7781117b2d74b9e7d198bb",
   "openapi": "3.0.3",
   "api_version": "4.24.0",
-  "operation_count": 1142,
+  "operation_count": 1157,
   "targets": [
     "javascript",
     "python"

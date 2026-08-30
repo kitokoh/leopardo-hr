@@ -8,16 +8,14 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelCancellationPolicyRequest;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelCancellationPolicyRequest;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelCancellationPolicyResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * TRAVEL-813 (#6103) — CRUD des politiques d'annulation configurables.
+ * TRAVEL-813 (#6103) — Politiques d'annulation configurables.
  *
- * Même contrat que les référentiels du module : `company_id` vérifié avant
- * la Policy (404 sûr cross-tenant), écritures réservées `travel.manage`.
+ * CRUD simple ; la politique est appliquée dans les remboursements via
+ * TravelRefundPolicyResolver (TRAVEL-808).
  */
 class TravelCancellationPolicyController extends Controller
 {
@@ -30,17 +28,16 @@ class TravelCancellationPolicyController extends Controller
             abort(403);
         }
 
-        $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
-
         $policies = TravelCancellationPolicy::query()
-            ->with(['trip', 'travelClass'])
-            ->when($request->query('trip_id'), fn ($q, $tripId) => $q->where('trip_id', $tripId))
-            ->when($request->query('class_id'), fn ($q, $classId) => $q->where('class_id', $classId))
-            ->when($request->query('active'), fn ($q, $active) => $q->where('is_active', (bool) $active))
-            ->orderByDesc('id')
-            ->paginate($perPage);
+            ->orderByDesc('created_at')
+            ->paginate(max(1, min(1000, (int) $request->query('per_page', 50))));
 
-        return TravelCancellationPolicyResource::collection($policies)->response();
+        return response()->json(['data' => $policies->items(), 'meta' => [
+            'current_page' => $policies->currentPage(),
+            'last_page' => $policies->lastPage(),
+            'per_page' => $policies->perPage(),
+            'total' => $policies->total(),
+        ]]);
     }
 
     public function store(StoreTravelCancellationPolicyRequest $request): JsonResponse
@@ -52,26 +49,19 @@ class TravelCancellationPolicyController extends Controller
             abort(403);
         }
 
-        $policy = TravelCancellationPolicy::query()->create(
-            array_merge($request->validated(), ['company_id' => $actor->company_id]),
-        );
+        $policy = TravelCancellationPolicy::query()->create([
+            'trip_id' => $request->validated('trip_id') !== null ? (int) $request->validated('trip_id') : null,
+            'class_id' => $request->validated('class_id') !== null ? (int) $request->validated('class_id') : null,
+            'hours_before_departure' => (int) $request->validated('hours_before_departure'),
+            'penalty_percent' => (int) $request->validated('penalty_percent'),
+            'refundable' => $request->boolean('refundable', true),
+            'created_by_user_id' => $actor->id,
+        ]);
 
-        return (new TravelCancellationPolicyResource($policy))->response()->setStatusCode(201);
+        return response()->json(['data' => $policy], 201);
     }
 
-    public function show(Request $request, TravelCancellationPolicy $travelCancellationPolicy): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if ($actor->company_id !== $travelCancellationPolicy->company_id) {
-            abort(404);
-        }
-
-        return (new TravelCancellationPolicyResource($travelCancellationPolicy))->response();
-    }
-
-    public function update(UpdateTravelCancellationPolicyRequest $request, TravelCancellationPolicy $travelCancellationPolicy): JsonResponse
+    public function update(StoreTravelCancellationPolicyRequest $request, TravelCancellationPolicy $travelCancellationPolicy): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -84,9 +74,15 @@ class TravelCancellationPolicyController extends Controller
             abort(403);
         }
 
-        $travelCancellationPolicy->update($request->validated());
+        $travelCancellationPolicy->update([
+            'trip_id' => $request->validated('trip_id') !== null ? (int) $request->validated('trip_id') : null,
+            'class_id' => $request->validated('class_id') !== null ? (int) $request->validated('class_id') : null,
+            'hours_before_departure' => (int) $request->validated('hours_before_departure'),
+            'penalty_percent' => (int) $request->validated('penalty_percent'),
+            'refundable' => $request->boolean('refundable', true),
+        ]);
 
-        return (new TravelCancellationPolicyResource($travelCancellationPolicy->refresh()))->response();
+        return response()->json(['data' => $travelCancellationPolicy->refresh()]);
     }
 
     public function destroy(Request $request, TravelCancellationPolicy $travelCancellationPolicy): JsonResponse

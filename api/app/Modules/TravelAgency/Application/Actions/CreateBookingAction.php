@@ -194,12 +194,69 @@ final class CreateBookingAction
             return $selected;
         }
 
-        $auto = $available->take(count($passengers));
-        if ($auto->count() < count($passengers)) {
+        return $this->autoAssignSeats($available, count($passengers));
+    }
+
+    /**
+     * Assignation automatique des sièges (TRAVEL-801, #6092).
+     *
+     * Algorithme déterministe de regroupement : les passagers sont placés sur
+     * le plus petit bloc de sièges consécutifs libres qui les contient
+     * (fenêtre avant = numéros les plus bas en cas d'égalité). Si aucun bloc
+     * contigu ne les contient, repli sur les N premières places libres
+     * (comportement historique TRAVEL-312). Le stock est déjà verrouillé
+     * FOR UPDATE par l'appelant : l'assignation reste cohérente sous
+     * contention.
+     *
+     * @param  Collection<int, TravelTripSeat>  $available  places libres triées par numéro
+     * @return list<TravelTripSeat>
+     */
+    private function autoAssignSeats(Collection $available, int $count): array
+    {
+        if ($count <= 0) {
+            abort(422, 'Aucun passager a placer.');
+        }
+
+        $free = $available->values();
+
+        if ($free->count() < $count) {
             abort(409, 'Plus assez de places libres sur ce trajet.');
         }
 
-        return array_values($auto->values()->all());
+        $bestStart = null;
+        $bestSize = PHP_INT_MAX;
+        $runStart = null;
+        $previous = null;
+        $runSize = 0;
+
+        foreach ($free as $seat) {
+            $number = (int) $seat->seat_number;
+
+            if ($previous !== null && $number === $previous + 1) {
+                $runSize++;
+            } else {
+                $runStart = $number;
+                $runSize = 1;
+            }
+            $previous = $number;
+
+            // Strictement plus petit : en cas d'égalité on conserve le premier
+            // bloc trouvé (numéros les plus bas → fenêtre avant).
+            if ($runSize >= $count && $runSize < $bestSize) {
+                $bestSize = $runSize;
+                $bestStart = $runStart;
+            }
+        }
+
+        if ($bestStart === null) {
+            return array_values($free->take($count)->all());
+        }
+
+        return array_values($free
+            ->filter(fn (TravelTripSeat $seat): bool => (int) $seat->seat_number >= $bestStart
+                && (int) $seat->seat_number < $bestStart + $count)
+            ->values()
+            ->all());
     }
 
     /**

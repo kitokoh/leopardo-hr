@@ -7,11 +7,13 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\CancelTripAction;
+use App\Modules\TravelAgency\Application\Actions\ConnectionSearchAction;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Application\Actions\PublishTripAction;
 use App\Modules\TravelAgency\Domain\Enums\TripStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
+use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelTripRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelTripRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelTripRequest;
@@ -19,6 +21,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelPassengerResource
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTripResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -42,11 +45,24 @@ class TravelTripController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $trips = TravelTrip::query()
-            ->with(['prices', 'route.stops'])
-            ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))
-            ->when($request->query('route_id'), fn ($q, $routeId) => $q->where('route_id', $routeId))
-            ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', (string) $date))
+        $query = TravelTrip::query()->with(['prices', 'route.stops']);
+
+        $statusFilter = $request->query('status');
+        if (is_string($statusFilter) && $statusFilter !== '') {
+            $query->where('status', $statusFilter);
+        }
+
+        $routeFilter = $request->query('route_id');
+        if (is_numeric($routeFilter)) {
+            $query->where('route_id', (int) $routeFilter);
+        }
+
+        $departureFilter = $request->query('departure_date');
+        if (is_string($departureFilter) && $departureFilter !== '') {
+            $query->whereDate('departure_date', $departureFilter);
+        }
+
+        $trips = $query
             ->orderByDesc('departure_date')
             ->orderBy('departure_time')
             ->paginate($perPage);
@@ -194,30 +210,126 @@ class TravelTripController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
-        $trips = TravelTrip::query()
-            ->with(['prices', 'route.stops'])
-            ->when($request->query('origin_city_id'), function ($q, $cityId) {
-                $q->whereHas('route', fn ($route) => $route->where('origin_city_id', $cityId));
-            })
-            ->when($request->query('destination_city_id'), function ($q, $cityId) {
-                $q->whereHas('route', fn ($route) => $route->where('destination_city_id', $cityId));
-            })
-            ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', (string) $date))
-            ->when($request->query('date_from'), fn ($q, $date) => $q->whereDate('departure_date', '>=', (string) $date))
-            ->when($request->query('date_to'), fn ($q, $date) => $q->whereDate('departure_date', '<=', (string) $date))
-            ->when($request->query('means_of_transport'), fn ($q, $means) => $q->where('means_of_transport', $means))
-            ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))
-            ->when($request->query('price_min'), function ($q, $min) {
-                $q->whereHas('prices', fn ($price) => $price->where('adult_price_minor', '>=', $min));
-            })
-            ->when($request->query('price_max'), function ($q, $max) {
-                $q->whereHas('prices', fn ($price) => $price->where('adult_price_minor', '<=', $max));
-            })
+        // TRAVEL-804 (#6095) — recherche flexible : fenêtre de dates ± N jours
+        // autour de `departure_date` (bornée 0..7), résultats triés par prix
+        // croissant puis date (le jour le moins cher d'abord — le groupement
+        // visuel par date reste côté client).
+        $flexibleDays = max(0, min(7, (int) $request->query('flexible_days', 0)));
+        $rawDepartureDate = $request->query('departure_date');
+        $departureDate = is_string($rawDepartureDate) && $rawDepartureDate !== '' ? $rawDepartureDate : null;
+        $flexibleWindow = null;
+
+        if ($departureDate !== null && $flexibleDays > 0) {
+            $from = Carbon::parse($departureDate)->subDays($flexibleDays)->toDateString();
+            $to = Carbon::parse($departureDate)->addDays($flexibleDays)->toDateString();
+            $flexibleWindow = ['from' => $from, 'to' => $to];
+        }
+
+        $query = TravelTrip::query()->with(['prices', 'route.stops']);
+
+        $originCityId = $request->query('origin_city_id');
+        if (is_numeric($originCityId)) {
+            $query->whereHas('route', fn ($route) => $route->where('origin_city_id', (int) $originCityId));
+        }
+
+        $destinationCityId = $request->query('destination_city_id');
+        if (is_numeric($destinationCityId)) {
+            $query->whereHas('route', fn ($route) => $route->where('destination_city_id', (int) $destinationCityId));
+        }
+
+        if ($departureDate !== null && $flexibleWindow !== null) {
+            $query->whereBetween('departure_date', [$flexibleWindow['from'], $flexibleWindow['to']]);
+        } elseif ($departureDate !== null) {
+            $query->whereDate('departure_date', $departureDate);
+        }
+
+        $dateFrom = $request->query('date_from');
+        if (is_string($dateFrom) && $dateFrom !== '') {
+            $query->whereDate('departure_date', '>=', $dateFrom);
+        }
+
+        $dateTo = $request->query('date_to');
+        if (is_string($dateTo) && $dateTo !== '') {
+            $query->whereDate('departure_date', '<=', $dateTo);
+        }
+
+        $means = $request->query('means_of_transport');
+        if (is_string($means) && $means !== '') {
+            $query->where('means_of_transport', $means);
+        }
+
+        $status = $request->query('status');
+        if (is_string($status) && $status !== '') {
+            $query->where('status', $status);
+        }
+
+        $priceMin = $request->query('price_min');
+        if (is_numeric($priceMin)) {
+            $query->whereHas('prices', fn ($price) => $price->where('adult_price_minor', '>=', (int) $priceMin));
+        }
+
+        $priceMax = $request->query('price_max');
+        if (is_numeric($priceMax)) {
+            $query->whereHas('prices', fn ($price) => $price->where('adult_price_minor', '<=', (int) $priceMax));
+        }
+
+        if ($flexibleDays > 0) {
+            // Tri par prix (le moins cher d'abord) puis par date : le
+            // « meilleur jour » apparaît en tête des résultats flexibles.
+            $query->orderBy(
+                TravelTripPrice::query()
+                    ->selectRaw('MIN(adult_price_minor)')
+                    ->whereColumn('trip_id', 'travel_trips.id'),
+                'asc'
+            );
+        }
+
+        $trips = $query
             ->orderBy('departure_date')
             ->orderBy('departure_time')
             ->paginate($perPage);
 
+        if ($flexibleWindow !== null) {
+            $trips->appends([
+                'flexible_days' => $flexibleDays,
+                'date_from' => $flexibleWindow['from'],
+                'date_to' => $flexibleWindow['to'],
+            ]);
+        }
+
         return TravelTripResource::collection($trips)->response();
+    }
+
+    /**
+     * TRAVEL-809 (#6099) — Correspondances (recherche multi-trajets).
+     */
+    public function connections(Request $request, ConnectionSearchAction $action): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('viewAny', TravelTrip::class)) {
+            abort(403);
+        }
+
+        $origin = $request->integer('origin_city_id');
+        $destination = $request->integer('destination_city_id');
+        $date = $request->query('date') ? (string) $request->query('date') : null;
+
+        if ($origin <= 0 || $destination <= 0 || $date === null) {
+            abort(422, 'origin_city_id, destination_city_id et date sont requis.');
+        }
+
+        $results = $action->search($origin, $destination, $date);
+
+        return response()->json(['data' => array_map(function (array $result): array {
+            return [
+                'total_price_minor' => $result['total_price_minor'],
+                'connection_minutes' => $result['connection_minutes'],
+                'first' => new TravelTripResource($result['first']),
+                'second' => new TravelTripResource($result['second']),
+            ];
+        }, $results)]);
     }
 
     /**

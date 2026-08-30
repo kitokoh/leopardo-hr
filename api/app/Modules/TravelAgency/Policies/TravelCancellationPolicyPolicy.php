@@ -10,9 +10,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
 /**
  * TRAVEL-813 (#6103) — Policy des politiques d'annulation.
  *
- * Même schéma que les Policies référentielles du module : lecture ouverte
- * à tout employé du tenant, écriture réservée `travel.manage`
- * (principal/rh/manager), 404 sûr cross-tenant.
+ * Lecture ouverte au tenant ; gestion réservée à travel.manage.
  */
 class TravelCancellationPolicyPolicy
 {

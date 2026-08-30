@@ -63,6 +63,7 @@ return new class extends Migration
             try {
                 // Déjà chiffré (payload valide pour l'encrypter courant) → rien à faire.
                 Crypt::decryptString((string) $row->metadata);
+
                 continue;
             } catch (DecryptException) {
                 // En clair → chiffrer (la valeur brute est un JSON string).
@@ -80,14 +81,14 @@ return new class extends Migration
      */
     private function resolveTableSchema(string $table): ?string
     {
-        $row = DB::selectOne("
+        $row = DB::selectOne('
             SELECT t.table_schema
             FROM information_schema.tables t
             WHERE t.table_name = ?
               AND t.table_schema = ANY (current_schemas(false))
             ORDER BY array_position(current_schemas(false), t.table_schema)
             LIMIT 1
-        ", [$table]);
+        ', [$table]);
 
         return $row ? (string) $row->table_schema : null;
     }

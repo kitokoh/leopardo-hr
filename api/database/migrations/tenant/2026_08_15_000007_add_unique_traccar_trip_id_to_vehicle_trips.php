@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * #3369 — `vehicle_trips.traccar_trip_id` n'a pas d'index unique : deux syncs

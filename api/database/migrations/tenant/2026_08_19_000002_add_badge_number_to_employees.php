@@ -36,7 +36,7 @@ return new class extends Migration
                     .'ON employees (company_id, badge_number) '
                     .'WHERE badge_number IS NOT NULL'
                 );
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 // Déjà présent ou environnement non-PG : on continue.
             }
         } else {
@@ -45,7 +45,7 @@ return new class extends Migration
                 Schema::table('employees', function (Blueprint $table): void {
                     $table->index(['company_id', 'badge_number'], 'employees_company_badge_number_index');
                 });
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 // Index déjà présent.
             }
         }
@@ -62,7 +62,7 @@ return new class extends Migration
                 Schema::table('employees', function (Blueprint $table): void {
                     $table->dropIndex('employees_company_badge_number_index');
                 });
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 // Ignoré.
             }
         }

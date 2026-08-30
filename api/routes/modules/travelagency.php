@@ -362,4 +362,20 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/articles/{travelArticle}/engagement', [TravelEngagementController::class, 'aggregates']);
 Route::post('/travel/public/contact', [TravelPublicContactController::class, 'store'])
 Route::post('/travel/public/contact', [TravelPublicContactController::class, 'store'])
+
+        Route::get('/trips/connections', [TravelTripController::class, 'connections']); // TRAVEL-809/#6099 — AVANT {trip}
+        Route::post('/bookings/{travelBooking}/refund-passenger', [TravelBookingController::class, 'refundPassenger']); // TRAVEL-808/#6098
+        Route::get('/loyalty/{contact}', [TravelLoyaltyController::class, 'balance']);
+        Route::post('/loyalty/{contact}/redeem', [TravelLoyaltyController::class, 'redeem']);
+        Route::post('/partner-keys', [TravelPartnerController::class, 'storePartnerKey']);
+        Route::delete('/partner-keys/{travelCarrierApiKey}', [TravelPartnerController::class, 'revokePartnerKey']);
+        Route::get('/currency-rates/{travelCurrencyRate}', [TravelCurrencyRateController::class, 'show']);
+        Route::put('/currency-rates/{travelCurrencyRate}', [TravelCurrencyRateController::class, 'update']);
+        Route::get('/quotes', [TravelQuoteController::class, 'index']);
+        Route::post('/quotes', [TravelQuoteController::class, 'store']);
+        Route::get('/quotes/{travelQuote}', [TravelQuoteController::class, 'show']);
+        Route::post('/quotes/{travelQuote}/book', [TravelQuoteController::class, 'book']);
+        Route::post('/round-trips', [TravelRoundTripController::class, 'store']);
+        Route::get('/round-trips/{travelRoundTrip}', [TravelRoundTripController::class, 'show']);
+        Route::post('/sync', [TravelPartnerController::class, 'sync']);
     });
