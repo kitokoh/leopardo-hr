@@ -23,7 +23,7 @@ return new class extends Migration
 
         DB::statement('ALTER TABLE invoices DROP CONSTRAINT IF EXISTS '.self::CHECK);
         DB::statement(
-            "ALTER TABLE invoices ADD CONSTRAINT ".self::CHECK
+            'ALTER TABLE invoices ADD CONSTRAINT '.self::CHECK
             ." CHECK (status IN ('draft','sent','paid','overdue','cancelled','pending'))"
         );
     }
@@ -36,7 +36,7 @@ return new class extends Migration
 
         DB::statement('ALTER TABLE invoices DROP CONSTRAINT IF EXISTS '.self::CHECK);
         DB::statement(
-            "ALTER TABLE invoices ADD CONSTRAINT ".self::CHECK
+            'ALTER TABLE invoices ADD CONSTRAINT '.self::CHECK
             ." CHECK (status IN ('draft','sent','paid','overdue','cancelled'))"
         );
     }
