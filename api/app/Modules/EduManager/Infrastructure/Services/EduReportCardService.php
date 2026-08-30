@@ -89,6 +89,9 @@ final class EduReportCardService
             'published_at' => now(),
         ]);
 
+        // EDU-014 : notification direction (bulletin publié).
+        app(EduNotificationService::class)->reportCardPublished($card->refresh());
+
         return $card->refresh();
     }
 
