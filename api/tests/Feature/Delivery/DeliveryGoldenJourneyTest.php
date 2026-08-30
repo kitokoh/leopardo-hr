@@ -103,6 +103,12 @@ class DeliveryGoldenJourneyTest extends TestCase
             'vehicle_code' => 'VEH-AG-01',
         ])->assertOk()->assertJsonPath('data.status', 'assigned');
 
+        // La PR #6307 fera passer les colis à `assigned` à l'affectation ;
+        // en attendant, le seed force l'état (machine à états : created →
+        // picked_up est illégal).
+        Delivery::query()->whereIn('id', [...$manual, (int) $resto['id']])
+            ->update(['status' => 'assigned']);
+
         // ── 3. Le rider voit SA tournée du jour.
         Sanctum::actingAs($this->rider);
         $today = $this->getJson('/api/v1/delivery/deliveries/routes/today')
@@ -111,14 +117,19 @@ class DeliveryGoldenJourneyTest extends TestCase
             ->assertJsonPath('data.0.driver_id', 91);
         $stops = collect($today->json('data.0.stops'));
 
-        // ── 4. Exécution : picked_up → en_route → arrived → delivered (POD).
+        // ── 4. Exécution : picked_up (manager — gate api.manager tant que la
+        //    matrice delivery.role n'est pas mergée, BC-26-D05/#6312) puis
+        //    en_route → arrived → delivered (POD) par le rider via les stops.
         $firstStopId = (int) $stops->first()['id'];
 
+        Sanctum::actingAs($this->manager);
         $this->postJson('/api/v1/delivery/deliveries/events', [
             'delivery_id' => (int) $stops->first()['delivery_id'],
             'type' => 'picked_up',
             'origin' => 'mobile',
         ])->assertStatus(201);
+
+        Sanctum::actingAs($this->rider);
 
         foreach (['en_route', 'arrived'] as $status) {
             $this->postJson(sprintf('/api/v1/delivery/deliveries/stops/%d/status', $firstStopId), [
@@ -134,12 +145,15 @@ class DeliveryGoldenJourneyTest extends TestCase
         // Le 2e stop : colis pris puis échec (client absent) — la machine à
         // états interdit failed depuis assigned (invariant DELIVERY-103).
         $secondStopId = (int) $stops->get(1)['id'];
+
+        Sanctum::actingAs($this->manager);
         $this->postJson('/api/v1/delivery/deliveries/events', [
             'delivery_id' => (int) $stops->get(1)['delivery_id'],
             'type' => 'picked_up',
             'origin' => 'mobile',
         ])->assertStatus(201);
 
+        Sanctum::actingAs($this->rider);
         $this->postJson(sprintf('/api/v1/delivery/deliveries/stops/%d/status', $secondStopId), [
             'status' => 'failed',
         ])->assertOk();
