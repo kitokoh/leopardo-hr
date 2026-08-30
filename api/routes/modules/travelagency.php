@@ -25,6 +25,8 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthControlle
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
@@ -101,4 +103,19 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/trips/{travelTrip}/prices/{travelTripPrice}', [TravelTripPriceController::class, 'show']);
         Route::put('/trips/{travelTrip}/prices/{travelTripPrice}', [TravelTripPriceController::class, 'update']);
         Route::delete('/trips/{travelTrip}/prices/{travelTripPrice}', [TravelTripPriceController::class, 'destroy']);
+
+        // Manifeste des passagers (TRAVEL-318/#6048).
+        Route::get('/trips/{travelTrip}/manifest', [TravelTripController::class, 'manifest']);
+
+        // Réservations & billetterie (TRAVEL-312..316/#6042..#6046).
+        Route::get('/bookings', [TravelBookingController::class, 'index']);
+        Route::post('/bookings', [TravelBookingController::class, 'store']);
+        Route::get('/bookings/{travelBooking}', [TravelBookingController::class, 'show']);
+        Route::post('/bookings/{travelBooking}/confirm', [TravelBookingController::class, 'confirm']);
+        Route::post('/bookings/{travelBooking}/cancel', [TravelBookingController::class, 'cancel']);
+        Route::post('/bookings/{travelBooking}/refund', [TravelBookingController::class, 'refund']);
+        Route::post('/bookings/{travelBooking}/issue-ticket', [TravelBookingController::class, 'issueTickets']);
+
+        // Check-in / embarquement (TRAVEL-317/#6047).
+        Route::post('/tickets/{travelTicket}/check-in', [TravelTicketController::class, 'checkIn']);
     });

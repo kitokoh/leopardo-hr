@@ -10,10 +10,12 @@ use App\Modules\TravelAgency\Application\Actions\CancelTripAction;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Application\Actions\PublishTripAction;
 use App\Modules\TravelAgency\Domain\Enums\TripStatus;
+use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelTripRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelTripRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelTripRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelPassengerResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTripResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -216,5 +218,28 @@ class TravelTripController extends Controller
             ->paginate($perPage);
 
         return TravelTripResource::collection($trips)->response();
+    }
+
+    /**
+     * TRAVEL-318 (#6048) — Manifeste des passagers d'un trajet.
+     *
+     * Passagers des réservations confirmées (ou au-delà), triés par siège.
+     * PII restreinte : jamais de n° de pièce d'identité (TravelPassengerResource).
+     */
+    public function manifest(Request $request, TravelTrip $travelTrip): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelTrip->company_id) {
+            abort(404);
+        }
+
+        $passengers = TravelPassenger::query()
+            ->whereHas('booking', fn ($booking) => $booking->where('trip_id', $travelTrip->id))
+            ->orderBy('seat_number')
+            ->get();
+
+        return TravelPassengerResource::collection($passengers)->response();
     }
 }
