@@ -49,6 +49,10 @@ class EduManagerMigrationsTest extends TestCase
         'edu_attendance_corrections',
         // EDU-006 (issue #5822)
         'edu_timetable_slots',
+        // EDU-007 (issue #5823)
+        'edu_assessments',
+        'edu_grades',
+        'edu_grade_versions',
         // EDU-008 (issue #5824)
         'edu_report_cards',
     ];
@@ -73,6 +77,10 @@ class EduManagerMigrationsTest extends TestCase
         '2026_08_30_000402_5821_create_edu_attendance_corrections_table',
         // EDU-006 (issue #5822)
         '2026_08_30_000501_5822_create_edu_timetable_slots_table',
+        // EDU-007 (issue #5823)
+        '2026_08_30_000601_5823_create_edu_assessments_table',
+        '2026_08_30_000602_5823_create_edu_grades_table',
+        '2026_08_30_000603_5823_create_edu_grade_versions_table',
         // EDU-008 (issue #5824)
         '2026_08_30_000701_5824_create_edu_report_cards_table',
     ];

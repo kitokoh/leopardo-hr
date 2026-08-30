@@ -224,6 +224,7 @@ class EduAdmissionTest extends TestCase
             'admission_number' => $number,
             'applicant_name' => $this->faker->name(),
             'status' => EduAdmission::STATUS_PENDING,
+            'consent_marketing' => false,
             'submitted_at' => now(),
         ], $overrides));
 

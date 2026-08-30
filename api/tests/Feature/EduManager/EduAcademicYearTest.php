@@ -46,11 +46,25 @@ class EduAcademicYearTest extends TestCase
 
     /** @var list<string> */
     private const MIGRATIONS = [
+        // Toutes les migrations EduManager, dans l'ordre chronologique des
+        // préfixes — le down() s'exécute en ordre inverse (dépendances d'abord).
+        '2026_08_30_000101_5818_create_edu_campuses_table',
+        '2026_08_30_000102_5818_create_edu_students_table',
+        '2026_08_30_000103_5818_create_edu_guardians_table',
+        '2026_08_30_000104_5818_create_edu_student_guardians_table',
         '2026_08_30_000201_5819_create_edu_academic_years_table',
         '2026_08_30_000202_5819_create_edu_classes_table',
         '2026_08_30_000203_5819_create_edu_subjects_table',
         '2026_08_30_000204_5819_create_edu_teachers_table',
         '2026_08_30_000205_5819_create_edu_teacher_subjects_table',
+        '2026_08_30_000301_5820_create_edu_admissions_table',
+        '2026_08_30_000401_5821_create_edu_attendance_records_table',
+        '2026_08_30_000402_5821_create_edu_attendance_corrections_table',
+        '2026_08_30_000501_5822_create_edu_timetable_slots_table',
+        '2026_08_30_000601_5823_create_edu_assessments_table',
+        '2026_08_30_000602_5823_create_edu_grades_table',
+        '2026_08_30_000603_5823_create_edu_grade_versions_table',
+        '2026_08_30_000701_5824_create_edu_report_cards_table',
     ];
 
     private Company $company;
@@ -271,9 +285,8 @@ class EduAcademicYearTest extends TestCase
         // (résolution dynamique — aucun nom d'issue voisine en dur) ; le
         // cycle complet se déroule dans la transaction du test, et up()
         // recrée les tables #5819 via leurs propres migrations.
-        $this->dropTablesReferencing(self::TABLES);
-
-        // down() dans l'ordre inverse des dépendances, puis up() complet.
+        // down() dans l'ordre inverse des dépendances (toutes les migrations EduManager),
+        // puis up() complet — les FK composites imposent l'ordre inverse des préfixes.
         foreach (array_reverse(self::MIGRATIONS) as $basename) {
             $migration = $this->migration($basename);
             $this->callMigrationMethod($migration, 'down');

@@ -101,10 +101,11 @@ class AdmissionService
 
         /** @var Collection<int, EduAdmission> $candidates */
         $candidates = EduAdmission::query()
-            // Même normalisation côté SQL (minuscules, espaces internes réduits).
-            ->whereRaw("LOWER(REGEXP_REPLACE(TRIM(applicant_name), '\\s+', ' ', 'g')) = ?", [$normalizedName])
+            // Fenêtre de recherche bornée (pas d'index fonctionnel sur le nom
+            // normalisé — les accents rendent une normalisation SQL fragile).
             ->where('created_at', '>=', now()->subDays(self::DUPLICATE_LOOKBACK_DAYS))
-            ->get(['id', 'contact_reference']);
+            ->get(['id', 'applicant_name', 'contact_reference'])
+            ->filter(fn (EduAdmission $candidate): bool => $this->normalizeName((string) $candidate->applicant_name) === $normalizedName);
 
         if ($contactRef === null || $contactRef === '') {
             return $candidates->isNotEmpty();
@@ -183,6 +184,14 @@ class AdmissionService
 
     private function normalizeName(string $applicantName): string
     {
-        return mb_strtolower(trim((string) preg_replace('/\s+/', ' ', $applicantName)));
+        $name = trim((string) preg_replace('/\s+/', ' ', $applicantName));
+        // Translittération ASCII : 'Aïcha' → 'Aicha' (les accents ne doivent pas
+        // faire échouer la détection de doublon, cf. test duplicate detection).
+        $transliterated = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $name);
+        if ($transliterated !== false) {
+            $name = $transliterated;
+        }
+
+        return mb_strtolower($name);
     }
 }
