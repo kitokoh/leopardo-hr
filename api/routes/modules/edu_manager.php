@@ -16,15 +16,21 @@ declare(strict_types=1);
  */
 
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAcademicYearController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAdmissionCampaignController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAdmissionController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAssessmentController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAttendanceController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCampusController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduClassController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduClassEnrollmentController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCourseSlotController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduDashboardController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeeController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduGuardianPortalController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportCardController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduStudentController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduSubjectController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduTeacherWorkspaceController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -99,4 +105,42 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/edu-manager/report-cards/{card}', [EduReportCardController::class, 'show'])->whereNumber('card');
     Route::post('/edu-manager/report-cards/{card}/validate', [EduReportCardController::class, 'validate'])->whereNumber('card');
     Route::post('/edu-manager/report-cards/{card}/publish', [EduReportCardController::class, 'publish'])->whereNumber('card');
+
+    // EDU-011 (#5827) — tableau de bord de l'administration scolaire.
+    Route::get('/edu-manager/dashboard', [EduDashboardController::class, 'index']);
+
+    // EDU-011 (#5827) — inscriptions d'élèves dans les classes.
+    Route::get('/edu-manager/classes/{class}/enrollments', [EduClassEnrollmentController::class, 'index'])->whereNumber('class');
+    Route::post('/edu-manager/classes/{class}/enrollments', [EduClassEnrollmentController::class, 'store'])->whereNumber('class');
+    Route::delete('/edu-manager/class-enrollments/{enrollment}', [EduClassEnrollmentController::class, 'destroy'])->whereNumber('enrollment');
+
+    // EDU-012 (#5828) — espace enseignant (classes, effectifs, saisie).
+    Route::get('/edu-manager/teacher/workspace', [EduTeacherWorkspaceController::class, 'index']);
+
+    // EDU-015 (#5831) — marketing admissions : relances consenties + opt-out.
+    Route::post('/edu-manager/admissions/{admission}/follow-ups', [EduAdmissionCampaignController::class, 'followUp'])->whereNumber('admission');
+    Route::post('/edu-manager/admissions/{admission}/opt-out', [EduAdmissionCampaignController::class, 'optOut'])->whereNumber('admission');
+
+    // EDU-016 (#5832) — frais scolaires + contrat Accounting.
+    Route::get('/edu-manager/fee-types', [EduFeeController::class, 'indexFeeTypes']);
+    Route::post('/edu-manager/fee-types', [EduFeeController::class, 'storeFeeType']);
+    Route::get('/edu-manager/fee-charges', [EduFeeController::class, 'indexCharges']);
+    Route::post('/edu-manager/fee-charges', [EduFeeController::class, 'storeCharge']);
+    Route::post('/edu-manager/fee-charges/{charge}/payments', [EduFeeController::class, 'storePayment'])->whereNumber('charge');
+    Route::post('/edu-manager/fee-charges/{charge}/waive', [EduFeeController::class, 'waive'])->whereNumber('charge');
+    Route::post('/edu-manager/fee-charges/{charge}/cancel', [EduFeeController::class, 'cancel'])->whereNumber('charge');
+    Route::get('/edu-manager/fee-accounting-entries', [EduFeeController::class, 'indexEntries']);
+
+    // EDU-013 (#5829) — génération d'un lien de portail guardian (direction).
+    Route::post('/edu-manager/guardians/{guardian}/portal-link', [EduGuardianPortalController::class, 'createLink'])->whereNumber('guardian');
 });
+
+/**
+ * Portail guardian — route PUBLIQUE (EDU-013, #5829) : consultation du
+ * résumé via `portal_token` (64 caractères — le token EST la credential,
+ * pattern AccountingDocumentShare #5428). Pas d'auth Sanctum ni de
+ * TenantMiddleware : résolution O(1) + expiration/révocation + audit
+ * (edu_portal_access_logs). Throttle dédié 60/min.
+ */
+Route::get('/edu-manager/portal/{token}', [EduGuardianPortalController::class, 'summary'])
+    ->middleware('throttle:60,1');

@@ -2332,6 +2332,460 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           description: Validation ou regle metier
+  /edu-manager/dashboard:
+    get:
+      tags:
+      - EduManager
+      summary: Tableau de bord administration scolaire (EDU-011)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/classes/{class}/enrollments:
+    get:
+      tags:
+      - EduManager
+      summary: Effectifs d'une classe (direction ou enseignant de la classe)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - EduManager
+      summary: Inscrire un eleve dans une classe (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - student_id
+              - academic_year_id
+              properties:
+                student_id:
+                  type: integer
+                academic_year_id:
+                  type: integer
+                enrolled_at:
+                  type: string
+                  format: date
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/class-enrollments/{enrollment}:
+    delete:
+      tags:
+      - EduManager
+      summary: Desinscrire un eleve (direction, soft-status)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: enrollment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/teacher/workspace:
+    get:
+      tags:
+      - EduManager
+      summary: Espace enseignant - classes et saisie en attente (EDU-012)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/admissions/{admission}/follow-ups:
+    post:
+      tags:
+      - EduManager
+      summary: Relance marketing consentie sur un dossier d'admission (EDU-015)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: admission
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - campaign_code
+              - channel
+              properties:
+                campaign_code:
+                  type: string
+                channel:
+                  type: string
+                  enum:
+                  - email
+                  - sms
+                  - phone
+                  - mail
+                sent_at:
+                  type: string
+                  format: date
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/admissions/{admission}/opt-out:
+    post:
+      tags:
+      - EduManager
+      summary: Revocation du consentement marketing (opt-out RGPD, EDU-015)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: admission
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/fee-types:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les types de frais scolaires (EDU-016)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - EduManager
+      summary: Creer un type de frais scolaire (direction)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              - amount
+              - currency
+              - billing_frequency
+              properties:
+                campus_id:
+                  type: integer
+                  nullable: true
+                code:
+                  type: string
+                label:
+                  type: string
+                amount:
+                  type: number
+                currency:
+                  type: string
+                billing_frequency:
+                  type: string
+                  enum:
+                  - once
+                  - term
+                  - monthly
+                is_active:
+                  type: boolean
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/fee-charges:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les facturations de frais (EDU-016)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - EduManager
+      summary: Facturer un frais a un eleve (idempotent, direction)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - student_id
+              - fee_type_id
+              - academic_year_id
+              properties:
+                student_id:
+                  type: integer
+                fee_type_id:
+                  type: integer
+                academic_year_id:
+                  type: integer
+                amount:
+                  type: number
+                  nullable: true
+                currency:
+                  type: string
+                  nullable: true
+                due_date:
+                  type: string
+                  format: date
+                  nullable: true
+                external_id:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/fee-charges/{charge}/payments:
+    post:
+      tags:
+      - EduManager
+      summary: Encaisser un paiement sur une charge (idempotent)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: charge
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount
+              - method
+              properties:
+                amount:
+                  type: number
+                currency:
+                  type: string
+                  nullable: true
+                method:
+                  type: string
+                  enum:
+                  - cash
+                  - transfer
+                  - card
+                  - mobile_money
+                  - other
+                reference:
+                  type: string
+                  nullable: true
+                external_id:
+                  type: string
+                  nullable: true
+                paid_at:
+                  type: string
+                  format: date
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/fee-charges/{charge}/waive:
+    post:
+      tags:
+      - EduManager
+      summary: Abandonner une charge de frais (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: charge
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/fee-charges/{charge}/cancel:
+    post:
+      tags:
+      - EduManager
+      summary: Annuler une charge de frais (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: charge
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/fee-accounting-entries:
+    get:
+      tags:
+      - EduManager
+      summary: Ecritures comptables du contrat Accounting (EDU-016)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/guardians/{guardian}/portal-link:
+    post:
+      tags:
+      - EduManager
+      summary: Generer un lien de portail guardian expirable (EDU-013)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: guardian
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expires_in_days:
+                  type: integer
+                  minimum: 1
+                  maximum: 30
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/portal/{token}:
+    get:
+      tags:
+      - EduManager
+      summary: Portail guardian - resume via token expirable (public, EDU-013)
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '404':
+          description: Lien inconnu, expire ou revoque
   /demo-users:
     get:
       tags:

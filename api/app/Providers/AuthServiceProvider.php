@@ -31,8 +31,10 @@ use App\Modules\EduManager\Policies\EduAdmissionPolicy;
 use App\Modules\EduManager\Policies\EduAssessmentPolicy;
 use App\Modules\EduManager\Policies\EduAttendancePolicy;
 use App\Modules\EduManager\Policies\EduCampusPolicy;
+use App\Modules\EduManager\Policies\EduClassEnrollmentPolicy;
 use App\Modules\EduManager\Policies\EduClassPolicy;
 use App\Modules\EduManager\Policies\EduCourseSlotPolicy;
+use App\Modules\EduManager\Policies\EduFeePolicy;
 use App\Modules\EduManager\Policies\EduGradePolicy;
 use App\Modules\EduManager\Policies\EduGuardianPolicy;
 use App\Modules\EduManager\Policies\EduReportCardPolicy;
@@ -140,6 +142,10 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(EduAssessment::class, EduAssessmentPolicy::class);
         Gate::policy(EduGrade::class, EduGradePolicy::class);
         Gate::policy(EduReportCard::class, EduReportCardPolicy::class);
+        // — EduManager batch 3 (#5827/#5832) : inscriptions, frais & Accounting
+        Gate::policy(EduClassEnrollment::class, EduClassEnrollmentPolicy::class);
+        Gate::policy(EduFeeType::class, EduFeePolicy::class);
+        Gate::policy(EduFeeCharge::class, EduFeePolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);

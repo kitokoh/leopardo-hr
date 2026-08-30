@@ -43,4 +43,20 @@ class EduAdmissionPolicy
     {
         return $this->view($actor, $admission);
     }
+
+    /**
+     * #5831 (EDU-015) — relance marketing consentie : direction uniquement.
+     */
+    public function followUp(Employee $actor, EduAdmission $admission): bool
+    {
+        return $this->view($actor, $admission);
+    }
+
+    /**
+     * #5831 (EDU-015) — opt-out RGPD : direction uniquement.
+     */
+    public function optOut(Employee $actor, EduAdmission $admission): bool
+    {
+        return $this->view($actor, $admission);
+    }
 }

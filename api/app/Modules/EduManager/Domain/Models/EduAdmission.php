@@ -38,6 +38,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $crm_contact_id
  * @property bool $consent_contact
  * @property Carbon|null $consented_at
+ * @property Carbon|null $consent_revoked_at
  * @property Carbon $applied_at
  * @property Carbon|null $converted_at
  * @property string|null $notes
@@ -103,6 +104,7 @@ class EduAdmission extends Model
         'crm_contact_id',
         'consent_contact',
         'consented_at',
+        'consent_revoked_at',
         'applied_at',
         'converted_at',
         'notes',
@@ -116,6 +118,7 @@ class EduAdmission extends Model
         'applicant_birth_date' => 'date',
         'consent_contact' => 'boolean',
         'consented_at' => 'datetime',
+        'consent_revoked_at' => 'datetime',
         'applied_at' => 'date',
         'converted_at' => 'datetime',
     ];
