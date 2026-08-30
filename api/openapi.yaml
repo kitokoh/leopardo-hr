@@ -6819,6 +6819,567 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           description: Vente introuvable ou autre tenant
+  /fuel-station/stations:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les stations (manager, pagine)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    post:
+      tags:
+      - FuelStation
+      summary: Creer une station (manager)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/stations/{station}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une station
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour une station
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    delete:
+      tags:
+      - FuelStation
+      summary: Supprimer une station
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/stations/{station}/sites:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les sites d'une station
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    post:
+      tags:
+      - FuelStation
+      summary: Creer un site (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/sites/{site}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'un site
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: site
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour un site
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: site
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    delete:
+      tags:
+      - FuelStation
+      summary: Supprimer un site
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: site
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/stations/{station}/pumps:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les pompes d'une station
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    post:
+      tags:
+      - FuelStation
+      summary: Creer une pompe (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/pumps/{pump}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une pompe
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pump
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour une pompe
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pump
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    delete:
+      tags:
+      - FuelStation
+      summary: Supprimer une pompe
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: pump
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/stations/{station}/tanks:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les cuves d'une station
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    post:
+      tags:
+      - FuelStation
+      summary: Creer une cuve (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/tanks/{tank}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une cuve
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: tank
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour une cuve
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: tank
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    delete:
+      tags:
+      - FuelStation
+      summary: Supprimer une cuve
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: tank
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/products:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister le catalogue produits
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    post:
+      tags:
+      - FuelStation
+      summary: Creer un produit (manager)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/products/{product}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'un produit
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour un produit
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    delete:
+      tags:
+      - FuelStation
+      summary: Supprimer un produit
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
   /fuel-station/me/sales:
     get:
       tags:

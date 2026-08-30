@@ -16,12 +16,22 @@ use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
 use App\Modules\FuelStation\Domain\Models\FuelMeterReading;
+use App\Modules\FuelStation\Domain\Models\FuelProduct;
+use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
 use App\Modules\FuelStation\Domain\Models\FuelShift;
 use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment;
+use App\Modules\FuelStation\Domain\Models\FuelSite;
+use App\Modules\FuelStation\Domain\Models\FuelStation;
+use App\Modules\FuelStation\Domain\Models\FuelTank;
 use App\Modules\FuelStation\Domain\Policies\FuelCashSessionPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelProductPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelPumpPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelSalePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelShiftPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelSitePolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelStationPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelTankPolicy;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\Department;
 use App\Modules\HR\Domain\Models\Evaluation;
@@ -91,11 +101,16 @@ class AuthServiceProvider extends ServiceProvider
         // Org structure
         Gate::policy(FuelMeterReading::class, FuelMeterReadingPolicy::class);
         Gate::policy(FuelMeterInterval::class, FuelMeterReadingPolicy::class);
-        // — FuelStation (FUEL-005 #5799, FUEL-007 #5801, FUEL-008 #5802)
+        // — FuelStation (FUEL-005 #5799, FUEL-007 #5801, FUEL-008 #5802, FUEL-011 #5805)
         Gate::policy(FuelShift::class, FuelShiftPolicy::class);
         Gate::policy(FuelShiftAssignment::class, FuelShiftPolicy::class);
         Gate::policy(FuelCashSession::class, FuelCashSessionPolicy::class);
         Gate::policy(FuelSale::class, FuelSalePolicy::class);
+        Gate::policy(FuelStation::class, FuelStationPolicy::class);
+        Gate::policy(FuelSite::class, FuelSitePolicy::class);
+        Gate::policy(FuelPump::class, FuelPumpPolicy::class);
+        Gate::policy(FuelTank::class, FuelTankPolicy::class);
+        Gate::policy(FuelProduct::class, FuelProductPolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);

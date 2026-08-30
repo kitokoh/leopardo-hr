@@ -19,8 +19,13 @@ declare(strict_types=1);
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelProductController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPumpController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSiteController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStationController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelTankController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -84,5 +89,32 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // FUEL-008 (#5802) : ventes (manager).
         Route::get('/fuel-station/sales', [FuelSaleController::class, 'index']);
         Route::get('/fuel-station/sales/{sale}', [FuelSaleController::class, 'show'])->whereNumber('sale');
+        // FUEL-011 (#5805) : référentiel manager — stations, sites, pompes,
+        // cuves, produits (CRUD tenant-scoped, 404 sûr cross-tenant).
+        Route::get('/fuel-station/stations', [FuelStationController::class, 'index']);
+        Route::post('/fuel-station/stations', [FuelStationController::class, 'store']);
+        Route::get('/fuel-station/stations/{station}', [FuelStationController::class, 'show'])->whereNumber('station');
+        Route::put('/fuel-station/stations/{station}', [FuelStationController::class, 'update'])->whereNumber('station');
+        Route::delete('/fuel-station/stations/{station}', [FuelStationController::class, 'destroy'])->whereNumber('station');
+        Route::get('/fuel-station/stations/{station}/sites', [FuelSiteController::class, 'index'])->whereNumber('station');
+        Route::post('/fuel-station/stations/{station}/sites', [FuelSiteController::class, 'store'])->whereNumber('station');
+        Route::get('/fuel-station/sites/{site}', [FuelSiteController::class, 'show'])->whereNumber('site');
+        Route::put('/fuel-station/sites/{site}', [FuelSiteController::class, 'update'])->whereNumber('site');
+        Route::delete('/fuel-station/sites/{site}', [FuelSiteController::class, 'destroy'])->whereNumber('site');
+        Route::get('/fuel-station/stations/{station}/pumps', [FuelPumpController::class, 'index'])->whereNumber('station');
+        Route::post('/fuel-station/stations/{station}/pumps', [FuelPumpController::class, 'store'])->whereNumber('station');
+        Route::get('/fuel-station/pumps/{pump}', [FuelPumpController::class, 'show'])->whereNumber('pump');
+        Route::put('/fuel-station/pumps/{pump}', [FuelPumpController::class, 'update'])->whereNumber('pump');
+        Route::delete('/fuel-station/pumps/{pump}', [FuelPumpController::class, 'destroy'])->whereNumber('pump');
+        Route::get('/fuel-station/stations/{station}/tanks', [FuelTankController::class, 'index'])->whereNumber('station');
+        Route::post('/fuel-station/stations/{station}/tanks', [FuelTankController::class, 'store'])->whereNumber('station');
+        Route::get('/fuel-station/tanks/{tank}', [FuelTankController::class, 'show'])->whereNumber('tank');
+        Route::put('/fuel-station/tanks/{tank}', [FuelTankController::class, 'update'])->whereNumber('tank');
+        Route::delete('/fuel-station/tanks/{tank}', [FuelTankController::class, 'destroy'])->whereNumber('tank');
+        Route::get('/fuel-station/products', [FuelProductController::class, 'index']);
+        Route::post('/fuel-station/products', [FuelProductController::class, 'store']);
+        Route::get('/fuel-station/products/{product}', [FuelProductController::class, 'show'])->whereNumber('product');
+        Route::put('/fuel-station/products/{product}', [FuelProductController::class, 'update'])->whereNumber('product');
+        Route::delete('/fuel-station/products/{product}', [FuelProductController::class, 'destroy'])->whereNumber('product');
     });
 });
