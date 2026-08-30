@@ -3795,169 +3795,24 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/reports/turnover", options);
     },
 
-    /** Liste des branch (référentiel BC-25) */
-    getRestaurantBranches(options = {}) {
-      return request("GET", "/restaurant/branches", options);
+    /** RESTO-410 — File cuisine (commandes in_preparation/ready de la branche, branch_id obligatoire) */
+    getRestaurantKitchenOrders(options = {}) {
+      return request("GET", "/restaurant/kitchen/orders", options);
     },
 
-    /** Création d'une gare/terminal (TRAVEL-302/#6032) */
-    postRestaurantBranches(options = {}) {
-      return request("POST", "/restaurant/branches", options);
+    /** RESTO-410 — Plat prêt (in_preparation → ready) */
+    postRestaurantKitchenOrdersByRestaurantOrderReady(options = {}) {
+      return request("POST", "/restaurant/kitchen/orders/{restaurantOrder}/ready", options);
     },
 
-    /** Suppression d'un branch */
-    deleteRestaurantBranchesByRestaurantBranch(options = {}) {
-      return request("DELETE", "/restaurant/branches/{restaurantBranch}", options);
+    /** RESTO-410 — Prise en cuisine (open → in_preparation) */
+    postRestaurantKitchenOrdersByRestaurantOrderStart(options = {}) {
+      return request("POST", "/restaurant/kitchen/orders/{restaurantOrder}/start", options);
     },
 
-    /** Détail d'un branch */
-    getRestaurantBranchesByRestaurantBranch(options = {}) {
-      return request("GET", "/restaurant/branches/{restaurantBranch}", options);
-    },
-
-    /** Modification d'une compagnie de transport (TRAVEL-304/#6034) */
-    putRestaurantBranchesByRestaurantBranch(options = {}) {
-      return request("PUT", "/restaurant/branches/{restaurantBranch}", options);
-    },
-
-    /** Mise à jour d'un branch */
-    putRestaurantBranchesByRestaurantBranch2(options = {}) {
-      return request("PUT", "/restaurant/branches/{restaurantBranch}", options);
-    },
-
-    /** Liste des zone (référentiel BC-25) */
-    getRestaurantBranchesByRestaurantBranchZones(options = {}) {
-      return request("GET", "/restaurant/branches/{restaurantBranch}/zones", options);
-    },
-
-    /** Liste des category (référentiel BC-25) */
-    getRestaurantCategories(options = {}) {
-      return request("GET", "/restaurant/categories", options);
-    },
-
-    /** Création d'un category */
-    postRestaurantCategories(options = {}) {
-      return request("POST", "/restaurant/categories", options);
-    },
-
-    /** Suppression d'un category */
-    deleteRestaurantCategoriesByRestaurantCategory(options = {}) {
-      return request("DELETE", "/restaurant/categories/{restaurantCategory}", options);
-    },
-
-    /** Détail d'un category */
-    getRestaurantCategoriesByRestaurantCategory(options = {}) {
-      return request("GET", "/restaurant/categories/{restaurantCategory}", options);
-    },
-
-    /** Mise à jour d'un category */
-    putRestaurantCategoriesByRestaurantCategory(options = {}) {
-      return request("PUT", "/restaurant/categories/{restaurantCategory}", options);
-    },
-
-    /** Liste des hour (référentiel BC-25) */
-    getRestaurantHours(options = {}) {
-      return request("GET", "/restaurant/hours", options);
-    },
-
-    /** Ajout d'une image (TRAVEL-319/#6049) */
-    postRestaurantHours(options = {}) {
-      return request("POST", "/restaurant/hours", options);
-    },
-
-    /** Création d'un hour */
-    postRestaurantHours2(options = {}) {
-      return request("POST", "/restaurant/hours", options);
-    },
-
-    /** Suppression d'un hour */
-    deleteRestaurantHoursByRestaurantHour(options = {}) {
-      return request("DELETE", "/restaurant/hours/{restaurantHour}", options);
-    },
-
-    /** Détail d'un hour */
-    getRestaurantHoursByRestaurantHour(options = {}) {
-      return request("GET", "/restaurant/hours/{restaurantHour}", options);
-    },
-
-    /** Mise à jour d'un hour */
-    putRestaurantHoursByRestaurantHour(options = {}) {
-      return request("PUT", "/restaurant/hours/{restaurantHour}", options);
-    },
-
-    /** Liste des ingredient (référentiel BC-25) */
-    getRestaurantIngredients(options = {}) {
-      return request("GET", "/restaurant/ingredients", options);
-    },
-
-    /** Création d'un ingredient */
-    postRestaurantIngredients(options = {}) {
-      return request("POST", "/restaurant/ingredients", options);
-    },
-
-    /** Suppression d'un ingredient */
-    deleteRestaurantIngredientsByRestaurantIngredient(options = {}) {
-      return request("DELETE", "/restaurant/ingredients/{restaurantIngredient}", options);
-    },
-
-    /** Détail d'un ingredient */
-    getRestaurantIngredientsByRestaurantIngredient(options = {}) {
-      return request("GET", "/restaurant/ingredients/{restaurantIngredient}", options);
-    },
-
-    /** Mise à jour d'un ingredient */
-    putRestaurantIngredientsByRestaurantIngredient(options = {}) {
-      return request("PUT", "/restaurant/ingredients/{restaurantIngredient}", options);
-    },
-
-    /** Liste des menu (référentiel BC-25) */
-    getRestaurantMenus(options = {}) {
-      return request("GET", "/restaurant/menus", options);
-    },
-
-    /** Création d'un véhicule en location (TRAVEL-319/#6049) */
-    postRestaurantMenus(options = {}) {
-      return request("POST", "/restaurant/menus", options);
-    },
-
-    /** Création d'un menu */
-    postRestaurantMenus2(options = {}) {
-      return request("POST", "/restaurant/menus", options);
-    },
-
-    /** Suppression d'un véhicule en location (TRAVEL-319/#6049) */
-    deleteRestaurantMenusByRestaurantMenu(options = {}) {
-      return request("DELETE", "/restaurant/menus/{restaurantMenu}", options);
-    },
-
-    /** Suppression d'un menu */
-    deleteRestaurantMenusByRestaurantMenu2(options = {}) {
-      return request("DELETE", "/restaurant/menus/{restaurantMenu}", options);
-    },
-
-    /** Détail d'un menu */
-    getRestaurantMenusByRestaurantMenu(options = {}) {
-      return request("GET", "/restaurant/menus/{restaurantMenu}", options);
-    },
-
-    /** Mise à jour d'un véhicule en location (TRAVEL-319/#6049) */
-    putRestaurantMenusByRestaurantMenu(options = {}) {
-      return request("PUT", "/restaurant/menus/{restaurantMenu}", options);
-    },
-
-    /** Mise à jour d'un menu */
-    putRestaurantMenusByRestaurantMenu2(options = {}) {
-      return request("PUT", "/restaurant/menus/{restaurantMenu}", options);
-    },
-
-    /** Liste des menuitem (référentiel BC-25) */
-    getRestaurantMenusByRestaurantMenuItems(options = {}) {
-      return request("GET", "/restaurant/menus/{restaurantMenu}/items", options);
-    },
-
-    /** Création d'un menuitem */
-    postRestaurantMenusByRestaurantMenuItems(options = {}) {
-      return request("POST", "/restaurant/menus/{restaurantMenu}/items", options);
+    /** Suppression d'un menuitem */
+    deleteRestaurantMenusByRestaurantMenuItemsByRestaurantMenuItem(options = {}) {
+      return request("DELETE", "/restaurant/menus/{restaurantMenu}/items/{restaurantMenuItem}", options);
     },
 
     /** Mise à jour d'un menuitem */
@@ -3965,184 +3820,99 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/restaurant/menus/{restaurantMenu}/items/{restaurantMenuItem}", options);
     },
 
-    /** Liste des product (référentiel BC-25) */
-    getRestaurantProducts(options = {}) {
-      return request("GET", "/restaurant/products", options);
+    /** RESTO-402 — Liste des commandes (filtres branche/statut, paginée) */
+    getRestaurantOrders(options = {}) {
+      return request("GET", "/restaurant/orders", options);
     },
 
-    /** Création d'un product */
-    postRestaurantProducts(options = {}) {
-      return request("POST", "/restaurant/products", options);
+    /** RESTO-402 — Création de commande (idempotente, types salle/emporter/livraison) */
+    postRestaurantOrders(options = {}) {
+      return request("POST", "/restaurant/orders", options);
     },
 
-    /** Suppression d'un product */
-    deleteRestaurantProductsByRestaurantProduct(options = {}) {
-      return request("DELETE", "/restaurant/products/{restaurantProduct}", options);
+    /** RESTO-402 — Détail d''une commande (articles + paiements) */
+    getRestaurantOrdersByRestaurantOrder(options = {}) {
+      return request("GET", "/restaurant/orders/{restaurantOrder}", options);
     },
 
-    /** Détail d'un product */
-    getRestaurantProductsByRestaurantProduct(options = {}) {
-      return request("GET", "/restaurant/products/{restaurantProduct}", options);
+    /** RESTO-405 — Addition (totaux recalculés serveur — sous-total, TVA, remise promo, total) */
+    getRestaurantOrdersByRestaurantOrderBill(options = {}) {
+      return request("GET", "/restaurant/orders/{restaurantOrder}/bill", options);
     },
 
-    /** Mise à jour d'un product */
-    putRestaurantProductsByRestaurantProduct(options = {}) {
-      return request("PUT", "/restaurant/products/{restaurantProduct}", options);
+    /** RESTO-404 — Annulation de commande (draft|open → cancelled) */
+    postRestaurantOrdersByRestaurantOrderCancel(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/cancel", options);
     },
 
-    /** Liste des productingredient (référentiel BC-25) */
-    getRestaurantProductsByRestaurantProductIngredients(options = {}) {
-      return request("GET", "/restaurant/products/{restaurantProduct}/ingredients", options);
+    /** RESTO-404 — Confirmation de commande (open → in_preparation) */
+    postRestaurantOrdersByRestaurantOrderConfirm(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/confirm", options);
     },
 
-    /** Création d'un productingredient */
-    postRestaurantProductsByRestaurantProductIngredients(options = {}) {
-      return request("POST", "/restaurant/products/{restaurantProduct}/ingredients", options);
+    /** RESTO-403 — Ajout d''un article (prix/TVA serveur, totaux recalculés) */
+    postRestaurantOrdersByRestaurantOrderItems(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/items", options);
     },
 
-    /** Suppression d'un productingredient */
-    deleteRestaurantProductsByRestaurantProductIngredientsByRestaurantProductIngredient(options = {}) {
-      return request("DELETE", "/restaurant/products/{restaurantProduct}/ingredients/{restaurantProductIngredient}", options);
+    /** RESTO-403 — Annulation d''une ligne d''article (totaux recalculés) */
+    postRestaurantOrdersByRestaurantOrderItemsByRestaurantOrderItemCancel(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/items/{restaurantOrderItem}/cancel", options);
     },
 
-    /** Liste des supplier (référentiel BC-25) */
-    getRestaurantSuppliers(options = {}) {
-      return request("GET", "/restaurant/suppliers", options);
+    /** RESTO-407 — Encaissement (montant vérifié serveur, idempotent, callback signé pour mobile money) */
+    postRestaurantOrdersByRestaurantOrderPay(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/pay", options);
     },
 
-    /** Création d'un supplier */
-    postRestaurantSuppliers(options = {}) {
-      return request("POST", "/restaurant/suppliers", options);
+    /** RESTO-408 — Remboursement (réservé restaurant.manage, motif, idempotent) */
+    postRestaurantOrdersByRestaurantOrderRefund(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/refund", options);
     },
 
-    /** Suppression d'un supplier */
-    deleteRestaurantSuppliersByRestaurantSupplier(options = {}) {
-      return request("DELETE", "/restaurant/suppliers/{restaurantSupplier}", options);
+    /** RESTO-404 — Service en salle (ready → served) */
+    postRestaurantOrdersByRestaurantOrderServe(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/serve", options);
     },
 
-    /** Détail d'un supplier */
-    getRestaurantSuppliersByRestaurantSupplier(options = {}) {
-      return request("GET", "/restaurant/suppliers/{restaurantSupplier}", options);
+    /** RESTO-404 — Soumission de commande (draft → open, événement order.created.v1) */
+    postRestaurantOrdersByRestaurantOrderSubmit(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/submit", options);
     },
 
-    /** Mise à jour d'un supplier */
-    putRestaurantSuppliersByRestaurantSupplier(options = {}) {
-      return request("PUT", "/restaurant/suppliers/{restaurantSupplier}", options);
+    /** RESTO-407 — Callback signé de confirmation mobile money (public, HMAC fail-closed, idempotent) */
+    postRestaurantPaymentsByPaymentCallback(options = {}) {
+      return request("POST", "/restaurant/payments/{payment}/callback", options);
     },
 
-    /** Liste des table (référentiel BC-25) */
-    getRestaurantTables(options = {}) {
-      return request("GET", "/restaurant/tables", options);
+    /** RESTO-401 — Ouverture d''une session de caisse POS (une seule session ouverte par branche) */
+    postRestaurantPosSessions(options = {}) {
+      return request("POST", "/restaurant/pos-sessions", options);
     },
 
-    /** Création d'un table */
-    postRestaurantTables(options = {}) {
-      return request("POST", "/restaurant/tables", options);
+    /** RESTO-401 — Détail d''une session de caisse */
+    getRestaurantPosSessionsByRestaurantPosSession(options = {}) {
+      return request("GET", "/restaurant/pos-sessions/{restaurantPosSession}", options);
     },
 
-    /** Suppression d'un table */
-    deleteRestaurantTablesByRestaurantTable(options = {}) {
-      return request("DELETE", "/restaurant/tables/{restaurantTable}", options);
+    /** RESTO-401 — Clôture d''une session de caisse (totaux recalculés serveur, écart + motif, immuable) */
+    postRestaurantPosSessionsByRestaurantPosSessionClose(options = {}) {
+      return request("POST", "/restaurant/pos-sessions/{restaurantPosSession}/close", options);
     },
 
-    /** Détail d'un table */
-    getRestaurantTablesByRestaurantTable(options = {}) {
-      return request("GET", "/restaurant/tables/{restaurantTable}", options);
+    /** RESTO-401 — Session de caisse en cours (par branche, sinon première branche du tenant) */
+    getRestaurantPosSessionsCurrent(options = {}) {
+      return request("GET", "/restaurant/pos-sessions/current", options);
     },
 
-    /** Mise à jour d'un table */
-    putRestaurantTablesByRestaurantTable(options = {}) {
-      return request("PUT", "/restaurant/tables/{restaurantTable}", options);
+    /** RESTO-409 — Clôture de la session d''occupation (immuable, événement table.closed.v1) */
+    postRestaurantTablesByRestaurantTableClose(options = {}) {
+      return request("POST", "/restaurant/tables/{restaurantTable}/close", options);
     },
 
-    /** Liste des taxrate (référentiel BC-25) */
-    getRestaurantTaxRates(options = {}) {
-      return request("GET", "/restaurant/tax-rates", options);
-    },
-
-    /** Création d'un véhicule de flotte (TRAVEL-306/#6036) */
-    postRestaurantTaxRates(options = {}) {
-      return request("POST", "/restaurant/tax-rates", options);
-    },
-
-    /** Création d'un taxrate */
-    postRestaurantTaxRates2(options = {}) {
-      return request("POST", "/restaurant/tax-rates", options);
-    },
-
-    /** Détail d'un taxrate */
-    getRestaurantTaxRatesByRestaurantTaxRate(options = {}) {
-      return request("GET", "/restaurant/tax-rates/{restaurantTaxRate}", options);
-    },
-
-    /** Mise à jour d'un taux (TRAVEL-805/#6096) */
-    putRestaurantTaxRatesByRestaurantTaxRate(options = {}) {
-      return request("PUT", "/restaurant/tax-rates/{restaurantTaxRate}", options);
-    },
-
-    /** Mise à jour d'un taxrate */
-    putRestaurantTaxRatesByRestaurantTaxRate2(options = {}) {
-      return request("PUT", "/restaurant/tax-rates/{restaurantTaxRate}", options);
-    },
-
-    /** Liste des unit (référentiel BC-25) */
-    getRestaurantUnits(options = {}) {
-      return request("GET", "/restaurant/units", options);
-    },
-
-    /** Création d'un unit */
-    postRestaurantUnits(options = {}) {
-      return request("POST", "/restaurant/units", options);
-    },
-
-    /** Suppression d'un unit */
-    deleteRestaurantUnitsByRestaurantUnit(options = {}) {
-      return request("DELETE", "/restaurant/units/{restaurantUnit}", options);
-    },
-
-    /** Détail d'un unit */
-    getRestaurantUnitsByRestaurantUnit(options = {}) {
-      return request("GET", "/restaurant/units/{restaurantUnit}", options);
-    },
-
-    /** Modification d'une classe de service (TRAVEL-305/#6035) */
-    putRestaurantUnitsByRestaurantUnit(options = {}) {
-      return request("PUT", "/restaurant/units/{restaurantUnit}", options);
-    },
-
-    /** Mise à jour d'un unit */
-    putRestaurantUnitsByRestaurantUnit2(options = {}) {
-      return request("PUT", "/restaurant/units/{restaurantUnit}", options);
-    },
-
-    /** Liste des zone (référentiel BC-25) */
-    getRestaurantZones(options = {}) {
-      return request("GET", "/restaurant/zones", options);
-    },
-
-    /** Création d'une classe de service (TRAVEL-305/#6035) */
-    postRestaurantZones(options = {}) {
-      return request("POST", "/restaurant/zones", options);
-    },
-
-    /** Création d'un zone */
-    postRestaurantZones2(options = {}) {
-      return request("POST", "/restaurant/zones", options);
-    },
-
-    /** Suppression d'un zone */
-    deleteRestaurantZonesByRestaurantZone(options = {}) {
-      return request("DELETE", "/restaurant/zones/{restaurantZone}", options);
-    },
-
-    /** Détail d'un zone */
-    getRestaurantZonesByRestaurantZone(options = {}) {
-      return request("GET", "/restaurant/zones/{restaurantZone}", options);
-    },
-
-    /** Mise à jour d'un zone */
-    putRestaurantZonesByRestaurantZone(options = {}) {
-      return request("PUT", "/restaurant/zones/{restaurantZone}", options);
+    /** RESTO-409 — Ouverture d''une session d''occupation de table (table occupée → 409) */
+    postRestaurantTablesByRestaurantTableOpen(options = {}) {
+      return request("POST", "/restaurant/tables/{restaurantTable}/open", options);
     },
 
     /** Lister les avances sur salaire */
@@ -4665,11 +4435,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/travel/cancellation-policies/{travelCancellationPolicy}", options);
     },
 
-    /** Suppression d'un taxrate */
-    deleteTravelCancellationPoliciesByTravelCancellationPolicy2(options = {}) {
-      return request("DELETE", "/travel/cancellation-policies/{travelCancellationPolicy}", options);
-    },
-
     /** Mise à jour d'une politique (TRAVEL-813/#6103) */
     putTravelCancellationPoliciesByTravelCancellationPolicy(options = {}) {
       return request("PUT", "/travel/cancellation-policies/{travelCancellationPolicy}", options);
@@ -4685,14 +4450,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/carriers", options);
     },
 
-    /** Création d'un branch */
-    postTravelCarriers2(options = {}) {
-      return request("POST", "/travel/carriers", options);
+    /** Suppression d'une compagnie de transport (TRAVEL-304/#6034) */
+    deleteTravelCarriersByTravelCarrier(options = {}) {
+      return request("DELETE", "/travel/carriers/{travelCarrier}", options);
     },
 
     /** Détail d'une compagnie de transport (TRAVEL-304/#6034) */
     getTravelCarriersByTravelCarrier(options = {}) {
       return request("GET", "/travel/carriers/{travelCarrier}", options);
+    },
+
+    /** Modification d'une compagnie de transport (TRAVEL-304/#6034) */
+    putTravelCarriersByTravelCarrier(options = {}) {
+      return request("PUT", "/travel/carriers/{travelCarrier}", options);
     },
 
     /** Référentiel villes en lecture (TRAVEL-301/#6031) */
@@ -4705,14 +4475,24 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/travel/classes", options);
     },
 
+    /** Création d'une classe de service (TRAVEL-305/#6035) */
+    postTravelClasses(options = {}) {
+      return request("POST", "/travel/classes", options);
+    },
+
+    /** Suppression d'une classe de service (TRAVEL-305/#6035) */
+    deleteTravelClassesByTravelClass(options = {}) {
+      return request("DELETE", "/travel/classes/{travelClass}", options);
+    },
+
     /** Détail d'une classe de service (TRAVEL-305/#6035) */
     getTravelClassesByTravelClass(options = {}) {
       return request("GET", "/travel/classes/{travelClass}", options);
     },
 
-    /** Suppression d'un menuitem */
-    deleteTravelContact(options = {}) {
-      return request("DELETE", "/travel/contact", options);
+    /** Modification d'une classe de service (TRAVEL-305/#6035) */
+    putTravelClassesByTravelClass(options = {}) {
+      return request("PUT", "/travel/classes/{travelClass}", options);
     },
 
     /** Formulaire de contact → lead CRM (TRAVEL-416/#6068) */
@@ -4738,6 +4518,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Détail d'un taux (TRAVEL-805/#6096) */
     getTravelCurrencyRatesByTravelCurrencyRate(options = {}) {
       return request("GET", "/travel/currency-rates/{travelCurrencyRate}", options);
+    },
+
+    /** Mise à jour d'un taux (TRAVEL-805/#6096) */
+    putTravelCurrencyRatesByTravelCurrencyRate(options = {}) {
+      return request("PUT", "/travel/currency-rates/{travelCurrencyRate}", options);
     },
 
     /** Conversion multi-devise (TRAVEL-805/#6096) */
@@ -4900,14 +4685,34 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/travel/rental-vehicles", options);
     },
 
+    /** Création d'un véhicule en location (TRAVEL-319/#6049) */
+    postTravelRentalVehicles(options = {}) {
+      return request("POST", "/travel/rental-vehicles", options);
+    },
+
+    /** Suppression d'un véhicule en location (TRAVEL-319/#6049) */
+    deleteTravelRentalVehiclesByTravelRentalVehicle(options = {}) {
+      return request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}", options);
+    },
+
     /** Détail d'un véhicule en location (TRAVEL-319/#6049) */
     getTravelRentalVehiclesByTravelRentalVehicle(options = {}) {
       return request("GET", "/travel/rental-vehicles/{travelRentalVehicle}", options);
     },
 
+    /** Mise à jour d'un véhicule en location (TRAVEL-319/#6049) */
+    putTravelRentalVehiclesByTravelRentalVehicle(options = {}) {
+      return request("PUT", "/travel/rental-vehicles/{travelRentalVehicle}", options);
+    },
+
     /** Images d'un véhicule en location (TRAVEL-319/#6049) */
     getTravelRentalVehiclesByTravelRentalVehicleImages(options = {}) {
       return request("GET", "/travel/rental-vehicles/{travelRentalVehicle}/images", options);
+    },
+
+    /** Ajout d'une image (TRAVEL-319/#6049) */
+    postTravelRentalVehiclesByTravelRentalVehicleImages(options = {}) {
+      return request("POST", "/travel/rental-vehicles/{travelRentalVehicle}/images", options);
     },
 
     /** Suppression d'une image (TRAVEL-319/#6049) */
@@ -4973,6 +4778,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Liste des gares/terminaux (TRAVEL-302/#6032) */
     getTravelStations(options = {}) {
       return request("GET", "/travel/stations", options);
+    },
+
+    /** Création d'une gare/terminal (TRAVEL-302/#6032) */
+    postTravelStations(options = {}) {
+      return request("POST", "/travel/stations", options);
     },
 
     /** Suppression d'une gare/terminal (TRAVEL-302/#6032) */
@@ -5073,6 +4883,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Liste des véhicules de la flotte (TRAVEL-306/#6036) */
     getTravelVehicles(options = {}) {
       return request("GET", "/travel/vehicles", options);
+    },
+
+    /** Création d'un véhicule de flotte (TRAVEL-306/#6036) */
+    postTravelVehicles(options = {}) {
+      return request("POST", "/travel/vehicles", options);
     },
 
     /** Suppression d'un véhicule (TRAVEL-306/#6036) */
