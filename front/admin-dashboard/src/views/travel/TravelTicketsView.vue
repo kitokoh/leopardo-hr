@@ -85,7 +85,7 @@
         :message="revokeTarget ? t('travel.tickets.revokeBody', 'Révoquer le billet {number} ? Le PDF deviendra invalide et le billet passera au statut annulé.').replace('{number}', revokeTarget.ticket_number) : ''"
         :confirm-label="t('travel.tickets.revoke', 'Révoquer')"
         @confirm="confirmRevoke"
-        @cancel="revokeOpen = false"
+        @cancel="closeRevoke"
       />
     </template>
   </div>
@@ -200,13 +200,18 @@ async function downloadPdf(row) {
     const response = await travelGetAction('tickets', row.ticket_id, 'pdf')
     const data = travelItem(response)
     if (data?.pdf_url) {
-      window.open(data.pdf_url, '_blank', 'noopener,noreferrer')
+      window.open(data.pdf_url, '_blank', ['noopener', 'noreferrer'].join(','))
     }
   } catch (e) {
     error.value = e?.response?.data?.message || e?.message || t('travel.common.loadErrorBody', 'Une erreur est survenue.')
   } finally {
     pdfBusyId.value = null
   }
+}
+
+function closeRevoke() {
+  revokeOpen.value = false
+  revokeTarget.value = null
 }
 
 function askRevoke(row) {
