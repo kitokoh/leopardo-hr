@@ -3056,161 +3056,9 @@ class LeopardoClient:
         """Taux de rotation (turnover) sur N mois"""
         return self.request("GET", "/reports/turnover", **kwargs)
 
-    def put_restaurant_branches_by_restaurantbranch_cancellation_policy(self, **kwargs):
-        """Création d'un taux de conversion par période (TRAVEL-805/#6096)"""
-        return self.request("PUT", "/restaurant/branches/{restaurantBranch}/cancellation-policy", **kwargs)
-
-    def delete_restaurant_delivery_zones_by_restaurantdeliveryzone(self, **kwargs):
-        """Suppression des zones de livraison"""
-        return self.request("DELETE", "/restaurant/delivery-zones/{restaurantDeliveryZone}", **kwargs)
-
-    def get_restaurant_delivery_zones_by_restaurantdeliveryzone(self, **kwargs):
-        """Détail des zones de livraison"""
-        return self.request("GET", "/restaurant/delivery-zones/{restaurantDeliveryZone}", **kwargs)
-
-    def put_restaurant_delivery_zones_by_restaurantdeliveryzone(self, **kwargs):
-        """Modification des zones de livraison"""
-        return self.request("PUT", "/restaurant/delivery-zones/{restaurantDeliveryZone}", **kwargs)
-
-    def delete_restaurant_delivery_zones_by_restaurantdeliveryzone_quote(self, **kwargs):
-        """Suppression d'un véhicule en location (TRAVEL-319/#6049)"""
-        return self.request("DELETE", "/restaurant/delivery-zones/{restaurantDeliveryZone}/quote", **kwargs)
-
-    def get_restaurant_delivery_zones_by_restaurantdeliveryzone_quote(self, **kwargs):
-        """Devis de livraison (frais serveur, RESTO-604/#6209)"""
-        return self.request("GET", "/restaurant/delivery-zones/{restaurantDeliveryZone}/quote", **kwargs)
-
-    def put_restaurant_delivery_zones_by_restaurantdeliveryzone_quote(self, **kwargs):
-        """Mise à jour d'un véhicule en location (TRAVEL-319/#6049)"""
-        return self.request("PUT", "/restaurant/delivery-zones/{restaurantDeliveryZone}/quote", **kwargs)
-
-    def get_restaurant_inventory_counts(self, **kwargs):
-        """Liste des inventaires physiques"""
-        return self.request("GET", "/restaurant/inventory-counts", **kwargs)
-
-    def post_restaurant_inventory_counts(self, **kwargs):
-        """Création d'un inventaire (lignes attendues pré-remplies)"""
-        return self.request("POST", "/restaurant/inventory-counts", **kwargs)
-
-    def get_restaurant_inventory_counts_by_restaurantinventorycount(self, **kwargs):
-        """Détail d'un inventaire"""
-        return self.request("GET", "/restaurant/inventory-counts/{restaurantInventoryCount}", **kwargs)
-
-    def post_restaurant_inventory_counts_by_restaurantinventorycount_approve(self, **kwargs):
-        """Approbation de l'inventaire (ajustements de stock)"""
-        return self.request("POST", "/restaurant/inventory-counts/{restaurantInventoryCount}/approve", **kwargs)
-
-    def put_restaurant_inventory_counts_by_restaurantinventorycount_items_by_item(self, **kwargs):
-        """Saisie d'une quantité comptée (écart calculé serveur)"""
-        return self.request("PUT", "/restaurant/inventory-counts/{restaurantInventoryCount}/items/{item}", **kwargs)
-
-    def post_restaurant_inventory_counts_by_restaurantinventorycount_submit(self, **kwargs):
-        """Soumission de l'inventaire (draft → submitted)"""
-        return self.request("POST", "/restaurant/inventory-counts/{restaurantInventoryCount}/submit", **kwargs)
-
-    def get_restaurant_inventory_movements(self, **kwargs):
-        """Liste des mouvements de stock"""
-        return self.request("GET", "/restaurant/inventory-movements", **kwargs)
-
-    def post_restaurant_inventory_movements(self, **kwargs):
-        """Création des mouvements de stock"""
-        return self.request("POST", "/restaurant/inventory-movements", **kwargs)
-
-    def get_restaurant_inventory_movements_by_restaurantinventorymovement(self, **kwargs):
-        """Détail des mouvements de stock"""
-        return self.request("GET", "/restaurant/inventory-movements/{restaurantInventoryMovement}", **kwargs)
-
-    def get_restaurant_pos_sessions_by_restaurantpossession_cogs(self, **kwargs):
-        """COGS de la session de caisse (RESTO-506/#6205)"""
-        return self.request("GET", "/restaurant/pos-sessions/{restaurantPosSession}/cogs", **kwargs)
-
-    def get_restaurant_purchase_orders(self, **kwargs):
-        """Liste des bons de commande"""
-        return self.request("GET", "/restaurant/purchase-orders", **kwargs)
-
-    def post_restaurant_purchase_orders(self, **kwargs):
-        """Création des bons de commande"""
-        return self.request("POST", "/restaurant/purchase-orders", **kwargs)
-
-    def delete_restaurant_purchase_orders_by_restaurantpurchaseorder(self, **kwargs):
-        """Suppression des bons de commande"""
-        return self.request("DELETE", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", **kwargs)
-
-    def get_restaurant_purchase_orders_by_restaurantpurchaseorder(self, **kwargs):
-        """Détail des bons de commande"""
-        return self.request("GET", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", **kwargs)
-
-    def put_restaurant_purchase_orders_by_restaurantpurchaseorder(self, **kwargs):
-        """Modification des bons de commande"""
-        return self.request("PUT", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", **kwargs)
-
-    def post_restaurant_purchase_orders_by_restaurantpurchaseorder_receive(self, **kwargs):
-        """Réception du bon de commande (mouvements de stock)"""
-        return self.request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/receive", **kwargs)
-
-    def post_restaurant_purchase_orders_by_restaurantpurchaseorder_send(self, **kwargs):
-        """Envoi du bon de commande (draft → sent)"""
-        return self.request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/send", **kwargs)
-
-    def get_restaurant_receivings(self, **kwargs):
-        """Liste des réceptions"""
-        return self.request("GET", "/restaurant/receivings", **kwargs)
-
-    def post_restaurant_receivings(self, **kwargs):
-        """Création des réceptions"""
-        return self.request("POST", "/restaurant/receivings", **kwargs)
-
-    def get_restaurant_receivings_by_restaurantreceiving(self, **kwargs):
-        """Détail des réceptions"""
-        return self.request("GET", "/restaurant/receivings/{restaurantReceiving}", **kwargs)
-
-    def get_restaurant_reservations(self, **kwargs):
-        """Liste des réservations"""
-        return self.request("GET", "/restaurant/reservations", **kwargs)
-
-    def get_restaurant_reservations_by_restaurantreservation(self, **kwargs):
-        """Référentiel villes en lecture (TRAVEL-301/#6031)"""
-        return self.request("GET", "/restaurant/reservations/{restaurantReservation}", **kwargs)
-
-    def put_restaurant_reservations_by_restaurantreservation(self, **kwargs):
-        """Modification d'une réservation (en attente)"""
-        return self.request("PUT", "/restaurant/reservations/{restaurantReservation}", **kwargs)
-
-    def post_restaurant_reservations_by_restaurantreservation_cancel(self, **kwargs):
-        """Annulation (politique d'annulation, pénalités serveur)"""
-        return self.request("POST", "/restaurant/reservations/{restaurantReservation}/cancel", **kwargs)
-
-    def post_restaurant_reservations_by_restaurantreservation_check_in(self, **kwargs):
-        """Check-in (confirmée → seated)"""
-        return self.request("POST", "/restaurant/reservations/{restaurantReservation}/check-in", **kwargs)
-
-    def post_restaurant_reservations_by_restaurantreservation_confirm(self, **kwargs):
-        """Confirmation de la réservation (événement outbox)"""
-        return self.request("POST", "/restaurant/reservations/{restaurantReservation}/confirm", **kwargs)
-
-    def post_restaurant_reservations_by_restaurantreservation_deposit(self, **kwargs):
-        """Création d'une gare/terminal (TRAVEL-302/#6032)"""
-        return self.request("POST", "/restaurant/reservations/{restaurantReservation}/deposit", **kwargs)
-
-    def post_restaurant_reservations_by_restaurantreservation_no_show(self, **kwargs):
-        """No-show (réservation non honorée)"""
-        return self.request("POST", "/restaurant/reservations/{restaurantReservation}/no-show", **kwargs)
-
-    def delete_restaurant_stock_levels_by_restaurantstocklevel(self, **kwargs):
-        """Suppression des niveaux de stock"""
-        return self.request("DELETE", "/restaurant/stock-levels/{restaurantStockLevel}", **kwargs)
-
-    def get_restaurant_stock_levels_by_restaurantstocklevel(self, **kwargs):
-        """Détail des niveaux de stock"""
-        return self.request("GET", "/restaurant/stock-levels/{restaurantStockLevel}", **kwargs)
-
-    def put_restaurant_stock_levels_by_restaurantstocklevel(self, **kwargs):
-        """Modification des niveaux de stock"""
-        return self.request("PUT", "/restaurant/stock-levels/{restaurantStockLevel}", **kwargs)
-
-    def get_restaurant_stock_alerts(self, **kwargs):
-        """Alertes de seuil de stock (RESTO-505/#6204)"""
-        return self.request("GET", "/restaurant/stock/alerts", **kwargs)
+    def post_restaurant_payments_by_payment_callback(self, **kwargs):
+        """Callback signé idempotent d'un paiement (RESTO-407)"""
+        return self.request("POST", "/restaurant/payments/{payment}/callback", **kwargs)
 
     def get_salary_advances(self, **kwargs):
         """Lister les avances sur salaire"""
@@ -3652,9 +3500,9 @@ class LeopardoClient:
         """Modification d'une compagnie de transport (TRAVEL-304/#6034)"""
         return self.request("PUT", "/travel/carriers/{travelCarrier}", **kwargs)
 
-    def post_travel_cities(self, **kwargs):
-        """Création d'une réservation (conflit de créneau → 409)"""
-        return self.request("POST", "/travel/cities", **kwargs)
+    def get_travel_cities(self, **kwargs):
+        """Référentiel villes en lecture (TRAVEL-301/#6031)"""
+        return self.request("GET", "/travel/cities", **kwargs)
 
     def get_travel_classes(self, **kwargs):
         """Liste des classes de service (TRAVEL-305/#6035)"""
@@ -3684,15 +3532,12 @@ class LeopardoClient:
         """Référentiel pays en lecture (TRAVEL-301/#6031)"""
         return self.request("GET", "/travel/countries", **kwargs)
 
-    def post_travel_countries(self, **kwargs):
-        """Création des niveaux de stock"""
-        return self.request("POST", "/travel/countries", **kwargs)
-
     def get_travel_currency_rates(self, **kwargs):
         """Liste des taux de conversion (TRAVEL-805/#6096)"""
         return self.request("GET", "/travel/currency-rates", **kwargs)
 
     def post_travel_currency_rates(self, **kwargs):
+        """Création d'un taux de conversion par période (TRAVEL-805/#6096)"""
         return self.request("POST", "/travel/currency-rates", **kwargs)
 
     def get_travel_currency_rates_by_travelcurrencyrate(self, **kwargs):
@@ -3835,9 +3680,17 @@ class LeopardoClient:
         """Création d'un véhicule en location (TRAVEL-319/#6049)"""
         return self.request("POST", "/travel/rental-vehicles", **kwargs)
 
+    def delete_travel_rental_vehicles_by_travelrentalvehicle(self, **kwargs):
+        """Suppression d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}", **kwargs)
+
     def get_travel_rental_vehicles_by_travelrentalvehicle(self, **kwargs):
         """Détail d'un véhicule en location (TRAVEL-319/#6049)"""
         return self.request("GET", "/travel/rental-vehicles/{travelRentalVehicle}", **kwargs)
+
+    def put_travel_rental_vehicles_by_travelrentalvehicle(self, **kwargs):
+        """Mise à jour d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("PUT", "/travel/rental-vehicles/{travelRentalVehicle}", **kwargs)
 
     def get_travel_rental_vehicles_by_travelrentalvehicle_images(self, **kwargs):
         """Images d'un véhicule en location (TRAVEL-319/#6049)"""
@@ -3898,6 +3751,10 @@ class LeopardoClient:
     def get_travel_stations(self, **kwargs):
         """Liste des gares/terminaux (TRAVEL-302/#6032)"""
         return self.request("GET", "/travel/stations", **kwargs)
+
+    def post_travel_stations(self, **kwargs):
+        """Création d'une gare/terminal (TRAVEL-302/#6032)"""
+        return self.request("POST", "/travel/stations", **kwargs)
 
     def delete_travel_stations_by_travelstation(self, **kwargs):
         """Suppression d'une gare/terminal (TRAVEL-302/#6032)"""

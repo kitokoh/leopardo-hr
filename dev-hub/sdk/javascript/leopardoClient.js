@@ -3795,199 +3795,9 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/reports/turnover", options);
     },
 
-    /** Création d'un taux de conversion par période (TRAVEL-805/#6096) */
-    putRestaurantBranchesByRestaurantBranchCancellationPolicy(options = {}) {
-      return request("PUT", "/restaurant/branches/{restaurantBranch}/cancellation-policy", options);
-    },
-
-    /** Suppression des zones de livraison */
-    deleteRestaurantDeliveryZonesByRestaurantDeliveryZone(options = {}) {
-      return request("DELETE", "/restaurant/delivery-zones/{restaurantDeliveryZone}", options);
-    },
-
-    /** Détail des zones de livraison */
-    getRestaurantDeliveryZonesByRestaurantDeliveryZone(options = {}) {
-      return request("GET", "/restaurant/delivery-zones/{restaurantDeliveryZone}", options);
-    },
-
-    /** Modification des zones de livraison */
-    putRestaurantDeliveryZonesByRestaurantDeliveryZone(options = {}) {
-      return request("PUT", "/restaurant/delivery-zones/{restaurantDeliveryZone}", options);
-    },
-
-    /** Suppression d'un véhicule en location (TRAVEL-319/#6049) */
-    deleteRestaurantDeliveryZonesByRestaurantDeliveryZoneQuote(options = {}) {
-      return request("DELETE", "/restaurant/delivery-zones/{restaurantDeliveryZone}/quote", options);
-    },
-
-    /** Devis de livraison (frais serveur, RESTO-604/#6209) */
-    getRestaurantDeliveryZonesByRestaurantDeliveryZoneQuote(options = {}) {
-      return request("GET", "/restaurant/delivery-zones/{restaurantDeliveryZone}/quote", options);
-    },
-
-    /** Mise à jour d'un véhicule en location (TRAVEL-319/#6049) */
-    putRestaurantDeliveryZonesByRestaurantDeliveryZoneQuote(options = {}) {
-      return request("PUT", "/restaurant/delivery-zones/{restaurantDeliveryZone}/quote", options);
-    },
-
-    /** Liste des inventaires physiques */
-    getRestaurantInventoryCounts(options = {}) {
-      return request("GET", "/restaurant/inventory-counts", options);
-    },
-
-    /** Création d'un inventaire (lignes attendues pré-remplies) */
-    postRestaurantInventoryCounts(options = {}) {
-      return request("POST", "/restaurant/inventory-counts", options);
-    },
-
-    /** Détail d'un inventaire */
-    getRestaurantInventoryCountsByRestaurantInventoryCount(options = {}) {
-      return request("GET", "/restaurant/inventory-counts/{restaurantInventoryCount}", options);
-    },
-
-    /** Approbation de l'inventaire (ajustements de stock) */
-    postRestaurantInventoryCountsByRestaurantInventoryCountApprove(options = {}) {
-      return request("POST", "/restaurant/inventory-counts/{restaurantInventoryCount}/approve", options);
-    },
-
-    /** Saisie d'une quantité comptée (écart calculé serveur) */
-    putRestaurantInventoryCountsByRestaurantInventoryCountItemsByItem(options = {}) {
-      return request("PUT", "/restaurant/inventory-counts/{restaurantInventoryCount}/items/{item}", options);
-    },
-
-    /** Soumission de l'inventaire (draft → submitted) */
-    postRestaurantInventoryCountsByRestaurantInventoryCountSubmit(options = {}) {
-      return request("POST", "/restaurant/inventory-counts/{restaurantInventoryCount}/submit", options);
-    },
-
-    /** Liste des mouvements de stock */
-    getRestaurantInventoryMovements(options = {}) {
-      return request("GET", "/restaurant/inventory-movements", options);
-    },
-
-    /** Création des mouvements de stock */
-    postRestaurantInventoryMovements(options = {}) {
-      return request("POST", "/restaurant/inventory-movements", options);
-    },
-
-    /** Détail des mouvements de stock */
-    getRestaurantInventoryMovementsByRestaurantInventoryMovement(options = {}) {
-      return request("GET", "/restaurant/inventory-movements/{restaurantInventoryMovement}", options);
-    },
-
-    /** COGS de la session de caisse (RESTO-506/#6205) */
-    getRestaurantPosSessionsByRestaurantPosSessionCogs(options = {}) {
-      return request("GET", "/restaurant/pos-sessions/{restaurantPosSession}/cogs", options);
-    },
-
-    /** Liste des bons de commande */
-    getRestaurantPurchaseOrders(options = {}) {
-      return request("GET", "/restaurant/purchase-orders", options);
-    },
-
-    /** Création des bons de commande */
-    postRestaurantPurchaseOrders(options = {}) {
-      return request("POST", "/restaurant/purchase-orders", options);
-    },
-
-    /** Suppression des bons de commande */
-    deleteRestaurantPurchaseOrdersByRestaurantPurchaseOrder(options = {}) {
-      return request("DELETE", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", options);
-    },
-
-    /** Détail des bons de commande */
-    getRestaurantPurchaseOrdersByRestaurantPurchaseOrder(options = {}) {
-      return request("GET", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", options);
-    },
-
-    /** Modification des bons de commande */
-    putRestaurantPurchaseOrdersByRestaurantPurchaseOrder(options = {}) {
-      return request("PUT", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", options);
-    },
-
-    /** Réception du bon de commande (mouvements de stock) */
-    postRestaurantPurchaseOrdersByRestaurantPurchaseOrderReceive(options = {}) {
-      return request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/receive", options);
-    },
-
-    /** Envoi du bon de commande (draft → sent) */
-    postRestaurantPurchaseOrdersByRestaurantPurchaseOrderSend(options = {}) {
-      return request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/send", options);
-    },
-
-    /** Liste des réceptions */
-    getRestaurantReceivings(options = {}) {
-      return request("GET", "/restaurant/receivings", options);
-    },
-
-    /** Création des réceptions */
-    postRestaurantReceivings(options = {}) {
-      return request("POST", "/restaurant/receivings", options);
-    },
-
-    /** Détail des réceptions */
-    getRestaurantReceivingsByRestaurantReceiving(options = {}) {
-      return request("GET", "/restaurant/receivings/{restaurantReceiving}", options);
-    },
-
-    /** Liste des réservations */
-    getRestaurantReservations(options = {}) {
-      return request("GET", "/restaurant/reservations", options);
-    },
-
-    /** Référentiel villes en lecture (TRAVEL-301/#6031) */
-    getRestaurantReservationsByRestaurantReservation(options = {}) {
-      return request("GET", "/restaurant/reservations/{restaurantReservation}", options);
-    },
-
-    /** Modification d'une réservation (en attente) */
-    putRestaurantReservationsByRestaurantReservation(options = {}) {
-      return request("PUT", "/restaurant/reservations/{restaurantReservation}", options);
-    },
-
-    /** Annulation (politique d'annulation, pénalités serveur) */
-    postRestaurantReservationsByRestaurantReservationCancel(options = {}) {
-      return request("POST", "/restaurant/reservations/{restaurantReservation}/cancel", options);
-    },
-
-    /** Check-in (confirmée → seated) */
-    postRestaurantReservationsByRestaurantReservationCheckIn(options = {}) {
-      return request("POST", "/restaurant/reservations/{restaurantReservation}/check-in", options);
-    },
-
-    /** Confirmation de la réservation (événement outbox) */
-    postRestaurantReservationsByRestaurantReservationConfirm(options = {}) {
-      return request("POST", "/restaurant/reservations/{restaurantReservation}/confirm", options);
-    },
-
-    /** Création d'une gare/terminal (TRAVEL-302/#6032) */
-    postRestaurantReservationsByRestaurantReservationDeposit(options = {}) {
-      return request("POST", "/restaurant/reservations/{restaurantReservation}/deposit", options);
-    },
-
-    /** No-show (réservation non honorée) */
-    postRestaurantReservationsByRestaurantReservationNoShow(options = {}) {
-      return request("POST", "/restaurant/reservations/{restaurantReservation}/no-show", options);
-    },
-
-    /** Suppression des niveaux de stock */
-    deleteRestaurantStockLevelsByRestaurantStockLevel(options = {}) {
-      return request("DELETE", "/restaurant/stock-levels/{restaurantStockLevel}", options);
-    },
-
-    /** Détail des niveaux de stock */
-    getRestaurantStockLevelsByRestaurantStockLevel(options = {}) {
-      return request("GET", "/restaurant/stock-levels/{restaurantStockLevel}", options);
-    },
-
-    /** Modification des niveaux de stock */
-    putRestaurantStockLevelsByRestaurantStockLevel(options = {}) {
-      return request("PUT", "/restaurant/stock-levels/{restaurantStockLevel}", options);
-    },
-
-    /** Alertes de seuil de stock (RESTO-505/#6204) */
-    getRestaurantStockAlerts(options = {}) {
-      return request("GET", "/restaurant/stock/alerts", options);
+    /** Callback signé idempotent d'un paiement (RESTO-407) */
+    postRestaurantPaymentsByPaymentCallback(options = {}) {
+      return request("POST", "/restaurant/payments/{payment}/callback", options);
     },
 
     /** Lister les avances sur salaire */
@@ -4540,9 +4350,9 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/travel/carriers/{travelCarrier}", options);
     },
 
-    /** Création d'une réservation (conflit de créneau → 409) */
-    postTravelCities(options = {}) {
-      return request("POST", "/travel/cities", options);
+    /** Référentiel villes en lecture (TRAVEL-301/#6031) */
+    getTravelCities(options = {}) {
+      return request("GET", "/travel/cities", options);
     },
 
     /** Liste des classes de service (TRAVEL-305/#6035) */
@@ -4580,16 +4390,12 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/travel/countries", options);
     },
 
-    /** Création des niveaux de stock */
-    postTravelCountries(options = {}) {
-      return request("POST", "/travel/countries", options);
-    },
-
     /** Liste des taux de conversion (TRAVEL-805/#6096) */
     getTravelCurrencyRates(options = {}) {
       return request("GET", "/travel/currency-rates", options);
     },
 
+    /** Création d'un taux de conversion par période (TRAVEL-805/#6096) */
     postTravelCurrencyRates(options = {}) {
       return request("POST", "/travel/currency-rates", options);
     },
@@ -4769,9 +4575,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/rental-vehicles", options);
     },
 
+    /** Suppression d'un véhicule en location (TRAVEL-319/#6049) */
+    deleteTravelRentalVehiclesByTravelRentalVehicle(options = {}) {
+      return request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}", options);
+    },
+
     /** Détail d'un véhicule en location (TRAVEL-319/#6049) */
     getTravelRentalVehiclesByTravelRentalVehicle(options = {}) {
       return request("GET", "/travel/rental-vehicles/{travelRentalVehicle}", options);
+    },
+
+    /** Mise à jour d'un véhicule en location (TRAVEL-319/#6049) */
+    putTravelRentalVehiclesByTravelRentalVehicle(options = {}) {
+      return request("PUT", "/travel/rental-vehicles/{travelRentalVehicle}", options);
     },
 
     /** Images d'un véhicule en location (TRAVEL-319/#6049) */
@@ -4847,6 +4663,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Liste des gares/terminaux (TRAVEL-302/#6032) */
     getTravelStations(options = {}) {
       return request("GET", "/travel/stations", options);
+    },
+
+    /** Création d'une gare/terminal (TRAVEL-302/#6032) */
+    postTravelStations(options = {}) {
+      return request("POST", "/travel/stations", options);
     },
 
     /** Suppression d'une gare/terminal (TRAVEL-302/#6032) */
