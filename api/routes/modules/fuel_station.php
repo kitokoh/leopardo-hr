@@ -16,6 +16,7 @@ declare(strict_types=1);
  * ventes = policy par propriétaire (opened_by/employee_id).
  */
 
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelAlertController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelEquipmentController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportController;
@@ -145,5 +146,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/fuel-station/imports', [FuelImportController::class, 'store']);
         Route::get('/fuel-station/imports', [FuelImportController::class, 'index']);
         Route::get('/fuel-station/imports/{import}', [FuelImportController::class, 'show'])->whereNumber('import');
+        // FUEL-019 (#5813) : alertes & préférences de notification (manager).
+        Route::get('/fuel-station/notifications/preferences', [FuelAlertController::class, 'preferences']);
+        Route::put('/fuel-station/notifications/preferences', [FuelAlertController::class, 'updatePreferences']);
+        Route::get('/fuel-station/alerts', [FuelAlertController::class, 'index']);
+        Route::post('/fuel-station/alerts/{alert}/acknowledge', [FuelAlertController::class, 'acknowledge'])->whereNumber('alert');
+        Route::post('/fuel-station/alerts/{alert}/resolve', [FuelAlertController::class, 'resolve'])->whereNumber('alert');
     });
 });
