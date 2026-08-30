@@ -88,10 +88,10 @@ final class ExportAiConversationJob implements ShouldQueue, TenantScopedJob
         }
 
         app(AiDeadLetterQueue::class)->record(
-            companyId: (string) ($export?->company_id ?? ''),
+            companyId: (string) ($export->company_id ?? ''),
             jobClass: self::class,
             jobId: $this->aiExportId,
-            dedupKey: $export?->dedup_key ?? 'ai_export:unknown',
+            dedupKey: $export->dedup_key ?? 'ai_export:unknown',
             error: $e->getMessage(),
             payload: ['ai_export_id' => $this->aiExportId],
         );

@@ -64,7 +64,10 @@ class ConversationExportService
 
             ExportAiConversationJob::dispatch($existing->id);
 
-            return $this->payload($existing->fresh());
+            $fresh = $existing->fresh();
+            assert($fresh instanceof \App\AI\Models\AiExport);
+
+            return $this->payload($fresh);
         }
 
         $export = AiExport::create([

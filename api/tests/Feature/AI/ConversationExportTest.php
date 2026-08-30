@@ -95,6 +95,7 @@ class ConversationExportTest extends TestCase
         $this->assertDatabaseHas('ai_exports', ['id' => $export['id'], 'status' => 'done']);
 
         $row = AiExport::query()->find($export['id']);
+        $this->assertInstanceOf(AiExport::class, $row);
         $this->assertNotNull($row->file_path);
         Storage::disk('local')->assertExists($row->file_path);
 
@@ -111,6 +112,7 @@ class ConversationExportTest extends TestCase
         [$company, $employee] = $this->aiFixture();
         $otherCompany = Company::factory()->create();
         $otherUser = Employee::factory()->create(['company_id' => $company->id]);
+        assert($otherUser instanceof Employee);
         $foreignConversation = $this->conversation($otherCompany->id, $employee->id);
 
         Sanctum::actingAs($employee);
@@ -197,8 +199,9 @@ class ConversationExportTest extends TestCase
 
         // QUEUE_CONNECTION=sync : le re-dispatch exécute le job en ligne →
         // succès → DLQ résolue.
-        $this->artisan('ai:dlq:replay', ['--company-id' => $company->id])
-            ->assertSuccessful();
+        $cmd = $this->artisan('ai:dlq:replay', ['--company-id' => $company->id]);
+        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
+        $cmd->assertExitCode(0);
 
         $this->assertDatabaseHas('ai_exports', [
             'id' => $export->id,
@@ -224,10 +227,15 @@ class ConversationExportTest extends TestCase
     /**
      * @return array{0: Company, 1: Employee}
      */
+    /**
+     * @return array{Company, Employee}
+     */
     private function aiFixture(): array
     {
         $company = Company::factory()->create();
         $employee = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        assert($company instanceof Company);
+        assert($employee instanceof Employee);
 
         return [$company, $employee];
     }

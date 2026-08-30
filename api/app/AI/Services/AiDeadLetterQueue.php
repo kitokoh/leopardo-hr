@@ -78,7 +78,8 @@ class AiDeadLetterQueue
 
         foreach ($entries as $entry) {
             try {
-                $payload = is_array($entry->payload) ? $entry->payload : [];
+                /** @var array<mixed> $payload */
+                $payload = $entry->payload;
                 /** @var int|null $exportId */
                 $exportId = isset($payload['ai_export_id']) ? (int) $payload['ai_export_id'] : null;
 

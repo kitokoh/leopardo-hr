@@ -50,6 +50,7 @@ class AiGoldenJourneyTest extends TestCase
         [$company, $manager] = $this->aiFixture();
         $type = $this->seedAbsenceType($company->id);
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+        assert($employee instanceof Employee);
         $this->registerWriteTool('create_absence');
         $this->app->forgetInstance(ToolRegistry::class);
 
@@ -90,6 +91,7 @@ class AiGoldenJourneyTest extends TestCase
             ->where('company_id', $company->id)
             ->where('conversation_id', $conversationId)
             ->first();
+        $this->assertNotNull($audit);
         $this->assertStringContainsString('conge', (string) $audit->prompt);
     }
 
@@ -129,14 +131,15 @@ class AiGoldenJourneyTest extends TestCase
 
     public function test_golden_journey_registry_contains_bc23_ai_journey(): void
     {
-        $registry = json_decode(
-            file_get_contents(base_path('../dev-hub/tools/golden-journeys.json')),
-            true,
-        );
+        $registryRaw = file_get_contents(base_path('../dev-hub/tools/golden-journeys.json'));
+        $this->assertNotFalse($registryRaw);
+        $registry = json_decode($registryRaw, true);
 
         $this->assertSame('active', $registry['solutions']['bc23_ai']['status'] ?? null);
 
-        $journey = collect($registry['journeys'])->firstWhere('id', 'GJ-08');
+        /** @var array<int, array<string, mixed>> $journeys */
+        $journeys = $registry['journeys'];
+        $journey = collect($journeys)->firstWhere('id', 'GJ-08');
         $this->assertNotNull($journey);
         $this->assertSame('bc23_ai', $journey['solution']);
 
@@ -147,12 +150,14 @@ class AiGoldenJourneyTest extends TestCase
     }
 
     /**
-     * @return array{0: Company, 1: Employee}
+     * @return array{Company, Employee}
      */
     private function aiFixture(): array
     {
         $company = Company::factory()->create();
         $employee = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        assert($company instanceof Company);
+        assert($employee instanceof Employee);
 
         return [$company, $employee];
     }
