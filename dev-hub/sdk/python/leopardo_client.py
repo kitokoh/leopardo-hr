@@ -1660,6 +1660,10 @@ class LeopardoClient:
         """Modifier un creneau"""
         return self.request("PUT", "/edu-manager/course-slots/{slot}", **kwargs)
 
+    def get_edu_manager_exports_by_kind(self, **kwargs):
+        """Exporter un CSV (students|presence|grades) audité"""
+        return self.request("GET", "/edu-manager/exports/{kind}", **kwargs)
+
     def post_edu_manager_grades_by_grade_correct(self, **kwargs):
         """Corriger une note (versionnee)"""
         return self.request("POST", "/edu-manager/grades/{grade}/correct", **kwargs)
@@ -1675,6 +1679,18 @@ class LeopardoClient:
     def post_edu_manager_guardians_by_guardian_access_links(self, **kwargs):
         """Emettre un lien d'acces portail guardian (direction, EDU-013)"""
         return self.request("POST", "/edu-manager/guardians/{guardian}/access-links", **kwargs)
+
+    def post_edu_manager_imports_by_import_cancel(self, **kwargs):
+        """Annuler un import avant commit"""
+        return self.request("POST", "/edu-manager/imports/{import}/cancel", **kwargs)
+
+    def post_edu_manager_imports_by_import_commit(self, **kwargs):
+        """Commit idempotent d un import"""
+        return self.request("POST", "/edu-manager/imports/{import}/commit", **kwargs)
+
+    def post_edu_manager_imports_preview(self, **kwargs):
+        """Preview d un import CSV (aucune écriture)"""
+        return self.request("POST", "/edu-manager/imports/preview", **kwargs)
 
     def get_edu_manager_report_cards(self, **kwargs):
         """Lister les bulletins"""
@@ -1696,6 +1712,22 @@ class LeopardoClient:
         """Generer un bulletin (recalculable)"""
         return self.request("POST", "/edu-manager/report-cards/generate", **kwargs)
 
+    def get_edu_manager_reports_capacity(self, **kwargs):
+        """Capacité par campus (direction)"""
+        return self.request("GET", "/edu-manager/reports/capacity", **kwargs)
+
+    def get_edu_manager_reports_enrollment(self, **kwargs):
+        """Rapport d inscriptions par campus (direction)"""
+        return self.request("GET", "/edu-manager/reports/enrollment", **kwargs)
+
+    def get_edu_manager_reports_presence(self, **kwargs):
+        """Rapport de présence agrégé (direction)"""
+        return self.request("GET", "/edu-manager/reports/presence", **kwargs)
+
+    def get_edu_manager_reports_results(self, **kwargs):
+        """Moyennes par matière (direction)"""
+        return self.request("GET", "/edu-manager/reports/results", **kwargs)
+
     def get_edu_manager_students(self, **kwargs):
         """Lister les eleves (direction, PII)"""
         return self.request("GET", "/edu-manager/students", **kwargs)
@@ -1715,6 +1747,14 @@ class LeopardoClient:
     def put_edu_manager_students_by_student(self, **kwargs):
         """Modifier un eleve"""
         return self.request("PUT", "/edu-manager/students/{student}", **kwargs)
+
+    def post_edu_manager_students_by_student_anonymize(self, **kwargs):
+        """Anonymiser un élève (RGPD, direction)"""
+        return self.request("POST", "/edu-manager/students/{student}/anonymize", **kwargs)
+
+    def get_edu_manager_students_by_student_privacy_export(self, **kwargs):
+        """Export individuel RGPD (direction)"""
+        return self.request("GET", "/edu-manager/students/{student}/privacy-export", **kwargs)
 
     def get_edu_manager_subjects(self, **kwargs):
         """Lister les matieres"""

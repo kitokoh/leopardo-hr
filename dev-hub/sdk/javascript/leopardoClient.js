@@ -2050,6 +2050,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/edu-manager/course-slots/{slot}", options);
     },
 
+    /** Exporter un CSV (students|presence|grades) audité */
+    getEduManagerExportsByKind(options = {}) {
+      return request("GET", "/edu-manager/exports/{kind}", options);
+    },
+
     /** Corriger une note (versionnee) */
     postEduManagerGradesByGradeCorrect(options = {}) {
       return request("POST", "/edu-manager/grades/{grade}/correct", options);
@@ -2068,6 +2073,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Emettre un lien d'acces portail guardian (direction, EDU-013) */
     postEduManagerGuardiansByGuardianAccessLinks(options = {}) {
       return request("POST", "/edu-manager/guardians/{guardian}/access-links", options);
+    },
+
+    /** Annuler un import avant commit */
+    postEduManagerImportsByImportCancel(options = {}) {
+      return request("POST", "/edu-manager/imports/{import}/cancel", options);
+    },
+
+    /** Commit idempotent d un import */
+    postEduManagerImportsByImportCommit(options = {}) {
+      return request("POST", "/edu-manager/imports/{import}/commit", options);
+    },
+
+    /** Preview d un import CSV (aucune écriture) */
+    postEduManagerImportsPreview(options = {}) {
+      return request("POST", "/edu-manager/imports/preview", options);
     },
 
     /** Lister les bulletins */
@@ -2095,6 +2115,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/edu-manager/report-cards/generate", options);
     },
 
+    /** Capacité par campus (direction) */
+    getEduManagerReportsCapacity(options = {}) {
+      return request("GET", "/edu-manager/reports/capacity", options);
+    },
+
+    /** Rapport d inscriptions par campus (direction) */
+    getEduManagerReportsEnrollment(options = {}) {
+      return request("GET", "/edu-manager/reports/enrollment", options);
+    },
+
+    /** Rapport de présence agrégé (direction) */
+    getEduManagerReportsPresence(options = {}) {
+      return request("GET", "/edu-manager/reports/presence", options);
+    },
+
+    /** Moyennes par matière (direction) */
+    getEduManagerReportsResults(options = {}) {
+      return request("GET", "/edu-manager/reports/results", options);
+    },
+
     /** Lister les eleves (direction, PII) */
     getEduManagerStudents(options = {}) {
       return request("GET", "/edu-manager/students", options);
@@ -2118,6 +2158,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier un eleve */
     putEduManagerStudentsByStudent(options = {}) {
       return request("PUT", "/edu-manager/students/{student}", options);
+    },
+
+    /** Anonymiser un élève (RGPD, direction) */
+    postEduManagerStudentsByStudentAnonymize(options = {}) {
+      return request("POST", "/edu-manager/students/{student}/anonymize", options);
+    },
+
+    /** Export individuel RGPD (direction) */
+    getEduManagerStudentsByStudentPrivacyExport(options = {}) {
+      return request("GET", "/edu-manager/students/{student}/privacy-export", options);
     },
 
     /** Lister les matieres */
