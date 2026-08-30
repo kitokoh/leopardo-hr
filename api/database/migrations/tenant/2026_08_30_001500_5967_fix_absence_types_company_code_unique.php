@@ -42,7 +42,13 @@ return new class extends Migration
         }
 
         // 2. Index unique composite tenant-first : (company_id, code).
-        if (! Schema::hasIndex('absence_types', 'absence_types_company_code_unique')) {
+        //    Tolère le nom alternatif `absence_types_company_id_code_unique`
+        //    (PR #6310, même correctif) : si l'un des deux existe déjà, la
+        //    migration est un no-op — ordre de merge indifférent.
+        $hasCompanyCode = Schema::hasIndex('absence_types', 'absence_types_company_code_unique')
+            || Schema::hasIndex('absence_types', 'absence_types_company_id_code_unique');
+
+        if (! $hasCompanyCode) {
             Schema::table('absence_types', function (Blueprint $table): void {
                 $table->unique(['company_id', 'code'], 'absence_types_company_code_unique');
             });
