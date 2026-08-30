@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\AI;
 
+use App\AI\Models\AiExport;
 use App\AI\Services\ConversationExportService;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
@@ -47,7 +48,7 @@ class ConversationExportController extends Controller
         /** @var Employee $user */
         $user = $request->user();
 
-        $export = \App\AI\Models\AiExport::query()
+        $export = AiExport::query()
             ->where('id', $exportId)
             ->where('company_id', $user->company_id)
             ->where('user_id', $user->id)

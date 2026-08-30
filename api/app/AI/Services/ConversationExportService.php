@@ -6,7 +6,6 @@ namespace App\AI\Services;
 
 use App\AI\AIAuditLogger;
 use App\AI\Jobs\ExportAiConversationJob;
-use App\AI\Models\AiDeadLetterEntry;
 use App\AI\Models\AiExport;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
@@ -65,7 +64,7 @@ class ConversationExportService
             ExportAiConversationJob::dispatch($existing->id);
 
             $fresh = $existing->fresh();
-            assert($fresh instanceof \App\AI\Models\AiExport);
+            assert($fresh instanceof AiExport);
 
             return $this->payload($fresh);
         }

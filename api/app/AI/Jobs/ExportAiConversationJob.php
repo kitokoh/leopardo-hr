@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\AI\Jobs;
 
-use App\AI\Models\AiDeadLetterEntry;
 use App\AI\Models\AiExport;
 use App\AI\Services\AiDeadLetterQueue;
 use App\AI\Services\ConversationExportService;

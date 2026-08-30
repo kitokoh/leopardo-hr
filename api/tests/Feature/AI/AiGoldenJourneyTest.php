@@ -13,7 +13,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use Database\Seeders\AiPilotSeeder;
-use Database\Seeders\AIToolRegistrySeeder;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use stdClass;
