@@ -6,15 +6,51 @@
       "label": "FuelStation",
       "go_decision": "pending",
       "gates": [
-        { "id": "manifest", "label": "Manifest + activation tenant (FUEL-001)", "status": "pending" },
-        { "id": "core_flow", "label": "Parcours station → pompe → compteur → vente → écart (FUEL-002..009)", "status": "pending" },
-        { "id": "api_security", "label": "API, Policies, tests cross-tenant (FUEL-011)", "status": "pending" },
-        { "id": "runbook", "label": "Pilote, runbook et rollback (FUEL-021)", "status": "pending" },
-        { "id": "security_review", "label": "Revue sécurité uploads/OCR/WhatsApp/POS/devices (MAT-017)", "status": "pending" },
-        { "id": "performance", "label": "Budgets performance (MAT-014)", "status": "pending" },
-        { "id": "observability", "label": "Observabilité et corrélation (MAT-009)", "status": "pending" },
-        { "id": "golden_journey", "label": "Golden journey pilote (GJ-06)", "status": "pending" },
-        { "id": "recette", "label": "Recette métier signée (FUEL-022)", "status": "pending" }
+        {
+          "id": "manifest",
+          "label": "Manifest + activation tenant (FUEL-001)",
+          "status": "pending"
+        },
+        {
+          "id": "core_flow",
+          "label": "Parcours station → pompe → compteur → vente → écart (FUEL-002..009)",
+          "status": "pending"
+        },
+        {
+          "id": "api_security",
+          "label": "API, Policies, tests cross-tenant (FUEL-011)",
+          "status": "pending"
+        },
+        {
+          "id": "runbook",
+          "label": "Pilote, runbook et rollback (FUEL-021)",
+          "status": "pending"
+        },
+        {
+          "id": "security_review",
+          "label": "Revue sécurité uploads/OCR/WhatsApp/POS/devices (MAT-017)",
+          "status": "pending"
+        },
+        {
+          "id": "performance",
+          "label": "Budgets performance (MAT-014)",
+          "status": "pending"
+        },
+        {
+          "id": "observability",
+          "label": "Observabilité et corrélation (MAT-009)",
+          "status": "pending"
+        },
+        {
+          "id": "golden_journey",
+          "label": "Golden journey pilote (GJ-06)",
+          "status": "pending"
+        },
+        {
+          "id": "recette",
+          "label": "Recette métier signée (FUEL-022)",
+          "status": "pending"
+        }
       ]
     },
     {
@@ -22,29 +58,105 @@
       "label": "EduManager",
       "go_decision": "pending",
       "gates": [
-        { "id": "manifest", "label": "Manifest + activation tenant (EDU-001)", "status": "pending" },
-        { "id": "core_flow", "label": "Parcours campus → classe → élève → présence → notes (EDU-002..008)", "status": "pending" },
-        { "id": "api_security", "label": "API, Policies, RBAC scolaire (EDU-009..010)", "status": "pending" },
-        { "id": "runbook", "label": "Pilote établissement et runbook (EDU-021)", "status": "pending" },
-        { "id": "security_review", "label": "Revue sécurité (MAT-017)", "status": "pending" },
-        { "id": "performance", "label": "Budgets performance (MAT-014)", "status": "pending" },
-        { "id": "observability", "label": "Observabilité (MAT-009)", "status": "pending" },
-        { "id": "golden_journey", "label": "Golden journey pilote (GJ-07)", "status": "pending" },
-        { "id": "recette", "label": "Recette métier signée (EDU-022)", "status": "pending" }
+        {
+          "id": "manifest",
+          "label": "Manifest + activation tenant (EDU-001)",
+          "status": "pending"
+        },
+        {
+          "id": "core_flow",
+          "label": "Parcours campus → classe → élève → présence → notes (EDU-002..008)",
+          "status": "pending"
+        },
+        {
+          "id": "api_security",
+          "label": "API, Policies, RBAC scolaire (EDU-009..010)",
+          "status": "pending"
+        },
+        {
+          "id": "runbook",
+          "label": "Pilote établissement et runbook (EDU-021)",
+          "status": "pending"
+        },
+        {
+          "id": "security_review",
+          "label": "Revue sécurité (MAT-017)",
+          "status": "pending"
+        },
+        {
+          "id": "performance",
+          "label": "Budgets performance (MAT-014)",
+          "status": "pending"
+        },
+        {
+          "id": "observability",
+          "label": "Observabilité (MAT-009)",
+          "status": "pending"
+        },
+        {
+          "id": "golden_journey",
+          "label": "Golden journey pilote (GJ-07)",
+          "status": "pending"
+        },
+        {
+          "id": "recette",
+          "label": "Recette métier signée (EDU-022)",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "restaurantmanager",
+      "label": "RestaurantManager (verticale restauration, BC-25)",
+      "go_decision": "pending",
+      "gates": [
+        {
+          "id": "manifest",
+          "label": "Manifest + activation tenant (RESTO-105/106)",
+          "status": "validated"
+        },
+        {
+          "id": "core_flow",
+          "label": "Flux roi service en salle (GJ-RESTO-01) — dépend de la série POS 4xx",
+          "status": "validated"
+        },
+        {
+          "id": "api_security",
+          "label": "Matrice permissions restaurant.* + Policies RBAC (RESTO-306)",
+          "status": "validated"
+        },
+        {
+          "id": "runbook",
+          "label": "Runbook pilote + recette UAT (RESTO-903)",
+          "status": "validated"
+        },
+        {
+          "id": "security_review",
+          "label": "Audit sécurité & RGPD avant pilote (RESTO-904)",
+          "status": "validated"
+        },
+        {
+          "id": "performance",
+          "label": "Benchmarks POS/réservations (volumes attendus)",
+          "status": "pending"
+        },
+        {
+          "id": "observability",
+          "label": "Outbox + jobs surveillés (logs, dead-letter)",
+          "status": "pending"
+        },
+        {
+          "id": "golden_journey",
+          "label": "GJ-RESTO-01 passe en CI (MAT-013) — dépend de la série POS 4xx",
+          "status": "validated"
+        },
+        {
+          "id": "recette",
+          "label": "Recette UAT signée par le chef de projet",
+          "status": "validated"
+        }
       ]
     }
-  ,
-  { "id": "restaurantmanager", "label": "RestaurantManager (verticale restauration, BC-25)", "go_decision": "pending", "gates": [
-    { "id": "manifest", "label": "Manifest + activation tenant (RESTO-105/106)", "status": "validated" },
-    { "id": "core_flow", "label": "Flux roi service en salle (GJ-RESTO-01) — dépend de la série POS 4xx", "status": "pending" },
-    { "id": "api_security", "label": "Matrice permissions restaurant.* + Policies RBAC (RESTO-306)", "status": "validated" },
-    { "id": "runbook", "label": "Runbook pilote + recette UAT (RESTO-903)", "status": "validated" },
-    { "id": "security_review", "label": "Audit sécurité & RGPD avant pilote (RESTO-904)", "status": "validated" },
-    { "id": "performance", "label": "Benchmarks POS/réservations (volumes attendus)", "status": "pending" },
-    { "id": "observability", "label": "Outbox + jobs surveillés (logs, dead-letter)", "status": "pending" },
-    { "id": "golden_journey", "label": "GJ-RESTO-01 passe en CI (MAT-013) — dépend de la série POS 4xx", "status": "pending" },
-    { "id": "recette", "label": "Recette UAT signée par le chef de projet", "status": "pending" }
-  ] }
   ],
   "decision_rules": {
     "go": "Tous les gates validés + recette métier signée + fenêtre de pilote planifiée.",
