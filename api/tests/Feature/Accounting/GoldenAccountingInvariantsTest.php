@@ -409,17 +409,26 @@ class GoldenAccountingInvariantsTest extends TestCase
                 'type' => 'deduction',
                 'base_amount' => 60000,
                 'rate' => null,
-                'amount' => 3000,
+                'amount' => 5000,
                 'order' => 1,
             ]);
             PaySlipLine::create([
                 'pay_slip_id' => $slip->id,
-                'name' => 'IRG',
+                'name' => 'Impot sur le revenu',
+                'type' => 'deduction',
+                'base_amount' => 60000,
+                'rate' => null,
+                'amount' => 3000,
+                'order' => 2,
+            ]);
+            PaySlipLine::create([
+                'pay_slip_id' => $slip->id,
+                'name' => 'Avance',
                 'type' => 'deduction',
                 'base_amount' => 60000,
                 'rate' => null,
                 'amount' => 2000,
-                'order' => 2,
+                'order' => 3,
             ]);
         }
 
