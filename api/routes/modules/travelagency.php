@@ -37,6 +37,8 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicContactController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuizController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicContactController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicContactLinkController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelReportController;
@@ -239,6 +241,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // ── Contacts admin (TRAVEL-913/#6421/#6425) : liste + consentements par canal
         Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
         Route::post('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent']);
+<<<<<<< HEAD
+=======
+        Route::put('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent']);
+>>>>>>> origin/feat/travel-101-202-foundations
         Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsentChannel']); // TRAVEL-913/#6425
 
         // ── Notifications manuelles legacy → canaux plateforme (TRAVEL-910/#6113)
@@ -247,6 +253,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // ── Formulaire de contact → lead CRM (TRAVEL-416/#6068) ────────────
         Route::post('/contact', [TravelContactController::class, 'store']);
 
+        // ── Lien public du formulaire de contact (TRAVEL-913/#6425) ────────────
+        Route::post('/public-contact-link', [TravelPublicContactLinkController::class, 'store']);
+
         // ── Engagement — likes/partages/notes (TRAVEL-903/#6106) ────────────
         Route::post('/articles/{travelArticle}/like', [TravelEngagementController::class, 'like']);
         Route::post('/articles/{travelArticle}/unlike', [TravelEngagementController::class, 'unlike']);
@@ -254,6 +263,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/articles/{travelArticle}/rate', [TravelEngagementController::class, 'rate']);
         Route::get('/articles/{travelArticle}/engagement', [TravelEngagementController::class, 'aggregates']);
     });
+
+/**
+ * Formulaire de contact PUBLIC (TRAVEL-913/#6425) — route PUBLIQUE protégée
+ * par le middleware `signed` (lien signé expirable : company_id paramètre
+ * signé). Même logique que POST /travel/contact (consentement obligatoire,
+ * événement travel.contact.submitted.v1). Pattern : restaurant/public/*.
+ */
+Route::post('/travel/public/contact', [TravelPublicContactController::class, 'store'])
+    ->middleware(['signed', 'throttle:60,1'])
+    ->name('travel.public.contact.store');
 
 // ── Formulaire de contact PUBLIC (TRAVEL-913/#6425) ──────────────────────
 // Hors groupe auth : URL signée (pattern restaurant/public/*, RESTO-805) —

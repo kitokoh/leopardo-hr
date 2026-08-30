@@ -1,9 +1,16 @@
 {
   "source": "api/openapi.yaml",
+<<<<<<< HEAD
   "spec_sha256": "9312bec4cb0e356ccc33ad37336194ce2092004687f4eaad542eeccd70b37c72",
   "openapi": "3.0.3",
   "api_version": "4.24.0",
   "operation_count": 1040,
+=======
+  "spec_sha256": "ac05b1368d08ce3b6f5651fd05c63a936c98e005e7c01e3ee7dc9bdc828a9a23",
+  "openapi": "3.0.3",
+  "api_version": "4.24.0",
+  "operation_count": 1041,
+>>>>>>> origin/feat/travel-101-202-foundations
   "targets": [
     "javascript",
     "python"

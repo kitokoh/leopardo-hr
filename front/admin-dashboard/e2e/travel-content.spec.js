@@ -12,8 +12,14 @@ function makeList(body) {
 
 test.describe('Contenu & annonces travel (TRAVEL-911)', () => {
   test('affiche les quiz, crée un quiz et ouvre les résultats', async ({ page }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('admin_token', 'e2e-fake-token')
+    })
     await page.route(/\/api\/v1\/platform\/auth\/me(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(AUTH_ME) }),
+    )
+    await page.route('**/api/v1/**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: {} }) }),
     )
     await page.route(/\/api\/v1\/travel\/ping(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) }),
@@ -24,13 +30,19 @@ test.describe('Contenu & annonces travel (TRAVEL-911)', () => {
       ])) }),
     )
     await page.goto('/travel/content')
-    await expect(page.getByRole('heading', { name: /Contenu & annonces/ })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Contenu & annonces/ }).first()).toBeVisible()
     await expect(page.getByText('Quiz Afrique de l\'Ouest')).toBeVisible()
   })
 
   test('liste les annonces en mode gestion et les sites touristiques', async ({ page }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('admin_token', 'e2e-fake-token')
+    })
     await page.route(/\/api\/v1\/platform\/auth\/me(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(AUTH_ME) }),
+    )
+    await page.route('**/api/v1/**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: {} }) }),
     )
     await page.route(/\/api\/v1\/travel\/ping(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) }),
@@ -60,9 +72,11 @@ test.describe('Contenu & annonces travel (TRAVEL-911)', () => {
 
     // Annonces
     await page.getByRole('button', { name: 'Annonces' }).first().click()
+    // Sous-onglet par défaut « Types » : le référentiel est affiché.
+    await expect(page.getByText('Sponsoring')).toBeVisible()
+    // Sous-onglet « Annonces » : le cycle de vie se charge.
     await page.getByRole('button', { name: 'Annonces' }).last().click()
     await expect(page.getByText('Annonce validée')).toBeVisible()
-    await expect(page.getByText('Sponsoring')).toBeVisible()
 
     // Sites touristiques
     await page.getByRole('button', { name: 'Sites touristiques' }).click()

@@ -1299,181 +1299,958 @@
       "name": "TravelAgency (BC-24)",
       "item": [
         {
-          "name": "Rapports — ventes",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/travel/reports/sales?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z"
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Rapports — occupation",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/travel/reports/occupancy?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z"
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Rapports — recettes",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/travel/reports/revenue?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z"
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Rapports — annulations",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/travel/reports/cancellations?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z"
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Rapports — dashboard KPIs",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/travel/reports/dashboard"
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Export CSV (idempotent)",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/travel/reports/export"
+          "name": "1. Référentiel & réseau",
+          "item": [
+            {
+              "name": "Pays (liste)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/countries",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "countries"
+                  ]
+                }
+              }
             },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"report_type\": \"sales\",\n  \"from\": \"2026-08-01T00:00:00Z\",\n  \"to\": \"2026-08-31T23:59:59Z\",\n  \"idempotency_key\": \"export-demo-1\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+            {
+              "name": "Villes (liste)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/cities",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "cities"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Gares & terminaux (liste)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/stations",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "stations"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Recherche de trajets",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/trips/search?from_city_id=1&to_city_id=2&date=2026-09-15",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "trips",
+                    "search?from_city_id=1&to_city_id=2&date=2026-09-15"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Trajet — détail",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/trips/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "trips",
+                    "1"
+                  ]
                 }
               }
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "Articles — création",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/travel/articles"
+          "name": "2. Golden journey (guichet)",
+          "item": [
+            {
+              "name": "Réservation multi-passagers",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/bookings",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "bookings"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"trip_id\": 1,\n  \"booking_source\": \"office\",\n  \"idempotency_key\": \"demo-{{$timestamp}}\",\n  \"passengers\": [\n    {\n      \"full_name\": \"Jean Dupont\",\n      \"age_category\": \"adult\",\n      \"class_id\": 1\n    }\n  ]\n}"
+                },
+                "description": "GJ-TRAVEL-01 — étape 2 (TRAVEL-312)"
+              }
             },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"slug\": \"safari-nord\",\n  \"title\": \"Safari dans le Nord\",\n  \"body_redacted\": \"Guide\",\n  \"status\": \"draft\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+            {
+              "name": "Confirmation (comptant)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/bookings/1/confirm",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "bookings",
+                    "1",
+                    "confirm"
+                  ]
+                },
+                "description": "GJ-TRAVEL-01 — étape 3 (TRAVEL-313)"
+              }
+            },
+            {
+              "name": "Émission des billets",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/bookings/1/issue-ticket",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "bookings",
+                    "1",
+                    "issue-ticket"
+                  ]
+                },
+                "description": "GJ-TRAVEL-01 — étape 4 (TRAVEL-316)"
+              }
+            },
+            {
+              "name": "Check-in passager",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/tickets/1/check-in",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "tickets",
+                    "1",
+                    "check-in"
+                  ]
+                },
+                "description": "GJ-TRAVEL-01 — étape 5 (TRAVEL-317)"
+              }
+            },
+            {
+              "name": "Manifeste du trajet",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/trips/1/manifest",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "trips",
+                    "1",
+                    "manifest"
+                  ]
                 }
               }
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "Articles — modération",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/travel/articles/1/moderate"
+          "name": "3. Annonces payantes",
+          "item": [
+            {
+              "name": "Types (liste)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/advert-types",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "advert-types"
+                  ]
+                }
+              }
             },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"published\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+            {
+              "name": "Créer un type",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/advert-types",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "advert-types"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"banner\",\n  \"label\": \"Bannière\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Positions (liste)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/advert-positions",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "advert-positions"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Grille tarifaire (liste)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/advert-prices",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "advert-prices"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Annonces — liste admin (tous statuts)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/adverts?scope=admin",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "adverts?scope=admin"
+                  ]
+                },
+                "description": "TRAVEL-911 — scope admin (rôle manager)"
+              }
+            },
+            {
+              "name": "Annonces — soumission",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/adverts",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "adverts"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"advert_type_id\": 1,\n  \"advert_position_id\": 1,\n  \"title\": \"Promo saison\",\n  \"content\": \"-20% sur la ligne Douala-Yaoundé\",\n  \"validity_days\": 30\n}"
+                }
+              }
+            },
+            {
+              "name": "Annonce — paiement",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/adverts/1/pay",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "adverts",
+                    "1",
+                    "pay"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Annonce — validation",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/adverts/1/validate",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "adverts",
+                    "1",
+                    "validate"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Annonce — rejet (motif)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/adverts/1/reject",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "adverts",
+                    "1",
+                    "reject"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Contenu non conforme\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Annonce — renouvellement",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/adverts/1/renew",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "adverts",
+                    "1",
+                    "renew"
+                  ]
                 }
               }
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "Commentaires — création",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/travel/comments"
+          "name": "4. Quiz & sites touristiques",
+          "item": [
+            {
+              "name": "Quiz — création",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/quizzes",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "quizzes"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Quiz Afrique de l'Ouest\",\n  \"description\": \"Culture générale\",\n  \"status\": \"draft\",\n  \"max_participations_per_contact\": 1\n}"
+                }
+              }
             },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"article_id\": 1,\n  \"content\": \"Très utile\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+            {
+              "name": "Quiz — ajouter une question",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/quizzes/1/questions",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "quizzes",
+                    "1",
+                    "questions"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"question\": \"Capitale du Sénégal ?\",\n  \"options\": [\n    \"Dakar\",\n    \"Abidjan\",\n    \"Bamako\"\n  ],\n  \"correct_option_index\": 0,\n  \"points\": 1\n}"
+                }
+              }
+            },
+            {
+              "name": "Quiz — résultats",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/quizzes/1/results",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "quizzes",
+                    "1",
+                    "results"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Sites touristiques (liste)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/tourist-sites",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "tourist-sites"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Sites touristiques — création",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/tourist-sites",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "tourist-sites"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Lac Rose\",\n  \"city_id\": 1,\n  \"status\": \"active\"\n}"
                 }
               }
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "Engagement — like",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/travel/articles/1/like"
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Engagement — note",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/travel/articles/1/rate"
+          "name": "5. Contacts & formulaire",
+          "item": [
+            {
+              "name": "Contacts — liste admin (consentements)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/contacts",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "contacts"
+                  ]
+                },
+                "description": "TRAVEL-912 — rôle manager requis"
+              }
             },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"rating\": 5\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+            {
+              "name": "Contact — consentement par canal",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/contacts/1/consent",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "contacts",
+                    "1",
+                    "consent"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"channel\": \"email\",\n  \"consent\": true\n}"
+                },
+                "description": "TRAVEL-912 — opt-in/opt-out horodaté"
+              }
+            },
+            {
+              "name": "Contact — notification manuelle",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/contacts/1/notify",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "contacts",
+                    "1",
+                    "notify"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"message\": \"Votre billet est prêt.\",\n  \"channels\": [\n    \"email\"\n  ]\n}"
+                }
+              }
+            },
+            {
+              "name": "Formulaire de contact public",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/contact",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "contact"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"Aline\",\n  \"last_name\": \"Ngo\",\n  \"email\": \"aline@example.com\",\n  \"message\": \"Horaires de la ligne Douala-Yaoundé ?\",\n  \"consent_email\": true\n}"
+                },
+                "description": "TRAVEL-912 — consentement RGPD obligatoire"
+              }
+            }
+          ]
+        },
+        {
+          "name": "6. Rapports",
+          "item": [
+            {
+              "name": "Ventes",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/reports/sales?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "reports",
+                    "sales?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Occupation",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/reports/occupancy?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "reports",
+                    "occupancy?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Recettes",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/reports/revenue?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "reports",
+                    "revenue?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Annulations",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/reports/cancellations?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "reports",
+                    "cancellations?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Dashboard KPIs",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/reports/dashboard",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "reports",
+                    "dashboard"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Export CSV (idempotent)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/travel/reports/export",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "travel",
+                    "reports",
+                    "export"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"report\": \"sales\",\n  \"from\": \"2026-08-01T00:00:00Z\",\n  \"to\": \"2026-08-31T23:59:59Z\"\n}"
                 }
               }
             }
-          },
-          "response": []
-        },
-        {
-          "name": "Engagement — agrégats",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/travel/articles/1/engagement"
-            }
-          },
-          "response": []
+          ]
         }
       ]
     }

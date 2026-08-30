@@ -4265,7 +4265,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/travel/advert-positions/{travelAdvertPosition}", options);
     },
 
+<<<<<<< HEAD
     /** TRAVEL-914 — Mise à jour d''une position */
+=======
+    /** TRAVEL-914 — Mise à jour (code/libellé tenant-scoped) */
+>>>>>>> origin/feat/travel-101-202-foundations
     putTravelAdvertPositionsByTravelAdvertPosition(options = {}) {
       return request("PUT", "/travel/advert-positions/{travelAdvertPosition}", options);
     },
@@ -4285,7 +4289,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/travel/advert-prices/{travelAdvertPrice}", options);
     },
 
+<<<<<<< HEAD
     /** TRAVEL-914 — Mise à jour d''une grille tarifaire */
+=======
+    /** TRAVEL-914 — Mise à jour (code/libellé tenant-scoped) */
+>>>>>>> origin/feat/travel-101-202-foundations
     putTravelAdvertPricesByTravelAdvertPrice(options = {}) {
       return request("PUT", "/travel/advert-prices/{travelAdvertPrice}", options);
     },
@@ -4305,7 +4313,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/travel/advert-types/{travelAdvertType}", options);
     },
 
+<<<<<<< HEAD
     /** TRAVEL-914 — Mise à jour d''un type d''annonce */
+=======
+    /** TRAVEL-914 — Mise à jour (code/libellé tenant-scoped) */
+>>>>>>> origin/feat/travel-101-202-foundations
     putTravelAdvertTypesByTravelAdvertType(options = {}) {
       return request("PUT", "/travel/advert-types/{travelAdvertType}", options);
     },
@@ -4345,7 +4357,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/adverts/{travelAdvert}/validate", options);
     },
 
+<<<<<<< HEAD
     /** TRAVEL-914 — Liste admin des annonces (toutes statuts, RBAC modération) */
+=======
+    /** TRAVEL-914 — Annonces en gestion (tous statuts, filtrables) */
+>>>>>>> origin/feat/travel-101-202-foundations
     getTravelAdvertsManage(options = {}) {
       return request("GET", "/travel/adverts/manage", options);
     },
@@ -4550,6 +4566,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/contacts/{travelCustomerContact}/consent", options);
     },
 
+    /** TRAVEL-912/913 — Mise à jour des consentements par canal */
+    putTravelContactsByTravelCustomerContactConsent(options = {}) {
+      return request("PUT", "/travel/contacts/{travelCustomerContact}/consent", options);
+    },
+
     /** TRAVEL-910 — Notification manuelle (canaux plateforme + consentement) */
     postTravelContactsByTravelCustomerContactNotify(options = {}) {
       return request("POST", "/travel/contacts/{travelCustomerContact}/notify", options);
@@ -4655,7 +4676,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/travel/quizzes/{travelQuiz}", options);
     },
 
+<<<<<<< HEAD
     /** TRAVEL-914 — Mise à jour d''un quiz (gestion) */
+=======
+    /** TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut) */
+>>>>>>> origin/feat/travel-101-202-foundations
     putTravelQuizzesByTravelQuiz(options = {}) {
       return request("PUT", "/travel/quizzes/{travelQuiz}", options);
     },
@@ -4665,7 +4690,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/quizzes/{travelQuiz}/participate", options);
     },
 
+<<<<<<< HEAD
     /** TRAVEL-914 — Questions d''un quiz (gestion, avec bonne réponse — réservé rôles gestion) */
+=======
+    /** TRAVEL-914 — Questions d'un quiz (admin, bonne réponse exposée) */
+>>>>>>> origin/feat/travel-101-202-foundations
     getTravelQuizzesByTravelQuizQuestions(options = {}) {
       return request("GET", "/travel/quizzes/{travelQuiz}/questions", options);
     },
@@ -4675,12 +4704,20 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/quizzes/{travelQuiz}/questions", options);
     },
 
+<<<<<<< HEAD
     /** TRAVEL-914 — Suppression d''une question (gestion) */
+=======
+    /** TRAVEL-914 — Suppression d'une question */
+>>>>>>> origin/feat/travel-101-202-foundations
     deleteTravelQuizzesByTravelQuizQuestionsByTravelQuizQuestion(options = {}) {
       return request("DELETE", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", options);
     },
 
+<<<<<<< HEAD
     /** TRAVEL-914 — Mise à jour d''une question (gestion) */
+=======
+    /** TRAVEL-914 — Mise à jour d'une question */
+>>>>>>> origin/feat/travel-101-202-foundations
     putTravelQuizzesByTravelQuizQuestionsByTravelQuizQuestion(options = {}) {
       return request("PUT", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", options);
     },
