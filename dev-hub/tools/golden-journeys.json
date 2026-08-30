@@ -1,289 +1,350 @@
 {
-  "$comment": "Golden journeys end-to-end par solution (MAT-013, issue #5871). Chaque parcours liste les étapes métier critiques (action, route API, rôle) ; le garde check-golden-journeys.sh vérifie que les routes référencées existent dans api/routes/** et que les contrôleurs existent. Couverture : solutions HR core, CRM client, FuelStation (pilote), EduManager (pilote).",
-  "solutions": {
-    "hr_core": {
-      "label": "HR Core (plateforme RH)",
-      "status": "active"
-    },
-    "crm_client": {
-      "label": "CRM client (tenant)",
-      "status": "active"
-    },
-    "fuelstation": {
-      "label": "FuelStation (verticale)",
-      "status": "planned"
-    },
-    "edumanager": {
-      "label": "EduManager (verticale)",
-      "status": "planned"
-    }
+ "$comment": "Golden journeys end-to-end par solution (MAT-013, issue #5871). Chaque parcours liste les étapes métier critiques (action, route API, rôle) ; le garde check-golden-journeys.sh vérifie que les routes référencées existent dans api/routes/** et que les contrôleurs existent. Couverture : solutions HR core, CRM client, FuelStation (pilote), EduManager (pilote).",
+ "solutions": {
+  "hr_core": {
+   "label": "HR Core (plateforme RH)",
+   "status": "active"
   },
-  "journeys": [
+  "crm_client": {
+   "label": "CRM client (tenant)",
+   "status": "active"
+  },
+  "fuelstation": {
+   "label": "FuelStation (verticale)",
+   "status": "planned"
+  },
+  "edumanager": {
+   "label": "EduManager (verticale)",
+   "status": "planned"
+  },
+  "delivery": {
+   "label": "DeliveryAgency (BC-26 DELIVERY)",
+   "status": "active"
+  }
+ },
+ "journeys": [
+  {
+   "id": "GJ-01",
+   "name": "Onboarding employé complet",
+   "solution": "hr_core",
+   "acceptance": "Le nouvel employé peut pointer, voir ses soldes et consulter sa fiche après création par le manager.",
+   "steps": [
     {
-      "id": "GJ-01",
-      "name": "Onboarding employé complet",
-      "solution": "hr_core",
-      "acceptance": "Le nouvel employé peut pointer, voir ses soldes et consulter sa fiche après création par le manager.",
-      "steps": [
-        {
-          "order": 1,
-          "action": "Créer l'entreprise (tenant)",
-          "method": "POST",
-          "route": "/api/v1/user/company-requests",
-          "role": "public"
-        },
-        {
-          "order": 2,
-          "action": "Créer l'employé",
-          "method": "POST",
-          "route": "/api/v1/employees",
-          "role": "manager:rh"
-        },
-        {
-          "order": 3,
-          "action": "Consulter sa fiche",
-          "method": "GET",
-          "route": "/api/v1/employees/{employee}",
-          "role": "manager:rh"
-        },
-        {
-          "order": 4,
-          "action": "Pointer (check-in)",
-          "method": "POST",
-          "route": "/api/v1/attendance/check-in",
-          "role": "employee"
-        },
-        {
-          "order": 5,
-          "action": "Consulter ses soldes de congés",
-          "method": "GET",
-          "route": "/api/v1/me/leave-balances",
-          "role": "employee"
-        }
-      ]
+     "order": 1,
+     "action": "Créer l'entreprise (tenant)",
+     "method": "POST",
+     "route": "/api/v1/user/company-requests",
+     "role": "public"
     },
     {
-      "id": "GJ-02",
-      "name": "Cycle de congé complet",
-      "solution": "hr_core",
-      "acceptance": "Demande → approbation → solde mis à jour, sans fuite cross-tenant.",
-      "steps": [
-        {
-          "order": 1,
-          "action": "Demander un congé",
-          "method": "POST",
-          "route": "/api/v1/absences",
-          "role": "employee"
-        },
-        {
-          "order": 2,
-          "action": "Lister les demandes",
-          "method": "GET",
-          "route": "/api/v1/absences",
-          "role": "manager:rh"
-        },
-        {
-          "order": 3,
-          "action": "Approuver",
-          "method": "POST",
-          "route": "/api/v1/absences/{absence}/approve",
-          "role": "manager:rh"
-        },
-        {
-          "order": 4,
-          "action": "Vérifier le solde",
-          "method": "GET",
-          "route": "/api/v1/me/leave-balances",
-          "role": "employee"
-        }
-      ]
+     "order": 2,
+     "action": "Créer l'employé",
+     "method": "POST",
+     "route": "/api/v1/employees",
+     "role": "manager:rh"
     },
     {
-      "id": "GJ-03",
-      "name": "Cycle de paie",
-      "solution": "hr_core",
-      "acceptance": "Run → calcul → validation → bulletin consultable par l'employé, idempotent.",
-      "steps": [
-        {
-          "order": 1,
-          "action": "Créer un run de paie",
-          "method": "POST",
-          "route": "/api/v1/payroll-runs",
-          "role": "manager:principal"
-        },
-        {
-          "order": 2,
-          "action": "Calculer",
-          "method": "POST",
-          "route": "/api/v1/payroll-runs/{payrollRun}/calculate",
-          "role": "manager:principal"
-        },
-        {
-          "order": 3,
-          "action": "Valider",
-          "method": "POST",
-          "route": "/api/v1/payroll-runs/{payrollRun}/validate",
-          "role": "manager:principal"
-        },
-        {
-          "order": 4,
-          "action": "Consulter son bulletin",
-          "method": "GET",
-          "route": "/api/v1/me/pay-slips",
-          "role": "employee"
-        }
-      ]
+     "order": 3,
+     "action": "Consulter sa fiche",
+     "method": "GET",
+     "route": "/api/v1/employees/{employee}",
+     "role": "manager:rh"
     },
     {
-      "id": "GJ-04",
-      "name": "Clôture comptable",
-      "solution": "hr_core",
-      "acceptance": "Écritures → clôture d'exercice → export FEC cohérent.",
-      "steps": [
-        {
-          "order": 1,
-          "action": "Consulter le journal",
-          "method": "GET",
-          "route": "/api/v1/accounting/journal",
-          "role": "manager:comptable"
-        },
-        {
-          "order": 2,
-          "action": "Clôturer un exercice",
-          "method": "POST",
-          "route": "/api/v1/accounting/fiscal-years/{year}/close",
-          "role": "manager:comptable"
-        },
-        {
-          "order": 3,
-          "action": "Exporter FEC",
-          "method": "GET",
-          "route": "/api/v1/accounting/journal/export-fec",
-          "role": "manager:comptable"
-        }
-      ]
+     "order": 4,
+     "action": "Pointer (check-in)",
+     "method": "POST",
+     "route": "/api/v1/attendance/check-in",
+     "role": "employee"
     },
     {
-      "id": "GJ-05",
-      "name": "Pipeline CRM client",
-      "solution": "crm_client",
-      "acceptance": "Import des comptes/contacts → commit → conversion de lead, tenant-scoped, feature flag crm.",
-      "steps": [
-        {
-          "order": 1,
-          "action": "Importer les comptes/contacts",
-          "method": "POST",
-          "route": "/api/v1/crm/imports",
-          "role": "manager"
-        },
-        {
-          "order": 2,
-          "action": "Suivre l'import",
-          "method": "GET",
-          "route": "/api/v1/crm/imports/{crmImport}",
-          "role": "manager"
-        },
-        {
-          "order": 3,
-          "action": "Committer l'import (crée comptes/contacts)",
-          "method": "POST",
-          "route": "/api/v1/crm/imports/{crmImport}/commit",
-          "role": "manager"
-        },
-        {
-          "order": 4,
-          "action": "Convertir un lead",
-          "method": "POST",
-          "route": "/api/v1/crm/leads/{crmLead}/convert",
-          "role": "manager"
-        }
-      ]
-    },
-    {
-      "id": "GJ-06",
-      "name": "Pilote FuelStation — station → vente",
-      "solution": "fuelstation",
-      "acceptance": "Manifest activé → station → pompe → relevé compteur → vente par pompe → écart expliqué.",
-      "steps": [
-        {
-          "order": 1,
-          "action": "Activer la solution",
-          "method": "POST",
-          "route": "/api/v1/solutions/fuelstation/activate",
-          "role": "manager:principal"
-        },
-        {
-          "order": 2,
-          "action": "Créer une station",
-          "method": "POST",
-          "route": "/api/v1/fuel/stations",
-          "role": "manager:principal"
-        },
-        {
-          "order": 3,
-          "action": "Créer une pompe",
-          "method": "POST",
-          "route": "/api/v1/fuel/pumps",
-          "role": "manager:principal"
-        },
-        {
-          "order": 4,
-          "action": "Relevé de compteur",
-          "method": "POST",
-          "route": "/api/v1/fuel/meter-readings",
-          "role": "operator"
-        },
-        {
-          "order": 5,
-          "action": "Vente par pompe",
-          "method": "POST",
-          "route": "/api/v1/fuel/sales",
-          "role": "operator"
-        }
-      ]
-    },
-    {
-      "id": "GJ-07",
-      "name": "Pilote EduManager — campus → présence",
-      "solution": "edumanager",
-      "acceptance": "Manifest activé → campus → classe → élève → présence scolaire enregistrée.",
-      "steps": [
-        {
-          "order": 1,
-          "action": "Activer la solution",
-          "method": "POST",
-          "route": "/api/v1/solutions/edumanager/activate",
-          "role": "manager:principal"
-        },
-        {
-          "order": 2,
-          "action": "Créer un campus",
-          "method": "POST",
-          "route": "/api/v1/edu/campuses",
-          "role": "manager:principal"
-        },
-        {
-          "order": 3,
-          "action": "Créer une classe",
-          "method": "POST",
-          "route": "/api/v1/edu/classes",
-          "role": "manager:principal"
-        },
-        {
-          "order": 4,
-          "action": "Inscrire un élève",
-          "method": "POST",
-          "route": "/api/v1/edu/students",
-          "role": "manager:principal"
-        },
-        {
-          "order": 5,
-          "action": "Enregistrer une présence",
-          "method": "POST",
-          "route": "/api/v1/edu/attendance",
-          "role": "teacher"
-        }
-      ]
+     "order": 5,
+     "action": "Consulter ses soldes de congés",
+     "method": "GET",
+     "route": "/api/v1/me/leave-balances",
+     "role": "employee"
     }
-  ]
+   ]
+  },
+  {
+   "id": "GJ-02",
+   "name": "Cycle de congé complet",
+   "solution": "hr_core",
+   "acceptance": "Demande → approbation → solde mis à jour, sans fuite cross-tenant.",
+   "steps": [
+    {
+     "order": 1,
+     "action": "Demander un congé",
+     "method": "POST",
+     "route": "/api/v1/absences",
+     "role": "employee"
+    },
+    {
+     "order": 2,
+     "action": "Lister les demandes",
+     "method": "GET",
+     "route": "/api/v1/absences",
+     "role": "manager:rh"
+    },
+    {
+     "order": 3,
+     "action": "Approuver",
+     "method": "POST",
+     "route": "/api/v1/absences/{absence}/approve",
+     "role": "manager:rh"
+    },
+    {
+     "order": 4,
+     "action": "Vérifier le solde",
+     "method": "GET",
+     "route": "/api/v1/me/leave-balances",
+     "role": "employee"
+    }
+   ]
+  },
+  {
+   "id": "GJ-03",
+   "name": "Cycle de paie",
+   "solution": "hr_core",
+   "acceptance": "Run → calcul → validation → bulletin consultable par l'employé, idempotent.",
+   "steps": [
+    {
+     "order": 1,
+     "action": "Créer un run de paie",
+     "method": "POST",
+     "route": "/api/v1/payroll-runs",
+     "role": "manager:principal"
+    },
+    {
+     "order": 2,
+     "action": "Calculer",
+     "method": "POST",
+     "route": "/api/v1/payroll-runs/{payrollRun}/calculate",
+     "role": "manager:principal"
+    },
+    {
+     "order": 3,
+     "action": "Valider",
+     "method": "POST",
+     "route": "/api/v1/payroll-runs/{payrollRun}/validate",
+     "role": "manager:principal"
+    },
+    {
+     "order": 4,
+     "action": "Consulter son bulletin",
+     "method": "GET",
+     "route": "/api/v1/me/pay-slips",
+     "role": "employee"
+    }
+   ]
+  },
+  {
+   "id": "GJ-04",
+   "name": "Clôture comptable",
+   "solution": "hr_core",
+   "acceptance": "Écritures → clôture d'exercice → export FEC cohérent.",
+   "steps": [
+    {
+     "order": 1,
+     "action": "Consulter le journal",
+     "method": "GET",
+     "route": "/api/v1/accounting/journal",
+     "role": "manager:comptable"
+    },
+    {
+     "order": 2,
+     "action": "Clôturer un exercice",
+     "method": "POST",
+     "route": "/api/v1/accounting/fiscal-years/{year}/close",
+     "role": "manager:comptable"
+    },
+    {
+     "order": 3,
+     "action": "Exporter FEC",
+     "method": "GET",
+     "route": "/api/v1/accounting/journal/export-fec",
+     "role": "manager:comptable"
+    }
+   ]
+  },
+  {
+   "id": "GJ-05",
+   "name": "Pipeline CRM client",
+   "solution": "crm_client",
+   "acceptance": "Import des comptes/contacts → commit → conversion de lead, tenant-scoped, feature flag crm.",
+   "steps": [
+    {
+     "order": 1,
+     "action": "Importer les comptes/contacts",
+     "method": "POST",
+     "route": "/api/v1/crm/imports",
+     "role": "manager"
+    },
+    {
+     "order": 2,
+     "action": "Suivre l'import",
+     "method": "GET",
+     "route": "/api/v1/crm/imports/{crmImport}",
+     "role": "manager"
+    },
+    {
+     "order": 3,
+     "action": "Committer l'import (crée comptes/contacts)",
+     "method": "POST",
+     "route": "/api/v1/crm/imports/{crmImport}/commit",
+     "role": "manager"
+    },
+    {
+     "order": 4,
+     "action": "Convertir un lead",
+     "method": "POST",
+     "route": "/api/v1/crm/leads/{crmLead}/convert",
+     "role": "manager"
+    }
+   ]
+  },
+  {
+   "id": "GJ-06",
+   "name": "Pilote FuelStation — station → vente",
+   "solution": "fuelstation",
+   "acceptance": "Manifest activé → station → pompe → relevé compteur → vente par pompe → écart expliqué.",
+   "steps": [
+    {
+     "order": 1,
+     "action": "Activer la solution",
+     "method": "POST",
+     "route": "/api/v1/solutions/fuelstation/activate",
+     "role": "manager:principal"
+    },
+    {
+     "order": 2,
+     "action": "Créer une station",
+     "method": "POST",
+     "route": "/api/v1/fuel/stations",
+     "role": "manager:principal"
+    },
+    {
+     "order": 3,
+     "action": "Créer une pompe",
+     "method": "POST",
+     "route": "/api/v1/fuel/pumps",
+     "role": "manager:principal"
+    },
+    {
+     "order": 4,
+     "action": "Relevé de compteur",
+     "method": "POST",
+     "route": "/api/v1/fuel/meter-readings",
+     "role": "operator"
+    },
+    {
+     "order": 5,
+     "action": "Vente par pompe",
+     "method": "POST",
+     "route": "/api/v1/fuel/sales",
+     "role": "operator"
+    }
+   ]
+  },
+  {
+   "id": "GJ-07",
+   "name": "Pilote EduManager — campus → présence",
+   "solution": "edumanager",
+   "acceptance": "Manifest activé → campus → classe → élève → présence scolaire enregistrée.",
+   "steps": [
+    {
+     "order": 1,
+     "action": "Activer la solution",
+     "method": "POST",
+     "route": "/api/v1/solutions/edumanager/activate",
+     "role": "manager:principal"
+    },
+    {
+     "order": 2,
+     "action": "Créer un campus",
+     "method": "POST",
+     "route": "/api/v1/edu/campuses",
+     "role": "manager:principal"
+    },
+    {
+     "order": 3,
+     "action": "Créer une classe",
+     "method": "POST",
+     "route": "/api/v1/edu/classes",
+     "role": "manager:principal"
+    },
+    {
+     "order": 4,
+     "action": "Inscrire un élève",
+     "method": "POST",
+     "route": "/api/v1/edu/students",
+     "role": "manager:principal"
+    },
+    {
+     "order": 5,
+     "action": "Enregistrer une présence",
+     "method": "POST",
+     "route": "/api/v1/edu/attendance",
+     "role": "teacher"
+    }
+   ]
+  },
+  {
+   "id": "GJ-DELIVERY-01",
+   "name": "Livraison dernier-kilomètre — parcours agence complet",
+   "solution": "delivery",
+   "acceptance": "3 colis (dont 1 COD) → tournée affectée livreur+véhicule → events mobile picked_up→delivered (POD) / failed→returned → clôture (totaux) → rapport manager (taux de succès, COD) → lien destinataire. Deux clôtures → mêmes totaux.",
+   "steps": [
+    {
+     "order": 1,
+     "action": "Créer les colis (dont 1 COD)",
+     "method": "POST",
+     "route": "/api/v1/delivery/deliveries",
+     "role": "delivery.dispatcher"
+    },
+    {
+     "order": 2,
+     "action": "Créer la tournée du jour",
+     "method": "POST",
+     "route": "/api/v1/delivery/deliveries/routes",
+     "role": "delivery.dispatcher"
+    },
+    {
+     "order": 3,
+     "action": "Affecter livreur + véhicule",
+     "method": "POST",
+     "route": "/api/v1/delivery/deliveries/routes/{route}/assign",
+     "role": "delivery.dispatcher"
+    },
+    {
+     "order": 4,
+     "action": "Événements mobile (picked_up→delivered avec POD, failed→returned)",
+     "method": "POST",
+     "route": "/api/v1/delivery/deliveries/events",
+     "role": "delivery.rider"
+    },
+    {
+     "order": 5,
+     "action": "Clôturer la tournée (totaux, idempotente)",
+     "method": "POST",
+     "route": "/api/v1/delivery/deliveries/routes/{route}/close",
+     "role": "delivery.dispatcher"
+    },
+    {
+     "order": 6,
+     "action": "Rapport manager (taux de succès, COD)",
+     "method": "GET",
+     "route": "/api/v1/delivery/deliveries/reports/summary",
+     "role": "delivery.manager"
+    },
+    {
+     "order": 7,
+     "action": "Suivi destinataire par lien borné",
+     "method": "GET",
+     "route": "/api/v1/deliveries/tracking/{token}",
+     "role": "public"
+    }
+   ]
+  }
+ ]
 }
