@@ -2231,6 +2231,15 @@ paths:
         schema:
           type: string
           format: date
+      # TRAVEL-804 (#6095) — recherche flexible (±N jours, groupée par date).
+      - name: flexible_days
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 7
+          default: 0
       - name: means_of_transport
         in: query
         required: false
@@ -2688,6 +2697,58 @@ paths:
                 customer_contact_id:
                   type: integer
                   nullable: true
+                # TRAVEL-415 (#6067) — contact voyageur + consentement.
+                contact_email:
+                  type: string
+                  format: email
+                  maxLength: 255
+                  nullable: true
+                contact_phone:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                notify_consent:
+                  type: boolean
+                  default: false
+                # TRAVEL-802 (#6093) — aller-retour (jambe retour optionnelle).
+                return_trip_id:
+                  type: integer
+                  nullable: true
+                return_passengers:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  nullable: true
+                  items:
+                    type: object
+                    required:
+                    - full_name
+                    - age_category
+                    - class_id
+                    properties:
+                      full_name:
+                        type: string
+                        maxLength: 160
+                      birth_date:
+                        type: string
+                        format: date
+                        nullable: true
+                      document_type:
+                        type: string
+                        enum: [national_id, passport, birth_certificate, other]
+                        nullable: true
+                      document_number:
+                        type: string
+                        maxLength: 40
+                        nullable: true
+                      age_category:
+                        type: string
+                        enum: [infant, child, adult]
+                      class_id:
+                        type: integer
+                      seat_number:
+                        type: integer
+                        nullable: true
                 passengers:
                   type: array
                   minItems: 1
@@ -2828,7 +2889,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: Remboursement d'une réservation (TRAVEL-315/#6045)
+      summary: Remboursement d'une réservation, total ou partiel (TRAVEL-315/#6045, TRAVEL-808/#6098)
       security:
       - BearerAuth: []
       parameters:
@@ -2850,6 +2911,15 @@ paths:
                   type: string
                   minLength: 3
                   maxLength: 500
+                # TRAVEL-808 (#6098) — remboursement partiel par passager
+                # (absent = remboursement intégral ; pénalités calculées serveur).
+                passenger_ids:
+                  type: array
+                  nullable: true
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: integer
       responses:
         '200':
           description: Réservation remboursée
@@ -3726,6 +3796,1317 @@ paths:
           description: Chambre ou hôtel introuvable ou hors tenant
         '403':
           description: Permission travel.manage requise
+  /travel/cancellation-policies:
+    get:
+      tags:
+      - Travel
+      summary: Liste des politiques d'annulation (TRAVEL-813/#6103)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      - name: trip_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: class_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Politiques paginées
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelCancellationPolicy'
+        '403':
+          description: Permission requise
+    post:
+      tags:
+      - Travel
+      summary: Création d'une politique d'annulation (TRAVEL-813/#6103)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - penalty_percent
+              properties:
+                trip_id:
+                  type: integer
+                  nullable: true
+                class_id:
+                  type: integer
+                  nullable: true
+                cancel_before_hours:
+                  type: integer
+                  minimum: 1
+                  maximum: 720
+                  nullable: true
+                penalty_percent:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                refundable:
+                  type: boolean
+                  default: true
+                is_active:
+                  type: boolean
+                  default: true
+                description:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+      responses:
+        '201':
+          description: Politique créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelCancellationPolicy'
+        '403':
+          description: Permission travel.manage requise
+  /travel/cancellation-policies/{travelCancellationPolicy}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'une politique d'annulation (TRAVEL-813/#6103)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCancellationPolicy
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Politique
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelCancellationPolicy'
+        '404':
+          description: Introuvable ou hors tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'une politique d'annulation (TRAVEL-813/#6103)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCancellationPolicy
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                trip_id:
+                  type: integer
+                  nullable: true
+                class_id:
+                  type: integer
+                  nullable: true
+                cancel_before_hours:
+                  type: integer
+                  nullable: true
+                penalty_percent:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                refundable:
+                  type: boolean
+                is_active:
+                  type: boolean
+                description:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Politique mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelCancellationPolicy'
+        '403':
+          description: Permission travel.manage requise
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une politique d'annulation (TRAVEL-813/#6103)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCancellationPolicy
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprimée
+        '403':
+          description: Permission travel.manage requise
+  /travel/loyalty/account:
+    get:
+      tags:
+      - Travel
+      summary: Solde du compte de fidélité d'un contact (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: contact_identifier
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Solde et statut opt-in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      contact_identifier:
+                        type: string
+                      opt_in:
+                        type: boolean
+                      points_balance:
+                        type: integer
+  /travel/loyalty/entries:
+    get:
+      tags:
+      - Travel
+      summary: Journal des points d'un contact (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: contact_identifier
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Entrées du journal
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        points:
+                          type: integer
+                        type:
+                          type: string
+                          enum: [earned, redeemed, bonus]
+                        reason:
+                          type: string
+                          nullable: true
+                        created_at:
+                          type: string
+                          format: date-time
+  /travel/loyalty/opt-in:
+    post:
+      tags:
+      - Travel
+      summary: Opt-in RGPD du programme de fidélité (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - contact_identifier
+              properties:
+                contact_identifier:
+                  type: string
+      responses:
+        '200':
+          description: Opt-in enregistré
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      contact_identifier:
+                        type: string
+                      opt_in:
+                        type: boolean
+                      points_balance:
+                        type: integer
+  /travel/loyalty/opt-out:
+    post:
+      tags:
+      - Travel
+      summary: Opt-out RGPD du programme de fidélité (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - contact_identifier
+              properties:
+                contact_identifier:
+                  type: string
+      responses:
+        '200':
+          description: Opt-out enregistré
+  /travel/loyalty/redeem:
+    post:
+      tags:
+      - Travel
+      summary: Échange de points contre une récompense (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - contact_identifier
+              - reward_id
+              - booking_id
+              properties:
+                contact_identifier:
+                  type: string
+                reward_id:
+                  type: integer
+                booking_id:
+                  type: integer
+      responses:
+        '200':
+          description: Points débités (idempotent par réservation)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      entry_id:
+                        type: integer
+                      points:
+                        type: integer
+                      type:
+                        type: string
+                      reason:
+                        type: string
+        '422':
+          description: Solde insuffisant, opt-in manquant ou récompense déjà utilisée
+  /travel/loyalty/rewards:
+    get:
+      tags:
+      - Travel
+      summary: Catalogue des récompenses actives (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Récompenses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        description:
+                          type: string
+                          nullable: true
+                        points_cost:
+                          type: integer
+    post:
+      tags:
+      - Travel
+      summary: Création d'une récompense (TRAVEL-811/#6101, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - points_cost
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                description:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+                points_cost:
+                  type: integer
+                  minimum: 1
+                active:
+                  type: boolean
+                  default: true
+      responses:
+        '201':
+          description: Récompense créée
+        '403':
+          description: Permission travel.manage requise
+  /travel/carrier-sync/trips:
+    post:
+      tags:
+      - Travel
+      summary: Synchronisation d'un trajet transporteur (TRAVEL-807/#6086, jeton X-Carrier-Token)
+      security:
+      - CarrierTokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - external_id
+              - departure_date
+              - total_seats
+              properties:
+                external_id:
+                  type: string
+                  maxLength: 120
+                code:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                route_id:
+                  type: integer
+                  nullable: true
+                route:
+                  type: object
+                  properties:
+                    external_id:
+                      type: string
+                    code:
+                      type: string
+                    origin_city_id:
+                      type: integer
+                    destination_city_id:
+                      type: integer
+                departure_date:
+                  type: string
+                  format: date
+                departure_time:
+                  type: string
+                  format: time
+                arrival_date:
+                  type: string
+                  format: date
+                  nullable: true
+                arrival_time:
+                  type: string
+                  format: time
+                  nullable: true
+                means_of_transport:
+                  type: string
+                  maxLength: 30
+                total_seats:
+                  type: integer
+                  minimum: 1
+                  maximum: 200
+                status:
+                  type: string
+                  maxLength: 20
+                prices:
+                  type: array
+                  maxItems: 10
+                  items:
+                    type: object
+                    required:
+                    - adult_price_minor
+                    properties:
+                      class_id:
+                        type: integer
+                        nullable: true
+                      class_code:
+                        type: string
+                        maxLength: 40
+                        nullable: true
+                      adult_price_minor:
+                        type: integer
+                        minimum: 0
+                      child_price_minor:
+                        type: integer
+                        minimum: 0
+                        nullable: true
+                      currency:
+                        type: string
+                        maxLength: 3
+      responses:
+        '201':
+          description: Trajet créé ou mis à jour (upsert idempotent par external_id)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTrip'
+        '401':
+          description: Jeton transporteur invalide ou manquant
+        '422':
+          description: Validation échouée (bornes, tarifs, clé externe)
+  /travel/community/categories:
+    get:
+      tags:
+      - Travel
+      summary: Liste des catégories d'articles (TRAVEL-901/#6104)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Catégories
+    post:
+      tags:
+      - Travel
+      summary: Création d'une catégorie (TRAVEL-901/#6104, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, name]
+              properties:
+                code: {type: string, maxLength: 60}
+                name: {type: string, maxLength: 160}
+                is_active: {type: boolean, default: true}
+      responses:
+        '201':
+          description: Catégorie créée (code unique par tenant)
+        '422':
+          description: Code dupliqué
+  /travel/community/articles:
+    get:
+      tags:
+      - Travel
+      summary: Liste des articles (TRAVEL-901/#6104)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Articles paginés
+    post:
+      tags:
+      - Travel
+      summary: Création d'un article (TRAVEL-901/#6104, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, body]
+              properties:
+                category_id: {type: integer, nullable: true}
+                title: {type: string, maxLength: 200}
+                body: {type: string, minLength: 10, maxLength: 50000}
+                status: {type: string, enum: [draft, published], default: draft}
+      responses:
+        '201':
+          description: Article créé (statut + published_at serveur)
+  /travel/community/articles/{article}/publish:
+    post:
+      tags:
+      - Travel
+      summary: Publication contrôlée d'un article (TRAVEL-901/#6104)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Article publié
+  /travel/community/articles/{article}/comments:
+    get:
+      tags:
+      - Travel
+      summary: Commentaires d'un article (TRAVEL-902/#6105)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commentaires
+    post:
+      tags:
+      - Travel
+      summary: Ajout d'un commentaire (TRAVEL-902/#6105)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [body]
+              properties:
+                body: {type: string, minLength: 3, maxLength: 1000}
+                author_name: {type: string, maxLength: 160, nullable: true}
+      responses:
+        '201':
+          description: Commentaire créé (pending, modéré)
+        '422':
+          description: Contenu hors bornes
+  /travel/community/comments/{comment}/approve:
+    post:
+      tags:
+      - Travel
+      summary: Approbation d'un commentaire (TRAVEL-902/#6105, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: comment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commentaire approuvé
+  /travel/community/comments/{comment}/report:
+    post:
+      tags:
+      - Travel
+      summary: Signalement d'un commentaire (TRAVEL-902/#6105, tracé unique)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: comment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: {type: string, minLength: 3, maxLength: 255}
+      responses:
+        '200':
+          description: Signalement enregistré
+        '422':
+          description: Déjà signalé
+  /travel/community/articles/{article}/like:
+    post:
+      tags:
+      - Travel
+      summary: Like d'un article (TRAVEL-903/#6106, idempotent)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Un acteur = un like par cible
+  /travel/community/articles/{article}/engagement:
+    get:
+      tags:
+      - Travel
+      summary: Agrégats likes/partages/notes (TRAVEL-903/#6106)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: likes_count, shares_count, rating_avg, ratings_count
+  /travel/community/quizzes:
+    get:
+      tags:
+      - Travel
+      summary: Liste des quiz (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Quiz
+    post:
+      tags:
+      - Travel
+      summary: Création d'un quiz (TRAVEL-904/#6107, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: {type: string, maxLength: 200}
+                description: {type: string, maxLength: 2000, nullable: true}
+                max_participations_per_contact: {type: integer, minimum: 1, default: 1}
+                bonus_points: {type: integer, minimum: 0, default: 0}
+      responses:
+        '201':
+          description: Quiz créé
+  /travel/community/quizzes/{quiz}/questions:
+    post:
+      tags:
+      - Travel
+      summary: Ajout d'une question (TRAVEL-904/#6107, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [label, choices, correct_answer]
+              properties:
+                label: {type: string, maxLength: 500}
+                choices: {type: array, minItems: 2, maxItems: 6, items: {type: string, maxLength: 200}}
+                correct_answer: {type: string, maxLength: 200, description: "Hachée au repos, jamais restituée"}
+                points: {type: integer, minimum: 1, default: 1}
+      responses:
+        '201':
+          description: Question créée (bonne réponse hachée)
+  /travel/community/quizzes/{quiz}/participate:
+    post:
+      tags:
+      - Travel
+      summary: Participation à un quiz (TRAVEL-904/#6107, unique par contact)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [participant_identifier, answers]
+              properties:
+                participant_identifier: {type: string, maxLength: 255}
+                answers: {type: object, additionalProperties: {type: string, maxLength: 200}}
+      responses:
+        '201':
+          description: Score calculé serveur
+        '422':
+          description: Participation déjà enregistrée ou quiz fermé
+  /travel/community/advert-types:
+    get:
+      tags:
+      - Travel
+      summary: Types d'annonces (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Types
+    post:
+      tags:
+      - Travel
+      summary: Création d'un type (TRAVEL-905/#6108, travel.manage)
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Type créé (code unique)
+  /travel/community/advert-prices:
+    get:
+      tags:
+      - Travel
+      summary: Grille tarifaire (TRAVEL-906/#6109)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Tarifs en minor units
+    post:
+      tags:
+      - Travel
+      summary: Création d'un tarif (TRAVEL-906/#6109, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type_id, position_id]
+              properties:
+                type_id: {type: integer}
+                position_id: {type: integer}
+                price_per_image_minor: {type: integer, minimum: 0}
+                price_per_character_minor: {type: integer, minimum: 0}
+                currency: {type: string, maxLength: 3, description: "Défaut : devise tenant"}
+      responses:
+        '201':
+          description: Tarif créé
+  /travel/community/adverts:
+    get:
+      tags:
+      - Travel
+      summary: Annonces VISIBLES (payées + validées + non expirées, TRAVEL-907/#6110)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Annonces publiées
+    post:
+      tags:
+      - Travel
+      summary: Soumission d'une annonce (TRAVEL-907/#6110, prix calculé serveur)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type_id, position_id, title, body]
+              properties:
+                type_id: {type: integer}
+                position_id: {type: integer}
+                title: {type: string, maxLength: 200}
+                body: {type: string, minLength: 10, maxLength: 5000}
+                image_path: {type: string, maxLength: 500, nullable: true}
+      responses:
+        '201':
+          description: Annonce soumise (submitted, prix + devise serveur)
+  /travel/community/adverts/{advert}/pay:
+    post:
+      tags:
+      - Travel
+      summary: Paiement d'une annonce (TRAVEL-907/#6110, idempotent)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: advert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Annonce payée
+  /travel/community/adverts/{advert}/validate:
+    post:
+      tags:
+      - Travel
+      summary: Validation + publication (TRAVEL-907/#6110, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: advert
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                valid_days: {type: integer, minimum: 1, maximum: 90, default: 30}
+      responses:
+        '200':
+          description: Annonce publiée (visible)
+  /travel/community/adverts/{advert}/renew:
+    post:
+      tags:
+      - Travel
+      summary: Renouvellement payé (TRAVEL-908/#6111, requalifie)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: advert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Annonce republiée
+  /travel/community/tourist-sites:
+    get:
+      tags:
+      - Travel
+      summary: Sites touristiques (TRAVEL-909/#6112)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Sites paginés
+    post:
+      tags:
+      - Travel
+      summary: Création d'un site (TRAVEL-909/#6112, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, city_id]
+              properties:
+                name: {type: string, maxLength: 200}
+                description: {type: string, maxLength: 5000, nullable: true}
+                city_id: {type: integer}
+                latitude: {type: number, minimum: -90, maximum: 90, nullable: true}
+                longitude: {type: number, minimum: -180, maximum: 180, nullable: true}
+                images: {type: array, maxItems: 10, items: {type: string}, nullable: true}
+      responses:
+        '201':
+          description: Site créé
+  /travel/community/tourist-sites/search:
+    get:
+      tags:
+      - Travel
+      summary: Recherche de sites par ville (TRAVEL-909/#6112)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: city_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Sites actifs de la ville
+
+  /travel/corporate-accounts:
+    get:
+      tags:
+      - Travel
+      summary: Comptes corporate (TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Comptes corporate
+    post:
+      tags:
+      - Travel
+      summary: Création d'un compte corporate (TRAVEL-803/#6094, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, credit_limit_minor]
+              properties:
+                name: {type: string, maxLength: 160}
+                contact_email: {type: string, format: email, nullable: true}
+                credit_limit_minor: {type: integer, minimum: 0}
+                currency: {type: string, maxLength: 3}
+      responses:
+        '201':
+          description: Compte créé
+  /travel/corporate-quotes:
+    get:
+      tags:
+      - Travel
+      summary: Devis corporate (TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Devis
+    post:
+      tags:
+      - Travel
+      summary: Création d'un devis (prix calculé serveur, TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [corporate_account_id, trip_id, class_id, passengers_count]
+              properties:
+                corporate_account_id: {type: integer}
+                trip_id: {type: integer}
+                class_id: {type: integer}
+                passengers_count: {type: integer, minimum: 1, maximum: 100}
+      responses:
+        '201':
+          description: Devis créé (draft, 14 jours de validité)
+  /travel/corporate-quotes/{quote}/accept:
+    post:
+      tags:
+      - Travel
+      summary: Acceptation d'un devis (TRAVEL-803/#6094, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quote
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Devis accepté (fige le montant)
+        '422':
+          description: Devis expiré ou non brouillon
+  /travel/currency-rates:
+    get:
+      tags:
+      - Travel
+      summary: Taux de conversion (TRAVEL-805/#6096)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Taux par période
+    post:
+      tags:
+      - Travel
+      summary: Création d'un taux (TRAVEL-805/#6096, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [base_currency, quote_currency, rate, valid_from]
+              properties:
+                base_currency: {type: string, maxLength: 3}
+                quote_currency: {type: string, maxLength: 3}
+                rate: {type: number, minimum: 0, exclusiveMinimum: true}
+                valid_from: {type: string, format: date}
+                valid_until: {type: string, format: date, nullable: true}
+      responses:
+        '201':
+          description: Taux créé (unique par paire/période)
+  /travel/currency-rates/convert:
+    get:
+      tags:
+      - Travel
+      summary: Conversion d'affichage (TRAVEL-805/#6096, sans perte d'arrondi)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: amount_minor
+        in: query
+        required: true
+        schema: {type: integer, minimum: 0}
+      - name: from
+        in: query
+        required: true
+        schema: {type: string, maxLength: 3}
+      - name: to
+        in: query
+        required: true
+        schema: {type: string, maxLength: 3}
+      - name: date
+        in: query
+        required: false
+        schema: {type: string, format: date}
+      responses:
+        '200':
+          description: Montant converti (minor units)
+        '422':
+          description: Aucun taux valide à cette date
+  /travel/shop/connections:
+    get:
+      tags:
+      - Travel
+      summary: Correspondances multi-trajets (TRAVEL-809/#6099)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: origin_city_id
+        in: query
+        required: true
+        schema: {type: integer}
+      - name: destination_city_id
+        in: query
+        required: true
+        schema: {type: integer}
+      - name: date
+        in: query
+        required: true
+        schema: {type: string, format: date}
+      - name: min_connection_minutes
+        in: query
+        required: false
+        schema: {type: integer, minimum: 15, maximum: 240, default: 45}
+      responses:
+        '200':
+          description: Paires compatibles (horaires validés)
+  /travel/shop/connections/book:
+    post:
+      tags:
+      - Travel
+      summary: Vente groupée d'une correspondance (TRAVEL-809/#6099)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [leg1_trip_id, leg2_trip_id, idempotency_key, leg1_passengers, leg2_passengers]
+              properties:
+                leg1_trip_id: {type: integer}
+                leg2_trip_id: {type: integer}
+                idempotency_key: {type: string}
+                leg1_passengers: {type: array, minItems: 1, items: {type: object}}
+                leg2_passengers: {type: array, minItems: 1, items: {type: object}}
+      responses:
+        '201':
+          description: Deux réservations liées (connection_group_id)
+  /travel/pdv/session/open:
+    post:
+      tags:
+      - Travel
+      summary: Ouverture de caisse PDV (TRAVEL-810/#6100)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                opening_balance_minor: {type: integer, minimum: 0, default: 0}
+      responses:
+        '201':
+          description: Session ouverte (une seule par tenant)
+        '422':
+          description: Session déjà ouverte
+  /travel/pdv/session/close:
+    post:
+      tags:
+      - Travel
+      summary: Clôture de caisse (TRAVEL-810/#6100, écart calculé serveur)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [actual_balance_minor]
+              properties:
+                actual_balance_minor: {type: integer, minimum: 0}
+      responses:
+        '200':
+          description: Attendu vs réel + écart
+  /travel/public-shop-token:
+    get:
+      tags:
+      - Travel
+      summary: Jeton boutique publique (TRAVEL-1001/#6114)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Jeton (préfixe de hash uniquement)
+  /travel/public-shop-token/rotate:
+    post:
+      tags:
+      - Travel
+      summary: Rotation du jeton (TRAVEL-1001/#6114, travel.manage)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Nouveau jeton (retourné UNE fois)
+  /public/travel/shop/trips:
+    get:
+      tags:
+      - Travel
+      summary: Recherche publique (TRAVEL-1001/#6114, jeton X-Travel-Shop-Token)
+      security:
+      - PublicShopTokenAuth: []
+      responses:
+        '200':
+          description: Trajets publiés du tenant
+        '401':
+          description: Jeton boutique invalide
+  /public/travel/shop/bookings:
+    post:
+      tags:
+      - Travel
+      summary: Réservation en ligne publique (TRAVEL-1001/#6114)
+      security:
+      - PublicShopTokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [trip_id, idempotency_key, passengers]
+              properties:
+                trip_id: {type: integer}
+                idempotency_key: {type: string}
+                contact_email: {type: string, format: email, nullable: true}
+                contact_phone: {type: string, nullable: true}
+                notify_consent: {type: boolean, default: false}
+                passengers: {type: array, minItems: 1, items: {type: object}}
+      responses:
+        '201':
+          description: Réservation créée (source online)
+  /public/travel/payments/initiate:
+    post:
+      tags:
+      - Travel
+      summary: Initiation de paiement en ligne (TRAVEL-1002/#6115)
+      security:
+      - PublicShopTokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [booking_reference, provider_code, idempotency_key]
+              properties:
+                booking_reference: {type: string}
+                provider_code: {type: string, enum: [cash, pvit, momo, card]}
+                idempotency_key: {type: string}
+      responses:
+        '201':
+          description: Paiement initié (pending)
+  /public/travel/tickets/{ticket}/pdf:
+    get:
+      tags:
+      - Travel
+      summary: E-billet public (TRAVEL-1002/#6115, accès par code)
+      security:
+      - PublicShopTokenAuth: []
+      parameters:
+      - name: ticket
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: code
+        in: query
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: URL signée temporaire du PDF
+        '403':
+          description: Code de validation invalide
+        '410':
+          description: Billet révoqué
+
   /travel/shop/trips:
     get:
       tags:
@@ -3769,6 +5150,15 @@ paths:
         schema:
           type: string
           format: date
+      # TRAVEL-804 (#6095) — recherche flexible (±N jours, groupée par date).
+      - name: flexible_days
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 7
+          default: 0
       - name: means_of_transport
         in: query
         required: false
@@ -3857,6 +5247,58 @@ paths:
                 customer_contact_id:
                   type: integer
                   nullable: true
+                # TRAVEL-415 (#6067) — contact voyageur + consentement.
+                contact_email:
+                  type: string
+                  format: email
+                  maxLength: 255
+                  nullable: true
+                contact_phone:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                notify_consent:
+                  type: boolean
+                  default: false
+                # TRAVEL-802 (#6093) — aller-retour (jambe retour optionnelle).
+                return_trip_id:
+                  type: integer
+                  nullable: true
+                return_passengers:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  nullable: true
+                  items:
+                    type: object
+                    required:
+                    - full_name
+                    - age_category
+                    - class_id
+                    properties:
+                      full_name:
+                        type: string
+                        maxLength: 160
+                      birth_date:
+                        type: string
+                        format: date
+                        nullable: true
+                      document_type:
+                        type: string
+                        enum: [national_id, passport, birth_certificate, other]
+                        nullable: true
+                      document_number:
+                        type: string
+                        maxLength: 40
+                        nullable: true
+                      age_category:
+                        type: string
+                        enum: [infant, child, adult]
+                      class_id:
+                        type: integer
+                      seat_number:
+                        type: integer
+                        nullable: true
                 passengers:
                   type: array
                   minItems: 1
@@ -4486,7 +5928,7 @@ paths:
               properties:
                 carrier_id: {type: integer}
                 url: {type: string, format: uri, maxLength: 500}
-                secret: {type: string, minLength: 16, maxLength: 200, description: Chiffré au repos, jamais restitué}
+                secret: {type: string, minLength: 16, maxLength: 200, description: "Chiffré au repos, jamais restitué"}
                 events:
                   type: array
                   items: {type: string}
@@ -29328,6 +30770,16 @@ components:
       type: http
       scheme: bearer
       bearerFormat: Sanctum
+    CarrierTokenAuth:
+      type: apiKey
+      in: header
+      name: X-Carrier-Token
+      description: Jeton transporteur (API entrante TRAVEL-807/#6086)
+    PublicShopTokenAuth:
+      type: apiKey
+      in: header
+      name: X-Travel-Shop-Token
+      description: Jeton boutique publique (TRAVEL-1001/#6114)
   parameters:
     ProjectId:
       name: project
@@ -29665,6 +31117,35 @@ components:
         updated_at:
           type: string
           nullable: true
+    TravelCancellationPolicy:
+      type: object
+      properties:
+        id:
+          type: integer
+        trip_id:
+          type: integer
+          nullable: true
+        class_id:
+          type: integer
+          nullable: true
+        cancel_before_hours:
+          type: integer
+          nullable: true
+        penalty_percent:
+          type: integer
+        refundable:
+          type: boolean
+        is_active:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     TravelBooking:
       type: object
       properties:
