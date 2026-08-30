@@ -17,6 +17,7 @@ declare(strict_types=1);
  */
 
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelIncidentController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
@@ -93,5 +94,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/fuel-station/deliveries/{delivery}/verify', [FuelStockController::class, 'verifyDelivery'])->whereNumber('delivery');
         Route::post('/fuel-station/reconciliations', [FuelStockController::class, 'runReconciliation']);
         Route::get('/fuel-station/reconciliations', [FuelStockController::class, 'reconciliations']);
+        // FUEL-010 (#5804) : incidents, maintenance et tâches (manager).
+        Route::get('/fuel-station/incidents', [FuelIncidentController::class, 'index']);
+        Route::post('/fuel-station/incidents', [FuelIncidentController::class, 'store']);
+        Route::get('/fuel-station/incidents/{incident}', [FuelIncidentController::class, 'show'])->whereNumber('incident');
+        Route::post('/fuel-station/incidents/{incident}/transition', [FuelIncidentController::class, 'transition'])->whereNumber('incident');
+        Route::post('/fuel-station/incidents/{incident}/attachments', [FuelIncidentController::class, 'attach'])->whereNumber('incident');
+        Route::get('/fuel-station/maintenance-tasks', [FuelIncidentController::class, 'tasks']);
+        Route::post('/fuel-station/maintenance-tasks', [FuelIncidentController::class, 'storeTask']);
+        Route::patch('/fuel-station/maintenance-tasks/{task}', [FuelIncidentController::class, 'updateTask'])->whereNumber('task');
     });
 });
