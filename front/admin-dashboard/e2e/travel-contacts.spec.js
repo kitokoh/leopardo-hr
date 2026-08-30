@@ -10,8 +10,14 @@ function makeList(body) {
 
 test.describe('Contacts voyageurs travel (TRAVEL-912)', () => {
   test('liste les contacts et bascule un consentement', async ({ page }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('admin_token', 'e2e-fake-token')
+    })
     await page.route(/\/api\/v1\/platform\/auth\/me(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(AUTH_ME) }),
+    )
+    await page.route('**/api/v1/**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: {} }) }),
     )
     await page.route(/\/api\/v1\/travel\/ping(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) }),
@@ -27,6 +33,6 @@ test.describe('Contacts voyageurs travel (TRAVEL-912)', () => {
     await page.goto('/travel/content')
     await page.getByRole('button', { name: 'Contacts' }).click()
     await expect(page.getByText('aline@example.com')).toBeVisible()
-    await expect(page.getByText('Aline')).toBeVisible()
+    await expect(page.getByText('Aline Ngo')).toBeVisible()
   })
 })

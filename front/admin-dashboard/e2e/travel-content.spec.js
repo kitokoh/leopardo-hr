@@ -30,7 +30,7 @@ test.describe('Contenu & annonces travel (TRAVEL-911)', () => {
       ])) }),
     )
     await page.goto('/travel/content')
-    await expect(page.getByRole('heading', { name: /Contenu & annonces/ })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Contenu & annonces/ }).first()).toBeVisible()
     await expect(page.getByText('Quiz Afrique de l\'Ouest')).toBeVisible()
   })
 
@@ -72,9 +72,11 @@ test.describe('Contenu & annonces travel (TRAVEL-911)', () => {
 
     // Annonces
     await page.getByRole('button', { name: 'Annonces' }).first().click()
+    // Sous-onglet par défaut « Types » : le référentiel est affiché.
+    await expect(page.getByText('Sponsoring')).toBeVisible()
+    // Sous-onglet « Annonces » : le cycle de vie se charge.
     await page.getByRole('button', { name: 'Annonces' }).last().click()
     await expect(page.getByText('Annonce validée')).toBeVisible()
-    await expect(page.getByText('Sponsoring')).toBeVisible()
 
     // Sites touristiques
     await page.getByRole('button', { name: 'Sites touristiques' }).click()
