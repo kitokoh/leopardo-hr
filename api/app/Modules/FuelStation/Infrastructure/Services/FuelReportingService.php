@@ -359,6 +359,11 @@ final class FuelReportingService
     private function exportRows(FuelReportExport $export): array
     {
         $date = $export->report_date?->toDateString() ?? now()->toDateString();
+
+        if ($export->report_type === 'referential') {
+            return $this->referentialRows($export);
+        }
+
         $rows = [['report_type', 'station_id', 'date', 'label', 'value']];
 
         $stationId = $export->station_id;
@@ -384,6 +389,56 @@ final class FuelReportingService
             } else {
                 $rows[] = [$export->report_type, (string) $stationId, $date, $key, (string) $value];
             }
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Export contrôlé du référentiel (FUEL-018, #5812) : produits et
+     * équipements (pompes/cuves/compteurs) du tenant.
+     *
+     * @return list<list<string>>
+     */
+    private function referentialRows(FuelReportExport $export): array
+    {
+        $companyId = $export->company_id;
+        $rows = [['entity', 'station_id', 'code', 'detail']];
+
+        foreach (FuelProduct::query()->where('company_id', $companyId)->orderBy('code')->get() as $product) {
+            $rows[] = [
+                'product',
+                '',
+                (string) $product->code,
+                sprintf('%s|%s|%s', (string) $product->name, (string) $product->unit_code, (string) $product->status),
+            ];
+        }
+
+        foreach (FuelPump::query()->where('company_id', $companyId)->orderBy('code')->get() as $pump) {
+            $rows[] = [
+                'pump',
+                (string) $pump->station_id,
+                (string) $pump->code,
+                implode('|', (array) $pump->product_types).'|'.(string) $pump->status,
+            ];
+        }
+
+        foreach (FuelTank::query()->where('company_id', $companyId)->orderBy('code')->get() as $tank) {
+            $rows[] = [
+                'tank',
+                (string) $tank->station_id,
+                (string) $tank->code,
+                sprintf('%s|%d|%s', (string) $tank->product_type, (int) $tank->capacity_minor, (string) $tank->status),
+            ];
+        }
+
+        foreach (FuelMeterRegister::query()->where('company_id', $companyId)->orderBy('meter_code')->get() as $meter) {
+            $rows[] = [
+                'meter',
+                (string) $meter->station_id,
+                (string) $meter->meter_code,
+                sprintf('%s|%s|%d|%s', (string) $meter->product_code, (string) $meter->unit_code, (int) $meter->precision_scale, (string) $meter->status),
+            ];
         }
 
         return $rows;

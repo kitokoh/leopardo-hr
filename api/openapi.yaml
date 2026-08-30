@@ -8366,6 +8366,106 @@ paths:
         '422':
           description: Export pas encore genere ou expire
 
+  /fuel-station/imports:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les imports CSV (manager, FUEL-018)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: import_type
+        in: query
+        schema:
+          type: string
+          enum:
+          - products
+          - equipment
+          - shifts
+          - readings
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - pending
+          - validated
+          - completed
+          - failed
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Imports pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Importer un CSV valide ligne a ligne (preview/rollback, FUEL-018)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - import_type
+              - file
+              properties:
+                import_type:
+                  type: string
+                  enum:
+                  - products
+                  - equipment
+                  - shifts
+                  - readings
+                file:
+                  type: string
+                  format: binary
+                dry_run:
+                  type: boolean
+                  description: Preview sans ecriture
+      responses:
+        '201':
+          description: Import applique (toutes les lignes valides)
+        '200':
+          description: Preview (dry_run) ou import rejete (lignes en erreur, zero ecriture)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation (type, taille <= 2 Mo, lignes <= 5000)
+  /fuel-station/imports/{import}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'un import (journal + erreurs par ligne, FUEL-018)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: import
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Import
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Import introuvable ou autre tenant
+
   /accounting/contacts:
     get:
       tags:
