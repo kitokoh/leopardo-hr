@@ -46,6 +46,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTouristSiteCont
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCorporateController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelConnectionController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPdvController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
@@ -173,6 +174,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/loyalty/redeem', [TravelLoyaltyController::class, 'redeem']);
         Route::get('/loyalty/rewards', [TravelLoyaltyController::class, 'rewards']);
         Route::post('/loyalty/rewards', [TravelLoyaltyController::class, 'storeReward']);
+
+        // Point de vente tablette (TRAVEL-810/#6100) — caisse + reçus.
+        Route::post('/pdv/session/open', [TravelPdvController::class, 'open']);
+        Route::get('/pdv/session/current', [TravelPdvController::class, 'current']);
+        Route::post('/pdv/session/close', [TravelPdvController::class, 'close']);
+        Route::get('/pdv/receipts/{booking}', [TravelPdvController::class, 'receipt']);
 
         // Correspondances multi-trajets (TRAVEL-809/#6099).
         Route::get('/shop/connections', [TravelConnectionController::class, 'search']);

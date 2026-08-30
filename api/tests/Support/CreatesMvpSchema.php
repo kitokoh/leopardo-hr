@@ -3010,6 +3010,21 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'base_currency', 'quote_currency', 'valid_from'], 'travel_currency_rates_company_pair_period_unique');
             });
         }
+        if (! Schema::hasTable($this->moduleTable('travel_cash_sessions'))) {
+            Schema::create($this->moduleTable('travel_cash_sessions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('opened_by_user_id');
+                $table->timestamp('opened_at');
+                $table->timestamp('closed_at')->nullable();
+                $table->unsignedBigInteger('opening_balance_minor')->default(0);
+                $table->unsignedBigInteger('expected_balance_minor')->nullable();
+                $table->unsignedBigInteger('actual_balance_minor')->nullable();
+                $table->bigInteger('difference_minor')->nullable();
+                $table->string('status', 20)->default('open');
+                $table->timestamps();
+            });
+        }
     }
 
     private function dropMvpTables(): void
@@ -3107,6 +3122,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "travel_comments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_articles"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_article_categories"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_cash_sessions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_currency_rates"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_quotes"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_corporate_accounts"'.$cascade);
