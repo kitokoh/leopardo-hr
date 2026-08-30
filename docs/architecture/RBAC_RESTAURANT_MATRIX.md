@@ -124,3 +124,16 @@ Notes :
 | `/restaurant/tables/{table}/open` · `/close` | POST | serveur+ |
 | `/restaurant/kitchen/orders` | GET | `restaurant.kitchen`/`restaurant.manager` — `branch_id` obligatoire (le cuisinier ne voit que sa branche) |
 | `/restaurant/kitchen/orders/{order}/start` · `/ready` | POST | `restaurant.kitchen`/`restaurant.manager` |
+
+## 6. Surfaces stock, achats & réservations (lot RESTO-501..506, 601..602)
+
+| Endpoint | Méthode | Permission / rôles requis |
+|---|---|---|
+| `/restaurant/stock-levels` · `/stock-levels/{level}` | GET/PUT | lecture : tout employé ; écriture seuils : `restaurant.manage` (principal/rh) |
+| `/restaurant/inventory-movements` | GET/POST | lecture : tout employé ; écriture : `restaurant.manager` (principal/rh/manager) |
+| `/restaurant/purchase-orders` (+ items, send/receive/cancel) | CRUD/POST | `restaurant.manager` (principal/rh/manager) |
+| `/restaurant/receivings` | GET/POST | `restaurant.manager` |
+| `/restaurant/inventory-counts` (+ items, submit) | CRUD/POST | `restaurant.manager` |
+| `/restaurant/inventory-counts/{count}/approve` | POST | `restaurant.manage` (principal/rh) |
+| `/restaurant/reservations` (+ confirm/check-in/no-show/cancel) | CRUD/POST | `restaurant.server` (principal/rh/manager/server) |
+| `/restaurant/reservations/availability` | GET | lecture : tout employé du tenant |

@@ -23,6 +23,8 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCatego
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantHealthController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantHourController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantIngredientController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantInventoryCountController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantInventoryMovementController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKitchenController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuItemController;
@@ -33,7 +35,13 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymen
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPosSessionController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductIngredientController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderItemController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReceivingController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantRefundController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReservationAvailabilityController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReservationController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantStockLevelController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantSupplierController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableSessionController;
@@ -160,4 +168,46 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/kitchen/orders', [RestaurantKitchenController::class, 'index']);
         Route::post('/kitchen/orders/{restaurantOrder}/start', [RestaurantKitchenController::class, 'start']);
         Route::post('/kitchen/orders/{restaurantOrder}/ready', [RestaurantKitchenController::class, 'ready']);
+
+        // ── Stock & mouvements (RESTO-501/#6200) ─────────────────────────────
+        Route::get('/stock-levels', [RestaurantStockLevelController::class, 'index']);
+        Route::put('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'update']);
+        Route::get('/inventory-movements', [RestaurantInventoryMovementController::class, 'index']);
+        Route::post('/inventory-movements', [RestaurantInventoryMovementController::class, 'store']);
+
+        // ── Achats : bons de commande & réceptions (RESTO-502/503) ───────────
+        Route::get('/purchase-orders', [RestaurantPurchaseOrderController::class, 'index']);
+        Route::post('/purchase-orders', [RestaurantPurchaseOrderController::class, 'store']);
+        Route::get('/purchase-orders/{restaurantPurchaseOrder}', [RestaurantPurchaseOrderController::class, 'show']);
+        Route::put('/purchase-orders/{restaurantPurchaseOrder}', [RestaurantPurchaseOrderController::class, 'update']);
+        Route::delete('/purchase-orders/{restaurantPurchaseOrder}', [RestaurantPurchaseOrderController::class, 'destroy']);
+        Route::post('/purchase-orders/{restaurantPurchaseOrder}/send', [RestaurantPurchaseOrderController::class, 'send']);
+        Route::post('/purchase-orders/{restaurantPurchaseOrder}/receive', [RestaurantPurchaseOrderController::class, 'receive']);
+        Route::post('/purchase-orders/{restaurantPurchaseOrder}/cancel', [RestaurantPurchaseOrderController::class, 'cancel']);
+        Route::post('/purchase-orders/{restaurantPurchaseOrder}/items', [RestaurantPurchaseOrderItemController::class, 'store']);
+        Route::delete('/purchase-orders/{restaurantPurchaseOrder}/items/{restaurantPurchaseOrderItem}', [RestaurantPurchaseOrderItemController::class, 'destroy']);
+
+        Route::get('/receivings', [RestaurantReceivingController::class, 'index']);
+        Route::post('/receivings', [RestaurantReceivingController::class, 'store']);
+
+        // ── Inventaires physiques (RESTO-504/#6203) ──────────────────────────
+        Route::get('/inventory-counts', [RestaurantInventoryCountController::class, 'index']);
+        Route::post('/inventory-counts', [RestaurantInventoryCountController::class, 'store']);
+        Route::get('/inventory-counts/{restaurantInventoryCount}', [RestaurantInventoryCountController::class, 'show']);
+        Route::put('/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}', [RestaurantInventoryCountController::class, 'updateItem']);
+        Route::post('/inventory-counts/{restaurantInventoryCount}/submit', [RestaurantInventoryCountController::class, 'submit']);
+        Route::post('/inventory-counts/{restaurantInventoryCount}/approve', [RestaurantInventoryCountController::class, 'approve']);
+
+        // ── Réservations & disponibilité (RESTO-601/602/#6206/#6207) ─────────
+        // `availability` est déclaré AVANT `{restaurantReservation}` (littéral
+        // prioritaire) — sinon le paramètre capterait la route.
+        Route::get('/reservations/availability', RestaurantReservationAvailabilityController::class);
+        Route::get('/reservations', [RestaurantReservationController::class, 'index']);
+        Route::post('/reservations', [RestaurantReservationController::class, 'store']);
+        Route::get('/reservations/{restaurantReservation}', [RestaurantReservationController::class, 'show']);
+        Route::put('/reservations/{restaurantReservation}', [RestaurantReservationController::class, 'update']);
+        Route::post('/reservations/{restaurantReservation}/confirm', [RestaurantReservationController::class, 'confirm']);
+        Route::post('/reservations/{restaurantReservation}/check-in', [RestaurantReservationController::class, 'checkIn']);
+        Route::post('/reservations/{restaurantReservation}/no-show', [RestaurantReservationController::class, 'noShow']);
+        Route::post('/reservations/{restaurantReservation}/cancel', [RestaurantReservationController::class, 'cancel']);
     });

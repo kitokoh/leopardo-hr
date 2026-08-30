@@ -3024,6 +3024,38 @@ class LeopardoClient:
         """Mise à jour d'un ingredient"""
         return self.request("PUT", "/restaurant/ingredients/{restaurantIngredient}", **kwargs)
 
+    def get_restaurant_inventory_counts(self, **kwargs):
+        """RESTO-504 — Inventaires physiques (filtres branche/statut)"""
+        return self.request("GET", "/restaurant/inventory-counts", **kwargs)
+
+    def post_restaurant_inventory_counts(self, **kwargs):
+        """RESTO-504 — Création d''un inventaire (lignes attendues pré-remplies depuis le stock)"""
+        return self.request("POST", "/restaurant/inventory-counts", **kwargs)
+
+    def get_restaurant_inventory_counts_by_restaurantinventorycount(self, **kwargs):
+        """RESTO-504 — Détail d''un inventaire (lignes)"""
+        return self.request("GET", "/restaurant/inventory-counts/{restaurantInventoryCount}", **kwargs)
+
+    def post_restaurant_inventory_counts_by_restaurantinventorycount_approve(self, **kwargs):
+        """RESTO-504 — Approbation (submitted → approved, ajustements de stock — réservé manage)"""
+        return self.request("POST", "/restaurant/inventory-counts/{restaurantInventoryCount}/approve", **kwargs)
+
+    def put_restaurant_inventory_counts_by_restaurantinventorycount_items_by_restaurantinventorycountitem(self, **kwargs):
+        """RESTO-504 — Saisie du compté (variance calculée serveur, motif si écart)"""
+        return self.request("PUT", "/restaurant/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}", **kwargs)
+
+    def post_restaurant_inventory_counts_by_restaurantinventorycount_submit(self, **kwargs):
+        """RESTO-504 — Soumission de l''inventaire (draft → submitted)"""
+        return self.request("POST", "/restaurant/inventory-counts/{restaurantInventoryCount}/submit", **kwargs)
+
+    def get_restaurant_inventory_movements(self, **kwargs):
+        """RESTO-501 — Journal des mouvements de stock (filtres branche/raison)"""
+        return self.request("GET", "/restaurant/inventory-movements", **kwargs)
+
+    def post_restaurant_inventory_movements(self, **kwargs):
+        """RESTO-501 — Mouvement de stock manuel (adjustment|waste|transfer, jamais négatif)"""
+        return self.request("POST", "/restaurant/inventory-movements", **kwargs)
+
     def get_restaurant_kitchen_orders(self, **kwargs):
         """RESTO-410 — File cuisine (commandes in_preparation/ready de la branche, branch_id obligatoire)"""
         return self.request("GET", "/restaurant/kitchen/orders", **kwargs)
@@ -3175,6 +3207,98 @@ class LeopardoClient:
     def delete_restaurant_products_by_restaurantproduct_ingredients_by_restaurantproductingredient(self, **kwargs):
         """Suppression d'un productingredient"""
         return self.request("DELETE", "/restaurant/products/{restaurantProduct}/ingredients/{restaurantProductIngredient}", **kwargs)
+
+    def get_restaurant_purchase_orders(self, **kwargs):
+        """RESTO-502 — Bons de commande fournisseurs (filtres branche/statut)"""
+        return self.request("GET", "/restaurant/purchase-orders", **kwargs)
+
+    def post_restaurant_purchase_orders(self, **kwargs):
+        """RESTO-502 — Création d''un bon de commande (total recalculé serveur)"""
+        return self.request("POST", "/restaurant/purchase-orders", **kwargs)
+
+    def delete_restaurant_purchase_orders_by_restaurantpurchaseorder(self, **kwargs):
+        """RESTO-502 — Suppression (draft uniquement)"""
+        return self.request("DELETE", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", **kwargs)
+
+    def get_restaurant_purchase_orders_by_restaurantpurchaseorder(self, **kwargs):
+        """RESTO-502 — Détail d''un bon de commande"""
+        return self.request("GET", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", **kwargs)
+
+    def put_restaurant_purchase_orders_by_restaurantpurchaseorder(self, **kwargs):
+        """RESTO-502 — Mise à jour (draft uniquement)"""
+        return self.request("PUT", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", **kwargs)
+
+    def post_restaurant_purchase_orders_by_restaurantpurchaseorder_cancel(self, **kwargs):
+        """RESTO-502 — Annulation (draft|sent → cancelled)"""
+        return self.request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/cancel", **kwargs)
+
+    def post_restaurant_purchase_orders_by_restaurantpurchaseorder_items(self, **kwargs):
+        """RESTO-502 — Ajout d''une ligne (total du PO recalculé serveur)"""
+        return self.request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/items", **kwargs)
+
+    def delete_restaurant_purchase_orders_by_restaurantpurchaseorder_items_by_restaurantpurchaseorderitem(self, **kwargs):
+        """RESTO-502 — Suppression d''une ligne (draft uniquement)"""
+        return self.request("DELETE", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/items/{restaurantPurchaseOrderItem}", **kwargs)
+
+    def post_restaurant_purchase_orders_by_restaurantpurchaseorder_receive(self, **kwargs):
+        """RESTO-502 — Réception (sent → received, entrées de stock + coût moyen pondéré)"""
+        return self.request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/receive", **kwargs)
+
+    def post_restaurant_purchase_orders_by_restaurantpurchaseorder_send(self, **kwargs):
+        """RESTO-502 — Envoi au fournisseur (draft → sent)"""
+        return self.request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/send", **kwargs)
+
+    def get_restaurant_receivings(self, **kwargs):
+        """RESTO-503 — Réceptions (filtres branche/bon de commande)"""
+        return self.request("GET", "/restaurant/receivings", **kwargs)
+
+    def post_restaurant_receivings(self, **kwargs):
+        """RESTO-503 — Réception (entrées stock + coût moyen pondéré, idempotente par référence)"""
+        return self.request("POST", "/restaurant/receivings", **kwargs)
+
+    def get_restaurant_reservations(self, **kwargs):
+        """RESTO-601 — Réservations (filtres branche/statut/date)"""
+        return self.request("GET", "/restaurant/reservations", **kwargs)
+
+    def post_restaurant_reservations(self, **kwargs):
+        """RESTO-601 — Création d''une réservation (idempotente, conflit de créneau → 409)"""
+        return self.request("POST", "/restaurant/reservations", **kwargs)
+
+    def get_restaurant_reservations_by_restaurantreservation(self, **kwargs):
+        """RESTO-601 — Détail d''une réservation"""
+        return self.request("GET", "/restaurant/reservations/{restaurantReservation}", **kwargs)
+
+    def put_restaurant_reservations_by_restaurantreservation(self, **kwargs):
+        """RESTO-601 — Mise à jour (pending|confirmed uniquement)"""
+        return self.request("PUT", "/restaurant/reservations/{restaurantReservation}", **kwargs)
+
+    def post_restaurant_reservations_by_restaurantreservation_cancel(self, **kwargs):
+        """RESTO-601 — Annulation (pending|confirmed → cancelled)"""
+        return self.request("POST", "/restaurant/reservations/{restaurantReservation}/cancel", **kwargs)
+
+    def post_restaurant_reservations_by_restaurantreservation_check_in(self, **kwargs):
+        """RESTO-601 — Arrivée client (confirmed → seated)"""
+        return self.request("POST", "/restaurant/reservations/{restaurantReservation}/check-in", **kwargs)
+
+    def post_restaurant_reservations_by_restaurantreservation_confirm(self, **kwargs):
+        """RESTO-601 — Confirmation (pending → confirmed, événement reservation.confirmed.v1)"""
+        return self.request("POST", "/restaurant/reservations/{restaurantReservation}/confirm", **kwargs)
+
+    def post_restaurant_reservations_by_restaurantreservation_no_show(self, **kwargs):
+        """RESTO-601 — Non venue (pending|confirmed → no_show)"""
+        return self.request("POST", "/restaurant/reservations/{restaurantReservation}/no-show", **kwargs)
+
+    def get_restaurant_reservations_availability(self, **kwargs):
+        """RESTO-602 — Disponibilité de créneaux (tables par capacité et conflits ±2h)"""
+        return self.request("GET", "/restaurant/reservations/availability", **kwargs)
+
+    def get_restaurant_stock_levels(self, **kwargs):
+        """RESTO-501 — Niveaux de stock (filtres branche/ingrédient, paginés)"""
+        return self.request("GET", "/restaurant/stock-levels", **kwargs)
+
+    def put_restaurant_stock_levels_by_restaurantstocklevel(self, **kwargs):
+        """RESTO-501 — Mise à jour des seuils/coût moyen (la quantité n''est JAMAIS écrite directement)"""
+        return self.request("PUT", "/restaurant/stock-levels/{restaurantStockLevel}", **kwargs)
 
     def get_restaurant_suppliers(self, **kwargs):
         """Liste des supplier (référentiel BC-25)"""
