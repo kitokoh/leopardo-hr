@@ -18,6 +18,7 @@ use App\Http\Middleware\RequireTenantCountry;
 use App\Http\Middleware\ResilientThrottleRequests;
 use App\Http\Middleware\Restaurant\EnsureRestaurantManagerModuleMiddleware;
 use App\Http\Middleware\Restaurant\EnsureRestaurantPublicShopAccess;
+>>>>>>> e5f98f080 (feat(restaurant): middleware module.restaurantmanager + feature flag (RESTO-102, #6159))
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\SetLocale;
@@ -150,6 +151,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'manager_role' => EnsureManagerRoleMiddleware::class,
             'employee' => EnsureEmployeeMiddleware::class,
             'module.cameras' => EnsureCameraModuleMiddleware::class,
+<<<<<<< HEAD
             // BC-24 TRAVEL — gate feature flag travelagency (TRAVEL-102/#6007).
             'module.travelagency' => EnsureTravelAgencyModuleMiddleware::class,
             // BC-24 TRAVEL — API entrante transporteurs (TRAVEL-807/#6086).
@@ -158,6 +160,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.restaurantmanager' => EnsureRestaurantManagerModuleMiddleware::class,
             // RESTO-805 (#6226) — boutique publique RestaurantManager (jeton signé par tenant).
             'restaurant.public.shop' => EnsureRestaurantPublicShopAccess::class,
+=======
+            // BC-25 RESTAURANT — gate feature flag restaurantmanager (RESTO-102/#6159).
+            'module.restaurantmanager' => EnsureRestaurantManagerModuleMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
