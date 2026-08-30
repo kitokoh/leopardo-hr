@@ -174,6 +174,22 @@ class DeliveryRouteApiTest extends TestCase
         ])->assertStatus(422);
     }
 
+    public function test_assign_transitions_deliveries_to_assigned(): void
+    {
+        Sanctum::actingAs($this->manager());
+        $route = $this->createRoute();
+
+        $this->postJson(sprintf('/api/v1/delivery/deliveries/routes/%d/assign', $route->id), [
+            'driver_id' => 42,
+            'vehicle_code' => 'VEH-001',
+        ])->assertOk();
+
+        // Les colis de la tournée passent à `assigned` (machine à états).
+        foreach ($route->stops as $stop) {
+            self::assertSame('assigned', Delivery::query()->find($stop->delivery_id)->status);
+        }
+    }
+
     public function test_assign_is_idempotent(): void
     {
         Sanctum::actingAs($this->manager());
