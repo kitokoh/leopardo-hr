@@ -4115,6 +4115,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/sessions/{trainingSession}/enroll", options);
     },
 
+    /** Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977) */
+    getTravelPing(options = {}) {
+      return request("GET", "/travel/ping", options);
+    },
+
     /** Demande d'essai guidé / auto-service (onboarding) */
     postTrialSignup(options = {}) {
       return request("POST", "/trial/signup", options);
