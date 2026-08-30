@@ -47,7 +47,7 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 | Fichier | Déclencheur | Rôle |
 |---|---|---|
 | `deploy-main.yml` | Push → main | Déploiement production (Render) |
-| `deploy-staging.yml` | `workflow_run` (Tests sur main) + dispatch | Déploiement staging — **fail-fast si `STAGING_API_URL`/`RENDER_STAGING_DEPLOY_HOOK_URL` absents** (plus aucun fallback prod, issue #1485) |
+| `deploy-staging.yml` | Push → main + dispatch (`push` est l'unique déclencheur direct depuis #3545/#4359 ; `workflow_run` reste géré en défense en profondeur dans le script) | Déploiement staging — **fail-fast si `STAGING_API_URL`/`RENDER_STAGING_DEPLOY_HOOK_URL` absents** (plus aucun fallback prod, issue #1485) |
 | `e2e-staging.yml` | Après deploy-staging | Tests E2E post-déploiement |
 | `mobile-distribute.yml` | Manuel + tags | Distribution APK/IPA |
 | `release.yml` | Tags v*.*.* | Création de release GitHub |
@@ -64,6 +64,8 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 | `k6-load-smoke.yml` | Manuel | Load test k6 |
 | `i18n-enterprise.yml` | PR → shared/i18n | Validation et sync traductions |
 | `database-backup.yml` | Schedule | Backup PostgreSQL |
+| `post-merge-conventions-audit.yml` | Push → main | Audit non bloquant CHANGELOG/openapi.yaml/i18n après chaque merge (CONVENTIONS.md §4.3/§7) |
+| `fix-feat-ratio-report.yml` | Schedule (lundi 07:00 UTC) + manuel | Rapport hebdomadaire du ratio fix/feat, KPI gouvernance (issue #5634) |
 
 ---
 
@@ -75,22 +77,20 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 
 ---
 
-### 🏢 Gouvernance interne (PLAN_ACTION2 / GitHub Issues) — jamais bloquants pour les externes
+### 🔖 Gouvernance PR/issue
 
-Ces workflows appartiennent au processus interne multi-agents issu de `docs/PLAN_ACTION2`
-(issue #1731). Depuis le 2026-07-26, la gestion de projet active passe par **GitHub Issues
-et GitHub Projects** (`docs/PLAN_ACTION2/` est un redirect vers l'archive — voir
-`docs/archive/PLAN_ACTION2/`). Ils sont **internes** : sur une PR de fork (contributeur externe)
-ils sont **sautés** (`if: github.event.pull_request.head.repo.full_name ==
-github.repository`) — le check apparaît « skipped », aucun bruit pour l'externe.
-Ils ne font **jamais** partie des checks requis de la branche `main`.
+Le processus interne multi-agents issu de `docs/PLAN_ACTION2` (issue #1731) est clos depuis le
+2026-07-26 — la gestion de projet active passe exclusivement par **GitHub Issues et GitHub
+Projects** (`docs/PLAN_ACTION2/` est un redirect vers l'archive — voir
+`docs/archive/PLAN_ACTION2/`). Les 4 workflows `plan-action2-*.yml` qui existaient encore ont
+été nettoyés (2026-08-29) : ce qui restait spécifique au backlog PA2-* (collision de claim
+multi-agent, signalement d'ID PA2-*, rapport de backlog, sync GitHub Projects) a été supprimé ;
+ce qui était déjà une règle générale (indépendante de PLAN_ACTION2) a été renommé et conservé
+ci-dessous.
 
 | Fichier | Déclencheur | Rôle |
 |---|---|---|
-| `plan-action2-claim-guard.yml` | PR du dépôt (opened/edited/synchronize) — sauté sur fork | Garde-fou collision de claim multi-agent + signalement PR sans ID PA2-* (PA2-AUTO-011/004/008) |
-| `plan-action2-project.yml` | PR du dépôt → docs/PLAN_ACTION2, push main, manuel — sauté sur fork | Validation du backlog + sync GitHub Projects |
-| `plan-action2-weekly-report.yml` | Schedule (lundi 07:00 UTC) + manuel | Rapport hebdomadaire d'avancement (PA2-AUTO-005) |
-| `plan-action2-post-merge-audit.yml` | Push → main | Audit non bloquant CHANGELOG/openapi.yaml/i18n après chaque merge (PA2-AUTO-010) |
+| `pr-issue-guard.yml` | PR du dépôt (opened/edited/synchronize) — sauté sur fork | Anti-doublon « une issue = une PR » (#5442) + exige que chaque PR référence une issue qu'elle ferme (PA2-OPS-008, **bloquant**, rappelé dans `PULL_REQUEST_TEMPLATE.md`) |
 
 ---
 

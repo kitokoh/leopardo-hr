@@ -2,8 +2,14 @@ name: Queue Worker — Fallback GH Actions
 
 on:
   schedule:
-    # Drain toutes les 5 minutes : couvre les périodes où l'instance Render
-    # dort (>15 min d'inactivité, free tier) ou a épuisé ses 750 h/mois.
+    # Drain toutes les 5 minutes. Le worker dédié `leopardo-queue-worker` est
+    # en plan Render `starter` (render.yaml) — il ne s'endort pas comme un
+    # service free tier. Ce cron reste un filet de sécurité en défense en
+    # profondeur suite à l'incident #5172 (2026-08-20) : les 2 background
+    # workers déclarés dans render.yaml n'existaient tout simplement pas sur
+    # le compte Render de prod, laissant les jobs s'accumuler sans être
+    # drainés (voir docs/OPS/RENDER_QUEUE_WORKERS.md). Couvre aussi un crash/
+    # redeploy/absence ponctuelle du worker dédié.
     - cron: '*/5 * * * *'
   workflow_dispatch:
 

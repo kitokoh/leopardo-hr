@@ -79,7 +79,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          lfs: false
 
       - name: Setup backend (PHP + Composer + multi-tenant DB)
         uses: ./.github/actions/setup-backend-db
@@ -147,7 +147,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          lfs: false
 
       # Issue #5227 — zéro chaîne hardcodée utilisateur dans le module
       # Accounting (messages API via __('accounting.*')) + parité des clés ×4
