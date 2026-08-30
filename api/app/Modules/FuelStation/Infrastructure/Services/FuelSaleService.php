@@ -24,6 +24,9 @@ use Illuminate\Support\Facades\Schema;
  */
 final class FuelSaleService
 {
+    public function __construct(
+        private readonly FuelAccountingContractPublisher $contract,
+    ) {}
     /**
      * @param  array<string, mixed>  $data
      */

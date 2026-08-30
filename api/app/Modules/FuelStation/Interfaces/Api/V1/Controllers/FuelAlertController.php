@@ -67,6 +67,7 @@ class FuelAlertController extends Controller
             abort(422);
         }
 
+        /** @var list<array{event_type: string, channel: string, enabled: bool, station_id?: int|null}> $preferences */
         $count = $this->service->upsertPreferences($actor->company_id, $preferences);
 
         return response()->json(['data' => ['updated' => $count]]);

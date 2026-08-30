@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\FuelStation\Domain\Models\FuelAlert;
 use App\Modules\FuelStation\Domain\Models\FuelNotificationPreference;
 use App\Core\Notifications\Contracts\InAppNotifier;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -76,7 +77,13 @@ final class FuelAlertService
             return ['alert' => $alert, 'created' => false, 'notified' => 0];
         }
 
-        $notified = $this->notifyManagers($companyId, $stationId, $eventType, $severity, $payload);
+        try {
+            $notified = $this->notifyManagers($companyId, $stationId, $eventType, $severity, $payload);
+        } catch (Throwable) {
+            // Best-effort : une notification en échec ne casse jamais le flux
+            // métier qui a créé l'alerte.
+            $notified = 0;
+        }
 
         return ['alert' => $alert, 'created' => true, 'notified' => $notified];
     }

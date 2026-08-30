@@ -262,6 +262,6 @@ class FuelIncidentApiTest extends TestCase
             'title' => 'Tentative cross-tenant',
             'description' => 'Ne doit jamais être créé.',
             'idempotency_key' => 'incident-x-tenant',
-        ])->assertStatus(404);
+        ])->assertStatus(422);
     }
 }

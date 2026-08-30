@@ -160,7 +160,10 @@ class FuelStockController extends Controller
         $station = $this->stationInTenant($request->integer('station_id'), $actor);
         $reconciliation = $this->service->runReconciliation($actor, $station, $request->validated());
 
-        return response()->json(['data' => $this->reconciliationPayload($reconciliation)]);
+        return response()->json(
+            ['data' => $this->reconciliationPayload($reconciliation)],
+            $reconciliation->wasRecentlyCreated ? 201 : 200,
+        );
     }
 
     public function reconciliations(Request $request): JsonResponse

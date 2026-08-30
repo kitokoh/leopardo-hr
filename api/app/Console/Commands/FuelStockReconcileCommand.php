@@ -79,6 +79,9 @@ class FuelStockReconcileCommand extends Command
                                     'period_start' => $date,
                                     'period_end' => $date,
                                     'idempotency_key' => "scheduled:{$date}:{$station->id}:{$product->code}",
+                                    // Période passée : pas de repli sur les niveaux
+                                    // de cuves du jour (FUEL-009/C3).
+                                    'fallback_to_tank_levels' => false,
                                 ],
                             );
                             ++$ran;

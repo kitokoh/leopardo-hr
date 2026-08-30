@@ -205,9 +205,9 @@ class FuelStockApiTest extends TestCase
             ->assertJsonPath('data.status', 'completed')
             ->assertJsonPath('data.variance_minor', 0);
 
-        // Rejeu : même rapport, aucune seconde ligne.
+        // Rejeu : même rapport (200), aucune seconde ligne.
         $this->postJson('/api/v1/fuel-station/reconciliations', $payload)
-            ->assertStatus(201)
+            ->assertStatus(200)
             ->assertJsonPath('data.id', fn ($id): bool => is_int($id));
 
         $this->assertDatabaseCount('fuel_stock_reconciliations', 1);
@@ -276,13 +276,15 @@ class FuelStockApiTest extends TestCase
         Sanctum::actingAs($this->manager($this->companyA));
         $stationB = $this->station($this->companyB, 'ST-99');
 
+        // Validation tenant-scoped des FormRequests → 422 (station d'un autre
+        // tenant rejetée AVANT tout traitement).
         $this->postJson('/api/v1/fuel-station/deliveries', [
             'station_id' => $stationB->id,
             'product_type' => 'essence',
             'quantity_minor' => 100,
             'delivered_at' => '2026-08-29T08:00:00Z',
             'idempotency_key' => 'deliv-x-tenant',
-        ])->assertStatus(404);
+        ])->assertStatus(422);
 
         $this->postJson('/api/v1/fuel-station/reconciliations', [
             'station_id' => $stationB->id,
@@ -290,6 +292,6 @@ class FuelStockApiTest extends TestCase
             'period_start' => '2026-08-01',
             'period_end' => '2026-08-31',
             'idempotency_key' => 'recon-x-tenant',
-        ])->assertStatus(404);
+        ])->assertStatus(422);
     }
 }

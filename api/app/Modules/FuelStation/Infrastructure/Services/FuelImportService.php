@@ -135,7 +135,7 @@ final class FuelImportService
             throw new \RuntimeException('Impossible d\'ouvrir le fichier CSV.');
         }
 
-        $header = fgetcsv($handle, 0, ',', '"', '\\');
+        $header = fgetcsv($handle, 0, ',', '"');
 
         if ($header === false || $header === [null]) {
             fclose($handle);
@@ -147,7 +147,7 @@ final class FuelImportService
 
         $rows = [];
 
-        while (($line = fgetcsv($handle, 0, ',', '"', '\\')) !== false) {
+        while (($line = fgetcsv($handle, 0, ',', '"')) !== false) {
             if ($line === [null] || trim(implode('', $line)) === '') {
                 continue;
             }
@@ -177,12 +177,12 @@ final class FuelImportService
 
         switch ($importType) {
             case FuelImport::TYPE_PRODUCTS:
-                if ($row['code'] ?? '' === '') {
+                if (($row['code'] ?? '') === '') {
                     $errors[] = 'code requis';
                 } elseif (FuelProduct::query()->where('company_id', $actor->company_id)->where('code', $row['code'])->exists()) {
                     $errors[] = "code '{$row['code']}' déjà existant";
                 }
-                if ($row['name'] ?? '' === '') {
+                if (($row['name'] ?? '') === '') {
                     $errors[] = 'name requis';
                 }
                 if (! in_array($row['status'] ?? '', FuelProduct::STATUSES, true)) {
@@ -199,14 +199,14 @@ final class FuelImportService
                 if (! in_array($row['equipment_type'] ?? '', ['pump', 'tank', 'meter'], true)) {
                     $errors[] = 'equipment_type invalide (pump|tank|meter)';
                 }
-                if ($row['code'] ?? '' === '') {
+                if (($row['code'] ?? '') === '') {
                     $errors[] = 'code requis';
                 }
 
                 break;
 
             case FuelImport::TYPE_SHIFTS:
-                if ($row['name'] ?? '' === '') {
+                if (($row['name'] ?? '') === '') {
                     $errors[] = 'name requis';
                 }
                 if ($row['start_time'] ?? '' === '' || $row['end_time'] ?? '' === '') {
@@ -223,10 +223,10 @@ final class FuelImportService
                 if ($meter === null) {
                     $errors[] = 'station/pump/meter introuvables dans le tenant';
                 }
-                if (! ctype_digit($row['reading_value_minor'] ?? '')) {
+                if (! ctype_digit(($row['reading_value_minor'] ?? ''))) {
                     $errors[] = 'reading_value_minor entier requis';
                 }
-                if ($row['captured_at_utc'] ?? '' === '') {
+                if (($row['captured_at_utc'] ?? '') === '') {
                     $errors[] = 'captured_at_utc requis';
                 }
 

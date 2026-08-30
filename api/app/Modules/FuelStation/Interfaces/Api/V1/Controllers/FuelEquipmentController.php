@@ -209,8 +209,11 @@ class FuelEquipmentController extends Controller
     }
 
     /**
-     * @param  list<mixed>  $items
-     * @param  callable(mixed): array<string, mixed>  $mapper
+     * @template T of object
+     *
+     * @param  list<T>  $items
+     * @param  \Illuminate\Pagination\LengthAwarePaginator<T>  $paginator
+     * @param  callable(T): array<string, mixed>  $mapper
      */
     private function paginated(array $items, \Illuminate\Pagination\LengthAwarePaginator $paginator, callable $mapper): JsonResponse
     {

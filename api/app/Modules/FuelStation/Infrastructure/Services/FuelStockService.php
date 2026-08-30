@@ -204,7 +204,16 @@ final class FuelStockService
         $metered = $this->meteredDelta($station, $data['product_type'], $periodStart, $periodEnd);
 
         $theoreticalClose = $opening + $delivered - $sold;
-        $measuredClose = $data['measured_close_minor'] ?? $this->measuredClose($station, $data['product_type']);
+        $measuredClose = $data['measured_close_minor'] ?? null;
+
+        // Jauge de clôture : fournie explicitement, ou repli sur les niveaux
+        // de cuves courants UNIQUEMENT pour les rapprochements du jour (une
+        // exécution planifiée pour une période passée n'a pas de jauge du
+        // jour → `pending_measurement`, jamais d'écart fantôme).
+        if ($measuredClose === null && ($data['fallback_to_tank_levels'] ?? true)) {
+            $measuredClose = $this->measuredClose($station, $data['product_type']);
+        }
+
         $variance = $measuredClose !== null ? $measuredClose - $theoreticalClose : 0;
 
         $tolerance = $data['tolerance_minor'] ?? max(

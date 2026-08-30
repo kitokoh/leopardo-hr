@@ -97,7 +97,7 @@ class FuelIncidentController extends Controller
 
         $this->authorize('view', $incident);
 
-        $incident->load(['attachments', 'tasks']);
+        $incident->loadCount('attachments')->load(['attachments', 'tasks']);
 
         return response()->json(['data' => $this->incidentPayload($incident)]);
     }

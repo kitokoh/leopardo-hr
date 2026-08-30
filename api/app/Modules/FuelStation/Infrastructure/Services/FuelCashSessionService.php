@@ -25,6 +25,9 @@ use App\Modules\FuelStation\Domain\Models\FuelCashSessionMovement;
  */
 final class FuelCashSessionService
 {
+    public function __construct(
+        private readonly FuelAccountingContractPublisher $contract,
+    ) {}
     /**
      * @param  array<string, mixed>  $data
      */

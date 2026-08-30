@@ -52,6 +52,16 @@ class FuelReportExport extends Model
         self::STATUS_FAILED,
     ];
 
+    /** Types de rapports exportables (miroir du CHECK de la migration 5811). */
+    public const TYPES = [
+        'daily_volumes',
+        'shift_summary',
+        'sales_summary',
+        'stock_status',
+        'variance_summary',
+        'referential',
+    ];
+
     /** Durée de validité d'un export généré (lien de téléchargement borné). */
     public const EXPORT_TTL_HOURS = 24;
 

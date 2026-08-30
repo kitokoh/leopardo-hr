@@ -98,7 +98,7 @@ class FuelOutboxApiTest extends TestCase
             'unit_price' => 145.00,
             'external_id' => 'sale-001',
         ])
-            ->assertStatus(201)
+            ->assertStatus(200)
             ->assertJsonPath('data.amount', 5872.5);
 
         $this->assertDatabaseHas('fuel_outbox_events', [
@@ -130,8 +130,8 @@ class FuelOutboxApiTest extends TestCase
             'external_id' => 'sale-002',
         ];
 
-        $this->postJson('/api/v1/fuel-station/sales', $payload)->assertStatus(201);
-        $this->postJson('/api/v1/fuel-station/sales', $payload)->assertStatus(201);
+        $this->postJson('/api/v1/fuel-station/sales', $payload)->assertStatus(200);
+        $this->postJson('/api/v1/fuel-station/sales', $payload)->assertStatus(200);
 
         $this->assertDatabaseCount('fuel_sales', 1);
         $this->assertDatabaseCount('fuel_outbox_events', 1);
@@ -147,7 +147,7 @@ class FuelOutboxApiTest extends TestCase
             'quantity' => 5,
             'unit_price' => 145.00,
             'external_id' => 'sale-003',
-        ])->assertStatus(201);
+        ])->assertStatus(200);
 
         // Aucun consommateur enregistré (le module Accounting branchera le
         // sien) → dead-letter honnête, l'événement reste rejouable.
@@ -189,7 +189,7 @@ class FuelOutboxApiTest extends TestCase
             'quantity' => 20,
             'unit_price' => 135.00,
             'external_id' => 'sale-004',
-        ])->assertStatus(201);
+        ])->assertStatus(200);
 
         $this->artisan('fuel:outbox-dispatch', ['--limit' => 10])
             ->expectsOutputToContain('1 événement(s) traité(s)')

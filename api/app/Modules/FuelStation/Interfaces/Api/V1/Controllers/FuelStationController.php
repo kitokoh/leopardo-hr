@@ -92,7 +92,7 @@ class FuelStationController extends Controller
 
         $this->authorize('view', $station);
 
-        return response()->json(['data' => $this->payload($station->load('sites'))]);
+        return response()->json(['data' => $this->payload($station->loadCount('sites')->load('sites'))]);
     }
 
     public function update(SaveFuelStationRequest $request, FuelStation $station): JsonResponse
