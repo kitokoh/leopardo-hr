@@ -15,12 +15,12 @@ use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use Illuminate\Support\Facades\DB;
 
 /**
- * TRAVEL-315 (#6045) — Remboursement d'une réservation confirmée.
+ * TRAVEL-315 (#6045) — Remboursement d'une reservation confirmee.
  *
- * confirmed → refunded : les sièges sont libérés, le paiement passe
- * `refunded`, événements outbox `travel.booking.cancelled.v1` +
- * `travel.payment.refunded.v1` après commit. Réservé `travel.manage`
- * (Policy) ; motif et audit obligatoires. Une réservation déjà remboursée
+ * confirmed → refunded : les sieges sont liberes, le paiement passe
+ * `refunded`, evenements outbox `travel.booking.cancelled.v1` +
+ * `travel.payment.refunded.v1` apres commit. Reserve `travel.manage`
+ * (Policy) ; motif et audit obligatoires. Une reservation deja remboursee
  * est idempotente.
  */
 final class RefundBookingAction
@@ -34,7 +34,7 @@ final class RefundBookingAction
         }
 
         if ($booking->status !== BookingStatus::CONFIRMED) {
-            abort(422, 'Seule une réservation confirmée peut être remboursée.');
+            abort(422, 'Seule une reservation confirmee peut etre remboursee.');
         }
 
         DB::transaction(function () use ($booking): void {
@@ -49,7 +49,7 @@ final class RefundBookingAction
                 ->where('booking_id', $booking->id)
                 ->update(['status' => SeatStatus::FREE, 'reserved_until' => null]);
 
-            // Trace du paiement remboursé (audit financier).
+            // Trace du paiement rembourse (audit financier).
             TravelPayment::query()
                 ->where('booking_id', $booking->id)
                 ->where('status', PaymentStatus::CONFIRMED)

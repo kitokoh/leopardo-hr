@@ -11,10 +11,10 @@ use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use Illuminate\Support\Facades\DB;
 
 /**
- * TRAVEL-320 (#6050) — Annulation d'une réservation de location.
+ * TRAVEL-320 (#6050) — Annulation d'une reservation de location.
  *
- * pending|confirmed → cancelled, événement outbox
- * `travel.rental.booking.cancelled.v1` après commit. Idempotent.
+ * pending|confirmed → cancelled, evenement outbox
+ * `travel.rental.booking.cancelled.v1` apres commit. Idempotent.
  */
 final class CancelRentalBookingAction
 {
@@ -27,7 +27,7 @@ final class CancelRentalBookingAction
         }
 
         if (! in_array($booking->status, [RentalBookingStatus::PENDING, RentalBookingStatus::CONFIRMED], true)) {
-            abort(422, 'Cette réservation de location ne peut plus être annulée.');
+            abort(422, 'Cette reservation de location ne peut plus etre annulee.');
         }
 
         DB::transaction(function () use ($booking): void {

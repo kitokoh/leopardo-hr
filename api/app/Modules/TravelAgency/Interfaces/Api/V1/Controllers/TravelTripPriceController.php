@@ -19,8 +19,8 @@ use Illuminate\Support\Facades\DB;
 /**
  * TRAVEL-309 (#6039) — Tarifs par classe d'un trajet (sous-ressource).
  *
- * Même schéma cross-tenant : 404 sûr sur le trajet ET sur le tarif ; les
- * montants restent en unités mineures entières.
+ * Meme schema cross-tenant : 404 sur sur le trajet ET sur le tarif ; les
+ * montants restent en unites mineures entieres.
  */
 class TravelTripPriceController extends Controller
 {
@@ -51,17 +51,17 @@ class TravelTripPriceController extends Controller
             abort(403);
         }
 
-        // Un trajet publié est verrouillé (invariant TRAVEL-310).
+        // Un trajet publie est verrouille (invariant TRAVEL-310).
         if ($travelTrip->status->value === 'published') {
-            abort(422, 'Un trajet publié ne peut plus voir ses tarifs modifiés.');
+            abort(422, 'Un trajet publie ne peut plus voir ses tarifs modifies.');
         }
 
         try {
             $price = DB::transaction(fn (): TravelTripPrice => $travelTrip->prices()->create($request->validated())->refresh());
         } catch (QueryException $e) {
-            // Unicité (trip, classe) violée → 409 propre, pas de 500.
+            // Unicite (trip, classe) violee → 409 propre, pas de 500.
             if (str_contains($e->getMessage(), 'travel_trip_prices_company_trip_class_unique')) {
-                abort(409, 'Un tarif existe déjà pour cette classe sur ce trajet.');
+                abort(409, 'Un tarif existe deja pour cette classe sur ce trajet.');
             }
 
             throw $e;
@@ -109,14 +109,14 @@ class TravelTripPriceController extends Controller
         }
 
         if ($travelTrip->status->value === 'published') {
-            abort(422, 'Un trajet publié ne peut plus voir ses tarifs modifiés.');
+            abort(422, 'Un trajet publie ne peut plus voir ses tarifs modifies.');
         }
 
         try {
             $travelTripPrice->update($request->validated());
         } catch (QueryException $e) {
             if (str_contains($e->getMessage(), 'travel_trip_prices_company_trip_class_unique')) {
-                abort(409, 'Un tarif existe déjà pour cette classe sur ce trajet.');
+                abort(409, 'Un tarif existe deja pour cette classe sur ce trajet.');
             }
 
             throw $e;
