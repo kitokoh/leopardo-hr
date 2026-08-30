@@ -42,6 +42,8 @@ return new class extends Migration
                 $table->unsignedInteger('validated_by')->nullable();
                 $table->timestamp('published_at')->nullable();
                 $table->timestamps();
+                // UNIQUE(id, company_id) requis par les FK composites anti cross-tenant.
+                $table->unique(['id', 'company_id'], 'edu_report_cards_id_company_unique');
 
                 $table->unique(
                     ['company_id', 'student_id', 'academic_year_id', 'period'],
