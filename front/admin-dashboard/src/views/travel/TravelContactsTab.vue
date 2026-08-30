@@ -83,9 +83,6 @@
         >
           <div>
             <p class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ ch.label }}</p>
-            <p v-if="ch.givenAt" class="text-xs text-slate-400">
-              {{ ch.givenAt }}
-            </p>
           </div>
           <button
             type="button"
@@ -200,12 +197,11 @@ const columns = computed(() => [
 function consentChips(row) {
   return CHANNELS.map((ch) => {
     const given = Boolean(row[`${ch.key}_consent_given`])
-    const at = row[`${ch.key}_consent_at`]
     return {
       channel: ch.key,
       given,
       label: t(ch.labelKey, ch.key),
-      title: given && at ? `${t(ch.labelKey, ch.key)} — ${at}` : t(ch.labelKey, ch.key),
+      title: t(ch.labelKey, ch.key),
     }
   })
 }
@@ -214,7 +210,7 @@ async function load() {
   loading.value = true
   listError.value = ''
   try {
-    const res = await api.get('/travel/customer-contacts', { params: { per_page: 100 }, _skipAuthRedirect: true })
+    const res = await api.get('/travel/contacts', { params: { per_page: 100 }, _skipAuthRedirect: true })
     contacts.value = res.data?.data || []
   } catch (err) {
     listError.value = err.response?.data?.message || t('travel.error.loadFailed', 'Impossible de charger les données.')
@@ -238,10 +234,15 @@ async function toggleConsent(channel) {
   consentSaving.value = true
   consentError.value = ''
   try {
-    const given = !targetContact.value[`${channel.key}_consent_given`]
-    const res = await api.patch(`/travel/customer-contacts/${targetContact.value.id}/consent`, { channel: channel.key, given }, { _skipAuthRedirect: true })
-    const updated = res.data?.data || {}
-    targetContact.value = { ...targetContact.value, [`${channel.key}_consent_given`]: updated.given, [`${channel.key}_consent_at`]: updated.at ?? targetContact.value[`${channel.key}_consent_at`] }
+    // Endpoint réel : POST /travel/contacts/{id}/consent (bulk par canal).
+    const next = { ...targetContact.value }
+    next[`${channel.key}_consent_given`] = !next[`${channel.key}_consent_given`]
+    await api.post(`/travel/contacts/${targetContact.value.id}/consent`, {
+      email_consent: next.email_consent_given,
+      sms_consent: next.sms_consent_given,
+      whatsapp_consent: next.whatsapp_consent_given,
+    }, { _skipAuthRedirect: true })
+    targetContact.value = next
     toast.success(t('travel.toast.saved', 'Enregistré.'))
   } catch (err) {
     consentError.value = err.response?.data?.message || t('travel.error.saveFailed', "Échec de l'enregistrement.")
@@ -269,7 +270,7 @@ async function sendNotify() {
   notifyError.value = ''
   notifyErrors.value = {}
   try {
-    const res = await api.post(`/travel/customer-contacts/${targetContact.value.id}/notify`, { message: notifyMessage.value, channels: notifyChannels.value }, { _skipAuthRedirect: true })
+    const res = await api.post(`/travel/contacts/${targetContact.value.id}/notify`, { message: notifyMessage.value, channels: notifyChannels.value }, { _skipAuthRedirect: true })
     const channels = res.data?.data?.channels || notifyChannels.value
     toast.success(t('travel.contacts.notifySent', 'Notification envoyée ({channels}).', { channels: channels.join(', ') }))
     notifyOpen.value = false

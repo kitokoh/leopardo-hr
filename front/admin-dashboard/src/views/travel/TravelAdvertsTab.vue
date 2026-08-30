@@ -402,7 +402,7 @@ async function load() {
   loading.value = true
   listError.value = ''
   try {
-    const res = await api.get('/travel/adverts', { params: { scope: 'admin', per_page: 100 }, _skipAuthRedirect: true })
+    const res = await api.get('/travel/adverts', { params: { per_page: 100 }, _skipAuthRedirect: true })
     adverts.value = res.data?.data || []
   } catch (err) {
     listError.value = err.response?.data?.message || t('travel.error.loadFailed', 'Impossible de charger les données.')

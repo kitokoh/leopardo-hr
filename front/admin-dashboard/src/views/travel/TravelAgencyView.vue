@@ -115,6 +115,7 @@ const tabs = [
   { key: 'quiz', label: t('travel.tab.quiz', 'Quiz'), component: TravelQuizTab },
   { key: 'adverts', label: t('travel.tab.adverts', 'Annonces'), component: TravelAdvertsTab },
   { key: 'sites', label: t('travel.tab.sites', 'Sites touristiques'), component: TravelTouristSitesTab },
+  { key: 'contacts', label: t('travel.tab.contacts', 'Contacts'), component: TravelContactsTab }
 ]
 
 const activeComponent = computed(() => tabs.find((tab) => tab.key === activeTab.value)?.component)
