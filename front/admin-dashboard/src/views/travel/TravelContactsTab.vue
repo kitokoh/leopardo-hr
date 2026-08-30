@@ -26,8 +26,8 @@
       :error="listError"
       :search-keys="['first_name', 'last_name', 'email', 'phone']"
       :search-placeholder="$t('travel.contacts.searchPlaceholder', 'Rechercher un contact…')"
-      :default-sort="'created_at'"
-      :default-sort-dir="'desc'"
+      :default-sort="defaultSortKey"
+      :default-sort-dir="defaultSortDir"
       :caption="$t('travel.contacts.title', 'Contacts voyageurs')"
     >
       <template #cell-name="{ row }">
@@ -39,7 +39,7 @@
             v-for="channel in consentChannels"
             :key="channel.key"
             class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
-            :class="row[channel.given] ? channel.onClass : channel.offClass"
+            :class="consentBadgeClass(row, channel)"
           >
             {{ channel.label }}
           </span>
@@ -94,10 +94,11 @@
               {{ formatDate(consentsDraft[channel.at]) }}
             </span>
             <input
-              v-model="consentsDraft[channel.given]"
+              :checked="consentChecked(channel)"
               class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
               type="checkbox"
               :aria-label="channel.label"
+              @change="toggleConsent(channel, $event)"
             />
           </span>
         </label>
@@ -188,6 +189,9 @@ const contacts = ref([])
 const loading = ref(false)
 const listError = ref('')
 
+const defaultSortKey = 'created_at'
+const defaultSortDir = 'desc' 
+
 const consentsOpen = ref(false)
 const consentsTarget = ref(null)
 const consentsDraft = ref({})
@@ -239,6 +243,18 @@ const columns = computed(() => [
 function fullName(row) {
   const parts = [row.first_name, row.last_name].filter(Boolean)
   return parts.length > 0 ? parts.join(' ') : (row.email || `#${row.id}`)
+}
+
+function consentBadgeClass(row, channel) {
+  return row[channel.given] ? channel.onClass : channel.offClass
+}
+
+function consentChecked(channel) {
+  return Boolean(consentsDraft.value[channel.given])
+}
+
+function toggleConsent(channel, event) {
+  consentsDraft.value[channel.given] = event.target.checked
 }
 
 function formatDate(value) {

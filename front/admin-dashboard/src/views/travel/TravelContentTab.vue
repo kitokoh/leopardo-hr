@@ -88,11 +88,12 @@
               <div v-for="(opt, idx) in questionDraft.options" :key="idx" class="flex items-center gap-2">
                 <span class="w-6 shrink-0 text-xs font-semibold text-slate-400">{{ idx }}</span>
                 <input
-                  v-model="questionDraft.options[idx]"
+                  :value="optionValue(idx)"
                   class="form-input"
                   type="text"
                   maxlength="200"
                   required
+                  @input="setOption(idx, $event)"
                 />
                 <button
                   class="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
@@ -169,8 +170,8 @@
           :rows="results"
           :loading="resultsLoading"
           :error="resultsError"
-          :default-sort="'score'"
-          :default-sort-dir="'desc'"
+          :default-sort="scoreSortKey"
+          :default-sort-dir="descSortDir"
           :caption="$t('travel.quiz.resultsTitle', 'Résultats')"
         />
       </TravelModal>
@@ -226,8 +227,8 @@
           :error="advertsError"
           :search-keys="['title', 'status']"
           :search-placeholder="$t('travel.advert.searchPlaceholder', 'Rechercher une annonce…')"
-          :default-sort="'id'"
-          :default-sort-dir="'desc'"
+          :default-sort="idSortKey"
+          :default-sort-dir="descSortDir"
           :caption="$t('travel.advert.advertsTitle', 'Annonces')"
         >
           <template #cell-status="{ value }">
@@ -374,6 +375,10 @@ import { useLocaleStore } from '@/stores/locale.js'
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 const toast = useToast()
+
+const scoreSortKey = 'score'
+const idSortKey = 'id'
+const descSortDir = 'desc' 
 
 /* ── lookups partagés ──────────────────────────────────────── */
 const cities = ref([])
@@ -525,6 +530,14 @@ function closeQuestions() {
 function addOption() {
   if (questionDraft.value.options.length >= 10) return
   questionDraft.value.options.push('')
+}
+
+function optionValue(idx) {
+  return questionDraft.value.options[idx]
+}
+
+function setOption(idx, event) {
+  questionDraft.value.options[idx] = event.target.value
 }
 
 function removeOption(idx) {
