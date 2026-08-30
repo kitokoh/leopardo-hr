@@ -42,6 +42,6 @@ class TravelOffice extends Model
      */
     public function city(): BelongsTo
     {
-        return $this->belongsTo(TravelCity::class);
+        return $this->belongsTo(TravelCity::class, 'city_id');
     }
 }

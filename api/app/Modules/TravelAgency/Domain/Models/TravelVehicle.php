@@ -44,6 +44,6 @@ class TravelVehicle extends Model
      */
     public function carrier(): BelongsTo
     {
-        return $this->belongsTo(TravelCarrier::class);
+        return $this->belongsTo(TravelCarrier::class, 'carrier_id');
     }
 }
