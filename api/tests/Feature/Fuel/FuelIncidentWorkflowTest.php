@@ -87,7 +87,9 @@ class FuelIncidentWorkflowTest extends TestCase
             ->get();
 
         self::assertCount(2, $audits);
-        self::assertSame(['fuel_incident.assigned', 'fuel_incident.open_to_resolved'], $audits->pluck('action')->all());
+        self::assertSame(['fuel_incident.assigned', 'fuel_incident.transition'], $audits->pluck('action')->all());
+        self::assertSame('open', $audits[1]->metadata['from']);
+        self::assertSame('resolved', $audits[1]->metadata['to']);
     }
 
     public function test_invalid_transition_is_rejected(): void
@@ -151,7 +153,7 @@ class FuelIncidentWorkflowTest extends TestCase
             ->assertJsonPath('data.completed_by', $operator->id);
 
         self::assertSame(1, AuditLog::query()
-            ->where('action', 'fuel_maintenance_task.completed')
+            ->where('action', 'fuel_maint_task.completed')
             ->where('auditable_id', $task->id)
             ->count());
     }

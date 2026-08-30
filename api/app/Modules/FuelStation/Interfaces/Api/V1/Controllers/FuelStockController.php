@@ -76,7 +76,7 @@ class FuelStockController extends Controller
         return response()->json(['data' => $movement], 201);
     }
 
-    public function reconcile(ReconcileFuelStockRequest $request, int $station): JsonResponse
+    public function reconcile(ReconcileFuelStockRequest $request, string $station): JsonResponse
     {
         $this->assertSolutionActive();
         $this->authorize('reconcile', FuelStockReconciliation::class);
@@ -86,7 +86,7 @@ class FuelStockController extends Controller
 
         $report = $this->stocks->reconcile(
             $actor->company_id,
-            $station,
+            (int) $station,
             $request->validated()['period'],
             $actor->id,
         );

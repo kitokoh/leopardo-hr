@@ -13,17 +13,14 @@ use App\Modules\FuelStation\Domain\Models\FuelProduct;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelEquipmentRequest;
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelEquipmentRequest;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
  * #5805 — CRUD équipements FuelStation : pompes, cuves, produits (FUEL-011).
  *
- * Pompes/cuves sont scopées par station (appartenance vérifiée) ; produits
- * par tenant. Policies deny-by-default via FuelEquipmentPolicy.
+ * Pompes/cuves scopées par station (appartenance vérifiée, 404 cross-tenant) ;
+ * produits par tenant. Policies deny-by-default via FuelEquipmentPolicy.
  */
 class FuelEquipmentController extends Controller
 {
@@ -31,37 +28,83 @@ class FuelEquipmentController extends Controller
 
     public function pumps(Request $request, FuelStation $station): JsonResponse
     {
+        $this->assertSolutionActive();
         $this->guardTenant($station, $request->user());
 
-        return $this->index($request, FuelPump::class, ['code', 'created_at'], ['status'], fn (Builder $q) => $q->where('station_id', $station->id));
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->authorize('viewAny', FuelPump::class);
+
+        $query = FuelPump::query()
+            ->where('company_id', $actor->company_id)
+            ->where('station_id', $station->id);
+
+        $pumps = $this->applyFuelIndexQuery($query, $request, ['code', 'created_at'], ['status']);
+
+        return response()->json(['data' => $pumps->through(fn (FuelPump $pump): array => $this->pumpPayload($pump))]);
     }
 
-    public function storePump(Request $request, FuelStation $station): JsonResponse
+    public function storePump(StoreFuelEquipmentRequest $request, FuelStation $station): JsonResponse
     {
+        $this->assertSolutionActive();
         $this->guardTenant($station, $request->user());
 
-        return $this->store($request, FuelPump::class, $station, ['company_id' => $station->company_id, 'station_id' => $station->id]);
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->authorize('create', FuelPump::class);
+
+        /** @var FuelPump $pump */
+        $pump = FuelPump::query()->create([
+            'company_id' => $actor->company_id,
+            'station_id' => $station->id,
+            'code' => $request->validated()['code'],
+            'status' => $request->validated()['status'] ?? FuelPump::STATUS_ACTIVE,
+        ]);
+
+        return response()->json(['data' => $this->pumpPayload($pump)], 201);
     }
 
     public function tanks(Request $request, FuelStation $station): JsonResponse
     {
+        $this->assertSolutionActive();
         $this->guardTenant($station, $request->user());
 
-        return $this->index($request, FuelTank::class, ['code', 'created_at'], ['status', 'product_type'], fn (Builder $q) => $q->where('station_id', $station->id));
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->authorize('viewAny', FuelTank::class);
+
+        $query = FuelTank::query()
+            ->where('company_id', $actor->company_id)
+            ->where('station_id', $station->id);
+
+        $tanks = $this->applyFuelIndexQuery($query, $request, ['code', 'created_at'], ['status', 'product_type']);
+
+        return response()->json(['data' => $tanks->through(fn (FuelTank $tank): array => $this->tankPayload($tank))]);
     }
 
-    public function storeTank(Request $request, FuelStation $station): JsonResponse
+    public function storeTank(StoreFuelEquipmentRequest $request, FuelStation $station): JsonResponse
     {
+        $this->assertSolutionActive();
         $this->guardTenant($station, $request->user());
 
-        return $this->store($request, FuelTank::class, $station, ['company_id' => $station->company_id, 'station_id' => $station->id]);
-    }
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->authorize('create', FuelTank::class);
 
-    private function guardTenant(FuelStation $station, mixed $actor): void
-    {
-        if ($actor instanceof Employee && (string) $station->company_id !== (string) $actor->company_id) {
-            abort(404);
-        }
+        $validated = $request->validated();
+
+        /** @var FuelTank $tank */
+        $tank = FuelTank::query()->create([
+            'company_id' => $actor->company_id,
+            'station_id' => $station->id,
+            'code' => $validated['code'],
+            'product_type' => $validated['product_type'] ?? null,
+            'capacity_minor' => $validated['capacity_minor'] ?? 0,
+            'current_level_minor' => $validated['current_level_minor'] ?? 0,
+            'status' => $validated['status'] ?? FuelTank::STATUS_ACTIVE,
+        ]);
+
+        return response()->json(['data' => $this->tankPayload($tank)], 201);
     }
 
     public function products(Request $request): JsonResponse
@@ -76,7 +119,7 @@ class FuelEquipmentController extends Controller
 
         $products = $this->applyFuelIndexQuery($query, $request, ['code', 'name', 'created_at'], ['status']);
 
-        return response()->json(['data' => $products->through(fn (FuelProduct $p): array => $this->productPayload($p))]);
+        return response()->json(['data' => $products->through(fn (FuelProduct $product): array => $this->productPayload($product))]);
     }
 
     public function storeProduct(StoreFuelEquipmentRequest $request): JsonResponse
@@ -87,63 +130,49 @@ class FuelEquipmentController extends Controller
         $actor = $request->user();
         $this->authorize('create', FuelProduct::class);
 
+        $validated = $request->validated();
+
         /** @var FuelProduct $product */
-        $product = FuelProduct::query()->create($request->validated() + ['company_id' => $actor->company_id]);
+        $product = FuelProduct::query()->create([
+            'company_id' => $actor->company_id,
+            'code' => $validated['code'],
+            'name' => $validated['name'] ?? $validated['code'],
+            'unit_code' => $validated['unit_code'] ?? 'l',
+            'status' => $validated['status'] ?? FuelProduct::STATUS_ACTIVE,
+        ]);
 
         return response()->json(['data' => $this->productPayload($product)], 201);
     }
 
     /**
-     * Index générique tenant-scoped pour un modèle équipement.
-     *
-     * @param  class-string<Model>  $modelClass
-     * @param  list<string>  $sortable
-     * @param  list<string>  $filterable
+     * @return array<string, mixed>
      */
-    private function index(Request $request, string $modelClass, array $sortable, array $filterable, ?callable $scope = null): JsonResponse
+    private function pumpPayload(FuelPump $pump): array
     {
-        $this->assertSolutionActive();
-
-        /** @var Employee $actor */
-        $actor = $request->user();
-        $this->authorize('viewAny', $modelClass);
-
-        /** @var Builder<Model> $query */
-        $query = $modelClass::query()->where('company_id', $actor->company_id);
-
-        if ($scope !== null) {
-            $scope($query);
-        }
-
-        $rows = $this->applyFuelIndexQuery($query, $request, $sortable, $filterable);
-
-        return response()->json(['data' => $rows->through(fn (Model $row): array => $this->equipmentPayload($row))]);
-    }
-
-    /**
-     * @param  array<string, mixed>  $forced
-     */
-    private function store(Request $request, string $modelClass, FuelStation $station, array $forced): JsonResponse
-    {
-        $this->assertSolutionActive();
-        $this->authorize('create', $modelClass);
-
-        /** @var Model $row */
-        $row = $modelClass::query()->create($request->validated() + $forced);
-
-        return response()->json(['data' => $this->equipmentPayload($row)], 201);
+        return [
+            'id' => $pump->id,
+            'station_id' => $pump->station_id,
+            'code' => $pump->code,
+            'status' => $pump->status,
+            'created_at' => optional($pump->created_at)->toIso8601String(),
+        ];
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function equipmentPayload(Model $row): array
+    private function tankPayload(FuelTank $tank): array
     {
-        $array = $row->toArray();
-
-        unset($array['company_id'], $array['updated_at']);
-
-        return $array;
+        return [
+            'id' => $tank->id,
+            'station_id' => $tank->station_id,
+            'code' => $tank->code,
+            'product_type' => $tank->product_type,
+            'capacity_minor' => $tank->capacity_minor,
+            'current_level_minor' => $tank->current_level_minor,
+            'status' => $tank->status,
+            'created_at' => optional($tank->created_at)->toIso8601String(),
+        ];
     }
 
     /**
@@ -159,6 +188,13 @@ class FuelEquipmentController extends Controller
             'status' => $product->status,
             'created_at' => optional($product->created_at)->toIso8601String(),
         ];
+    }
+
+    private function guardTenant(FuelStation $station, mixed $actor): void
+    {
+        if ($actor instanceof Employee && (string) $station->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
     }
 
     private function assertSolutionActive(): void

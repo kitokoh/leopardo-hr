@@ -67,12 +67,12 @@ final class FuelIncidentService
             AuditLog::create([
                 'company_id' => $incident->company_id,
                 'user_id' => $actor->id,
-                'action' => 'fuel_incident.'.$from.'_to_'.$to->value,
+                'action' => 'fuel_incident.transition',
                 'auditable_type' => FuelIncident::class,
                 'auditable_id' => $incident->id,
                 'old_values' => ['status' => $from],
                 'new_values' => ['status' => $to->value],
-                'metadata' => ['transition' => $from.'→'.$to->value],
+                'metadata' => ['from' => $from, 'to' => $to->value],
             ]);
         });
 
@@ -129,7 +129,7 @@ final class FuelIncidentService
             AuditLog::create([
                 'company_id' => $task->company_id,
                 'user_id' => $actor->id,
-                'action' => 'fuel_maintenance_task.completed',
+                'action' => 'fuel_maint_task.completed',
                 'auditable_type' => FuelMaintenanceTask::class,
                 'auditable_id' => $task->id,
                 'old_values' => ['status' => $task->getOriginal('status')],
