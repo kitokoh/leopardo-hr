@@ -111,7 +111,9 @@ class ConversationExportTest extends TestCase
     {
         [$company, $employee] = $this->aiFixture();
         $otherCompany = Company::factory()->create();
+        assert($otherCompany instanceof Company);
         $otherUser = Employee::factory()->create(['company_id' => $company->id]);
+        assert($otherUser instanceof Employee);
         assert($otherUser instanceof Employee);
         $foreignConversation = $this->conversation($otherCompany->id, $employee->id);
 
@@ -129,6 +131,7 @@ class ConversationExportTest extends TestCase
     {
         [$company, $employee] = $this->aiFixture();
         $otherUser = Employee::factory()->create(['company_id' => $company->id]);
+        assert($otherUser instanceof Employee);
         $conversation = $this->conversation($company->id, $employee->id);
         $export = AiExport::create([
             'company_id' => $company->id,
@@ -233,8 +236,8 @@ class ConversationExportTest extends TestCase
     private function aiFixture(): array
     {
         $company = Company::factory()->create();
-        $employee = Employee::factory()->manager()->create(['company_id' => $company->id]);
         assert($company instanceof Company);
+        $employee = Employee::factory()->manager()->create(['company_id' => $company->id]);
         assert($employee instanceof Employee);
 
         return [$company, $employee];
