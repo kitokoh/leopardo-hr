@@ -39,6 +39,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Platform` | Super-admin plateforme, gestion tenants |
 | `Recruitment` | Offres, candidats, entretiens |
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
+| `Delivery` | Livraisons dernier-kilomètre : colis, tournées, livreurs, POD, tracking, COD, rapports (BC-26 DELIVERY) |
 
 > Liste vivante — voir `docs/ARCHITECTURE_STATUS.md` section 1 pour l'état de complétude
 > (Domain/Contracts/Application/Infra/Interfaces/Tests) de chaque module.
