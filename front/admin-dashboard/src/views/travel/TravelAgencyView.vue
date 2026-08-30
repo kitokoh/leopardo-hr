@@ -90,6 +90,9 @@ import TravelCheckInTab from '@/views/travel/TravelCheckInTab.vue'
 import TravelTicketsTab from '@/views/travel/TravelTicketsTab.vue'
 import TravelReportsTab from '@/views/travel/TravelReportsTab.vue'
 import TravelRentalsHotelsTab from '@/views/travel/TravelRentalsHotelsTab.vue'
+import TravelQuizTab from '@/views/travel/TravelQuizTab.vue'
+import TravelAdvertsTab from '@/views/travel/TravelAdvertsTab.vue'
+import TravelTouristSitesTab from '@/views/travel/TravelTouristSitesTab.vue'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
@@ -107,7 +110,10 @@ const tabs = [
   { key: 'checkin', label: t('travel.tab.checkin', 'Check-in'), component: TravelCheckInTab },
   { key: 'tickets', label: t('travel.tab.tickets', 'Billets'), component: TravelTicketsTab },
   { key: 'reports', label: t('travel.tab.reports', 'Rapports'), component: TravelReportsTab },
-  { key: 'rentals', label: t('travel.tab.rentals', 'Locations & Hôtels'), component: TravelRentalsHotelsTab }
+  { key: 'rentals', label: t('travel.tab.rentals', 'Locations & Hôtels'), component: TravelRentalsHotelsTab },
+  { key: 'quiz', label: t('travel.tab.quiz', 'Quiz'), component: TravelQuizTab },
+  { key: 'adverts', label: t('travel.tab.adverts', 'Annonces'), component: TravelAdvertsTab },
+  { key: 'sites', label: t('travel.tab.sites', 'Sites touristiques'), component: TravelTouristSitesTab },
 ]
 
 const activeComponent = computed(() => tabs.find((tab) => tab.key === activeTab.value)?.component)

@@ -4255,7 +4255,11 @@
       "checkin": "تسجيل الدخول",
       "tickets": "التذاكر",
       "reports": "التقارير",
-      "rentals": "الإيجارات والفنادق"
+      "rentals": "الإيجارات والفنادق",
+      "quiz": "المسابقات",
+      "adverts": "الإعلانات",
+      "sites": "المواقع السياحية",
+      "contacts": "جهات الاتصال"
     },
     "referentiel": {
       "tabsLabel": "الأقسام الفرعية للمرجع",
@@ -4289,7 +4293,12 @@
       "report": "ابحث في التقرير…",
       "rentalVehicle": "ابحث عن مركبة إيجار…",
       "rentalBooking": "ابحث عن حجز إيجار…",
-      "hotel": "ابحث عن فندق…"
+      "hotel": "ابحث عن فندق…",
+      "quiz": "البحث عن مسابقة…",
+      "advert": "البحث عن إعلان…",
+      "site": "البحث عن موقع…",
+      "contact": "البحث عن جهة اتصال…",
+      "advertRef": "بحث…"
     },
     "field": {
       "iso2": "كود ISO2",
@@ -4361,7 +4370,16 @@
       "availableUntil": "متاح حتى",
       "ownerCarrier": "الشركة المالكة",
       "title": "العنوان",
-      "vehicle": "المركبة"
+      "vehicle": "المركبة",
+      "id": "المعرف",
+      "email": "البريد الإلكتروني",
+      "position": "الترتيب",
+      "question": "السؤال",
+      "points": "النقاط",
+      "content": "المحتوى",
+      "advertType": "نوع الإعلان",
+      "advertPosition": "الموضع",
+      "imageAsset": "الصورة (معرف الأصل)"
     },
     "action": {
       "create": "إنشاء",
@@ -4525,6 +4543,91 @@
     "form": {
       "selectPlaceholder": "— اختر —",
       "moneyMinor": "المبلغ بالعملة (1 = 100 وحدة صغيرة)"
+    },
+    "quiz": {
+      "title": "المسابقات والألعاب",
+      "subtitle": "مسابقات المنظومة: التصحيح من الخادم، ولا تُعرض الإجابة الصحيحة أبدًا.",
+      "createTitle": "إنشاء مسابقة",
+      "detailTitle": "تفاصيل المسابقة",
+      "resultsTitle": "نتائج المسابقة",
+      "viewResults": "النتائج",
+      "addQuestion": "إضافة سؤال",
+      "noQuestions": "لا توجد أسئلة بعد.",
+      "option": "خيار",
+      "correctOption": "الإجابة الصحيحة",
+      "correctRequired": "يجب أن تكون الإجابة الصحيحة خيارًا مُعبأً.",
+      "maxParticipation": "الحد الأقصى للمشاركة لكل جهة اتصال",
+      "score": "النتيجة",
+      "bonus": "المكافأة",
+      "questionDeleteUnavailable": "الحذف غير متاح عبر الواجهة الحالية"
+    },
+    "quizStatus": {
+      "draft": "مسودة",
+      "active": "نشط",
+      "closed": "مغلق"
+    },
+    "adverts": {
+      "tabsLabel": "أقسام الإعلانات",
+      "tabAdverts": "الإعلانات",
+      "tabTypes": "الأنواع",
+      "tabPositions": "المواضع",
+      "tabPrices": "الأسعار",
+      "title": "الإعلانات المدفوعة",
+      "subtitle": "تقديم الإعلانات ودفعها والتحقق منها وتجديدها.",
+      "createTitle": "إنشاء إعلان",
+      "detailTitle": "تفاصيل الإعلان",
+      "types": "أنواع الإعلانات",
+      "positions": "المواضع",
+      "prices": "جدول الأسعار",
+      "pricePerImage": "السعر / الصورة",
+      "pricePerCharacter": "السعر / الحرف",
+      "validityDays": "مدة الصلاحية (أيام)",
+      "paidAt": "دُفع في",
+      "validatedAt": "تم التحقق في",
+      "visible": "ظاهر",
+      "pay": "دفع",
+      "validate": "تحقق",
+      "reject": "رفض",
+      "renew": "تجديد",
+      "rejectTitle": "رفض الإعلان"
+    },
+    "advertStatus": {
+      "draft": "مسودة",
+      "submitted": "مُقدَّم",
+      "paid": "مدفوع",
+      "validated": "مُتحقَّق",
+      "rejected": "مرفوض",
+      "expired": "منتهي الصلاحية",
+      "archived": "مؤرشف"
+    },
+    "sites": {
+      "title": "المواقع السياحية",
+      "subtitle": "أماكن الاهتمام مصنفة حسب المدينة (الواجهة العامة).",
+      "filterCity": "تصفية حسب المدينة",
+      "allCities": "كل المدن",
+      "count": "{count} موقعًا",
+      "latitude": "خط العرض",
+      "longitude": "خط الطول"
+    },
+    "contacts": {
+      "title": "جهات اتصال المسافرين",
+      "subtitle": "سجل جهات الاتصال مع الموافقات حسب القناة (اللائحة العامة لحماية البيانات) والإشعار اليدوي.",
+      "consents": "الموافقات",
+      "consent": "الموافقات",
+      "consentTitle": "الموافقات حسب القناة",
+      "consentFor": "جهة الاتصال",
+      "consentHint": "كل تغيير مُختوم بالوقت. إلغاء الموافقة يوقف فورًا استخدام القناة.",
+      "manageConsent": "إدارة الموافقات",
+      "notify": "إشعار",
+      "notifyTitle": "إشعار يدوي",
+      "notifySent": "تم إرسال الإشعار ({channels}).",
+      "message": "الرسالة",
+      "channels": "القنوات (مع احترام الموافقة)",
+      "channelEmail": "البريد الإلكتروني",
+      "channelApp": "التطبيق",
+      "channelSms": "رسالة نصية",
+      "channelWhatsapp": "واتساب",
+      "noConsentChannel": "لا توجد قناة موافق عليها لهذه الجهة (422)."
     }
   }
 }

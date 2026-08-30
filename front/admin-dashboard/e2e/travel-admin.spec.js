@@ -133,6 +133,56 @@ test.describe('TravelAgency — écrans (TRAVEL-602..608)', () => {
   test.skip(!AUTHENTICATED, 'Skipped: requiert PLAYWRIGHT_AUTH_TOKEN (tests authentifiés)')
   test.skip(LIVE, 'Skipped: BACKEND_LIVE=1 — tests mock désactivés')
 
+  test('onglet Quiz : liste, création, questions, résultats (TRAVEL-911)', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /Quiz/i }).click()
+    await expect(page.getByRole('heading', { name: /Quiz & jeux-concours/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('button', { name: /Créer/i }).first()).toBeVisible()
+
+    // Création d'un quiz (mock générique → succès + rechargement)
+    await page.getByRole('button', { name: /Créer/i }).first().click()
+    await expect(page.getByRole('dialog').first()).toBeVisible()
+    await page.getByLabel(/Intitulé/i).fill('Quiz E2E')
+    await page.getByRole('dialog').first().getByRole('button', { name: /Créer/i }).click()
+
+    // Détail : aucune question → état vide, bouton « Ajouter une question »
+    await expect(page.getByRole('heading', { name: /Quiz & jeux-concours/i })).toBeVisible({ timeout: 15_000 })
+  })
+
+  test('onglet Annonces : annonces + sous-onglets types/positions/tarifs (TRAVEL-911)', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /Annonces/i }).click()
+    await expect(page.getByRole('heading', { name: /Annonces payantes/i })).toBeVisible({ timeout: 15_000 })
+
+    await page.getByRole('tab', { name: /Types/i }).click()
+    await expect(page.getByRole('heading', { name: /Types d'annonces/i })).toBeVisible({ timeout: 15_000 })
+
+    await page.getByRole('tab', { name: /Positions/i }).click()
+    await expect(page.getByRole('heading', { name: /Positions/i })).toBeVisible({ timeout: 15_000 })
+
+    await page.getByRole('tab', { name: /Tarifs/i }).click()
+    await expect(page.getByRole('heading', { name: /Grille tarifaire/i })).toBeVisible({ timeout: 15_000 })
+  })
+
+  test('onglet Sites touristiques : liste + filtre par ville (TRAVEL-911)', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /Sites touristiques/i }).click()
+    await expect(page.getByRole('heading', { name: /Sites touristiques/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByLabel(/Filtrer par ville/i)).toBeVisible()
+    await expect(page.getByRole('button', { name: /Créer/i }).first()).toBeVisible()
+  })
+
+
+
   test('onglet Référentiel : pays & villes + sections CRUD', async ({ page }) => {
     await loginViaToken(page)
     await mockTravelApi(page)

@@ -4255,7 +4255,11 @@
       "checkin": "Check-in",
       "tickets": "Tickets",
       "reports": "Reports",
-      "rentals": "Rentals & Hotels"
+      "rentals": "Rentals & Hotels",
+      "quiz": "Quizzes",
+      "adverts": "Adverts",
+      "sites": "Tourist sites",
+      "contacts": "Contacts"
     },
     "referentiel": {
       "tabsLabel": "Referential sub-sections",
@@ -4289,7 +4293,12 @@
       "report": "Search in report…",
       "rentalVehicle": "Search a rental vehicle…",
       "rentalBooking": "Search a rental booking…",
-      "hotel": "Search a hotel…"
+      "hotel": "Search a hotel…",
+      "quiz": "Search a quiz…",
+      "advert": "Search an advert…",
+      "site": "Search a site…",
+      "contact": "Search a contact…",
+      "advertRef": "Search…"
     },
     "field": {
       "iso2": "ISO2",
@@ -4361,7 +4370,16 @@
       "availableUntil": "Available until",
       "ownerCarrier": "Owner carrier",
       "title": "Title",
-      "vehicle": "Vehicle"
+      "vehicle": "Vehicle",
+      "id": "ID",
+      "email": "Email",
+      "position": "Position",
+      "question": "Question",
+      "points": "Points",
+      "content": "Content",
+      "advertType": "Advert type",
+      "advertPosition": "Position",
+      "imageAsset": "Image (asset id)"
     },
     "action": {
       "create": "Create",
@@ -4525,6 +4543,91 @@
     "form": {
       "selectPlaceholder": "— Select —",
       "moneyMinor": "Amount in currency (1 = 100 minor)"
+    },
+    "quiz": {
+      "title": "Quizzes & contests",
+      "subtitle": "Vertical contests: server-side scoring, the correct answer is never exposed.",
+      "createTitle": "Create a quiz",
+      "detailTitle": "Quiz details",
+      "resultsTitle": "Quiz results",
+      "viewResults": "Results",
+      "addQuestion": "Add a question",
+      "noQuestions": "No questions yet.",
+      "option": "Option",
+      "correctOption": "Correct answer",
+      "correctRequired": "The correct answer must be a filled option.",
+      "maxParticipation": "Max participations per contact",
+      "score": "Score",
+      "bonus": "Bonus",
+      "questionDeleteUnavailable": "Deletion not available via the current API"
+    },
+    "quizStatus": {
+      "draft": "Draft",
+      "active": "Active",
+      "closed": "Closed"
+    },
+    "adverts": {
+      "tabsLabel": "Advert sub-sections",
+      "tabAdverts": "Adverts",
+      "tabTypes": "Types",
+      "tabPositions": "Positions",
+      "tabPrices": "Rates",
+      "title": "Paid adverts",
+      "subtitle": "Submission, payment, validation and renewal of adverts.",
+      "createTitle": "Create an advert",
+      "detailTitle": "Advert details",
+      "types": "Advert types",
+      "positions": "Positions",
+      "prices": "Rate grid",
+      "pricePerImage": "Price / image",
+      "pricePerCharacter": "Price / character",
+      "validityDays": "Validity (days)",
+      "paidAt": "Paid on",
+      "validatedAt": "Validated on",
+      "visible": "Visible",
+      "pay": "Pay",
+      "validate": "Validate",
+      "reject": "Reject",
+      "renew": "Renew",
+      "rejectTitle": "Reject the advert"
+    },
+    "advertStatus": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "paid": "Paid",
+      "validated": "Validated",
+      "rejected": "Rejected",
+      "expired": "Expired",
+      "archived": "Archived"
+    },
+    "sites": {
+      "title": "Tourist sites",
+      "subtitle": "Points of interest referenced by city (public showcase).",
+      "filterCity": "Filter by city",
+      "allCities": "All cities",
+      "count": "{count} site(s)",
+      "latitude": "Latitude",
+      "longitude": "Longitude"
+    },
+    "contacts": {
+      "title": "Traveler contacts",
+      "subtitle": "Contact registry with per-channel consents (GDPR) and manual notification.",
+      "consents": "Consents",
+      "consent": "Consents",
+      "consentTitle": "Per-channel consents",
+      "consentFor": "Contact",
+      "consentHint": "Every change is timestamped. Withdrawing consent (opt-out) immediately stops the use of the channel.",
+      "manageConsent": "Manage consents",
+      "notify": "Notify",
+      "notifyTitle": "Manual notification",
+      "notifySent": "Notification sent ({channels}).",
+      "message": "Message",
+      "channels": "Channels (consent-aware)",
+      "channelEmail": "Email",
+      "channelApp": "App",
+      "channelSms": "SMS",
+      "channelWhatsapp": "WhatsApp",
+      "noConsentChannel": "No consented channel for this contact (422)."
     }
   }
 }

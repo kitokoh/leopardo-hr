@@ -4255,7 +4255,11 @@
       "checkin": "Check-in",
       "tickets": "Biletler",
       "reports": "Raporlar",
-      "rentals": "Kiralama ve Oteller"
+      "rentals": "Kiralama ve Oteller",
+      "quiz": "Quizler",
+      "adverts": "İlanlar",
+      "sites": "Turistik yerler",
+      "contacts": "Kişiler"
     },
     "referentiel": {
       "tabsLabel": "Referans alt bölümleri",
@@ -4289,7 +4293,12 @@
       "report": "Raporda ara…",
       "rentalVehicle": "Kiralık araç ara…",
       "rentalBooking": "Kiralama rezervasyonu ara…",
-      "hotel": "Otel ara…"
+      "hotel": "Otel ara…",
+      "quiz": "Quiz ara…",
+      "advert": "İlan ara…",
+      "site": "Yer ara…",
+      "contact": "Kişi ara…",
+      "advertRef": "Ara…"
     },
     "field": {
       "iso2": "ISO2",
@@ -4361,7 +4370,16 @@
       "availableUntil": "Şu tarihe kadar",
       "ownerCarrier": "Sahip şirket",
       "title": "Başlık",
-      "vehicle": "Araç"
+      "vehicle": "Araç",
+      "id": "ID",
+      "email": "E-posta",
+      "position": "Sıra",
+      "question": "Soru",
+      "points": "Puan",
+      "content": "İçerik",
+      "advertType": "İlan türü",
+      "advertPosition": "Konum",
+      "imageAsset": "Görsel (varlık kimliği)"
     },
     "action": {
       "create": "Oluştur",
@@ -4525,6 +4543,91 @@
     "form": {
       "selectPlaceholder": "— Seçin —",
       "moneyMinor": "Para birimi cinsinden tutar (1 = 100 birim)"
+    },
+    "quiz": {
+      "title": "Quizler ve yarışmalar",
+      "subtitle": "Dikey yarışmalar: sunucu tarafı puanlama, doğru cevap asla gösterilmez.",
+      "createTitle": "Quiz oluştur",
+      "detailTitle": "Quiz detayı",
+      "resultsTitle": "Quiz sonuçları",
+      "viewResults": "Sonuçlar",
+      "addQuestion": "Soru ekle",
+      "noQuestions": "Henüz soru yok.",
+      "option": "Seçenek",
+      "correctOption": "Doğru cevap",
+      "correctRequired": "Doğru cevap dolu bir seçenek olmalı.",
+      "maxParticipation": "Kişi başına maksimum katılım",
+      "score": "Skor",
+      "bonus": "Bonus",
+      "questionDeleteUnavailable": "Silme işlemi mevcut API üzerinden yapılamaz"
+    },
+    "quizStatus": {
+      "draft": "Taslak",
+      "active": "Aktif",
+      "closed": "Kapalı"
+    },
+    "adverts": {
+      "tabsLabel": "İlan alt bölümleri",
+      "tabAdverts": "İlanlar",
+      "tabTypes": "Türler",
+      "tabPositions": "Konumlar",
+      "tabPrices": "Tarifeler",
+      "title": "Ücretli ilanlar",
+      "subtitle": "İlanların gönderimi, ödemesi, onayı ve yenilenmesi.",
+      "createTitle": "İlan oluştur",
+      "detailTitle": "İlan detayı",
+      "types": "İlan türleri",
+      "positions": "Konumlar",
+      "prices": "Tarife tablosu",
+      "pricePerImage": "Fiyat / görsel",
+      "pricePerCharacter": "Fiyat / karakter",
+      "validityDays": "Geçerlilik (gün)",
+      "paidAt": "Ödeme tarihi",
+      "validatedAt": "Onay tarihi",
+      "visible": "Görünür",
+      "pay": "Öde",
+      "validate": "Onayla",
+      "reject": "Reddet",
+      "renew": "Yenile",
+      "rejectTitle": "İlanı reddet"
+    },
+    "advertStatus": {
+      "draft": "Taslak",
+      "submitted": "Gönderildi",
+      "paid": "Ödendi",
+      "validated": "Onaylandı",
+      "rejected": "Reddedildi",
+      "expired": "Süresi doldu",
+      "archived": "Arşivlendi"
+    },
+    "sites": {
+      "title": "Turistik yerler",
+      "subtitle": "Şehre göre listelenen ilgi noktaları (genel vitrin).",
+      "filterCity": "Şehre göre filtrele",
+      "allCities": "Tüm şehirler",
+      "count": "{count} yer",
+      "latitude": "Enlem",
+      "longitude": "Boylam"
+    },
+    "contacts": {
+      "title": "Gezgin kişileri",
+      "subtitle": "Kanal bazında onaylarla (KVKK) kişi kaydı ve manuel bildirim.",
+      "consents": "Onaylar",
+      "consent": "Onaylar",
+      "consentTitle": "Kanal bazında onaylar",
+      "consentFor": "Kişi",
+      "consentHint": "Her değişiklik zaman damgalıdır. Onayın geri çekilmesi kanal kullanımını anında durdurur.",
+      "manageConsent": "Onayları yönet",
+      "notify": "Bildir",
+      "notifyTitle": "Manuel bildirim",
+      "notifySent": "Bildirim gönderildi ({channels}).",
+      "message": "Mesaj",
+      "channels": "Kanallar (onaya saygılı)",
+      "channelEmail": "E-posta",
+      "channelApp": "Uygulama",
+      "channelSms": "SMS",
+      "channelWhatsapp": "WhatsApp",
+      "noConsentChannel": "Bu kişi için onaylı kanal yok (422)."
     }
   }
 }

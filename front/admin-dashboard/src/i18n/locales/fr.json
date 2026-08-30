@@ -4255,7 +4255,11 @@
       "checkin": "Check-in",
       "tickets": "Billets",
       "reports": "Rapports",
-      "rentals": "Locations & Hôtels"
+      "rentals": "Locations & Hôtels",
+      "quiz": "Quiz",
+      "adverts": "Annonces",
+      "sites": "Sites touristiques",
+      "contacts": "Contacts"
     },
     "referentiel": {
       "tabsLabel": "Sous-sections du référentiel",
@@ -4289,7 +4293,12 @@
       "report": "Rechercher dans le rapport…",
       "rentalVehicle": "Rechercher un véhicule de location…",
       "rentalBooking": "Rechercher une réservation de location…",
-      "hotel": "Rechercher un hôtel…"
+      "hotel": "Rechercher un hôtel…",
+      "quiz": "Rechercher un quiz…",
+      "advert": "Rechercher une annonce…",
+      "site": "Rechercher un site…",
+      "contact": "Rechercher un contact…",
+      "advertRef": "Rechercher…"
     },
     "field": {
       "iso2": "ISO2",
@@ -4361,7 +4370,16 @@
       "availableUntil": "Disponible au",
       "ownerCarrier": "Compagnie propriétaire",
       "title": "Intitulé",
-      "vehicle": "Véhicule"
+      "vehicle": "Véhicule",
+      "id": "ID",
+      "email": "Email",
+      "position": "Position",
+      "question": "Question",
+      "points": "Points",
+      "content": "Contenu",
+      "advertType": "Type d’annonce",
+      "advertPosition": "Position",
+      "imageAsset": "Image (asset id)"
     },
     "action": {
       "create": "Créer",
@@ -4525,6 +4543,91 @@
     "form": {
       "selectPlaceholder": "— Sélectionner —",
       "moneyMinor": "Montant en devises (1 = 100 minor)"
+    },
+    "quiz": {
+      "title": "Quiz & jeux-concours",
+      "subtitle": "Jeux-concours de la verticale : notation serveur, la bonne réponse n’est jamais exposée.",
+      "createTitle": "Créer un quiz",
+      "detailTitle": "Détail du quiz",
+      "resultsTitle": "Résultats du quiz",
+      "viewResults": "Résultats",
+      "addQuestion": "Ajouter une question",
+      "noQuestions": "Aucune question pour le moment.",
+      "option": "Option",
+      "correctOption": "Bonne réponse",
+      "correctRequired": "La bonne réponse doit être une option remplie.",
+      "maxParticipation": "Participations max. par contact",
+      "score": "Score",
+      "bonus": "Bonus",
+      "questionDeleteUnavailable": "Suppression non disponible via l’API actuelle"
+    },
+    "quizStatus": {
+      "draft": "Brouillon",
+      "active": "Actif",
+      "closed": "Clôturé"
+    },
+    "adverts": {
+      "tabsLabel": "Sous-sections annonces",
+      "tabAdverts": "Annonces",
+      "tabTypes": "Types",
+      "tabPositions": "Positions",
+      "tabPrices": "Tarifs",
+      "title": "Annonces payantes",
+      "subtitle": "Soumission, paiement, validation et renouvellement des annonces.",
+      "createTitle": "Créer une annonce",
+      "detailTitle": "Détail de l’annonce",
+      "types": "Types d’annonces",
+      "positions": "Positions",
+      "prices": "Grille tarifaire",
+      "pricePerImage": "Prix / image",
+      "pricePerCharacter": "Prix / caractère",
+      "validityDays": "Durée de validité (jours)",
+      "paidAt": "Payé le",
+      "validatedAt": "Validée le",
+      "visible": "Visible",
+      "pay": "Payer",
+      "validate": "Valider",
+      "reject": "Rejeter",
+      "renew": "Renouveler",
+      "rejectTitle": "Rejeter l’annonce"
+    },
+    "advertStatus": {
+      "draft": "Brouillon",
+      "submitted": "Soumise",
+      "paid": "Payée",
+      "validated": "Validée",
+      "rejected": "Rejetée",
+      "expired": "Expirée",
+      "archived": "Archivée"
+    },
+    "sites": {
+      "title": "Sites touristiques",
+      "subtitle": "Lieux d’intérêt référencés par ville (vitrine publique).",
+      "filterCity": "Filtrer par ville",
+      "allCities": "Toutes les villes",
+      "count": "{count} site(s)",
+      "latitude": "Latitude",
+      "longitude": "Longitude"
+    },
+    "contacts": {
+      "title": "Contacts voyageurs",
+      "subtitle": "Registre des contacts avec consentements par canal (RGPD) et notification manuelle.",
+      "consents": "Consentements",
+      "consent": "Consentements",
+      "consentTitle": "Consentements par canal",
+      "consentFor": "Contact",
+      "consentHint": "Chaque changement est horodaté. Un retrait de consentement (opt-out) met immédiatement fin à l’utilisation du canal.",
+      "manageConsent": "Gérer les consentements",
+      "notify": "Notifier",
+      "notifyTitle": "Notification manuelle",
+      "notifySent": "Notification envoyée ({channels}).",
+      "message": "Message",
+      "channels": "Canaux (respect du consentement)",
+      "channelEmail": "Email",
+      "channelApp": "Application",
+      "channelSms": "SMS",
+      "channelWhatsapp": "WhatsApp",
+      "noConsentChannel": "Aucun canal consenti pour ce contact (422)."
     }
   }
 }
