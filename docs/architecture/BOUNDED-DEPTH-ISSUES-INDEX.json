@@ -175,6 +175,13 @@
       "status": "created",
       "number": 6276,
       "url": "https://github.com/kitokoh/leopardo-hr/issues/6276"
+    },
+    {
+      "key": "DEP-BC26",
+      "title": "[DEP-BC26] Deep maturity — BC-26 DELIVERY",
+      "status": "created",
+      "number": 6281,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/6281"
     }
   ]
 }
