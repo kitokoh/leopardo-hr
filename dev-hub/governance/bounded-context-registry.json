@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [
   {
     "code": "BC-01",
@@ -30,6 +31,14 @@
       "App\\Modules\\Onboarding\\Domain\\Events"
     ],
     "dependencies": []
+=======
+{
+  "_meta": {
+    "title": "Bounded Context Registry — Leopardo HR",
+    "description": "Registre canonique machine-readable des bounded contexts (MAT-001, issue #5859). Référence humaine : docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (plan de gouvernance, PR agent-readiness).",
+    "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
+    "updated": "2026-08-30"
+>>>>>>> 5c68931d1 (feat(restaurant): registre BC-25 actif + CODEOWNERS (RESTO-103, #6160))
   },
 <<<<<<< ours
   "_shared_exceptions": [
@@ -762,11 +771,16 @@
       "responsibility": "Module de livraison dernier-kilomètre générique : livraisons/colis (sources manual/restaurant/retail/ecommerce/crm/field), tournées, livreurs, preuves (POD), suivi temps réel, règlement COD et rapports — activable par tout tenant (agence, restaurant, retail, e-commerce, pharmacie).",
       "owner": "Agent 26 — BC-DELIVERY",
       "priority": "P1",
-      "status": "planned",
+      "status": "active",
       "paths": [
         {
+<<<<<<< HEAD
           "path": "api/app/Modules/Delivery",
           "status": "planned"
+=======
+          "path": "api/app/Modules/RestaurantManager",
+          "status": "active"
+>>>>>>> 5c68931d1 (feat(restaurant): registre BC-25 actif + CODEOWNERS (RESTO-103, #6160))
         }
       ],
       "routes": [],
@@ -792,6 +806,7 @@
       ]
     }
   ]
+<<<<<<< HEAD
 }
 =======
   {
@@ -1544,3 +1559,6 @@
   }
 ]
 >>>>>>> theirs
+=======
+}
+>>>>>>> 5c68931d1 (feat(restaurant): registre BC-25 actif + CODEOWNERS (RESTO-103, #6160))
