@@ -7,17 +7,146 @@
     "p99_target_ms": 800
   },
   "critical_endpoints": [
-    { "method": "GET", "route": "/api/v1/employees", "max_queries": 10, "p95_ms": 300, "pagination": true, "notes": "Liste employés tenant — pagination obligatoire." },
-    { "method": "GET", "route": "/api/v1/attendance", "max_queries": 15, "p95_ms": 400, "pagination": true, "notes": "Journal de présence." },
-    { "method": "GET", "route": "/api/v1/accounting/journal", "max_queries": 20, "p95_ms": 500, "pagination": true, "notes": "Journal comptable (volumétrie écritures)." },
-    { "method": "GET", "route": "/api/v1/payroll-runs/{payrollRun}/pay-slips", "max_queries": 25, "p95_ms": 600, "pagination": true, "notes": "Bulletins d'un run de paie." },
-    { "method": "GET", "route": "/api/v1/dashboard/summary", "max_queries": 30, "p95_ms": 700, "pagination": false, "notes": "Agrégats dashboard manager." },
-    { "method": "GET", "route": "/api/v1/crm/imports", "max_queries": 10, "p95_ms": 300, "pagination": true, "notes": "Historique imports CRM." }
+    {
+      "method": "GET",
+      "route": "/api/v1/employees",
+      "max_queries": 10,
+      "p95_ms": 300,
+      "pagination": true,
+      "notes": "Liste employés tenant — pagination obligatoire."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/attendance",
+      "max_queries": 15,
+      "p95_ms": 400,
+      "pagination": true,
+      "notes": "Journal de présence."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/accounting/journal",
+      "max_queries": 20,
+      "p95_ms": 500,
+      "pagination": true,
+      "notes": "Journal comptable (volumétrie écritures)."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/payroll-runs/{payrollRun}/pay-slips",
+      "max_queries": 25,
+      "p95_ms": 600,
+      "pagination": true,
+      "notes": "Bulletins d'un run de paie."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/dashboard/summary",
+      "max_queries": 30,
+      "p95_ms": 700,
+      "pagination": false,
+      "notes": "Agrégats dashboard manager."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/crm/imports",
+      "max_queries": 10,
+      "p95_ms": 300,
+      "pagination": true,
+      "notes": "Historique imports CRM."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/delivery/deliveries/reports/summary",
+      "max_queries": 8,
+      "p95_ms": 300,
+      "pagination": false,
+      "notes": "Read model rapports livraison (DELIVERY-207/#6291) — 5 agrégations scopées company_id (totaux, par source, par jour, par livreur, COD), fenêtre de dates bornée."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/delivery/deliveries",
+      "max_queries": 10,
+      "p95_ms": 300,
+      "pagination": true,
+      "notes": "Liste colis/livraisons tenant — pagination obligatoire, filtres statut/source/date (BC-26-D10/#6296)."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/delivery/deliveries/routes/today",
+      "max_queries": 10,
+      "p95_ms": 300,
+      "pagination": true,
+      "notes": "Tournée du jour livreur mobile (DELIVERY-203) — scope par employé, pagination (BC-26-D10/#6296)."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/delivery/deliveries/routes/{route}",
+      "max_queries": 8,
+      "p95_ms": 300,
+      "pagination": false,
+      "notes": "Détail tournée + stops ordonnés (DELIVERY-202) — pas de N+1, load stops (BC-26-D10/#6296)."
+    },
+    {
+      "method": "POST",
+      "route": "/api/v1/delivery/deliveries/events",
+      "max_queries": 8,
+      "p95_ms": 200,
+      "pagination": false,
+      "notes": "Événement tracking idempotent (DELIVERY-204) — lock FOR UPDATE + unique (company,delivery,type,event_at) (BC-26-D10/#6296)."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/deliveries/tracking/{token}",
+      "max_queries": 6,
+      "p95_ms": 200,
+      "pagination": false,
+      "notes": "Suivi public par lien borné (DELIVERY-204) — lookup token indexé (BC-26-D10/#6296)."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/delivery/deliveries/reports/export",
+      "max_queries": 10,
+      "p95_ms": 400,
+      "pagination": false,
+      "notes": "Export CSV streamé (DELIVERY-207) — read model agrégé, export async BC-26-D07 (BC-26-D10/#6296)."
+    }
   ],
   "required_indexes": [
-    { "table": "attendance_logs", "index": "attendance_logs_company_id_created_at_index", "notes": "Journal de présence tenant+date." },
-    { "table": "pay_slips", "index": "pay_slips_payroll_run_id_index", "notes": "Bulletins par run." },
-    { "table": "accounting_journal_entries", "index": "accounting_journal_entries_company_id_index", "notes": "Écritures tenant." },
-    { "table": "employees", "index": "employees_company_id_index", "notes": "Listes employés tenant." }
+    {
+      "table": "attendance_logs",
+      "index": "attendance_logs_company_id_created_at_index",
+      "notes": "Journal de présence tenant+date."
+    },
+    {
+      "table": "pay_slips",
+      "index": "pay_slips_payroll_run_id_index",
+      "notes": "Bulletins par run."
+    },
+    {
+      "table": "accounting_journal_entries",
+      "index": "accounting_journal_entries_company_id_index",
+      "notes": "Écritures tenant."
+    },
+    {
+      "table": "employees",
+      "index": "employees_company_id_index",
+      "notes": "Listes employés tenant."
+    },
+    {
+      "table": "delivery_deliveries",
+      "index": "delivery_deliveries_company_status_date_idx",
+      "notes": "Rapports livraison : agrégations tenant + statut + fenêtre temporelle (DELIVERY-207/#6291)."
+    },
+    {
+      "table": "delivery_events",
+      "index": "delivery_events_company_delivery_idx",
+      "notes": "Événements par livraison (tracking/timeline) — requête delivery_id scopée company_id (BC-26-D10/#6296)."
+    },
+    {
+      "table": "delivery_stops",
+      "index": "delivery_stops_route_sort_idx",
+      "notes": "Stops ordonnés d'une tournée (route_id, sort_order) — liste du mobile livreur (BC-26-D10/#6296)."
+    }
   ]
 }

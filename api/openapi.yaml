@@ -40,6 +40,8 @@ tags:
 - name: Health
   description: Groupe d'opérations Health
 - name: Auth
+- name: Delivery
+  description: Groupe d'opérations Delivery (BC-26 DELIVERY)
   description: Groupe d'opérations Auth
 - name: Payrolls
   description: Groupe d'opérations Payrolls
@@ -24243,6 +24245,845 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
+  /delivery/deliveries:
+    get:
+      tags:
+      - Delivery
+      summary: Liste des livraisons du tenant (DELIVERY-201/#6285)
+      description: |
+        Liste paginée des livraisons du tenant courant, filtres statut/source/date.
+        RBAC manager (api.manager) — la matrice fine est le scope de BC-26-D05.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: source
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Liste des livraisons
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Delivery'
+    post:
+      tags:
+      - Delivery
+      summary: Crée une livraison (DELIVERY-201/#6285)
+      description: |
+        Crée une livraison pour le tenant courant. Référence DLV-YYYY-NNNNNN
+        générée serveur. Source + source_reference uniques par tenant (zéro
+        doublon par commande source). Montants en minor units.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - source
+              - type
+              - dropoff_contact
+              - dropoff_address
+              properties:
+                source:
+                  type: string
+                  enum: [manual, restaurant, retail, ecommerce, crm, field]
+                source_reference:
+                  type: string
+                type:
+                  type: string
+                  enum: [parcel, order, food, grocery, medication, document]
+                cod_amount_minor:
+                  type: integer
+                  minimum: 0
+                dropoff_contact:
+                  type: string
+                dropoff_address:
+                  type: string
+                idempotency_key:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Livraison créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Delivery'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /delivery/deliveries/reports/summary:
+    get:
+      tags:
+      - Delivery
+      summary: KPIs livraison du tenant (DELIVERY-207/#6291)
+      description: |
+        Read model déterministe scopé tenant : totaux (taux de succès, délai
+        moyen, COD attendu vs collecté) ventilés par source/jour/livreur.
+        Fenêtre de dates bornée (défaut 30 j) ; 422 si from > to.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Résumé des KPIs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryReportSummary'
+        '422':
+          description: Fenêtre de dates invalide
+  /delivery/deliveries/reports/export:
+    get:
+      tags:
+      - Delivery
+      summary: Export CSV des livraisons (DELIVERY-207/#6291)
+      description: |
+        Export CSV streamé des livraisons du tenant sur la fenêtre (champs
+        métier, pas de PII superflue). Export async : BC-26-D07.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Fichier CSV
+          content:
+            text/csv:
+              schema:
+                type: string
+
+  /delivery/deliveries/events:
+    post:
+      tags:
+      - Delivery
+      summary: Enregistre un événement de tracking (DELIVERY-204/#6288)
+      description: |
+        Idempotent : unique (company, delivery, type, event_at) + idempotency_key
+        client — un rejeu retourne l'événement existant. Chaque type est une
+        transition légale de la machine à états ; delivered exige
+        proof_document_id (POD, BC-20 par valeur) — refus 409 PROOF_REQUIRED.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - delivery_id
+              - type
+              properties:
+                delivery_id:
+                  type: integer
+                type:
+                  type: string
+                  enum: [picked_up, out_for_delivery, arrived, delivered, failed, returned]
+                event_at:
+                  type: string
+                  format: date-time
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                origin:
+                  type: string
+                  enum: [mobile, edge, api]
+                  default: mobile
+                idempotency_key:
+                  type: string
+                  format: uuid
+                proof_document_id:
+                  type: integer
+      responses:
+        '201':
+          description: Événement enregistré (ou existant si rejeu)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryEvent'
+        '404':
+          description: Livraison introuvable ou hors tenant
+        '409':
+          description: PROOF_REQUIRED ou INVALID_TRANSITION
+  /delivery/deliveries/{delivery}/tracking-link:
+    post:
+      tags:
+      - Delivery
+      summary: Génère un lien de suivi public borné (DELIVERY-204/#6288)
+      description: |
+        Token 64 chars expirant (7 jours) — le token EST la credential du
+        destinataire (pattern AccountingDocumentShare #5225).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: delivery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Lien de suivi + expiration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      tracking_url:
+                        type: string
+                      expires_at:
+                        type: string
+                        format: date-time
+        '404':
+          description: Livraison introuvable ou hors tenant
+  /delivery/deliveries/{delivery}/tracking:
+    get:
+      tags:
+      - Delivery
+      summary: Ligne du temps interne (DELIVERY-204/#6288)
+      description: |
+        Événements d'une livraison, ordre chronologique décroissant — RBAC
+        manager, scope tenant (404 hors tenant).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: delivery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ligne du temps
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryEvent'
+        '404':
+          description: Livraison introuvable ou hors tenant
+  /deliveries/tracking/{token}:
+    get:
+      tags:
+      - Delivery
+      summary: Suivi public par lien borné (DELIVERY-204/#6288)
+      description: |
+        Endpoint public : le token 64 chars expirant EST la credential (pas
+        d'auth). Champs limités au suivi (RGPD) : statut, événements, adresse
+        de destination, fenêtre. Anti-énumération + Referrer-Policy no-referrer.
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '[A-Za-z0-9]{64}'
+      responses:
+        '200':
+          description: Suivi de la livraison
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      reference:
+                        type: string
+                      status:
+                        type: string
+                      dropoff_address:
+                        type: string
+                      window_from:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      events:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            event_at:
+                              type: string
+                              format: date-time
+        '404':
+          description: Token invalide ou expiré
+        '429':
+          description: Trop de requêtes (throttle)
+
+  /delivery/deliveries/routes/today:
+    get:
+      tags:
+      - Delivery
+      summary: Tournée du jour du livreur (DELIVERY-203/#6287)
+      description: |
+        Tournées du jour scopées par propriété : un rider ne voit que les
+        routes dont driver_id = son id d'employé ; dispatcher/manager/admin
+        voient toutes les routes du jour. Stops inclus.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Tournées du jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryRoute'
+        '403':
+          description: Rôle delivery requis
+  /delivery/deliveries/stops/{stop}/status:
+    post:
+      tags:
+      - Delivery
+      summary: Statut d'un arrêt (DELIVERY-203/#6287)
+      description: |
+        Idempotent (rejeu du même statut → même arrêt). Chaque statut
+        déclenche l'événement de tracking correspondant (machine à états) ;
+        delivered exige proof_document_id (409 PROOF_REQUIRED). Scope par
+        propriété : un rider ne peut agir que sur sa tournée (403 sinon).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: stop
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum: [en_route, arrived, delivered, failed, skipped]
+                proof_document_id:
+                  type: integer
+      responses:
+        '200':
+          description: Arrêt mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRouteStop'
+        '403':
+          description: Hors de la tournée du rider
+        '404':
+          description: Arrêt introuvable ou hors tenant
+        '409':
+          description: PROOF_REQUIRED ou INVALID_TRANSITION
+
+  /delivery/deliveries/routes:
+    post:
+      tags:
+      - Delivery
+      summary: Crée une tournée (DELIVERY-202/#6286)
+      description: |
+        Crée une tournée (statut draft) + stops ordonnés à partir des colis.
+        Refus 409 si un colis est déjà planifié dans une tournée non close.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - route_date
+              - delivery_ids
+              properties:
+                route_date:
+                  type: string
+                  format: date
+                zone:
+                  type: string
+                delivery_ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 200
+                  items:
+                    type: integer
+      responses:
+        '201':
+          description: Tournée créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '409':
+          description: Colis déjà planifié
+  /delivery/deliveries/routes/{route}/assign:
+    post:
+      tags:
+      - Delivery
+      summary: Affecte livreur + véhicule (DELIVERY-202/#6286)
+      description: |
+        Idempotent (même affectation → même résultat). Garde anti-chevauchement :
+        un livreur = une tournée par date (409 DRIVER_ALREADY_ASSIGNED).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - driver_id
+              properties:
+                driver_id:
+                  type: integer
+                vehicle_code:
+                  type: string
+      responses:
+        '200':
+          description: Tournée affectée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '409':
+          description: Livreur déjà affecté ce jour
+  /delivery/deliveries/routes/{route}/settlement:
+    post:
+      tags:
+      - Delivery
+      summary: Crée le règlement COD d'une tournée close (DELIVERY-205/#6289)
+      description: |
+        Idempotent (unique company+route). Exige une tournée close (409
+        ROUTE_NOT_CLOSED). expected_minor = COD collecté de la tournée.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Règlement créé (ou existant)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+        '409':
+          description: Tournée non close
+  /delivery/deliveries/cod-settlements:
+    get:
+      tags:
+      - Delivery
+      summary: Liste des règlements COD (DELIVERY-205/#6289)
+      description: |
+        Paginée, filtres statut/driver_id. RBAC admin|manager.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: driver_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Règlements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryCodSettlement'
+  /delivery/deliveries/cod-settlements/{settlement}/collect:
+    post:
+      tags:
+      - Delivery
+      summary: Remise caisse (DELIVERY-205/#6289)
+      description: |
+        Idempotente, plafonnée à l'attendu (422 OVER_COLLECTION). Exige
+        pending. RBAC admin|manager.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: settlement
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - collected_minor
+              properties:
+                collected_minor:
+                  type: integer
+                  minimum: 0
+                commission_minor:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: Règlement collecté
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+        '422':
+          description: OVER_COLLECTION
+  /delivery/deliveries/cod-settlements/{settlement}/settle:
+    post:
+      tags:
+      - Delivery
+      summary: Posting BC-08 + settled (DELIVERY-205/#6289)
+      description: |
+        Idempotent, exige collected (409 SETTLEMENT_NOT_COLLECTED). Écriture
+        comptable source-référencée via contrat BC-08. RBAC admin.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: settlement
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Règlement settled (accounting_ref)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+  /delivery/deliveries/cod-settlements/{settlement}/reconcile:
+    post:
+      tags:
+      - Delivery
+      summary: Réconciliation (DELIVERY-205/#6289)
+      description: |
+        Idempotente, exige settled (409 SETTLEMENT_NOT_SETTLED). RBAC admin.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: settlement
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Règlement reconciled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+  /delivery/deliveries/notifications/opt-out:
+    post:
+      tags:
+      - Delivery
+      summary: Opt-out destinataire (DELIVERY-206/#6290)
+      description: |
+        Arrête les notifications planifiées vers ce numéro (jamais les déjà
+        envoyées). RGPD : la réponse ne renvoie que le numéro tronqué.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - phone
+              properties:
+                phone:
+                  type: string
+      responses:
+        '201':
+          description: Opt-out enregistré
+        '422':
+          description: INVALID_PHONE
+  /delivery/deliveries/notifications:
+    get:
+      tags:
+      - Delivery
+      summary: Liste des notifications (outbox) (DELIVERY-206/#6290)
+      description: |
+        Paginée, filtre statut. RGPD : numéros masqués hors admin.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryNotification'
+                  meta:
+                    type: object
+                    properties:
+                      phone_masked:
+                        type: boolean
+
+  /delivery/deliveries/cod-settlements/report:
+    get:
+      tags:
+      - Delivery
+      summary: Réconciliation attendu vs collecté (DELIVERY-205/#6289)
+      description: |
+        Totaux expected/collected/gap + ventilation par statut. RBAC
+        admin|manager.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Rapport de réconciliation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totals:
+                        type: object
+                        properties:
+                          expected_minor:
+                            type: integer
+                          collected_minor:
+                            type: integer
+                          gap_minor:
+                            type: integer
+
+  /delivery/deliveries/routes/{route}/close:
+    post:
+      tags:
+      - Delivery
+      summary: Clôture une tournée (DELIVERY-202/#6286)
+      description: |
+        Idempotente. Refus 409 ROUTE_INCOMPLETE si des stops sont non terminés.
+        Calcule totaux colis/livrés/échecs/COD collecté (verrou SELECT FOR UPDATE).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tournée clôturée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '409':
+          description: Tournée incomplète ou vide
+  /delivery/deliveries/routes/{route}:
+    get:
+      tags:
+      - Delivery
+      summary: Détail d'une tournée (DELIVERY-202/#6286)
+      description: |
+        Détail scopé au tenant — 404 si absente OU hors tenant. Stops ordonnés.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tournée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '404':
+          description: Tournée introuvable ou hors tenant
+
+  /delivery/deliveries/{delivery}:
+    get:
+      tags:
+      - Delivery
+      summary: Détail d'une livraison (DELIVERY-201/#6285)
+      description: |
+        Détail d'une livraison scopé au tenant — 404 si absente OU hors tenant.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: delivery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Livraison
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Delivery'
+        '404':
+          description: Livraison introuvable ou hors tenant
+
+  /delivery/ping:
+    get:
+      tags:
+      - Delivery
+      summary: Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282)
+      description: |
+        Route de contrôle : prouve que le module est chargé, que le feature flag
+        `delivery` est actif pour le tenant courant et que le pipeline
+        middleware (auth → tenant → module) est opérationnel. Lecture pure.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Module actif
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - status
+                - service
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    example: delivery
   /accounting/dashboard:
     get:
       tags:
@@ -26030,6 +26871,249 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    DeliveryReportSummary:
+      type: object
+      properties:
+        range:
+          type: object
+          properties:
+            from:
+              type: string
+              format: date-time
+            to:
+              type: string
+              format: date-time
+        totals:
+          type: object
+          properties:
+            deliveries:
+              type: integer
+            delivered:
+              type: integer
+            failed:
+              type: integer
+            cancelled:
+              type: integer
+            returned:
+              type: integer
+            success_rate_pct:
+              type: number
+            avg_delivery_delay_minutes:
+              type: integer
+            cod_expected_minor:
+              type: integer
+            cod_collected_minor:
+              type: integer
+        by_source:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                type: string
+              deliveries:
+                type: integer
+              delivered:
+                type: integer
+              success_rate_pct:
+                type: number
+        by_day:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              deliveries:
+                type: integer
+              delivered:
+                type: integer
+        by_driver:
+          type: array
+          items:
+            type: object
+            properties:
+              driver_id:
+                type: integer
+                nullable: true
+              deliveries:
+                type: integer
+              delivered:
+                type: integer
+
+    DeliveryEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+        delivery_id:
+          type: integer
+        type:
+          type: string
+        event_at:
+          type: string
+          format: date-time
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        origin:
+          type: string
+        payload:
+          type: object
+          nullable: true
+
+    DeliveryNotification:
+      type: object
+      properties:
+        id:
+          type: integer
+        delivery_id:
+          type: integer
+        event_type:
+          type: string
+        channel:
+          type: string
+        recipient_phone:
+          type: string
+        template_key:
+          type: string
+        status:
+          type: string
+          enum: [pending, sent, failed, skipped]
+        attempts:
+          type: integer
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    DeliveryCodSettlement:
+      type: object
+      properties:
+        id:
+          type: integer
+        route_id:
+          type: integer
+        driver_id:
+          type: integer
+          nullable: true
+        expected_minor:
+          type: integer
+        collected_minor:
+          type: integer
+        commission_minor:
+          type: integer
+        status:
+          type: string
+          enum: [pending, collected, settled, reconciled]
+        accounting_ref:
+          type: string
+          nullable: true
+        collected_at:
+          type: string
+          format: date-time
+          nullable: true
+        settled_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    DeliveryRoute:
+      type: object
+      properties:
+        id:
+          type: integer
+        route_date:
+          type: string
+          format: date
+        zone:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [draft, assigned, in_progress, completed]
+        driver_id:
+          type: integer
+          nullable: true
+        vehicle_code:
+          type: string
+          nullable: true
+        deliveries_count:
+          type: integer
+        delivered_count:
+          type: integer
+        failed_count:
+          type: integer
+        cod_collected_minor:
+          type: integer
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeliveryRouteStop'
+    DeliveryRouteStop:
+      type: object
+      properties:
+        id:
+          type: integer
+        delivery_id:
+          type: integer
+        sort_order:
+          type: integer
+        status:
+          type: string
+          enum: [pending, en_route, arrived, delivered, failed, skipped]
+        address:
+          type: string
+        contact:
+          type: string
+          nullable: true
+        eta:
+          type: string
+          format: date-time
+          nullable: true
+        delivered_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Delivery:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+          example: DLV-2026-000123
+        source:
+          type: string
+          enum: [manual, restaurant, retail, ecommerce, crm, field]
+        source_reference:
+          type: string
+          nullable: true
+        type:
+          type: string
+        status:
+          type: string
+          enum: [created, assigned, picked_up, out_for_delivery, arrived, delivered, failed, returned, cancelled]
+        cod_amount_minor:
+          type: integer
+          nullable: true
+        dropoff_contact:
+          type: string
+        dropoff_address:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
     AccountingChartAccount:
       type: object
       properties:
