@@ -89,6 +89,13 @@ class GoldenDashboardRecomputeTest extends TestCase
             'status' => 'recorded',
         ]);
 
+        // Invariant du read model : le flux métier maintient `paid_amount` sur
+        // le document (champ dénormalisé, `DocumentWorkflowService`), le
+        // read model des impayés lit `total_ttc > paid_amount`.
+        $document->update([
+            'paid_amount' => round((float) $document->paid_amount + $amount, 2),
+        ]);
+
         return $payment;
     }
 

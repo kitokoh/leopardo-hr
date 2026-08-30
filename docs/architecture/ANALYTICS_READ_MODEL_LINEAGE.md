@@ -123,3 +123,9 @@ sont réunies (décision ADR, PR dédiée) :
 - Tout export CSV passe par `CsvCellSanitizer` (injection neutralisée).
 - Les endpoints de reporting sont inscrits au registre des budgets p95
   (`performance-budgets.json`) — ajout d'un endpoint = mise à jour du registre.
+- **Invariant impayés (D12 data quality)** : le read model `outstanding` lit
+  `total_ttc > paid_amount` sur `accounting_documents` ; `paid_amount` est un
+  champ **dénormalisé** maintenu par le flux métier
+  (`DocumentWorkflowService::recordPayment`). Enregistrer un
+  `AccountingPayment` sans mettre à jour `paid_amount` rend le read model
+  incohérent — le golden test respecte ce contrat (`GoldenDashboardRecomputeTest`).
