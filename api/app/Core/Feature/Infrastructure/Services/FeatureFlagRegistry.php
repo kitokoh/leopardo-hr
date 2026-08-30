@@ -60,9 +60,9 @@ final class FeatureFlagRegistry
      */
     public function isKillSwitched(string $key): bool
     {
-        $envValue = env('FEATURE_FLAG_KILL_'.strtoupper(str_replace('-', '_', $key)));
+        $envValue = getenv('FEATURE_FLAG_KILL_'.strtoupper(str_replace('-', '_', $key)));
 
-        if ($envValue !== null && $envValue !== '') {
+        if ($envValue !== false && $envValue !== '') {
             return filter_var($envValue, FILTER_VALIDATE_BOOL);
         }
 

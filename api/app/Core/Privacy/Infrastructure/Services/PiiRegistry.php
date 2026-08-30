@@ -140,7 +140,7 @@ final class PiiRegistry
         $fields = [];
 
         foreach ($this->entries() as $category) {
-            $entries = is_array($category) ? ($category['entries'] ?? []) : [];
+            $entries = $category['entries'] ?? [];
 
             foreach ($entries as $key => $entry) {
                 if (is_array($entry) && ($entry['context'] ?? null) === $context) {

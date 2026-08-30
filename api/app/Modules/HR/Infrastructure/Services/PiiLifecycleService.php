@@ -7,6 +7,7 @@ namespace App\Modules\HR\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Privacy\Domain\Enums\PiiSensitivity;
+use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Domain\Models\PrivacyRequest;
@@ -216,7 +217,7 @@ final class PiiLifecycleService
         $schedule = [];
 
         foreach ($this->registry->entries() as $category) {
-            $entries = is_array($category) ? ($category['entries'] ?? []) : [];
+            $entries = $category['entries'] ?? [];
 
             foreach ($entries as $key => $entry) {
                 if (! is_array($entry)) {
