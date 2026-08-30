@@ -80,7 +80,9 @@ class Invoice extends Model
         return $this->belongsTo(Subscription::class);
     }
 
-    /** @return HasMany<Model, $this> */
+    // Type de relation inféré par Larastan depuis la chaîne littérale
+    // (HasMany<Payroll\Payment, $this>) — pas de docblock générique (conflit
+    // d'inférence) ni d'import cross-module (ADR-0011).
     public function payments(): HasMany
     {
         return $this->hasMany('App\Modules\Payroll\Domain\Models\Payment');
