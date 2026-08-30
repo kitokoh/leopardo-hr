@@ -136,7 +136,7 @@ jobs:
           # (leopardo-rh.com NXDOMAIN) — la var pointe la vitrine live.
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run start
-        run: npx playwright test e2e/auth-client-smoke.spec.ts e2e/manager-workday-smoke.spec.ts e2e/client-feature-gates.spec.ts e2e/client-visual-smoke.spec.ts e2e/payroll-compliance.spec.ts --project=chromium --workers=1
+        run: npx playwright test e2e/auth-client-smoke.spec.ts e2e/manager-workday-smoke.spec.ts e2e/client-feature-gates.spec.ts e2e/client-visual-smoke.spec.ts e2e/payroll-compliance.spec.ts e2e/kiosk.spec.ts e2e/shop-order.spec.ts --project=chromium --workers=1
 
       - name: Upload Playwright report
         if: always()
