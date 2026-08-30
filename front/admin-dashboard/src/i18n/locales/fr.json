@@ -4359,7 +4359,20 @@
     },
     "checkin": {
       "title": "Check-in & manifeste",
-      "subtitle": "Embarquement par trajet et compteur de passagers."
+      "subtitle": "Embarquement par trajet et compteur de passagers.",
+      "trip": "Trajet",
+      "selectTrip": "Sélectionner un trajet…",
+      "boarded": "embarqués",
+      "seat": "Siège",
+      "passenger": "Passager",
+      "age": "Âge",
+      "class": "Classe",
+      "ticket": "Billet",
+      "action": "Embarquement",
+      "emptyManifest": "Aucun passager pour ce trajet",
+      "noTicket": "Sans billet",
+      "checkIn": "Embarquer",
+      "done": "Embarqué"
     },
     "tickets": {
       "title": "Billets",
