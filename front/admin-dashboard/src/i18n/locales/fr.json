@@ -1576,7 +1576,8 @@
     "notFound": "Page non trouvee",
     "accountingActivation": "Comptabilité — Démarrer",
     "accountingDashboard": "Comptabilité — Tableau de bord",
-    "accountingSettings": "Comptabilité — Paramétrage"
+    "accountingSettings": "Comptabilité — Paramétrage",
+    "travel": "Agence de voyage"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?",
@@ -4233,5 +4234,90 @@
     "loadError": "Impossible de charger la file cuisine.",
     "actionError": "Action impossible, réessayez.",
     "loading": "Chargement de la file cuisine…"
+  },
+  "travel": {
+    "common": {
+      "retry": "Réessayer",
+      "featureDisabledTitle": "Module Agence de voyage inactif",
+      "featureDisabledBody": "Le flag travelagency n’est pas activé pour le tenant connecté. Contactez un administrateur plateforme pour l’activer.",
+      "tenantRequiredTitle": "Contexte tenant requis",
+      "tenantRequiredBody": "Les données de l’agence de voyage sont accessibles avec une session tenant (impersonation ou compte manager).",
+      "loadErrorTitle": "Chargement impossible",
+      "loadErrorBody": "Une erreur est survenue en interrogeant l’API travel.",
+      "create": "Créer",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "close": "Fermer",
+      "search": "Rechercher",
+      "actions": "Actions",
+      "confirmDeleteTitle": "Supprimer cet élément ?",
+      "confirmDeleteBody": "Cette action est irréversible. Voulez-vous vraiment supprimer « {name} » ?",
+      "status": "Statut",
+      "active": "Actif",
+      "disabled": "Inactif",
+      "loading": "Chargement…",
+      "noData": "Aucune donnée",
+      "createdAt": "Créé le",
+      "updatedAt": "Modifié le",
+      "reason": "Motif",
+      "reasonRequired": "Le motif est obligatoire.",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "all": "Tous",
+      "export": "Exporter",
+      "yes": "Oui",
+      "no": "Non",
+      "perPage": "par page"
+    },
+    "home": {
+      "title": "Agence de voyage",
+      "subtitle": "Gestion de la verticale TravelAgency : réseau, ventes, billetterie et pilotage.",
+      "flagActive": "Module actif",
+      "flowTitle": "Flux métier",
+      "flowBody": "Référentiel & réseau → programmation des trajets → publication → vente au guichet → billetterie & check-in → rapports."
+    },
+    "referential": {
+      "title": "Référentiel",
+      "subtitle": "Pays, villes, gares, bureaux, compagnies, classes et véhicules.",
+      "tabs": "Sections du référentiel",
+      "countries": "Pays",
+      "cities": "Villes",
+      "stations": "Gares & terminaux",
+      "offices": "Bureaux de vente",
+      "carriers": "Compagnies",
+      "classes": "Classes de service",
+      "vehicles": "Véhicules"
+    },
+    "network": {
+      "title": "Routes & trajets",
+      "subtitle": "Lignes, étapes, programmation, tarifs et publication.",
+      "tabs": "Sections réseau",
+      "routes": "Routes & étapes",
+      "trips": "Trajets & tarifs",
+      "publish": "Publier",
+      "cancelTrip": "Annuler le trajet"
+    },
+    "bookings": {
+      "title": "Réservations",
+      "subtitle": "Ventes au guichet, confirmation, annulation, remboursement et billets."
+    },
+    "checkin": {
+      "title": "Check-in & manifeste",
+      "subtitle": "Embarquement par trajet et compteur de passagers."
+    },
+    "tickets": {
+      "title": "Billets",
+      "subtitle": "Consultation, téléchargement PDF et révocation."
+    },
+    "reports": {
+      "title": "Rapports",
+      "subtitle": "Ventes, occupation, recettes, annulations et exports CSV."
+    },
+    "catalog": {
+      "title": "Locations & hôtels",
+      "subtitle": "Véhicules en location, réservations et catalogue hôtelier."
+    }
   }
 }
