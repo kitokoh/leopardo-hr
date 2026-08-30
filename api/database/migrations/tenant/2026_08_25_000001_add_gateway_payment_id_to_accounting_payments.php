@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -22,7 +23,7 @@ return new class extends Migration
     public function up(): void
     {
         if (! schemaHasColumn('accounting_payments', 'gateway_payment_id')) {
-            Schema::table('accounting_payments', function (\Illuminate\Database\Schema\Blueprint $table): void {
+            Schema::table('accounting_payments', function (Blueprint $table): void {
                 $table->string('gateway_payment_id', 255)->nullable()->after('reference');
             });
         }
@@ -40,7 +41,7 @@ return new class extends Migration
         DB::statement('DROP INDEX IF EXISTS accounting_payments_company_gateway_unique');
 
         if (schemaHasColumn('accounting_payments', 'gateway_payment_id')) {
-            Schema::table('accounting_payments', function (\Illuminate\Database\Schema\Blueprint $table): void {
+            Schema::table('accounting_payments', function (Blueprint $table): void {
                 $table->dropColumn('gateway_payment_id');
             });
         }

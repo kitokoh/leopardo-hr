@@ -39,7 +39,7 @@ return new class extends Migration
                 $table->timestampTz('started_at');
                 $table->timestampTz('ended_at')->nullable();
                 $table->unsignedInteger('duration_seconds')->nullable()
-                      ->comment('Calculé automatiquement à la fermeture de la session');
+                    ->comment('Calculé automatiquement à la fermeture de la session');
 
                 // Coordonnées GPS au moment de l'entrée
                 $table->decimal('check_in_lat', 10, 8);
