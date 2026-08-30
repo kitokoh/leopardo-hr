@@ -1534,3 +1534,18 @@ Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (man
 Note 2026-08-31 (BC-22 ANALYTICS, PR #6280) : snapshots horodatés des read models de reporting + golden journey Analytics.
 - `GET /api/v1/accounting/dashboard` expose désormais un bloc `data.snapshot` (`source: live|snapshot`, `version`, `refreshed_at`) — scénarios : lecture live par défaut (aucun snapshot actif → `source: live`) ; après activation du recompute (budget p95 dépassé, jamais préventif) → `source: snapshot` avec `version` incrémentée uniquement si le contenu change (2 recomputes identiques → même version) ; rejeu de la commande `accounting:reporting-snapshot` → aucune écriture dupliquée (clé unique `(company_id, report, period_from, period_to)`).
 - Seed pilote synthétique `analytics-pilot-001` (DZD, 100 % synthétique, refusé en production MAT-012) : agrégats cohérents + déterminisme (2 lectures → mêmes totaux), export CSV impayés téléchargeable et sanitisé (`CsvCellSanitizer`), tenant vide → agrégats zéro, RBAC 403 pour un employé simple. Tests : `AccountingReportingSnapshotTest`, `AccountingAnalyticsGoldenJourneyTest`.
+## BC-24 TRAVEL — Verticale TravelAgency (TRAVEL-101..305, 2026-08-30)
+
+Surface API ajoutée par la verticale TravelAgency (module `api/app/Modules/TravelAgency`,
+préfixe `/api/v1/travel/*`, groupe `module.travelagency` — feature flag `travelagency`).
+
+- Fondations : `GET /api/v1/travel/ping` (smoke, feature flag actif).
+- Référentiel (lecture tenant) : `GET /travel/countries`, `GET /travel/cities`.
+- CRUD back-office (policies `travel.manage` — principal/rh/manager ; lecture tout employé du tenant) :
+  `GET|POST /travel/stations`, `GET|PUT|DELETE /travel/stations/{travelStation}`,
+  idem `/travel/offices`, `/travel/carriers`, `/travel/classes`.
+- Scénarios à vérifier : (1) sans auth → 401 ; (2) feature flag inactif → 403 ; (3) création
+  type hors enum (`spaceship`) → 422 ; (4) ressource cross-tenant → 404 (jamais 403 sur la
+  ressource) ; (5) suppression → 204 ; (6) liste paginée `per_page` borné (1..1000).
+- Couverture : `api/tests/Feature/Travel/Travel*CrudTest.php`, `TravelGeoReadEndpointsTest.php`,
+  `TravelFeatureFlagTest.php`, `TravelIsolationTest.php` (harness verticale TRAVEL-108). (docs(scenarios): surface API BC-24 TRAVEL (garde Governance Gates, TRAVEL-101..305))
