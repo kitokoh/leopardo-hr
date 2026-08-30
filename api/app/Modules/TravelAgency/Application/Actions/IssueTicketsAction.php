@@ -72,6 +72,8 @@ final class IssueTicketsAction
                 'booking_reference' => $booking->reference,
                 'passenger_id' => $ticket->passenger_id,
                 'issued_at' => $ticket->issued_at?->toIso8601String(),
+                'notification_intent' => 'travel.ticket.issued',
+                'consent' => false, // Opt-in explicite requis via contrat CRM client (TRAVEL-416).
             ]);
         }
 

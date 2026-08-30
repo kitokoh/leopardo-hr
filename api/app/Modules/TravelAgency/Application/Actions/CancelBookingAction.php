@@ -53,6 +53,8 @@ final class CancelBookingAction
             'cancelled_by' => $actor->id,
             'cancelled_at' => now()->toIso8601String(),
             'reason' => $reason,
+            'notification_intent' => 'travel.booking.cancelled',
+            'consent' => false, // Opt-in explicite requis via contrat CRM client (TRAVEL-416).
         ]);
 
         return $booking->refresh()->load('passengers');

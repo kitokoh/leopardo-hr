@@ -44,6 +44,8 @@ final class CheckInTicketAction
             'booking_id' => $ticket->booking_id,
             'checked_in_by' => $actor->id,
             'checked_in_at' => now()->toIso8601String(),
+            'notification_intent' => 'travel.ticket.checked_in',
+            'consent' => false, // Opt-in explicite requis via contrat CRM client (TRAVEL-416).
         ]);
 
         return $ticket->refresh();
