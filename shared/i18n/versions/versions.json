@@ -58,11 +58,11 @@
     "admin": {
       "checksums": {
         "ar": "d9830e21a2bee9d815d85a72ad99ce24eee35801300d0ba59f6bb70b418ff095",
-        "en": "f4bf031b525366808d61b30ad953fbfe490a5f0acc8c2ca7f4857244e5fe0e91",
-        "fr": "56f18dbfb587d0ee48313bbad106cc277d91b33eb32a907543a2450bff0129ef",
+        "en": "0f3749459d2195c9b5904b3953edf21524d596e4e13d0a69b8fa48e82536fd74",
+        "fr": "e1d34fee77f8235e669673be8dd39e4362b794c0608cc84e668090739e8db73a",
         "tr": "d4245c5afff3c99a9bc62dfee4a01a9c76a7e6b76f18437ad361156047c8f201"
       },
-      "updated_at": "2026-08-30T11:03:26.040Z"
+      "updated_at": "2026-08-30T14:23:35.461Z"
     }
   }
 }
