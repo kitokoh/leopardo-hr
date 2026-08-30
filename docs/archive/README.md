@@ -14,6 +14,7 @@ conserve tout).
 |---|---|---|
 | `PLAN_ACTION/` | Ancien processus de planification (72 plans clos, 2025 → 2026-07) | Seuls les fichiers encore référencés (AGENTS.md, docs sécurité) sont conservés ; les autres plans sont supprimés — récupérables via l'historique git (`git log -- docs/PLAN_ACTION/`). |
 | `PLAN_ACTION2/` | Ancien backlog du processus multi-agents (avant bascule GitHub Issues, PA2-OPS-008 #1279) | Intégral, référence de traçabilité — voir `docs/PLAN_ACTION2/README.md`. |
+| `PHASE_8_VITRINE_2026-07-18/` | Rapports de complétion de la restructuration initiale de la vitrine (implémentation du 2026-07-18) — `PROJECT_COMPLETION_SUMMARY.md`, `PHASE_8_COMPLETION.md`, `DEPLOYMENT_AND_MONITORING_SUMMARY.md` | Déplacés depuis `docs/` le 2026-08-29 (nettoyage doc) — chacun se déclarait déjà "rapport historique figé" décrivant des workflows CI/CD (`test.yml`/`lint.yml`/`build.yml`, domaine `leopardo.com`) qui n'ont jamais existé sous ces noms dans ce repo. Pour l'état réel, voir `PILOTAGE.md` et `.github/workflows/README.md`. |
 
 ## Recherche d'un fichier supprimé
 

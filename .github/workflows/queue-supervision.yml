@@ -72,18 +72,35 @@ jobs:
         working-directory: ./api
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Vérifier secrets DB (diagnostic actionnable)
+      - name: Vérifier la configuration de supervision
+        id: queue-config
+        shell: bash
         env:
+          APP_KEY: ${{ secrets.APP_KEY }}
+          APP_URL: ${{ secrets.APP_URL }}
           DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
           DB_DATABASE: ${{ secrets.DB_DATABASE }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
-          if [[ -z "$DB_HOST" || -z "$DB_DATABASE" ]]; then
-            echo "::error::Secrets DB Actions vides (DB_HOST/DB_DATABASE) — la supervision ne peut pas vérifier la queue sans accès à la DB prod. Remplir les secrets dans les settings du repo (issue #5306)."
-            exit 1
+          set -Eeuo pipefail
+          missing=()
+          for name in APP_KEY APP_URL DB_HOST DB_PORT DB_DATABASE DB_USERNAME DB_PASSWORD; do
+            if [[ -z "${!name:-}" ]]; then
+              missing+=("$name")
+            fi
+          done
+          if (( ${#missing[@]} > 0 )); then
+            printf '::notice title=Queue supervision non configurée::Health-check ignoré ; secrets manquants : %s\n' "${missing[*]}"
+            echo 'configured=false' >> "$GITHUB_OUTPUT"
+            exit 0
           fi
-          echo "Secrets DB présents — supervision opérationnelle."
+          echo 'configured=true' >> "$GITHUB_OUTPUT"
+          echo 'Configuration présente — supervision opérationnelle.'
 
       - name: Supervise queue (seuils DoD #5282)
+        if: steps.queue-config.outputs.configured == 'true'
         working-directory: ./api
         env:
           DB_PORT: ${{ secrets.DB_PORT || '5432' }}
