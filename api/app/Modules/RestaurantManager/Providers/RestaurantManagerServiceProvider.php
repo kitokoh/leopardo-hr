@@ -46,6 +46,9 @@ use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantOrderRep
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPosSessionRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantReservationRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantStockLevelRepository;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppAdapterRegistry;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoDeliveryAppAdapter;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsDeliveryAppAdapter;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGatewayRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CashPaymentGateway;
@@ -124,6 +127,15 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             $registry->register(new MobileMoneyPaymentGateway());
 
             return $registry;
+        });
+
+        // RESTO-806 (#6227) — registre des adaptateurs d'apps de livraison
+        // (Uber Eats / Glovo, webhooks HMAC fail-closed).
+        $this->app->singleton(DeliveryAppAdapterRegistry::class, function (): DeliveryAppAdapterRegistry {
+            return new DeliveryAppAdapterRegistry([
+                new UberEatsDeliveryAppAdapter(),
+                new GlovoDeliveryAppAdapter(),
+            ]);
         });
 
         // RESTO-105 (#6162) — activation tenant (flag + référentiel) ;
