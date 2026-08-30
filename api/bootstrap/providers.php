@@ -10,6 +10,7 @@ use App\Modules\Cameras\Providers\CamerasServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
+use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
 use App\Modules\Growth\Providers\GrowthServiceProvider;
 use App\Modules\HR\Providers\HRServiceProvider;
 use App\Modules\Marketing\Providers\MarketingServiceProvider;
@@ -59,4 +60,6 @@ return [
     MarketingServiceProvider::class,
     // — Accounting module (Phase A, issue #5221)
     AccountingServiceProvider::class,
+    // — FuelStation module (solution verticale, issue #5795)
+    FuelStationServiceProvider::class,
 ];
