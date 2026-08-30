@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\EduManager\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\EduManager\Domain\Models\EduGrade;
 use App\Modules\EduManager\Domain\Models\EduReportCard;
 use App\Modules\EduManager\Domain\Models\EduReportCardLine;
 use App\Modules\EduManager\Domain\Models\EduStudent;
@@ -101,7 +102,11 @@ final class EduReportCardService
             ->where('g.company_id', $actor->company_id)
             ->where('g.student_id', (int) $card->student_id)
             ->where('a.academic_year_id', $academicYearId)
-            ->where('a.published_at', '!=', null)
+            // Publication au niveau de la NOTE (EduGradeService::publish pose
+            // g.published_at) — pas au niveau de l'évaluation (correctif : la
+            // ligne de bulletin ne dépendait jamais de a.published_at, qui
+            // restait NULL → aucun bulletin généré).
+            ->where('g.status', EduGrade::STATUS_PUBLISHED)
             ->selectRaw('a.subject_id, COUNT(g.id) as cnt, AVG(g.score) as avg, MAX(a.coefficient) as coeff')
             ->groupBy('a.subject_id')
             ->get();

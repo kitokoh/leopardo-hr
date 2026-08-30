@@ -84,9 +84,9 @@ final class EduReportService
         }
 
         return $query->get()->map(fn ($row): array => [
-            'campus_id' => $row->campus_id,
-            'status' => $row->status,
-            'count' => (int) $row->count,
+            'campus_id' => $row->getAttribute('campus_id'),
+            'status' => $row->getAttribute('status'),
+            'count' => (int) $row->getAttribute('count'),
         ])->all();
     }
 
@@ -124,9 +124,9 @@ final class EduReportService
         }
 
         return $query->get()->map(fn ($row): array => [
-            'subject_id' => (int) $row->subject_id,
-            'average' => (string) round((float) $row->average, 2),
-            'grade_count' => (int) $row->grade_count,
+            'subject_id' => (int) $row->getAttribute('subject_id'),
+            'average' => (string) round((float) $row->getAttribute('average'), 2),
+            'grade_count' => (int) $row->getAttribute('grade_count'),
         ])->all();
     }
 
@@ -149,9 +149,9 @@ final class EduReportService
         }
 
         return $query->get()->map(fn ($row): array => [
-            'campus_id' => (int) $row->campus_id,
-            'class_count' => (int) $row->class_count,
-            'total_capacity' => (int) $row->total_capacity,
+            'campus_id' => (int) $row->getAttribute('campus_id'),
+            'class_count' => (int) $row->getAttribute('class_count'),
+            'total_capacity' => (int) $row->getAttribute('total_capacity'),
         ])->all();
     }
 }

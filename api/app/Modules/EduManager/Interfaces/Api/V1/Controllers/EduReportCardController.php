@@ -25,9 +25,7 @@ class EduReportCardController extends Controller
 {
     use ChecksEduSolution;
 
-    public function __construct(private readonly EduReportCardService $cards)
-    {
-    }
+    public function __construct(private readonly EduReportCardService $cards) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -93,7 +91,7 @@ class EduReportCardController extends Controller
         return response()->json(['data' => $this->payload($card->load('lines.subject:id,code,name'), true)]);
     }
 
-    public function validate(Request $request, EduReportCard $card): JsonResponse
+    public function validateCard(Request $request, EduReportCard $card): JsonResponse
     {
         $this->assertSolutionActive();
 

@@ -54,7 +54,7 @@ final class EduMarketingService
                 'admission_number' => $admission->admission_number,
                 'crm_contact_id' => $admission->crm_contact_id,
                 'applicant_name' => trim($admission->applicant_first_name.' '.$admission->applicant_last_name),
-                'applied_at' => $admission->applied_at?->toDateString(),
+                'applied_at' => $admission->applied_at->toDateString(),
                 'status' => $admission->status,
             ])
             ->all();
