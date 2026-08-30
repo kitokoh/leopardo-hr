@@ -34,34 +34,34 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // Smoke test du module (DELIVERY-101/#6282) — lecture pure.
         Route::get('/ping', [DeliveryHealthController::class, 'ping']);
 
-        // CRUD livraisons (DELIVERY-201/#6285) — RBAC manager (`api.manager`) ;
-        // la matrice fine livreur/dispatcher/admin est le scope de BC-26-D05.
-        Route::middleware('api.manager')->group(function (): void {
+        // CRUD livraisons (DELIVERY-201/#6285) — RBAC fine (BC-26-D05/#6294) :
+        // dispatcher/manager/admin (la création vient du dispatcher/manager).
+        Route::middleware('delivery.permission:dispatcher|manager|admin')->group(function (): void {
             Route::get('/deliveries', [DeliveryController::class, 'index']);
             Route::post('/deliveries', [DeliveryController::class, 'store']);
             Route::get('/deliveries/{delivery}', [DeliveryController::class, 'show'])->whereNumber('delivery');
 
-            // Tournées (DELIVERY-202/#6286) — création, affectation idempotente,
-            // clôture idempotente, détail avec stops ordonnés.
-            // Tracking (DELIVERY-204/#6288) — événements idempotents, lien
-            // public borné, ligne du temps interne.
-            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
-            Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
+            // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
+            Route::middleware('delivery.permission:dispatcher|admin|manager')->group(function (): void {
+                Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
+                Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
+                Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
+                Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
+            });
 
-            // Tournées (DELIVERY-202/#6286) — création, affectation idempotente,
-            // clôture idempotente, détail avec stops ordonnés.
-            // Rapports & KPIs (DELIVERY-207/#6291) — read model déterministe
-            // ventilé par source + export CSV streamé.
-            Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
-            Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
+            // Tracking (DELIVERY-204/#6288) — l'écriture d'événements est
+            // ouverte au rider (mobile livreur, DELIVERY-203).
+            Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
+                Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
+                Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
+                Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
+            });
 
-            // Tournées (DELIVERY-202/#6286) — création, affectation idempotente,
-            // clôture idempotente, détail avec stops ordonnés.
-            Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
-            Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
-            Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
-            Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
+            // Rapports & KPIs (DELIVERY-207/#6291).
+            Route::middleware('delivery.permission:manager|admin')->group(function (): void {
+                Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
+                Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
+            });
         });
     });
 

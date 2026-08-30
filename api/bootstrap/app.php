@@ -142,6 +142,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'employee' => EnsureEmployeeMiddleware::class,
             'module.cameras' => EnsureCameraModuleMiddleware::class,
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,
+            'delivery.permission' => \App\Http\Middleware\Delivery\EnsureDeliveryPermissionMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
