@@ -33,6 +33,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingCo
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelReportController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
@@ -131,6 +132,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
         // Formulaire de contact → lead CRM (TRAVEL-416/#6068).
         Route::post('/contact', [TravelContactController::class, 'store']);
+
+        // Rapports & exports (TRAVEL-501..507/#6071..#6077) — travel.reports.
+        Route::get('/reports/sales', [TravelReportController::class, 'sales']);
+        Route::get('/reports/occupancy', [TravelReportController::class, 'occupancy']);
+        Route::get('/reports/revenue', [TravelReportController::class, 'revenue']);
+        Route::get('/reports/cancellations', [TravelReportController::class, 'cancellations']);
+        Route::get('/reports/dashboard', [TravelReportController::class, 'dashboard']);
+        Route::get('/reports/export', [TravelReportController::class, 'export']);
 
         // Boutique en ligne (TRAVEL-401..404/#6053..#6056).
         Route::get('/shop/trips', [TravelShopController::class, 'search']);

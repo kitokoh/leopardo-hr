@@ -4291,6 +4291,171 @@ paths:
           description: Non authentifié
         '422':
           description: Validation échouée (consentement requis, message borné)
+  /travel/reports/sales:
+    get:
+      tags:
+      - Travel
+      summary: Rapport des ventes (TRAVEL-501/#6071)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema: {type: string, format: date}
+        description: Début de période (created_at)
+      - name: to
+        in: query
+        schema: {type: string, format: date}
+      - name: trip_id
+        in: query
+        schema: {type: integer}
+      - name: route_id
+        in: query
+        schema: {type: integer}
+      - name: source
+        in: query
+        schema: {type: string, enum: [online, office, phone, partner]}
+      - name: status
+        in: query
+        schema: {type: string, enum: [confirmed, cancelled, refunded, completed]}
+      - name: per_page
+        in: query
+        schema: {type: integer, default: 50}
+      responses:
+        '200':
+          description: Ventes paginées + agrégats serveur (minor units)
+        '403':
+          description: Permission travel.reports requise
+        '401':
+          description: Non authentifié
+  /travel/reports/occupancy:
+    get:
+      tags:
+      - Travel
+      summary: Taux d'occupation par trajet (TRAVEL-502/#6072)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema: {type: string, format: date}
+      - name: to
+        in: query
+        schema: {type: string, format: date}
+      - name: route_id
+        in: query
+        schema: {type: integer}
+      - name: per_page
+        in: query
+        schema: {type: integer, default: 50}
+      responses:
+        '200':
+          description: Occupation (vendus/total/taux) triée par taux décroissant
+        '403':
+          description: Permission travel.reports requise
+        '401':
+          description: Non authentifié
+  /travel/reports/revenue:
+    get:
+      tags:
+      - Travel
+      summary: Recettes encaissées (TRAVEL-503/#6073)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema: {type: string, format: date}
+      - name: to
+        in: query
+        schema: {type: string, format: date}
+      responses:
+        '200':
+          description: Confirmés − remboursés (minor units), détail par route
+        '403':
+          description: Permission travel.reports requise
+        '401':
+          description: Non authentifié
+  /travel/reports/cancellations:
+    get:
+      tags:
+      - Travel
+      summary: Annulations & motifs (TRAVEL-504/#6074)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema: {type: string, format: date}
+      - name: to
+        in: query
+        schema: {type: string, format: date}
+      - name: source
+        in: query
+        schema: {type: string, enum: [online, office, phone, partner]}
+      responses:
+        '200':
+          description: Annulations par motif/source + taux
+        '403':
+          description: Permission travel.reports requise
+        '401':
+          description: Non authentifié
+  /travel/reports/dashboard:
+    get:
+      tags:
+      - Travel
+      summary: KPIs du dashboard (TRAVEL-507/#6077)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema: {type: string, format: date}
+        description: "Défaut : début du jour"
+      - name: to
+        in: query
+        schema: {type: string, format: date}
+        description: "Défaut : fin du jour"
+      responses:
+        '200':
+          description: KPIs (ventes, passagers, recettes, occupation, annulations)
+        '403':
+          description: Permission travel.reports requise
+        '401':
+          description: Non authentifié
+  /travel/reports/export:
+    get:
+      tags:
+      - Travel
+      summary: Export CSV idempotent (TRAVEL-505/#6075)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: type
+        in: query
+        required: true
+        schema: {type: string, enum: [sales, occupancy, revenue, cancellations]}
+      - name: from
+        in: query
+        schema: {type: string, format: date}
+      - name: to
+        in: query
+        schema: {type: string, format: date}
+      - name: route_id
+        in: query
+        schema: {type: integer}
+      - name: source
+        in: query
+        schema: {type: string, enum: [online, office, phone, partner]}
+      responses:
+        '200':
+          description: URL signée (30 min) — même requête = même fichier
+        '403':
+          description: Permission travel.reports requise
+        '401':
+          description: Non authentifié
+        '422':
+          description: Type d'export inconnu
   /health:
     get:
       tags:

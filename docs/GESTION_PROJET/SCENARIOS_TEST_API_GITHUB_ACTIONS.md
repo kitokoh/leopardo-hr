@@ -1584,3 +1584,12 @@ Suite de l'épic 4xx : `POST /travel/payments/{payment}/verify`, `POST /travel/p
 `POST /travel/contact` → événement `travel.contact.submitted.v1` (lead CRM par événement, jamais d'import direct).
 - Scénarios à vérifier : 202 + événement publié ; consentement absent/faux → 422 ; message > 2000 → 422 ; email invalide → 422.
 - Couverture : `api/tests/Feature/Travel/TravelContactTest.php` (198 tests Travel au total).
+
+## BC-24 TRAVEL — Rapports & exports (TRAVEL-501..507, 2026-08-30)
+
+`GET /travel/reports/{sales,occupancy,revenue,cancellations,dashboard,export}` (permission `travel.reports`).
+- Scénarios à vérifier : agrégats exacts (count, passagers, montants minor units) ; isolation tenant ; taux d'occupation
+  = vendus/total borné [0,1] trié décroissant ; recettes = confirmés − remboursés ; annulations groupées par motif/source ;
+  employé simple → 403 ; export idempotent (même requête = même hash sha256 = même fichier, URL signée 30 min) ; type
+  inconnu → 422 ; read models recalculés → état identique après reprise.
+- Couverture : `api/tests/Feature/Travel/TravelReportApiTest.php` (208 tests Travel au total).

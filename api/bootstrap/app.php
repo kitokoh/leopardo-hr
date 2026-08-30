@@ -58,6 +58,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // BC-24 TRAVEL — outbox événementielle + expiration des réservations.
         $schedule->command('travel:outbox-dispatch --limit=100')->everyMinute()->withoutOverlapping();
         $schedule->command('travel:expire-bookings --limit=100')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('travel:rebuild-report-readmodels')->hourly();
         // PA2-PAY-012 — Nightly progressive payroll pre-calculation
         $schedule->command('payroll:precalculate')->dailyAt('02:00');
         // Audit Mobile+Edge 2026-07-26 (issue #1288) — Edge node silence /

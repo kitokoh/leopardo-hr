@@ -4375,6 +4375,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}/images/{travelRentalVehicleImage}", options);
     },
 
+    /** Annulations & motifs (TRAVEL-504/#6074) */
+    getTravelReportsCancellations(options = {}) {
+      return request("GET", "/travel/reports/cancellations", options);
+    },
+
+    /** KPIs du dashboard (TRAVEL-507/#6077) */
+    getTravelReportsDashboard(options = {}) {
+      return request("GET", "/travel/reports/dashboard", options);
+    },
+
+    /** Export CSV idempotent (TRAVEL-505/#6075) */
+    getTravelReportsExport(options = {}) {
+      return request("GET", "/travel/reports/export", options);
+    },
+
+    /** Taux d'occupation par trajet (TRAVEL-502/#6072) */
+    getTravelReportsOccupancy(options = {}) {
+      return request("GET", "/travel/reports/occupancy", options);
+    },
+
+    /** Recettes encaissées (TRAVEL-503/#6073) */
+    getTravelReportsRevenue(options = {}) {
+      return request("GET", "/travel/reports/revenue", options);
+    },
+
+    /** Rapport des ventes (TRAVEL-501/#6071) */
+    getTravelReportsSales(options = {}) {
+      return request("GET", "/travel/reports/sales", options);
+    },
+
     /** Liste des routes (TRAVEL-307/#6037) */
     getTravelRoutes(options = {}) {
       return request("GET", "/travel/routes", options);

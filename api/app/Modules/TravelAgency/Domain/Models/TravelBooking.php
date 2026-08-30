@@ -40,6 +40,8 @@ class TravelBooking extends Model
         'customer_contact_id',
         'booked_by_user_id',
         'payment_status',
+        'cancelled_at',
+        'cancel_reason',
         'expires_at',
         'idempotency_key',
         'version',
@@ -52,6 +54,7 @@ class TravelBooking extends Model
         'booking_source' => BookingSource::class,
         'payment_status' => PaymentStatus::class,
         'expires_at' => 'datetime',
+        'cancelled_at' => 'datetime',
         'version' => 'integer',
     ];
 
