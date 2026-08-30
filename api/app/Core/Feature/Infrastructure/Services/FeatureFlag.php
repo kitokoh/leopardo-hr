@@ -7,26 +7,24 @@ namespace App\Core\Feature\Infrastructure\Services;
 use App\Core\Tenant\Domain\Models\Company;
 
 /**
+ * MAT-010 (#5868) — Feature flags (socle) : délègue au registre versionné.
+ *
  * APV L.08 — Un module = un package activable par company.
  *
- * Service leger pour interroger les feature flags stockes dans companies.features (JSONB).
- * Utilisation :
+ * La résolution est déléguée à {@see FeatureFlagRegistry} (registre versionné
+ * + kill switches, fail-closed) — l'API statique historique est conservée :
  *   FeatureFlag::enabled('finance', $company)  => bool
- *   FeatureFlag::for($company)                 => array des flags resolus
+ *   FeatureFlag::for($company)                 => array des flags résolus
  */
 class FeatureFlag
 {
     /**
-     * Retourne true si la feature est active pour la company donnee.
+     * Retourne true si la feature est active pour la company donnée.
      * Les features inconnues retournent false (fail-closed).
      */
     public static function enabled(string $key, ?Company $company): bool
     {
-        if ($company === null) {
-            return false;
-        }
-
-        return $company->hasFeature($key);
+        return app(FeatureFlagRegistry::class)->enabled($key, $company);
     }
 
     /**
@@ -35,13 +33,14 @@ class FeatureFlag
      */
     public static function for(?Company $company): array
     {
-        $flags = [];
+        return app(FeatureFlagRegistry::class)->for($company);
+    }
 
-        foreach (Company::KNOWN_MODULES as $module) {
-            $flags[$module] = self::enabled($module, $company);
-        }
-
-        return $flags;
+    /**
+     * Version du registre des feature flags (MAT-010).
+     */
+    public static function version(): string
+    {
+        return app(FeatureFlagRegistry::class)->version();
     }
 }
-
