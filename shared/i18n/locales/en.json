@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-30T15:05:00Z",
+  "_updated_at": "2026-08-30T15:30:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -3636,6 +3636,19 @@
       "loadError": "Unable to load the point of sale.",
       "loading": "Loading point of sale…",
       "actionError": "Action failed, please retry."
-    }
+    },
+    "kitchenTitle": "Kitchen display",
+    "kitchenSubtitle": "Real-time order queue — preparation and pickup",
+    "branchAll": "All branches",
+    "inPreparation": "In preparation",
+    "ready": "Ready",
+    "empty": "No pending orders. The queue is empty.",
+    "start": "Start",
+    "markReady": "Ready",
+    "orderRef": "Order",
+    "covers": "covers",
+    "takeaway": "Takeaway",
+    "delivery": "Delivery",
+    "dineIn": "Dine-in"
   }
 }

@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-30T15:05:00Z",
+  "_updated_at": "2026-08-30T15:30:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -4260,6 +4260,19 @@
       "loadError": "Impossible de charger le point de vente.",
       "loading": "Chargement du point de vente…",
       "actionError": "Action impossible, réessayez."
-    }
+    },
+    "kitchenTitle": "Écran cuisine",
+    "kitchenSubtitle": "File de commandes en temps réel — préparation et mise à disposition",
+    "branchAll": "Toutes les branches",
+    "inPreparation": "En préparation",
+    "ready": "Prêtes",
+    "empty": "Aucune commande en attente. La file est vide.",
+    "start": "Démarrer",
+    "markReady": "Prête",
+    "orderRef": "Commande",
+    "covers": "couverts",
+    "takeaway": "À emporter",
+    "delivery": "Livraison",
+    "dineIn": "Sur place"
   }
 }

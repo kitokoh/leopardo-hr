@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-30T15:05:00Z",
+  "_updated_at": "2026-08-30T15:30:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -3636,6 +3636,19 @@
       "loadError": "Satış noktası yüklenemedi.",
       "loading": "Satış noktası yükleniyor…",
       "actionError": "İşlem başarısız, tekrar deneyin."
-    }
+    },
+    "kitchenTitle": "Mutfak ekranı",
+    "kitchenSubtitle": "Gerçek zamanlı sipariş kuyruğu — hazırlık ve teslim",
+    "branchAll": "Tüm şubeler",
+    "inPreparation": "Hazırlanıyor",
+    "ready": "Hazır",
+    "empty": "Bekleyen sipariş yok. Kuyruk boş.",
+    "start": "Başlat",
+    "markReady": "Hazır",
+    "orderRef": "Sipariş",
+    "covers": "kişi",
+    "takeaway": "Paket servis",
+    "delivery": "Teslimat",
+    "dineIn": "Salon"
   }
 }
