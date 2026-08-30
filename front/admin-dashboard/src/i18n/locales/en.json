@@ -4355,7 +4355,11 @@
     },
     "tickets": {
       "title": "Tickets",
-      "subtitle": "Browse, PDF download and revocation."
+      "subtitle": "Browse, PDF download and revocation.",
+      "download": "PDF",
+      "revoke": "Revoke",
+      "revokeTitle": "Revoke ticket",
+      "revokeBody": "Revoke ticket {number}? The PDF will become invalid and the ticket status will change to void."
     },
     "reports": {
       "title": "Reports",
