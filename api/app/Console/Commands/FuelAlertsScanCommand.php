@@ -12,6 +12,7 @@ use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
 use App\Modules\FuelStation\Domain\Models\FuelNotificationPreference;
 use App\Modules\FuelStation\Infrastructure\Services\FuelAlertService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 /**
  * fuel:alerts-scan — Détection périodique des anomalies FuelStation
@@ -50,6 +51,12 @@ class FuelAlertsScanCommand extends Command
         foreach ($companies as $company) {
             $created += $this->scanCompany($company->id, $maxHours);
         }
+
+        // Trace structurée SANS PII ni payload (FUEL-020, #5814).
+        Log::channel('structured')->info('fuel.alerts.scanned', [
+            'created' => $created,
+            'companies' => $companies->count(),
+        ]);
 
         $this->info("[fuel:alerts-scan] {$created} alerte(s) créée(s).");
 
