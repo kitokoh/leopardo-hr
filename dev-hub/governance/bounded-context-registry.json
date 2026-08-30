@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 [
   {
     "code": "BC-01",
@@ -35,6 +36,8 @@
 =======
 =======
 >>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
+=======
+>>>>>>> 92dbac8e8 (fix(governance): registre BC — ajout BC-25 RESTAURANT + format aligné sur main (débloque Module Structure Validator #6306))
 {
   "_meta": {
     "title": "Bounded Context Registry — Leopardo HR",
@@ -42,12 +45,16 @@
     "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
     "updated": "2026-08-30"
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 5c68931d1 (feat(restaurant): registre BC-25 actif + CODEOWNERS (RESTO-103, #6160))
   },
 <<<<<<< ours
 =======
   },
 >>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
+=======
+  },
+>>>>>>> 92dbac8e8 (fix(governance): registre BC — ajout BC-25 RESTAURANT + format aligné sur main (débloque Module Structure Validator #6306))
   "_shared_exceptions": [
     {
       "path": "api/app/Core/Http",
@@ -495,12 +502,18 @@
           "path": "api/app/Solutions/FuelStation",
           "status": "planned"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 92dbac8e8 (fix(governance): registre BC — ajout BC-25 RESTAURANT + format aligné sur main (débloque Module Structure Validator #6306))
         },
         {
           "path": "api/app/Modules/FuelStation",
           "status": "active"
+<<<<<<< HEAD
 >>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
+=======
+>>>>>>> 92dbac8e8 (fix(governance): registre BC — ajout BC-25 RESTAURANT + format aligné sur main (débloque Module Structure Validator #6306))
         }
       ],
       "routes": [],
@@ -754,6 +767,7 @@
       "owner": "Agent 24 — BC-TRAVEL",
       "priority": "P1",
 <<<<<<< HEAD
+<<<<<<< HEAD
       "status": "active",
       "paths": [
         {
@@ -765,6 +779,8 @@
         "api/routes/modules/travelagency.php"
       ],
 =======
+=======
+>>>>>>> 92dbac8e8 (fix(governance): registre BC — ajout BC-25 RESTAURANT + format aligné sur main (débloque Module Structure Validator #6306))
       "status": "planned",
       "paths": [
         {
@@ -773,7 +789,10 @@
         }
       ],
       "routes": [],
+<<<<<<< HEAD
 >>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
+=======
+>>>>>>> 92dbac8e8 (fix(governance): registre BC — ajout BC-25 RESTAURANT + format aligné sur main (débloque Module Structure Validator #6306))
       "migrations": [
         "api/database/migrations/tenant"
       ],
@@ -791,11 +810,18 @@
     },
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       "code": "BC-25",
       "name": "RESTAURANT",
       "context": "RestaurantManager",
       "responsibility": "Établissements, plan de salle, catalogue & recettes, POS/caisse, commandes, réservations, stock & achats (COGS), livraison, fidélité, promotions, rapports.",
+=======
+      "code": "BC-25",
+      "name": "RESTAURANT",
+      "context": "RestaurantManager",
+      "responsibility": "Branches, zones, tables, catégories, produits, recettes, ingrédients, unités, taxes, menus, fournisseurs, stock, achats, POS, commandes, paiements, réservations, livraison, fidélité, promotions, rapports, kiosque.",
+>>>>>>> 92dbac8e8 (fix(governance): registre BC — ajout BC-25 RESTAURANT + format aligné sur main (débloque Module Structure Validator #6306))
       "owner": "Agent 25 — BC-RESTAURANT",
       "priority": "P1",
       "status": "active",
@@ -805,7 +831,13 @@
           "status": "active"
         }
       ],
+<<<<<<< HEAD
       "routes": [],
+=======
+      "routes": [
+        "api/routes/modules/restaurantmanager.php"
+      ],
+>>>>>>> 92dbac8e8 (fix(governance): registre BC — ajout BC-25 RESTAURANT + format aligné sur main (débloque Module Structure Validator #6306))
       "migrations": [
         "api/database/migrations/tenant"
       ],
@@ -814,6 +846,7 @@
       ],
       "dependencies": [
         "BC-02",
+<<<<<<< HEAD
         "BC-03",
         "BC-04",
         "BC-11",
@@ -823,12 +856,19 @@
     },
     {
 >>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
+=======
+        "BC-03"
+      ]
+    },
+    {
+>>>>>>> 92dbac8e8 (fix(governance): registre BC — ajout BC-25 RESTAURANT + format aligné sur main (débloque Module Structure Validator #6306))
       "code": "BC-26",
       "name": "DELIVERY",
       "context": "Delivery",
       "responsibility": "Module de livraison dernier-kilomètre générique : livraisons/colis (sources manual/restaurant/retail/ecommerce/crm/field), tournées, livreurs, preuves (POD), suivi temps réel, règlement COD et rapports — activable par tout tenant (agence, restaurant, retail, e-commerce, pharmacie).",
       "owner": "Agent 26 — BC-DELIVERY",
       "priority": "P1",
+<<<<<<< HEAD
 <<<<<<< HEAD
       "status": "active",
       "paths": [
@@ -841,12 +881,17 @@
           "status": "active"
 >>>>>>> 5c68931d1 (feat(restaurant): registre BC-25 actif + CODEOWNERS (RESTO-103, #6160))
 =======
+=======
+>>>>>>> 92dbac8e8 (fix(governance): registre BC — ajout BC-25 RESTAURANT + format aligné sur main (débloque Module Structure Validator #6306))
       "status": "planned",
       "paths": [
         {
           "path": "api/app/Modules/Delivery",
           "status": "planned"
+<<<<<<< HEAD
 >>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
+=======
+>>>>>>> 92dbac8e8 (fix(governance): registre BC — ajout BC-25 RESTAURANT + format aligné sur main (débloque Module Structure Validator #6306))
         }
       ],
       "routes": [],
@@ -872,6 +917,7 @@
       ]
     }
   ]
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 }
@@ -1632,3 +1678,6 @@
 =======
 }
 >>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
+=======
+}
+>>>>>>> 92dbac8e8 (fix(governance): registre BC — ajout BC-25 RESTAURANT + format aligné sur main (débloque Module Structure Validator #6306))
