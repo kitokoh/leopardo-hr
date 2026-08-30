@@ -8131,4 +8131,295 @@ class AppLocalizationsEn extends AppLocalizations {
   String companydetailPlanWithPrice(Object planName, Object price) {
     return '$planName — $price';
   }
+
+  @override
+  String get crmAccountsColcreated => 'Created';
+
+  @override
+  String get crmAccountsColemail => 'Email';
+
+  @override
+  String get crmAccountsColname => 'Name';
+
+  @override
+  String get crmAccountsColphone => 'Phone';
+
+  @override
+  String get crmAccountsColstatus => 'Status';
+
+  @override
+  String get crmAccountsDescription => 'Client organizations of your company';
+
+  @override
+  String get crmAccountsEmpty => 'No accounts yet.';
+
+  @override
+  String get crmAccountsSubtitle => 'Account list (tenant-scoped).';
+
+  @override
+  String get crmAccountsTitle => 'Accounts';
+
+  @override
+  String get crmContactsDescription => 'People linked to your accounts';
+
+  @override
+  String get crmContactsEmpty => 'No contacts yet.';
+
+  @override
+  String get crmContactsPrimary => 'Primary';
+
+  @override
+  String get crmContactsSubtitle => 'Contact list (tenant-scoped).';
+
+  @override
+  String get crmContactsTitle => 'Contacts';
+
+  @override
+  String get crmErrorloading => 'Unable to load data.';
+
+  @override
+  String get crmFeaturelocked => 'CRM module not enabled for your company.';
+
+  @override
+  String get crmIsolationnote => 'Tenant-scoped data: no access to the Leopardo commercial CRM from this space.';
+
+  @override
+  String get crmLeadsColcompany => 'Company';
+
+  @override
+  String get crmLeadsColcreated => 'Created';
+
+  @override
+  String get crmLeadsColemail => 'Email';
+
+  @override
+  String get crmLeadsColname => 'Name';
+
+  @override
+  String get crmLeadsColsource => 'Source';
+
+  @override
+  String get crmLeadsColstatus => 'Status';
+
+  @override
+  String get crmLeadsDescription => 'Business opportunities to qualify';
+
+  @override
+  String get crmLeadsEmpty => 'No leads yet.';
+
+  @override
+  String get crmLeadsSubtitle => 'Lead list (tenant-scoped).';
+
+  @override
+  String get crmLeadsTitle => 'Leads';
+
+  @override
+  String get crmLoading => 'Loading…';
+
+  @override
+  String get crmPaginationnext => 'Next';
+
+  @override
+  String get crmPaginationpage => 'Page';
+
+  @override
+  String get crmPaginationprev => 'Previous';
+
+  @override
+  String get crmPipelineDescription => 'Opportunities overview by stage';
+
+  @override
+  String get crmPipelineEmpty => 'No opportunities yet.';
+
+  @override
+  String get crmPipelineStageLost => 'Lost';
+
+  @override
+  String get crmPipelineStageNegotiation => 'Negotiation';
+
+  @override
+  String get crmPipelineStageProposal => 'Proposal';
+
+  @override
+  String get crmPipelineStageProspecting => 'Prospecting';
+
+  @override
+  String get crmPipelineStageQualification => 'Qualification';
+
+  @override
+  String get crmPipelineStageWon => 'Won';
+
+  @override
+  String get crmPipelineSubtitle => 'Opportunities grouped by stage (tenant-scoped).';
+
+  @override
+  String get crmPipelineTitle => 'Pipeline';
+
+  @override
+  String get crmRefresh => 'Refresh';
+
+  @override
+  String get crmSearchplaceholder => 'Search…';
+
+  @override
+  String get crmSubtitle => 'Manage your prospects, accounts, contacts and opportunities — data isolated per company (tenant).';
+
+  @override
+  String get crmTitle => 'Client CRM';
+
+  @override
+  String get modulesRestaurant => 'Kitchen display';
+
+  @override
+  String get restaurantActionerror => 'Action failed, please retry.';
+
+  @override
+  String get restaurantAdditem => 'Add item';
+
+  @override
+  String get restaurantBill => 'Bill';
+
+  @override
+  String get restaurantBranch => 'Branch';
+
+  @override
+  String get restaurantBranchall => 'All branches';
+
+  @override
+  String get restaurantCheckin => 'Check in';
+
+  @override
+  String get restaurantClosesession => 'Close cash register';
+
+  @override
+  String get restaurantCovers => 'covers';
+
+  @override
+  String get restaurantCustomername => 'Customer name';
+
+  @override
+  String get restaurantDelivery => 'Delivery';
+
+  @override
+  String get restaurantDinein => 'Dine-in';
+
+  @override
+  String get restaurantDiscount => 'Discount';
+
+  @override
+  String get restaurantEmpty => 'No pending orders. The queue is empty.';
+
+  @override
+  String get restaurantGuests => 'Guests';
+
+  @override
+  String get restaurantInpreparation => 'In preparation';
+
+  @override
+  String get restaurantKiosktitle => 'Self-service kiosk';
+
+  @override
+  String get restaurantKitchensubtitle => 'Real-time order queue — preparation and pickup';
+
+  @override
+  String get restaurantKitchentitle => 'Kitchen display';
+
+  @override
+  String get restaurantLoaderror => 'Unable to load the kitchen queue.';
+
+  @override
+  String get restaurantLoading => 'Loading kitchen queue…';
+
+  @override
+  String get restaurantMarkready => 'Ready';
+
+  @override
+  String get restaurantNeworder => 'New order';
+
+  @override
+  String get restaurantNoshow => 'No-show';
+
+  @override
+  String get restaurantOpensession => 'Open cash register';
+
+  @override
+  String get restaurantOrderitems => 'Order items';
+
+  @override
+  String get restaurantOrderref => 'Order';
+
+  @override
+  String get restaurantPaid => 'Paid';
+
+  @override
+  String get restaurantPaycash => 'Pay cash';
+
+  @override
+  String get restaurantPossubtitle => 'Order taking and checkout';
+
+  @override
+  String get restaurantPostitle => 'Point of sale';
+
+  @override
+  String get restaurantReady => 'Ready';
+
+  @override
+  String get restaurantReservationnew => 'New reservation';
+
+  @override
+  String get restaurantReservations => 'Reservations';
+
+  @override
+  String get restaurantSessionclosed => 'Cash register closed';
+
+  @override
+  String get restaurantSessionopen => 'Cash register open';
+
+  @override
+  String get restaurantShoptitle => 'Online ordering';
+
+  @override
+  String get restaurantStart => 'Start';
+
+  @override
+  String get restaurantStatuscancelled => 'Cancelled';
+
+  @override
+  String get restaurantStatusclosed => 'Closed';
+
+  @override
+  String get restaurantStatusdraft => 'Draft';
+
+  @override
+  String get restaurantStatusinpreparation => 'In preparation';
+
+  @override
+  String get restaurantStatusopen => 'Open';
+
+  @override
+  String get restaurantStatuspaid => 'Paid';
+
+  @override
+  String get restaurantStatusready => 'Ready';
+
+  @override
+  String get restaurantStatusrefunded => 'Refunded';
+
+  @override
+  String get restaurantStatusserved => 'Served';
+
+  @override
+  String get restaurantSubtotal => 'Subtotal';
+
+  @override
+  String get restaurantTable => 'Table';
+
+  @override
+  String get restaurantTakeaway => 'Takeaway';
+
+  @override
+  String get restaurantTax => 'Tax';
+
+  @override
+  String get restaurantTotal => 'Total';
 }
