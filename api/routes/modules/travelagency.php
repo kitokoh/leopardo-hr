@@ -240,15 +240,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
         // ── Contacts admin (TRAVEL-913/#6421/#6425) : liste + consentements par canal
         Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
+        Route::post('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent']);
         Route::put('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent']);
         Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsentChannel']); // TRAVEL-913/#6425
 
         // ── Notifications manuelles legacy → canaux plateforme (TRAVEL-910/#6113)
-
-        // ── Notifications manuelles legacy → canaux plateforme (TRAVEL-910/#6113)
-        Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
-        Route::post('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent']);
-        Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsentChannel']); // TRAVEL-913/#6425
         Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
 
         // ── Formulaire de contact → lead CRM (TRAVEL-416/#6068) ────────────
