@@ -45,7 +45,7 @@
       </div>
 
       <DataTable
-        :columns="entityConfig.columns"
+        :columns="tableColumns"
         :rows="filteredRows"
         :loading="isLoading(activeTab)"
         :error="listError(activeTab)"
@@ -190,25 +190,25 @@ const entityConfigs = {
     canEdit: false,
     canDelete: false,
     searchKeys: ['name', 'iso2', 'iso3'],
-    columns: computed(() => [
+    columns: () => [
       { key: 'iso2', label: 'ISO2', sortable: true },
       { key: 'iso3', label: 'ISO3', sortable: true },
       { key: 'name', label: t('travel.countries.name', 'Nom'), sortable: true },
       { key: 'phone_code', label: t('travel.countries.phoneCode', 'Indicatif'), sortable: true },
       { key: 'status', label: t('travel.common.status', 'Statut'), sortable: true }
-    ])
+    ]
   },
   cities: {
     canCreate: false,
     canEdit: false,
     canDelete: false,
     searchKeys: ['name', 'region', 'country_iso2'],
-    columns: computed(() => [
+    columns: () => [
       { key: 'name', label: t('travel.cities.name', 'Ville'), sortable: true },
       { key: 'country_iso2', label: t('travel.cities.country', 'Pays'), sortable: true },
       { key: 'region', label: t('travel.cities.region', 'Région'), sortable: true },
       { key: 'status', label: t('travel.common.status', 'Statut'), sortable: true }
-    ])
+    ]
   },
   stations: {
     resource: 'stations',
@@ -217,15 +217,15 @@ const entityConfigs = {
     canEdit: true,
     canDelete: true,
     searchKeys: ['code', 'name', 'address', 'contact_phone'],
-    columns: computed(() => [
+    columns: () => [
       { key: 'code', label: 'Code', sortable: true },
       { key: 'name', label: t('travel.stations.name', 'Nom'), sortable: true },
       { key: 'city_label', label: t('travel.common.city', 'Ville'), sortable: false },
       { key: 'contact_phone', label: t('travel.stations.phone', 'Téléphone') },
       { key: 'is_terminal', label: t('travel.stations.isTerminal', 'Terminal') },
       { key: 'status', label: t('travel.common.status', 'Statut'), sortable: true }
-    ]),
-    fields: computed(() => [
+    ],
+    fields: () => [
       { key: 'code', label: 'travel.stations.code', type: 'text', required: true, max: 40 },
       { key: 'name', label: 'travel.stations.name', type: 'text', required: true, max: 120 },
       { key: 'city_id', label: 'travel.common.city', type: 'select', required: true, options: cityOptions },
@@ -234,7 +234,7 @@ const entityConfigs = {
       { key: 'timezone', label: 'travel.stations.timezone', type: 'text', max: 64 },
       { key: 'is_terminal', label: 'travel.stations.isTerminal', type: 'checkbox' },
       { key: 'status', label: 'travel.common.status', type: 'select', options: statusOptions }
-    ])
+    ]
   },
   offices: {
     resource: 'offices',
@@ -243,20 +243,20 @@ const entityConfigs = {
     canEdit: true,
     canDelete: true,
     searchKeys: ['name', 'address', 'contact_phone'],
-    columns: computed(() => [
+    columns: () => [
       { key: 'name', label: t('travel.offices.name', 'Nom'), sortable: true },
       { key: 'city_label', label: t('travel.common.city', 'Ville') },
       { key: 'address', label: t('travel.offices.address', 'Adresse') },
       { key: 'contact_phone', label: t('travel.offices.phone', 'Téléphone') },
       { key: 'status', label: t('travel.common.status', 'Statut'), sortable: true }
-    ]),
-    fields: computed(() => [
+    ],
+    fields: () => [
       { key: 'name', label: 'travel.offices.name', type: 'text', required: true, max: 120 },
       { key: 'city_id', label: 'travel.common.city', type: 'select', required: true, options: cityOptions },
       { key: 'address', label: 'travel.offices.address', type: 'text', max: 255 },
       { key: 'contact_phone', label: 'travel.offices.phone', type: 'text', max: 40 },
       { key: 'status', label: 'travel.common.status', type: 'select', options: statusOptions }
-    ])
+    ]
   },
   carriers: {
     resource: 'carriers',
@@ -265,20 +265,20 @@ const entityConfigs = {
     canEdit: true,
     canDelete: true,
     searchKeys: ['code', 'name', 'contact_phone'],
-    columns: computed(() => [
+    columns: () => [
       { key: 'code', label: 'Code', sortable: true },
       { key: 'name', label: t('travel.carriers.name', 'Nom'), sortable: true },
       { key: 'type', label: t('travel.carriers.type', 'Type'), sortable: true },
       { key: 'contact_phone', label: t('travel.carriers.phone', 'Téléphone') },
       { key: 'status', label: t('travel.common.status', 'Statut'), sortable: true }
-    ]),
-    fields: computed(() => [
+    ],
+    fields: () => [
       { key: 'code', label: 'travel.carriers.code', type: 'text', required: true, max: 40 },
       { key: 'name', label: 'travel.carriers.name', type: 'text', required: true, max: 120 },
       { key: 'type', label: 'travel.carriers.type', type: 'select', options: carrierTypes },
       { key: 'contact_phone', label: 'travel.carriers.phone', type: 'text', max: 40 },
       { key: 'status', label: 'travel.common.status', type: 'select', options: statusOptions }
-    ])
+    ]
   },
   classes: {
     resource: 'classes',
@@ -287,20 +287,20 @@ const entityConfigs = {
     canEdit: true,
     canDelete: true,
     searchKeys: ['code', 'label'],
-    columns: computed(() => [
+    columns: () => [
       { key: 'code', label: 'Code', sortable: true },
       { key: 'label', label: t('travel.classes.label', 'Libellé'), sortable: true },
       { key: 'color', label: t('travel.classes.color', 'Couleur'), sortable: true },
       { key: 'priority', label: t('travel.classes.priority', 'Priorité'), sortable: true },
       { key: 'status', label: t('travel.common.status', 'Statut'), sortable: true }
-    ]),
-    fields: computed(() => [
+    ],
+    fields: () => [
       { key: 'code', label: 'travel.classes.code', type: 'text', required: true, max: 40 },
       { key: 'label', label: 'travel.classes.label', type: 'text', required: true, max: 120 },
       { key: 'color', label: 'travel.classes.color', type: 'text', max: 7 },
       { key: 'priority', label: 'travel.classes.priority', type: 'number', min: 0 },
       { key: 'status', label: 'travel.common.status', type: 'select', options: statusOptions }
-    ])
+    ]
   },
   vehicles: {
     resource: 'vehicles',
@@ -309,25 +309,34 @@ const entityConfigs = {
     canEdit: true,
     canDelete: true,
     searchKeys: ['code', 'registration_number'],
-    columns: computed(() => [
+    columns: () => [
       { key: 'code', label: 'Code', sortable: true },
       { key: 'registration_number', label: t('travel.vehicles.registration', 'Immatriculation'), sortable: true },
       { key: 'seat_capacity', label: t('travel.vehicles.seats', 'Places'), sortable: true },
       { key: 'carrier_label', label: t('travel.common.carrier', 'Compagnie') },
       { key: 'status', label: t('travel.common.status', 'Statut'), sortable: true }
-    ]),
-    fields: computed(() => [
+    ],
+    fields: () => [
       { key: 'code', label: 'travel.vehicles.code', type: 'text', required: true, max: 40 },
       { key: 'registration_number', label: 'travel.vehicles.registration', type: 'text', max: 40 },
       { key: 'seat_capacity', label: 'travel.vehicles.seats', type: 'number', required: true, min: 1, max: 200 },
       { key: 'carrier_id', label: 'travel.common.carrier', type: 'select', options: carrierOptions },
       { key: 'status', label: 'travel.common.status', type: 'select', options: statusOptions },
       { key: 'notes', label: 'travel.vehicles.notes', type: 'textarea', max: 2000 }
-    ])
+    ]
   }
 }
 
 const entityConfig = computed(() => entityConfigs[activeTab.value])
+
+/** Colonnes et champs de l'entité active — computeds de premier niveau :
+ *  Vue ne dépaquette pas les refs imbriquées dans un objet (les
+ *  `columns`/`fields` stockés dans entityConfigs sont des fonctions). */
+const tableColumns = computed(() => entityConfig.value.columns())
+const formFields = computed(() => {
+  const fields = entityConfig.value.fields
+  return fields ? fields() : []
+})
 
 const filteredRows = computed(() => {
   const rows = lists[activeTab.value] || []
@@ -391,7 +400,6 @@ async function init() {
   decorate()
 }
 
-const formFields = computed(() => entityConfig.value.fields || [])
 
 function openCreate() {
   editing.value = null
