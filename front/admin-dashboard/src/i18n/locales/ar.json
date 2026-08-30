@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-30T15:05:00Z",
+  "_updated_at": "2026-08-30T12:00:00Z",
   "_locale": "ar",
   "app": {
     "title": "ليوباردو للموارد البشرية"
@@ -172,7 +172,7 @@
     "cabinet": "خزانة المستندات",
     "notifications": "الاشعارات",
     "evaluations": "التقييمات",
-    "restaurant": "المطعم"
+    "restaurant": "المطبخ"
   },
   "emails": {
     "invitation": {
@@ -4215,51 +4215,23 @@
   "settingsNotificationsSaveFailed": "تعذّر حفظ تفضيلات الإشعارات: {error}",
   "companydetailPlanWithPrice": "الخطة {planName} — {price}",
   "restaurant": {
-    "title": "نقطة البيع",
-    "subtitle": "أخذ الطلبات والتحصيل",
-    "products": "قائمة المنتجات",
-    "cart": "الطلب الحالي",
-    "noProducts": "لا توجد منتجات متاحة.",
-    "noSession": "لا توجد جلسة نقدية مفتوحة لهذا الفرع.",
-    "openSession": "فتح الجلسة النقدية",
-    "noOrder": "لا يوجد طلب حالي.",
-    "newOrder": "طلب جديد",
-    "submit": "إرسال",
-    "confirm": "تأكيد (المطبخ)",
-    "bill": "الفاتورة",
-    "payCash": "الدفع نقدًا",
-    "paid": "تم دفع الطلب",
-    "subtotal": "المجموع الفرعي",
-    "tax": "الضريبة",
-    "total": "الإجمالي",
-    "removeItem": "إزالة",
-    "uncategorized": "بدون تصنيف",
-    "loadError": "تعذر تحميل نقطة البيع.",
-    "loading": "جارٍ تحميل نقطة البيع…",
+    "kitchenTitle": "شاشة المطبخ",
+    "kitchenSubtitle": "قائمة الطلبات لحظيًا — التحضير والتجهيز",
+    "branch": "الفرع",
+    "branchAll": "جميع الفروع",
+    "inPreparation": "قيد التحضير",
+    "ready": "جاهز",
+    "empty": "لا توجد طلبات معلقة. القائمة فارغة.",
+    "start": "ابدأ",
+    "markReady": "جاهز",
+    "orderRef": "طلب",
+    "table": "طاولة",
+    "covers": "أشخاص",
+    "takeaway": "للطلب الخارجي",
+    "delivery": "توصيل",
+    "dineIn": "في المكان",
+    "loadError": "تعذر تحميل قائمة المطبخ.",
     "actionError": "تعذر تنفيذ الإجراء، حاول مجددًا.",
-    "pos": {
-      "title": "نقطة البيع",
-      "subtitle": "أخذ الطلبات والتحصيل",
-      "products": "قائمة المنتجات",
-      "cart": "الطلب الحالي",
-      "noProducts": "لا توجد منتجات متاحة.",
-      "noSession": "لا توجد جلسة نقدية مفتوحة لهذا الفرع.",
-      "openSession": "فتح الجلسة النقدية",
-      "noOrder": "لا يوجد طلب حالي.",
-      "newOrder": "طلب جديد",
-      "submit": "إرسال",
-      "confirm": "تأكيد (المطبخ)",
-      "bill": "الفاتورة",
-      "payCash": "الدفع نقدًا",
-      "paid": "تم دفع الطلب",
-      "subtotal": "المجموع الفرعي",
-      "tax": "الضريبة",
-      "total": "الإجمالي",
-      "removeItem": "إزالة",
-      "uncategorized": "بدون تصنيف",
-      "loadError": "تعذر تحميل نقطة البيع.",
-      "loading": "جارٍ تحميل نقطة البيع…",
-      "actionError": "تعذر تنفيذ الإجراء، حاول مجددًا."
-    }
+    "loading": "جارٍ تحميل قائمة المطبخ…"
   }
 }

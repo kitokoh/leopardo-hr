@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-30T15:05:00Z",
+  "_updated_at": "2026-08-30T12:00:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -147,7 +147,7 @@
     "cabinet": "Coffre documentaire",
     "notifications": "Notifications",
     "evaluations": "Evaluations",
-    "restaurant": "Point de vente (POS)"
+    "restaurant": "Écran cuisine"
   },
   "emails": {
     "invitation": {
@@ -3613,29 +3613,23 @@
     }
   },
   "restaurant": {
-    "pos": {
-      "title": "Point de vente (POS)",
-      "subtitle": "Prise de commande et encaissement",
-      "products": "Catalogue",
-      "cart": "Commande en cours",
-      "noProducts": "Aucun produit disponible.",
-      "noSession": "Aucune caisse ouverte pour cette branche.",
-      "openSession": "Ouvrir la caisse",
-      "noOrder": "Aucune commande en cours.",
-      "newOrder": "Nouvelle commande",
-      "submit": "Soumettre",
-      "confirm": "Confirmer (cuisine)",
-      "bill": "Addition",
-      "payCash": "Encaisser espèces",
-      "paid": "Commande payée",
-      "subtotal": "Sous-total",
-      "tax": "TVA",
-      "total": "Total",
-      "removeItem": "Retirer",
-      "uncategorized": "Sans catégorie",
-      "loadError": "Impossible de charger le point de vente.",
-      "loading": "Chargement du point de vente…",
-      "actionError": "Action impossible, réessayez."
-    }
+    "kitchenTitle": "Écran cuisine",
+    "kitchenSubtitle": "File de commandes en temps réel — préparation et mise à disposition",
+    "branch": "Branche",
+    "branchAll": "Toutes les branches",
+    "inPreparation": "En préparation",
+    "ready": "Prêtes",
+    "empty": "Aucune commande en attente. La file est vide.",
+    "start": "Démarrer",
+    "markReady": "Prête",
+    "orderRef": "Commande",
+    "table": "Table",
+    "covers": "couverts",
+    "takeaway": "À emporter",
+    "delivery": "Livraison",
+    "dineIn": "Sur place",
+    "loadError": "Impossible de charger la file cuisine.",
+    "actionError": "Action impossible, réessayez.",
+    "loading": "Chargement de la file cuisine…"
   }
 }

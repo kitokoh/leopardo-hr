@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-30T15:05:00Z",
+  "_updated_at": "2026-08-30T12:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -147,7 +147,7 @@
     "cabinet": "Document vault",
     "notifications": "Notifications",
     "evaluations": "Evaluations",
-    "restaurant": "Point of sale (POS)"
+    "restaurant": "Kitchen display"
   },
   "emails": {
     "invitation": {
@@ -3613,29 +3613,23 @@
     }
   },
   "restaurant": {
-    "pos": {
-      "title": "Point of sale (POS)",
-      "subtitle": "Order taking and payment",
-      "products": "Catalog",
-      "cart": "Current order",
-      "noProducts": "No products available.",
-      "noSession": "No open cash session for this branch.",
-      "openSession": "Open cash session",
-      "noOrder": "No current order.",
-      "newOrder": "New order",
-      "submit": "Submit",
-      "confirm": "Confirm (kitchen)",
-      "bill": "Bill",
-      "payCash": "Pay cash",
-      "paid": "Order paid",
-      "subtotal": "Subtotal",
-      "tax": "Tax",
-      "total": "Total",
-      "removeItem": "Remove",
-      "uncategorized": "Uncategorized",
-      "loadError": "Unable to load the point of sale.",
-      "loading": "Loading point of sale…",
-      "actionError": "Action failed, please retry."
-    }
+    "kitchenTitle": "Kitchen display",
+    "kitchenSubtitle": "Real-time order queue — preparation and pickup",
+    "branch": "Branch",
+    "branchAll": "All branches",
+    "inPreparation": "In preparation",
+    "ready": "Ready",
+    "empty": "No pending orders. The queue is empty.",
+    "start": "Start",
+    "markReady": "Ready",
+    "orderRef": "Order",
+    "table": "Table",
+    "covers": "covers",
+    "takeaway": "Takeaway",
+    "delivery": "Delivery",
+    "dineIn": "Dine-in",
+    "loadError": "Unable to load the kitchen queue.",
+    "actionError": "Action failed, please retry.",
+    "loading": "Loading kitchen queue…"
   }
 }

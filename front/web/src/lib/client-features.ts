@@ -195,10 +195,10 @@ export const CLIENT_MODULES: ClientModule[] = [
   },
   {
     key: 'restaurant',
-    href: '/restaurant/pos',
+    href: '/restaurant/kitchen',
     label: 'Restaurant',
     group: 'general',
-    capabilityKeys: ['restaurant', 'restaurant.server', 'restaurant.manage'],
+    capabilityKeys: ['restaurant', 'restaurant.kitchen'],
     featureKeys: ['restaurantmanager'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Restaurant',
@@ -226,7 +226,6 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/crm/leads': 'crm',
   '/crm/pipeline': 'crm',
   '/restaurant': 'restaurant',
-  '/restaurant/pos': 'restaurant',
   '/restaurant/kitchen': 'restaurant',
 };
 
