@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -44,7 +45,7 @@ return new class extends Migration
                 $table->index('company_id'); // index unique, pas de doublon avec ->index() ci-dessus
             });
 
-            \Illuminate\Support\Facades\DB::statement(
+            DB::statement(
                 "COMMENT ON TABLE employee_attendance_preferences IS 'Préférence mode pointage individuel. Actif uniquement si l''entreprise n''impose pas de mode.'"
             );
         }

@@ -70,7 +70,7 @@ return new class extends Migration
                 $definition = strtolower((string) ($constraint->definition ?? ''));
                 foreach (['status', 'draft', 'scheduled', 'published', 'cancelled'] as $requiredToken) {
                     if (! str_contains($definition, $requiredToken)) {
-                        throw new \RuntimeException('Existing company_announcements_status_check has an incompatible definition.');
+                        throw new RuntimeException('Existing company_announcements_status_check has an incompatible definition.');
                     }
                 }
             }

@@ -11,6 +11,7 @@ use App\Modules\TravelAgency\Application\Actions\CreateQuoteAction;
 use App\Modules\TravelAgency\Domain\Models\TravelQuote;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelQuoteRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelBookingResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelQuoteResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,8 +30,14 @@ class TravelQuoteController extends Controller
             abort(403);
         }
 
-        $quotes = TravelQuote::query()
-            ->when($request->query('status'), fn ($query, string $status) => $query->where('status', $status))
+        $query = TravelQuote::query();
+
+        $statusFilter = $request->query('status');
+        if (is_string($statusFilter) && $statusFilter !== '') {
+            $query->where('status', $statusFilter);
+        }
+
+        $quotes = $query
             ->orderByDesc('created_at')
             ->paginate(max(1, min(1000, (int) $request->query('per_page', 50))));
 
@@ -88,6 +95,6 @@ class TravelQuoteController extends Controller
 
         $booking = app(BookQuoteAction::class)->execute($travelQuote, $actor);
 
-        return (new \App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelBookingResource($booking))->response();
+        return (new TravelBookingResource($booking))->response();
     }
 }

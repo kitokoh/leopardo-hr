@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -44,7 +45,7 @@ return new class extends Migration
                 $table->timestampTz('updated_at')->useCurrent();
             });
 
-            \Illuminate\Support\Facades\DB::statement(
+            DB::statement(
                 "COMMENT ON TABLE attendance_mode_settings IS 'Config mode pointage par entreprise. forced_mode NULL = choix libre employé.'"
             );
         }

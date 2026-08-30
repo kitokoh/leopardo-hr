@@ -54,6 +54,7 @@ final class BookQuoteAction
 
         /** @var TravelBooking $booking */
         $booking = DB::transaction(function () use ($quote, $trip, $actor): TravelBooking {
+            /** @var list<array{full_name: string, age_category: string, class_id: int}> $passengers */
             $passengers = $quote->passengers_json ?? [];
 
             if (count($passengers) < $quote->passenger_count) {
@@ -92,5 +93,4 @@ final class BookQuoteAction
 
         return $booking->load('passengers');
     }
-
 }
