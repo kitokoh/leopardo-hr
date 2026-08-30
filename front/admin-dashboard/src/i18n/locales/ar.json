@@ -4236,12 +4236,12 @@
   },
   "edu": {
     "nav": {
-      "label": "EduManager",
+      "label": "EduManager — الإدارة المدرسية",
       "admin": "الإدارة المدرسية",
       "teacher": "فضاء المعلّم"
     },
     "home": {
-      "title": "EduManager",
+      "title": "EduManager — الإدارة المدرسية",
       "subtitle": "الإدارة المدرسية: الحرم الجامعي، السنوات الدراسية، الأقسام، التلاميذ، التسجيلات، التقييمات وكشوف النقاط.",
       "campuses": "الحرم الجامعي",
       "classes": "الأقسام",
@@ -4368,7 +4368,8 @@
       "average": "المعدل",
       "status": "الحالة",
       "generated": "صدر",
-      "validated": "تم التحقق"
+      "validated": "تم التحقق",
+      "period": "الفترة"
     },
     "teacher": {
       "title": "فضاء المعلّم",

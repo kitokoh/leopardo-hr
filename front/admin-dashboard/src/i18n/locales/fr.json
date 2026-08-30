@@ -4368,7 +4368,8 @@
       "average": "Moyenne",
       "status": "Statut",
       "generated": "Généré",
-      "validated": "Validé"
+      "validated": "Validé",
+      "period": "Période"
     },
     "teacher": {
       "title": "Espace enseignant",

@@ -4368,7 +4368,8 @@
       "average": "Average",
       "status": "Status",
       "generated": "Generated",
-      "validated": "Validated"
+      "validated": "Validated",
+      "period": "Period"
     },
     "teacher": {
       "title": "Teacher space",

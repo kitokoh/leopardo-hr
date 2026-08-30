@@ -109,7 +109,7 @@ export default function AdmissionsPage() {
     { key: 'status', header: 'Statut', render: (row) => <StatusBadge status={row.status} /> },
     {
       key: 'student',
-      header: 'Élève',
+      header: t(locale, 'edu.reportCards.student'),
       render: (row) =>
         row.student ? (
           <span className="text-sm text-slate-600">

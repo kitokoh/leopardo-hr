@@ -3766,7 +3766,8 @@
       "average": "Ortalama",
       "status": "Durum",
       "generated": "Oluşturuldu",
-      "validated": "Onaylandı"
+      "validated": "Onaylandı",
+      "period": "Dönem"
     },
     "teacher": {
       "title": "Öğretmen alanı",

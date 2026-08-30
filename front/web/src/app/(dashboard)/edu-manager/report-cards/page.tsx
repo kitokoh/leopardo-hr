@@ -107,7 +107,7 @@ export default function ReportCardsPage() {
         </span>
       ),
     },
-    { key: 'period', header: 'Période', render: (row) => <span className="text-slate-500">{row.period}</span> },
+    { key: 'period', header: t(locale, 'edu.reportCards.period'), render: (row) => <span className="text-slate-500">{row.period}</span> },
     {
       key: 'average',
       header: t(locale, 'edu.reportCards.average'),
@@ -164,7 +164,7 @@ export default function ReportCardsPage() {
               ))}
             </SelectInput>
           </Field>
-          <Field label="Période">
+          <Field label={t(locale, 'edu.reportCards.period')}>
             <SelectInput value={form.period ?? 'S1'} onChange={(e) => setForm((p) => ({ ...p, period: e.target.value }))}>
               <option value="S1">S1</option>
               <option value="S2">S2</option>

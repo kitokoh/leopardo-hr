@@ -101,8 +101,8 @@ export default function EduManagerHomePage() {
     { label: t(locale, 'edu.home.manageStudents'), href: '/edu-manager/students', icon: Users },
     { label: t(locale, 'edu.home.manageAssessments'), href: '/edu-manager/assessments', icon: ListChecks },
     { label: t(locale, 'edu.home.manageReportCards'), href: '/edu-manager/report-cards', icon: ClipboardCheck },
-    { label: 'Années scolaires', href: '/edu-manager/academic-years', icon: CalendarRange },
-    { label: 'Matières', href: '/edu-manager/subjects', icon: Layers },
+    { label: t(locale, 'edu.academicYears.title'), href: '/edu-manager/academic-years', icon: CalendarRange },
+    { label: t(locale, 'edu.subjects.title'), href: '/edu-manager/subjects', icon: Layers },
   ];
 
   if (isTeacher) {

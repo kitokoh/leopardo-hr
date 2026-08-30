@@ -2,6 +2,8 @@
 
 import type { ReactNode } from 'react';
 import { AlertTriangle, Inbox, Loader2, RefreshCw } from 'lucide-react';
+import { getPreferredLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
 
 /**
  * Petit kit UI partagé des écrans EduManager (EDU-011/012/013).
@@ -12,15 +14,17 @@ import { AlertTriangle, Inbox, Loader2, RefreshCw } from 'lucide-react';
  */
 
 export function Spinner({ label }: { label?: string }) {
+  const locale = getPreferredLocale();
   return (
     <div className="flex items-center justify-center gap-3 py-16 text-slate-500" role="status">
       <Loader2 className="h-6 w-6 animate-spin text-emerald-600" aria-hidden="true" />
-      {label ? <span className="text-sm font-medium">{label}</span> : null}
+      {label ? <span className="text-sm font-medium">{label}</span> : <span className="text-sm font-medium">{t(locale, 'edu.common.loading')}</span>}
     </div>
   );
 }
 
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const locale = getPreferredLocale();
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50/70 p-8 text-center">
       <AlertTriangle className="h-8 w-8 text-rose-500" aria-hidden="true" />
@@ -32,7 +36,7 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
           className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-white px-4 py-2 text-sm font-bold text-rose-600 hover:bg-rose-50"
         >
           <RefreshCw className="h-4 w-4" aria-hidden="true" />
-          Réessayer
+          {t(locale, 'edu.common.retry')}
         </button>
       ) : null}
     </div>
