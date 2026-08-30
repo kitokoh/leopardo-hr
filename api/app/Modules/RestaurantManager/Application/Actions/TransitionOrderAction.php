@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Application\Services\OrderStateMachine;
+use App\Modules\RestaurantManager\Application\Services\StockDecrementer;
 use App\Modules\RestaurantManager\Domain\Enums\OrderItemStatus;
 use App\Modules\RestaurantManager\Domain\Enums\OrderStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
@@ -14,12 +15,14 @@ use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 /**
- * RESTO-404 (#6191) — Transitions d'état d'une commande.
+ * RESTO-404 (#6191) / RESTO-411 (#6198) — Transitions d'état d'une commande.
  *
  * Toute transition est validée par la machine à états (spec §4.5) : hors
  * workflow → 409. `version` protège la commande contre les écritures
- * concurrentes (mise à jour optimiste). Événement `restaurant.order.created.v1`
- * publié dans l'outbox à la soumission (draft → open) — payload redigé.
+ * concurrentes. À la CONFIRMATION (open → in_preparation), le stock des
+ * ingrédients des lignes actives est décrémenté dans la MÊME transaction
+ * (verrous SELECT FOR UPDATE, jamais négatif — RESTO-411). Événement
+ * `restaurant.order.created.v1` publié à la soumission (payload redigé).
  */
 final class TransitionOrderAction
 {
@@ -28,6 +31,7 @@ final class TransitionOrderAction
     public function __construct(
         private readonly OrderStateMachine $stateMachine,
         private readonly RestaurantOutboxPublisher $outbox,
+        private readonly StockDecrementer $stockDecrementer,
     ) {
     }
 
@@ -54,18 +58,28 @@ final class TransitionOrderAction
             }
         }
 
-        $affected = DB::table('restaurant_orders')
-            ->where('id', $order->id)
-            ->where('company_id', $order->company_id)
-            ->where('version', $order->version)
-            ->update([
-                'status' => $target->value,
-                'version' => $order->version + 1,
-            ]);
+        DB::transaction(function () use ($order, $target): void {
+            // RESTO-411 : le décrément de stock à la confirmation se fait dans
+            // la transaction (les lignes de stock sont verrouillées AVANT la
+            // mise à jour d'état — deux confirmations simultanées sur le
+            // dernier stock : une seule passe).
+            if ($target === OrderStatus::IN_PREPARATION) {
+                $this->stockDecrementer->decrementForOrder($order);
+            }
 
-        if ($affected !== 1) {
-            abort(409, 'Order was modified concurrently; reload and retry.');
-        }
+            $affected = DB::table('restaurant_orders')
+                ->where('id', $order->id)
+                ->where('company_id', $order->company_id)
+                ->where('version', $order->version)
+                ->update([
+                    'status' => $target->value,
+                    'version' => $order->version + 1,
+                ]);
+
+            if ($affected !== 1) {
+                abort(409, 'Order was modified concurrently; reload and retry.');
+            }
+        });
 
         $order->refresh();
 
