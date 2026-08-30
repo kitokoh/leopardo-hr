@@ -325,6 +325,15 @@ const routes = [
         }
       },
       {
+        path: '/travel/content',
+        name: 'travel-content',
+        component: () => import('../views/travel/TravelContentView.vue'),
+        meta: {
+          title: 'travel.content.title',
+          parent: 'travel'
+        }
+      },
+      {
         path: '/travel/catalog',
         name: 'travel-catalog',
         component: () => import('../views/travel/TravelCatalogView.vue'),
