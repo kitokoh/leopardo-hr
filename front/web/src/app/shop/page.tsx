@@ -186,11 +186,11 @@ export default function ShopPage() {
         }),
       });
       if (!res.ok) {
-        throw Object.assign(new Error('order failed'), { status: res.status });
+        throw Object.assign(new Error(String(res.status)), { status: res.status });
       }
       const json = (await res.json()) as { data?: OrderResult };
       if (!json.data) {
-        throw new Error('empty payload');
+        throw Object.assign(new Error('empty'), { status: 422 });
       }
       setOrder(json.data);
       setCart({});
