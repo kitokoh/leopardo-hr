@@ -725,6 +725,36 @@
         "BC-13",
         "BC-20"
       ]
+    },
+    {
+      "code": "BC-25",
+      "name": "RESTAURANT",
+      "context": "RestaurantManager",
+      "responsibility": "Établissements, plan de salle, catalogue & recettes, POS/caisse, commandes, réservations, stock & achats (COGS), livraison, fidélité, promotions, rapports.",
+      "owner": "Agent 25 — BC-RESTAURANT",
+      "priority": "P1",
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Modules/RestaurantManager",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\RestaurantManager\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04",
+        "BC-11",
+        "BC-13",
+        "BC-20"
+      ]
     }
   ]
 }
