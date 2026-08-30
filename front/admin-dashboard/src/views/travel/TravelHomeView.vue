@@ -73,7 +73,6 @@ import {
   NewspaperIcon,
   QrCodeIcon,
   TicketIcon,
-  ChartBarIcon
   ChartBarIcon,
   MegaphoneIcon
 } from '@heroicons/vue/24/outline'
