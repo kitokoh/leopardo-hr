@@ -596,6 +596,12 @@ CREATE TABLE shared_tenants.absence_types (
     updated_at timestamptz NULL
 );
 
+-- Issue #5967 : index unique composite (company_id, code) — chaque tenant a
+-- ses propres codes standards sans collision inter-tenant (remplace l'ancien
+-- index unique global sur `code` seul qui cassait le seed multi-tenant).
+CREATE UNIQUE INDEX absence_types_company_id_code_unique
+    ON shared_tenants.absence_types (company_id, code);
+
 CREATE TABLE shared_tenants.absences (
     id serial PRIMARY KEY,
     company_id uuid NOT NULL,
