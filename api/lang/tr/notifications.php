@@ -34,4 +34,6 @@ return [
 
     'payment_document_ready_title' => 'Belge hazır',
     'payment_document_ready_body' => 'Ödeme belgeniz oluşturuldu ve indirilmeye hazır.',
+    'weekly_manager_digest_title' => 'Haftalık ekip özeti',
+    'weekly_manager_digest_body' => ':week_start haftası — :team_size kişilik ekip · :present kayıtlı devam · :pending_absences bekleyen izin · :pending_advances bekleyen avans · :pending_corrections bekleyen düzeltme.',
 ];

@@ -40,3 +40,50 @@ Alerts are routed to:
 ---
 
 For runbooks and incident response, see [Operations Guide](../GESTION_PROJET/RUNBOOK_OPERATIONS.md).
+
+---
+
+## 🔗 Corrélation commune (MAT-009, #5867)
+
+Un incident doit être traçable **de l'API jusqu'au job** : chaque requête et
+chaque travail asynchrone porte un identifiant de corrélation unique.
+
+### Contrat
+
+| Élément | Valeur |
+|---|---|
+| Header entrant/sortant | `X-Correlation-ID` (repli historique `X-Request-Id`) |
+| Helper applicatif | `correlation_id()` (conteneur, UUID frais si absent) |
+| Longueur max | 64 caractères (colonnes d'audit) |
+| Propagation files | `Queue::createPayloadUsing` → `correlation_id` dans le payload de chaque job |
+| Réhydratation worker | `Queue::before` (JobProcessing) → conteneur posé au démarrage du job |
+| Nettoyage | `Queue::after` / `Queue::failing` → conteneur vidé après traitement |
+
+L'identifiant est exposé dans les logs structurés (`request_id` /
+`correlation_id`), les réponses API et les lignes d'audit
+(`audit_logs.module_request_id`).
+
+### Redaction PII dans les logs
+
+Le processeur `App\Logging\PiiRedactionProcessor` est branché sur le canal
+`structured` : les valeurs portées par des clés sensibles (`password`,
+`token`, `secret`, `api_key`, `national_id`, `iban`, codes 2FA...) sont
+remplacées par `[REDACTED]`, y compris dans les tableaux imbriqués et les
+motifs `clé=valeur` des messages. Les clés techniques (`request_id`,
+`duration_ms`, `method`, `uri`, `status`) restent intactes pour préserver
+l'exploitabilité.
+
+### Alertes par bounded context (convention)
+
+Chaque BC documente dans sa fiche (registre MAT-001) au minimum :
+
+1. **Latence** : p95 de ses endpoints critiques (cible < 200 ms).
+2. **Erreurs** : taux 5xx > 0.1 % → alerte Slack/ops.
+3. **Files** : profondeur, jobs failed (déjà couvert par
+   `GET /api/v1/platform/observability/queues`), lag de consommation.
+4. **Requêtes lentes** : `monitor:slow-queries --threshold=500` (toutes les 15 min).
+5. **Sondes** : `launch-observability-smoke` (toutes les 30 min) sur API/docs/vitrine/admin.
+
+Exemples : BC-06 Leave → alerte sur `leave:accrue` échoué ; BC-07 Payroll →
+alerte sur jobs `payroll` en dead-letter ; BC-08 Accounting → alerte sur
+`accounting:purge-expired-shares` échoué.

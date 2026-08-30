@@ -29,6 +29,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `EduManager` | Solution scolaire : campus, élèves, responsables légaux, inscriptions, évaluations (EDU-001→EDU-022) |
 | `Expense` | Notes de frais employés |
 | `Fleet` | Véhicules, trajets, affectations |
+| `FuelStation` | Verticale station-service — stations, pompes, cuves, compteurs, shifts, caisse, ventes (FUEL-001..008) |
 | `Growth` | Programme partenaires, référencement, payout |
 | `HR` | Employés, départements, contrats, évaluations, formations |
 | `Marketing` | Vitrine, leads, campagnes |

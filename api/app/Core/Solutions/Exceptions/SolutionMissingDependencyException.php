@@ -11,7 +11,7 @@ use App\Exceptions\DomainException;
  */
 class SolutionMissingDependencyException extends DomainException
 {
-    /** @param list<string> $missing */
+    /** @param  list<string>  $missing */
     public function __construct(public readonly array $missing)
     {
         parent::__construct(

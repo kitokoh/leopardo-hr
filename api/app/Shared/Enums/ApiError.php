@@ -56,6 +56,13 @@ enum ApiError: string
     case SOLUTION_NOT_FOUND = 'SOLUTION_NOT_FOUND';
     case SOLUTION_MISSING_DEPENDENCY = 'SOLUTION_MISSING_DEPENDENCY';
 
+    // Solutions sectorielles (FUEL-001)
+    // FuelStation — relevés de compteur (FUEL-004)
+    case FUEL_SOLUTION_INACTIVE = 'FUEL_SOLUTION_INACTIVE';
+    case FUEL_READING_FUTURE = 'FUEL_READING_FUTURE';
+    case FUEL_READING_REJECTED = 'FUEL_READING_REJECTED';
+    case FUEL_READING_REVIEWED = 'FUEL_READING_REVIEWED';
+
     // Passwords
     case INVALID_CURRENT_PASSWORD = 'INVALID_CURRENT_PASSWORD';
     case INVALID_PASSWORD = 'INVALID_PASSWORD';
@@ -79,17 +86,20 @@ enum ApiError: string
             self::ACCOUNT_LOCKED, self::ACCOUNT_SUSPENDED => 401,
 
             self::FORBIDDEN, self::MANAGER_REQUIRED, self::INSUFFICIENT_ROLE,
-            self::TENANT_MISMATCH, self::SUPER_ADMIN_REQUIRED, self::POLICY_DENIED => 403,
+            self::TENANT_MISMATCH, self::SUPER_ADMIN_REQUIRED, self::POLICY_DENIED,
+            self::FUEL_SOLUTION_INACTIVE => 403,
 
             self::RESOURCE_NOT_FOUND, self::EMPLOYEE_NOT_FOUND,
             self::COMPANY_NOT_FOUND, self::USER_NOT_FOUND,
             self::SOLUTION_NOT_FOUND => 404,
 
             self::ALREADY_APPROVED, self::ALREADY_REJECTED, self::ALREADY_LINKED,
-            self::ALREADY_ENABLED, self::DUPLICATE_ENTRY => 409,
+            self::ALREADY_ENABLED, self::DUPLICATE_ENTRY,
+            self::FUEL_READING_REVIEWED => 409,
 
             self::VALIDATION_FAILED, self::INVALID_STATUS_TRANSITION,
             self::INVALID_DATE_RANGE, self::INSUFFICIENT_BALANCE,
+            self::FUEL_READING_FUTURE, self::FUEL_READING_REJECTED,
             self::CONTRACT_EXPIRED, self::PAYROLL_ALREADY_VALIDATED,
             self::SUBSCRIPTION_INACTIVE, self::TRIAL_EXPIRED,
             self::INVITATION_ALREADY_ACCEPTED, self::TOO_MANY_PENDING_REQUESTS,
@@ -122,6 +132,10 @@ enum ApiError: string
             self::TWO_FA_INVALID => 'Invalid two-factor code.',
             self::ACCOUNT_LOCKED => 'Account is locked due to too many failed attempts.',
             self::ACCOUNT_SUSPENDED => 'Account has been suspended.',
+            self::FUEL_SOLUTION_INACTIVE => 'The fuel solution is not active for this tenant.',
+            self::FUEL_READING_FUTURE => 'Meter reading is in the future.',
+            self::FUEL_READING_REJECTED => 'Meter reading was rejected.',
+            self::FUEL_READING_REVIEWED => 'Meter reading has already been reviewed.',
             self::FORBIDDEN => 'You do not have permission to perform this action.',
             self::MANAGER_REQUIRED => 'This endpoint requires manager access.',
             self::INSUFFICIENT_ROLE => 'Your role does not have access to this resource.',
