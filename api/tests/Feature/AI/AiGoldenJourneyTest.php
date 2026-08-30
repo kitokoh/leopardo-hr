@@ -155,8 +155,8 @@ class AiGoldenJourneyTest extends TestCase
     private function aiFixture(): array
     {
         $company = Company::factory()->create();
-        $employee = Employee::factory()->manager()->create(['company_id' => $company->id]);
         assert($company instanceof Company);
+        $employee = Employee::factory()->manager()->create(['company_id' => $company->id]);
         assert($employee instanceof Employee);
 
         return [$company, $employee];
