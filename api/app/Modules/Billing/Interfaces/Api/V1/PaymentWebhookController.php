@@ -75,7 +75,7 @@ class PaymentWebhookController extends Controller
                                 'payment_method' => 'chargily',
                             ]);
                         } catch (InvalidArgumentException $e) {
-                            Log::warning('Chargily: Transition de facture refusée — paiement non enregistré', [
+                            Log::warning('Chargily: Transition de facture refusee - paiement non enregistre', [
                                 'invoice_id' => $invoice->id,
                                 'status' => $invoice->status,
                                 'error' => $e->getMessage(),
