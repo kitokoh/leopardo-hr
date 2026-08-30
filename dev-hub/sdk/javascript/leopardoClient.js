@@ -4430,6 +4430,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/comments/{travelComment}/report", options);
     },
 
+    /** TRAVEL-416 — Formulaire de contact → lead CRM (événement outbox) */
+    postTravelContact(options = {}) {
+      return request("POST", "/travel/contact", options);
+    },
+
     /** Référentiel pays en lecture (TRAVEL-301/#6031) */
     getTravelCountries(options = {}) {
       return request("GET", "/travel/countries", options);

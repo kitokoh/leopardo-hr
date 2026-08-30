@@ -19,13 +19,14 @@
 
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelArticleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCommentController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelEngagementController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelExportController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCommentController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelEngagementController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelExportController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
@@ -181,6 +182,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/comments/{travelComment}/moderate', [TravelCommentController::class, 'moderate']);
         Route::post('/comments/{travelComment}/report', [TravelCommentController::class, 'report']);
         Route::delete('/comments/{travelComment}', [TravelCommentController::class, 'destroy']);
+
+        // ── Formulaire de contact → lead CRM (TRAVEL-416/#6068) ────────────
+        Route::post('/contact', [TravelContactController::class, 'store']);
 
         // ── Engagement — likes/partages/notes (TRAVEL-903/#6106) ────────────
         Route::post('/articles/{travelArticle}/like', [TravelEngagementController::class, 'like']);

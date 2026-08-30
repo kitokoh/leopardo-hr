@@ -3564,6 +3564,10 @@ class LeopardoClient:
         """TRAVEL-902 — Signalement d''un commentaire"""
         return self.request("POST", "/travel/comments/{travelComment}/report", **kwargs)
 
+    def post_travel_contact(self, **kwargs):
+        """TRAVEL-416 — Formulaire de contact → lead CRM (événement outbox)"""
+        return self.request("POST", "/travel/contact", **kwargs)
+
     def get_travel_countries(self, **kwargs):
         """Référentiel pays en lecture (TRAVEL-301/#6031)"""
         return self.request("GET", "/travel/countries", **kwargs)

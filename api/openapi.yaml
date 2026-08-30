@@ -4009,6 +4009,50 @@ paths:
           description: Catégorie créée
         '401':
           description: Non authentifié
+  /travel/contact:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-416 — Formulaire de contact → lead CRM (événement outbox)'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - message
+              - consent_email
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 120
+                last_name:
+                  type: string
+                  maxLength: 120
+                email:
+                  type: string
+                  format: email
+                  maxLength: 190
+                phone:
+                  type: string
+                  maxLength: 40
+                message:
+                  type: string
+                  maxLength: 2000
+                consent_email:
+                  type: boolean
+                  description: Consentement de contact explicite (obligatoire, RGPD)
+      responses:
+        '202':
+          description: Demande reçue (événement travel.contact.submitted.v1 publié)
+        '401':
+          description: Non authentifié
+        '422':
+          description: Validation échouée (bornes, consentement manquant)
   /travel/comments:
     get:
       tags:
@@ -29006,6 +29050,22 @@ components:
       scheme: bearer
       bearerFormat: Sanctum
   parameters:
+    TravelReportPeriod:
+      name: from
+      in: query
+      required: false
+      description: 'Borne basse de la période (YYYY-MM-DD)'
+      schema:
+        type: string
+        format: date
+    TravelReportPeriodTo:
+      name: to
+      in: query
+      required: false
+      description: 'Borne haute de la période (YYYY-MM-DD)'
+      schema:
+        type: string
+        format: date
     ProjectId:
       name: project
       in: path
