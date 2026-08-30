@@ -74,8 +74,9 @@ final class MeterReadingService
         $this->assertOperatorInTenant($actor, $companyId);
 
         // 3. Horodatage.
-        $capturedAtUtc = $input['captured_at'] !== null && $input['captured_at'] !== ''
-            ? Carbon::parse((string) $input['captured_at'])->utc()
+        $capturedAtRaw = $input['captured_at'] ?? null;
+        $capturedAtUtc = $capturedAtRaw !== null && $capturedAtRaw !== ''
+            ? Carbon::parse((string) $capturedAtRaw)->utc()
             : Carbon::now('UTC');
 
         if ($capturedAtUtc->greaterThan(Carbon::now('UTC')->addSeconds(self::MAX_CLOCK_DRIFT_SECONDS))) {

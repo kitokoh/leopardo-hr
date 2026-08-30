@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
 use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Testing\TestResponse;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -73,6 +74,7 @@ class FuelMeterReadingTest extends TestCase
         return $employee;
     }
 
+    /** @return array{FuelStation, FuelPump, FuelMeterRegister} */
     private function fixture(Company $company): array
     {
         /** @var FuelStation $station */
@@ -116,7 +118,7 @@ class FuelMeterReadingTest extends TestCase
             .'/meters/'.(int) $meter->getAttribute('id').'/readings';
     }
 
-    /** @return \Illuminate\Testing\TestResponse */
+    /** @return TestResponse<JsonResponse> */
     private function recordReading(
         Company $company,
         FuelStation $station,
