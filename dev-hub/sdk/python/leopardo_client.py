@@ -1824,6 +1824,42 @@ class LeopardoClient:
         """Ajouter un mouvement in/out (proprietaire, session ouverte)"""
         return self.request("POST", "/fuel-station/cash-sessions/{session}/movements", **kwargs)
 
+    def get_fuel_station_incidents(self, **kwargs):
+        """Lister les incidents (manager, FUEL-010 #5804)"""
+        return self.request("GET", "/fuel-station/incidents", **kwargs)
+
+    def post_fuel_station_incidents(self, **kwargs):
+        """Signalement d'un incident équipement (tout employé du tenant, FUEL-010 #5804)"""
+        return self.request("POST", "/fuel-station/incidents", **kwargs)
+
+    def get_fuel_station_incidents_by_incident(self, **kwargs):
+        """Détail d'un incident (manager ou auteur, FUEL-010 #5804)"""
+        return self.request("GET", "/fuel-station/incidents/{incident}", **kwargs)
+
+    def post_fuel_station_incidents_by_incident_assign(self, **kwargs):
+        """Affecter un incident (manager, FUEL-010 #5804)"""
+        return self.request("POST", "/fuel-station/incidents/{incident}/assign", **kwargs)
+
+    def post_fuel_station_incidents_by_incident_close(self, **kwargs):
+        """Clôturer un incident résolu (manager, FUEL-010 #5804)"""
+        return self.request("POST", "/fuel-station/incidents/{incident}/close", **kwargs)
+
+    def post_fuel_station_incidents_by_incident_resolve(self, **kwargs):
+        """Résoudre un incident (manager, FUEL-010 #5804)"""
+        return self.request("POST", "/fuel-station/incidents/{incident}/resolve", **kwargs)
+
+    def get_fuel_station_maintenance_tasks(self, **kwargs):
+        """Lister les tâches de maintenance (manager, FUEL-010 #5804)"""
+        return self.request("GET", "/fuel-station/maintenance-tasks", **kwargs)
+
+    def post_fuel_station_maintenance_tasks(self, **kwargs):
+        """Créer une tâche de maintenance (manager, FUEL-010 #5804)"""
+        return self.request("POST", "/fuel-station/maintenance-tasks", **kwargs)
+
+    def post_fuel_station_maintenance_tasks_by_task_transition(self, **kwargs):
+        """Transitionner une tâche (manager ou assigné, FUEL-010 #5804)"""
+        return self.request("POST", "/fuel-station/maintenance-tasks/{task}/transition", **kwargs)
+
     def get_fuel_station_me_cash_sessions(self, **kwargs):
         """Sessions de caisse du pompiste connecte (self-service)"""
         return self.request("GET", "/fuel-station/me/cash-sessions", **kwargs)

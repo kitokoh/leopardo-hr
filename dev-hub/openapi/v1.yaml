@@ -7147,6 +7147,381 @@ paths:
         '404':
           description: Run introuvable ou autre tenant
 
+  /fuel-station/incidents:
+    post:
+      tags:
+      - FuelStation
+      summary: Signalement d'un incident équipement (tout employé du tenant, FUEL-010 #5804)
+      description: "Workflow audité (reported → assigned → resolved → closed). Description redacted (pas de PII). Pièces jointes : seules les métadonnées contrôlées (mime allowlist, taille ≤ 10 Mo)."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - description_redacted
+              properties:
+                station_id:
+                  type: integer
+                  nullable: true
+                category:
+                  type: string
+                  enum: [equipment, fuel_leak, safety, cash, other]
+                severity:
+                  type: string
+                  enum: [low, medium, high, critical]
+                description_redacted:
+                  type: string
+                  maxLength: 2000
+                attachments_metadata:
+                  type: array
+                  maxItems: 5
+                  items:
+                    type: object
+                    properties:
+                      name: {type: string, maxLength: 255}
+                      size_bytes: {type: integer, minimum: 1, maximum: 10485760}
+                      mime: {type: string, maxLength: 100}
+                external_id:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Incident signalé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelIncident'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les incidents (manager, FUEL-010 #5804)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [reported, assigned, resolved, closed]
+      - name: severity
+        in: query
+        schema:
+          type: string
+          enum: [low, medium, high, critical]
+      responses:
+        '200':
+          description: Incidents du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FuelIncident'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /fuel-station/incidents/{incident}:
+    get:
+      tags:
+      - FuelStation
+      summary: Détail d'un incident (manager ou auteur, FUEL-010 #5804)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: incident
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de l'incident (avec tâches liées)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelIncident'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Incident introuvable ou autre tenant
+
+  /fuel-station/incidents/{incident}/assign:
+    post:
+      tags:
+      - FuelStation
+      summary: Affecter un incident (manager, FUEL-010 #5804)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: incident
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assigned_to:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Incident affecté
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelIncident'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Incident introuvable ou autre tenant
+        '422':
+          description: Transition interdite
+
+  /fuel-station/incidents/{incident}/resolve:
+    post:
+      tags:
+      - FuelStation
+      summary: Résoudre un incident (manager, FUEL-010 #5804)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: incident
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Incident résolu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelIncident'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Incident introuvable ou autre tenant
+        '422':
+          description: Transition interdite
+
+  /fuel-station/incidents/{incident}/close:
+    post:
+      tags:
+      - FuelStation
+      summary: Clôturer un incident résolu (manager, FUEL-010 #5804)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: incident
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Incident clôturé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelIncident'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Incident introuvable ou autre tenant
+        '422':
+          description: Transition interdite
+
+  /fuel-station/maintenance-tasks:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les tâches de maintenance (manager, FUEL-010 #5804)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [open, in_progress, done, cancelled]
+      - name: assigned_to
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tâches de maintenance du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FuelMaintenanceTask'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Créer une tâche de maintenance (manager, FUEL-010 #5804)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              properties:
+                station_id:
+                  type: integer
+                  nullable: true
+                incident_id:
+                  type: integer
+                  nullable: true
+                title:
+                  type: string
+                  maxLength: 200
+                description_redacted:
+                  type: string
+                  maxLength: 2000
+                  nullable: true
+                task_type:
+                  type: string
+                  enum: [preventive, corrective, inspection]
+                priority:
+                  type: string
+                  enum: [low, medium, high, critical]
+                assigned_to:
+                  type: integer
+                  nullable: true
+                due_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                external_id:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Tâche créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelMaintenanceTask'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation
+
+  /fuel-station/maintenance-tasks/{task}/transition:
+    post:
+      tags:
+      - FuelStation
+      summary: Transitionner une tâche (manager ou assigné, FUEL-010 #5804)
+      description: "Transitions autorisées : open → in_progress|cancelled, in_progress → done|cancelled."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum: [open, in_progress, done, cancelled]
+                assigned_to:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Tâche transitionnée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelMaintenanceTask'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Tâche introuvable ou autre tenant
+        '422':
+          description: Transition interdite ou validation
+
   /accounting/contacts:
     get:
       tags:
@@ -33581,3 +33956,52 @@ components:
           type: string
           format: date-time
           nullable: true
+    FuelIncident:
+      type: object
+      properties:
+        id: {type: integer}
+        station_id: {type: integer, nullable: true}
+        category: {type: string, enum: [equipment, fuel_leak, safety, cash, other]}
+        severity: {type: string, enum: [low, medium, high, critical]}
+        description_redacted: {type: string}
+        status: {type: string, enum: [reported, assigned, resolved, closed]}
+        reported_by: {type: integer}
+        reported_at: {type: string, format: date-time}
+        assigned_to: {type: integer, nullable: true}
+        assigned_at: {type: string, format: date-time, nullable: true}
+        resolved_by: {type: integer, nullable: true}
+        resolved_at: {type: string, format: date-time, nullable: true}
+        closed_by: {type: integer, nullable: true}
+        closed_at: {type: string, format: date-time, nullable: true}
+        attachments_metadata:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              name: {type: string}
+              size_bytes: {type: integer}
+              mime: {type: string}
+        external_id: {type: string, nullable: true}
+        tasks_count: {type: integer, nullable: true}
+        created_at: {type: string, format: date-time, nullable: true}
+    FuelMaintenanceTask:
+      type: object
+      properties:
+        id: {type: integer}
+        station_id: {type: integer, nullable: true}
+        incident_id: {type: integer, nullable: true}
+        title: {type: string}
+        description_redacted: {type: string, nullable: true}
+        task_type: {type: string, enum: [preventive, corrective, inspection]}
+        priority: {type: string, enum: [low, medium, high, critical]}
+        status: {type: string, enum: [open, in_progress, done, cancelled]}
+        assigned_to: {type: integer, nullable: true}
+        due_at: {type: string, format: date-time, nullable: true}
+        started_at: {type: string, format: date-time, nullable: true}
+        completed_by: {type: integer, nullable: true}
+        completed_at: {type: string, format: date-time, nullable: true}
+        created_by: {type: integer, nullable: true}
+        external_id: {type: string, nullable: true}
+        created_at: {type: string, format: date-time, nullable: true}
+

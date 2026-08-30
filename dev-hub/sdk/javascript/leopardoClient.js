@@ -2255,6 +2255,51 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/fuel-station/cash-sessions/{session}/movements", options);
     },
 
+    /** Lister les incidents (manager, FUEL-010 #5804) */
+    getFuelStationIncidents(options = {}) {
+      return request("GET", "/fuel-station/incidents", options);
+    },
+
+    /** Signalement d'un incident équipement (tout employé du tenant, FUEL-010 #5804) */
+    postFuelStationIncidents(options = {}) {
+      return request("POST", "/fuel-station/incidents", options);
+    },
+
+    /** Détail d'un incident (manager ou auteur, FUEL-010 #5804) */
+    getFuelStationIncidentsByIncident(options = {}) {
+      return request("GET", "/fuel-station/incidents/{incident}", options);
+    },
+
+    /** Affecter un incident (manager, FUEL-010 #5804) */
+    postFuelStationIncidentsByIncidentAssign(options = {}) {
+      return request("POST", "/fuel-station/incidents/{incident}/assign", options);
+    },
+
+    /** Clôturer un incident résolu (manager, FUEL-010 #5804) */
+    postFuelStationIncidentsByIncidentClose(options = {}) {
+      return request("POST", "/fuel-station/incidents/{incident}/close", options);
+    },
+
+    /** Résoudre un incident (manager, FUEL-010 #5804) */
+    postFuelStationIncidentsByIncidentResolve(options = {}) {
+      return request("POST", "/fuel-station/incidents/{incident}/resolve", options);
+    },
+
+    /** Lister les tâches de maintenance (manager, FUEL-010 #5804) */
+    getFuelStationMaintenanceTasks(options = {}) {
+      return request("GET", "/fuel-station/maintenance-tasks", options);
+    },
+
+    /** Créer une tâche de maintenance (manager, FUEL-010 #5804) */
+    postFuelStationMaintenanceTasks(options = {}) {
+      return request("POST", "/fuel-station/maintenance-tasks", options);
+    },
+
+    /** Transitionner une tâche (manager ou assigné, FUEL-010 #5804) */
+    postFuelStationMaintenanceTasksByTaskTransition(options = {}) {
+      return request("POST", "/fuel-station/maintenance-tasks/{task}/transition", options);
+    },
+
     /** Sessions de caisse du pompiste connecte (self-service) */
     getFuelStationMeCashSessions(options = {}) {
       return request("GET", "/fuel-station/me/cash-sessions", options);
