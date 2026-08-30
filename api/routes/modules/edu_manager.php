@@ -22,6 +22,7 @@ use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAttendanceController
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCampusController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduClassController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCourseSlotController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduGuardianPortalController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduImportExportController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportCardController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportController;
@@ -93,6 +94,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::put('/edu-manager/assessments/{assessment}', [EduAssessmentController::class, 'update'])->whereNumber('assessment');
     Route::delete('/edu-manager/assessments/{assessment}', [EduAssessmentController::class, 'destroy'])->whereNumber('assessment');
     Route::post('/edu-manager/assessments/{assessment}/grades', [EduAssessmentController::class, 'grade'])->whereNumber('assessment');
+    Route::post('/edu-manager/assessments/{assessment}/publish', [EduAssessmentController::class, 'publish'])->whereNumber('assessment');
     Route::post('/edu-manager/grades/{grade}/publish', [EduAssessmentController::class, 'publishGrade'])->whereNumber('grade');
     Route::post('/edu-manager/grades/{grade}/correct', [EduAssessmentController::class, 'correctGrade'])->whereNumber('grade');
 
@@ -118,4 +120,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // EDU-019 (#5835) — RGPD : anonymisation + export individuel (direction).
     Route::post('/edu-manager/students/{student}/anonymize', [EduRetentionController::class, 'anonymize'])->whereNumber('student');
     Route::get('/edu-manager/students/{student}/privacy-export', [EduRetentionController::class, 'privacyExport'])->whereNumber('student');
+
+    // EDU-013/EDU-010 — portail guardian : émission d'un lien d'accès
+    // expirable à usage unique (direction uniquement, policy createAccessLink).
+    Route::post('/edu-manager/guardians/{guardian}/access-links', [EduGuardianPortalController::class, 'createAccessLink'])
+        ->whereNumber('guardian');
+
 });
+
+// EDU-013 (#5829) — portail guardian : consommation du lien (route PUBLIQUE,
+// sans auth:sanctum — le token EST le secret, HMAC 256 bits hashé au repos).
+// Replay/expiration → 410 ; throttle dédié anti-bruteforce (par token + IP).
+Route::middleware('throttle:guardian-portal')->post(
+    '/edu-manager/guardian-portal/access-links/{token}/consume',
+    [EduGuardianPortalController::class, 'consume']
+)->where('token', '[A-Za-z0-9_-]{40,120}');

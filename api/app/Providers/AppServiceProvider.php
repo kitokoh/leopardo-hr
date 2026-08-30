@@ -265,6 +265,17 @@ class AppServiceProvider extends ServiceProvider
                 ->by('public-careers:'.$request->ip());
         });
 
+        // EDU-013 (#5829) : consommation des liens du portail guardian (route
+        // publique). Bucket dédié par token + IP — 10/min borne l'énumération
+        // et le bruteforce sans affamer le flux légitime (un lien est à usage
+        // unique, 1-2 requêtes max par utilisateur).
+        RateLimiter::for('guardian-portal', function (Request $request) {
+            $token = (string) $request->route('token', 'unknown');
+
+            return Limit::perMinute((int) config('security.rate_limits.guardian_portal_per_minute', 10))
+                ->by('guardian-portal:'.substr(hash('sha256', $token), 0, 16).'|'.$request->ip());
+        });
+
     }
 
     private function resolvePlanLimit(string $plan): int
