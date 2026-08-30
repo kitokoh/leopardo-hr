@@ -4280,6 +4280,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/travel/offices/{travelOffice}", options);
     },
 
+    /** Statut d'un paiement (TRAVEL-408/#6060) */
+    getTravelPaymentsByTravelPayment(options = {}) {
+      return request("GET", "/travel/payments/{travelPayment}", options);
+    },
+
+    /** Callback provider (signé HMAC, idempotent — TRAVEL-409/#6061) */
+    postTravelPaymentsCallback(options = {}) {
+      return request("POST", "/travel/payments/callback", options);
+    },
+
+    /** Initiation d'un paiement (TRAVEL-408/#6060) */
+    postTravelPaymentsInitiate(options = {}) {
+      return request("POST", "/travel/payments/initiate", options);
+    },
+
     /** Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977) */
     getTravelPing(options = {}) {
       return request("GET", "/travel/ping", options);
@@ -4388,6 +4403,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Mise à jour d'une étape (TRAVEL-307/#6037) */
     putTravelRoutesByTravelRouteStopsByTravelRouteStop(options = {}) {
       return request("PUT", "/travel/routes/{travelRoute}/stops/{travelRouteStop}", options);
+    },
+
+    /** Réservation en ligne (TRAVEL-403/#6055) */
+    postTravelShopBookings(options = {}) {
+      return request("POST", "/travel/shop/bookings", options);
+    },
+
+    /** Suivi d'une réservation par référence (TRAVEL-404/#6056) */
+    getTravelShopBookingsByReference(options = {}) {
+      return request("GET", "/travel/shop/bookings/{reference}", options);
+    },
+
+    /** Recherche boutique en ligne (TRAVEL-401/#6053) */
+    getTravelShopTrips(options = {}) {
+      return request("GET", "/travel/shop/trips", options);
+    },
+
+    /** Détail + disponibilité d'un trajet (TRAVEL-402/#6054) */
+    getTravelShopTripsByTravelTrip(options = {}) {
+      return request("GET", "/travel/shop/trips/{travelTrip}", options);
     },
 
     /** Liste des gares/terminaux (TRAVEL-302/#6032) */

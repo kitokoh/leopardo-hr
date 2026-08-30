@@ -26,6 +26,8 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeControlle
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelShopController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
@@ -121,6 +123,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
         // Check-in / embarquement (TRAVEL-317/#6047).
         Route::post('/tickets/{travelTicket}/check-in', [TravelTicketController::class, 'checkIn']);
+
+        // Boutique en ligne (TRAVEL-401..404/#6053..#6056).
+        Route::get('/shop/trips', [TravelShopController::class, 'search']);
+        Route::get('/shop/trips/{travelTrip}', [TravelShopController::class, 'show']);
+        Route::post('/shop/bookings', [TravelShopController::class, 'storeBooking']);
+        Route::get('/shop/bookings/{reference}', [TravelShopController::class, 'track']);
+
+        // Paiements (TRAVEL-408/#6060, TRAVEL-409/#6061).
+        Route::post('/payments/initiate', [TravelPaymentController::class, 'initiate']);
+        Route::get('/payments/{travelPayment}', [TravelPaymentController::class, 'show']);
 
         // Locations : véhicules + images (TRAVEL-319/#6049).
         Route::get('/rental-vehicles', [TravelRentalVehicleController::class, 'index']);

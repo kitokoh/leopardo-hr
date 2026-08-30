@@ -35,7 +35,9 @@ class StoreTravelBookingRequest extends FormRequest
 
         return [
             'trip_id' => ['required', 'integer', 'exists:travel_trips,id'],
-            'booking_source' => ['required', 'string', Rule::in($sources)],
+            // Optionnel : la boutique en ligne force `online` (contrôleur) ;
+            // le guichet fournit `office`/`phone`/`partner`.
+            'booking_source' => ['sometimes', 'string', Rule::in($sources)],
             'idempotency_key' => ['required', 'string', 'max:255'],
             'customer_contact_id' => ['nullable', 'integer'],
             'passengers' => ['required', 'array', 'min:1', 'max:20'],

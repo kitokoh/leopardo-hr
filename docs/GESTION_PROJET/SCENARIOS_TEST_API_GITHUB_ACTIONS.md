@@ -1548,3 +1548,15 @@ Dernière tranche de l'épic 3xx : `GET|POST /travel/rental-vehicles` (+ images)
   non authentifié → 401.
 - Couverture : `api/tests/Feature/Travel/TravelRentalApiTest.php`, `TravelHotelApiTest.php`, `TravelRbacMatrixTest.php`
   (168 tests Travel au total) + `docs/security/TRAVEL_RBAC_MATRIX.md`.
+
+## BC-24 TRAVEL — Boutique en ligne & paiements (TRAVEL-401..409, 2026-08-30)
+
+Début de l'épic 4xx : `GET /travel/shop/trips` (recherche trajets publiés), `GET /travel/shop/trips/{trip}` (+ available_seats),
+`POST /travel/shop/bookings` (source online, expiration), `GET /travel/shop/bookings/{reference}` (suivi sans code en clair),
+`POST /travel/payments/initiate` (idempotent), `POST /travel/payments/callback` (webhook public signé HMAC, résolution par référence),
+`GET /travel/payments/{payment}`.
+- Scénarios à vérifier : seuls les trajets publiés sont vendables (404/409 sinon) ; disponibilité dérivée de l'inventaire ;
+  réservation online idempotente + expiration 15 min ; initiation idempotente (rejeu → 200) ; callback : signature invalide → 403,
+  montant incohérent → 422, référence inconnue → 404, rejeu → `replayed: true` sans effet de bord, confirmation → payment_status
+  confirmé + événement outbox ; PII jamais exposée.
+- Couverture : `api/tests/Feature/Travel/TravelShopTest.php`, `TravelPaymentTest.php` (184 tests Travel au total).

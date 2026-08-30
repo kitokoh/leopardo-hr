@@ -3726,6 +3726,379 @@ paths:
           description: Chambre ou hôtel introuvable ou hors tenant
         '403':
           description: Permission travel.manage requise
+  /travel/shop/trips:
+    get:
+      tags:
+      - Travel
+      summary: Recherche boutique en ligne (TRAVEL-401/#6053)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: origin_city_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: destination_city_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: departure_date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: means_of_transport
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [bus, train, plane, boat]
+      - name: price_min
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: price_max
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Trajets publiés correspondant aux filtres
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelTrip'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+  /travel/shop/trips/{travelTrip}:
+    get:
+      tags:
+      - Travel
+      summary: Détail + disponibilité d'un trajet (TRAVEL-402/#6054)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail du trajet (avec available_seats)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                    - $ref: '#/components/schemas/TravelTrip'
+                    - type: object
+                      properties:
+                        available_seats:
+                          type: integer
+        '404':
+          description: Trajet introuvable, hors tenant ou non publié
+  /travel/shop/bookings:
+    post:
+      tags:
+      - Travel
+      summary: Réservation en ligne (TRAVEL-403/#6055)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - trip_id
+              - idempotency_key
+              - passengers
+              properties:
+                trip_id:
+                  type: integer
+                idempotency_key:
+                  type: string
+                  maxLength: 255
+                customer_contact_id:
+                  type: integer
+                  nullable: true
+                passengers:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: object
+                    required:
+                    - full_name
+                    - age_category
+                    - class_id
+                    properties:
+                      full_name:
+                        type: string
+                        maxLength: 160
+                      birth_date:
+                        type: string
+                        format: date
+                        nullable: true
+                      document_type:
+                        type: string
+                        enum: [national_id, passport, birth_certificate, other]
+                        nullable: true
+                      document_number:
+                        type: string
+                        maxLength: 40
+                        nullable: true
+                      age_category:
+                        type: string
+                        enum: [infant, child, adult]
+                      class_id:
+                        type: integer
+                      seat_number:
+                        type: integer
+                        nullable: true
+      responses:
+        '201':
+          description: Réservation en ligne créée (pending, expiration 15 min)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelBooking'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+        '409':
+          description: Trajet non publié ou sièges indisponibles
+        '422':
+          description: Validation échouée
+  /travel/shop/bookings/{reference}:
+    get:
+      tags:
+      - Travel
+      summary: Suivi d'une réservation par référence (TRAVEL-404/#6056)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Statut de la réservation (jamais de code de validation en clair)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                    - $ref: '#/components/schemas/TravelBooking'
+                    - type: object
+                      properties:
+                        ticket_numbers:
+                          type: array
+                          items:
+                            type: string
+        '404':
+          description: Référence inconnue ou hors tenant
+  /travel/payments/initiate:
+    post:
+      tags:
+      - Travel
+      summary: Initiation d'un paiement (TRAVEL-408/#6060)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - booking_reference
+              - provider_code
+              - idempotency_key
+              properties:
+                booking_reference:
+                  type: string
+                  maxLength: 40
+                provider_code:
+                  type: string
+                  enum: [cash, pvit, momo, card]
+                idempotency_key:
+                  type: string
+                  maxLength: 255
+      responses:
+        '201':
+          description: Paiement initié (pending)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      reference:
+                        type: string
+                      provider_reference:
+                        type: string
+                      redirect_url:
+                        type: string
+                        nullable: true
+                      status:
+                        type: string
+                        enum: [pending, confirmed, failed, refunded]
+        '200':
+          description: Paiement déjà existant (rejeu idempotent)
+        '404':
+          description: Réservation introuvable ou hors tenant
+        '422':
+          description: Validation échouée
+  /travel/payments/{travelPayment}:
+    get:
+      tags:
+      - Travel
+      summary: Statut d'un paiement (TRAVEL-408/#6060)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelPayment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Statut du paiement
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      reference:
+                        type: string
+                      booking_id:
+                        type: integer
+                      provider_code:
+                        type: string
+                        enum: [cash, pvit, momo, card]
+                      amount_minor:
+                        type: integer
+                      currency:
+                        type: string
+                      status:
+                        type: string
+                        enum: [pending, confirmed, failed, refunded]
+                      created_at:
+                        type: string
+                        nullable: true
+        '404':
+          description: Paiement introuvable ou hors tenant
+  /travel/payments/callback:
+    post:
+      tags:
+      - Travel
+      summary: Callback provider (signé HMAC, idempotent — TRAVEL-409/#6061)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reference
+              - provider_reference
+              - amount_minor
+              - currency
+              - status
+              - signature
+              properties:
+                reference:
+                  type: string
+                  maxLength: 40
+                provider_reference:
+                  type: string
+                  maxLength: 120
+                amount_minor:
+                  type: integer
+                  minimum: 1
+                currency:
+                  type: string
+                  maxLength: 3
+                status:
+                  type: string
+                  enum: [confirmed, failed]
+                signature:
+                  type: string
+                  maxLength: 128
+      responses:
+        '200':
+          description: Callback accepté (résolution par référence, montant vérifié)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      reference:
+                        type: string
+                      status:
+                        type: string
+                        enum: [pending, confirmed, failed, refunded]
+                      replayed:
+                        type: boolean
+        '403':
+          description: Signature HMAC invalide
+        '404':
+          description: Référence ou paiement inconnu
+        '422':
+          description: Montant incohérent avec la réservation
   /health:
     get:
       tags:
