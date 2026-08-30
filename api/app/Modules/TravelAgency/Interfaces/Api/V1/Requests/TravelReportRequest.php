@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Interfaces\Api\V1\Requests;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\TravelAgency\Domain\Enums\BookingSource;
+use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
+use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
@@ -41,9 +44,15 @@ class TravelReportRequest extends FormRequest
                     fn (Builder $query) => $query->where('company_id', $companyId)
                 ),
             ],
-            'route_id' => ['nullable', 'integer'],
-            'source' => ['nullable', 'string', 'max:20'],
-            'status' => ['nullable', 'string', 'max:20'],
+            'route_id' => [
+                'nullable',
+                'integer',
+                Rule::exists((new TravelRoute)->getTable(), 'id')->where(
+                    fn (Builder $query) => $query->where('company_id', $companyId)
+                ),
+            ],
+            'source' => ['nullable', Rule::in(array_map(fn ($c) => $c->value, BookingSource::cases()))],
+            'status' => ['nullable', Rule::in(array_map(fn ($c) => $c->value, BookingStatus::cases()))],
         ];
     }
 }
