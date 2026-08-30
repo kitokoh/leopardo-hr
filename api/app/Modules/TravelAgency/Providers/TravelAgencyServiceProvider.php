@@ -6,18 +6,22 @@ namespace App\Modules\TravelAgency\Providers;
 
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
+use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelOffice;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelStation;
+use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
+use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
 use App\Modules\TravelAgency\Policies\TravelClassPolicy;
 use App\Modules\TravelAgency\Policies\TravelOfficePolicy;
 use App\Modules\TravelAgency\Policies\TravelRoutePolicy;
 use App\Modules\TravelAgency\Policies\TravelStationPolicy;
+use App\Modules\TravelAgency\Policies\TravelTicketPolicy;
 use App\Modules\TravelAgency\Policies\TravelTripPolicy;
 use App\Modules\TravelAgency\Policies\TravelVehiclePolicy;
 use Illuminate\Support\Facades\Gate;
@@ -54,5 +58,7 @@ class TravelAgencyServiceProvider extends ServiceProvider
         Gate::policy(TravelVehicle::class, TravelVehiclePolicy::class);
         Gate::policy(TravelRoute::class, TravelRoutePolicy::class);
         Gate::policy(TravelTrip::class, TravelTripPolicy::class);
+        Gate::policy(TravelBooking::class, TravelBookingPolicy::class);
+        Gate::policy(TravelTicket::class, TravelTicketPolicy::class);
     }
 }
