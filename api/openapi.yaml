@@ -766,6 +766,4175 @@ paths:
           description: Non authentifié
         '403':
           description: Contexte tenant absent ou feature flag restaurantmanager inactif
+  /restaurant/branches:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des branch (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantBranch'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: Création d'un branch
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 150
+                address:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+                city:
+                  type: string
+                  maxLength: 120
+                  nullable: true
+                phone:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                timezone:
+                  type: string
+                  maxLength: 50
+                currency:
+                  type: string
+                  maxLength: 3
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantBranch'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/branches/{restaurantBranch}:
+    get:
+      tags:
+      - Restaurant
+      summary: Détail d'un branch
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la ressource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantBranch'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      tags:
+      - Restaurant
+      summary: Mise à jour d'un branch
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 150
+                address:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+                city:
+                  type: string
+                  maxLength: 120
+                  nullable: true
+                phone:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                timezone:
+                  type: string
+                  maxLength: 50
+                currency:
+                  type: string
+                  maxLength: 3
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantBranch'
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un branch
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/zones:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des zone (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantZone'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: Création d'un zone
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - branch_id
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                branch_id:
+                  type: integer
+                  minimum: 0
+                color:
+                  type: string
+                  maxLength: 7
+                  nullable: true
+                sort_order:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantZone'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/zones/{restaurantZone}:
+    get:
+      tags:
+      - Restaurant
+      summary: Détail d'un zone
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantZone
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la ressource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantZone'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      tags:
+      - Restaurant
+      summary: Mise à jour d'un zone
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantZone
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                branch_id:
+                  type: integer
+                  minimum: 0
+                color:
+                  type: string
+                  maxLength: 7
+                  nullable: true
+                sort_order:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantZone'
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un zone
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantZone
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/tables:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des table (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantTable'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: Création d'un table
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - label
+              - branch_id
+              properties:
+                label:
+                  type: string
+                  maxLength: 80
+                branch_id:
+                  type: integer
+                  minimum: 0
+                zone_id:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                capacity:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                min_covers:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                is_mergeable:
+                  type: boolean
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantTable'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/tables/{restaurantTable}:
+    get:
+      tags:
+      - Restaurant
+      summary: Détail d'un table
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTable
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la ressource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantTable'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      tags:
+      - Restaurant
+      summary: Mise à jour d'un table
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTable
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                  maxLength: 80
+                branch_id:
+                  type: integer
+                  minimum: 0
+                zone_id:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                capacity:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                min_covers:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                is_mergeable:
+                  type: boolean
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantTable'
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un table
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTable
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/categories:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des category (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantCategory'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: Création d'un category
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                branch_id:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                color:
+                  type: string
+                  maxLength: 7
+                  nullable: true
+                sort_order:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantCategory'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/categories/{restaurantCategory}:
+    get:
+      tags:
+      - Restaurant
+      summary: Détail d'un category
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantCategory
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la ressource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantCategory'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      tags:
+      - Restaurant
+      summary: Mise à jour d'un category
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantCategory
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                branch_id:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                color:
+                  type: string
+                  maxLength: 7
+                  nullable: true
+                sort_order:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantCategory'
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un category
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantCategory
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/products:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des product (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantProduct'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: Création d'un product
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - category_id
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 150
+                category_id:
+                  type: integer
+                  minimum: 0
+                branch_id:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                description_redacted:
+                  type: string
+                  nullable: true
+                price_minor:
+                  type: integer
+                  minimum: 0
+                currency:
+                  type: string
+                  maxLength: 3
+                cost_minor:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                tax_rate_id:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                is_available:
+                  type: boolean
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantProduct'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/products/{restaurantProduct}:
+    get:
+      tags:
+      - Restaurant
+      summary: Détail d'un product
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la ressource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantProduct'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      tags:
+      - Restaurant
+      summary: Mise à jour d'un product
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 150
+                category_id:
+                  type: integer
+                  minimum: 0
+                branch_id:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                description_redacted:
+                  type: string
+                  nullable: true
+                price_minor:
+                  type: integer
+                  minimum: 0
+                currency:
+                  type: string
+                  maxLength: 3
+                cost_minor:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                tax_rate_id:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                is_available:
+                  type: boolean
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantProduct'
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un product
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/ingredients:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des ingredient (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantIngredient'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: Création d'un ingredient
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - unit_code
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 150
+                branch_id:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                unit_code:
+                  type: string
+                  maxLength: 20
+                avg_cost_minor:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantIngredient'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/ingredients/{restaurantIngredient}:
+    get:
+      tags:
+      - Restaurant
+      summary: Détail d'un ingredient
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantIngredient
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la ressource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantIngredient'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      tags:
+      - Restaurant
+      summary: Mise à jour d'un ingredient
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantIngredient
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 150
+                branch_id:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                unit_code:
+                  type: string
+                  maxLength: 20
+                avg_cost_minor:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantIngredient'
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un ingredient
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantIngredient
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/units:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des unit (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantUnit'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: Création d'un unit
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              properties:
+                code:
+                  type: string
+                  maxLength: 20
+                label:
+                  type: string
+                  maxLength: 80
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantUnit'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/units/{restaurantUnit}:
+    get:
+      tags:
+      - Restaurant
+      summary: Détail d'un unit
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantUnit
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la ressource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantUnit'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      tags:
+      - Restaurant
+      summary: Mise à jour d'un unit
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantUnit
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 20
+                label:
+                  type: string
+                  maxLength: 80
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantUnit'
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un unit
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantUnit
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/tax-rates:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des taxrate (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantTaxRate'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: Création d'un taxrate
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              - rate_bps
+              properties:
+                code:
+                  type: string
+                  maxLength: 20
+                label:
+                  type: string
+                  maxLength: 80
+                rate_bps:
+                  type: integer
+                  minimum: 0
+                is_default:
+                  type: boolean
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantTaxRate'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/tax-rates/{restaurantTaxRate}:
+    get:
+      tags:
+      - Restaurant
+      summary: Détail d'un taxrate
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTaxRate
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la ressource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantTaxRate'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      tags:
+      - Restaurant
+      summary: Mise à jour d'un taxrate
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTaxRate
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 20
+                label:
+                  type: string
+                  maxLength: 80
+                rate_bps:
+                  type: integer
+                  minimum: 0
+                is_default:
+                  type: boolean
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantTaxRate'
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un taxrate
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTaxRate
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/menus:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des menu (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantMenu'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: Création d'un menu
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 150
+                branch_id:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                price_minor:
+                  type: integer
+                  minimum: 0
+                currency:
+                  type: string
+                  maxLength: 3
+                starts_at:
+                  type: string
+                  nullable: true
+                  format: date-time
+                ends_at:
+                  type: string
+                  nullable: true
+                  format: date-time
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantMenu'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/menus/{restaurantMenu}:
+    get:
+      tags:
+      - Restaurant
+      summary: Détail d'un menu
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la ressource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantMenu'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      tags:
+      - Restaurant
+      summary: Mise à jour d'un menu
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 150
+                branch_id:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                price_minor:
+                  type: integer
+                  minimum: 0
+                currency:
+                  type: string
+                  maxLength: 3
+                starts_at:
+                  type: string
+                  nullable: true
+                  format: date-time
+                ends_at:
+                  type: string
+                  nullable: true
+                  format: date-time
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantMenu'
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un menu
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/hours:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des hour (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantHour'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: Création d'un hour
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - branch_id
+              - day_of_week
+              properties:
+                branch_id:
+                  type: integer
+                  minimum: 0
+                day_of_week:
+                  type: integer
+                  minimum: 0
+                opens_at:
+                  type: string
+                  nullable: true
+                  format: time
+                closes_at:
+                  type: string
+                  nullable: true
+                  format: time
+                is_closed:
+                  type: boolean
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantHour'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/hours/{restaurantHour}:
+    get:
+      tags:
+      - Restaurant
+      summary: Détail d'un hour
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantHour
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la ressource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantHour'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      tags:
+      - Restaurant
+      summary: Mise à jour d'un hour
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantHour
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                branch_id:
+                  type: integer
+                  minimum: 0
+                day_of_week:
+                  type: integer
+                  minimum: 0
+                opens_at:
+                  type: string
+                  nullable: true
+                  format: time
+                closes_at:
+                  type: string
+                  nullable: true
+                  format: time
+                is_closed:
+                  type: boolean
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantHour'
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un hour
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantHour
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/suppliers:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des supplier (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantSupplier'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: Création d'un supplier
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 150
+                contact_phone:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                email:
+                  type: string
+                  maxLength: 150
+                  nullable: true
+                address:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantSupplier'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/suppliers/{restaurantSupplier}:
+    get:
+      tags:
+      - Restaurant
+      summary: Détail d'un supplier
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantSupplier
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la ressource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantSupplier'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      tags:
+      - Restaurant
+      summary: Mise à jour d'un supplier
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantSupplier
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 150
+                contact_phone:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                email:
+                  type: string
+                  maxLength: 150
+                  nullable: true
+                address:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+                status:
+                  type: string
+                  enum: ['active', 'disabled']
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantSupplier'
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un supplier
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantSupplier
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/branches/{restaurantBranch}/zones:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des zone (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantZone'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+  /restaurant/products/{restaurantProduct}/ingredients:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des productingredient (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantProductIngredient'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: Création d'un productingredient
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ingredient_id
+              - quantity
+              properties:
+                ingredient_id:
+                  type: integer
+                  minimum: 0
+                quantity:
+                  type: number
+                unit_code:
+                  type: string
+                  maxLength: 20
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantProductIngredient'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/products/{restaurantProduct}/ingredients/{restaurantProductIngredient}:
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un productingredient
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: restaurantProductIngredient
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/menus/{restaurantMenu}/items:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des menuitem (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantMenuItem'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: Création d'un menuitem
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - product_id
+              properties:
+                product_id:
+                  type: integer
+                  minimum: 0
+                position:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                is_optional:
+                  type: boolean
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantMenuItem'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/menus/{restaurantMenu}/items/{restaurantMenuItem}:
+    put:
+      tags:
+      - Restaurant
+      summary: Mise à jour d'un menuitem
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: restaurantMenuItem
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: integer
+                  minimum: 0
+                position:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                is_optional:
+                  type: boolean
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantMenuItem'
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un menuitem
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: restaurantMenuItem
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/pos-sessions:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-401 — Ouverture d''une session de caisse POS (une seule session ouverte par branche)'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - branch_id
+              - opening_cash_minor
+              properties:
+                branch_id:
+                  type: integer
+                opening_cash_minor:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: Session ouverte
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantPosSession'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag inactif, ou permission manquante
+        '409':
+          description: Une session est déjà ouverte pour cette branche
+        '422':
+          description: Validation échouée
+  /restaurant/pos-sessions/current:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-401 — Session de caisse en cours (par branche, sinon première branche du tenant)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: branch_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Session en cours (data null si aucune)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                    - $ref: '#/components/schemas/RestaurantPosSession'
+                    - type: object
+                      nullable: true
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag inactif, ou permission manquante
+  /restaurant/pos-sessions/{restaurantPosSession}:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-401 — Détail d''une session de caisse'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPosSession
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantPosSession'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/pos-sessions/{restaurantPosSession}/close:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-401 — Clôture d''une session de caisse (totaux recalculés serveur, écart + motif, immuable)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPosSession
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - counted_cash_minor
+              properties:
+                counted_cash_minor:
+                  type: integer
+                  minimum: 0
+                variance_reason:
+                  type: string
+                  maxLength: 255
+                  nullable: true
+      responses:
+        '200':
+          description: Session clôturée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantPosSession'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Session non ouverte ou modifiée concurrentement
+        '422':
+          description: Écart non nul sans motif
+  /restaurant/orders:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-402 — Liste des commandes (filtres branche/statut, paginée)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: branch_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-402 — Création de commande (idempotente, types salle/emporter/livraison)'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - branch_id
+              - order_type
+              properties:
+                branch_id:
+                  type: integer
+                order_type:
+                  type: string
+                  enum: ['dine_in', 'takeaway', 'delivery']
+                table_id:
+                  type: integer
+                  nullable: true
+                zone_id:
+                  type: integer
+                  nullable: true
+                covers:
+                  type: integer
+                  minimum: 1
+                  nullable: true
+                pos_session_id:
+                  type: integer
+                  nullable: true
+                customer_contact_id:
+                  type: integer
+                  nullable: true
+                source:
+                  type: string
+                  enum: ['pos', 'web', 'phone', 'delivery_app']
+                note_redacted:
+                  type: string
+                  maxLength: 1000
+                  nullable: true
+                idempotency_key:
+                  type: string
+                  format: uuid
+                  nullable: true
+      responses:
+        '201':
+          description: Commande créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrder'
+        '200':
+          description: Commande existante retournée (rejeu de la même idempotency_key)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '422':
+          description: Validation échouée (table dine_in obligatoire, référence hors tenant)
+  /restaurant/orders/{restaurantOrder}:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-402 — Détail d''une commande (articles + paiements)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la commande
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrder'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/orders/{restaurantOrder}/items:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-403 — Ajout d''un article (prix/TVA serveur, totaux recalculés)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - product_id
+              - quantity
+              properties:
+                product_id:
+                  type: integer
+                quantity:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: true
+                  maximum: 9999
+                menu_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Article ajouté
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrderItem'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Commande non modifiable (statut avancé)
+        '422':
+          description: Produit indisponible ou hors branche
+  /restaurant/orders/{restaurantOrder}/items/{restaurantOrderItem}/cancel:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-403 — Annulation d''une ligne d''article (totaux recalculés)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: restaurantOrderItem
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ligne annulée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrderItem'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Ligne déjà annulée ou commande non modifiable
+  /restaurant/orders/{restaurantOrder}/submit:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-404 — Soumission de commande (draft → open, événement order.created.v1)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande soumise
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+        '422':
+          description: Aucun article actif sur la commande
+  /restaurant/orders/{restaurantOrder}/confirm:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-404 — Confirmation de commande (open → in_preparation)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande confirmée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/orders/{restaurantOrder}/serve:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-404 — Service en salle (ready → served)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande servie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/orders/{restaurantOrder}/cancel:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-404 — Annulation de commande (draft|open → cancelled)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande annulée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/orders/{restaurantOrder}/bill:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-405 — Addition (totaux recalculés serveur — sous-total, TVA, remise promo, total)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: promotion_code
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Addition calculée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantBill'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Code promotionnel inconnu, expiré, hors branche ou plafond atteint
+  /restaurant/orders/{restaurantOrder}/pay:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-407 — Encaissement (montant vérifié serveur, idempotent, callback signé pour mobile money)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - provider_code
+              - amount_minor
+              properties:
+                provider_code:
+                  type: string
+                  enum: ['cash', 'card', 'mobile_money']
+                amount_minor:
+                  type: integer
+                  minimum: 0
+                tip_minor:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                idempotency_key:
+                  type: string
+                  format: uuid
+                  nullable: true
+      responses:
+        '201':
+          description: Paiement créé (confirmé pour cash/carte, pending pour mobile money)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrderPayment'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Commande déjà réglée ou non payable depuis ce statut
+        '422':
+          description: Montant incohérent avec le reste à payer
+  /restaurant/orders/{restaurantOrder}/refund:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-408 — Remboursement (réservé restaurant.manage, motif, idempotent)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount_minor
+              - reason_code
+              properties:
+                amount_minor:
+                  type: integer
+                  minimum: 1
+                reason_code:
+                  type: string
+                  enum: ['customer_request', 'wrong_item', 'quality_issue', 'no_show', 'duplicate_charge', 'other']
+                reason_text:
+                  type: string
+                  maxLength: 1000
+                  nullable: true
+                payment_id:
+                  type: integer
+                  nullable: true
+                idempotency_key:
+                  type: string
+                  format: uuid
+                  nullable: true
+      responses:
+        '201':
+          description: Remboursement créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantRefund'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Commande non payée ou déjà intégralement remboursée
+        '422':
+          description: Montant supérieur au restant remboursable
+  /restaurant/tables/{restaurantTable}/open:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-409 — Ouverture d''une session d''occupation de table (table occupée → 409)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTable
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                covers:
+                  type: integer
+                  minimum: 1
+                  nullable: true
+                order_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Session ouverte
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantTableSession'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Table déjà occupée
+  /restaurant/tables/{restaurantTable}/close:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-409 — Clôture de la session d''occupation (immuable, événement table.closed.v1)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTable
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Session clôturée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantTableSession'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Aucune session ouverte pour cette table ou ressource hors tenant
+  /restaurant/kitchen/orders:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-410 — File cuisine (commandes in_preparation/ready de la branche, branch_id obligatoire)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: branch_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: File cuisine de la branche
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantKitchenOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.kitchen/restaurant.manager requise
+        '404':
+          description: Branche introuvable ou hors tenant
+        '422':
+          description: branch_id absent
+  /restaurant/kitchen/orders/{restaurantOrder}/start:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-410 — Prise en cuisine (open → in_preparation)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande en préparation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantKitchenOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.kitchen/restaurant.manager requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/kitchen/orders/{restaurantOrder}/ready:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-410 — Plat prêt (in_preparation → ready)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande prête
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantKitchenOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.kitchen/restaurant.manager requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/payments/{payment}/callback:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-407 — Callback signé de confirmation mobile money (public, HMAC fail-closed, idempotent)'
+      security: []
+      parameters:
+      - name: payment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - company_id
+              - provider_reference
+              - amount_minor
+              - status
+              properties:
+                company_id:
+                  type: string
+                  format: uuid
+                provider_reference:
+                  type: string
+                amount_minor:
+                  type: integer
+                currency:
+                  type: string
+                  maxLength: 3
+                status:
+                  type: string
+                  enum: ['confirmed', 'failed']
+      responses:
+        '200':
+          description: Paiement confirmé — rejeu idempotent (même réponse)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrderPayment'
+        '401':
+          description: Signature HMAC invalide
+        '404':
+          description: Paiement introuvable ou hors tenant
+        '422':
+          description: Payload invalide
+  /restaurant/stock-levels:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-501 — Niveaux de stock (filtres branche/ingrédient, paginés)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: branch_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: ingredient_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des niveaux de stock
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantStockLevel'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag inactif, ou permission manquante
+  /restaurant/stock-levels/{restaurantStockLevel}:
+    put:
+      tags:
+      - Restaurant
+      summary: 'RESTO-501 — Mise à jour des seuils/coût moyen (la quantité n''est JAMAIS écrite directement)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantStockLevel
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reorder_level:
+                  type: number
+                  minimum: 0
+                  nullable: true
+                alert_threshold:
+                  type: number
+                  minimum: 0
+                  nullable: true
+                avg_cost_minor:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+      responses:
+        '200':
+          description: Niveau de stock mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantStockLevel'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '422':
+          description: Validation échouée (quantity prohibé, seuils invalides)
+  /restaurant/inventory-movements:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-501 — Journal des mouvements de stock (filtres branche/raison)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: branch_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: reason_code
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: ['sale', 'receiving', 'count', 'adjustment', 'waste', 'transfer']
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des mouvements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantInventoryMovement'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-501 — Mouvement de stock manuel (adjustment|waste|transfer, jamais négatif)'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - branch_id
+              - ingredient_id
+              - quantity_delta
+              - reason_code
+              properties:
+                branch_id:
+                  type: integer
+                ingredient_id:
+                  type: integer
+                quantity_delta:
+                  type: number
+                reason_code:
+                  type: string
+                  enum: ['adjustment', 'waste', 'transfer']
+                note_redacted:
+                  type: string
+                  maxLength: 1000
+                  nullable: true
+      responses:
+        '201':
+          description: Mouvement enregistré (stock mis à jour)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantInventoryMovement'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manager requise
+        '422':
+          description: Stock insuffisant ou raison invalide
+  /restaurant/purchase-orders:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-502 — Bons de commande fournisseurs (filtres branche/statut)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: branch_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: ['draft', 'sent', 'received', 'cancelled']
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des bons de commande
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantPurchaseOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-502 — Création d''un bon de commande (total recalculé serveur)'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - branch_id
+              - supplier_id
+              properties:
+                branch_id:
+                  type: integer
+                supplier_id:
+                  type: integer
+                reference:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                expected_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                currency:
+                  type: string
+                  maxLength: 3
+      responses:
+        '201':
+          description: Bon de commande créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantPurchaseOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manager requise
+        '422':
+          description: Validation échouée
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-502 — Détail d''un bon de commande'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail du bon de commande
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantPurchaseOrder'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant
+    put:
+      tags:
+      - Restaurant
+      summary: 'RESTO-502 — Mise à jour (draft uniquement)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expected_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                currency:
+                  type: string
+                  maxLength: 3
+      responses:
+        '200':
+          description: Bon de commande mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantPurchaseOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manager requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Seul un draft est modifiable
+    delete:
+      tags:
+      - Restaurant
+      summary: 'RESTO-502 — Suppression (draft uniquement)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprimé
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manager requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Seul un draft est supprimable
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/send:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-502 — Envoi au fournisseur (draft → sent)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Bon de commande envoyé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantPurchaseOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manager requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/receive:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-502 — Réception (sent → received, entrées de stock + coût moyen pondéré)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Bon de commande reçu (mouvements de stock générés)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantPurchaseOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manager requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/cancel:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-502 — Annulation (draft|sent → cancelled)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Bon de commande annulé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantPurchaseOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manager requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/items:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-502 — Ajout d''une ligne (total du PO recalculé serveur)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ingredient_id
+              - quantity
+              - unit_price_minor
+              properties:
+                ingredient_id:
+                  type: integer
+                quantity:
+                  type: number
+                  exclusiveMinimum: true
+                  minimum: 0
+                unit_price_minor:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: Ligne ajoutée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantPurchaseOrderItem'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manager requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Seul un draft est modifiable
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/items/{restaurantPurchaseOrderItem}:
+    delete:
+      tags:
+      - Restaurant
+      summary: 'RESTO-502 — Suppression d''une ligne (draft uniquement)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: restaurantPurchaseOrderItem
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Ligne supprimée
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manager requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Seul un draft est modifiable
+  /restaurant/receivings:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-503 — Réceptions (filtres branche/bon de commande)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: branch_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: purchase_order_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des réceptions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantReceiving'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-503 — Réception (entrées stock + coût moyen pondéré, idempotente par référence)'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - branch_id
+              - lines
+              properties:
+                branch_id:
+                  type: integer
+                purchase_order_id:
+                  type: integer
+                  nullable: true
+                supplier_id:
+                  type: integer
+                  nullable: true
+                reference:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                note_redacted:
+                  type: string
+                  maxLength: 1000
+                  nullable: true
+                lines:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                    - ingredient_id
+                    - quantity
+                    - unit_price_minor
+                    properties:
+                      ingredient_id:
+                        type: integer
+                      quantity:
+                        type: number
+                        exclusiveMinimum: true
+                        minimum: 0
+                      unit_price_minor:
+                        type: integer
+                        minimum: 0
+      responses:
+        '201':
+          description: Réception créée (stock et coût moyen mis à jour)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantReceiving'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manager requise
+        '409':
+          description: Une réception avec cette référence existe déjà
+        '422':
+          description: Validation échouée
+  /restaurant/inventory-counts:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-504 — Inventaires physiques (filtres branche/statut)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: branch_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: ['draft', 'submitted', 'approved']
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des inventaires
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantInventoryCount'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-504 — Création d''un inventaire (lignes attendues pré-remplies depuis le stock)'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - branch_id
+              properties:
+                branch_id:
+                  type: integer
+                counted_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        '201':
+          description: Inventaire créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantInventoryCount'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manager requise
+        '422':
+          description: Validation échouée
+  /restaurant/inventory-counts/{restaurantInventoryCount}:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-504 — Détail d''un inventaire (lignes)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantInventoryCount
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de l'inventaire
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantInventoryCount'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}:
+    put:
+      tags:
+      - Restaurant
+      summary: 'RESTO-504 — Saisie du compté (variance calculée serveur, motif si écart)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantInventoryCount
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: restaurantInventoryCountItem
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - counted_qty
+              properties:
+                counted_qty:
+                  type: number
+                  minimum: 0
+                reason_code:
+                  type: string
+                  enum: ['damage', 'loss', 'theft', 'miscount', 'expiry', 'other']
+                  nullable: true
+      responses:
+        '200':
+          description: Ligne saisie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantInventoryCountItem'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manager requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Seul un draft est modifiable
+  /restaurant/inventory-counts/{restaurantInventoryCount}/submit:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-504 — Soumission de l''inventaire (draft → submitted)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantInventoryCount
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Inventaire soumis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantInventoryCount'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manager requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/inventory-counts/{restaurantInventoryCount}/approve:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-504 — Approbation (submitted → approved, ajustements de stock — réservé manage)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantInventoryCount
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Inventaire approuvé (ajustements appliqués)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantInventoryCount'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+        '422':
+          description: Écart non justifié (motif manquant)
+  /restaurant/reservations/availability:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-602 — Disponibilité de créneaux (tables par capacité et conflits ±2h)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: branch_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: reserved_at
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: covers
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 999
+      responses:
+        '200':
+          description: Tables disponibles sur le créneau
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      branch_id:
+                        type: integer
+                      reserved_at:
+                        type: string
+                        format: date-time
+                      covers:
+                        type: integer
+                      available_tables:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            label:
+                              type: string
+                            capacity:
+                              type: integer
+                            zone_id:
+                              type: integer
+                              nullable: true
+        '401':
+          description: Non authentifié
+        '404':
+          description: Branche introuvable ou hors tenant
+        '422':
+          description: Paramètres requis manquants
+  /restaurant/reservations:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-601 — Réservations (filtres branche/statut/date)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: branch_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: ['pending', 'confirmed', 'seated', 'completed', 'no_show', 'cancelled']
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des réservations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantReservation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag inactif, ou permission manquante
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-601 — Création d''une réservation (idempotente, conflit de créneau → 409)'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - branch_id
+              - contact_name
+              - contact_phone
+              - reserved_at
+              properties:
+                branch_id:
+                  type: integer
+                contact_name:
+                  type: string
+                  maxLength: 150
+                contact_phone:
+                  type: string
+                  maxLength: 40
+                reserved_at:
+                  type: string
+                  format: date-time
+                covers:
+                  type: integer
+                  minimum: 1
+                  maximum: 999
+                  nullable: true
+                table_id:
+                  type: integer
+                  nullable: true
+                zone_id:
+                  type: integer
+                  nullable: true
+                customer_contact_id:
+                  type: integer
+                  nullable: true
+                deposit_minor:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+                notes_redacted:
+                  type: string
+                  maxLength: 1000
+                  nullable: true
+                idempotency_key:
+                  type: string
+                  format: uuid
+                  nullable: true
+      responses:
+        '201':
+          description: Réservation créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantReservation'
+        '200':
+          description: Réservation existante retournée (rejeu idempotency_key)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantReservation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '409':
+          description: Table déjà réservée sur un créneau qui chevauche (±2h)
+        '422':
+          description: Validation échouée (reserved_at dans le passé, référence hors tenant)
+  /restaurant/reservations/{restaurantReservation}:
+    get:
+      tags:
+      - Restaurant
+      summary: 'RESTO-601 — Détail d''une réservation'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la réservation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantReservation'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant
+    put:
+      tags:
+      - Restaurant
+      summary: 'RESTO-601 — Mise à jour (pending|confirmed uniquement)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contact_name:
+                  type: string
+                  maxLength: 150
+                contact_phone:
+                  type: string
+                  maxLength: 40
+                reserved_at:
+                  type: string
+                  format: date-time
+                covers:
+                  type: integer
+                  minimum: 1
+                  maximum: 999
+                table_id:
+                  type: integer
+                  nullable: true
+                notes_redacted:
+                  type: string
+                  maxLength: 1000
+                  nullable: true
+      responses:
+        '200':
+          description: Réservation mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantReservation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Réservation non modifiable (statut avancé)
+  /restaurant/reservations/{restaurantReservation}/confirm:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-601 — Confirmation (pending → confirmed, événement reservation.confirmed.v1)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation confirmée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantReservation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/reservations/{restaurantReservation}/check-in:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-601 — Arrivée client (confirmed → seated)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Client installé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantReservation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/reservations/{restaurantReservation}/no-show:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-601 — Non venue (pending|confirmed → no_show)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation passée en no_show
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantReservation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/reservations/{restaurantReservation}/cancel:
+    post:
+      tags:
+      - Restaurant
+      summary: 'RESTO-601 — Annulation (pending|confirmed → cancelled)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation annulée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantReservation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
   /health:
     get:
       tags:
@@ -33270,3 +37439,1114 @@ components:
           type: boolean
         correlation_id:
           type: string
+    RestaurantBranch:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 40
+        name:
+          type: string
+          maxLength: 150
+        address:
+          type: string
+          maxLength: 255
+          nullable: true
+        city:
+          type: string
+          maxLength: 120
+          nullable: true
+        phone:
+          type: string
+          maxLength: 40
+          nullable: true
+        timezone:
+          type: string
+          maxLength: 50
+        currency:
+          type: string
+          maxLength: 3
+        status:
+          type: string
+          enum: ['active', 'disabled']
+        id:
+          type: integer
+          readOnly: true
+        company_id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantZone:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 120
+        branch_id:
+          type: integer
+          minimum: 0
+        color:
+          type: string
+          maxLength: 7
+          nullable: true
+        sort_order:
+          type: integer
+          minimum: 0
+          nullable: true
+        status:
+          type: string
+          enum: ['active', 'disabled']
+        id:
+          type: integer
+          readOnly: true
+        company_id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantTable:
+      type: object
+      properties:
+        label:
+          type: string
+          maxLength: 80
+        branch_id:
+          type: integer
+          minimum: 0
+        zone_id:
+          type: integer
+          minimum: 0
+          nullable: true
+        capacity:
+          type: integer
+          minimum: 0
+          nullable: true
+        min_covers:
+          type: integer
+          minimum: 0
+          nullable: true
+        is_mergeable:
+          type: boolean
+        status:
+          type: string
+          enum: ['active', 'disabled']
+        id:
+          type: integer
+          readOnly: true
+        company_id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantCategory:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 120
+        branch_id:
+          type: integer
+          minimum: 0
+          nullable: true
+        color:
+          type: string
+          maxLength: 7
+          nullable: true
+        sort_order:
+          type: integer
+          minimum: 0
+          nullable: true
+        status:
+          type: string
+          enum: ['active', 'disabled']
+        id:
+          type: integer
+          readOnly: true
+        company_id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantProduct:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 40
+        name:
+          type: string
+          maxLength: 150
+        category_id:
+          type: integer
+          minimum: 0
+        branch_id:
+          type: integer
+          minimum: 0
+          nullable: true
+        description_redacted:
+          type: string
+          nullable: true
+        price_minor:
+          type: integer
+          minimum: 0
+        currency:
+          type: string
+          maxLength: 3
+        cost_minor:
+          type: integer
+          minimum: 0
+          nullable: true
+        tax_rate_id:
+          type: integer
+          minimum: 0
+          nullable: true
+        is_available:
+          type: boolean
+        status:
+          type: string
+          enum: ['active', 'disabled']
+        id:
+          type: integer
+          readOnly: true
+        company_id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantIngredient:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 40
+        name:
+          type: string
+          maxLength: 150
+        branch_id:
+          type: integer
+          minimum: 0
+          nullable: true
+        unit_code:
+          type: string
+          maxLength: 20
+        avg_cost_minor:
+          type: integer
+          minimum: 0
+          nullable: true
+        status:
+          type: string
+          enum: ['active', 'disabled']
+        id:
+          type: integer
+          readOnly: true
+        company_id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantUnit:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 20
+        label:
+          type: string
+          maxLength: 80
+        status:
+          type: string
+          enum: ['active', 'disabled']
+        id:
+          type: integer
+          readOnly: true
+        company_id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantTaxRate:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 20
+        label:
+          type: string
+          maxLength: 80
+        rate_bps:
+          type: integer
+          minimum: 0
+        is_default:
+          type: boolean
+        status:
+          type: string
+          enum: ['active', 'disabled']
+        id:
+          type: integer
+          readOnly: true
+        company_id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantMenu:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 40
+        name:
+          type: string
+          maxLength: 150
+        branch_id:
+          type: integer
+          minimum: 0
+          nullable: true
+        price_minor:
+          type: integer
+          minimum: 0
+        currency:
+          type: string
+          maxLength: 3
+        starts_at:
+          type: string
+          nullable: true
+          format: date-time
+        ends_at:
+          type: string
+          nullable: true
+          format: date-time
+        status:
+          type: string
+          enum: ['active', 'disabled']
+        id:
+          type: integer
+          readOnly: true
+        company_id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantHour:
+      type: object
+      properties:
+        branch_id:
+          type: integer
+          minimum: 0
+        day_of_week:
+          type: integer
+          minimum: 0
+        opens_at:
+          type: string
+          nullable: true
+          format: time
+        closes_at:
+          type: string
+          nullable: true
+          format: time
+        is_closed:
+          type: boolean
+        id:
+          type: integer
+          readOnly: true
+        company_id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantSupplier:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 150
+        contact_phone:
+          type: string
+          maxLength: 40
+          nullable: true
+        email:
+          type: string
+          maxLength: 150
+          nullable: true
+        address:
+          type: string
+          maxLength: 255
+          nullable: true
+        status:
+          type: string
+          enum: ['active', 'disabled']
+        id:
+          type: integer
+          readOnly: true
+        company_id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantProductIngredient:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        product_id:
+          type: integer
+          minimum: 0
+        ingredient_id:
+          type: integer
+          minimum: 0
+        quantity:
+          type: number
+        unit_code:
+          type: string
+          maxLength: 20
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantMenuItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        menu_id:
+          type: integer
+          minimum: 0
+        product_id:
+          type: integer
+          minimum: 0
+        position:
+          type: integer
+          minimum: 0
+          nullable: true
+        is_optional:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantPosSession:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        branch_id:
+          type: integer
+        opened_at:
+          type: string
+          format: date-time
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        opened_by_user_id:
+          type: integer
+        closed_by_user_id:
+          type: integer
+          nullable: true
+        opening_cash_minor:
+          type: integer
+          minimum: 0
+        expected_cash_minor:
+          type: integer
+          nullable: true
+        counted_cash_minor:
+          type: integer
+          nullable: true
+        variance_minor:
+          type: integer
+          nullable: true
+        variance_reason:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: ['open', 'closed', 'cancelled']
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+        branch_id:
+          type: integer
+        pos_session_id:
+          type: integer
+          nullable: true
+        order_type:
+          type: string
+          enum: ['dine_in', 'takeaway', 'delivery']
+        table_id:
+          type: integer
+          nullable: true
+        zone_id:
+          type: integer
+          nullable: true
+        covers:
+          type: integer
+          nullable: true
+        customer_contact_id:
+          type: integer
+          nullable: true
+        rider_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: ['draft', 'open', 'in_preparation', 'ready', 'served', 'paid', 'closed', 'cancelled', 'refunded']
+        subtotal_minor:
+          type: integer
+          minimum: 0
+        tax_minor:
+          type: integer
+          minimum: 0
+        discount_minor:
+          type: integer
+          minimum: 0
+        total_minor:
+          type: integer
+          minimum: 0
+        currency:
+          type: string
+          maxLength: 3
+        source:
+          type: string
+          enum: ['pos', 'web', 'phone', 'delivery_app']
+        note_redacted:
+          type: string
+          nullable: true
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestaurantOrderItem'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestaurantOrderPayment'
+    RestaurantOrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order_id:
+          type: integer
+        product_id:
+          type: integer
+        menu_id:
+          type: integer
+          nullable: true
+        quantity:
+          type: number
+        unit_price_minor:
+          type: integer
+          minimum: 0
+        line_total_minor:
+          type: integer
+          minimum: 0
+        tax_rate_id:
+          type: integer
+          nullable: true
+        tax_minor:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: ['active', 'cancelled']
+        line_index:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantOrderPayment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order_id:
+          type: integer
+        pos_session_id:
+          type: integer
+          nullable: true
+        provider_code:
+          type: string
+          enum: ['cash', 'card', 'mobile_money']
+        amount_minor:
+          type: integer
+          minimum: 0
+        currency:
+          type: string
+          maxLength: 3
+        status:
+          type: string
+          enum: ['pending', 'confirmed', 'failed', 'refunded']
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        provider_reference:
+          type: string
+          nullable: true
+        tip_minor:
+          type: integer
+          nullable: true
+        idempotency_key:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantRefund:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order_id:
+          type: integer
+        payment_id:
+          type: integer
+          nullable: true
+        amount_minor:
+          type: integer
+          minimum: 0
+        reason_code:
+          type: string
+        reason_text:
+          type: string
+          nullable: true
+        refunded_by_user_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: ['pending', 'processed', 'rejected']
+        idempotency_key:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantTableSession:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        branch_id:
+          type: integer
+        table_id:
+          type: integer
+        order_id:
+          type: integer
+          nullable: true
+        opened_at:
+          type: string
+          format: date-time
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        covers:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: ['open', 'closed', 'cancelled']
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantKitchenOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+        branch_id:
+          type: integer
+        table_id:
+          type: integer
+          nullable: true
+        order_type:
+          type: string
+          enum: ['dine_in', 'takeaway', 'delivery']
+        status:
+          type: string
+          enum: ['in_preparation', 'ready']
+        covers:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              product_id:
+                type: integer
+              name:
+                type: string
+                nullable: true
+              quantity:
+                type: number
+              line_index:
+                type: integer
+              status:
+                type: string
+    RestaurantBill:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+        status:
+          type: string
+        currency:
+          type: string
+          maxLength: 3
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestaurantOrderItem'
+        bill:
+          type: object
+          properties:
+            subtotal_minor:
+              type: integer
+              minimum: 0
+            tax_minor:
+              type: integer
+              minimum: 0
+            discount_minor:
+              type: integer
+              minimum: 0
+            total_minor:
+              type: integer
+              minimum: 0
+            currency:
+              type: string
+              maxLength: 3
+            promotion_code:
+              type: string
+              nullable: true
+    RestaurantStockLevel:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        branch_id:
+          type: integer
+        ingredient_id:
+          type: integer
+        ingredient_name:
+          type: string
+          nullable: true
+        quantity:
+          type: number
+        avg_cost_minor:
+          type: integer
+          nullable: true
+        reorder_level:
+          type: number
+          nullable: true
+        alert_threshold:
+          type: number
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantInventoryMovement:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        branch_id:
+          type: integer
+        ingredient_id:
+          type: integer
+        ingredient_name:
+          type: string
+          nullable: true
+        stock_level_id:
+          type: integer
+          nullable: true
+        quantity_delta:
+          type: number
+        reason_code:
+          type: string
+          enum: ['sale', 'receiving', 'count', 'adjustment', 'waste', 'transfer']
+        reference_type:
+          type: string
+          nullable: true
+        reference_id:
+          type: integer
+          nullable: true
+        note_redacted:
+          type: string
+          nullable: true
+        user_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantPurchaseOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+        branch_id:
+          type: integer
+        supplier_id:
+          type: integer
+        status:
+          type: string
+          enum: ['draft', 'sent', 'received', 'cancelled']
+        expected_at:
+          type: string
+          format: date-time
+          nullable: true
+        received_at:
+          type: string
+          format: date-time
+          nullable: true
+        total_minor:
+          type: integer
+          nullable: true
+        currency:
+          type: string
+          maxLength: 3
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestaurantPurchaseOrderItem'
+    RestaurantPurchaseOrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        purchase_order_id:
+          type: integer
+        ingredient_id:
+          type: integer
+        quantity:
+          type: number
+        unit_price_minor:
+          type: integer
+          minimum: 0
+        line_total_minor:
+          type: integer
+          minimum: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantReceiving:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+        branch_id:
+          type: integer
+        purchase_order_id:
+          type: integer
+          nullable: true
+        supplier_id:
+          type: integer
+          nullable: true
+        received_at:
+          type: string
+          format: date-time
+        note_redacted:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantInventoryCount:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        branch_id:
+          type: integer
+        counted_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: ['draft', 'submitted', 'approved']
+        counted_by_user_id:
+          type: integer
+          nullable: true
+        approved_by:
+          type: integer
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestaurantInventoryCountItem'
+    RestaurantInventoryCountItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        count_id:
+          type: integer
+        ingredient_id:
+          type: integer
+        expected_qty:
+          type: number
+        counted_qty:
+          type: number
+          nullable: true
+        variance_qty:
+          type: number
+          nullable: true
+        reason_code:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantReservation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+        branch_id:
+          type: integer
+        customer_contact_id:
+          type: integer
+          nullable: true
+        contact_name:
+          type: string
+        contact_phone:
+          type: string
+        reserved_at:
+          type: string
+          format: date-time
+        covers:
+          type: integer
+        table_id:
+          type: integer
+          nullable: true
+        zone_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: ['pending', 'confirmed', 'seated', 'completed', 'no_show', 'cancelled']
+        deposit_minor:
+          type: integer
+          nullable: true
+        notes_redacted:
+          type: string
+          nullable: true
+        idempotency_key:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true

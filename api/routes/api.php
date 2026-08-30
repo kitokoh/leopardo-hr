@@ -62,6 +62,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
 use App\Modules\Recruitment\Interfaces\Api\V1\CandidateApplicationController;
 use App\Modules\Recruitment\Interfaces\Api\V1\PublicCareerController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -154,6 +155,11 @@ Route::prefix('v1')->group(function (): void {
         // (Postmark, SES, Mailgun, ...), protected by a shared secret header
         // instead of Sanctum since the caller is a third-party mail provider.
         Route::post('/webhooks/email-bounce', EmailBounceWebhookController::class);
+        // RESTO-407 (#6194) — callback signé de confirmation mobile money de la
+        // verticale RestaurantManager. Public : la confiance est portée par la
+        // signature HMAC (secret par tenant, fail-closed) ; le tenant est résolu
+        // depuis le payload signé puis posé via TenantManager (pattern #5272).
+        Route::post('/restaurant/payments/{payment}/callback', RestaurantPaymentCallbackController::class);
     });
 
     // Public careers portal (ATS): unauthenticated job listing/detail, the
@@ -263,10 +269,9 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/absence.php';
     require __DIR__.'/modules/expense.php';
     require __DIR__.'/modules/marketing.php';
+    require __DIR__.'/modules/restaurantmanager.php';
 
     require __DIR__.'/modules/fuel_station.php';
-
-    require __DIR__.'/modules/restaurantmanager.php';
 
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';
