@@ -64,6 +64,7 @@ return [
     // — Accounting module (Phase A, issue #5221)
     AccountingServiceProvider::class,
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     // — FuelStation module (solution verticale, issue #5795)
     FuelStationServiceProvider::class,
@@ -71,6 +72,12 @@ return [
     TravelAgencyServiceProvider::class,
 
 =======
+=======
+
+    // — FuelStation module (solution verticale, issue #5795)
+    FuelStationServiceProvider::class,
+
+>>>>>>> b45640692 (chore(merge): résolution des conflits — version canonique BC-25 (schéma rebasé + lots API))
     // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
     RestaurantManagerServiceProvider::class,
 ];

@@ -1520,7 +1520,6 @@ Note 2026-08-26 (PM hygiene, PR #5597) : retour au vert des checks backend — R
 - Payroll : `PayrollPaymentOrder::items()` a une FK explicite `payment_order_id` → l'ordre de virement prépare ses lignes sans QueryException (`column payroll_payment_order_id does not exist`).
 - Couverture : `VatDeclarationTest`, `AccountingMultiCurrencyTest`, `WebhookIdempotenceTest`, `EmailBounceWebhookControllerTest`, `ShareAccessAuditTest`, `PayrollPaymentOrderFlowTest`, `TwoFactorAuthTest`, `AccountingActivationTest` (route `/activation/complete`), `LangCatalogParityTest` (fins de fichier `];` tolérées), `OpenApiDocsTest` (`openapi: "3.0.3"` quoté).
 
-<<<<<<< HEAD
 Note 2026-08-31 (BC-22 ANALYTICS, PR #6280) : snapshots horodatés des read models de reporting + golden journey Analytics.
 - `GET /api/v1/accounting/dashboard` expose désormais un bloc `data.snapshot` (`source: live|snapshot`, `version`, `refreshed_at`) — scénarios : lecture live par défaut (aucun snapshot actif → `source: live`) ; après activation du recompute (budget p95 dépassé, jamais préventif) → `source: snapshot` avec `version` incrémentée uniquement si le contenu change (2 recomputes identiques → même version) ; rejeu de la commande `accounting:reporting-snapshot` → aucune écriture dupliquée (clé unique `(company_id, report, period_from, period_to)`).
 - Seed pilote synthétique `analytics-pilot-001` (DZD, 100 % synthétique, refusé en production MAT-012) : agrégats cohérents + déterminisme (2 lectures → mêmes totaux), export CSV impayés téléchargeable et sanitisé (`CsvCellSanitizer`), tenant vide → agrégats zéro, RBAC 403 pour un employé simple. Tests : `AccountingReportingSnapshotTest`, `AccountingAnalyticsGoldenJourneyTest`.
@@ -1565,6 +1564,7 @@ Dernière tranche de l'épic 3xx : `GET|POST /travel/rental-vehicles` (+ images)
   non authentifié → 401.
 - Couverture : `api/tests/Feature/Travel/TravelRentalApiTest.php`, `TravelHotelApiTest.php`, `TravelRbacMatrixTest.php`
   (168 tests Travel au total) + `docs/security/TRAVEL_RBAC_MATRIX.md`.
+>>>>>>> b45640692 (chore(merge): résolution des conflits — version canonique BC-25 (schéma rebasé + lots API))
 Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (manifest + stations/sites + équipements + relevés + shifts + présence + caisse + ventes).
 - Manifest de solution : `App\Core\Solutions` (contrat `SolutionManifest`, catalogue allowlist fail-closed, activateur audité, commande `leopardo:solution:activate`) + `FuelStationManifest` (FUEL-001). Activation idempotente par feature flag, dépendances manquantes → 422 `SOLUTION_MISSING_DEPENDENCY`, code inconnu → 404 `SOLUTION_NOT_FOUND`. Tests : `SolutionManifestTest`.
 - Stations et sites tenant-first (FUEL-002) : tables `fuel_stations` (code unique par tenant, timezone, statut CHECK active|inactive|archived) et `fuel_sites` (FK composite `(station_id, company_id)` → `fuel_stations`, statut CHECK active|inactive) — company_id non nullable partout, références cross-tenant physiquement impossibles. Tests : `FuelStationMigrationTest`, `FuelSitesInvariantTest`.
@@ -1576,6 +1576,7 @@ Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (man
 - Ventes (FUEL-008) : `POST/GET /fuel-station/sales` — transactions par pompe liées shift/session. Tests : `FuelSaleApiTest`.
 - Couverture globale : solution inactive → 403 `FUEL_SOLUTION_INACTIVE` (fail-closed) ; OpenAPI 3 chemins `/fuel-station/*` + SDK régénérés (885 ops) ; i18n ×4 (`FUEL_*`).
 
+<<<<<<< HEAD
 ## BC-24 TRAVEL — Verticale TravelAgency (TRAVEL-101..305, 2026-08-30)
 
 Surface API ajoutée par la verticale TravelAgency (module `api/app/Modules/TravelAgency`,
@@ -1633,7 +1634,6 @@ Dernière tranche de l'épic 3xx : `GET|POST /travel/rental-vehicles` (+ images)
 - Couverture : `api/tests/Feature/Travel/TravelRentalApiTest.php`, `TravelHotelApiTest.php`, `TravelRbacMatrixTest.php`
   (168 tests Travel au total) + `docs/security/TRAVEL_RBAC_MATRIX.md`.
 =======
->>>>>>> 965dd3a18 (docs(governance): scénarios API BC-25 RESTAURANT (garde api/routes, #5588))
 ## Scenarios BC-25 RESTAURANT (verticale RestaurantManager)
 
 Note 2026-08-30 (lots RESTO-1xx..7xx) : la verticale `RestaurantManager` (préfixe `/restaurant/*`, feature flag `restaurantmanager`, middleware `module.restaurantmanager`) couvre POS & caisse, commandes, réservations, stock & achats, livraison, fidélité, promotions et rapports. Scénarios couverts par les tests Feature `api/tests/Feature/Restaurant/*` :

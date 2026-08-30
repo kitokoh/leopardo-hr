@@ -40,13 +40,6 @@ class RestaurantProduct extends Model
         'status',
     ];
 
-    protected $attributes = [
-        'status' => 'active',
-        'currency' => 'DZD',
-        'price_minor' => 0,
-        'is_available' => true,
-    ];
-
     protected $casts = [
         'price_minor' => 'integer',
         'cost_minor' => 'integer',

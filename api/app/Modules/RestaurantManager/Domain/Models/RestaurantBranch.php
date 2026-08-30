@@ -36,12 +36,6 @@ class RestaurantBranch extends Model
         'status',
     ];
 
-    protected $attributes = [
-        'status' => 'active',
-        'timezone' => 'UTC',
-        'currency' => 'DZD',
-    ];
-
     protected $casts = [
         'status' => RestaurantRecordStatus::class,
     ];
