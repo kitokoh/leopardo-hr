@@ -83,4 +83,12 @@ class TravelTrip extends Model
     {
         return $this->hasMany(TravelTripPrice::class, 'trip_id');
     }
+
+    /**
+     * @return HasMany<TravelTripSeat, $this>
+     */
+    public function seats(): HasMany
+    {
+        return $this->hasMany(TravelTripSeat::class, 'trip_id');
+    }
 }

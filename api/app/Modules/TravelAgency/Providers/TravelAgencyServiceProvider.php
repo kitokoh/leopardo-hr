@@ -25,6 +25,9 @@ use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
+use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
+use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
+use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelCancellationPolicyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierApiKeyPolicy;
@@ -67,6 +70,14 @@ class TravelAgencyServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(SolutionManifest::class, TravelAgencyManifest::class);
+
+        // Passerelles de paiement (TRAVEL-405..407) — registre par code.
+        $this->app->singleton(PaymentGatewayRegistry::class, function (): PaymentGatewayRegistry {
+            return new PaymentGatewayRegistry([
+                'cash' => new CashPaymentGateway,
+                'pvit' => new PvitPaymentGateway(config('travel.payments.pvit', [])),
+            ]);
+        });
     }
 
     public function boot(): void

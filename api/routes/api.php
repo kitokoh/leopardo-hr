@@ -20,6 +20,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBankingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
@@ -143,6 +144,9 @@ Route::prefix('v1')->group(function (): void {
     // the controller). PA2-API-005: dedicated 'webhooks-inbound' throttle since
     // these routes sit outside the authenticated 'api' middleware group below.
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
+        // TRAVEL-409 (#6061) — callback provider paiements TravelAgency
+        // (signé HMAC, idempotent — public, vérifié dans le contrôleur).
+        Route::post('/travel/payments/callback', [TravelPaymentController::class, 'callback']);
         Route::post('/webhooks/stripe', StripeWebhookController::class);
         Route::post('/webhooks/chargily', [PaymentWebhookController::class, 'chargily']);
         // #5272 — webhook des paiements en ligne des documents comptables.
