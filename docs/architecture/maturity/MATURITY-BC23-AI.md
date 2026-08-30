@@ -21,7 +21,7 @@ actions à confirmer), gateway + analytics.
 | D2 | Données | 🟢 PRÉSENT | Migrations tenant (conversations, pending actions), index cohérents. |
 | D3 | Tenant | 🟢 PRÉSENT | Contexte tenant injecté (AITenantInjector), conversations scopées, isolation par company. |
 | D4 | API | 🟢 PRÉSENT | Routes `/api/v1/ai/*` (chat, history, tools, actions confirm/reject, workflows), Requests validées, OpenAPI couvert. |
-| D5 | Autorisation | 🟡 PARTIEL | Gardes employé/manager ; **WriteToolPolicy** (actions d'écriture bornées + confirmation humaine) — solide ; pas de matrice de permission fine par outil AI (recommandation 1). |
+| D5 | Autorisation | 🟢 PRÉSENT | Gardes employé/manager ; **WriteToolPolicy** (actions d'écriture bornées + confirmation humaine) ; **matrice de permissions par outil AI versionnée** (`ai.tool_permissions` + `ai.role_permissions`, issue #6237) : rôle minimal + permissions requises, enforce à l'exécution (lecture ET écriture, y compris à la confirmation), refus fail-closed `AI_TOOL_PERMISSION_DENIED`, exposition `/ai/tools` filtrée par rôle, garde anti-dérive config ↔ registre. |
 | D6 | Transactions | 🟢 PRÉSENT | **Écriture IA = confirmation humaine obligatoire** (AIWriteActionConfirmationTest) — garde anti-actions non désirées. |
 | D7 | Asynchronisme | 🟡 PARTIEL | Workflows IA synchrones ou par jobs ; pas de DLQ dédié AI. |
 | D8 | Sécurité | 🟢 PRÉSENT | **AIAuditLogger** (traçabilité des décisions), prompts bornés, pas de secret provider en clair (clé LLM via env/Pulumi). |
@@ -39,9 +39,14 @@ php artisan test --filter="AIWriteActionConfirmationTest|AIWorkflowTest|AIGatewa
 
 ## Recommandations (PR futures, non bloquantes)
 
-1. **Matrice de permissions par outil** (D5) : versionner la liste des
-   write-tools autorisés par rôle (WriteToolPolicy) avec tests négatifs par
-   rôle.
+1. ~~**Matrice de permissions par outil** (D5)~~ **LIVRÉ (BC-23-D05, issue #6237)** :
+   `ai.tool_permissions` + `ai.role_permissions` (config versionnée, alignée
+   sur `ai_tool_registry`), `ToolPermissionPolicy` (rôle minimal + permissions
+   requises, hiérarchie employee<manager<admin<super_admin), enforcement dans
+   l'IntentEngine (lecture ET écriture, y compris à la confirmation — refus
+   fail-closed `AI_TOOL_PERMISSION_DENIED`, aucune pending action ni effet de
+   bord), `/ai/tools` filtré par rôle, garde `ToolPermissionMatrixCoverageTest`
+   (config ↔ registre). 9 tests (`ToolPermissionMatrixTest`).
 2. ~~**Budgets de tokens** (D10)~~ **LIVRÉ (BC-23-D10, issue #6238)** :
    `config/ai.php` → `ai.budgets.{max_tokens_per_request,max_context_tokens,
    max_tokens_per_workflow}` (env override), `TokenBudgetGuard` (fail-closed

@@ -81,4 +81,81 @@ return [
         'create_absence',
         'approve_absence',
     ],
+
+    // BC-23-D05 (issue #6237) — matrice de permissions par outil AI
+    // (versionnée, source de vérité de l'ENFORCEMENT à l'exécution).
+    // {tool: {role: rôle minimal requis, permissions: permissions requises}}.
+    // Doit rester alignée sur `ai_tool_registry` (garde
+    // ToolPermissionMatrixCoverageTest) : tout outil actif du registre sans
+    // entrée ici → CI rouge (promesse fantôme / trou de permission).
+    'tool_permissions' => [
+        'get_employees' => ['role' => 'employee', 'permissions' => ['employees.view']],
+        'get_employee_details' => ['role' => 'employee', 'permissions' => ['employees.view']],
+        'get_departments' => ['role' => 'employee', 'permissions' => ['departments.view']],
+        'get_headcount' => ['role' => 'manager', 'permissions' => ['reports.view']],
+        'search_employees' => ['role' => 'employee', 'permissions' => ['employees.view']],
+        'get_attendance_today' => ['role' => 'manager', 'permissions' => ['attendance.view']],
+        'get_attendance_anomalies' => ['role' => 'manager', 'permissions' => ['attendance.view']],
+        'get_monthly_report' => ['role' => 'manager', 'permissions' => ['attendance.view']],
+        'get_absences' => ['role' => 'employee', 'permissions' => ['absences.view']],
+        'get_daily_summary' => ['role' => 'employee', 'permissions' => ['estimations.view']],
+        'get_notifications' => ['role' => 'employee', 'permissions' => ['notifications.view']],
+        'get_leave_balances' => ['role' => 'employee', 'permissions' => ['leave.view']],
+        'get_payroll_summary' => ['role' => 'manager', 'permissions' => ['payroll.view']],
+        'create_absence' => ['role' => 'employee', 'permissions' => ['absences.create']],
+        'approve_absence' => ['role' => 'manager', 'permissions' => ['absences.approve']],
+    ],
+
+    // BC-23-D05 (issue #6237) — permissions accordées par rôle (résolution du
+    // demandeur). Listes explicites et versionnées (pas d'héritage implicite).
+    'role_permissions' => [
+        'employee' => [
+            'employees.view',
+            'departments.view',
+            'absences.view',
+            'absences.create',
+            'estimations.view',
+            'notifications.view',
+            'leave.view',
+        ],
+        'manager' => [
+            'employees.view',
+            'departments.view',
+            'absences.view',
+            'absences.create',
+            'estimations.view',
+            'notifications.view',
+            'leave.view',
+            'reports.view',
+            'attendance.view',
+            'absences.approve',
+            'payroll.view',
+        ],
+        'admin' => [
+            'employees.view',
+            'departments.view',
+            'absences.view',
+            'absences.create',
+            'estimations.view',
+            'notifications.view',
+            'leave.view',
+            'reports.view',
+            'attendance.view',
+            'absences.approve',
+            'payroll.view',
+        ],
+        'super_admin' => [
+            'employees.view',
+            'departments.view',
+            'absences.view',
+            'absences.create',
+            'estimations.view',
+            'notifications.view',
+            'leave.view',
+            'reports.view',
+            'attendance.view',
+            'absences.approve',
+            'payroll.view',
+        ],
+    ],
 ];

@@ -8,8 +8,10 @@ use App\AI\DTOs\AIRequest;
 use App\AI\IntentEngine;
 use App\AI\Orchestrator;
 use App\AI\PendingActionStore;
-use App\Http\Controllers\Controller;
+use App\AI\ToolPermissionPolicy;
+use App\AI\ToolRegistry;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +26,7 @@ class AIGatewayController extends Controller
 
     public function chat(Request $request): JsonResponse
     {
+        /** @var array{message: string, conversation_id?: int} $validated */
         $validated = $request->validate([
             'message' => 'required|string|max:2000',
             'conversation_id' => 'nullable|integer',
@@ -148,13 +151,24 @@ class AIGatewayController extends Controller
         /** @var Employee $user */
         $user = $request->user();
 
-        $tools = DB::table('ai_tool_registry')
-            ->where('active', true)
-            ->select(['id', 'name', 'description', 'required_role', 'module', 'active'])
-            ->orderBy('module')
-            ->orderBy('name')
-            ->get();
+        // BC-23-D05 : n'exposer que les outils autorisés pour le rôle du
+        // demandeur (miroir de l'exposition LLM dans l'Orchestrator) — un
+        // employé ne voit pas les outils manager/admin.
+        $policy = app(ToolPermissionPolicy::class);
+        $registry = app(ToolRegistry::class);
 
-        return response()->json(['data' => $tools]);
+        $role = $policy->resolveRole((int) $user->id, (string) $user->company_id);
+        $tools = $registry->getToolsForRole($role, (string) $user->company_id);
+
+        $payload = array_values(array_map(static fn (array $tool): array => [
+            'id' => $tool['id'],
+            'name' => $tool['name'],
+            'description' => $tool['description'],
+            'required_role' => $tool['required_role'],
+            'module' => $tool['module'],
+            'active' => $tool['active'],
+        ], $tools));
+
+        return response()->json(['data' => $payload]);
     }
 }
