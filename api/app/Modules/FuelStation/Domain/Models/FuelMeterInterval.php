@@ -7,6 +7,7 @@ namespace App\Modules\FuelStation\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -67,5 +68,11 @@ class FuelMeterInterval extends Model
             'interval_seconds' => 'integer',
             'calculated_at' => 'datetime',
         ];
+    }
+
+    /** @return \Illuminate\Database\Eloquent\Relations\BelongsTo<FuelMeterRegister, $this> */
+    public function meter(): BelongsTo
+    {
+        return $this->belongsTo(FuelMeterRegister::class, 'meter_id');
     }
 }

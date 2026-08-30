@@ -6854,6 +6854,134 @@ paths:
           description: Introuvable ou autre tenant
         '422':
           description: Validation
+  /fuel-station/stations/{station}/stock:
+    get:
+      tags:
+      - FuelStation
+      summary: Niveaux de stock par produit (avec rapprochement du jour)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      parameters:
+      - name: product_type
+        in: query
+        schema:
+          type: string
+      - name: day
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/stations/{station}/deliveries:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les livraisons
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer une livraison recue
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/stations/{station}/adjustments:
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer un ajustement de stock (raison obligatoire)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/stations/{station}/reconciliations:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les snapshots de rapprochement
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+        '422':
+          description: Validation
   /fuel-station/stations/{station}:
     get:
       tags:

@@ -25,6 +25,7 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSiteController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStationController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelTankController;
 use Illuminate\Support\Facades\Route;
 
@@ -116,5 +117,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/fuel-station/products/{product}', [FuelProductController::class, 'show'])->whereNumber('product');
         Route::put('/fuel-station/products/{product}', [FuelProductController::class, 'update'])->whereNumber('product');
         Route::delete('/fuel-station/products/{product}', [FuelProductController::class, 'destroy'])->whereNumber('product');
+        // FUEL-009 (#5803) : stocks, livraisons, ajustements, rapprochements.
+        Route::get('/fuel-station/stations/{station}/stock', [FuelStockController::class, 'index'])->whereNumber('station');
+        Route::get('/fuel-station/stations/{station}/deliveries', [FuelStockController::class, 'deliveries'])->whereNumber('station');
+        Route::post('/fuel-station/stations/{station}/deliveries', [FuelStockController::class, 'storeDelivery'])->whereNumber('station');
+        Route::post('/fuel-station/stations/{station}/adjustments', [FuelStockController::class, 'storeAdjustment'])->whereNumber('station');
+        Route::get('/fuel-station/stations/{station}/reconciliations', [FuelStockController::class, 'reconciliations'])->whereNumber('station');
     });
 });

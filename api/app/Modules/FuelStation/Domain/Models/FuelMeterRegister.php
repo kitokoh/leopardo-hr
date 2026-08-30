@@ -7,6 +7,7 @@ namespace App\Modules\FuelStation\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -86,5 +87,11 @@ class FuelMeterRegister extends Model
             'installed_at' => 'datetime',
             'retired_at' => 'datetime',
         ];
+    }
+
+    /** @return \Illuminate\Database\Eloquent\Relations\BelongsTo<FuelPump, $this> */
+    public function pump(): BelongsTo
+    {
+        return $this->belongsTo(FuelPump::class, 'pump_id');
     }
 }

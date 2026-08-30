@@ -31,6 +31,7 @@ use App\Modules\FuelStation\Domain\Policies\FuelSalePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelShiftPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelSitePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStationPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelStockPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelTankPolicy;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\Department;
@@ -111,6 +112,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(FuelPump::class, FuelPumpPolicy::class);
         Gate::policy(FuelTank::class, FuelTankPolicy::class);
         Gate::policy(FuelProduct::class, FuelProductPolicy::class);
+        Gate::policy(FuelStockReconciliation::class, FuelStockPolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);
