@@ -34,15 +34,15 @@
       <template #cell-consents="{ row }">
         <div class="flex flex-wrap gap-1">
           <StatusBadge
-            :status="row.email_consent_given ? 'consented' : 'refused'"
+            :status="consentState(row.email_consent_given)"
             :map="consentMap"
           />
           <StatusBadge
-            :status="row.sms_consent_given ? 'consented' : 'refused'"
+            :status="consentState(row.sms_consent_given)"
             :map="consentMap"
           />
           <StatusBadge
-            :status="row.whatsapp_consent_given ? 'consented' : 'refused'"
+            :status="consentState(row.whatsapp_consent_given)"
             :map="consentMap"
           />
         </div>
@@ -62,7 +62,7 @@
       :open="contactFormOpen"
       :title="t('travel.contacts.newRequestTitle', 'Nouvelle demande de contact')"
       wide
-      @close="contactFormOpen = false"
+      @close="closeContactForm"
     >
       <form class="grid grid-cols-1 gap-4 sm:grid-cols-2" @submit.prevent="saveContact">
         <FormField
@@ -118,7 +118,7 @@
             v-model="contactForm.consent_email"
             type="checkbox"
             class="mt-0.5 h-4 w-4 shrink-0"
-            :aria-invalid="contactFormErrors.consent_email ? 'true' : undefined"
+            :aria-invalid="consentEmailAriaInvalid"
           />
           <label class="text-sm text-slate-600 dark:text-slate-300" for="travel-contact-consent-email">
             {{ $t('travel.contacts.consentEmailLabel', "J'accepte d'être recontacté(e) par email (consentement obligatoire — RGPD).") }}
@@ -148,7 +148,7 @@
     <TravelModal
       :open="consentOpen"
       :title="t('travel.contacts.consentsTitle', 'Consentements par canal')"
-      @close="consentOpen = false"
+      @close="closeConsentModal"
     >
       <form class="grid grid-cols-1 gap-4" @submit.prevent="saveConsent">
         <p class="text-sm text-slate-600 dark:text-slate-300">
@@ -186,7 +186,7 @@
     <TravelModal
       :open="notifyOpen"
       :title="t('travel.contacts.notifyTitle', 'Notification manuelle')"
-      @close="notifyOpen = false"
+      @close="closeNotifyModal"
     >
       <form class="grid grid-cols-1 gap-4" @submit.prevent="saveNotify">
         <p class="text-sm text-slate-600 dark:text-slate-300">
@@ -265,6 +265,26 @@ const contactColumns = computed(() => [
 const consentMap = {
   consented: { labelKey: 'travel.contacts.consented', color: 'green' },
   refused: { labelKey: 'travel.contacts.refused', color: 'gray' }
+}
+
+function consentState(given) {
+  return given ? 'consented' : 'refused'
+}
+
+const consentEmailAriaInvalid = computed(() =>
+  contactFormErrors.value.consent_email ? 'true' : undefined
+)
+
+function closeContactForm() {
+  contactFormOpen.value = false
+}
+
+function closeConsentModal() {
+  consentOpen.value = false
+}
+
+function closeNotifyModal() {
+  notifyOpen.value = false
 }
 
 async function loadContacts() {

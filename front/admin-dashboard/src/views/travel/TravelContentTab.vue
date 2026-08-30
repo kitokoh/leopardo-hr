@@ -74,7 +74,7 @@
         :open="quizFormOpen"
         :title="t('travel.quiz.createTitle', 'Nouveau quiz')"
         wide
-        @close="quizFormOpen = false"
+        @close="closeQuizForm"
       >
         <form class="grid grid-cols-1 gap-4 sm:grid-cols-2" @submit.prevent="saveQuiz">
           <FormField
@@ -163,7 +163,7 @@
         :open="quizDetailOpen"
         :title="t('travel.quiz.detailTitle', 'Gérer le quiz')"
         wide
-        @close="quizDetailOpen = false"
+        @close="closeQuizDetail"
       >
         <div v-if="quizDetail" class="space-y-6">
           <div>
@@ -190,7 +190,7 @@
             <ul v-if="questions.length" class="mt-3 space-y-3">
               <li
                 v-for="(q, qi) in questions"
-                :key="q.id ?? qi"
+                :key="questionKey(q, qi)"
                 class="rounded-lg border border-slate-200 p-3 dark:border-slate-800"
               >
                 <div class="flex items-start justify-between gap-3">
@@ -221,7 +221,7 @@
         :open="questionFormOpen"
         :title="t('travel.quiz.addQuestionTitle', 'Ajouter une question')"
         wide
-        @close="questionFormOpen = false"
+        @close="closeQuestionForm"
       >
         <form class="grid grid-cols-1 gap-4" @submit.prevent="saveQuestion">
           <FormField
@@ -253,7 +253,7 @@
                 class="h-4 w-4 shrink-0"
               />
               <input
-                v-model="questionForm.options[oi]"
+                :value="questionOption(oi)" @input="setQuestionOption(oi, $event)"
                 type="text"
                 maxlength="200"
                 class="form-input"
@@ -264,14 +264,14 @@
                 type="button"
                 class="rounded-md p-1 text-slate-400 hover:text-red-500"
                 :aria-label="$t('travel.quiz.removeOption', 'Retirer cette option')"
-                :disabled="questionForm.options.length <= 2"
+                :disabled="minOptionsReached"
                 @click="removeOption(oi)"
               >
                 <TrashIcon class="h-4 w-4" />
               </button>
             </div>
             <button
-              v-if="questionForm.options.length < 10"
+              v-if="!maxOptionsReached"
               type="button"
               class="btn-secondary"
               @click="questionForm.options.push('')"
@@ -324,7 +324,7 @@
         :open="quizResultsOpen"
         :title="t('travel.quiz.resultsTitle', 'Résultats du quiz')"
         wide
-        @close="quizResultsOpen = false"
+        @close="closeQuizResults"
       >
         <DataTable
           :columns="resultColumns"
@@ -356,7 +356,7 @@
               ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
               : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
           ]"
-          @click="activeAdSub = ad.key"
+          @click="selectAdSub(ad)"
         >
           {{ ad.label }}
         </button>
@@ -388,7 +388,7 @@
       <TravelModal
         :open="advertActionOpen"
         :title="advertActionTitle"
-        @close="advertActionOpen = false"
+        @close="closeAdvertAction"
       >
         <form class="grid grid-cols-1 gap-4" @submit.prevent="confirmAdvertAction">
           <p class="text-sm text-slate-600 dark:text-slate-300">
@@ -485,6 +485,45 @@ const subTabs = computed(() => [
 function selectSub(sub) {
   activeSub.value = sub.key
 }
+
+function selectAdSub(ad) {
+  activeAdSub.value = ad.key
+}
+
+function closeQuizForm() {
+  quizFormOpen.value = false
+}
+
+function closeQuizDetail() {
+  quizDetailOpen.value = false
+}
+
+function closeQuestionForm() {
+  questionFormOpen.value = false
+}
+
+function closeQuizResults() {
+  quizResultsOpen.value = false
+}
+
+function closeAdvertAction() {
+  advertActionOpen.value = false
+}
+
+function questionKey(q, qi) {
+  return q.id ?? qi
+}
+
+function questionOption(index) {
+  return questionForm.value.options[index]
+}
+
+function setQuestionOption(index, event) {
+  questionForm.value.options[index] = event.target.value
+}
+
+const minOptionsReached = computed(() => questionForm.value.options.length <= 2)
+const maxOptionsReached = computed(() => questionForm.value.options.length >= 10)
 
 /* ── statuts ───────────────────────────────────────────────── */
 const quizStatusMap = {
@@ -696,7 +735,6 @@ async function loadAdvertLookups() {
 const advertTypeConfig = computed(() => ({
   resource: 'advert-types',
   titleKey: 'travel.ads.types',
-  titleFallback: "Types d'annonces",
   searchPlaceholderKey: 'travel.search.placeholder',
   searchKeys: ['code', 'label'],
   defaultSort: 'code',
@@ -713,7 +751,6 @@ const advertTypeConfig = computed(() => ({
 const advertPositionConfig = computed(() => ({
   resource: 'advert-positions',
   titleKey: 'travel.ads.positions',
-  titleFallback: 'Emplacements',
   searchPlaceholderKey: 'travel.search.placeholder',
   searchKeys: ['code', 'label'],
   defaultSort: 'code',
@@ -730,7 +767,6 @@ const advertPositionConfig = computed(() => ({
 const advertPriceConfig = computed(() => ({
   resource: 'advert-prices',
   titleKey: 'travel.ads.prices',
-  titleFallback: 'Grille tarifaire',
   searchPlaceholderKey: 'travel.search.placeholder',
   searchKeys: ['advert_type_id', 'advert_position_id', 'currency'],
   defaultSort: 'id',
@@ -764,7 +800,6 @@ const advertStatusMap = {
 const advertConfig = computed(() => ({
   resource: 'adverts',
   titleKey: 'travel.ads.list',
-  titleFallback: 'Annonces',
   searchPlaceholderKey: 'travel.search.placeholder',
   searchKeys: ['title', 'status'],
   defaultSort: 'id',
@@ -858,7 +893,6 @@ const siteStatusMap = {
 const touristSiteConfig = computed(() => ({
   resource: 'tourist-sites',
   titleKey: 'travel.sites.title',
-  titleFallback: 'Sites touristiques',
   searchPlaceholderKey: 'travel.search.site',
   searchKeys: ['name', 'city_id', 'status'],
   defaultSort: 'name',
