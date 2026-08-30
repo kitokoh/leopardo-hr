@@ -2667,6 +2667,96 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           description: Validation ou regle metier
+  /edu-manager/me:
+    get:
+      tags:
+      - EduManager
+      summary: Profil role-aware de l'acteur (EDU-011)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/teacher/classes:
+    get:
+      tags:
+      - EduManager
+      summary: Classes enseignees par l'acteur (EDU-012)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/teacher/classes/{class}/students:
+    get:
+      tags:
+      - EduManager
+      summary: Eleves d'une classe enseignee (EDU-012)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /edu-manager/teacher/classes/{class}/assessments:
+    get:
+      tags:
+      - EduManager
+      summary: Evaluations d'une classe enseignee (EDU-012)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /edu-manager/teacher/grades/{grade}/submit:
+    post:
+      tags:
+      - EduManager
+      summary: Soumettre une note pour validation (EDU-012)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: grade
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Validation ou regle metier
   /demo-users:
     get:
       tags:

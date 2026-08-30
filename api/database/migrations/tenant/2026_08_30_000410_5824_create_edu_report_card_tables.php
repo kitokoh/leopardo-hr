@@ -51,6 +51,8 @@ return new class extends Migration
                     ['company_id', 'academic_year_id', 'period'],
                     'edu_report_cards_company_year_period_idx'
                 );
+                // Clé d'intégrité des FK composites (id, company_id).
+                $table->unique(['id', 'company_id'], 'edu_report_cards_id_company_unique');
 
                 $table->foreign(['student_id', 'company_id'], 'edu_report_cards_student_company_fk')
                     ->references(['id', 'company_id'])
@@ -73,7 +75,12 @@ return new class extends Migration
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_report_cards_status_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_report_cards\" ADD CONSTRAINT edu_report_cards_status_check "
                     ."CHECK (status IN ('draft','validated','published')); END IF; END $$"
+                );                DB::statement(
+                    "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_report_cards_id_company_unique') "
+                    ."THEN ALTER TABLE \"{$schema}\".\"edu_report_cards\" ADD CONSTRAINT edu_report_cards_id_company_unique "
+                    ."UNIQUE (id, company_id); END IF; END $$"
                 );
+
             }
         }
 
