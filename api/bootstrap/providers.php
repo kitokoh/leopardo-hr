@@ -21,6 +21,7 @@ use App\Modules\Planning\Providers\PlanningServiceProvider;
 use App\Modules\Platform\Providers\PlatformServiceProvider;
 use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
 use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
+use App\Modules\RestaurantManager\Providers\RestaurantManagerServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
@@ -61,8 +62,13 @@ return [
     MarketingServiceProvider::class,
     // — Accounting module (Phase A, issue #5221)
     AccountingServiceProvider::class,
+
     // — FuelStation module (solution verticale, issue #5795)
     FuelStationServiceProvider::class,
     // — TravelAgency vertical (BC-24 TRAVEL, TRAVEL-101/#5977)
     TravelAgencyServiceProvider::class,
+
+    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
+    RestaurantManagerServiceProvider::class,
+ (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
 ];
