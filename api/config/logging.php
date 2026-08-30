@@ -137,7 +137,9 @@ return [
             'level' => env('LOG_LEVEL', 'info'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
-            'formatter' => JsonFormatter::class,
+            // MAT-009 (#5867) : redaction PII/secrets au moment de la
+            // sérialisation (lazy — aucune résolution anticipée du canal).
+            'formatter' => \App\Logging\RedactingJsonFormatter::class,
         ],
 
         'audit' => [
