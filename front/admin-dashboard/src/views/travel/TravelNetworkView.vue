@@ -150,7 +150,7 @@
                 {{ t('travel.network.prices', 'Tarifs') }}
               </button>
               <button
-                v-if="['draft', 'scheduled'].includes(row.status)"
+                v-if="canPublish(row.status)"
                 class="text-sm font-medium text-emerald-600 hover:text-emerald-800 dark:text-emerald-400"
                 @click="publishTrip(row)"
               >
@@ -296,19 +296,7 @@ import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { PlusIcon } from '@heroicons/vue/24/outline'
-import {
-  listTravel,
-  createTravel,
-  updateTravel,
-  deleteTravel,
-  travelAction,
-  createTravelSub,
-  listTravelSub,
-  updateTravelSub,
-  deleteTravelSub,
-  travelList,
-  formatMinor
-} from '@/services/travel'
+import { listTravel, createTravel, updateTravel, deleteTravel, travelAction, createTravelSub, listTravelSub, updateTravelSub, deleteTravelSub, travelList, formatMinor } from '@/services/travel'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
@@ -519,6 +507,10 @@ function switchTab(key) {
 
 function closeTripPrices() {
   selectedTrip.value = null
+}
+
+function canPublish(status) {
+  return ['draft', 'scheduled'].includes(status)
 }
 
 function closeRouteStops() {
