@@ -116,12 +116,13 @@ Artisan::command(
 // ──────────────────────────────────────────────
 // Scheduled Jobs
 // ──────────────────────────────────────────────
+// NOTE (DEP-BC21 #6251) : le scheduler CANONIQUE vit dans
+// `bootstrap/app.php` → `withSchedule`. Les commandes billing ont été
+// dédupliquées ici (elles tournaient DEUX fois par jour — une fois par
+// fichier). Ne pas ré-ajouter de Schedule::command billing dans ce fichier.
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::command('billing:check-trials')->daily()->at('08:00');
-Schedule::command('billing:check-overdue')->daily()->at('09:00');
 Schedule::command('app:send-drip-emails')->daily()->at('10:00');
-Schedule::command('billing:generate-invoices')->monthlyOn(1, '02:00');
 Schedule::command('leave:accrue')->monthlyOn(1, '03:00');
 Schedule::command('leave:carry-forward --year='.(now()->year - 1))->yearlyOn(1, 1, '04:00');
 Schedule::command('contracts:alert-expiring')->daily()->at('07:00');
