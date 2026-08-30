@@ -174,6 +174,7 @@ Route::prefix('v1')->group(function (): void {
     // `restaurant-shop-public` (anti-scraping par IP, pattern TRAVEL-1001).
     Route::middleware(['throttle:restaurant-shop-public', 'restaurant.public.shop'])->group(function (): void {
         Route::get('/public/restaurant/menu', [RestaurantPublicShopController::class, 'menu']);
+        Route::get('/public/restaurant/branches', [RestaurantPublicShopController::class, 'branches']);
         Route::post('/public/restaurant/orders', [RestaurantPublicShopController::class, 'storeOrder']);
         Route::get('/public/restaurant/orders/{reference}', [RestaurantPublicShopController::class, 'show']);
         Route::post('/public/restaurant/orders/{reference}/pay', [RestaurantPublicShopController::class, 'pay']);

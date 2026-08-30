@@ -9,6 +9,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Application\Actions\CreateOnlineOrderAction;
 use App\Modules\RestaurantManager\Application\Actions\PayOrderAction;
 use App\Modules\RestaurantManager\Domain\Enums\RestaurantRecordStatus;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantCategory;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPublicShopToken;
@@ -58,6 +59,19 @@ class RestaurantPublicShopController extends Controller
             ->get();
 
         return RestaurantPublicMenuResource::collection($categories)->response();
+    }
+
+    /**
+     * Branches actives du tenant (sélecteur du kiosque / boutiques).
+     */
+    public function branches(): JsonResponse
+    {
+        $branches = RestaurantBranch::query()
+            ->where('status', RestaurantRecordStatus::ACTIVE->value)
+            ->orderBy('name')
+            ->get(['id', 'code', 'name']);
+
+        return response()->json(['data' => $branches]);
     }
 
     /**
