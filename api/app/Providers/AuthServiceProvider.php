@@ -42,6 +42,7 @@ use App\Modules\FuelStation\Domain\Policies\FuelProductPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStationPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelImportPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelMaintenancePolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelMetricsPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelOutboxPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelReportPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelSalePolicy;
@@ -142,6 +143,8 @@ class AuthServiceProvider extends ServiceProvider
         // — FuelStation (FUEL-019 #5813 : alertes & préférences)
         Gate::policy(FuelAlert::class, FuelAlertPolicy::class);
         Gate::policy(FuelNotificationPreference::class, FuelAlertPolicy::class);
+        // — FuelStation (FUEL-020 #5814 : métriques d'observabilité, sans modèle)
+        Gate::define('fuel.metrics', [FuelMetricsPolicy::class, 'viewAny']);
         // — FuelStation (FUEL-017 #5811 : reporting opérationnel)
         Gate::policy(FuelReportSnapshot::class, FuelReportPolicy::class);
         Gate::policy(FuelReportExport::class, FuelReportPolicy::class);

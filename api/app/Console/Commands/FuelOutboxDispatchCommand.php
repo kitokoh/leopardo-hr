@@ -12,6 +12,7 @@ use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;
 use Illuminate\Console\Command;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -65,6 +66,12 @@ class FuelOutboxDispatchCommand extends Command
                 $processed++;
             }
         }
+
+        // Trace structurée SANS PII ni payload (FUEL-020, #5814).
+        Log::channel('structured')->info('fuel.outbox.dispatched', [
+            'processed' => $processed,
+            'limit' => $limit,
+        ]);
 
         $this->info("[fuel:outbox-dispatch] {$processed} événement(s) traité(s).");
 

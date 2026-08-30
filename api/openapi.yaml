@@ -8618,6 +8618,45 @@ paths:
         '404':
           description: Alerte introuvable ou autre tenant
 
+  /fuel-station/health/metrics:
+    get:
+      tags:
+      - FuelStation
+      summary: Metriques d'observabilite (manager, FUEL-020)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Metriques tenant-scoped (file outbox, alertes, fraicheur)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      outbox_pending:
+                        type: integer
+                      outbox_failed:
+                        type: integer
+                      alerts_open:
+                        type: integer
+                      readings_today:
+                        type: integer
+                      snapshots_stale:
+                        type: integer
+                      reconciliations_exception:
+                        type: integer
+                      generated_at:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '429':
+          description: Rate limit (30/min)
+
   /accounting/contacts:
     get:
       tags:

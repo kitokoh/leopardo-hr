@@ -121,6 +121,19 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute($limit)->by('plan:'.$normalizedPlan.':company:'.$user->company_id);
         });
 
+        // FUEL-020 (#5814) : bornes dédiées aux écritures FuelStation
+        // (relevés, ventes, livraisons, ajustements, imports, transitions)
+        // — anti-abus par tenant, distinct du quota API global.
+        RateLimiter::for('fuel-sensitive', function (Request $request) {
+            $user = $request->user();
+            $key = $user instanceof Employee && $user->company_id
+                ? 'company:'.$user->company_id
+                : 'ip:'.$request->ip();
+
+            return Limit::perMinute((int) config('security.rate_limits.fuel_per_minute', 120))
+                ->by('fuel:'.$key);
+        });
+
         RateLimiter::for('auth-sensitive', function (Request $request) {
             $email = strtolower((string) $request->input('email', 'anonymous'));
 

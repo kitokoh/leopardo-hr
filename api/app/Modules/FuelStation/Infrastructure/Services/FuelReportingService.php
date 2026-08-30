@@ -153,19 +153,23 @@ final class FuelReportingService
             ->where('station_id', $station->id)
             ->get();
 
+        // N+1 guard (FUEL-020, #5814) : UNE requête agrégée pour tous les
+        // deltas de la station, pas une requête par compteur.
+        $deltas = FuelMeterInterval::query()
+            ->where('company_id', $station->company_id)
+            ->whereIn('meter_id', $meters->pluck('id'))
+            ->whereIn('calculation_status', [
+                FuelMeterInterval::STATUS_VALID,
+                FuelMeterInterval::STATUS_ROLLOVER,
+            ])
+            ->whereBetween('calculated_at', [$start, $end])
+            ->selectRaw('meter_id, COALESCE(SUM(delta_minor), 0) as total')
+            ->groupBy('meter_id')
+            ->pluck('total', 'meter_id');
+
         $result = [];
 
         foreach ($meters as $meter) {
-            $delta = (int) FuelMeterInterval::query()
-                ->where('company_id', $station->company_id)
-                ->where('meter_id', $meter->id)
-                ->whereIn('calculation_status', [
-                    FuelMeterInterval::STATUS_VALID,
-                    FuelMeterInterval::STATUS_ROLLOVER,
-                ])
-                ->whereBetween('calculated_at', [$start, $end])
-                ->sum('delta_minor');
-
             $pump = $meter->getAttribute('pump_id');
             $code = $meter->getAttribute('meter_code');
 
@@ -173,7 +177,7 @@ final class FuelReportingService
                 'meter_code' => is_string($code) ? $code : (string) $meter->id,
                 'pump_id' => is_int($pump) ? $pump : null,
                 'product_code' => $meter->getAttribute('product_code'),
-                'delta_minor' => $delta,
+                'delta_minor' => (int) ($deltas->get($meter->id) ?? 0),
             ];
         }
 
@@ -309,17 +313,18 @@ final class FuelReportingService
             ->where('assignment_date', $date->toDateString())
             ->get();
 
+        // N+1 guard (FUEL-020, #5814) : les noms de shifts sont chargés en
+        // UNE requête (pas un find() par affectation).
+        $shiftNames = FuelShift::query()
+            ->whereIn('id', $shiftIds)
+            ->pluck('name', 'id');
+
         $shiftByEmployee = [];
-        $shiftNames = [];
 
         foreach ($assignments as $assignment) {
             $employeeId = $assignment->getAttribute('employee_id');
             $shiftId = $assignment->getAttribute('shift_id');
             $shiftByEmployee[(int) $employeeId] = (int) $shiftId;
-
-            /** @var FuelShift|null $shift */
-            $shift = FuelShift::query()->find($shiftId);
-            $shiftNames[(int) $shiftId] = $shift?->getAttribute('name') ?? "Shift #{$shiftId}";
         }
 
         $sales = FuelSale::query()
@@ -338,7 +343,7 @@ final class FuelReportingService
             if (! isset($byShift[$key])) {
                 $byShift[$key] = [
                     'shift_id' => $shiftId,
-                    'shift_name' => $shiftId !== null ? ($shiftNames[$shiftId] ?? "Shift #{$shiftId}") : 'sans_shift',
+                    'shift_name' => $shiftId !== null ? ((string) ($shiftNames[$shiftId] ?? "Shift #{$shiftId}")) : 'sans_shift',
                     'count' => 0,
                     'amount' => 0.0,
                 ];
