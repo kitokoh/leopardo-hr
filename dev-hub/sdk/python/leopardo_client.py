@@ -3632,6 +3632,10 @@ class LeopardoClient:
         """TRAVEL-416 — Formulaire de contact → lead CRM (événement outbox)"""
         return self.request("POST", "/travel/contact", **kwargs)
 
+    def post_travel_contacts_by_travelcustomercontact_notify(self, **kwargs):
+        """TRAVEL-910 — Notification manuelle (canaux plateforme + consentement)"""
+        return self.request("POST", "/travel/contacts/{travelCustomerContact}/notify", **kwargs)
+
     def get_travel_countries(self, **kwargs):
         """Référentiel pays en lecture (TRAVEL-301/#6031)"""
         return self.request("GET", "/travel/countries", **kwargs)
@@ -3855,6 +3859,26 @@ class LeopardoClient:
     def post_travel_tickets_by_travelticket_check_in(self, **kwargs):
         """Check-in / embarquement (TRAVEL-317/#6047)"""
         return self.request("POST", "/travel/tickets/{travelTicket}/check-in", **kwargs)
+
+    def get_travel_tourist_sites(self, **kwargs):
+        """TRAVEL-909 — Sites touristiques (recherche par ville/nom)"""
+        return self.request("GET", "/travel/tourist-sites", **kwargs)
+
+    def post_travel_tourist_sites(self, **kwargs):
+        """TRAVEL-909 — Création d''un site touristique"""
+        return self.request("POST", "/travel/tourist-sites", **kwargs)
+
+    def delete_travel_tourist_sites_by_traveltouristsite(self, **kwargs):
+        """TRAVEL-909 — Suppression d''un site touristique"""
+        return self.request("DELETE", "/travel/tourist-sites/{travelTouristSite}", **kwargs)
+
+    def get_travel_tourist_sites_by_traveltouristsite(self, **kwargs):
+        """TRAVEL-909 — Détail d''un site touristique"""
+        return self.request("GET", "/travel/tourist-sites/{travelTouristSite}", **kwargs)
+
+    def put_travel_tourist_sites_by_traveltouristsite(self, **kwargs):
+        """TRAVEL-909 — Mise à jour d''un site touristique"""
+        return self.request("PUT", "/travel/tourist-sites/{travelTouristSite}", **kwargs)
 
     def get_travel_trips(self, **kwargs):
         """Liste des trajets (TRAVEL-308/#6038)"""

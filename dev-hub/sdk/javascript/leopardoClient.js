@@ -4515,6 +4515,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/contact", options);
     },
 
+    /** TRAVEL-910 — Notification manuelle (canaux plateforme + consentement) */
+    postTravelContactsByTravelCustomerContactNotify(options = {}) {
+      return request("POST", "/travel/contacts/{travelCustomerContact}/notify", options);
+    },
+
     /** Référentiel pays en lecture (TRAVEL-301/#6031) */
     getTravelCountries(options = {}) {
       return request("GET", "/travel/countries", options);
@@ -4793,6 +4798,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Check-in / embarquement (TRAVEL-317/#6047) */
     postTravelTicketsByTravelTicketCheckIn(options = {}) {
       return request("POST", "/travel/tickets/{travelTicket}/check-in", options);
+    },
+
+    /** TRAVEL-909 — Sites touristiques (recherche par ville/nom) */
+    getTravelTouristSites(options = {}) {
+      return request("GET", "/travel/tourist-sites", options);
+    },
+
+    /** TRAVEL-909 — Création d''un site touristique */
+    postTravelTouristSites(options = {}) {
+      return request("POST", "/travel/tourist-sites", options);
+    },
+
+    /** TRAVEL-909 — Suppression d''un site touristique */
+    deleteTravelTouristSitesByTravelTouristSite(options = {}) {
+      return request("DELETE", "/travel/tourist-sites/{travelTouristSite}", options);
+    },
+
+    /** TRAVEL-909 — Détail d''un site touristique */
+    getTravelTouristSitesByTravelTouristSite(options = {}) {
+      return request("GET", "/travel/tourist-sites/{travelTouristSite}", options);
+    },
+
+    /** TRAVEL-909 — Mise à jour d''un site touristique */
+    putTravelTouristSitesByTravelTouristSite(options = {}) {
+      return request("PUT", "/travel/tourist-sites/{travelTouristSite}", options);
     },
 
     /** Liste des trajets (TRAVEL-308/#6038) */

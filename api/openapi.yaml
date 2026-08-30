@@ -4540,6 +4540,200 @@ paths:
           description: Résultats triés par score
         '403':
           description: Rôle insuffisant
+  /travel/contacts/{travelCustomerContact}/notify:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-910 — Notification manuelle (canaux plateforme + consentement)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - message
+              properties:
+                message:
+                  type: string
+                  maxLength: 2000
+                channels:
+                  type: array
+                  maxItems: 2
+                  items:
+                    type: string
+                    enum: [email, app]
+      responses:
+        '200':
+          description: Notification envoyée (canaux respectant le consentement)
+        '403':
+          description: Rôle insuffisant
+        '404':
+          description: Contact introuvable
+        '422':
+          description: Aucun canal configuré avec consentement
+  /travel/tourist-sites:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-909 — Sites touristiques (recherche par ville/nom)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: city_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [active, disabled]
+      responses:
+        '200':
+          description: Sites touristiques
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-909 — Création d''un site touristique'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                description:
+                  type: string
+                  maxLength: 2000
+                city_id:
+                  type: integer
+                  nullable: true
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                image_asset_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '201':
+          description: Site créé
+        '403':
+          description: Rôle insuffisant
+        '422':
+          description: Validation échouée
+  /travel/tourist-sites/{travelTouristSite}:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-909 — Détail d''un site touristique'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTouristSite
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail du site
+        '404':
+          description: Introuvable
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-909 — Mise à jour d''un site touristique'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTouristSite
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                description:
+                  type: string
+                  maxLength: 2000
+                city_id:
+                  type: integer
+                  nullable: true
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+                image_asset_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '200':
+          description: Site mis à jour
+        '404':
+          description: Introuvable
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-909 — Suppression d''un site touristique'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTouristSite
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprimé
+        '404':
+          description: Introuvable
   /travel/contact:
     post:
       tags:
