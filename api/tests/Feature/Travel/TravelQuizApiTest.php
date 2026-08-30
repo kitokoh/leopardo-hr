@@ -188,4 +188,92 @@ class TravelQuizApiTest extends TestCase
             ->assertOk()
             ->assertJsonMissing(['title' => 'Quiz tenant B']);
     }
+
+    /* ── TRAVEL-914 (#6422) — gestion admin : update quiz / questions ── */
+
+    public function test_quiz_can_be_updated_by_manager(): void
+    {
+        $this->actingManager();
+        $quiz = $this->makeQuizWithQuestions();
+
+        $this->putJson("/api/v1/travel/quizzes/{$quiz->id}", [
+            'title' => 'Quiz édité',
+            'description' => 'Nouvelle description',
+            'status' => 'closed',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.id', $quiz->id)
+            ->assertJsonPath('data.status', 'closed');
+
+        $quiz->refresh();
+        self::assertSame('Quiz édité', $quiz->title);
+        self::assertSame('closed', $quiz->status->value);
+    }
+
+    public function test_quiz_question_can_be_updated_and_deleted(): void
+    {
+        $this->actingManager();
+        $quiz = $this->makeQuizWithQuestions();
+        $question = $quiz->questions()->orderBy('position')->firstOrFail();
+
+        $this->putJson("/api/v1/travel/quizzes/{$quiz->id}/questions/{$question->id}", [
+            'question' => 'Capitale du Cameroun (édition) ?',
+            'options' => ['Douala', 'Yaoundé', 'Garoua'],
+            'correct_option_index' => 1,
+            'points' => 3,
+            'position' => 0,
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.id', $question->id);
+
+        $question->refresh();
+        self::assertSame('Capitale du Cameroun (édition) ?', $question->question);
+        self::assertSame(3, $question->points);
+
+        $this->deleteJson("/api/v1/travel/quizzes/{$quiz->id}/questions/{$question->id}")
+            ->assertStatus(204);
+
+        self::assertNull(TravelQuizQuestion::find($question->id));
+    }
+
+    public function test_quiz_update_requires_manager_role(): void
+    {
+        /** @var Employee $agent */
+        $agent = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'agent',
+            'manager_role' => null,
+        ]);
+        Sanctum::actingAs($agent);
+
+        $quiz = $this->makeQuizWithQuestions();
+
+        $this->putJson("/api/v1/travel/quizzes/{$quiz->id}", [
+            'title' => 'Interdit',
+            'description' => null,
+        ])->assertStatus(403);
+    }
+
+    public function test_quiz_question_edit_is_isolated_per_tenant(): void
+    {
+        /** @var Company $companyB */
+        $companyB = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $foreignQuestion = $this->tenants->withinTenant($companyB, function (): TravelQuizQuestion {
+            $quiz = TravelQuiz::factory()->create();
+
+            return TravelQuizQuestion::factory()->create(['quiz_id' => $quiz->id]);
+        });
+
+        $this->actingManager();
+        $quiz = $this->makeQuizWithQuestions();
+
+        $this->putJson("/api/v1/travel/quizzes/{$quiz->id}/questions/{$foreignQuestion->id}", [
+            'question' => 'X',
+            'options' => ['a', 'b'],
+            'correct_option_index' => 0,
+        ])->assertStatus(404);
+
+        $this->deleteJson("/api/v1/travel/quizzes/{$quiz->id}/questions/{$foreignQuestion->id}")
+            ->assertStatus(404);
+    }
 }

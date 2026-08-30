@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelAdvertPriceRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelAdvertPriceRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -50,6 +51,33 @@ class TravelAdvertPriceController extends Controller
         ]);
 
         return response()->json(['data' => ['id' => $price->id]], 201);
+    }
+
+    /**
+     * TRAVEL-914 (#6422) — Mise à jour d'une grille tarifaire.
+     */
+    public function update(UpdateTravelAdvertPriceRequest $request, TravelAdvertPrice $travelAdvertPrice): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+            abort(403);
+        }
+
+        if ($actor->company_id !== $travelAdvertPrice->company_id) {
+            abort(404);
+        }
+
+        $travelAdvertPrice->forceFill([
+            'advert_type_id' => (int) $request->validated('advert_type_id'),
+            'advert_position_id' => (int) $request->validated('advert_position_id'),
+            'price_per_image_minor' => (int) $request->validated('price_per_image_minor'),
+            'price_per_character_minor' => (int) $request->validated('price_per_character_minor'),
+            'currency' => strtoupper((string) $request->validated('currency')),
+        ])->save();
+
+        return response()->json(['data' => ['id' => $travelAdvertPrice->id]]);
     }
 
     public function destroy(Request $request, TravelAdvertPrice $travelAdvertPrice): JsonResponse
