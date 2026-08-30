@@ -3436,14 +3436,6 @@ class LeopardoClient:
         """TRAVEL-901 — Création d''une catégorie"""
         return self.request("POST", "/travel/article-categories", **kwargs)
 
-    def get_travel_articles(self, **kwargs):
-        """TRAVEL-901 — Liste des articles"""
-        return self.request("GET", "/travel/articles", **kwargs)
-
-    def post_travel_articles(self, **kwargs):
-        """TRAVEL-901 — Création d''un article"""
-        return self.request("POST", "/travel/articles", **kwargs)
-
     def delete_travel_articles_by_travelarticle(self, **kwargs):
         """TRAVEL-901 — Suppression d''un article"""
         return self.request("DELETE", "/travel/articles/{travelArticle}", **kwargs)
@@ -3594,6 +3586,10 @@ class LeopardoClient:
 
     def post_travel_contact(self, **kwargs):
         """Formulaire de contact → lead CRM (TRAVEL-416/#6068)"""
+        return self.request("POST", "/travel/contact", **kwargs)
+
+    def post_travel_contact_2(self, **kwargs):
+        """TRAVEL-416 — Formulaire de contact → lead CRM (événement outbox)"""
         return self.request("POST", "/travel/contact", **kwargs)
 
     def get_travel_countries(self, **kwargs):
@@ -3771,34 +3767,6 @@ class LeopardoClient:
     def delete_travel_rental_vehicles_by_travelrentalvehicle_images_by_travelrentalvehicleimage(self, **kwargs):
         """Suppression d'une image (TRAVEL-319/#6049)"""
         return self.request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}/images/{travelRentalVehicleImage}", **kwargs)
-
-    def get_travel_reports_cancellations(self, **kwargs):
-        """TRAVEL-504 — Annulations sur période"""
-        return self.request("GET", "/travel/reports/cancellations", **kwargs)
-
-    def get_travel_reports_dashboard(self, **kwargs):
-        """TRAVEL-507 — Dashboard KPIs"""
-        return self.request("GET", "/travel/reports/dashboard", **kwargs)
-
-    def post_travel_reports_export(self, **kwargs):
-        """TRAVEL-505 — Export CSV idempotent"""
-        return self.request("POST", "/travel/reports/export", **kwargs)
-
-    def get_travel_reports_export_by_travelexportasset(self, **kwargs):
-        """TRAVEL-505 — Lecture d''un export (URL signée éphémère)"""
-        return self.request("GET", "/travel/reports/export/{travelExportAsset}", **kwargs)
-
-    def get_travel_reports_occupancy(self, **kwargs):
-        """TRAVEL-502 — Occupation par trajet"""
-        return self.request("GET", "/travel/reports/occupancy", **kwargs)
-
-    def get_travel_reports_revenue(self, **kwargs):
-        """TRAVEL-503 — Recettes (confirmés − remboursements)"""
-        return self.request("GET", "/travel/reports/revenue", **kwargs)
-
-    def get_travel_reports_sales(self, **kwargs):
-        """TRAVEL-501 — Ventes (réservations nettes) sur période"""
-        return self.request("GET", "/travel/reports/sales", **kwargs)
 
     def post_travel_round_trips(self, **kwargs):
         """Création d'un aller-retour combiné (TRAVEL-802/#6093)"""
