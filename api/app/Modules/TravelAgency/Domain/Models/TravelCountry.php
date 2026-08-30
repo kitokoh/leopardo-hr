@@ -20,7 +20,7 @@ class TravelCountry extends Model
 {
     use BelongsToCompany;
 
-    /** @use HasFactory<Database\Factories\TravelCountryFactory> */
+    /** @use HasFactory<\Database\Factories\TravelCountryFactory> */
     use HasFactory;
 
     protected $fillable = [
