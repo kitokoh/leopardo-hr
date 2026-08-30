@@ -238,7 +238,7 @@
           </template>
         </FormField>
         <div class="mt-4 flex justify-end gap-2">
-          <button type="button" class="btn-secondary" @click="reasonOpen = false">
+          <button type="button" class="btn-secondary" @click="closeReason">
             {{ $t('common.cancel', 'Annuler') }}
           </button>
           <button type="submit" class="btn-primary" :disabled="reasonSaving">

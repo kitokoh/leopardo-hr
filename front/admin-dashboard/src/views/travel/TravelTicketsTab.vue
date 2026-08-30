@@ -76,7 +76,7 @@
           </div>
           <div class="flex items-center gap-2">
             <button
-              v-if="['issued', 'checked_in'].includes(ticket.status)"
+              v-if="canManageTicket(ticket)"
               class="btn-secondary px-3 py-1.5 text-xs"
               type="button"
               :disabled="downloadingPdf === ticket.id"
@@ -86,7 +86,7 @@
               {{ downloadingPdf === ticket.id ? $t('common.busy', 'En cours…') : $t('travel.tickets.downloadPdf', 'PDF') }}
             </button>
             <button
-              v-if="['issued', 'checked_in'].includes(ticket.status)"
+              v-if="canManageTicket(ticket)"
               class="rounded-md px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
               type="button"
               @click="askRevoke(ticket)"
@@ -118,7 +118,7 @@
           </template>
         </FormField>
         <div class="mt-4 flex justify-end gap-2">
-          <button type="button" class="btn-secondary" @click="revokeOpen = false">
+          <button type="button" class="btn-secondary" @click="closeRevoke">
             {{ $t('common.cancel', 'Annuler') }}
           </button>
           <button type="submit" class="btn-primary" :disabled="revokeSaving">
@@ -230,6 +230,10 @@ function resetFilters() {
 
 function closeTickets() {
   ticketsOpen.value = false
+}
+
+function canManageTicket(ticket) {
+  return ['issued', 'checked_in'].includes(ticket.status)
 }
 
 function closeRevoke() {

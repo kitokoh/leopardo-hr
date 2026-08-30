@@ -51,7 +51,7 @@
             ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
             : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
         ]"
-        @click="activeReport = rep.key"
+        @click="selectReport(rep)"
       >
         {{ rep.label }}
       </button>
@@ -113,6 +113,10 @@ const reportColumns = computed(() => {
 })
 
 const searchKeys = computed(() => reportColumns.value.map((c) => c.key).slice(0, 4))
+
+function selectReport(rep) {
+  activeReport.value = rep.key
+}
 
 function reportParams() {
   const params = {}

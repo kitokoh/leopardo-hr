@@ -213,7 +213,7 @@ const routes = [
       {
         path: '/travel',
         name: 'travel',
-        component: () => import('@/views/travel/TravelAgencyView.vue'),
+        component: () => import('../views/travel/TravelAgencyView.vue'),
         meta: {
           title: 'navigation.travelAgency',
           icon: 'GlobeAltIcon'

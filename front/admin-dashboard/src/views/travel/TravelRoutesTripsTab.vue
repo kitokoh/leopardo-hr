@@ -139,7 +139,7 @@ const routeConfig = computed(() => ({
   fields: [
     { key: 'code', label: 'travel.field.code', type: 'text', required: true, max: 40 },
     { key: 'origin_city_id', label: 'travel.field.origin', type: 'select', source: 'cities', required: true },
-    { key: 'destination_city_id', label: 'travel.field.destination', labelFallback: "Ville d'arrivée", type: 'select', source: 'cities', required: true },
+    { key: 'destination_city_id', label: 'travel.field.destination', type: 'select', source: 'cities', required: true },
     { key: 'distance_km', label: 'travel.field.distanceKm', type: 'number', min: 0 },
     { key: 'duration_min', label: 'travel.field.durationMin', type: 'number', min: 0 },
     { key: 'status', label: 'travel.field.status', type: 'select', options: [
@@ -206,8 +206,8 @@ const tripConfig = computed(() => ({
     { key: 'vehicle_id', label: 'travel.field.vehicle', type: 'select', source: 'vehicles' },
     { key: 'departure_date', label: 'travel.field.departureDate', type: 'date', required: true },
     { key: 'departure_time', label: 'travel.field.departureTime', type: 'time', required: true },
-    { key: 'arrival_date', label: 'travel.field.arrivalDate', labelFallback: "Date d'arrivée", type: 'date', required: true },
-    { key: 'arrival_time', label: 'travel.field.arrivalTime', labelFallback: "Heure d'arrivée", type: 'time', required: true },
+    { key: 'arrival_date', label: 'travel.field.arrivalDate', type: 'date', required: true },
+    { key: 'arrival_time', label: 'travel.field.arrivalTime', type: 'time', required: true },
     { key: 'means_of_transport', label: 'travel.field.means', type: 'select', required: true, options: meansOptions },
     { key: 'total_seats', label: 'travel.field.totalSeats', type: 'number', required: true, min: 1 },
     tripStatusField

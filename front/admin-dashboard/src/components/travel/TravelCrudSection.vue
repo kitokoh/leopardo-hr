@@ -213,7 +213,7 @@
     <TravelModal
       :open="nestedFormOpen"
       :title="nestedEditing ? $t('travel.action.editTitle', 'Modifier') : $t('travel.action.addNested', 'Ajouter')"
-      @close="closenestedFormOpen"
+      @close="closeNestedForm"
     >
       <form class="grid grid-cols-1 gap-3 sm:grid-cols-2" @submit.prevent="saveNested">
         <FormField
@@ -252,7 +252,7 @@
           </template>
         </FormField>
         <div class="col-span-full flex justify-end gap-2 pt-1">
-          <button type="button" class="btn-secondary" @click="nestedFormOpen = false">
+          <button type="button" class="btn-secondary" @click="closeNestedForm">
             {{ $t('common.cancel', 'Annuler') }}
           </button>
           <button type="submit" class="btn-primary" :disabled="nestedSaving">
@@ -268,7 +268,7 @@
       :message="deleteMessage"
       :busy="deleting"
       @confirm="confirmDelete"
-      @cancel="closedeleteOpen"
+      @cancel="closeDelete"
     />
   </section>
 </template>
@@ -327,7 +327,7 @@ const nestedFormErrors = ref({})
 
 const title = computed(() => t(props.config.titleKey, props.config.titleFallback || ''))
 const subtitle = computed(() => (props.config.subtitleKey ? t(props.config.subtitleKey, '') : ''))
-const searchPlaceholder = computed(() => t(props.config.searchPlaceholderKey || 'travel.search.placeholder', 'Rechercher…'))
+const searchPlaceholder = computed(() => t(props.config.searchPlaceholderKey || 'travel.search.placeholder', ''))
 
 const columns = computed(() =>
   (props.config.columns || []).map((col) => ({ ...col, label: t(col.label, col.labelFallback || '') }))

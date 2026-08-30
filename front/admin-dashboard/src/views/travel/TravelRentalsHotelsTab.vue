@@ -56,7 +56,7 @@
           <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400" for="vehicle-image">
             {{ $t('travel.rentals.addImage', 'Ajouter une image') }}
           </label>
-          <input id="vehicle-image" type="file" accept="image/jpeg,image/png,image/webp" class="form-input mt-1" @change="onFileChange" />
+          <input id="vehicle-image" type="file" class="form-input mt-1" @change="onFileChange" />
         </div>
         <button class="btn-primary" type="submit" :disabled="!selectedFile || uploadingImage">
           {{ uploadingImage ? $t('common.busy', 'En cours…') : $t('travel.action.add', 'Ajouter') }}
