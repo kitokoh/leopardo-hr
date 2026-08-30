@@ -114,7 +114,6 @@ class ConversationExportTest extends TestCase
         assert($otherCompany instanceof Company);
         $otherUser = Employee::factory()->create(['company_id' => $company->id]);
         assert($otherUser instanceof Employee);
-        assert($otherUser instanceof Employee);
         $foreignConversation = $this->conversation($otherCompany->id, $employee->id);
 
         Sanctum::actingAs($employee);
