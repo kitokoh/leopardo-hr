@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Application\Actions\PayTravelAdvertAction;
+use App\Modules\TravelAgency\Application\Actions\RenewTravelAdvertAction;
 use App\Modules\TravelAgency\Application\Actions\ValidateTravelAdvertAction;
 use App\Modules\TravelAgency\Application\Services\TravelAdvertPricingService;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
@@ -530,6 +531,32 @@ class TravelAdvertController extends Controller
         $travelAdvert->delete();
 
         return new JsonResponse(null, 204);
+    }
+
+
+    public function renewAdvert(Request $request, TravelAdvert $travelAdvert): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelAdvert->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('manage', $travelAdvert)) {
+            abort(403);
+        }
+
+        $provider = (string) $request->json('provider', 'cash');
+
+        $advert = app(RenewTravelAdvertAction::class)->execute(
+            $travelAdvert,
+            $actor,
+            $provider,
+            $request->json('provider_reference') !== null ? (string) $request->json('provider_reference') : null,
+        );
+
+        return new JsonResponse(['data' => $advert]);
     }
 
 }
