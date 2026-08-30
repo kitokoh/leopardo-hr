@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -42,7 +43,7 @@ return new class extends Migration
      */
     private function targetIndexExists(string $schema, string $indexName): bool
     {
-        return \Illuminate\Support\Facades\DB::selectOne(
+        return DB::selectOne(
             'SELECT 1 FROM pg_indexes WHERE schemaname = ? AND tablename = ? AND indexname = ?',
             [$schema, 'social_contributions', $indexName]
         ) !== null;
