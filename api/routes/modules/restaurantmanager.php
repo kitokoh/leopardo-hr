@@ -245,5 +245,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/reports/pos', [RestaurantReportController::class, 'pos']);
         Route::get('/dashboard/kpis', [RestaurantReportController::class, 'kpis']);
         Route::post('/reports/export', [RestaurantReportExportController::class, 'export']);
-        Route::get('/restaurant/reports/export/{export}', [RestaurantReportExportController::class, 'download'])
     });
+
+// Téléchargement d'export signé — route publique (la signature EST l'auth).
+// La signature est émise par `RestaurantReportExportService` (TTL 10 min).
+Route::get('/restaurant/reports/export/{export}', [RestaurantReportExportController::class, 'download'])
+    ->name('restaurant.reports.export.download')
+    ->middleware('signed');
