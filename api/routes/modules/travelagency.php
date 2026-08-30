@@ -28,6 +28,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeControlle
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRoundTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
@@ -137,6 +138,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/rental-bookings', [TravelRentalBookingController::class, 'store']);
         Route::get('/rental-bookings/{travelRentalBooking}', [TravelRentalBookingController::class, 'show']);
         Route::post('/rental-bookings/{travelRentalBooking}/cancel', [TravelRentalBookingController::class, 'cancel']);
+
+        // Allers-retours combinés (TRAVEL-802/#6093).
+        Route::post('/round-trips', [TravelRoundTripController::class, 'store']);
+        Route::get('/round-trips/{travelRoundTrip}', [TravelRoundTripController::class, 'show']);
 
         // Hôtels + chambres (TRAVEL-321/#6051).
         Route::get('/hotels', [TravelHotelController::class, 'index']);
