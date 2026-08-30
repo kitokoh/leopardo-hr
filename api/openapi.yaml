@@ -23400,6 +23400,80 @@ paths:
         '429':
           description: Trop de requêtes (throttle)
 
+  /delivery/deliveries/routes/today:
+    get:
+      tags:
+      - Delivery
+      summary: Tournée du jour du livreur (DELIVERY-203/#6287)
+      description: |
+        Tournées du jour scopées par propriété : un rider ne voit que les
+        routes dont driver_id = son id d'employé ; dispatcher/manager/admin
+        voient toutes les routes du jour. Stops inclus.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Tournées du jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryRoute'
+        '403':
+          description: Rôle delivery requis
+  /delivery/deliveries/stops/{stop}/status:
+    post:
+      tags:
+      - Delivery
+      summary: Statut d'un arrêt (DELIVERY-203/#6287)
+      description: |
+        Idempotent (rejeu du même statut → même arrêt). Chaque statut
+        déclenche l'événement de tracking correspondant (machine à états) ;
+        delivered exige proof_document_id (409 PROOF_REQUIRED). Scope par
+        propriété : un rider ne peut agir que sur sa tournée (403 sinon).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: stop
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum: [en_route, arrived, delivered, failed, skipped]
+                proof_document_id:
+                  type: integer
+      responses:
+        '200':
+          description: Arrêt mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRouteStop'
+        '403':
+          description: Hors de la tournée du rider
+        '404':
+          description: Arrêt introuvable ou hors tenant
+        '409':
+          description: PROOF_REQUIRED ou INVALID_TRANSITION
+
   /delivery/deliveries/routes:
     post:
       tags:

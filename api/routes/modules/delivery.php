@@ -25,6 +25,7 @@ use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryEventController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRouteController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryReportController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRiderController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\PublicDeliveryTrackingController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/deliveries', [DeliveryController::class, 'index']);
             Route::post('/deliveries', [DeliveryController::class, 'store']);
             Route::get('/deliveries/{delivery}', [DeliveryController::class, 'show'])->whereNumber('delivery');
+
+            // Mobile livreur (DELIVERY-203/#6287) — tournée du jour scopée par
+            // propriété (driver_id = employé) + statuts d'arrêts idempotents.
+            Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
+                Route::get('/deliveries/routes/today', [DeliveryRiderController::class, 'today']);
+                Route::post('/deliveries/stops/{stop}/status', [DeliveryRiderController::class, 'status'])->whereNumber('stop');
+            });
 
             // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
             Route::middleware('delivery.permission:dispatcher|admin|manager')->group(function (): void {
