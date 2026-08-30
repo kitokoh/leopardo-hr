@@ -29,6 +29,10 @@ class TravelEngagementController extends Controller
             abort(404);
         }
 
+        if ($actor->cannot('engage', $travelArticle)) {
+            abort(403);
+        }
+
         $like = TravelLike::query()->firstOrCreate(
             [
                 'company_id' => $actor->company_id,
@@ -50,6 +54,10 @@ class TravelEngagementController extends Controller
             abort(404);
         }
 
+        if ($actor->cannot('engage', $travelArticle)) {
+            abort(403);
+        }
+
         TravelLike::query()
             ->where('company_id', $actor->company_id)
             ->where('article_id', $travelArticle->id)
@@ -67,6 +75,10 @@ class TravelEngagementController extends Controller
 
         if ($actor->company_id !== $travelArticle->company_id) {
             abort(404);
+        }
+
+        if ($actor->cannot('engage', $travelArticle)) {
+            abort(403);
         }
 
         $channel = (string) $request->json('channel', 'link');
@@ -93,6 +105,10 @@ class TravelEngagementController extends Controller
 
         if ($actor->company_id !== $travelArticle->company_id) {
             abort(404);
+        }
+
+        if ($actor->cannot('engage', $travelArticle)) {
+            abort(403);
         }
 
         $rating = (int) $request->json('rating');
