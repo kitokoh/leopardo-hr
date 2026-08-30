@@ -94,6 +94,7 @@ class ReconcileBillingPaymentsCommand extends Command
                     'payment_orphan invoice=null payment_id=%d',
                     $payment->id
                 );
+
                 continue;
             }
 
@@ -101,7 +102,14 @@ class ReconcileBillingPaymentsCommand extends Command
                 continue;
             }
 
-            $amountMatches = bccomp((string) $payment->amount, (string) $invoice->total, 2) === 0;
+            $paymentAmount = (string) $payment->amount;
+            $invoiceTotal = (string) $invoice->total;
+
+            if (! is_numeric($paymentAmount) || ! is_numeric($invoiceTotal)) {
+                continue;
+            }
+
+            $amountMatches = bccomp($paymentAmount, $invoiceTotal, 2) === 0;
             $currencyMatches = $payment->currency === $invoice->currency;
 
             if ($amountMatches && $currencyMatches) {

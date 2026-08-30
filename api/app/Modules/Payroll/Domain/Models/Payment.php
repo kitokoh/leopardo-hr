@@ -6,6 +6,7 @@ namespace App\Modules\Payroll\Domain\Models;
 
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -14,6 +15,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int|null $invoice_id
  * @property int|null $company_id
+ * @property int $occurrences // agrégat COUNT(*) des requêtes groupBy (reconcil billing)
  * @property string $amount
  * @property string $currency
  * @property string $method
@@ -21,7 +23,8 @@ use Illuminate\Support\Carbon;
  * @property string $status
  * @property Carbon|null $paid_at
  * @property Carbon|null $created_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class Payment extends Model
 {

@@ -95,7 +95,7 @@ class BillingReconciliationTest extends TestCase
         $this->completedPayment($company, $invoice, '100.00');
 
         $this->artisan('billing:reconcile-payments')
-            ->expectsExitCode(2)
+            ->assertExitCode(2)
             ->expectsOutputToContain('payment_completed_invoice_not_paid');
 
         $this->assertSame('sent', $invoice->fresh()->status);
@@ -108,7 +108,7 @@ class BillingReconciliationTest extends TestCase
         $this->completedPayment($company, $invoice, '100.00');
 
         $this->artisan('billing:reconcile-payments --apply')
-            ->expectsExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertSame('paid', $invoice->fresh()->status);
         $this->assertNotNull($invoice->fresh()->paid_at);
@@ -120,8 +120,8 @@ class BillingReconciliationTest extends TestCase
         $invoice = $this->invoice($company, 'sent', '100.00');
         $this->completedPayment($company, $invoice, '100.00');
 
-        $this->artisan('billing:reconcile-payments --apply')->expectsExitCode(0);
-        $this->artisan('billing:reconcile-payments --apply')->expectsExitCode(0);
+        $this->artisan('billing:reconcile-payments --apply')->assertExitCode(0);
+        $this->artisan('billing:reconcile-payments --apply')->assertExitCode(0);
 
         $this->assertSame('paid', $invoice->fresh()->status);
     }
@@ -133,7 +133,7 @@ class BillingReconciliationTest extends TestCase
         $this->completedPayment($company, $invoice, '90.00');
 
         $this->artisan('billing:reconcile-payments --apply')
-            ->expectsExitCode(2)
+            ->assertExitCode(2)
             ->expectsOutputToContain('amount_mismatch');
 
         $this->assertSame('sent', $invoice->fresh()->status);
@@ -145,7 +145,7 @@ class BillingReconciliationTest extends TestCase
         $this->invoice($company, 'paid', '100.00');
 
         $this->artisan('billing:reconcile-payments')
-            ->expectsExitCode(2)
+            ->assertExitCode(2)
             ->expectsOutputToContain('invoice_paid_without_payment');
     }
 
@@ -157,7 +157,7 @@ class BillingReconciliationTest extends TestCase
         $this->completedPayment($company, $invoice, '100.00', 'pi_dup_1234567890');
 
         $this->artisan('billing:reconcile-payments')
-            ->expectsExitCode(2)
+            ->assertExitCode(2)
             ->expectsOutputToContain('duplicate_provider_reference');
     }
 
@@ -174,7 +174,7 @@ class BillingReconciliationTest extends TestCase
         $this->completedPayment($companyB, $invoiceB, '75.00');
 
         $this->artisan('billing:reconcile-payments --apply')
-            ->expectsExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertSame('paid', $invoiceA->fresh()->status);
         $this->assertSame('paid', $invoiceB->fresh()->status);

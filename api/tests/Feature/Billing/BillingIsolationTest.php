@@ -67,6 +67,14 @@ class BillingIsolationTest extends TestCase
         [$companyA, , $invoiceA] = $this->tenantWithBillingData();
         /** @var Company $companyB */
         $companyB = Company::factory()->create();
+        Subscription::create([
+            'company_id' => $companyB->id,
+            'plan' => 'business',
+            'status' => 'active',
+            'payment_method' => 'stripe',
+            'current_period_start' => now(),
+            'current_period_end' => now()->addMonth(),
+        ]);
         /** @var Employee $managerB */
         $managerB = Employee::factory()->manager()->create(['company_id' => $companyB->id]);
 
@@ -87,6 +95,14 @@ class BillingIsolationTest extends TestCase
         [$companyA] = $this->tenantWithBillingData();
         /** @var Company $companyB */
         $companyB = Company::factory()->create();
+        Subscription::create([
+            'company_id' => $companyB->id,
+            'plan' => 'business',
+            'status' => 'active',
+            'payment_method' => 'stripe',
+            'current_period_start' => now(),
+            'current_period_end' => now()->addMonth(),
+        ]);
         /** @var Employee $managerB */
         $managerB = Employee::factory()->manager()->create(['company_id' => $companyB->id]);
 
@@ -107,6 +123,7 @@ class BillingIsolationTest extends TestCase
     public function test_plain_employee_cannot_manage_billing(): void
     {
         $company = Company::factory()->create();
+        assert($company instanceof Company);
         /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
@@ -152,6 +169,14 @@ class BillingIsolationTest extends TestCase
         [$companyA, , $invoiceA] = $this->tenantWithBillingData();
         /** @var Company $companyB */
         $companyB = Company::factory()->create();
+        Subscription::create([
+            'company_id' => $companyB->id,
+            'plan' => 'business',
+            'status' => 'active',
+            'payment_method' => 'stripe',
+            'current_period_start' => now(),
+            'current_period_end' => now()->addMonth(),
+        ]);
         /** @var Subscription $subscriptionB */
         $subscriptionB = Subscription::create([
             'company_id' => $companyB->id,
@@ -179,7 +204,7 @@ class BillingIsolationTest extends TestCase
             'company_id' => $companyA->id,
             'amount' => '100.00',
             'currency' => 'USD',
-            'method' => 'stripe',
+            'method' => 'card',
             'provider_reference' => 'pi_a_1234567890',
             'status' => 'completed',
             'paid_at' => now(),
@@ -190,7 +215,7 @@ class BillingIsolationTest extends TestCase
             'company_id' => $companyB->id,
             'amount' => '50.00',
             'currency' => 'USD',
-            'method' => 'stripe',
+            'method' => 'card',
             'provider_reference' => 'pi_b_1234567890',
             'status' => 'completed',
             'paid_at' => now(),
@@ -198,7 +223,7 @@ class BillingIsolationTest extends TestCase
         ]);
 
         // Console, sans contexte tenant : traite A ET B (exit 0, aucune fuite).
-        $this->artisan('billing:reconcile-payments --apply')->expectsExitCode(0);
+        $this->artisan('billing:reconcile-payments --apply')->assertExitCode(0);
 
         $this->assertSame('paid', $invoiceA->fresh()->status);
         $this->assertSame('paid', $invoiceB->fresh()->status);
