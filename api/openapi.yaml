@@ -4009,6 +4009,537 @@ paths:
           description: Catégorie créée
         '401':
           description: Non authentifié
+  /travel/advert-prices:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-906 — Grille tarifaire des annonces'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Grilles tarifaires
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-906 — Création d''une grille tarifaire (minor units)'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - advert_type_id
+              - advert_position_id
+              - price_per_image_minor
+              - price_per_character_minor
+              - currency
+              properties:
+                advert_type_id:
+                  type: integer
+                advert_position_id:
+                  type: integer
+                price_per_image_minor:
+                  type: integer
+                  minimum: 1
+                price_per_character_minor:
+                  type: integer
+                  minimum: 1
+                currency:
+                  type: string
+                  maxLength: 3
+      responses:
+        '201':
+          description: Grille créée
+        '401':
+          description: Non authentifié
+        '422':
+          description: Validation échouée (devise tenant, bornes)
+  /travel/advert-prices/{travelAdvertPrice}:
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-906 — Suppression d''une grille tarifaire'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPrice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprimée
+        '404':
+          description: Introuvable
+  /travel/advert-types:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-905 — Types d''annonces'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Types d'annonces
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-905 — Création d''un type d''annonce'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+      responses:
+        '201':
+          description: Type créé
+        '401':
+          description: Non authentifié
+        '422':
+          description: Code invalide ou déjà pris
+  /travel/advert-types/{travelAdvertType}:
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-905 — Suppression d''un type d''annonce'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertType
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprimé
+        '404':
+          description: Introuvable
+  /travel/advert-positions:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-905 — Positions de publication'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Positions
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-905 — Création d''une position'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+      responses:
+        '201':
+          description: Position créée
+        '401':
+          description: Non authentifié
+        '422':
+          description: Code invalide ou déjà pris
+  /travel/advert-positions/{travelAdvertPosition}:
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-905 — Suppression d''une position'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPosition
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprimée
+        '404':
+          description: Introuvable
+  /travel/adverts:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-907 — Annonces visibles (payées + validées + non expirées)'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Annonces visibles
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-907 — Soumission d''une annonce (prix calculé serveur)'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - advert_type_id
+              - advert_position_id
+              - title
+              - content
+              properties:
+                advert_type_id:
+                  type: integer
+                advert_position_id:
+                  type: integer
+                title:
+                  type: string
+                  maxLength: 160
+                content:
+                  type: string
+                  maxLength: 2000
+                image_asset_id:
+                  type: integer
+                  nullable: true
+                validity_days:
+                  type: integer
+                  minimum: 1
+                  maximum: 365
+                  default: 30
+      responses:
+        '201':
+          description: Annonce soumise
+        '401':
+          description: Non authentifié
+        '422':
+          description: Validation échouée (grille absente, bornes)
+  /travel/adverts/{travelAdvert}:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-907 — Détail d''une annonce'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de l'annonce
+        '404':
+          description: Introuvable
+  /travel/adverts/{travelAdvert}/pay:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-907 — Paiement d''une annonce (idempotent)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Annonce payée
+        '404':
+          description: Introuvable
+        '422':
+          description: État non payable
+  /travel/adverts/{travelAdvert}/validate:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-907 — Validation d''une annonce (travel.manage)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Annonce validée
+        '403':
+          description: Rôle insuffisant
+        '422':
+          description: Non payée
+  /travel/adverts/{travelAdvert}/reject:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-907 — Rejet d''une annonce (motif)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        '200':
+          description: Annonce rejetée
+        '403':
+          description: Rôle insuffisant
+  /travel/adverts/{travelAdvert}/renew:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-908 — Renouvellement (nouveau paiement, prolongation)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Annonce renouvelée
+        '404':
+          description: Introuvable
+        '422':
+          description: État non renouvelable
+  /travel/quizzes:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-904 — Liste des quiz'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Quiz
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-904 — Création d''un quiz'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              properties:
+                title:
+                  type: string
+                  maxLength: 160
+                description:
+                  type: string
+                  maxLength: 2000
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+                max_participations_per_contact:
+                  type: integer
+                  default: 1
+                status:
+                  type: string
+                  enum: [draft, active, closed]
+      responses:
+        '201':
+          description: Quiz créé
+        '401':
+          description: Non authentifié
+  /travel/quizzes/{travelQuiz}:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-904 — Détail d''un quiz (questions SANS réponses correctes)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Quiz + questions
+        '404':
+          description: Introuvable
+  /travel/quizzes/{travelQuiz}/questions:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-904 — Ajout d''une question'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - question
+              - options
+              - correct_option_index
+              properties:
+                question:
+                  type: string
+                  maxLength: 500
+                options:
+                  type: array
+                  minItems: 2
+                  maxItems: 10
+                  items:
+                    type: string
+                correct_option_index:
+                  type: integer
+                  minimum: 0
+                points:
+                  type: integer
+                  default: 1
+                position:
+                  type: integer
+      responses:
+        '201':
+          description: Question ajoutée
+        '403':
+          description: Rôle insuffisant
+        '422':
+          description: Index hors bornes
+  /travel/quizzes/{travelQuiz}/participate:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-904 — Participation (notation serveur)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - participant_email
+              - answers
+              properties:
+                participant_email:
+                  type: string
+                  format: email
+                participant_name:
+                  type: string
+                answers:
+                  type: array
+                  items:
+                    type: object
+                    required: [question_id, selected_option]
+                    properties:
+                      question_id:
+                        type: integer
+                      selected_option:
+                        type: integer
+      responses:
+        '201':
+          description: Participation notée
+        '404':
+          description: Quiz introuvable
+        '409':
+          description: Participation déjà enregistrée
+        '422':
+          description: Quiz non actif ou validation échouée
+  /travel/quizzes/{travelQuiz}/results:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-904 — Résultats (gestion)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Résultats triés par score
+        '403':
+          description: Rôle insuffisant
   /travel/contact:
     post:
       tags:
