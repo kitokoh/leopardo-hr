@@ -3420,6 +3420,10 @@ class LeopardoClient:
         """Inscrire un employe"""
         return self.request("POST", "/training/sessions/{trainingSession}/enroll", **kwargs)
 
+    def get_travel_ping(self, **kwargs):
+        """Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977)"""
+        return self.request("GET", "/travel/ping", **kwargs)
+
     def post_trial_signup(self, **kwargs):
         """Demande d'essai guidé / auto-service (onboarding)"""
         return self.request("POST", "/trial/signup", **kwargs)

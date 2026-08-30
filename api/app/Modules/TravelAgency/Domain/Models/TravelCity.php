@@ -21,7 +21,7 @@ class TravelCity extends Model
 {
     use BelongsToCompany;
 
-    /** @use HasFactory<Database\Factories\TravelCityFactory> */
+    /** @use HasFactory<\Database\Factories\TravelCityFactory> */
     use HasFactory;
 
     protected $fillable = [
