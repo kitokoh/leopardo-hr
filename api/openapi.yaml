@@ -32175,18 +32175,79 @@ components:
           nullable: true
     AccountingDashboard:
       type: object
+      description: 'Synthèse de pilotage du dashboard comptable (issue #5230, BC-22). Le bloc snapshot expose la fraîcheur du read model (BC-22-D10, issue #6243).'
       properties:
-        totals:
+        period:
           type: object
-          additionalProperties: { type: number, format: double }
-        overdue_count:
-          type: integer
-        period_from:
-          type: string
-          format: date
-        period_to:
-          type: string
-          format: date
+          properties:
+            from: { type: string, format: date }
+            to: { type: string, format: date }
+        invoices:
+          type: object
+          description: 'Factures émises (glossaire BC-22 : documents client émis sur la période).'
+          properties:
+            count: { type: integer }
+            total_ttc: { type: number, format: double }
+        collections:
+          type: object
+          description: 'Encaissements (glossaire BC-22 : paiements reçus sur la période).'
+          properties:
+            count: { type: integer }
+            total: { type: number, format: double }
+        expenses:
+          type: object
+          description: 'Dépenses fournisseurs (glossaire BC-22).'
+          properties:
+            count: { type: integer }
+            total_ttc: { type: number, format: double }
+        outstanding:
+          type: object
+          description: 'Impayés (glossaire BC-22 : total_ttc > paid_amount) + aging.'
+          properties:
+            count: { type: integer }
+            total_due: { type: number, format: double }
+            aging:
+              type: array
+              items:
+                type: object
+                properties:
+                  bucket:
+                    type: string
+                    enum: [0_30, 31_60, 61_90, 90_plus]
+                  count: { type: integer }
+                  total_due: { type: number, format: double }
+            list:
+              type: array
+              items:
+                type: object
+                properties:
+                  id: { type: integer }
+                  number: { type: string }
+                  contact: { type: string }
+                  issue_date: { type: string, format: date, nullable: true }
+                  due_date: { type: string, format: date, nullable: true }
+                  days_late: { type: integer }
+                  total_ttc: { type: number, format: double }
+                  paid_amount: { type: number, format: double }
+                  due_amount: { type: number, format: double }
+                  status: { type: string }
+        snapshot:
+          type: object
+          description: 'Fraîcheur du read model — live tant qu aucun snapshot n est activé, sinon source snapshot + version + refreshed_at.'
+          properties:
+            source:
+              type: string
+              enum: [live, snapshot]
+            report:
+              type: string
+              nullable: true
+            version:
+              type: integer
+              nullable: true
+            refreshed_at:
+              type: string
+              format: date-time
+              nullable: true
 
 
     AttendanceDayClosure:

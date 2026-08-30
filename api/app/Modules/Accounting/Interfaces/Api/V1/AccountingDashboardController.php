@@ -6,6 +6,7 @@ namespace App\Modules\Accounting\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Accounting\Application\Actions\AccountingDashboardService;
+use App\Modules\Accounting\Application\Actions\AccountingReportingSnapshotService;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\AccountingDashboardRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,18 +28,28 @@ final class AccountingDashboardController extends Controller
 
     /**
      * Synthèse du tableau de bord pour la période demandée.
+     *
+     * Le bloc `data.snapshot` expose la fraîcheur (BC-22-D10, #6243) :
+     * `source: "live"` tant qu'aucun snapshot n'est activé pour la période,
+     * sinon `source: "snapshot"` + `version` + `refreshed_at`.
      */
     public function show(AccountingDashboardRequest $request): JsonResponse
     {
         $validated = $request->validated();
 
-        return response()->json([
-            'data' => $this->dashboard->summary(
-                $this->companyId($request),
-                $validated['from'] ?? null,
-                $validated['to'] ?? null,
-            ),
-        ]);
+        $summary = $this->dashboard->summary(
+            $this->companyId($request),
+            $validated['from'] ?? null,
+            $validated['to'] ?? null,
+        );
+
+        $summary['snapshot'] = app(AccountingReportingSnapshotService::class)->metadata(
+            $this->companyId($request),
+            $validated['from'] ?? null,
+            $validated['to'] ?? null,
+        );
+
+        return response()->json(['data' => $summary]);
     }
 
     /**
