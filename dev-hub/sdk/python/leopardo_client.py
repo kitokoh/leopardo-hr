@@ -624,6 +624,14 @@ class LeopardoClient:
         """Historique des conversations IA"""
         return self.request("GET", "/ai/chat/history", **kwargs)
 
+    def post_ai_conversations_by_conversationid_export(self, **kwargs):
+        """Exporter une conversation IA (asynchrone, idempotent)"""
+        return self.request("POST", "/ai/conversations/{conversationId}/export", **kwargs)
+
+    def get_ai_exports_by_exportid(self, **kwargs):
+        """Statut d'une exportation de conversation IA"""
+        return self.request("GET", "/ai/exports/{exportId}", **kwargs)
+
     def get_ai_tools(self, **kwargs):
         """Liste des outils IA disponibles"""
         return self.request("GET", "/ai/tools", **kwargs)

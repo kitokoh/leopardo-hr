@@ -755,6 +755,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/ai/chat/history", options);
     },
 
+    /** Exporter une conversation IA (asynchrone, idempotent) */
+    postAiConversationsByConversationIdExport(options = {}) {
+      return request("POST", "/ai/conversations/{conversationId}/export", options);
+    },
+
+    /** Statut d'une exportation de conversation IA */
+    getAiExportsByExportId(options = {}) {
+      return request("GET", "/ai/exports/{exportId}", options);
+    },
+
     /** Liste des outils IA disponibles */
     getAiTools(options = {}) {
       return request("GET", "/ai/tools", options);

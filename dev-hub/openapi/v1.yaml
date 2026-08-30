@@ -10180,6 +10180,105 @@ paths:
       responses:
         '200':
           description: Liste des tools enregistres dans le ToolRegistry
+  /ai/conversations/{conversationId}/export:
+    post:
+      tags:
+      - AI
+      summary: Exporter une conversation IA (asynchrone, idempotent)
+      description: BC-23-D07 — cree une exportation (statut pending) et lance le job sur la file ai ; une exportation existante (en cours, livree ou en echec) est renvoyee telle quelle (idempotence par tenant+conversation+format). Echec definitif consigne en dead-letter queue (replay via ai:dlq:replay).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: conversationId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                format:
+                  type: string
+                  enum:
+                  - json
+                  default: json
+      responses:
+        '200':
+          description: Exportation creee ou existante
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      conversation_id:
+                        type: integer
+                      format:
+                        type: string
+                      status:
+                        type: string
+                      error_message:
+                        type: string
+                        nullable: true
+                      created_at:
+                        type: string
+                        nullable: true
+        '404':
+          description: Conversation introuvable ou non autorisee
+        '422':
+          description: Format non supporte
+  /ai/exports/{exportId}:
+    get:
+      tags:
+      - AI
+      summary: Statut d'une exportation de conversation IA
+      description: BC-23-D07 — statut du job d'export (pending/processing/done/failed), erreur eventuelle.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: exportId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Statut de l'exportation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      conversation_id:
+                        type: integer
+                      format:
+                        type: string
+                      status:
+                        type: string
+                      error_message:
+                        type: string
+                        nullable: true
+                      created_at:
+                        type: string
+                        nullable: true
+                      updated_at:
+                        type: string
+                        nullable: true
+        '404':
+          description: Exportation introuvable ou non autorisee
   /ai/analytics/usage:
     get:
       tags:
