@@ -2310,6 +2310,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/fuel-station/cash-sessions/{session}/movements", options);
     },
 
+    /** Historique des imports CSV (manager, paginé, FUEL-018 #5812) */
+    getFuelStationImports(options = {}) {
+      return request("GET", "/fuel-station/imports", options);
+    },
+
+    /** Annuler un import (manager, FUEL-018 #5812) */
+    postFuelStationImportsByImportCancel(options = {}) {
+      return request("POST", "/fuel-station/imports/{import}/cancel", options);
+    },
+
+    /** Commiter un import previewed (manager, idempotent, FUEL-018 #5812) */
+    postFuelStationImportsByImportCommit(options = {}) {
+      return request("POST", "/fuel-station/imports/{import}/commit", options);
+    },
+
+    /** Preview d'un import CSV (manager, FUEL-018 #5812) */
+    postFuelStationImportsPreview(options = {}) {
+      return request("POST", "/fuel-station/imports/preview", options);
+    },
+
     /** Lister les incidents (manager, FUEL-010 #5804) */
     getFuelStationIncidents(options = {}) {
       return request("GET", "/fuel-station/incidents", options);
@@ -2398,6 +2418,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Snapshot de reporting opérationnel (manager, FUEL-017 #5811) */
     getFuelStationReportsByType(options = {}) {
       return request("GET", "/fuel-station/reports/{type}", options);
+    },
+
+    /** Exporter un rapport en CSV contrôlé (manager, FUEL-018 #5812) */
+    getFuelStationReportsByTypeExport(options = {}) {
+      return request("GET", "/fuel-station/reports/{type}/export", options);
     },
 
     /** Lister les ventes (manager, pagine) */

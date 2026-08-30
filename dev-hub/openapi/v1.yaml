@@ -7582,6 +7582,230 @@ paths:
         '404':
           description: Station introuvable, autre tenant ou type inconnu
 
+  /fuel-station/imports:
+    get:
+      tags:
+      - FuelStation
+      summary: Historique des imports CSV (manager, paginé, FUEL-018 #5812)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [previewed, committing, committed, failed, cancelled]
+      - name: entity_type
+        in: query
+        schema:
+          type: string
+          enum: [products, pumps, tanks, shifts, readings]
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Sessions d'import paginées
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FuelImport'
+                  meta:
+                    type: object
+                    properties:
+                      current_page: {type: integer}
+                      last_page: {type: integer}
+                      total: {type: integer}
+                      per_page: {type: integer}
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /fuel-station/imports/preview:
+    post:
+      tags:
+      - FuelStation
+      summary: Preview d'un import CSV (manager, FUEL-018 #5812)
+      description: "Aucun effet sur les tables cibles. Validation ligne par ligne, limites taille (2 Mo) et lignes (5000). Réponse : lignes valides/erreurs + aperçu."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - entity_type
+              - file
+              properties:
+                entity_type:
+                  type: string
+                  enum: [products, pumps, tanks, shifts, readings]
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Aperçu de l'import
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id: {type: integer}
+                      entity_type: {type: string}
+                      filename: {type: string}
+                      status: {type: string}
+                      total_rows: {type: integer}
+                      valid_rows: {type: integer}
+                      error_rows: {type: integer}
+                      preview:
+                        type: array
+                  meta:
+                    type: object
+                    properties:
+                      errors:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            line: {type: integer}
+                            error: {type: string}
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Fichier trop volumineux, trop de lignes ou type invalide
+
+  /fuel-station/imports/{import}/commit:
+    post:
+      tags:
+      - FuelStation
+      summary: Commiter un import previewed (manager, idempotent, FUEL-018 #5812)
+      description: "Persiste les lignes validées dans une transaction (rollback logique au premier échec). Rejeu d'un commit déjà fait → état existant."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: import
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Import committé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelImport'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Import introuvable ou autre tenant
+        '422':
+          description: Import non previewed ou non commitable
+
+  /fuel-station/imports/{import}/cancel:
+    post:
+      tags:
+      - FuelStation
+      summary: Annuler un import (manager, FUEL-018 #5812)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: import
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Import annulé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelImport'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Import introuvable ou autre tenant
+        '422':
+          description: Import non annulable (déjà committé)
+
+  /fuel-station/reports/{type}/export:
+    get:
+      tags:
+      - FuelStation
+      summary: Exporter un rapport en CSV contrôlé (manager, FUEL-018 #5812)
+      description: "CSV généré depuis le snapshot FUEL-017 (borné, sans PII). URL signée, audit."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [pump_volumes, sales, shifts, variances, stock, station_performance]
+      - name: station_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: period_start
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: period_end
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: URL signée du CSV
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      filename: {type: string}
+                      url: {type: string}
+                      rows: {type: integer}
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station introuvable, autre tenant ou type inconnu
+
   /fuel-station/accounts:
     get:
       tags:
@@ -34520,6 +34744,26 @@ components:
           type: string
           format: date-time
           nullable: true
+    FuelImport:
+      type: object
+      properties:
+        id: {type: integer}
+        entity_type: {type: string, enum: [products, pumps, tanks, shifts, readings]}
+        filename: {type: string}
+        status: {type: string, enum: [previewed, committing, committed, failed, cancelled]}
+        total_rows: {type: integer}
+        valid_rows: {type: integer}
+        error_rows: {type: integer}
+        result:
+          type: object
+          nullable: true
+        created_by: {type: integer, nullable: true}
+        committed_by: {type: integer, nullable: true}
+        committed_at: {type: string, format: date-time, nullable: true}
+        cancelled_at: {type: string, format: date-time, nullable: true}
+        created_at: {type: string, format: date-time, nullable: true}
+
+
     FuelProfessionalAccount:
       type: object
       properties:

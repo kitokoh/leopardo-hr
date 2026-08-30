@@ -1868,6 +1868,22 @@ class LeopardoClient:
         """Ajouter un mouvement in/out (proprietaire, session ouverte)"""
         return self.request("POST", "/fuel-station/cash-sessions/{session}/movements", **kwargs)
 
+    def get_fuel_station_imports(self, **kwargs):
+        """Historique des imports CSV (manager, paginé, FUEL-018 #5812)"""
+        return self.request("GET", "/fuel-station/imports", **kwargs)
+
+    def post_fuel_station_imports_by_import_cancel(self, **kwargs):
+        """Annuler un import (manager, FUEL-018 #5812)"""
+        return self.request("POST", "/fuel-station/imports/{import}/cancel", **kwargs)
+
+    def post_fuel_station_imports_by_import_commit(self, **kwargs):
+        """Commiter un import previewed (manager, idempotent, FUEL-018 #5812)"""
+        return self.request("POST", "/fuel-station/imports/{import}/commit", **kwargs)
+
+    def post_fuel_station_imports_preview(self, **kwargs):
+        """Preview d'un import CSV (manager, FUEL-018 #5812)"""
+        return self.request("POST", "/fuel-station/imports/preview", **kwargs)
+
     def get_fuel_station_incidents(self, **kwargs):
         """Lister les incidents (manager, FUEL-010 #5804)"""
         return self.request("GET", "/fuel-station/incidents", **kwargs)
@@ -1939,6 +1955,10 @@ class LeopardoClient:
     def get_fuel_station_reports_by_type(self, **kwargs):
         """Snapshot de reporting opérationnel (manager, FUEL-017 #5811)"""
         return self.request("GET", "/fuel-station/reports/{type}", **kwargs)
+
+    def get_fuel_station_reports_by_type_export(self, **kwargs):
+        """Exporter un rapport en CSV contrôlé (manager, FUEL-018 #5812)"""
+        return self.request("GET", "/fuel-station/reports/{type}/export", **kwargs)
 
     def get_fuel_station_sales(self, **kwargs):
         """Lister les ventes (manager, pagine)"""

@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCrmController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelIncidentController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
@@ -119,6 +120,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // FUEL-017 (#5811) : reporting opérationnel (manager).
         Route::get('/fuel-station/reports/{type}', [FuelReportController::class, 'show'])
             ->whereIn('type', ['pump_volumes', 'sales', 'shifts', 'variances', 'stock', 'station_performance']);
+        // FUEL-018 (#5812) : export CSV contrôlé depuis les snapshots.
+        Route::get('/fuel-station/reports/{type}/export', [FuelImportController::class, 'export'])
+            ->whereIn('type', ['pump_volumes', 'sales', 'shifts', 'variances', 'stock', 'station_performance']);
+
+        // FUEL-018 (#5812) : imports CSV (preview → commit/cancel).
+        Route::get('/fuel-station/imports', [FuelImportController::class, 'index']);
+        Route::post('/fuel-station/imports/preview', [FuelImportController::class, 'preview']);
+        Route::post('/fuel-station/imports/{import}/commit', [FuelImportController::class, 'commit'])
+            ->whereNumber('import');
+        Route::post('/fuel-station/imports/{import}/cancel', [FuelImportController::class, 'cancel'])
+            ->whereNumber('import');
 
         // FUEL-016 (#5810) : comptes professionnels & visites (manager).
         Route::get('/fuel-station/accounts', [FuelCrmController::class, 'index']);

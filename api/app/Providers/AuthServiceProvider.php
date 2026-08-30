@@ -15,6 +15,7 @@ use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\FuelStation\Domain\Models\FuelAccountVisit;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
+use App\Modules\FuelStation\Domain\Models\FuelImport;
 use App\Modules\FuelStation\Domain\Models\FuelIncident;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
@@ -132,6 +133,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(FuelAccountVisit::class, FuelCrmPolicy::class);
         // — FuelStation reporting (FUEL-017 #5811)
         Gate::policy(FuelReportSnapshot::class, FuelReferencePolicy::class);
+        // — FuelStation import/export (FUEL-018 #5812)
+        Gate::policy(FuelImport::class, FuelReferencePolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);
