@@ -33,6 +33,10 @@ class RestaurantStockLevel extends Model
         'alert_threshold',
     ];
 
+    protected $attributes = [
+        'quantity' => 0,
+    ];
+
     protected $casts = [
         'quantity' => 'decimal:3',
         'avg_cost_minor' => 'integer',

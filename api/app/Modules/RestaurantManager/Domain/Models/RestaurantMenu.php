@@ -37,6 +37,12 @@ class RestaurantMenu extends Model
         'status',
     ];
 
+    protected $attributes = [
+        'status' => 'active',
+        'currency' => 'DZD',
+        'price_minor' => 0,
+    ];
+
     protected $casts = [
         'price_minor' => 'integer',
         'starts_at' => 'datetime',
