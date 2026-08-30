@@ -95,6 +95,9 @@ class DeliveryRbacTest extends TestCase
         ]);
 
         $delivery = $this->createDelivery();
+        // L'affectation à une tournée passe la livraison en `assigned`
+        // (machine à états : created → picked_up est illégal).
+        $delivery->forceFill(['status' => 'assigned'])->save();
         DeliveryStop::query()->create([
             'company_id' => $this->company->id,
             'route_id' => $route->id,

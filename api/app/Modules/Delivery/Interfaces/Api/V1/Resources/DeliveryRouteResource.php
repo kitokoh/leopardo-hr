@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Interfaces\Api\V1\Resources;
 
+use App\Modules\Delivery\Domain\Models\DeliveryRoute;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Tournée (DELIVERY-202, issue #6286) — totaux dénormalisés + stops ordonnés.
  *
- * @mixin \App\Modules\Delivery\Domain\Models\DeliveryRoute
+ * @mixin DeliveryRoute
  */
 final class DeliveryRouteResource extends JsonResource
 {
@@ -21,7 +22,7 @@ final class DeliveryRouteResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'route_date' => $this->route_date?->toDateString(),
+            'route_date' => $this->route_date->toDateString(),
             'zone' => $this->zone,
             'status' => $this->status,
             'driver_id' => $this->driver_id,

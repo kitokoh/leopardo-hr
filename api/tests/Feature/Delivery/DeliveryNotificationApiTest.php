@@ -6,6 +6,8 @@ namespace Tests\Feature\Delivery;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Jobs\DispatchDeliveryNotificationJob;
+use App\Modules\Delivery\Domain\Contracts\RecipientMessageContract;
 use App\Modules\Delivery\Domain\Models\Delivery;
 use App\Modules\Delivery\Domain\Models\DeliveryNotification;
 use App\Modules\Delivery\Domain\Models\DeliveryRecipientOptOut;
@@ -136,14 +138,22 @@ class DeliveryNotificationApiTest extends TestCase
 
         $this->postJson('/api/v1/delivery/deliveries/events', [
             'delivery_id' => $delivery->id,
+            'type' => 'picked_up',
+        ])->assertStatus(201);
+        $this->postJson('/api/v1/delivery/deliveries/events', [
+            'delivery_id' => $delivery->id,
+            'type' => 'out_for_delivery',
+        ])->assertStatus(201);
+        $this->postJson('/api/v1/delivery/deliveries/events', [
+            'delivery_id' => $delivery->id,
             'type' => 'arrived',
         ])->assertStatus(201);
 
         $notification = DeliveryNotification::query()->where('delivery_id', $delivery->id)->firstOrFail();
 
         // Exécution synchrone du job (seam BC-13 → succès).
-        (new \App\Jobs\DispatchDeliveryNotificationJob((int) $notification->id))
-            ->handle(app(\App\Modules\Delivery\Domain\Contracts\RecipientMessageContract::class));
+        (new DispatchDeliveryNotificationJob((int) $notification->id))
+            ->handle(app(RecipientMessageContract::class));
 
         $notification->refresh();
         self::assertSame('sent', $notification->status);

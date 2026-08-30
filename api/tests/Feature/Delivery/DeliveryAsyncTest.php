@@ -8,11 +8,11 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\Delivery\Application\Jobs\CloseDeliveryRouteJob;
 use App\Modules\Delivery\Application\Jobs\ExportDeliveryReportJob;
+use App\Modules\Delivery\Application\Services\DeliveryReportService;
 use App\Modules\Delivery\Domain\Models\Delivery;
 use App\Modules\Delivery\Domain\Models\DeliveryDeadLetter;
 use App\Modules\Delivery\Domain\Models\DeliveryRoute;
 use App\Modules\Delivery\Domain\Models\DeliveryStop;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Tests\RefreshTenantDatabase;
@@ -172,7 +172,7 @@ class DeliveryAsyncTest extends TestCase
             'run-1',
         );
 
-        $job->handle(app(\App\Modules\Delivery\Application\Services\DeliveryReportService::class));
+        $job->handle(app(DeliveryReportService::class));
 
         $filePath = sprintf(
             'delivery_reports/%s/%s_%s_run-1.json',
@@ -185,7 +185,7 @@ class DeliveryAsyncTest extends TestCase
         $first = Storage::disk('local')->get($filePath);
 
         // Rejeu avec la même runKey : même contenu (déterministe, zéro doublon).
-        $job->handle(app(\App\Modules\Delivery\Application\Services\DeliveryReportService::class));
+        $job->handle(app(DeliveryReportService::class));
         $second = Storage::disk('local')->get($filePath);
 
         self::assertSame($first, $second);

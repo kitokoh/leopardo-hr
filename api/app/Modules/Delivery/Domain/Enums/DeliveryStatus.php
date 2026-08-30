@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Domain\Enums;
 
+use App\Modules\Delivery\Domain\Support\DeliveryStateMachine;
+
 /**
  * Statut d'une livraison (BC-26 DELIVERY, DELIVERY-103/#6284).
  *
@@ -12,7 +14,7 @@ namespace App\Modules\Delivery\Domain\Enums;
  * verrouillées par DeliveryStateMachine (états terminaux : delivered,
  * returned, cancelled — aucune réouverture).
  *
- * @see \App\Modules\Delivery\Domain\Support\DeliveryStateMachine
+ * @see DeliveryStateMachine
  */
 enum DeliveryStatus: string
 {

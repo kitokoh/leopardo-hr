@@ -79,9 +79,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
             Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
 
-            // Notifications destinataire (DELIVERY-206/#6290) — outbox +
-            // opt-out (numéros masqués RGPD hors admin).
+        });
+
+        // Notifications destinataire (DELIVERY-206/#6290) — outbox + opt-out.
+        // Lecture ouverte aux managers (numéros masqués RGPD hors admin) ;
+        // opt-out (écriture) réservé dispatcher/admin.
+        Route::middleware('delivery.role:dispatcher,admin')->group(function (): void {
             Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
+        });
+        Route::middleware('delivery.role:dispatcher,admin,manager')->group(function (): void {
             Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
         });
 

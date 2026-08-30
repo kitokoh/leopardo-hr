@@ -10,6 +10,7 @@ use App\Modules\Delivery\Domain\Exceptions\InvalidDeliveryTransitionException;
 use App\Modules\Delivery\Domain\Support\DeliveryStateMachine;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -49,7 +50,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read DeliveryStatus $status_enum
  * @property-read DeliverySource $source_enum
- * @property-read \Illuminate\Database\Eloquent\Collection<int, DeliveryEvent> $events
+ * @property-read Collection<int, DeliveryEvent> $events
  *
  * @mixin Builder<static>
  */
@@ -115,11 +116,11 @@ class Delivery extends Model
      * Applique une transition de statut validée par la machine à états.
      *
      * @throws InvalidDeliveryTransitionException si la transition est illégale
-     *                                             ou si `delivered` sans POD
+     *                                            ou si `delivered` sans POD
      */
     public function transitionTo(DeliveryStatus $to, bool $hasProof = false): void
     {
-        (new DeliveryStateMachine())->assertCanTransitionTo($this->statusEnum(), $to, $hasProof);
+        (new DeliveryStateMachine)->assertCanTransitionTo($this->statusEnum(), $to, $hasProof);
 
         $this->status = $to->value;
 

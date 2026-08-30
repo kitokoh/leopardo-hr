@@ -67,7 +67,7 @@ final class ExportDeliveryReportJob implements ShouldQueue, TenantScopedJob
         );
     }
 
-    public function tenantCompanyId(): ?string
+    public function tenantCompanyId(): string
     {
         return $this->companyId;
     }
@@ -101,7 +101,7 @@ final class ExportDeliveryReportJob implements ShouldQueue, TenantScopedJob
         );
 
         Log::info('delivery.report.exported', [
-            'job' => static::class,
+            'job' => self::class,
             'job_id' => (string) ($this->job?->getJobId() ?? ''),
             'company_id' => $this->companyId,
             'from' => $this->from,
@@ -114,7 +114,7 @@ final class ExportDeliveryReportJob implements ShouldQueue, TenantScopedJob
     public function failed(Throwable $exception): void
     {
         Log::error('delivery.job.failed', [
-            'job' => static::class,
+            'job' => self::class,
             'job_id' => (string) ($this->job?->getJobId() ?? ''),
             'company_id' => $this->companyId,
             'error' => $exception->getMessage(),
@@ -122,7 +122,7 @@ final class ExportDeliveryReportJob implements ShouldQueue, TenantScopedJob
 
         DeliveryDeadLetter::query()->withoutGlobalScopes()->create([
             'company_id' => $this->companyId,
-            'job_class' => static::class,
+            'job_class' => self::class,
             'payload' => [
                 'company_id' => $this->companyId,
                 'from' => $this->from,

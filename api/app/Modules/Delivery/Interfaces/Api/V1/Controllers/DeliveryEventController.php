@@ -6,13 +6,13 @@ namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 
 use App\Modules\Delivery\Application\Services\DeliveryEventService;
 use App\Modules\Delivery\Domain\Models\Delivery;
-use App\Modules\Delivery\Domain\Models\DeliveryTrackingShare;
 use App\Modules\Delivery\Infrastructure\Services\DeliveryTrackingShareService;
 use App\Modules\Delivery\Interfaces\Api\V1\Requests\DeliveryEventStoreRequest;
 use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryEventResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -46,7 +46,7 @@ final class DeliveryEventController
             deliveryId: (int) $validated['delivery_id'],
             type: (string) $validated['type'],
             eventAt: isset($validated['event_at'])
-                ? \Illuminate\Support\Carbon::parse($validated['event_at'])
+                ? Carbon::parse($validated['event_at'])
                 : now(),
             latitude: isset($validated['latitude']) ? (float) $validated['latitude'] : null,
             longitude: isset($validated['longitude']) ? (float) $validated['longitude'] : null,

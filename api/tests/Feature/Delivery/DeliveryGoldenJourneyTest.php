@@ -7,11 +7,6 @@ namespace Tests\Feature\Delivery;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Delivery\Domain\Models\Delivery;
-use App\Modules\Delivery\Domain\Models\DeliveryCodSettlement;
-use App\Modules\Delivery\Domain\Models\DeliveryNotification;
-use App\Modules\Delivery\Domain\Models\DeliveryRoute;
-use App\Modules\Delivery\Domain\Models\DeliveryTrackingShare;
-use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -158,6 +153,14 @@ class DeliveryGoldenJourneyTest extends TestCase
             'status' => 'failed',
         ])->assertOk();
 
+        // Le 3e stop (commande restaurant, sans COD) : skipped (client
+        // injoignable) — la clôture exige tous les stops terminaux.
+        $thirdStopId = (int) $stops->get(2)['id'];
+        Sanctum::actingAs($this->rider);
+        $this->postJson(sprintf('/api/v1/delivery/deliveries/stops/%d/status', $thirdStopId), [
+            'status' => 'skipped',
+        ])->assertOk();
+
         // ── 5. Clôture de la tournée → totaux dénormalisés.
         Sanctum::actingAs($this->manager);
         $closed = $this->postJson(sprintf('/api/v1/delivery/deliveries/routes/%d/close', $route['id']))
@@ -271,7 +274,7 @@ class DeliveryGoldenJourneyTest extends TestCase
             'type' => 'delivered',
             'origin' => 'mobile',
             'proof_document_id' => 777001,
-            'idempotency_key' => 'offline-replay-1',
+            'idempotency_key' => '0f1e2d3c-4b5a-6789-abcd-ef0123456789',
         ])->assertStatus(201)->json('data');
 
         $replay = $this->postJson('/api/v1/delivery/deliveries/events', [
@@ -279,7 +282,7 @@ class DeliveryGoldenJourneyTest extends TestCase
             'type' => 'delivered',
             'origin' => 'mobile',
             'proof_document_id' => 777001,
-            'idempotency_key' => 'offline-replay-1',
+            'idempotency_key' => '0f1e2d3c-4b5a-6789-abcd-ef0123456789',
         ])->assertStatus(201)->json('data');
 
         self::assertSame($first['id'], $replay['id']);

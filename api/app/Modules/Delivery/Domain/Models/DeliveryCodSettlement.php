@@ -55,7 +55,6 @@ class DeliveryCodSettlement extends Model
     protected $casts = [
         'collected_at' => 'datetime',
         'settled_at' => 'datetime',
-        'settled_at' => 'datetime',
         'expected_minor' => 'int',
         'collected_minor' => 'int',
         'commission_minor' => 'int',

@@ -83,7 +83,7 @@ final class DeliveryPolicy
 
         // Rider : la livraison doit appartenir à une de SES tournées.
         return DeliveryStop::query()
-            ->where('company_id', $actor->company_id)
+            ->where('delivery_stops.company_id', $actor->company_id)
             ->where('delivery_id', $delivery->id)
             ->whereHas('route', fn ($route) => $route->where('driver_id', $actor->id))
             ->exists();
