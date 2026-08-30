@@ -1549,6 +1549,8 @@ préfixe `/api/v1/travel/*`, groupe `module.travelagency` — feature flag `trav
   ressource) ; (5) suppression → 204 ; (6) liste paginée `per_page` borné (1..1000).
 - Couverture : `api/tests/Feature/Travel/Travel*CrudTest.php`, `TravelGeoReadEndpointsTest.php`,
   `TravelFeatureFlagTest.php`, `TravelIsolationTest.php` (harness verticale TRAVEL-108). (docs(scenarios): surface API BC-24 TRAVEL (garde Governance Gates, TRAVEL-101..305))
+  `TravelFeatureFlagTest.php`, `TravelIsolationTest.php` (harness verticale TRAVEL-108).
+
 ## BC-24 TRAVEL — API réseau & trajets (TRAVEL-306..311, 2026-08-30)
 
 Deuxième tranche de l'épic 3xx : `GET|POST /travel/vehicles`, `GET|PUT|DELETE /travel/vehicles/{travelVehicle}` ;
@@ -1566,6 +1568,7 @@ Deuxième tranche de l'épic 3xx : `GET|POST /travel/vehicles`, `GET|PUT|DELETE 
   (tenant, idempotency_key) ; recherche paginée sans N+1.
 - Couverture : `api/tests/Feature/Travel/TravelVehicleApiTest.php`, `TravelRouteApiTest.php`,
   `TravelTripApiTest.php`, `TravelTripPriceApiTest.php`, `TravelTripWorkflowTest.php`, `TravelTripSearchTest.php`
+<<<<<<< HEAD
   (+ 135 tests Travel au total, dont correctifs d'invariants 2xx protégés par savepoint).
 
 ## BC-24 TRAVEL — API réservations & billetterie (TRAVEL-312..318, 2026-08-30)
@@ -1589,3 +1592,5 @@ Dernière tranche de l'épic 3xx : `GET|POST /travel/rental-vehicles` (+ images)
   non authentifié → 401.
 - Couverture : `api/tests/Feature/Travel/TravelRentalApiTest.php`, `TravelHotelApiTest.php`, `TravelRbacMatrixTest.php`
   (168 tests Travel au total) + `docs/security/TRAVEL_RBAC_MATRIX.md`.
+=======
+>>>>>>> 24df3e4bc (feat(travel): schéma, domaine & API back-office TravelAgency (Closes #6017-#6035) (#6129))
