@@ -17,6 +17,8 @@ declare(strict_types=1);
  */
 
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelIncidentController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMaintenanceTaskController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelProductController;
@@ -61,6 +63,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
     // FUEL-008 (#5802) — enregistrement d'une vente (tout employé authentifié).
     Route::post('/fuel-station/sales', [FuelSaleController::class, 'store']);
+    // FUEL-010 (#5804) — signalement d'incident (tout employé authentifié).
+    Route::post('/fuel-station/stations/{station}/incidents', [FuelIncidentController::class, 'store'])
+        ->whereNumber('station');
 
     // FUEL-007 (#5801) — cycle de vie des sessions de caisse (policy par
     // opened_by : pompiste = ses sessions ; approbation manager).
@@ -123,5 +128,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/fuel-station/stations/{station}/deliveries', [FuelStockController::class, 'storeDelivery'])->whereNumber('station');
         Route::post('/fuel-station/stations/{station}/adjustments', [FuelStockController::class, 'storeAdjustment'])->whereNumber('station');
         Route::get('/fuel-station/stations/{station}/reconciliations', [FuelStockController::class, 'reconciliations'])->whereNumber('station');
+        // FUEL-010 (#5804) : incidents + tâches de maintenance (manager).
+        Route::get('/fuel-station/incidents', [FuelIncidentController::class, 'index']);
+        Route::get('/fuel-station/incidents/{incident}', [FuelIncidentController::class, 'show'])->whereNumber('incident');
+        Route::put('/fuel-station/incidents/{incident}', [FuelIncidentController::class, 'update'])->whereNumber('incident');
+        Route::post('/fuel-station/incidents/{incident}/assign', [FuelIncidentController::class, 'assign'])->whereNumber('incident');
+        Route::post('/fuel-station/incidents/{incident}/start', [FuelIncidentController::class, 'start'])->whereNumber('incident');
+        Route::post('/fuel-station/incidents/{incident}/resolve', [FuelIncidentController::class, 'resolve'])->whereNumber('incident');
+        Route::post('/fuel-station/incidents/{incident}/close', [FuelIncidentController::class, 'close'])->whereNumber('incident');
+        Route::get('/fuel-station/maintenance-tasks', [FuelMaintenanceTaskController::class, 'index']);
+        Route::post('/fuel-station/maintenance-tasks', [FuelMaintenanceTaskController::class, 'store']);
+        Route::get('/fuel-station/maintenance-tasks/{task}', [FuelMaintenanceTaskController::class, 'show'])->whereNumber('task');
+        Route::put('/fuel-station/maintenance-tasks/{task}', [FuelMaintenanceTaskController::class, 'update'])->whereNumber('task');
+        Route::post('/fuel-station/maintenance-tasks/{task}/complete', [FuelMaintenanceTaskController::class, 'complete'])->whereNumber('task');
     });
 });
