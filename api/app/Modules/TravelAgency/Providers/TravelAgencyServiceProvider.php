@@ -10,6 +10,7 @@ use App\Modules\TravelAgency\Console\Commands\RecalculateTravelReadModelsCommand
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
@@ -103,6 +104,7 @@ class TravelAgencyServiceProvider extends ServiceProvider
         Gate::policy(TravelAdvertType::class, TravelAdvertPolicy::class);
         Gate::policy(TravelAdvertPosition::class, TravelAdvertPolicy::class);
         Gate::policy(TravelAdvertPrice::class, TravelAdvertPolicy::class);
+        Gate::policy(TravelAdvert::class, TravelAdvertPolicy::class);
 
         // TRAVEL-414 (#6066) — publication des événements travel.*.v1 sur le
         // bus tenant-scopé (BC consommateurs sans import inter-modules).

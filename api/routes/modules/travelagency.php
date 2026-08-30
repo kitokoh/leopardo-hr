@@ -182,7 +182,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/advert-prices/{travelAdvertPrice}', [TravelAdvertController::class, 'updateAdvertPrice']);
         Route::delete('/advert-prices/{travelAdvertPrice}', [TravelAdvertController::class, 'destroyAdvertPrice']);
 
-        // Annonces payantes — cycle de vie (TRAVEL-907/908).
+        Route::get('/adverts', [TravelAdvertController::class, 'indexAdverts']);
+        Route::post('/adverts', [TravelAdvertController::class, 'storeAdvert']);
+        Route::get('/adverts/{travelAdvert}', [TravelAdvertController::class, 'showAdvert']);
+        Route::post('/adverts/{travelAdvert}/pay', [TravelAdvertController::class, 'payAdvert']);
+        Route::post('/adverts/{travelAdvert}/validate', [TravelAdvertController::class, 'validateAdvert']);
+        Route::delete('/adverts/{travelAdvert}', [TravelAdvertController::class, 'destroyAdvert']);
+
 
 
         Route::get('/articles', [TravelArticleController::class, 'index']);
