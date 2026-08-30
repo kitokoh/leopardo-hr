@@ -17,6 +17,14 @@ use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
 use App\Modules\FuelStation\Domain\Models\FuelMeterReading;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
+use App\Modules\EduManager\Domain\Models\EduCampus;
+use App\Modules\EduManager\Domain\Models\EduGuardian;
+use App\Modules\EduManager\Domain\Models\EduStudent;
+use App\Modules\EduManager\Domain\Models\EduStudentGuardian;
+use App\Modules\EduManager\Policies\EduCampusPolicy;
+use App\Modules\EduManager\Policies\EduGuardianPolicy;
+use App\Modules\EduManager\Policies\EduStudentGuardianPolicy;
+use App\Modules\EduManager\Policies\EduStudentPolicy;
 use App\Modules\FuelStation\Domain\Models\FuelShift;
 use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment;
 use App\Modules\FuelStation\Domain\Policies\FuelCashSessionPolicy;
@@ -96,6 +104,11 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(FuelShiftAssignment::class, FuelShiftPolicy::class);
         Gate::policy(FuelCashSession::class, FuelCashSessionPolicy::class);
         Gate::policy(FuelSale::class, FuelSalePolicy::class);
+        // — EduManager (EDU-002, issue #5818)
+        Gate::policy(EduCampus::class, EduCampusPolicy::class);
+        Gate::policy(EduStudent::class, EduStudentPolicy::class);
+        Gate::policy(EduGuardian::class, EduGuardianPolicy::class);
+        Gate::policy(EduStudentGuardian::class, EduStudentGuardianPolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);
