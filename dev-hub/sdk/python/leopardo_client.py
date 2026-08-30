@@ -3388,6 +3388,42 @@ class LeopardoClient:
         """Référentiel pays en lecture (TRAVEL-301/#6031)"""
         return self.request("GET", "/travel/countries", **kwargs)
 
+    def get_travel_hotels(self, **kwargs):
+        """Liste des hôtels (TRAVEL-321/#6051)"""
+        return self.request("GET", "/travel/hotels", **kwargs)
+
+    def post_travel_hotels(self, **kwargs):
+        """Création d'un hôtel (TRAVEL-321/#6051)"""
+        return self.request("POST", "/travel/hotels", **kwargs)
+
+    def delete_travel_hotels_by_travelhotel(self, **kwargs):
+        """Suppression d'un hôtel (TRAVEL-321/#6051)"""
+        return self.request("DELETE", "/travel/hotels/{travelHotel}", **kwargs)
+
+    def get_travel_hotels_by_travelhotel(self, **kwargs):
+        """Détail d'un hôtel (TRAVEL-321/#6051)"""
+        return self.request("GET", "/travel/hotels/{travelHotel}", **kwargs)
+
+    def put_travel_hotels_by_travelhotel(self, **kwargs):
+        """Mise à jour d'un hôtel (TRAVEL-321/#6051)"""
+        return self.request("PUT", "/travel/hotels/{travelHotel}", **kwargs)
+
+    def get_travel_hotels_by_travelhotel_rooms(self, **kwargs):
+        """Chambres d'un hôtel (TRAVEL-321/#6051)"""
+        return self.request("GET", "/travel/hotels/{travelHotel}/rooms", **kwargs)
+
+    def post_travel_hotels_by_travelhotel_rooms(self, **kwargs):
+        """Création d'une chambre (TRAVEL-321/#6051)"""
+        return self.request("POST", "/travel/hotels/{travelHotel}/rooms", **kwargs)
+
+    def delete_travel_hotels_by_travelhotel_rooms_by_travelhotelroom(self, **kwargs):
+        """Suppression d'une chambre (TRAVEL-321/#6051)"""
+        return self.request("DELETE", "/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}", **kwargs)
+
+    def put_travel_hotels_by_travelhotel_rooms_by_travelhotelroom(self, **kwargs):
+        """Mise à jour d'une chambre (TRAVEL-321/#6051)"""
+        return self.request("PUT", "/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}", **kwargs)
+
     def get_travel_offices(self, **kwargs):
         """Liste des bureaux de vente (TRAVEL-303/#6033)"""
         return self.request("GET", "/travel/offices", **kwargs)
@@ -3411,6 +3447,54 @@ class LeopardoClient:
     def get_travel_ping(self, **kwargs):
         """Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977)"""
         return self.request("GET", "/travel/ping", **kwargs)
+
+    def get_travel_rental_bookings(self, **kwargs):
+        """Liste des réservations de location (TRAVEL-320/#6050)"""
+        return self.request("GET", "/travel/rental-bookings", **kwargs)
+
+    def post_travel_rental_bookings(self, **kwargs):
+        """Création d'une réservation de location (TRAVEL-320/#6050)"""
+        return self.request("POST", "/travel/rental-bookings", **kwargs)
+
+    def get_travel_rental_bookings_by_travelrentalbooking(self, **kwargs):
+        """Détail d'une réservation de location (TRAVEL-320/#6050)"""
+        return self.request("GET", "/travel/rental-bookings/{travelRentalBooking}", **kwargs)
+
+    def post_travel_rental_bookings_by_travelrentalbooking_cancel(self, **kwargs):
+        """Annulation d'une réservation de location (TRAVEL-320/#6050)"""
+        return self.request("POST", "/travel/rental-bookings/{travelRentalBooking}/cancel", **kwargs)
+
+    def get_travel_rental_vehicles(self, **kwargs):
+        """Liste des véhicules en location (TRAVEL-319/#6049)"""
+        return self.request("GET", "/travel/rental-vehicles", **kwargs)
+
+    def post_travel_rental_vehicles(self, **kwargs):
+        """Création d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("POST", "/travel/rental-vehicles", **kwargs)
+
+    def delete_travel_rental_vehicles_by_travelrentalvehicle(self, **kwargs):
+        """Suppression d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}", **kwargs)
+
+    def get_travel_rental_vehicles_by_travelrentalvehicle(self, **kwargs):
+        """Détail d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("GET", "/travel/rental-vehicles/{travelRentalVehicle}", **kwargs)
+
+    def put_travel_rental_vehicles_by_travelrentalvehicle(self, **kwargs):
+        """Mise à jour d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("PUT", "/travel/rental-vehicles/{travelRentalVehicle}", **kwargs)
+
+    def get_travel_rental_vehicles_by_travelrentalvehicle_images(self, **kwargs):
+        """Images d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("GET", "/travel/rental-vehicles/{travelRentalVehicle}/images", **kwargs)
+
+    def post_travel_rental_vehicles_by_travelrentalvehicle_images(self, **kwargs):
+        """Ajout d'une image (TRAVEL-319/#6049)"""
+        return self.request("POST", "/travel/rental-vehicles/{travelRentalVehicle}/images", **kwargs)
+
+    def delete_travel_rental_vehicles_by_travelrentalvehicle_images_by_travelrentalvehicleimage(self, **kwargs):
+        """Suppression d'une image (TRAVEL-319/#6049)"""
+        return self.request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}/images/{travelRentalVehicleImage}", **kwargs)
 
     def get_travel_routes(self, **kwargs):
         """Liste des routes (TRAVEL-307/#6037)"""
