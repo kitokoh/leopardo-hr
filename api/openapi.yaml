@@ -8091,6 +8091,64 @@ paths:
         '422':
           description: Validation
 
+  /fuel-station/outbox/events:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les evenements d'outbox contrat Accounting (manager, FUEL-015)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - pending
+          - processing
+          - sent
+          - failed
+      - name: event_type
+        in: query
+        schema:
+          type: string
+          example: fuel.sale.recorded.v1
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Evenements pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/outbox/events/{event}/retry:
+    post:
+      tags:
+      - FuelStation
+      summary: Rejouer un evenement dead-letter (manager, FUEL-015)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: event
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Evenement repasse en pending
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Evenement introuvable ou autre tenant
+        '422':
+          description: Evenement non dead-letter
+
   /accounting/contacts:
     get:
       tags:

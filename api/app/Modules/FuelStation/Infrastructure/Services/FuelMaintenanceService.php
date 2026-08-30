@@ -25,6 +25,10 @@ use Illuminate\Http\UploadedFile;
  */
 final class FuelMaintenanceService
 {
+    public function __construct(
+        private readonly FuelAccountingContractPublisher $contract,
+    ) {}
+
     private const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'application/pdf'];
 
     private const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
@@ -102,6 +106,7 @@ final class FuelMaintenanceService
 
         if ($target === FuelIncident::STATUS_RESOLVED) {
             FuelIncidentResolved::dispatch($incident);
+            $this->contract->incidentResolved($incident);
         }
 
         return $incident;

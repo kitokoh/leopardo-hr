@@ -15,6 +15,7 @@ use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
+use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
 use App\Modules\FuelStation\Domain\Models\FuelProduct;
 use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelSite;
@@ -34,6 +35,7 @@ use App\Modules\FuelStation\Domain\Policies\FuelEquipmentPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelProductPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStationPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelMaintenancePolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelOutboxPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelSalePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelShiftPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStockPolicy;
@@ -125,6 +127,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(FuelTank::class, FuelEquipmentPolicy::class);
         Gate::policy(FuelMeterRegister::class, FuelEquipmentPolicy::class);
         Gate::policy(FuelProduct::class, FuelProductPolicy::class);
+        // — FuelStation (FUEL-015 #5809 : outbox contrat Accounting)
+        Gate::policy(FuelOutboxEvent::class, FuelOutboxPolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);

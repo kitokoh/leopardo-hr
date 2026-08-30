@@ -65,7 +65,12 @@ final class FuelSaleService
         ]);
 
         // sale_time est un défaut DB (useCurrent) : refresh pour le charger.
-        return $sale->refresh();
+        $sale = $sale->refresh();
+
+        // Contrat Accounting (FUEL-015, #5809) : publication post-commit.
+        $this->contract->saleRecorded($sale);
+
+        return $sale;
     }
 
     private function assertPumpBelongsToTenant(Employee $actor, mixed $pumpId): void

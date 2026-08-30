@@ -102,6 +102,7 @@ final class FuelCashSessionService
         // Contrat Accounting (FUEL-015) : consommer l'événement pour générer
         // les écritures comptables (état figé, statut closed).
         FuelCashSessionClosed::dispatch($session);
+        $this->contract->cashSessionClosed($session);
 
         return $session;
     }

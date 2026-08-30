@@ -20,6 +20,7 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionControl
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelEquipmentController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelIncidentController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelOutboxController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelProductController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
@@ -126,5 +127,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/fuel-station/products', [FuelProductController::class, 'store']);
         Route::get('/fuel-station/products/{product}', [FuelProductController::class, 'show'])->whereNumber('product');
         Route::put('/fuel-station/products/{product}', [FuelProductController::class, 'update'])->whereNumber('product');
+        // FUEL-015 (#5809) : outbox contrat Accounting (audit + rejeu dead-letter).
+        Route::get('/fuel-station/outbox/events', [FuelOutboxController::class, 'index']);
+        Route::post('/fuel-station/outbox/events/{event}/retry', [FuelOutboxController::class, 'retry'])->whereNumber('event');
     });
 });
