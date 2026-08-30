@@ -20,7 +20,7 @@
           'rounded-md px-4 py-2 text-sm font-medium',
           activeTab === tab.key ? 'bg-indigo-600 text-white' : 'glass-card text-gray-700 ring-1 ring-gray-300 glass-bg-hover'
         ]"
-        @click="activeTab = tab.key"
+        @click="selectTab(tab)"
       >
         {{ tab.label }}
       </button>
@@ -163,6 +163,10 @@ const reconciliationStatusMap = {
   pending_review: { label: t('fuel.reconcilPending', 'À revoir'), color: 'yellow' },
   reviewed: { label: t('fuel.reconcilReviewed', 'Revu'), color: 'blue' },
   approved: { label: t('fuel.reconcilApproved', 'Approuvé'), color: 'green' },
+}
+
+function selectTab(tab) {
+  activeTab.value = tab.key
 }
 
 async function fetchData() {

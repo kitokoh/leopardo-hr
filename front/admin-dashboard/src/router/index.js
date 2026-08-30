@@ -213,7 +213,7 @@ const routes = [
       {
         path: '/fuel-station',
         name: 'fuelStation',
-        component: () => import('@/views/fuel/FuelManagerView.vue'),
+        component: () => import('../../views/fuel/FuelManagerView.vue'),
         meta: {
           title: 'navigation.fuelStation',
           icon: 'BoltIcon'
