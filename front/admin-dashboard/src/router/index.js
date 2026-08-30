@@ -211,6 +211,18 @@ const routes = [
         }
       },
       {
+        path: '/travel',
+        name: 'travel',
+        component: () => import('@/views/travel/TravelAgencyView.vue'),
+        meta: {
+          title: 'navigation.travelAgency',
+          icon: 'GlobeAltIcon'
+          // BC-24 TRAVEL (#6078) : la vue porte le gate du feature flag
+          // travelagency (GET /travel/ping → 403 = module non activé pour le
+          // tenant connecté). Même pattern que FleetView (#4710).
+        }
+      },
+      {
         path: '/chat',
         name: 'chat',
         component: () => import('@/views/chat/ChatView.vue'),
