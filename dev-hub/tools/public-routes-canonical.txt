@@ -61,3 +61,13 @@ POST api/v1/zkteco/sync-attendance/{serialNumber}
 # ── Essai guidé ─────────────────────────────────────────────────────────────
 POST api/v1/trial/signup
 POST api/v1/trial/verify
+# ── BC-25 RESTAURANT : boutique publique / kiosque / webhooks apps de livraison (RESTO-805/806/807, #6226/#6227/#6228) ──
+GET api/v1/public/restaurant/shop/menu
+POST api/v1/public/restaurant/shop/orders
+GET api/v1/public/restaurant/shop/orders/{reference}
+POST api/v1/public/restaurant/shop/orders/{reference}/pay
+GET api/v1/public/restaurant/kiosk/menu
+POST api/v1/public/restaurant/kiosk/orders
+GET api/v1/public/restaurant/kiosk/orders/{reference}
+POST api/v1/restaurant/webhooks/delivery-apps/{provider}
+POST api/v1/restaurant/payments/{payment}/callback

@@ -211,6 +211,14 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by('public-registry:'.$request->ip());
         });
 
+        // RESTO-805 (#6226) — boutique publique RestaurantManager : bucket
+        // renforcé (défaut 30/min par IP) pour le menu public / commande en
+        // ligne / kiosque (pattern TRAVEL-1001/#6114, `shop-public`).
+        RateLimiter::for('shop-public', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.shop_public_per_minute', 30))
+                ->by('shop-public:'.$request->ip());
+        });
+
         // PA2-API-005 — Session-based web login forms (employee login, super-admin
         // platform login) are not covered by the API 'auth-sensitive' limiter
         // above, which only guards the Sanctum token endpoints. Keyed by e-mail +

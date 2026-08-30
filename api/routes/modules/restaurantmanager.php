@@ -28,6 +28,10 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantInvent
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKitchenController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuItemController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileManagerController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileRiderController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileServerController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileSyncController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderItemController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderTransitionController;
@@ -35,6 +39,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymen
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPosSessionController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductIngredientController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderItemController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReceivingController;
@@ -210,4 +215,32 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/reservations/{restaurantReservation}/check-in', [RestaurantReservationController::class, 'checkIn']);
         Route::post('/reservations/{restaurantReservation}/no-show', [RestaurantReservationController::class, 'noShow']);
         Route::post('/reservations/{restaurantReservation}/cancel', [RestaurantReservationController::class, 'cancel']);
+
+        // ── Boutique publique : gestion du jeton (RESTO-805/#6226) ─────────
+        Route::get('/shop/token', [RestaurantPublicShopController::class, 'token']);
+        Route::post('/shop/token/rotate', [RestaurantPublicShopController::class, 'rotateToken']);
+
+        // ── Mobile (RESTO-801..804/#6222..#6225) — surfaces des apps ───────
+        Route::prefix('mobile')->group(function (): void {
+            // Serveur (RESTO-801/#6222) : file de service, tables, encaissement cash.
+            Route::get('/server/orders', [RestaurantMobileServerController::class, 'orders']);
+            Route::get('/server/tables', [RestaurantMobileServerController::class, 'tables']);
+            Route::post('/server/orders/{restaurantOrder}/serve', [RestaurantMobileServerController::class, 'serve']);
+            Route::post('/server/orders/{restaurantOrder}/pay', [RestaurantMobileServerController::class, 'pay']);
+
+            // Livreur (RESTO-802/#6223) : tournées assignées, transitions.
+            Route::get('/rider/deliveries', [RestaurantMobileRiderController::class, 'deliveries']);
+            Route::get('/rider/deliveries/{restaurantDelivery}', [RestaurantMobileRiderController::class, 'show']);
+            Route::post('/rider/deliveries/{restaurantDelivery}/out-for-delivery', [RestaurantMobileRiderController::class, 'outForDelivery']);
+            Route::post('/rider/deliveries/{restaurantDelivery}/deliver', [RestaurantMobileRiderController::class, 'deliver']);
+
+            // Gérant (RESTO-803/#6224) : KPIs, alertes stock, clôture de caisse.
+            Route::get('/manager/kpis', [RestaurantMobileManagerController::class, 'kpis']);
+            Route::get('/manager/stock-alerts', [RestaurantMobileManagerController::class, 'stockAlerts']);
+            Route::get('/manager/pos-sessions/current', [RestaurantMobileManagerController::class, 'currentPosSession']);
+            Route::post('/manager/pos-sessions/{restaurantPosSession}/close', [RestaurantMobileManagerController::class, 'closePosSession']);
+
+            // Synchronisation offline (RESTO-804/#6225) : file idempotente.
+            Route::post('/sync', [RestaurantMobileSyncController::class, 'sync']);
+        });
     });

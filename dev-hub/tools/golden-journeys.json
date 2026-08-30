@@ -1,5 +1,4 @@
 {
-  "$comment": "Golden journeys end-to-end par solution (MAT-013, issue #5871). Chaque parcours liste les étapes métier critiques (action, route API, rôle) ; le garde check-golden-journeys.sh vérifie que les routes référencées existent dans api/routes/** et que les contrôleurs existent. Couverture : solutions HR core, CRM client, FuelStation (pilote), EduManager (pilote).",
   "solutions": {
     "hr_core": {
       "label": "HR Core (plateforme RH)",
@@ -15,6 +14,10 @@
     },
     "edumanager": {
       "label": "EduManager (verticale)",
+      "status": "planned"
+    },
+    "restaurantmanager": {
+      "label": "RestaurantManager (verticale)",
       "status": "planned"
     }
   },
@@ -282,6 +285,70 @@
           "method": "POST",
           "route": "/api/v1/edu/attendance",
           "role": "teacher"
+        }
+      ]
+    },
+    {
+      "id": "GJ-RESTO-01",
+      "name": "Pilote RestaurantManager — caisse → commande → paiement → clôture",
+      "solution": "restaurantmanager",
+      "acceptance": "Session de caisse ouverte → commande salle créée avec articles → servie → encaissée (cash) → caisse clôturée avec écart nul ; événements outbox publiés.",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Activer la solution (flag)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/ping",
+          "role": "manager:principal"
+        },
+        {
+          "order": 2,
+          "action": "Ouvrir une session de caisse",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions",
+          "role": "manager:server"
+        },
+        {
+          "order": 3,
+          "action": "Créer une commande (salle)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders",
+          "role": "manager:server"
+        },
+        {
+          "order": 4,
+          "action": "Ajouter un article",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/items",
+          "role": "manager:server"
+        },
+        {
+          "order": 5,
+          "action": "Soumettre et confirmer la commande",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/submit",
+          "role": "manager:server"
+        },
+        {
+          "order": 6,
+          "action": "Servir la commande",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/serve",
+          "role": "manager:server"
+        },
+        {
+          "order": 7,
+          "action": "Encaisser (cash)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/pay",
+          "role": "manager:server"
+        },
+        {
+          "order": 8,
+          "action": "Clôturer la caisse",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions/{restaurantPosSession}/close",
+          "role": "manager:server"
         }
       ]
     }
