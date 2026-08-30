@@ -50,6 +50,7 @@ class RestaurantDeliveryAppWebhookTest extends TestCase
                 'code' => 'BURGER-CLASSIC',
                 'price_minor' => 2500,
                 'currency' => 'XAF',
+                'tax_rate_id' => null,
                 'is_available' => true,
             ]);
 
