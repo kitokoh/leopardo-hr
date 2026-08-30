@@ -17,7 +17,18 @@
  * Référence : docs/specifications/SOLUTION_TRAVEL_AGENCY.md (§7 API v1).
  */
 
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.travelagency'])
@@ -25,4 +36,69 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     ->group(function (): void {
         // Smoke test de la verticale (TRAVEL-101/#5977) — lecture pure.
         Route::get('/ping', [TravelHealthController::class, 'ping']);
+
+        // Référentiel géographique en lecture (TRAVEL-301/#6031).
+        Route::get('/countries', [TravelCountryController::class, 'index']);
+        Route::get('/cities', [TravelCityController::class, 'index']);
+
+        // Gares/terminaux (TRAVEL-302/#6032).
+        Route::get('/stations', [TravelStationController::class, 'index']);
+        Route::post('/stations', [TravelStationController::class, 'store']);
+        Route::get('/stations/{travelStation}', [TravelStationController::class, 'show']);
+        Route::put('/stations/{travelStation}', [TravelStationController::class, 'update']);
+        Route::delete('/stations/{travelStation}', [TravelStationController::class, 'destroy']);
+
+        // Bureaux de vente (TRAVEL-303/#6033).
+        Route::get('/offices', [TravelOfficeController::class, 'index']);
+        Route::post('/offices', [TravelOfficeController::class, 'store']);
+        Route::get('/offices/{travelOffice}', [TravelOfficeController::class, 'show']);
+        Route::put('/offices/{travelOffice}', [TravelOfficeController::class, 'update']);
+        Route::delete('/offices/{travelOffice}', [TravelOfficeController::class, 'destroy']);
+
+        // Compagnies de transport (TRAVEL-304/#6034).
+        Route::get('/carriers', [TravelCarrierController::class, 'index']);
+        Route::post('/carriers', [TravelCarrierController::class, 'store']);
+        Route::get('/carriers/{travelCarrier}', [TravelCarrierController::class, 'show']);
+        Route::put('/carriers/{travelCarrier}', [TravelCarrierController::class, 'update']);
+        Route::delete('/carriers/{travelCarrier}', [TravelCarrierController::class, 'destroy']);
+
+        // Classes de service (TRAVEL-305/#6035).
+        Route::get('/classes', [TravelClassController::class, 'index']);
+        Route::post('/classes', [TravelClassController::class, 'store']);
+        Route::get('/classes/{travelClass}', [TravelClassController::class, 'show']);
+        Route::put('/classes/{travelClass}', [TravelClassController::class, 'update']);
+        Route::delete('/classes/{travelClass}', [TravelClassController::class, 'destroy']);
+
+        // Flotte propre (TRAVEL-306/#6036).
+        Route::get('/vehicles', [TravelVehicleController::class, 'index']);
+        Route::post('/vehicles', [TravelVehicleController::class, 'store']);
+        Route::get('/vehicles/{travelVehicle}', [TravelVehicleController::class, 'show']);
+        Route::put('/vehicles/{travelVehicle}', [TravelVehicleController::class, 'update']);
+        Route::delete('/vehicles/{travelVehicle}', [TravelVehicleController::class, 'destroy']);
+
+        // Routes ville→ville + étapes ordonnées (TRAVEL-307/#6037).
+        Route::get('/routes', [TravelRouteController::class, 'index']);
+        Route::post('/routes', [TravelRouteController::class, 'store']);
+        Route::get('/routes/{travelRoute}', [TravelRouteController::class, 'show']);
+        Route::put('/routes/{travelRoute}', [TravelRouteController::class, 'update']);
+        Route::delete('/routes/{travelRoute}', [TravelRouteController::class, 'destroy']);
+        Route::get('/routes/{travelRoute}/stops', [TravelRouteStopController::class, 'index']);
+        Route::post('/routes/{travelRoute}/stops', [TravelRouteStopController::class, 'store']);
+        Route::put('/routes/{travelRoute}/stops/{travelRouteStop}', [TravelRouteStopController::class, 'update']);
+        Route::delete('/routes/{travelRoute}/stops/{travelRouteStop}', [TravelRouteStopController::class, 'destroy']);
+
+        // Trajets datés + tarifs par classe (TRAVEL-308/#6038, TRAVEL-309/#6039).
+        Route::get('/trips', [TravelTripController::class, 'index']);
+        Route::post('/trips', [TravelTripController::class, 'store']);
+        Route::get('/trips/search', [TravelTripController::class, 'search']); // TRAVEL-311/#6041 — AVANT {trip}
+        Route::get('/trips/{travelTrip}', [TravelTripController::class, 'show']);
+        Route::put('/trips/{travelTrip}', [TravelTripController::class, 'update']);
+        Route::delete('/trips/{travelTrip}', [TravelTripController::class, 'destroy']);
+        Route::post('/trips/{travelTrip}/publish', [TravelTripController::class, 'publish']); // TRAVEL-310/#6040
+        Route::post('/trips/{travelTrip}/cancel', [TravelTripController::class, 'cancel']);   // TRAVEL-310/#6040
+        Route::get('/trips/{travelTrip}/prices', [TravelTripPriceController::class, 'index']);
+        Route::post('/trips/{travelTrip}/prices', [TravelTripPriceController::class, 'store']);
+        Route::get('/trips/{travelTrip}/prices/{travelTripPrice}', [TravelTripPriceController::class, 'show']);
+        Route::put('/trips/{travelTrip}/prices/{travelTripPrice}', [TravelTripPriceController::class, 'update']);
+        Route::delete('/trips/{travelTrip}/prices/{travelTripPrice}', [TravelTripPriceController::class, 'destroy']);
     });

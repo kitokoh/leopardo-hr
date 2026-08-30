@@ -6,6 +6,21 @@ namespace App\Modules\TravelAgency\Providers;
 
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
+use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
+use App\Modules\TravelAgency\Domain\Models\TravelClass;
+use App\Modules\TravelAgency\Domain\Models\TravelOffice;
+use App\Modules\TravelAgency\Domain\Models\TravelRoute;
+use App\Modules\TravelAgency\Domain\Models\TravelStation;
+use App\Modules\TravelAgency\Domain\Models\TravelTrip;
+use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
+use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
+use App\Modules\TravelAgency\Policies\TravelClassPolicy;
+use App\Modules\TravelAgency\Policies\TravelOfficePolicy;
+use App\Modules\TravelAgency\Policies\TravelRoutePolicy;
+use App\Modules\TravelAgency\Policies\TravelStationPolicy;
+use App\Modules\TravelAgency\Policies\TravelTripPolicy;
+use App\Modules\TravelAgency\Policies\TravelVehiclePolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -32,7 +47,12 @@ class TravelAgencyServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Policies enregistrées ici dès que les modèles de l'épic 3xx existent
-        // (Gate::policy(TravelX::class, TravelXPolicy::class)).
+        Gate::policy(TravelStation::class, TravelStationPolicy::class);
+        Gate::policy(TravelOffice::class, TravelOfficePolicy::class);
+        Gate::policy(TravelCarrier::class, TravelCarrierPolicy::class);
+        Gate::policy(TravelClass::class, TravelClassPolicy::class);
+        Gate::policy(TravelVehicle::class, TravelVehiclePolicy::class);
+        Gate::policy(TravelRoute::class, TravelRoutePolicy::class);
+        Gate::policy(TravelTrip::class, TravelTripPolicy::class);
     }
 }

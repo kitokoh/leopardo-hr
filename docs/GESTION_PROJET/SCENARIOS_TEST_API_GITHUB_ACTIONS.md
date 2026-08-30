@@ -1523,3 +1523,21 @@ préfixe `/api/v1/travel/*`, groupe `module.travelagency` — feature flag `trav
   ressource) ; (5) suppression → 204 ; (6) liste paginée `per_page` borné (1..1000).
 - Couverture : `api/tests/Feature/Travel/Travel*CrudTest.php`, `TravelGeoReadEndpointsTest.php`,
   `TravelFeatureFlagTest.php`, `TravelIsolationTest.php` (harness verticale TRAVEL-108).
+
+## BC-24 TRAVEL — API réseau & trajets (TRAVEL-306..311, 2026-08-30)
+
+Deuxième tranche de l'épic 3xx : `GET|POST /travel/vehicles`, `GET|PUT|DELETE /travel/vehicles/{travelVehicle}` ;
+`GET|POST /travel/routes`, `GET|PUT|DELETE /travel/routes/{travelRoute}` ; sous-ressource étapes
+`GET|POST /travel/routes/{travelRoute}/stops` + `PUT|DELETE /travel/routes/{travelRoute}/stops/{travelRouteStop}`
+(rank auto-attribué, réordonnancement) ; `GET|POST /travel/trips` (génération transactionnelle des sièges),
+`GET|PUT|DELETE /travel/trips/{travelTrip}` ; `GET|POST /travel/trips/{travelTrip}/prices` +
+`GET|PUT|DELETE /travel/trips/{travelTrip}/prices/{travelTripPrice}` (409 sur doublon (trip, classe)) ;
+`POST /travel/trips/{travelTrip}/publish|cancel` (transitions validées, motif obligatoire à l'annulation,
+événements outbox `travel.trip.published.v1`/`travel.trip.cancelled.v1`) ; `GET /travel/trips/search`
+(filtres origin/destination/date/plage/moyen/statut/prix).
+- Scénarios à vérifier : 401 sans auth ; 403 feature flag inactif ; référence cross-tenant (ville, route,
+  carrier, classe) → 422 ; ressource cross-tenant → 404 ; trajet publié verrouillé → 422 ; doublon
+  (trip, classe) → 409 ; doublon code classe → 422 ; sièges générés en nombre exact ; outbox dédup par
+  (tenant, idempotency_key) ; recherche paginée sans N+1.
+- Couverture : `api/tests/Feature/Travel/TravelVehicleApiTest.php`, `TravelRouteApiTest.php`,
+  `TravelTripApiTest.php`, `TravelTripPriceApiTest.php`, `TravelTripWorkflowTest.php`, `TravelTripSearchTest.php`
