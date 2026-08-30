@@ -2536,6 +2536,9 @@ trait CreatesMvpSchema
                 $table->string('provider_reference', 120)->nullable();
                 $table->jsonb('callback_payload_redacted')->nullable();
                 $table->string('idempotency_key', 255);
+                // TRAVEL-805 (#6096) — affichage multi-devise.
+                $table->char('display_currency', 3)->nullable();
+                $table->unsignedBigInteger('display_amount_minor')->nullable();
                 $table->timestamps();
                 $table->unique(['company_id', 'reference'], 'travel_payments_company_reference_unique');
                 $table->unique(['company_id', 'idempotency_key'], 'travel_payments_company_idempotency_unique');
@@ -2992,6 +2995,19 @@ trait CreatesMvpSchema
                 $table->timestamps();
             });
         }
+        if (! Schema::hasTable($this->moduleTable('travel_currency_rates'))) {
+            Schema::create($this->moduleTable('travel_currency_rates'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->char('base_currency', 3);
+                $table->char('quote_currency', 3);
+                $table->decimal('rate', 18, 8);
+                $table->date('valid_from');
+                $table->date('valid_until')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'base_currency', 'quote_currency', 'valid_from'], 'travel_currency_rates_company_pair_period_unique');
+            });
+        }
     }
 
     private function dropMvpTables(): void
@@ -3089,6 +3105,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "travel_comments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_articles"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_article_categories"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_currency_rates"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_quotes"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_corporate_accounts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_loyalty_accounts"'.$cascade);

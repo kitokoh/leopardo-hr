@@ -44,6 +44,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationControll
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTouristSiteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCorporateController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
@@ -210,6 +211,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/hotels/{travelHotel}/rooms', [TravelHotelController::class, 'storeRoom']);
         Route::put('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'updateRoom']);
         Route::delete('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'destroyRoom']);
+        // Multi-devise (TRAVEL-805/#6096) — taux par période + conversion.
+        Route::get('/currency-rates', [TravelCurrencyController::class, 'index']);
+        Route::post('/currency-rates', [TravelCurrencyController::class, 'store']);
+        Route::get('/currency-rates/convert', [TravelCurrencyController::class, 'convert']);
+
         // Réservations corporate (TRAVEL-803/#6094) — travel.manage.
         Route::get('/corporate-accounts', [TravelCorporateController::class, 'indexAccounts']);
         Route::post('/corporate-accounts', [TravelCorporateController::class, 'storeAccount']);
