@@ -2255,6 +2255,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/fuel-station/cash-sessions/{session}/movements", options);
     },
 
+    /** Import CSV transactionnel (rollback logique + audit, FUEL-018/#5812) */
+    postFuelStationImports(options = {}) {
+      return request("POST", "/fuel-station/imports", options);
+    },
+
+    /** Preview d'import CSV (validation ligne par ligne, FUEL-018/#5812) */
+    postFuelStationImportsPreview(options = {}) {
+      return request("POST", "/fuel-station/imports/preview", options);
+    },
+
     /** Sessions de caisse du pompiste connecte (self-service) */
     getFuelStationMeCashSessions(options = {}) {
       return request("GET", "/fuel-station/me/cash-sessions", options);
@@ -2283,6 +2293,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Corriger un releve (versionne, audite) — manager principal/rh */
     postFuelStationMeterReadingsByReadingCorrections(options = {}) {
       return request("POST", "/fuel-station/meter-readings/{reading}/corrections", options);
+    },
+
+    /** Rapport sessions de caisse FuelStation (FUEL-017/#5811) */
+    getFuelStationReportsCashSessions(options = {}) {
+      return request("GET", "/fuel-station/reports/cash-sessions", options);
+    },
+
+    /** Génération d'un export CSV idempotent + URL signée (FUEL-018/#5812) */
+    postFuelStationReportsExport(options = {}) {
+      return request("POST", "/fuel-station/reports/export", options);
+    },
+
+    /** Téléchargement de l'export (URL signée, TTL 10 min) */
+    getFuelStationReportsExportByExport(options = {}) {
+      return request("GET", "/fuel-station/reports/export/{export}", options);
+    },
+
+    /** Rapport ventes FuelStation (FUEL-017/#5811) */
+    getFuelStationReportsSales(options = {}) {
+      return request("GET", "/fuel-station/reports/sales", options);
+    },
+
+    /** Rapport shifts FuelStation (FUEL-017/#5811) */
+    getFuelStationReportsShifts(options = {}) {
+      return request("GET", "/fuel-station/reports/shifts", options);
     },
 
     /** Lister les ventes (manager, pagine) */

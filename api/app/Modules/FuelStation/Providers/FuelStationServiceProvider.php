@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
+use App\Modules\FuelStation\Console\Commands\FuelAnomaliesCommand;
 use App\Modules\FuelStation\Domain\Solution\FuelStationManifest;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +28,9 @@ class FuelStationServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Rien à booter tant que l'API FuelStation n'existe pas (FUEL-006).
+        // FUEL-019 (#5813) — détection des anomalies (outbox notifications).
+        if ($this->app->runningInConsole()) {
+            $this->commands([FuelAnomaliesCommand::class]);
+        }
     }
 }

@@ -732,6 +732,331 @@ paths:
                 properties:
                   data:
                     type: array
+
+  /fuel-station/reports/sales:
+    get:
+      tags:
+      - FuelStation
+      summary: Rapport ventes FuelStation (FUEL-017/#5811)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: station_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Agrégats ventes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      total_amount:
+                        type: number
+                      total_quantity:
+                        type: number
+                      sales_count:
+                        type: integer
+                      by_pump:
+                        type: array
+                      by_product:
+                        type: array
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission refusée ou solution inactive
+  /fuel-station/reports/shifts:
+    get:
+      tags:
+      - FuelStation
+      summary: Rapport shifts FuelStation (FUEL-017/#5811)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Agrégats shifts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      shifts_count:
+                        type: integer
+                      active_shifts:
+                        type: integer
+                      assignments_count:
+                        type: integer
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission refusée ou solution inactive
+  /fuel-station/reports/cash-sessions:
+    get:
+      tags:
+      - FuelStation
+      summary: Rapport sessions de caisse FuelStation (FUEL-017/#5811)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: station_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Agrégats caisse
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      sessions_count:
+                        type: integer
+                      opening_balance:
+                        type: number
+                      closing_balance:
+                        type: number
+                      variance:
+                        type: number
+                      open_sessions:
+                        type: integer
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission refusée ou solution inactive
+  /fuel-station/imports/preview:
+    post:
+      tags:
+      - FuelStation
+      summary: Preview d'import CSV (validation ligne par ligne, FUEL-018/#5812)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              - rows
+              properties:
+                type:
+                  type: string
+                  enum: [products, shifts, readings]
+                rows:
+                  type: array
+                  maxItems: 5000
+                  items:
+                    type: object
+                    additionalProperties: true
+      responses:
+        '200':
+          description: Résultat de validation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      valid:
+                        type: boolean
+                      total:
+                        type: integer
+                      errors:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            line:
+                              type: integer
+                            message:
+                              type: string
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission refusée ou solution inactive
+  /fuel-station/imports:
+    post:
+      tags:
+      - FuelStation
+      summary: Import CSV transactionnel (rollback logique + audit, FUEL-018/#5812)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              - rows
+              properties:
+                type:
+                  type: string
+                  enum: [products, shifts, readings]
+                rows:
+                  type: array
+                  maxItems: 5000
+                  items:
+                    type: object
+                    additionalProperties: true
+      responses:
+        '200':
+          description: Import effectué avec trace d'audit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      imported:
+                        type: integer
+                      type:
+                        type: string
+                      audit_id:
+                        type: integer
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission refusée ou solution inactive
+        '422':
+          description: Import refusé (lignes invalides)
+  /fuel-station/reports/export:
+    post:
+      tags:
+      - FuelStation
+      summary: Génération d'un export CSV idempotent + URL signée (FUEL-018/#5812)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              properties:
+                type:
+                  type: string
+                  enum: [sales, shifts, cash-sessions]
+                from:
+                  type: string
+                  format: date
+                  nullable: true
+                to:
+                  type: string
+                  format: date
+                  nullable: true
+                station_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Export prêt (URL signée)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      export_id:
+                        type: string
+                      filename:
+                        type: string
+                      signed_url:
+                        type: string
+                      reused:
+                        type: boolean
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission refusée ou solution inactive
+  /fuel-station/reports/export/{export}:
+    get:
+      tags:
+      - FuelStation
+      summary: Téléchargement de l'export (URL signée, TTL 10 min)
+      security: []
+      parameters:
+      - name: export
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: signature
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: expires
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fichier CSV
+          content:
+            text/csv:
+              schema:
+                type: string
+        '403':
+          description: Signature invalide ou expirée
+        '404':
+          description: Export introuvable
+
   /health:
     get:
       tags:

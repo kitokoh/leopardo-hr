@@ -1824,6 +1824,14 @@ class LeopardoClient:
         """Ajouter un mouvement in/out (proprietaire, session ouverte)"""
         return self.request("POST", "/fuel-station/cash-sessions/{session}/movements", **kwargs)
 
+    def post_fuel_station_imports(self, **kwargs):
+        """Import CSV transactionnel (rollback logique + audit, FUEL-018/#5812)"""
+        return self.request("POST", "/fuel-station/imports", **kwargs)
+
+    def post_fuel_station_imports_preview(self, **kwargs):
+        """Preview d'import CSV (validation ligne par ligne, FUEL-018/#5812)"""
+        return self.request("POST", "/fuel-station/imports/preview", **kwargs)
+
     def get_fuel_station_me_cash_sessions(self, **kwargs):
         """Sessions de caisse du pompiste connecte (self-service)"""
         return self.request("GET", "/fuel-station/me/cash-sessions", **kwargs)
@@ -1847,6 +1855,26 @@ class LeopardoClient:
     def post_fuel_station_meter_readings_by_reading_corrections(self, **kwargs):
         """Corriger un releve (versionne, audite) — manager principal/rh"""
         return self.request("POST", "/fuel-station/meter-readings/{reading}/corrections", **kwargs)
+
+    def get_fuel_station_reports_cash_sessions(self, **kwargs):
+        """Rapport sessions de caisse FuelStation (FUEL-017/#5811)"""
+        return self.request("GET", "/fuel-station/reports/cash-sessions", **kwargs)
+
+    def post_fuel_station_reports_export(self, **kwargs):
+        """Génération d'un export CSV idempotent + URL signée (FUEL-018/#5812)"""
+        return self.request("POST", "/fuel-station/reports/export", **kwargs)
+
+    def get_fuel_station_reports_export_by_export(self, **kwargs):
+        """Téléchargement de l'export (URL signée, TTL 10 min)"""
+        return self.request("GET", "/fuel-station/reports/export/{export}", **kwargs)
+
+    def get_fuel_station_reports_sales(self, **kwargs):
+        """Rapport ventes FuelStation (FUEL-017/#5811)"""
+        return self.request("GET", "/fuel-station/reports/sales", **kwargs)
+
+    def get_fuel_station_reports_shifts(self, **kwargs):
+        """Rapport shifts FuelStation (FUEL-017/#5811)"""
+        return self.request("GET", "/fuel-station/reports/shifts", **kwargs)
 
     def get_fuel_station_sales(self, **kwargs):
         """Lister les ventes (manager, pagine)"""

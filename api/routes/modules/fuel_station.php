@@ -20,6 +20,9 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionControl
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReportController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReportExportController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
 use Illuminate\Support\Facades\Route;
 
@@ -86,3 +89,22 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/fuel-station/sales/{sale}', [FuelSaleController::class, 'show'])->whereNumber('sale');
     });
 });
+
+    // FUEL-017 (#5811) — reporting opérationnel (manager).
+    Route::middleware('api.manager')->group(function (): void {
+        Route::get('/fuel-station/reports/sales', [FuelReportController::class, 'sales']);
+        Route::get('/fuel-station/reports/shifts', [FuelReportController::class, 'shifts']);
+        Route::get('/fuel-station/reports/cash-sessions', [FuelReportController::class, 'cashSessions']);
+
+        // FUEL-018 (#5812) — import contrôlé (preview + import transactionnel).
+        Route::post('/fuel-station/imports/preview', [FuelImportController::class, 'preview']);
+        Route::post('/fuel-station/imports', [FuelImportController::class, 'import']);
+
+        // FUEL-018 — export CSV idempotent + URL signée (génération auth).
+        Route::post('/fuel-station/reports/export', [FuelReportExportController::class, 'export']);
+    });
+
+// Téléchargement d'export signé — route publique (la signature EST l'auth).
+Route::get('/fuel-station/reports/export/{export}', [FuelReportExportController::class, 'download'])
+    ->name('fuel.reports.export.download')
+    ->middleware('signed');
