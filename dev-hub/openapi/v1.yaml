@@ -775,6 +775,2957 @@ paths:
           description: Non authentifié
         '403':
           description: Contexte tenant absent ou feature flag travelagency inactif
+  /travel/countries:
+    get:
+      tags:
+      - Travel
+      summary: Référentiel pays en lecture (TRAVEL-301/#6031)
+      description: |
+        Liste paginée du référentiel pays tenant-scoped, destinée aux listes
+        déroulantes. Filtres : statut, recherche par nom. Lecture pure.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [active, disabled]
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 120
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des pays
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        iso2:
+                          type: string
+                        iso3:
+                          type: string
+                        name:
+                          type: string
+                        phone_code:
+                          type: integer
+                          nullable: true
+                        status:
+                          type: string
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+  /travel/cities:
+    get:
+      tags:
+      - Travel
+      summary: Référentiel villes en lecture (TRAVEL-301/#6031)
+      description: |
+        Liste paginée du référentiel villes tenant-scoped, destinée aux listes
+        déroulantes. Filtres : pays (ISO2), statut, recherche par nom. Lecture
+        pure.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: country_iso2
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 2
+          maxLength: 2
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [active, disabled]
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 120
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des villes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        country_iso2:
+                          type: string
+                        name:
+                          type: string
+                        region:
+                          type: string
+                          nullable: true
+                        latitude:
+                          type: number
+                          nullable: true
+                        longitude:
+                          type: number
+                          nullable: true
+                        status:
+                          type: string
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+  /travel/stations:
+    get:
+      tags:
+      - Travel
+      summary: Liste des gares/terminaux (TRAVEL-302/#6032)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des gares/terminaux
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelStation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag inactif, ou permission travel.manage/travel.agent manquante
+    post:
+      tags:
+      - Travel
+      summary: Création d'une gare/terminal (TRAVEL-302/#6032)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - city_id
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 120
+                city_id:
+                  type: integer
+                address:
+                  type: string
+                  nullable: true
+                contact_phone:
+                  type: string
+                  nullable: true
+                timezone:
+                  type: string
+                is_terminal:
+                  type: boolean
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '201':
+          description: Gare créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelStation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée (code/nom/city_id invalide, ville d'un autre tenant)
+  /travel/stations/{travelStation}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'une gare/terminal (TRAVEL-302/#6032)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelStation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Gare trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelStation'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Gare introuvable ou appartenant à un autre tenant
+    put:
+      tags:
+      - Travel
+      summary: Modification d'une gare/terminal (TRAVEL-302/#6032)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelStation
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 120
+                city_id:
+                  type: integer
+                address:
+                  type: string
+                  nullable: true
+                contact_phone:
+                  type: string
+                  nullable: true
+                timezone:
+                  type: string
+                is_terminal:
+                  type: boolean
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '200':
+          description: Gare modifiée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelStation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Gare introuvable ou appartenant à un autre tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une gare/terminal (TRAVEL-302/#6032)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelStation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Gare supprimée
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Gare introuvable ou appartenant à un autre tenant
+  /travel/offices:
+    get:
+      tags:
+      - Travel
+      summary: Liste des bureaux de vente (TRAVEL-303/#6033)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des bureaux de vente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelOffice'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'un bureau de vente (TRAVEL-303/#6033)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - city_id
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                city_id:
+                  type: integer
+                address:
+                  type: string
+                  nullable: true
+                contact_phone:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '201':
+          description: Bureau créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelOffice'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée (ville d'un autre tenant)
+  /travel/offices/{travelOffice}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un bureau de vente (TRAVEL-303/#6033)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelOffice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Bureau trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelOffice'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Bureau introuvable ou appartenant à un autre tenant
+    put:
+      tags:
+      - Travel
+      summary: Modification d'un bureau de vente (TRAVEL-303/#6033)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelOffice
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                city_id:
+                  type: integer
+                address:
+                  type: string
+                  nullable: true
+                contact_phone:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '200':
+          description: Bureau modifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelOffice'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Bureau introuvable ou appartenant à un autre tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un bureau de vente (TRAVEL-303/#6033)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelOffice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Bureau supprimé
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Bureau introuvable ou appartenant à un autre tenant
+  /travel/carriers:
+    get:
+      tags:
+      - Travel
+      summary: Liste des compagnies de transport (TRAVEL-304/#6034)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des compagnies de transport
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelCarrier'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'une compagnie de transport (TRAVEL-304/#6034)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 120
+                type:
+                  type: string
+                  enum: [bus, train, plane, boat]
+                contact_phone:
+                  type: string
+                  nullable: true
+                logo_asset_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '201':
+          description: Compagnie créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelCarrier'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée (type inconnu)
+  /travel/carriers/{travelCarrier}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'une compagnie de transport (TRAVEL-304/#6034)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCarrier
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Compagnie trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelCarrier'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Compagnie introuvable ou appartenant à un autre tenant
+    put:
+      tags:
+      - Travel
+      summary: Modification d'une compagnie de transport (TRAVEL-304/#6034)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCarrier
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 120
+                type:
+                  type: string
+                  enum: [bus, train, plane, boat]
+                contact_phone:
+                  type: string
+                  nullable: true
+                logo_asset_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '200':
+          description: Compagnie modifiée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelCarrier'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Compagnie introuvable ou appartenant à un autre tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une compagnie de transport (TRAVEL-304/#6034)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCarrier
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Compagnie supprimée
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Compagnie introuvable ou appartenant à un autre tenant
+  /travel/classes:
+    get:
+      tags:
+      - Travel
+      summary: Liste des classes de service (TRAVEL-305/#6035)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des classes de service
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelClass'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'une classe de service (TRAVEL-305/#6035)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+                color:
+                  type: string
+                  nullable: true
+                priority:
+                  type: integer
+                  minimum: 0
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '201':
+          description: Classe créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelClass'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée (code déjà utilisé par le tenant)
+  /travel/classes/{travelClass}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'une classe de service (TRAVEL-305/#6035)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelClass
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Classe trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelClass'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Classe introuvable ou appartenant à un autre tenant
+    put:
+      tags:
+      - Travel
+      summary: Modification d'une classe de service (TRAVEL-305/#6035)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelClass
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+                color:
+                  type: string
+                  nullable: true
+                priority:
+                  type: integer
+                  minimum: 0
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '200':
+          description: Classe modifiée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelClass'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Classe introuvable ou appartenant à un autre tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une classe de service (TRAVEL-305/#6035)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelClass
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Classe supprimée
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Classe introuvable ou appartenant à un autre tenant
+  /travel/vehicles:
+    get:
+      tags:
+      - Travel
+      summary: Liste des véhicules de la flotte (TRAVEL-306/#6036)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des véhicules
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelVehicle'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'un véhicule de flotte (TRAVEL-306/#6036)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - seat_capacity
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                registration_number:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                seat_capacity:
+                  type: integer
+                  minimum: 1
+                carrier_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Véhicule créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelVehicle'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée
+  /travel/vehicles/{travelVehicle}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un véhicule (TRAVEL-306/#6036)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Véhicule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelVehicle'
+        '404':
+          description: Véhicule introuvable ou hors tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'un véhicule (TRAVEL-306/#6036)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                registration_number:
+                  type: string
+                  maxLength: 40
+                  nullable: true
+                seat_capacity:
+                  type: integer
+                  minimum: 1
+                carrier_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Véhicule mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelVehicle'
+        '404':
+          description: Véhicule introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un véhicule (TRAVEL-306/#6036)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Véhicule supprimé
+        '404':
+          description: Véhicule introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+  /travel/routes:
+    get:
+      tags:
+      - Travel
+      summary: Liste des routes (TRAVEL-307/#6037)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des routes (avec étapes)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelRoute'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'une route (TRAVEL-307/#6037)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - origin_city_id
+              - destination_city_id
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                origin_city_id:
+                  type: integer
+                destination_city_id:
+                  type: integer
+                distance_km:
+                  type: integer
+                  nullable: true
+                duration_min:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '201':
+          description: Route créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRoute'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée (origine = destination, ville hors tenant)
+  /travel/routes/{travelRoute}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'une route (TRAVEL-307/#6037)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRoute
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Route (avec étapes)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRoute'
+        '404':
+          description: Route introuvable ou hors tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'une route (TRAVEL-307/#6037)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRoute
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                origin_city_id:
+                  type: integer
+                destination_city_id:
+                  type: integer
+                distance_km:
+                  type: integer
+                  nullable: true
+                duration_min:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '200':
+          description: Route mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRoute'
+        '404':
+          description: Route introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une route (TRAVEL-307/#6037)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRoute
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Route supprimée
+        '404':
+          description: Route introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+  /travel/routes/{travelRoute}/stops:
+    get:
+      tags:
+      - Travel
+      summary: Étapes d'une route, triées par rang (TRAVEL-307/#6037)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRoute
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Étapes de la route
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelRouteStop'
+        '404':
+          description: Route introuvable ou hors tenant
+    post:
+      tags:
+      - Travel
+      summary: Ajout d'une étape à une route (TRAVEL-307/#6037)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRoute
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - city_id
+              properties:
+                city_id:
+                  type: integer
+                rank:
+                  type: integer
+                  minimum: 1
+                is_stopover:
+                  type: boolean
+                min_duration_min:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Étape ajoutée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRouteStop'
+        '404':
+          description: Route introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée (ville hors tenant ou déjà sur la route)
+  /travel/routes/{travelRoute}/stops/{travelRouteStop}:
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'une étape (TRAVEL-307/#6037)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRoute
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelRouteStop
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                city_id:
+                  type: integer
+                rank:
+                  type: integer
+                  minimum: 1
+                is_stopover:
+                  type: boolean
+                min_duration_min:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Étape mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRouteStop'
+        '404':
+          description: Route ou étape introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une étape (TRAVEL-307/#6037)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRoute
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelRouteStop
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Étape supprimée (rangs réordonnés)
+        '404':
+          description: Route ou étape introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+  /travel/trips:
+    get:
+      tags:
+      - Travel
+      summary: Liste des trajets (TRAVEL-308/#6038)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [draft, scheduled, published, cancelled]
+      - name: route_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: departure_date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Liste paginée des trajets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelTrip'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'un trajet (TRAVEL-308/#6038, génère les sièges)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - route_id
+              - departure_date
+              - departure_time
+              - arrival_date
+              - arrival_time
+              - total_seats
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                route_id:
+                  type: integer
+                carrier_id:
+                  type: integer
+                  nullable: true
+                vehicle_id:
+                  type: integer
+                  nullable: true
+                departure_date:
+                  type: string
+                  format: date
+                departure_time:
+                  type: string
+                  example: "08:00"
+                arrival_date:
+                  type: string
+                  format: date
+                arrival_time:
+                  type: string
+                  example: "12:30"
+                means_of_transport:
+                  type: string
+                  enum: [bus, train, plane, boat]
+                total_seats:
+                  type: integer
+                  minimum: 1
+                status:
+                  type: string
+                  enum: [draft, scheduled, published, cancelled]
+      responses:
+        '201':
+          description: Trajet créé (sièges générés)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTrip'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée
+  /travel/trips/search:
+    get:
+      tags:
+      - Travel
+      summary: Recherche interne de trajets (TRAVEL-311/#6041)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      - name: origin_city_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: destination_city_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: departure_date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: means_of_transport
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [bus, train, plane, boat]
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [draft, scheduled, published, cancelled]
+      - name: price_min
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: price_max
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Trajets correspondant aux filtres
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelTrip'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+  /travel/trips/{travelTrip}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un trajet (TRAVEL-308/#6038)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Trajet (avec tarifs et étapes)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTrip'
+        '404':
+          description: Trajet introuvable ou hors tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'un trajet (TRAVEL-308/#6038)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                route_id:
+                  type: integer
+                carrier_id:
+                  type: integer
+                  nullable: true
+                vehicle_id:
+                  type: integer
+                  nullable: true
+                departure_date:
+                  type: string
+                  format: date
+                departure_time:
+                  type: string
+                arrival_date:
+                  type: string
+                  format: date
+                arrival_time:
+                  type: string
+                means_of_transport:
+                  type: string
+                  enum: [bus, train, plane, boat]
+                total_seats:
+                  type: integer
+                  minimum: 1
+                status:
+                  type: string
+                  enum: [draft, scheduled, published, cancelled]
+      responses:
+        '200':
+          description: Trajet mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTrip'
+        '404':
+          description: Trajet introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Trajet publié verrouillé ou validation échouée
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un trajet (TRAVEL-308/#6038)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Trajet supprimé
+        '404':
+          description: Trajet introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+  /travel/trips/{travelTrip}/publish:
+    post:
+      tags:
+      - Travel
+      summary: Publication d'un trajet (TRAVEL-310/#6040)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Trajet publié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTrip'
+        '404':
+          description: Trajet introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Transition invalide (ex. trajet annulé)
+  /travel/trips/{travelTrip}/cancel:
+    post:
+      tags:
+      - Travel
+      summary: Annulation d'un trajet (TRAVEL-310/#6040)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+      responses:
+        '200':
+          description: Trajet annulé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTrip'
+        '404':
+          description: Trajet introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Motif manquant
+  /travel/trips/{travelTrip}/prices:
+    get:
+      tags:
+      - Travel
+      summary: Tarifs d'un trajet par classe (TRAVEL-309/#6039)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tarifs du trajet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelTripPrice'
+        '404':
+          description: Trajet introuvable ou hors tenant
+    post:
+      tags:
+      - Travel
+      summary: Création d'un tarif (TRAVEL-309/#6039)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - class_id
+              - adult_price_minor
+              - currency
+              properties:
+                class_id:
+                  type: integer
+                adult_price_minor:
+                  type: integer
+                  minimum: 1
+                child_price_minor:
+                  type: integer
+                  nullable: true
+                currency:
+                  type: string
+                  maxLength: 3
+      responses:
+        '201':
+          description: Tarif créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTripPrice'
+        '404':
+          description: Trajet introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '409':
+          description: Un tarif existe déjà pour cette classe
+        '422':
+          description: Validation échouée
+  /travel/trips/{travelTrip}/prices/{travelTripPrice}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un tarif (TRAVEL-309/#6039)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelTripPrice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tarif
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTripPrice'
+        '404':
+          description: Tarif ou trajet introuvable ou hors tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'un tarif (TRAVEL-309/#6039)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelTripPrice
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                class_id:
+                  type: integer
+                adult_price_minor:
+                  type: integer
+                  minimum: 1
+                child_price_minor:
+                  type: integer
+                  nullable: true
+                currency:
+                  type: string
+                  maxLength: 3
+      responses:
+        '200':
+          description: Tarif mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTripPrice'
+        '404':
+          description: Tarif ou trajet introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '409':
+          description: Conflit d'unicité (trip, classe)
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un tarif (TRAVEL-309/#6039)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelTripPrice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Tarif supprimé
+        '404':
+          description: Tarif ou trajet introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+  /travel/bookings:
+    get:
+      tags:
+      - Travel
+      summary: Liste des réservations (TRAVEL-312/#6042)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [pending, confirmed, cancelled, refunded, completed]
+      - name: trip_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: reference
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste paginée des réservations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelBooking'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'une réservation guichet (TRAVEL-312/#6042)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - trip_id
+              - booking_source
+              - idempotency_key
+              - passengers
+              properties:
+                trip_id:
+                  type: integer
+                booking_source:
+                  type: string
+                  enum: [online, office, phone, partner]
+                idempotency_key:
+                  type: string
+                  maxLength: 255
+                customer_contact_id:
+                  type: integer
+                  nullable: true
+                passengers:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: object
+                    required:
+                    - full_name
+                    - age_category
+                    - class_id
+                    properties:
+                      full_name:
+                        type: string
+                        maxLength: 160
+                      birth_date:
+                        type: string
+                        format: date
+                        nullable: true
+                      document_type:
+                        type: string
+                        enum: [national_id, passport, birth_certificate, other]
+                        nullable: true
+                      document_number:
+                        type: string
+                        maxLength: 40
+                        nullable: true
+                      age_category:
+                        type: string
+                        enum: [infant, child, adult]
+                      class_id:
+                        type: integer
+                      seat_number:
+                        type: integer
+                        nullable: true
+      responses:
+        '201':
+          description: Réservation créée (pending, sièges réservés)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelBooking'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '409':
+          description: Trajet non publié ou sièges indisponibles
+        '422':
+          description: Validation échouée (aucun tarif pour la classe, passagers invalides)
+  /travel/bookings/{travelBooking}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'une réservation (TRAVEL-312/#6042)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation (passagers + billets)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelBooking'
+        '404':
+          description: Réservation introuvable ou hors tenant
+  /travel/bookings/{travelBooking}/confirm:
+    post:
+      tags:
+      - Travel
+      summary: Confirmation d'une réservation (TRAVEL-313/#6043)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation confirmée (sièges vendus)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelBooking'
+        '404':
+          description: Réservation introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Transition invalide
+  /travel/bookings/{travelBooking}/cancel:
+    post:
+      tags:
+      - Travel
+      summary: Annulation d'une réservation (TRAVEL-314/#6044)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+      responses:
+        '200':
+          description: Réservation annulée (sièges libérés)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelBooking'
+        '404':
+          description: Réservation introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Motif manquant ou transition invalide
+  /travel/bookings/{travelBooking}/refund:
+    post:
+      tags:
+      - Travel
+      summary: Remboursement d'une réservation (TRAVEL-315/#6045)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+      responses:
+        '200':
+          description: Réservation remboursée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelBooking'
+        '404':
+          description: Réservation introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Seule une réservation confirmée est remboursable
+  /travel/bookings/{travelBooking}/issue-ticket:
+    post:
+      tags:
+      - Travel
+      summary: Émission des billets (TRAVEL-316/#6046)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Billets émis (un par passager)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelTicket'
+        '404':
+          description: Réservation introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Seule une réservation confirmée peut émettre des billets
+  /travel/tickets/{travelTicket}/check-in:
+    post:
+      tags:
+      - Travel
+      summary: Check-in / embarquement (TRAVEL-317/#6047)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTicket
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Billet enregistré
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTicket'
+        '404':
+          description: Billet introuvable ou hors tenant
+        '403':
+          description: Permission de check-in requise
+        '422':
+          description: Billet non émis ou annulé
+  /travel/trips/{travelTrip}/manifest:
+    get:
+      tags:
+      - Travel
+      summary: Manifeste des passagers d'un trajet (TRAVEL-318/#6048)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Passagers triés par siège (jamais de n° de pièce)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelPassenger'
+        '404':
+          description: Trajet introuvable ou hors tenant
+  /travel/rental-vehicles:
+    get:
+      tags:
+      - Travel
+      summary: Liste des véhicules en location (TRAVEL-319/#6049)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des véhicules en location
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelRentalVehicle'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'un véhicule en location (TRAVEL-319/#6049)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - title
+              - city_id
+              - price_per_day_minor
+              - currency
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                title:
+                  type: string
+                  maxLength: 160
+                city_id:
+                  type: integer
+                price_per_day_minor:
+                  type: integer
+                  minimum: 1
+                currency:
+                  type: string
+                  maxLength: 3
+                available_from:
+                  type: string
+                  format: date
+                  nullable: true
+                available_until:
+                  type: string
+                  format: date
+                  nullable: true
+                owner_carrier_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Véhicule en location créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRentalVehicle'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée
+  /travel/rental-vehicles/{travelRentalVehicle}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un véhicule en location (TRAVEL-319/#6049)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRentalVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Véhicule en location
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRentalVehicle'
+        '404':
+          description: Véhicule introuvable ou hors tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'un véhicule en location (TRAVEL-319/#6049)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRentalVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                title:
+                  type: string
+                  maxLength: 160
+                city_id:
+                  type: integer
+                price_per_day_minor:
+                  type: integer
+                  minimum: 1
+                currency:
+                  type: string
+                  maxLength: 3
+                available_from:
+                  type: string
+                  format: date
+                  nullable: true
+                available_until:
+                  type: string
+                  format: date
+                  nullable: true
+                owner_carrier_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Véhicule en location mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRentalVehicle'
+        '404':
+          description: Véhicule introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un véhicule en location (TRAVEL-319/#6049)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRentalVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Véhicule supprimé
+        '404':
+          description: Véhicule introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+  /travel/rental-vehicles/{travelRentalVehicle}/images:
+    get:
+      tags:
+      - Travel
+      summary: Images d'un véhicule en location (TRAVEL-319/#6049)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRentalVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Images du véhicule
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelRentalVehicleImage'
+        '404':
+          description: Véhicule introuvable ou hors tenant
+    post:
+      tags:
+      - Travel
+      summary: Ajout d'une image (TRAVEL-319/#6049)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRentalVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - asset_id
+              properties:
+                asset_id:
+                  type: integer
+                position:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: Image ajoutée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRentalVehicleImage'
+        '404':
+          description: Véhicule introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+  /travel/rental-vehicles/{travelRentalVehicle}/images/{travelRentalVehicleImage}:
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une image (TRAVEL-319/#6049)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRentalVehicle
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelRentalVehicleImage
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Image supprimée
+        '404':
+          description: Véhicule ou image introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+  /travel/rental-bookings:
+    get:
+      tags:
+      - Travel
+      summary: Liste des réservations de location (TRAVEL-320/#6050)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      - name: vehicle_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [pending, confirmed, cancelled, completed]
+      responses:
+        '200':
+          description: Liste paginée des réservations de location
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelRentalBooking'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'une réservation de location (TRAVEL-320/#6050)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - vehicle_id
+              - start_date
+              - end_date
+              - idempotency_key
+              properties:
+                vehicle_id:
+                  type: integer
+                start_date:
+                  type: string
+                  format: date
+                end_date:
+                  type: string
+                  format: date
+                idempotency_key:
+                  type: string
+                  maxLength: 255
+                customer_contact_id:
+                  type: integer
+                  nullable: true
+                deposit_amount_minor:
+                  type: integer
+                  minimum: 0
+                  nullable: true
+      responses:
+        '201':
+          description: Réservation créée (montant calculé côté serveur)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRentalBooking'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '409':
+          description: Véhicule déjà réservé sur cette période
+        '422':
+          description: Validation échouée
+  /travel/rental-bookings/{travelRentalBooking}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'une réservation de location (TRAVEL-320/#6050)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRentalBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation de location
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRentalBooking'
+        '404':
+          description: Réservation introuvable ou hors tenant
+  /travel/rental-bookings/{travelRentalBooking}/cancel:
+    post:
+      tags:
+      - Travel
+      summary: Annulation d'une réservation de location (TRAVEL-320/#6050)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRentalBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+      responses:
+        '200':
+          description: Réservation annulée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRentalBooking'
+        '404':
+          description: Réservation introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Motif manquant ou transition invalide
+  /travel/hotels:
+    get:
+      tags:
+      - Travel
+      summary: Liste des hôtels (TRAVEL-321/#6051)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      - name: city_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste paginée des hôtels (avec chambres)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelHotel'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'un hôtel (TRAVEL-321/#6051)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - city_id
+              - classification
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                city_id:
+                  type: integer
+                classification:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                address:
+                  type: string
+                  nullable: true
+                contact_phone:
+                  type: string
+                  nullable: true
+                description_redacted:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '201':
+          description: Hôtel créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelHotel'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée (classification hors 1-5)
+  /travel/hotels/{travelHotel}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un hôtel (TRAVEL-321/#6051)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelHotel
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Hôtel (avec chambres)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelHotel'
+        '404':
+          description: Hôtel introuvable ou hors tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'un hôtel (TRAVEL-321/#6051)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelHotel
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                city_id:
+                  type: integer
+                classification:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                address:
+                  type: string
+                  nullable: true
+                contact_phone:
+                  type: string
+                  nullable: true
+                description_redacted:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '200':
+          description: Hôtel mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelHotel'
+        '404':
+          description: Hôtel introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un hôtel (TRAVEL-321/#6051)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelHotel
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Hôtel supprimé
+        '404':
+          description: Hôtel introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+  /travel/hotels/{travelHotel}/rooms:
+    get:
+      tags:
+      - Travel
+      summary: Chambres d'un hôtel (TRAVEL-321/#6051)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelHotel
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Chambres de l'hôtel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelHotelRoom'
+        '404':
+          description: Hôtel introuvable ou hors tenant
+    post:
+      tags:
+      - Travel
+      summary: Création d'une chambre (TRAVEL-321/#6051)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelHotel
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type_code
+              - room_number
+              - capacity
+              - price_per_night_minor
+              - currency
+              properties:
+                type_code:
+                  type: string
+                  maxLength: 40
+                room_number:
+                  type: string
+                  maxLength: 20
+                capacity:
+                  type: integer
+                  minimum: 1
+                price_per_night_minor:
+                  type: integer
+                  minimum: 1
+                currency:
+                  type: string
+                  maxLength: 3
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '201':
+          description: Chambre créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelHotelRoom'
+        '404':
+          description: Hôtel introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée
+  /travel/hotels/{travelHotel}/rooms/{travelHotelRoom}:
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'une chambre (TRAVEL-321/#6051)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelHotel
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelHotelRoom
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type_code:
+                  type: string
+                  maxLength: 40
+                room_number:
+                  type: string
+                  maxLength: 20
+                capacity:
+                  type: integer
+                  minimum: 1
+                price_per_night_minor:
+                  type: integer
+                  minimum: 1
+                currency:
+                  type: string
+                  maxLength: 3
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '200':
+          description: Chambre mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelHotelRoom'
+        '404':
+          description: Chambre ou hôtel introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une chambre (TRAVEL-321/#6051)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelHotel
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelHotelRoom
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Chambre supprimée
+        '404':
+          description: Chambre ou hôtel introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
   /health:
     get:
       tags:
@@ -24900,6 +27851,508 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    TravelClass:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        label:
+          type: string
+        color:
+          type: string
+          nullable: true
+        priority:
+          type: integer
+        status:
+          type: string
+          enum: [active, disabled]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelVehicle:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        registration_number:
+          type: string
+          nullable: true
+        seat_capacity:
+          type: integer
+        carrier_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [active, disabled]
+        notes:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelRoute:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        origin_city_id:
+          type: integer
+        destination_city_id:
+          type: integer
+        distance_km:
+          type: integer
+          nullable: true
+        duration_min:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [active, disabled]
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelRouteStop'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelRouteStop:
+      type: object
+      properties:
+        id:
+          type: integer
+        route_id:
+          type: integer
+        city_id:
+          type: integer
+        rank:
+          type: integer
+        is_stopover:
+          type: boolean
+        min_duration_min:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelTrip:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        route_id:
+          type: integer
+        carrier_id:
+          type: integer
+          nullable: true
+        vehicle_id:
+          type: integer
+          nullable: true
+        departure_date:
+          type: string
+          format: date
+        departure_time:
+          type: string
+        arrival_date:
+          type: string
+          format: date
+        arrival_time:
+          type: string
+        means_of_transport:
+          type: string
+          enum: [bus, train, plane, boat]
+        total_seats:
+          type: integer
+        status:
+          type: string
+          enum: [draft, scheduled, published, cancelled]
+        published_at:
+          type: string
+          nullable: true
+        prices:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelTripPrice'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelTripPrice:
+      type: object
+      properties:
+        id:
+          type: integer
+        trip_id:
+          type: integer
+        class_id:
+          type: integer
+        adult_price_minor:
+          type: integer
+        child_price_minor:
+          type: integer
+          nullable: true
+        currency:
+          type: string
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelBooking:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+        trip_id:
+          type: integer
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled, refunded, completed]
+        passenger_count:
+          type: integer
+        total_amount_minor:
+          type: integer
+        currency:
+          type: string
+        booking_source:
+          type: string
+          enum: [online, office, phone, partner]
+        payment_status:
+          type: string
+          enum: [pending, confirmed, failed, refunded]
+        expires_at:
+          type: string
+          nullable: true
+        version:
+          type: integer
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelPassenger'
+        tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelTicket'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelPassenger:
+      type: object
+      properties:
+        id:
+          type: integer
+        booking_id:
+          type: integer
+        full_name:
+          type: string
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        document_type:
+          type: string
+          nullable: true
+        has_document:
+          type: boolean
+        age_category:
+          type: string
+          enum: [infant, child, adult]
+        class_id:
+          type: integer
+        seat_number:
+          type: integer
+          nullable: true
+        unit_price_minor:
+          type: integer
+    TravelTicket:
+      type: object
+      properties:
+        id:
+          type: integer
+        ticket_number:
+          type: string
+        booking_id:
+          type: integer
+        passenger_id:
+          type: integer
+        status:
+          type: string
+          enum: [issued, checked_in, void]
+        issued_at:
+          type: string
+          nullable: true
+        valid_from:
+          type: string
+          nullable: true
+        valid_until:
+          type: string
+          nullable: true
+        checked_in_at:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+    TravelRentalVehicle:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        title:
+          type: string
+        city_id:
+          type: integer
+        price_per_day_minor:
+          type: integer
+        currency:
+          type: string
+        available_from:
+          type: string
+          format: date
+          nullable: true
+        available_until:
+          type: string
+          format: date
+          nullable: true
+        owner_carrier_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [active, disabled]
+        notes:
+          type: string
+          nullable: true
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelRentalVehicleImage'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelRentalVehicleImage:
+      type: object
+      properties:
+        id:
+          type: integer
+        vehicle_id:
+          type: integer
+        asset_id:
+          type: integer
+        position:
+          type: integer
+    TravelRentalBooking:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+        vehicle_id:
+          type: integer
+        customer_contact_id:
+          type: integer
+          nullable: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        total_amount_minor:
+          type: integer
+        currency:
+          type: string
+        deposit_amount_minor:
+          type: integer
+          nullable: true
+        payment_status:
+          type: string
+          enum: [pending, confirmed, failed, refunded]
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled, completed]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelHotel:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        city_id:
+          type: integer
+        classification:
+          type: integer
+          minimum: 1
+          maximum: 5
+        address:
+          type: string
+          nullable: true
+        contact_phone:
+          type: string
+          nullable: true
+        description_redacted:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, disabled]
+        rooms:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelHotelRoom'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelHotelRoom:
+      type: object
+      properties:
+        id:
+          type: integer
+        hotel_id:
+          type: integer
+        type_code:
+          type: string
+        room_number:
+          type: string
+        capacity:
+          type: integer
+        price_per_night_minor:
+          type: integer
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [active, disabled]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelCarrier:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [bus, train, plane, boat]
+        contact_phone:
+          type: string
+          nullable: true
+        logo_asset_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [active, disabled]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelOffice:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        city_id:
+          type: integer
+        address:
+          type: string
+          nullable: true
+        contact_phone:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, disabled]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelStation:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        city_id:
+          type: integer
+        address:
+          type: string
+          nullable: true
+        contact_phone:
+          type: string
+          nullable: true
+        timezone:
+          type: string
+        is_terminal:
+          type: boolean
+        status:
+          type: string
+          enum: [active, disabled]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
     AccountingChartAccount:
       type: object
       properties:
