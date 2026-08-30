@@ -4312,7 +4312,29 @@
     },
     "bookings": {
       "title": "Réservations",
-      "subtitle": "Ventes au guichet, confirmation, annulation, remboursement et billets."
+      "subtitle": "Ventes au guichet, confirmation, annulation, remboursement et billets.",
+      "reference": "Référence",
+      "referencePlaceholder": "Ex. GV-2026-0001…",
+      "detail": "Détail",
+      "confirm": "Confirmer",
+      "cancel": "Annuler",
+      "refund": "Rembourser",
+      "issueTickets": "Émettre billet",
+      "detailTitle": "Réservation",
+      "paymentStatus": "Paiement",
+      "trip": "Trajet",
+      "source": "Source",
+      "passengerCount": "Passagers",
+      "total": "Total",
+      "passengers": "Passagers",
+      "seat": "Siège",
+      "noTickets": "Aucun billet émis",
+      "confirmTitle": "Confirmer la réservation",
+      "confirmBody": "Confirmer la réservation {ref} ? Les sièges seront marqués vendus.",
+      "issueTicketsTitle": "Émettre les billets",
+      "issueTicketsBody": "Émettre un billet nominatif pour chaque passager de {ref} ?",
+      "cancelTitle": "Annuler la réservation",
+      "refundTitle": "Rembourser la réservation"
     },
     "checkin": {
       "title": "Check-in & manifeste",
@@ -4381,6 +4403,34 @@
       "scheduled": "Planifié",
       "published": "Publié",
       "cancelled": "Annulé"
+    },
+    "bookingStatus": {
+      "pending": "En attente",
+      "confirmed": "Confirmée",
+      "cancelled": "Annulée",
+      "refunded": "Remboursée",
+      "completed": "Terminée"
+    },
+    "paymentStatus": {
+      "pending": "En attente",
+      "confirmed": "Confirmé",
+      "failed": "Échoué",
+      "refunded": "Remboursé"
+    },
+    "ticketStatus": {
+      "issued": "Émis",
+      "checked_in": "Enregistré",
+      "void": "Annulé"
+    },
+    "bookingSource": {
+      "office": "Guichet",
+      "phone": "Téléphone",
+      "online": "En ligne"
+    },
+    "ageCategory": {
+      "infant": "Bébé",
+      "child": "Enfant",
+      "adult": "Adulte"
     }
   }
 }
