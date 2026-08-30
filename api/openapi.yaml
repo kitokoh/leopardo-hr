@@ -2883,6 +2883,84 @@ paths:
           description: Permission travel.manage requise
         '422':
           description: Seule une réservation confirmée peut émettre des billets
+  /travel/round-trips:
+    post:
+      tags:
+      - Travel
+      summary: Création d'un aller-retour combiné (TRAVEL-802/#6093)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - outbound_trip_id
+              - return_trip_id
+              - booking_source
+              - idempotency_key
+              - passengers
+              properties:
+                outbound_trip_id:
+                  type: integer
+                return_trip_id:
+                  type: integer
+                booking_source:
+                  type: string
+                  enum: [online, office, phone, partner]
+                idempotency_key:
+                  type: string
+                  maxLength: 255
+                passengers:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    $ref: '#/components/schemas/TravelPassengerInput'
+      responses:
+        '201':
+          description: Aller-retour créé (2 réservations liées)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelRoundTrip'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, flag inactif ou permission travel.manage requise
+        '409':
+          description: Sièges indisponibles sur l'un des trajets
+  /travel/round-trips/{travelRoundTrip}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un aller-retour (TRAVEL-802/#6093)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRoundTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Aller-retour avec ses deux réservations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelRoundTrip'
+        '404':
+          description: Aller-retour introuvable ou hors tenant
+
   /travel/tickets/{travelTicket}/check-in:
     post:
       tags:
@@ -28900,6 +28978,56 @@ components:
           nullable: true
         updated_at:
           type: string
+          nullable: true
+    TravelRoundTrip:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+        status:
+          type: string
+          enum: [active, partially_cancelled, cancelled]
+        outbound:
+          $ref: '#/components/schemas/TravelBooking'
+        return:
+          $ref: '#/components/schemas/TravelBooking'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelPassengerInput:
+      type: object
+      required:
+      - full_name
+      - age_category
+      - class_id
+      properties:
+        full_name:
+          type: string
+          maxLength: 160
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        document_type:
+          type: string
+          nullable: true
+        document_number:
+          type: string
+          maxLength: 40
+          nullable: true
+        age_category:
+          type: string
+          enum: [infant, child, adult]
+        class_id:
+          type: integer
+        seat_number:
+          type: integer
+          minimum: 1
           nullable: true
     TravelPassenger:
       type: object

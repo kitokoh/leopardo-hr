@@ -2764,6 +2764,24 @@ trait CreatesMvpSchema
         }
 
         // ── BC-24 TRAVEL — TRAVEL-214 (issue #6027) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_round_trips'))) {
+            Schema::create($this->moduleTable('travel_round_trips'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('reference', 40);
+                $table->unsignedBigInteger('booking_outbound_id');
+                $table->unsignedBigInteger('booking_return_id');
+                $table->string('idempotency_key', 255);
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'reference'], 'travel_round_trips_company_reference_unique');
+                $table->unique(['company_id', 'idempotency_key'], 'travel_round_trips_company_idempotency_unique');
+                $table->unique(['booking_outbound_id'], 'travel_round_trips_outbound_unique');
+                $table->unique(['booking_return_id'], 'travel_round_trips_return_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-802 (issue #6093) ────────────────────────
         if (! Schema::hasTable($this->moduleTable('travel_hotels'))) {
             Schema::create($this->moduleTable('travel_hotels'), function (Blueprint $table): void {
                 $table->id();
@@ -2928,6 +2946,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
         // BC-24 TRAVEL (verticale TravelAgency)
         DB::statement('DROP TABLE IF EXISTS "travel_hotel_rooms"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_round_trips"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_hotels"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_rental_bookings"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_rental_vehicle_images"'.$cascade);

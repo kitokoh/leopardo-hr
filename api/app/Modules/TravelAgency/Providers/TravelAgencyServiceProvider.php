@@ -13,6 +13,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelHotel;
 use App\Modules\TravelAgency\Domain\Models\TravelOffice;
 use App\Modules\TravelAgency\Domain\Models\TravelRentalBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelRentalVehicle;
+use App\Modules\TravelAgency\Domain\Models\TravelRoundTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelStation;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
@@ -25,6 +26,7 @@ use App\Modules\TravelAgency\Policies\TravelHotelPolicy;
 use App\Modules\TravelAgency\Policies\TravelOfficePolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalVehiclePolicy;
+use App\Modules\TravelAgency\Policies\TravelRoundTripPolicy;
 use App\Modules\TravelAgency\Policies\TravelRoutePolicy;
 use App\Modules\TravelAgency\Policies\TravelStationPolicy;
 use App\Modules\TravelAgency\Policies\TravelTicketPolicy;
@@ -69,5 +71,6 @@ class TravelAgencyServiceProvider extends ServiceProvider
         Gate::policy(TravelRentalVehicle::class, TravelRentalVehiclePolicy::class);
         Gate::policy(TravelRentalBooking::class, TravelRentalBookingPolicy::class);
         Gate::policy(TravelHotel::class, TravelHotelPolicy::class);
+        Gate::policy(TravelRoundTrip::class, TravelRoundTripPolicy::class);
     }
 }
