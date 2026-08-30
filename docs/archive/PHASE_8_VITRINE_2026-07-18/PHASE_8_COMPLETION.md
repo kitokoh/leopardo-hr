@@ -5,8 +5,8 @@
 > ci-dessous n'existent plus sous ces noms dans `.github/workflows/` ; les checks équivalents
 > vivent aujourd'hui dans `tests.yml` (backend), `web-marketing-ci.yml` (vitrine Next.js) et
 > `web-ci.yml` (admin Vue). Le domaine `leopardo.com` cité dans ce rapport n'est pas possédé
-> pour ce produit (voir `docs/DEPLOYMENT_PRODUCTION.md`). Pour l'état réel des workflows, voir
-> `DEVELOPMENT.md` section CI/CD et `.github/workflows/README.md`.
+> pour ce produit (voir `../../DEPLOYMENT_PRODUCTION.md`). Pour l'état réel des workflows, voir
+> `../../../DEVELOPMENT.md` section CI/CD et `../../../.github/workflows/README.md`.
 
 ## Statut: ✅ COMPLÉTÉ
 
