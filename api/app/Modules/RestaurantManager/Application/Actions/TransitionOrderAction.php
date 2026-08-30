@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Application\Services\OrderStateMachine;
+use App\Modules\RestaurantManager\Application\Services\RestaurantStockService;
 use App\Modules\RestaurantManager\Domain\Enums\OrderItemStatus;
 use App\Modules\RestaurantManager\Domain\Enums\OrderStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
@@ -20,6 +21,11 @@ use RuntimeException;
  * workflow → 409. `version` protège la commande contre les écritures
  * concurrentes (mise à jour optimiste). Événement `restaurant.order.created.v1`
  * publié dans l'outbox à la soumission (draft → open) — payload redigé.
+ *
+ * RESTO-411 (#6198) — la CONFIRMATION (open → in_preparation) décrémente le
+ * stock des ingrédients en transaction (SELECT FOR UPDATE) AVANT le passage
+ * de statut : si le stock est insuffisant (politique 'block'), la transition
+ * entière est annulée (422) et la commande reste `open`.
  */
 final class TransitionOrderAction
 {
@@ -28,6 +34,7 @@ final class TransitionOrderAction
     public function __construct(
         private readonly OrderStateMachine $stateMachine,
         private readonly RestaurantOutboxPublisher $outbox,
+        private readonly RestaurantStockService $stockService,
     ) {
     }
 
@@ -54,18 +61,28 @@ final class TransitionOrderAction
             }
         }
 
-        $affected = DB::table('restaurant_orders')
-            ->where('id', $order->id)
-            ->where('company_id', $order->company_id)
-            ->where('version', $order->version)
-            ->update([
-                'status' => $target->value,
-                'version' => $order->version + 1,
-            ]);
+        // RESTO-411 : décrément de stock + passage de statut dans la même
+        // transaction. La confirmation consomme le stock (verrou FOR UPDATE) ;
+        // en cas de stock insuffisant (politique 'block'), abort 422 → rollback
+        // → la commande reste `open`.
+        DB::transaction(function () use ($order, $target): void {
+            if ($target === OrderStatus::IN_PREPARATION) {
+                $this->stockService->decrementForConfirmedOrder($order);
+            }
 
-        if ($affected !== 1) {
-            abort(409, 'Order was modified concurrently; reload and retry.');
-        }
+            $affected = DB::table('restaurant_orders')
+                ->where('id', $order->id)
+                ->where('company_id', $order->company_id)
+                ->where('version', $order->version)
+                ->update([
+                    'status' => $target->value,
+                    'version' => $order->version + 1,
+                ]);
+
+            if ($affected !== 1) {
+                abort(409, 'Order was modified concurrently; reload and retry.');
+            }
+        });
 
         $order->refresh();
 
