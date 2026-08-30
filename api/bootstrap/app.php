@@ -8,6 +8,7 @@ use App\Http\Middleware\ApiVersionMiddleware;
 use App\Http\Middleware\AuthenticateZktecoDevice;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
 use App\Http\Middleware\Delivery\EnsureDeliveryModuleMiddleware;
+use App\Http\Middleware\Delivery\EnsureDeliveryRoleMiddleware;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
 use App\Http\Middleware\EnsureAppContextMiddleware;
