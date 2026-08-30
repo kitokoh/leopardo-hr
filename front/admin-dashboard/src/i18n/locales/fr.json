@@ -1577,7 +1577,11 @@
     "accountingActivation": "Comptabilité — Démarrer",
     "accountingDashboard": "Comptabilité — Tableau de bord",
     "accountingSettings": "Comptabilité — Paramétrage",
+<<<<<<< HEAD
     "travel": "Agence de voyage"
+=======
+    "fuelStation": "Stations-service"
+>>>>>>> origin/feat/travel-101-202-foundations
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?",
@@ -4235,6 +4239,55 @@
     "actionError": "Action impossible, réessayez.",
     "loading": "Chargement de la file cuisine…"
   },
+<<<<<<< HEAD
+=======
+  "fuel": {
+    "statStations": "Stations",
+    "statOpenIncidents": "Incidents ouverts",
+    "statPendingReconciliations": "Rapprochements à revoir",
+    "statVariance": "Écarts à expliquer",
+    "tabsStations": "Stations",
+    "tabsIncidents": "Incidents",
+    "tabsReconciliations": "Rapprochements",
+    "searchStation": "Rechercher une station...",
+    "searchIncident": "Rechercher un incident...",
+    "searchReconciliation": "Rechercher un rapport...",
+    "colCode": "Code",
+    "colName": "Nom",
+    "colTimezone": "Fuseau",
+    "colStatus": "Statut",
+    "colDate": "Créé le",
+    "colTitle": "Titre",
+    "colStation": "Station",
+    "colEquipmentType": "Équipement",
+    "colPriority": "Priorité",
+    "colReportDate": "Jour",
+    "colExpected": "Attendu",
+    "colClosing": "Clôture",
+    "colVariance": "Écart",
+    "stationActive": "Active",
+    "stationInactive": "Inactive",
+    "stationArchived": "Archivée",
+    "incidentReported": "Signalé",
+    "incidentAssigned": "Assigné",
+    "incidentInProgress": "En cours",
+    "incidentResolved": "Résolu",
+    "incidentClosed": "Clos",
+    "priorityLow": "Faible",
+    "priorityMedium": "Moyen",
+    "priorityHigh": "Élevé",
+    "priorityCritical": "Critique",
+    "reconcilPending": "À revoir",
+    "reconcilReviewed": "Revu",
+    "reconcilApproved": "Approuvé",
+    "errStations": "Impossible de charger les stations.",
+    "errIncidents": "Impossible de charger les incidents.",
+    "errReconciliations": "Impossible de charger les rapprochements.",
+    "stationsCaption": "Stations de la flotte",
+    "incidentsCaption": "Incidents signalés",
+    "reconciliationsCaption": "Rapports de rapprochement"
+  },
+>>>>>>> origin/feat/travel-101-202-foundations
   "travel": {
     "common": {
       "retry": "Réessayer",
@@ -4519,6 +4572,107 @@
       "infant": "Bébé",
       "child": "Enfant",
       "adult": "Adulte"
+<<<<<<< HEAD
+=======
+    },
+    "content": {
+      "title": "Contenu & annonces",
+      "subtitle": "Quiz, annonces payantes et sites touristiques.",
+      "tabs": {
+        "quiz": "Quiz",
+        "adverts": "Annonces",
+        "sites": "Sites touristiques",
+        "contacts": "Contacts",
+        "form": "Formulaire de contact"
+      }
+    },
+    "quiz": {
+      "title": "Quiz & jeux-concours",
+      "create": "Créer un quiz",
+      "questions": "Questions",
+      "results": "Résultats",
+      "addQuestion": "Ajouter une question",
+      "question": "Question",
+      "options": "Options",
+      "optionsInput": "Options (séparées par des virgules)",
+      "correctIndex": "Index de la bonne réponse",
+      "points": "Points",
+      "participant": "Participant",
+      "score": "Score",
+      "bonus": "Bonus",
+      "endsAt": "Fin",
+      "status": {
+        "draft": "Brouillon",
+        "active": "Actif",
+        "closed": "Clôturé"
+      }
+    },
+    "adverts": {
+      "title": "Annonces",
+      "types": "Types",
+      "positions": "Positions",
+      "prices": "Tarifs",
+      "label": "Libellé",
+      "code": "Code",
+      "type": "Type",
+      "position": "Position",
+      "priceImage": "Prix image (minor)",
+      "priceChar": "Prix caractère (minor)",
+      "currency": "Devise",
+      "create": "Soumettre une annonce",
+      "content": "Contenu",
+      "validityDays": "Durée (jours)",
+      "pay": "Payer",
+      "validate": "Valider",
+      "reject": "Rejeter",
+      "renew": "Renouveler",
+      "rejectReason": "Motif du rejet",
+      "price": "Prix",
+      "expiresAt": "Expiration",
+      "allStatuses": "Tous les statuts",
+      "status": {
+        "draft": "Brouillon",
+        "submitted": "Soumise",
+        "paid": "Payée",
+        "validated": "Validée",
+        "rejected": "Rejetée",
+        "expired": "Expirée"
+      }
+    },
+    "sites": {
+      "title": "Sites touristiques",
+      "name": "Nom",
+      "description": "Description",
+      "latitude": "Latitude",
+      "longitude": "Longitude"
+    },
+    "contacts": {
+      "title": "Contacts voyageurs",
+      "search": "Rechercher par email",
+      "name": "Nom",
+      "consents": "Consentements",
+      "notify": "Notifier",
+      "message": "Message",
+      "channelEmail": "Email",
+      "channelSms": "SMS",
+      "channelWhatsapp": "WhatsApp",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Email",
+      "phone": "Téléphone",
+      "form": {
+        "title": "Formulaire de contact",
+        "subtitle": "Une demande transmise à l’agence via l’API réelle (consentement obligatoire).",
+        "consentLabel": "J’accepte d’être recontacté(e) par email au sujet de ma demande.",
+        "consentRequired": "Le consentement de contact est obligatoire.",
+        "emailInvalid": "Adresse email invalide.",
+        "messageRequired": "Le message est requis.",
+        "send": "Envoyer la demande",
+        "receivedTitle": "Demande reçue",
+        "receivedBody": "Merci, votre demande a bien été transmise à l’agence.",
+        "newRequest": "Nouvelle demande"
+      }
+>>>>>>> origin/feat/travel-101-202-foundations
     }
   }
 }

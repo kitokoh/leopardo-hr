@@ -4551,6 +4551,58 @@ paths:
           description: Résultats triés par score
         '403':
           description: Rôle insuffisant
+<<<<<<< HEAD
+=======
+  /travel/contacts:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-912 — Contacts voyageurs (gestion, consentements)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Contacts + consentements par canal
+        '403':
+          description: Rôle insuffisant
+  /travel/contacts/{travelCustomerContact}/consent:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-912 — Mise à jour des consentements par canal'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email_consent:
+                  type: boolean
+                sms_consent:
+                  type: boolean
+                whatsapp_consent:
+                  type: boolean
+      responses:
+        '200':
+          description: Consentements mis à jour
+        '404':
+          description: Contact introuvable
+>>>>>>> origin/feat/travel-101-202-foundations
   /travel/contacts/{travelCustomerContact}/notify:
     post:
       tags:
@@ -29907,6 +29959,22 @@ components:
       required: true
       schema:
         type: string
+    TravelReportPeriod:
+      name: period_from
+      in: query
+      description: Début de période (YYYY-MM-DD) — agrégation des rapports TRAVEL-501..504.
+      required: false
+      schema:
+        type: string
+        format: date
+    TravelReportPeriodTo:
+      name: period_to
+      in: query
+      description: Fin de période (YYYY-MM-DD) — agrégation des rapports TRAVEL-501..504.
+      required: false
+      schema:
+        type: string
+        format: date
   headers:
     XRequestId:
       description: Identifiant de correlation a fournir au support en cas d'incident.
