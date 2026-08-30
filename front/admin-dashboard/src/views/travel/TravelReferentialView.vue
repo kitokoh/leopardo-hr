@@ -20,7 +20,7 @@
           :class="activeTab === tab.key
             ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25'
             : 'glass-card text-slate-600 ring-1 ring-slate-200 dark:text-slate-400 dark:ring-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'"
-          @click="activeTab = tab.key"
+          @click="switchTab(tab.key)"
         >
           {{ tab.label }}
         </button>
@@ -47,8 +47,8 @@
       <DataTable
         :columns="entityConfig.columns"
         :rows="filteredRows"
-        :loading="loading[activeTab]"
-        :error="errors[activeTab]"
+        :loading="isLoading(activeTab)"
+        :error="listError(activeTab)"
         :search-keys="entityConfig.searchKeys"
         :search-placeholder="t('travel.common.search', 'Rechercher…')"
         :empty-message="t('travel.common.noData', 'Aucune donnée')"
@@ -97,7 +97,7 @@
         :message="deleteTarget ? t('travel.common.confirmDeleteBody', 'Cette action est irréversible. Voulez-vous vraiment supprimer « {name} » ?').replace('{name}', String(deleteTarget[entityConfig.labelField || 'name'] || '')) : ''"
         :confirm-label="t('travel.common.delete', 'Supprimer')"
         @confirm="confirmDelete"
-        @cancel="deleteOpen = false"
+        @cancel="closeDelete"
       />
     </template>
   </div>
@@ -370,6 +370,23 @@ function decorate() {
       carrier_label: row.carrier_id ? carrierName(row.carrier_id) : '—'
     }))
   }
+}
+
+function switchTab(key) {
+  activeTab.value = key
+}
+
+function isLoading(key) {
+  return !!loading[key]
+}
+
+function listError(key) {
+  return errors[key] || ''
+}
+
+function closeDelete() {
+  deleteOpen.value = false
+  deleteTarget.value = null
 }
 
 async function init() {

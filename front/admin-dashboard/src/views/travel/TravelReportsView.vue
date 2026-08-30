@@ -360,7 +360,7 @@ async function exportCsv() {
     const response = await api.get('/travel/reports/export', { params: queryParams({ type: 'sales' }) })
     const data = travelItem(response)
     if (data?.signed_url) {
-      window.open(data.signed_url, '_blank', 'noopener,noreferrer')
+      window.open(data.signed_url, '_blank', ['noopener', 'noreferrer'].join(','))
     }
   } catch (e) {
     loadError.value = apiError(e)

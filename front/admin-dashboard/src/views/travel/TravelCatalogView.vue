@@ -68,7 +68,7 @@
             <h2 class="text-sm font-semibold text-slate-900 dark:text-white">
               {{ t('travel.catalog.rentalImagesTitle', 'Images du véhicule') }} — {{ selectedRental.title }}
             </h2>
-            <button class="btn-secondary" @click="selectedRental = null">
+            <button class="btn-secondary" @click="closeRentalImages">
               {{ t('travel.common.close', 'Fermer') }}
             </button>
           </div>
@@ -95,8 +95,8 @@
         <DataTable
           :columns="rentalBookingColumns"
           :rows="rentalBookings"
-          :loading="loading['rental-bookings']"
-          :error="errors['rental-bookings']"
+          :loading="isLoading('rental-bookings')"
+          :error="listError('rental-bookings')"
           :search-keys="['reference']"
           :empty-message="t('travel.common.noData', 'Aucune donnée')"
         >
@@ -108,7 +108,7 @@
           </template>
           <template #row-actions="{ row }">
             <button
-              v-if="['pending', 'confirmed'].includes(row.status)"
+              v-if="isActiveBookingStatus(row.status)"
               class="text-sm font-medium text-amber-600 hover:text-amber-800 dark:text-amber-400"
               @click="openRentalCancel(row)"
             >
@@ -160,7 +160,7 @@
             <h2 class="text-sm font-semibold text-slate-900 dark:text-white">
               {{ t('travel.catalog.hotelRoomsTitle', 'Chambres de l\u2019hôtel') }} — {{ selectedHotel.name }}
             </h2>
-            <button class="btn-secondary" @click="selectedHotel = null">
+            <button class="btn-secondary" @click="closeHotelRooms">
               {{ t('travel.common.close', 'Fermer') }}
             </button>
           </div>
@@ -201,7 +201,7 @@
         :busy="saving"
         :error="formError"
         @save="saveRental"
-        @cancel="rentalModalOpen = false"
+        @cancel="closeRentalModal"
       />
 
       <TravelFormModal
@@ -212,7 +212,7 @@
         :busy="saving"
         :error="formError"
         @save="saveHotel"
-        @cancel="hotelModalOpen = false"
+        @cancel="closeHotelModal"
       />
 
       <TravelFormModal
@@ -223,7 +223,7 @@
         :busy="saving"
         :error="formError"
         @save="saveRoom"
-        @cancel="roomModalOpen = false"
+        @cancel="closeRoomModal"
       />
 
       <TravelFormModal
@@ -234,7 +234,7 @@
         :busy="saving"
         :error="formError"
         @save="confirmRentalCancel"
-        @cancel="rentalCancelModalOpen = false"
+        @cancel="closeRentalCancelModal"
       />
 
       <ConfirmDialog
@@ -243,7 +243,7 @@
         :message="deleteMessage"
         :confirm-label="t('travel.common.delete', 'Supprimer')"
         @confirm="confirmDelete"
-        @cancel="deleteOpen = false"
+        @cancel="closeDelete"
       />
     </template>
   </div>
@@ -425,6 +425,50 @@ function switchTab(key) {
   if (key === 'rental-bookings' && lists['rental-bookings'].length === 0) {
     load('rental-bookings')
   }
+}
+
+function isActiveBookingStatus(status) {
+  return ['pending', 'confirmed'].includes(status)
+}
+
+function isLoading(key) {
+  return !!loading[key]
+}
+
+function listError(key) {
+  return errors[key] || ''
+}
+
+function closeRentalImages() {
+  selectedRental.value = null
+}
+
+function closeHotelRooms() {
+  selectedHotel.value = null
+}
+
+function closeRentalModal() {
+  rentalModalOpen.value = false
+  editingRental.value = null
+}
+
+function closeHotelModal() {
+  hotelModalOpen.value = false
+  editingHotel.value = null
+}
+
+function closeRoomModal() {
+  roomModalOpen.value = false
+}
+
+function closeRentalCancelModal() {
+  rentalCancelModalOpen.value = false
+  rentalCancelTarget.value = null
+}
+
+function closeDelete() {
+  deleteOpen.value = false
+  deleteAction.value = null
 }
 
 async function init() {

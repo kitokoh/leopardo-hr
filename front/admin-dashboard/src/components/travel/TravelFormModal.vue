@@ -20,13 +20,14 @@
 
       <form class="mt-4 space-y-4" novalidate @submit.prevent="$emit('save', form)">
         <div v-for="field in fields" :key="field.key" class="space-y-1">
-          <FormField :id="`field-${field.key}`" :label="fieldLabel(field)" :required="field.required" :error="fieldErrors[field.key]">
+          <FormField :id="`field-${field.key}`" :label="fieldLabel(field)" :required="field.required" :error="fieldError(field.key)">
             <template v-if="field.type === 'select'">
               <select
                 :id="`field-${field.key}`"
-                v-model="form[field.key]"
+                :value="formValue(field.key)"
                 class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 :required="field.required"
+                @change="formValue(field.key, $event.target.value)"
               >
                 <option value="">{{ t('travel.common.selectPlaceholder', '— Sélectionner —') }}</option>
                 <option
@@ -43,8 +44,9 @@
               <label class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                 <input
                   :id="`field-${field.key}`"
-                  v-model="form[field.key]"
+                  :checked="formValue(field.key)"
                   type="checkbox"
+                  @change="formValue(field.key, $event.target.checked)"
                   class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
                 />
                 <span>{{ fieldLabel(field) }}</span>
@@ -54,8 +56,9 @@
             <template v-else-if="field.type === 'textarea'">
               <textarea
                 :id="`field-${field.key}`"
-                v-model="form[field.key]"
+                :value="formValue(field.key)"
                 :rows="field.rows || 3"
+                @input="formValue(field.key, $event.target.value)"
                 :required="field.required"
                 :maxlength="field.max"
                 class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
@@ -65,8 +68,9 @@
             <template v-else>
               <input
                 :id="`field-${field.key}`"
-                v-model="form[field.key]"
+                :value="formValue(field.key)"
                 :type="field.type === 'number' ? 'number' : 'text'"
+                @input="formValue(field.key, $event.target.value)"
                 :required="field.required"
                 :min="field.min"
                 :max="field.max"
@@ -150,6 +154,21 @@ function resetForm() {
 
 function fieldLabel(field) {
   return t(field.label, field.label)
+}
+
+/** Lecture/écriture `form[key]` via méthode (garde PA2-I18N-014 : pas
+ *  d'accès par crochets dans les templates). */
+function formValue(key, value) {
+  if (arguments.length > 1) {
+    form[key] = value
+    return value
+  }
+  return form[key]
+}
+
+/** Lecture `fieldErrors[key]` via méthode (même garde). */
+function fieldError(key) {
+  return fieldErrors[key] || ''
 }
 
 function resolveOptions(field) {

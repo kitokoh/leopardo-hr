@@ -87,7 +87,7 @@
               {{ t('travel.bookings.confirm', 'Confirmer') }}
             </button>
             <button
-              v-if="['pending', 'confirmed'].includes(row.status)"
+              v-if="isActiveBookingStatus(row.status)"
               class="text-sm font-medium text-amber-600 hover:text-amber-800 dark:text-amber-400"
               @click="openCancel(row)"
             >
@@ -118,7 +118,7 @@
             <h3 class="text-lg font-bold text-slate-900 dark:text-white">
               {{ t('travel.bookings.detailTitle', 'Réservation') }} {{ detail.reference }}
             </h3>
-            <button class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800" @click="detail = null">
+            <button class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800" @click="closeDetail">
               <XMarkIcon class="h-5 w-5" />
             </button>
           </div>
@@ -189,7 +189,7 @@
           </div>
 
           <div class="mt-6 flex justify-end gap-2">
-            <button class="btn-secondary" @click="detail = null">
+            <button class="btn-secondary" @click="closeDetail">
               {{ t('travel.common.close', 'Fermer') }}
             </button>
           </div>
@@ -205,7 +205,7 @@
         :busy="saving"
         :error="formError"
         @save="submitReason"
-        @cancel="reasonModalOpen = false"
+        @cancel="closeReasonModal"
       />
 
       <ConfirmDialog
@@ -214,7 +214,7 @@
         :message="confirmMessage"
         :confirm-label="confirmLabel"
         @confirm="runConfirm"
-        @cancel="confirmOpen = false"
+        @cancel="closeConfirm"
       />
     </template>
   </div>
@@ -319,6 +319,24 @@ const reasonTitle = computed(() =>
     ? t('travel.bookings.refundTitle', 'Rembourser la réservation')
     : t('travel.bookings.cancelTitle', 'Annuler la réservation')
 )
+
+function isActiveBookingStatus(status) {
+  return ['pending', 'confirmed'].includes(status)
+}
+
+function closeDetail() {
+  detail.value = null
+}
+
+function closeReasonModal() {
+  reasonModalOpen.value = false
+  reasonTarget.value = null
+}
+
+function closeConfirm() {
+  confirmOpen.value = false
+  confirmAction.value = null
+}
 
 function sourceLabel(source) {
   const labels = {
