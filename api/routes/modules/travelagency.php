@@ -17,23 +17,23 @@
  * Référence : docs/specifications/SOLUTION_TRAVEL_AGENCY.md (§7 API v1).
  */
 
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.travelagency'])
