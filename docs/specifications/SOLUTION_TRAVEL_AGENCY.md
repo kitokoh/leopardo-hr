@@ -670,6 +670,45 @@ rejouables.
 
 ---
 
+### 8.6 Intégrations livrées (TRAVEL-414..418, #6066..#6070)
+
+- `travel:outbox-dispatch` — consommation idempotente de `travel_outbox_events`
+  (claim atomique avec lease, retry backoff, dead-letter ; pattern #5741).
+- `travel:settle-sales` — synthèse mensuelle `travel.sales.settled.v1`
+  (période, montants minor units, devise, compteurs) ; rejouable par période.
+- `travel:expire-pending-bookings` — expiration des réservations pending
+  (annulation + libération des sièges + événement `travel.booking.cancelled.v1`).
+- `POST /travel/contact` — formulaire de contact → `travel.contact.submitted.v1`
+  (le BC CRM crée le lead ; aucun import direct).
+- Notifications voyageur : registre `travel_customer_contacts` (consentement
+  par canal) + consommateur in-app BC-13 / email transactionnel externe.
+
+### 8.7 Contenu & monétisation livrés (TRAVEL-904..908, #6107..#6111)
+
+- Quiz & jeu-concours : `travel_quizzes`/`travel_quiz_questions`/
+  `travel_quiz_participations` ; notation serveur, participation unique par
+  (quiz, email), la bonne réponse n'est jamais exposée.
+- Annonces payantes : référentiels `travel_advert_types`/`travel_advert_positions`
+  (code unique par tenant), grille `travel_advert_prices` (minor units, devise
+  tenant), `travel_adverts` — prix calculé serveur, paiement idempotent,
+  validation `travel.manage`, visible uniquement payée+validée+non expirée,
+  expiration (`travel:expire-adverts`) et renouvellement payé.
+
+### 8.8 Annuaire & notifications legacy livrés (TRAVEL-909/910, #6112/#6113)
+
+- Sites touristiques : `travel_tourist_sites` (nom, description redigée, ville,
+  géo, statut) — CRUD + recherche par ville/nom.
+- Notifications legacy gv-back : la file maison n'est pas reproduite ; envoi
+  manuel via canaux plateforme (email / in-app BC-13) + consentement
+  (`travel_customer_contacts`), endpoint `POST /travel/contacts/{contact}/notify`.
+
+### 8.9 Import legacy & qualité livrés (TRAVEL-1003/1004, #6116/#6117)
+
+- CLI `leopardo:travel:import-legacy` (mapping documenté, idempotent,
+  dry-run, rapport ; consentement jamais accordé par l'import).
+- Qualité du seed géographique versionné (ISO 3166-1, rejouable, zéro
+  ville orpheline).
+
 ## 9. Sécurité & RGPD
 
 | Sujet | Mesure |

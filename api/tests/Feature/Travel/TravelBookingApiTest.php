@@ -179,6 +179,60 @@ class TravelBookingApiTest extends TestCase
         ])->assertStatus(409);
     }
 
+    public function test_only_one_booking_wins_the_last_seat_under_race(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->activateTravel($company);
+        $this->principal($company);
+
+        // Trajet avec UN SEUL siège libre : la course porte sur ce siège.
+        ['trip' => $trip, 'class' => $class] = app(TenantManager::class)->withinTenant($company, function (): array {
+            $trip = TravelTrip::factory()->create(['status' => 'published', 'total_seats' => 1]);
+            app(GenerateTripSeatsAction::class)->execute($trip);
+
+            $class = TravelClass::factory()->create();
+            TravelTripPrice::factory()->create([
+                'trip_id' => $trip->id,
+                'class_id' => $class->id,
+                'adult_price_minor' => 15000,
+            ]);
+
+            return ['trip' => $trip->refresh(), 'class' => $class];
+        });
+
+        $passenger = ['full_name' => 'Jean Dupont', 'age_category' => 'adult', 'class_id' => $class->id];
+
+        // Première réservation : gagne le dernier siège (statut 201).
+        $first = $this->postJson('/api/v1/travel/bookings', [
+            'trip_id' => $trip->id,
+            'booking_source' => 'office',
+            'idempotency_key' => 'race-001',
+            'passengers' => [$passenger],
+        ])->assertStatus(201)
+            ->assertJsonPath('data.passengers.0.seat_number', 1);
+
+        // Seconde réservation (clé d'idempotence différente) : le verrou
+        // transactionnel a sérialisé l'accès → 409 SEATS_UNAVAILABLE.
+        $this->postJson('/api/v1/travel/bookings', [
+            'trip_id' => $trip->id,
+            'booking_source' => 'office',
+            'idempotency_key' => 'race-002',
+            'passengers' => [$passenger],
+        ])->assertStatus(409);
+
+        // Une seule réservation existe sur ce trajet, et elle possède le siège.
+        [$bookingCount, $seatBookingId] = app(TenantManager::class)->withinTenant($company, function () use ($trip): array {
+            return [
+                TravelBooking::query()->where('trip_id', $trip->id)->count(),
+                TravelTripSeat::query()->where('trip_id', $trip->id)->value('booking_id'),
+            ];
+        });
+
+        $this->assertSame(1, $bookingCount);
+        $this->assertSame($first->json('data.id'), $seatBookingId);
+    }
+
     public function test_booking_of_another_tenant_returns_404(): void
     {
         /** @var Company $companyA */

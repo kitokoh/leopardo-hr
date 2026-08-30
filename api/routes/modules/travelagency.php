@@ -30,12 +30,20 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyRateController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPositionController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPriceController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertTypeController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCustomerContactController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelLoyaltyController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPartnerController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuoteController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicContactController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuizController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicContactLinkController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRoundTripController;
@@ -43,6 +51,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteController
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTouristSiteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
@@ -228,6 +237,66 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/comments/{travelComment}/report', [TravelCommentController::class, 'report']);
         Route::delete('/comments/{travelComment}', [TravelCommentController::class, 'destroy']);
 
+        // ── Quiz & jeu-concours (TRAVEL-904/#6107) ─────────────────────────
+        Route::get('/quizzes', [TravelQuizController::class, 'index']);
+        Route::post('/quizzes', [TravelQuizController::class, 'store']);
+        Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
+        Route::post('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'storeQuestion']);
+        Route::get('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'questionsIndex']); // TRAVEL-914/#6422 — admin (avec bonne réponse)
+        Route::put('/quizzes/{travelQuiz}/questions/{travelQuizQuestion}', [TravelQuizController::class, 'updateQuestion']); // TRAVEL-914/#6422
+        Route::delete('/quizzes/{travelQuiz}/questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']); // TRAVEL-914/#6422
+        Route::put('/quizzes/{travelQuiz}', [TravelQuizController::class, 'update']); // TRAVEL-914/#6422
+        Route::post('/quizzes/{travelQuiz}/participate', [TravelQuizController::class, 'participate']);
+        Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
+
+        // ── Annonces : référentiels (TRAVEL-905/#6108) ─────────────────────
+        Route::get('/advert-types', [TravelAdvertTypeController::class, 'index']);
+        Route::post('/advert-types', [TravelAdvertTypeController::class, 'store']);
+        Route::put('/advert-types/{travelAdvertType}', [TravelAdvertTypeController::class, 'update']); // TRAVEL-914/#6422
+        Route::delete('/advert-types/{travelAdvertType}', [TravelAdvertTypeController::class, 'destroy']);
+        Route::get('/advert-positions', [TravelAdvertPositionController::class, 'index']);
+        Route::post('/advert-positions', [TravelAdvertPositionController::class, 'store']);
+        Route::put('/advert-positions/{travelAdvertPosition}', [TravelAdvertPositionController::class, 'update']); // TRAVEL-914/#6422
+        Route::delete('/advert-positions/{travelAdvertPosition}', [TravelAdvertPositionController::class, 'destroy']);
+
+        // ── Annonces : grille tarifaire (TRAVEL-906/#6109) ─────────────────
+        Route::get('/advert-prices', [TravelAdvertPriceController::class, 'index']);
+        Route::post('/advert-prices', [TravelAdvertPriceController::class, 'store']);
+        Route::put('/advert-prices/{travelAdvertPrice}', [TravelAdvertPriceController::class, 'update']); // TRAVEL-914/#6422
+        Route::delete('/advert-prices/{travelAdvertPrice}', [TravelAdvertPriceController::class, 'destroy']);
+
+        // ── Annonces : cycle de vie (TRAVEL-907/908/#6110/#6111) ───────────
+        Route::get('/adverts', [TravelAdvertController::class, 'index']);
+        Route::get('/adverts/manage', [TravelAdvertController::class, 'manageIndex']); // TRAVEL-914/#6422 — AVANT /adverts/{travelAdvert}
+        Route::post('/adverts', [TravelAdvertController::class, 'store']);
+        Route::get('/adverts/{travelAdvert}', [TravelAdvertController::class, 'show']);
+        Route::post('/adverts/{travelAdvert}/pay', [TravelAdvertController::class, 'pay']);
+        Route::post('/adverts/{travelAdvert}/validate', [TravelAdvertController::class, 'validate']);
+        Route::post('/adverts/{travelAdvert}/reject', [TravelAdvertController::class, 'reject']);
+        Route::post('/adverts/{travelAdvert}/renew', [TravelAdvertController::class, 'renew']);
+
+        // ── Sites touristiques (TRAVEL-909/#6112) ──────────────────────────
+        Route::get('/tourist-sites', [TravelTouristSiteController::class, 'index']);
+        Route::post('/tourist-sites', [TravelTouristSiteController::class, 'store']);
+        Route::get('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'show']);
+        Route::put('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'update']);
+        Route::delete('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'destroy']);
+
+        // ── Contacts admin (TRAVEL-913/#6421/#6425) : liste + consentements par canal
+        Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
+        Route::post('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent']);
+        Route::put('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent']);
+        Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsentChannel']); // TRAVEL-913/#6425
+
+        // ── Notifications manuelles legacy → canaux plateforme (TRAVEL-910/#6113)
+        Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
+
+        // ── Formulaire de contact → lead CRM (TRAVEL-416/#6068) ────────────
+        Route::post('/contact', [TravelContactController::class, 'store']);
+
+        // ── Lien public du formulaire de contact (TRAVEL-913/#6425) ────────────
+        Route::post('/public-contact-link', [TravelPublicContactLinkController::class, 'store']);
+
         // ── Engagement — likes/partages/notes (TRAVEL-903/#6106) ────────────
         Route::post('/articles/{travelArticle}/like', [TravelEngagementController::class, 'like']);
         Route::post('/articles/{travelArticle}/unlike', [TravelEngagementController::class, 'unlike']);
@@ -246,3 +315,21 @@ Route::middleware(['throttle:api', 'travel.partner'])
     ->group(function (): void {
         Route::post('/sync', [TravelPartnerController::class, 'sync']);
     });
+
+/**
+ * Formulaire de contact PUBLIC (TRAVEL-913/#6425) — route PUBLIQUE protégée
+ * par le middleware `signed` (lien signé expirable : company_id paramètre
+ * signé). Même logique que POST /travel/contact (consentement obligatoire,
+ * événement travel.contact.submitted.v1). Pattern : restaurant/public/*.
+ */
+Route::post('/travel/public/contact', [TravelPublicContactController::class, 'store'])
+    ->middleware(['signed', 'throttle:60,1'])
+    ->name('travel.public.contact.store');
+
+// ── Formulaire de contact PUBLIC (TRAVEL-913/#6425) ──────────────────────
+// Hors groupe auth : URL signée (pattern restaurant/public/*, RESTO-805) —
+// le `company` est un paramètre signé (forger un lien pour un autre tenant
+// est impossible) ; throttle dédié anti-spam.
+Route::post('/travel/public/contact', [TravelPublicContactController::class, 'store'])
+    ->middleware(['signed', 'throttle:60,1'])
+    ->name('travel.public.contact.store');

@@ -159,28 +159,28 @@
     },
     {
       "id": "travelagency",
-      "label": "TravelAgency (verticale voyage, BC-24)",
+      "label": "TravelAgency (verticale agence de voyage, BC-24)",
       "go_decision": "pending",
       "gates": [
         {
           "id": "manifest",
           "label": "Manifest + activation tenant (TRAVEL-105/106)",
-          "status": "validated"
+          "status": "pending"
         },
         {
           "id": "core_flow",
-          "label": "Flux roi vente billet en ligne (GJ-TRAVEL-01)",
+          "label": "Parcours réseau → trajet → réservation → passagers → billet → check-in (TRAVEL-2xx/3xx)",
           "status": "pending"
         },
         {
           "id": "api_security",
-          "label": "Matrice permissions travel.* + Policies RBAC (TRAVEL-306)",
-          "status": "validated"
+          "label": "API, Policies, matrice RBAC travel.* (TRAVEL-322)",
+          "status": "pending"
         },
         {
           "id": "runbook",
-          "label": "Runbook pilote + recette UAT (TRAVEL-1010)",
-          "status": "validated"
+          "label": "Runbook pilote + recette UAT (TRAVEL-050)",
+          "status": "pending"
         },
         {
           "id": "security_review",
@@ -189,22 +189,22 @@
         },
         {
           "id": "performance",
-          "label": "Budgets p95 endpoints critiques (MAT-014)",
+          "label": "Budgets performance (MAT-014)",
           "status": "pending"
         },
         {
           "id": "observability",
-          "label": "Runbooks exploitation + supervision",
+          "label": "Outbox + jobs surveillés (logs, dead-letter)",
           "status": "pending"
         },
         {
           "id": "golden_journey",
-          "label": "Golden journey E2E (TRAVEL-1007)",
+          "label": "GJ-TRAVEL-01 passe en CI (MAT-013, TRAVEL-1007)",
           "status": "pending"
         },
         {
-          "id": "signed_uat",
-          "label": "Recette métier signée (UAT)",
+          "id": "recette",
+          "label": "Recette UAT signée par le chef de projet (TRAVEL-051)",
           "status": "pending"
         }
       ]
