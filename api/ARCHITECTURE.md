@@ -104,6 +104,7 @@ restent libres. La garde est en veille tant que `Modules/CRM` n'existe pas.
 | `Modules/Fleet` | ✅ routes/modules/hr_extended.php | ✅ complet | `FleetServiceProvider` |
 | `Modules/Cameras` | ✅ routes/modules/cameras.php | ✅ complet | `CamerasServiceProvider` |
 | `Modules/CRM` | 🔶 en cours (squelette #5707, routes #5712) | 🔶 Application/Domain/Infrastructure/Interfaces + Providers (squelette) | `CrmServiceProvider` |
+| `Modules/FuelStation` | ✅ routes/modules/fuelstation.php | ✅ DDD complet (Application/Domain/Infrastructure/Interfaces/Providers) | `FuelStationServiceProvider` |
 | `Modules/Growth` | ✅ routes/modules/growth.php | ✅ complet | `GrowthServiceProvider` |
 | `Modules/Marketing` | ✅ routes/modules/marketing.php | ✅ complet | `MarketingServiceProvider` |
 | `Modules/CRM` | ✅ routes/modules/crm.php | 🔶 V1 en construction (canaux #5725, automatisations #5728, exports #5729) | `CrmServiceProvider` |

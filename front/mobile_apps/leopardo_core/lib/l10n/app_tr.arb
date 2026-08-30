@@ -2507,8 +2507,22 @@
   "settingsBiometricSubmitFailed": "Gönderim başarısız: {error}",
   "settingsNotificationsSaveFailed": "Bildirim tercihleri kaydedilemedi: {error}",
   "companydetailPlanWithPrice": "{planName} — {price}",
+<<<<<<< HEAD
   "crmHubTitle": "CRM",
   "crmHubSubtitle": "Şirketinizin hesapları, kişileri, potansiyel müşterileri ve fırsatları.",
+=======
+  "crmTitle": "Müşteri CRM",
+  "crmSubtitle": "Potansiyel müşterilerinizi, hesaplarınızı, kişilerinizi ve fırsatlarınızı yönetin — veriler şirket başına (tenant) izole edilir.",
+  "crmIsolationnote": "Tenant kapsamlı veri: bu alandan Leopardo ticari CRM'ine erişim yoktur.",
+  "crmLoading": "Yükleniyor…",
+  "crmFeaturelocked": "CRM modülü şirketiniz için etkin değil.",
+  "crmErrorloading": "Veriler yüklenemedi.",
+  "crmSearchplaceholder": "Ara…",
+  "crmRefresh": "Yenile",
+  "crmPaginationprev": "Önceki",
+  "crmPaginationnext": "Sonraki",
+  "crmPaginationpage": "Sayfa",
+>>>>>>> origin/main
   "crmAccountsTitle": "Hesaplar",
   "crmAccountsDescription": "Şirketinizin müşteri kuruluşları",
   "crmAccountsSubtitle": "Hesap listesi (tenant kapsamlı).",
@@ -2533,6 +2547,7 @@
   "crmLeadsColsource": "Kaynak",
   "crmLeadsColemail": "E-posta",
   "crmLeadsColcreated": "Oluşturulma",
+<<<<<<< HEAD
   "crmOpportunities": "Fırsatlar",
   "crmAccountDetail": "Hesap",
   "crmStage": "Aşama",
@@ -2558,6 +2573,8 @@
   "crmPaginationprev": "Önceki",
   "crmPaginationnext": "Sonraki",
   "crmPaginationpage": "Sayfa",
+=======
+>>>>>>> origin/main
   "crmPipelineTitle": "Pipeline",
   "crmPipelineDescription": "Aşamalara göre fırsat genel bakışı",
   "crmPipelineSubtitle": "Aşamalara göre gruplandırılmış fırsatlar (tenant kapsamlı).",

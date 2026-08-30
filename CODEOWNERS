@@ -80,3 +80,4 @@
 #   3. Dès qu'un second mainteneur humain rejoint, l'ajouter ici par chemin
 #      (ex. @second-maintainer) ET activer `require_code_owner_reviews` pour
 #      répartir les révisions obligatoires.
+/api/app/Modules/FuelStation/ @kitokoh
