@@ -2332,6 +2332,252 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           description: Validation ou regle metier
+  /edu-manager/imports/preview:
+    post:
+      tags:
+      - EduManager
+      summary: Preview d un import CSV (aucune écriture)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - entity_type
+              - file
+              properties:
+                entity_type:
+                type: string
+                enum:
+                - students
+                - guardians
+                - classes
+                - subjects
+                - grades
+                file:
+                type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/imports/{import}/commit:
+    post:
+      tags:
+      - EduManager
+      summary: Commit idempotent d un import
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: import
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/imports/{import}/cancel:
+    post:
+      tags:
+      - EduManager
+      summary: Annuler un import avant commit
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: import
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/exports/{kind}:
+    get:
+      tags:
+      - EduManager
+      summary: Exporter un CSV (students|presence|grades) audité
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: kind
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/reports/presence:
+    get:
+      tags:
+      - EduManager
+      summary: Rapport de présence agrégé (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class_id
+        in: query
+        schema:
+          type: integer
+      - name: from
+        in: query
+        schema:
+          type: string
+      - name: to
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/reports/enrollment:
+    get:
+      tags:
+      - EduManager
+      summary: Rapport d inscriptions par campus (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campus_id
+        in: query
+        schema:
+          type: integer
+      - name: academic_year_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/reports/results:
+    get:
+      tags:
+      - EduManager
+      summary: Moyennes par matière (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campus_id
+        in: query
+        schema:
+          type: integer
+      - name: academic_year_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/reports/capacity:
+    get:
+      tags:
+      - EduManager
+      summary: Capacité par campus (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campus_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/students/{student}/anonymize:
+    post:
+      tags:
+      - EduManager
+      summary: Anonymiser un élève (RGPD, direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: student
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/students/{student}/privacy-export:
+    get:
+      tags:
+      - EduManager
+      summary: Export individuel RGPD (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: student
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
   /demo-users:
     get:
       tags:
