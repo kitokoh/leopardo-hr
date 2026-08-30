@@ -241,10 +241,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // ── Contacts admin (TRAVEL-913/#6421/#6425) : liste + consentements par canal
         Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
         Route::post('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent']);
-<<<<<<< HEAD
-=======
         Route::put('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent']);
->>>>>>> origin/feat/travel-101-202-foundations
         Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsentChannel']); // TRAVEL-913/#6425
 
         // ── Notifications manuelles legacy → canaux plateforme (TRAVEL-910/#6113)

@@ -57,21 +57,12 @@
     },
     "admin": {
       "checksums": {
-<<<<<<< HEAD
-        "ar": "78db154d337cf1fdea49928862f5c848df9dce2a86db58a65c37eeb3cc8445fc",
-        "en": "8e1fff9320e15f6fa035c68bc5a26a896fc52d22364d5563c7da947efd595f55",
-        "fr": "6f4fab1743c3ed0cb2bcddd9f6b7a568a2698edcc141b2e8eea220eb1138ce14",
-        "tr": "50e3906b6472cc88049031e2f6279444a6beded622c99945c87f8862e6782d24"
-      },
-      "updated_at": "2026-08-30T17:55:36.884Z"
-=======
         "ar": "5d7b0b6ff330990846a893de4962f99774552294b5c76b9c907ceb663eb65372",
         "en": "811c3590da19f2a937f5332f2a615000ccbbe234f210ae78eae4ea0bf85c6748",
         "fr": "52551fbfbac253d7414932db5b512a3423ff5a78ff39bcda8c1fb9e38860b99e",
         "tr": "7404e0e92d3b70f3d2f481bb33d40d82cd017ea0d3b1ac9fd7fdfb564dd10c2c"
       },
       "updated_at": "2026-08-30T18:01:46.789Z"
->>>>>>> origin/feat/travel-101-202-foundations
     }
   }
 }

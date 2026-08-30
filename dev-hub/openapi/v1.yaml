@@ -4075,11 +4075,7 @@ paths:
     put:
       tags:
       - Travel
-<<<<<<< HEAD
-      summary: 'TRAVEL-914 — Mise à jour d''une grille tarifaire'
-=======
       summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
->>>>>>> origin/feat/travel-101-202-foundations
       security:
       - BearerAuth: []
       parameters:
@@ -4094,12 +4090,6 @@ paths:
           application/json:
             schema:
               type: object
-<<<<<<< HEAD
-              required:
-              - code
-              - label
-=======
->>>>>>> origin/feat/travel-101-202-foundations
               properties:
                 code:
                   type: string
@@ -4109,18 +4099,10 @@ paths:
                   maxLength: 120
       responses:
         '200':
-<<<<<<< HEAD
-          description: Mis à jour
-        '403':
-          description: Rôle insuffisant
-        '404':
-          description: Introuvable
-=======
           description: Élément mis à jour
         '422':
           description: Code dupliqué (tenant)
 
->>>>>>> origin/feat/travel-101-202-foundations
     delete:
       tags:
       - Travel
@@ -4183,11 +4165,7 @@ paths:
     put:
       tags:
       - Travel
-<<<<<<< HEAD
-      summary: 'TRAVEL-914 — Mise à jour d''un type d''annonce'
-=======
       summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
->>>>>>> origin/feat/travel-101-202-foundations
       security:
       - BearerAuth: []
       parameters:
@@ -4202,12 +4180,6 @@ paths:
           application/json:
             schema:
               type: object
-<<<<<<< HEAD
-              required:
-              - code
-              - label
-=======
->>>>>>> origin/feat/travel-101-202-foundations
               properties:
                 code:
                   type: string
@@ -4217,18 +4189,10 @@ paths:
                   maxLength: 120
       responses:
         '200':
-<<<<<<< HEAD
-          description: Mis à jour
-        '403':
-          description: Rôle insuffisant
-        '404':
-          description: Introuvable
-=======
           description: Élément mis à jour
         '422':
           description: Code dupliqué (tenant)
 
->>>>>>> origin/feat/travel-101-202-foundations
     delete:
       tags:
       - Travel
@@ -4291,11 +4255,7 @@ paths:
     put:
       tags:
       - Travel
-<<<<<<< HEAD
-      summary: 'TRAVEL-914 — Mise à jour d''une position'
-=======
       summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
->>>>>>> origin/feat/travel-101-202-foundations
       security:
       - BearerAuth: []
       parameters:
@@ -4310,12 +4270,6 @@ paths:
           application/json:
             schema:
               type: object
-<<<<<<< HEAD
-              required:
-              - code
-              - label
-=======
->>>>>>> origin/feat/travel-101-202-foundations
               properties:
                 code:
                   type: string
@@ -4325,18 +4279,10 @@ paths:
                   maxLength: 120
       responses:
         '200':
-<<<<<<< HEAD
-          description: Mis à jour
-        '403':
-          description: Rôle insuffisant
-        '404':
-          description: Introuvable
-=======
           description: Élément mis à jour
         '422':
           description: Code dupliqué (tenant)
 
->>>>>>> origin/feat/travel-101-202-foundations
     delete:
       tags:
       - Travel
@@ -4358,34 +4304,13 @@ paths:
     get:
       tags:
       - Travel
-<<<<<<< HEAD
-      summary: 'TRAVEL-914 — Liste admin des annonces (toutes statuts, RBAC modération)'
-=======
       summary: 'TRAVEL-914 — Annonces en gestion (tous statuts, filtrables)'
->>>>>>> origin/feat/travel-101-202-foundations
       security:
       - BearerAuth: []
       parameters:
       - name: status
         in: query
         required: false
-<<<<<<< HEAD
-        schema:
-          type: string
-          enum:
-          - draft
-          - submitted
-          - paid
-          - validated
-          - rejected
-          - expired
-          - archived
-      responses:
-        '200':
-          description: Annonces + statuts/paiements/validations
-        '403':
-          description: Rôle insuffisant
-=======
         description: Filtre par statut (draft, submitted, paid, validated, rejected, expired, archived)
         schema:
           type: string
@@ -4394,7 +4319,6 @@ paths:
           description: Annonces avec statuts (rôles manager)
         '403':
           description: Rôle manager requis
->>>>>>> origin/feat/travel-101-202-foundations
   /travel/adverts:
     get:
       tags:
@@ -4613,10 +4537,23 @@ paths:
       tags:
       - Travel
       summary: 'TRAVEL-904 — Détail d''un quiz (questions SANS réponses correctes)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Quiz + questions
+        '404':
+          description: Introuvable
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut)'
+      summary: 'TRAVEL-914 — Mise à jour d''un quiz (titre, période, statut)'
       security:
       - BearerAuth: []
       parameters:
@@ -4654,68 +4591,6 @@ paths:
           description: Rôle insuffisant
         '404':
           description: Quiz introuvable
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: travelQuiz
-        in: path
-        required: true
-        schema:
-          type: integer
-      responses:
-        '200':
-          description: Quiz + questions
-        '404':
-          description: Introuvable
-    put:
-      tags:
-      - Travel
-      summary: 'TRAVEL-914 — Mise à jour d''un quiz (gestion)'
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: travelQuiz
-        in: path
-        required: true
-        schema:
-          type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - title
-              properties:
-                title:
-                  type: string
-                  maxLength: 160
-                description:
-                  type: string
-                  maxLength: 2000
-                starts_at:
-                  type: string
-                  format: date-time
-                ends_at:
-                  type: string
-                  format: date-time
-                max_participations_per_contact:
-                  type: integer
-                  default: 1
-                status:
-                  type: string
-                  enum:
-                  - draft
-                  - active
-                  - closed
-      responses:
-        '200':
-          description: Quiz mis à jour
-        '403':
-          description: Rôle insuffisant
-        '404':
-          description: Introuvable
   /travel/quizzes/{travelQuiz}/questions:
     post:
       tags:
@@ -4767,11 +4642,7 @@ paths:
     get:
       tags:
       - Travel
-<<<<<<< HEAD
-      summary: 'TRAVEL-914 — Questions d''un quiz (gestion, avec bonne réponse — réservé rôles gestion)'
-=======
-      summary: 'TRAVEL-914 — Questions d'un quiz (admin, bonne réponse exposée)'
->>>>>>> origin/feat/travel-101-202-foundations
+      summary: 'TRAVEL-914 — Questions d''un quiz (admin, bonne réponse exposée)'
       security:
       - BearerAuth: []
       parameters:
@@ -4782,24 +4653,14 @@ paths:
           type: integer
       responses:
         '200':
-<<<<<<< HEAD
-          description: Questions + correct_option_index
-        '403':
-          description: Rôle insuffisant
-=======
           description: Questions (avec correct_option_index — gestion)
         '403':
           description: Rôle gestion requis
->>>>>>> origin/feat/travel-101-202-foundations
   /travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}:
     put:
       tags:
       - Travel
-<<<<<<< HEAD
-      summary: 'TRAVEL-914 — Mise à jour d''une question (gestion)'
-=======
-      summary: 'TRAVEL-914 — Mise à jour d'une question'
->>>>>>> origin/feat/travel-101-202-foundations
+      summary: 'TRAVEL-914 — Mise à jour d''une question'
       security:
       - BearerAuth: []
       parameters:
@@ -4819,37 +4680,19 @@ paths:
           application/json:
             schema:
               type: object
-<<<<<<< HEAD
-              required:
-              - question
-              - options
-              - correct_option_index
-=======
->>>>>>> origin/feat/travel-101-202-foundations
               properties:
                 question:
                   type: string
                   maxLength: 500
                 options:
                   type: array
-<<<<<<< HEAD
-                  minItems: 2
-=======
->>>>>>> origin/feat/travel-101-202-foundations
                   maxItems: 10
                   items:
                     type: string
                 correct_option_index:
                   type: integer
-<<<<<<< HEAD
-                  minimum: 0
                 points:
                   type: integer
-                  default: 1
-=======
-                points:
-                  type: integer
->>>>>>> origin/feat/travel-101-202-foundations
                 position:
                   type: integer
       responses:
@@ -4858,19 +4701,11 @@ paths:
         '403':
           description: Rôle insuffisant
         '404':
-<<<<<<< HEAD
-          description: Introuvable
-    delete:
-      tags:
-      - Travel
-      summary: 'TRAVEL-914 — Suppression d''une question (gestion)'
-=======
           description: Question introuvable
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Suppression d'une question'
->>>>>>> origin/feat/travel-101-202-foundations
+      summary: 'TRAVEL-914 — Suppression d''une question'
       security:
       - BearerAuth: []
       parameters:
@@ -4889,12 +4724,6 @@ paths:
           description: Question supprimée
         '403':
           description: Rôle insuffisant
-<<<<<<< HEAD
-        '404':
-          description: Introuvable
-
-=======
->>>>>>> origin/feat/travel-101-202-foundations
   /travel/quizzes/{travelQuiz}/participate:
     post:
       tags:
@@ -4997,8 +4826,6 @@ paths:
         '403':
           description: Rôle principal / RH / manager requis
   /travel/contacts/{travelCustomerContact}/consent:
-<<<<<<< HEAD
-=======
     put:
       tags:
       - Travel
@@ -5031,7 +4858,6 @@ paths:
           description: Rôle principal / RH / manager requis
         '404':
           description: Introuvable (ou autre tenant)
->>>>>>> origin/feat/travel-101-202-foundations
     patch:
       tags:
       - Travel
@@ -5345,6 +5171,30 @@ paths:
           description: Tenant introuvable
         '422':
           description: Validation échouée (consentement manquant, bornes)
+  /travel/public-contact-link:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-913 — Génération du lien public signé du formulaire de contact'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expires_in_hours:
+                  type: integer
+                  minimum: 1
+                  maximum: 168
+                  default: 24
+      responses:
+        '201':
+          description: Lien signé généré (contact_url + expires_at)
+        '403':
+          description: Rôle insuffisant (manager requis)
   /travel/contact:
     post:
       tags:
