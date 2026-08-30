@@ -17,6 +17,7 @@ use App\Modules\EduManager\Domain\Models\EduAdmission;
 use App\Modules\EduManager\Domain\Models\EduAssessment;
 use App\Modules\EduManager\Domain\Models\EduAttendance;
 use App\Modules\EduManager\Domain\Models\EduCampus;
+use App\Modules\EduManager\Domain\Models\EduFee;
 use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduCourseSlot;
 use App\Modules\EduManager\Domain\Models\EduGrade;
@@ -32,6 +33,7 @@ use App\Modules\EduManager\Policies\EduAdmissionPolicy;
 use App\Modules\EduManager\Policies\EduAssessmentPolicy;
 use App\Modules\EduManager\Policies\EduAttendancePolicy;
 use App\Modules\EduManager\Policies\EduCampusPolicy;
+use App\Modules\EduManager\Policies\EduFeePolicy;
 use App\Modules\EduManager\Policies\EduClassPolicy;
 use App\Modules\EduManager\Policies\EduCourseSlotPolicy;
 use App\Modules\EduManager\Policies\EduGradePolicy;
@@ -131,6 +133,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(EduStudent::class, EduStudentPolicy::class);
         Gate::policy(EduGuardian::class, EduGuardianPolicy::class);
         Gate::policy(EduStudentGuardian::class, EduStudentGuardianPolicy::class);
+        Gate::policy(EduFee::class, EduFeePolicy::class);
         // — EduManager RBAC scolaire (EDU-009, #5825)
         Gate::policy(EduAcademicYear::class, EduAcademicYearPolicy::class);
         Gate::policy(EduSubject::class, EduSubjectPolicy::class);

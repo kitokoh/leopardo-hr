@@ -2578,6 +2578,313 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           description: Validation ou regle metier
+  /edu-manager/fees:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les frais scolaires (direction, EDU-016)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: student_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - EduManager
+      summary: Creer un frais scolaire (idempotent, direction, EDU-016)
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/fees/{fee}:
+    get:
+      tags:
+      - EduManager
+      summary: Detail d'un frais scolaire (direction, EDU-016)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable
+  /edu-manager/fees/{fee}/pay:
+    post:
+      tags:
+      - EduManager
+      summary: Regler un frais (idempotent, terminal, EDU-016)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/fees/{fee}/cancel:
+    post:
+      tags:
+      - EduManager
+      summary: Annuler un frais (terminal, EDU-016)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/fees/{fee}/waive:
+    post:
+      tags:
+      - EduManager
+      summary: Remise de frais (terminal, direction, EDU-016)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/marketing/eligible-prospects:
+    get:
+      tags:
+      - EduManager
+      summary: Segments de prospects consentis pour campagnes d'admission (EDU-015)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/admissions/{admission}/opt-out:
+    post:
+      tags:
+      - EduManager
+      summary: Opt-out RGPD d'un prospect admission (EDU-015)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: admission
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable
+  /edu-manager/notifications:
+    get:
+      tags:
+      - EduManager
+      summary: Historique des notifications EduManager (direction, EDU-014)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: event_name
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/guardians/me:
+    get:
+      tags:
+      - EduManager
+      summary: Profil du portail guardian (EDU-013)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/guardians/me/students:
+    get:
+      tags:
+      - EduManager
+      summary: Enfants autorises du guardian (aucune enumeration, EDU-013)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/guardians/me/students/{student}/presences:
+    get:
+      tags:
+      - EduManager
+      summary: Presences d'un enfant autorise (EDU-013)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: student
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable
+  /edu-manager/guardians/me/students/{student}/report-cards:
+    get:
+      tags:
+      - EduManager
+      summary: Bulletins publies d'un enfant autorise (notes conditionnees, EDU-013)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: student
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable
+  /edu-manager/guardians/access-links:
+    post:
+      tags:
+      - EduManager
+      summary: Emettre un lien d'acces expirable pour un guardian (direction, EDU-013)
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/guardians/access-links/redeem:
+    post:
+      tags:
+      - EduManager
+      summary: Echanger un lien d'acces expirable (usage unique, EDU-013)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Lien invalide, expire ou deja utilise
   /demo-users:
     get:
       tags:
