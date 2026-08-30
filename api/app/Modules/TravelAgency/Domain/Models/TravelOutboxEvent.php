@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
+use Database\Factories\TravelOutboxEventFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -31,6 +33,9 @@ use Illuminate\Support\Carbon;
 class TravelOutboxEvent extends Model
 {
     use BelongsToCompany;
+
+    /** @use HasFactory<TravelOutboxEventFactory> */
+    use HasFactory;
 
     public const STATUS_PENDING = 'pending';
 

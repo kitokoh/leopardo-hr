@@ -11,6 +11,7 @@ use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -101,7 +102,7 @@ class TravelTripSeatGenerationTest extends TestCase
             TravelTripSeat::factory()->create(['trip_id' => $trip->id, 'seat_number' => 1]);
 
             $this->expectException(QueryException::class);
-            TravelTripSeat::factory()->create(['trip_id' => $trip->id, 'seat_number' => 1]);
+            DB::transaction(fn () => TravelTripSeat::factory()->create(['trip_id' => $trip->id, 'seat_number' => 1]));
         });
     }
 
