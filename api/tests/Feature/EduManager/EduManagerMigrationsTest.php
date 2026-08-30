@@ -31,18 +31,50 @@ class EduManagerMigrationsTest extends TestCase
 
     /** @var list<string> */
     private const TABLES = [
+        // EDU-002 (issue #5818)
         'edu_campuses',
         'edu_students',
         'edu_guardians',
         'edu_student_guardians',
+        // EDU-003 (issue #5819)
+        'edu_academic_years',
+        'edu_classes',
+        'edu_subjects',
+        'edu_teachers',
+        'edu_teacher_subjects',
+        // EDU-004 (issue #5820)
+        'edu_admissions',
+        // EDU-005 (issue #5821)
+        'edu_attendance_records',
+        'edu_attendance_corrections',
+        // EDU-006 (issue #5822)
+        'edu_timetable_slots',
+        // EDU-008 (issue #5824)
+        'edu_report_cards',
     ];
 
     /** @var list<string> */
     private const MIGRATIONS = [
+        // EDU-002 (issue #5818) — ordre chronologique des préfixes.
         '2026_08_30_000101_5818_create_edu_campuses_table',
         '2026_08_30_000102_5818_create_edu_students_table',
         '2026_08_30_000103_5818_create_edu_guardians_table',
         '2026_08_30_000104_5818_create_edu_student_guardians_table',
+        // EDU-003 (issue #5819)
+        '2026_08_30_000201_5819_create_edu_academic_years_table',
+        '2026_08_30_000202_5819_create_edu_classes_table',
+        '2026_08_30_000203_5819_create_edu_subjects_table',
+        '2026_08_30_000204_5819_create_edu_teachers_table',
+        '2026_08_30_000205_5819_create_edu_teacher_subjects_table',
+        // EDU-004 (issue #5820)
+        '2026_08_30_000301_5820_create_edu_admissions_table',
+        // EDU-005 (issue #5821)
+        '2026_08_30_000401_5821_create_edu_attendance_records_table',
+        '2026_08_30_000402_5821_create_edu_attendance_corrections_table',
+        // EDU-006 (issue #5822)
+        '2026_08_30_000501_5822_create_edu_timetable_slots_table',
+        // EDU-008 (issue #5824)
+        '2026_08_30_000701_5824_create_edu_report_cards_table',
     ];
 
     private function newCompany(): Company
