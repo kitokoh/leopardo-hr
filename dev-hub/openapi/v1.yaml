@@ -23083,6 +23083,122 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
+  /delivery/deliveries:
+    get:
+      tags:
+      - Delivery
+      summary: Liste des livraisons du tenant (DELIVERY-201/#6285)
+      description: |
+        Liste paginée des livraisons du tenant courant, filtres statut/source/date.
+        RBAC manager (api.manager) — la matrice fine est le scope de BC-26-D05.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: source
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Liste des livraisons
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Delivery'
+    post:
+      tags:
+      - Delivery
+      summary: Crée une livraison (DELIVERY-201/#6285)
+      description: |
+        Crée une livraison pour le tenant courant. Référence DLV-YYYY-NNNNNN
+        générée serveur. Source + source_reference uniques par tenant (zéro
+        doublon par commande source). Montants en minor units.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - source
+              - type
+              - dropoff_contact
+              - dropoff_address
+              properties:
+                source:
+                  type: string
+                  enum: [manual, restaurant, retail, ecommerce, crm, field]
+                source_reference:
+                  type: string
+                type:
+                  type: string
+                  enum: [parcel, order, food, grocery, medication, document]
+                cod_amount_minor:
+                  type: integer
+                  minimum: 0
+                dropoff_contact:
+                  type: string
+                dropoff_address:
+                  type: string
+                idempotency_key:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Livraison créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Delivery'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /delivery/deliveries/{delivery}:
+    get:
+      tags:
+      - Delivery
+      summary: Détail d'une livraison (DELIVERY-201/#6285)
+      description: |
+        Détail d'une livraison scopé au tenant — 404 si absente OU hors tenant.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: delivery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Livraison
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Delivery'
+        '404':
+          description: Livraison introuvable ou hors tenant
+
   /delivery/ping:
     get:
       tags:
@@ -24898,6 +25014,36 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    Delivery:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+          example: DLV-2026-000123
+        source:
+          type: string
+          enum: [manual, restaurant, retail, ecommerce, crm, field]
+        source_reference:
+          type: string
+          nullable: true
+        type:
+          type: string
+        status:
+          type: string
+          enum: [created, assigned, picked_up, out_for_delivery, arrived, delivered, failed, returned, cancelled]
+        cod_amount_minor:
+          type: integer
+          nullable: true
+        dropoff_contact:
+          type: string
+        dropoff_address:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
     AccountingChartAccount:
       type: object
       properties:
