@@ -351,7 +351,7 @@ test.describe('TravelAgency — contenu & monétisation (TRAVEL-911/#6416)', () 
     await page.goto('/travel')
 
     await page.getByRole('tab', { name: /Sites touristiques/i }).click()
-    await expect(page.getByRole('heading', { name: /Sites touristiques/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /Sites touristiques/i }).first()).toBeVisible({ timeout: 15_000 })
     await expect(page.getByText('Mont Cameroun')).toBeVisible()
     await expect(page.locator('#travel-sites-city-filter')).toBeVisible()
     await expect(page.getByRole('button', { name: /Créer/i })).toBeVisible()
@@ -383,7 +383,7 @@ test.describe('TravelAgency — contacts voyageurs (TRAVEL-912/#6417)', () => {
     await page.getByRole('button', { name: /Notifier/i }).click()
     await expect(page.getByRole('dialog')).toBeVisible({ timeout: 15_000 })
     await page.locator('#travel-notify-message').fill('Bonjour, votre agence vous informe…')
-    await page.getByRole('button', { name: /Envoyer/i }).click()
+    await page.getByRole('button', { name: 'Envoyer', exact: true }).click()
   })
 })
 

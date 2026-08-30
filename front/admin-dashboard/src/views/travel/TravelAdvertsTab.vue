@@ -93,10 +93,12 @@
           :error="formErrors.advert_type_id"
           required
         >
-          <select v-model="form.advert_type_id" class="form-input" required>
-            <option value="">{{ t('travel.form.selectPlaceholder', '— Sélectionner —') }}</option>
-            <option v-for="opt in typeOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
-          </select>
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <select :id="id" v-model="form.advert_type_id" class="form-input" required :aria-invalid="ariaInvalid" :aria-describedby="describedBy">
+              <option value="">{{ t('travel.form.selectPlaceholder', '— Sélectionner —') }}</option>
+              <option v-for="opt in typeOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            </select>
+          </template>
         </FormField>
         <FormField
           :id="'travel-advert-position'"
@@ -104,10 +106,12 @@
           :error="formErrors.advert_position_id"
           required
         >
-          <select v-model="form.advert_position_id" class="form-input" required>
-            <option value="">{{ t('travel.form.selectPlaceholder', '— Sélectionner —') }}</option>
-            <option v-for="opt in positionOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
-          </select>
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <select :id="id" v-model="form.advert_position_id" class="form-input" required :aria-invalid="ariaInvalid" :aria-describedby="describedBy">
+              <option value="">{{ t('travel.form.selectPlaceholder', '— Sélectionner —') }}</option>
+              <option v-for="opt in positionOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            </select>
+          </template>
         </FormField>
         <FormField
           :id="'travel-advert-title'"
@@ -115,14 +119,18 @@
           :error="formErrors.title"
           required
         >
-          <input v-model.trim="form.title" type="text" class="form-input" required maxlength="160" />
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <input :id="id" v-model.trim="form.title" type="text" class="form-input" required maxlength="160" :aria-invalid="ariaInvalid" :aria-describedby="describedBy" />
+          </template>
         </FormField>
         <FormField
           :id="'travel-advert-validity'"
           :label="t('travel.adverts.field.validityDays', 'Durée de validité (jours)')"
           :error="formErrors.validity_days"
         >
-          <input v-model.number="form.validity_days" type="number" class="form-input" min="1" max="365" />
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <input :id="id" v-model.number="form.validity_days" type="number" class="form-input" min="1" max="365" :aria-invalid="ariaInvalid" :aria-describedby="describedBy" />
+          </template>
         </FormField>
         <FormField
           :id="'travel-advert-content'"
@@ -131,7 +139,9 @@
           class="col-span-full"
           required
         >
-          <textarea v-model.trim="form.content" class="form-input" rows="4" required maxlength="2000"></textarea>
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <textarea :id="id" v-model.trim="form.content" class="form-input" rows="4" required maxlength="2000" :aria-invalid="ariaInvalid" :aria-describedby="describedBy"></textarea>
+          </template>
         </FormField>
 
         <div v-if="globalError" class="col-span-full rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">

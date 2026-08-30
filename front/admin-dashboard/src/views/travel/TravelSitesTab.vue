@@ -14,10 +14,12 @@
           :id="'travel-sites-city-filter'"
           :label="t('travel.sites.filterCity', 'Filtrer par ville')"
         >
-          <select v-model="cityFilter" class="form-input" @change="refreshKey += 1">
-            <option value="">{{ t('travel.sites.allCities', 'Toutes les villes') }}</option>
-            <option v-for="opt in cityOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
-          </select>
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <select :id="id" v-model="cityFilter" class="form-input" :aria-invalid="ariaInvalid" :aria-describedby="describedBy" @change="refreshKey += 1">
+              <option value="">{{ t('travel.sites.allCities', 'Toutes les villes') }}</option>
+              <option v-for="opt in cityOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            </select>
+          </template>
         </FormField>
       </div>
     </div>

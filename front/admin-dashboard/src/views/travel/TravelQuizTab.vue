@@ -72,7 +72,18 @@
           :error="questionErrors.question"
           required
         >
-          <input v-model.trim="questionForm.question" type="text" class="form-input" required maxlength="500" />
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <input
+              :id="id"
+              v-model.trim="questionForm.question"
+              type="text"
+              class="form-input"
+              required
+              maxlength="500"
+              :aria-invalid="ariaInvalid"
+              :aria-describedby="describedBy"
+            />
+          </template>
         </FormField>
 
         <FormField
@@ -82,7 +93,17 @@
           :error="questionErrors.options"
           required
         >
-          <textarea v-model="questionForm.optionsText" class="form-input" rows="4" required></textarea>
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <textarea
+              :id="id"
+              v-model="questionForm.optionsText"
+              class="form-input"
+              rows="4"
+              required
+              :aria-invalid="ariaInvalid"
+              :aria-describedby="describedBy"
+            ></textarea>
+          </template>
         </FormField>
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -93,14 +114,36 @@
             :error="questionErrors.correct_option_index"
             required
           >
-            <input v-model.number="questionForm.correct_option_index" type="number" class="form-input" min="0" required />
+            <template #default="{ id, ariaInvalid, describedBy }">
+              <input
+                :id="id"
+                v-model.number="questionForm.correct_option_index"
+                type="number"
+                class="form-input"
+                min="0"
+                required
+                :aria-invalid="ariaInvalid"
+                :aria-describedby="describedBy"
+              />
+            </template>
           </FormField>
           <FormField
             :id="'travel-quiz-points'"
             :label="t('travel.quiz.field.points', 'Points')"
             :error="questionErrors.points"
           >
-            <input v-model.number="questionForm.points" type="number" class="form-input" min="1" max="100" />
+            <template #default="{ id, ariaInvalid, describedBy }">
+              <input
+                :id="id"
+                v-model.number="questionForm.points"
+                type="number"
+                class="form-input"
+                min="1"
+                max="100"
+                :aria-invalid="ariaInvalid"
+                :aria-describedby="describedBy"
+              />
+            </template>
           </FormField>
         </div>
 

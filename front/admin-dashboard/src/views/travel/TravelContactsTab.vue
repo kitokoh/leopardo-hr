@@ -15,14 +15,18 @@
           :label="t('travel.contacts.field.firstName', 'Prénom')"
           :error="contactErrors.first_name"
         >
-          <input v-model.trim="contactForm.first_name" type="text" class="form-input" maxlength="120" />
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <input :id="id" v-model.trim="contactForm.first_name" type="text" class="form-input" maxlength="120" :aria-invalid="ariaInvalid" :aria-describedby="describedBy" />
+          </template>
         </FormField>
         <FormField
           :id="'travel-contact-last'"
           :label="t('travel.contacts.field.lastName', 'Nom')"
           :error="contactErrors.last_name"
         >
-          <input v-model.trim="contactForm.last_name" type="text" class="form-input" maxlength="120" />
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <input :id="id" v-model.trim="contactForm.last_name" type="text" class="form-input" maxlength="120" :aria-invalid="ariaInvalid" :aria-describedby="describedBy" />
+          </template>
         </FormField>
         <FormField
           :id="'travel-contact-email'"
@@ -30,14 +34,18 @@
           :error="contactErrors.email"
           required
         >
-          <input v-model.trim="contactForm.email" type="email" class="form-input" required maxlength="190" />
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <input :id="id" v-model.trim="contactForm.email" type="email" class="form-input" required maxlength="190" :aria-invalid="ariaInvalid" :aria-describedby="describedBy" />
+          </template>
         </FormField>
         <FormField
           :id="'travel-contact-phone'"
           :label="t('travel.contacts.field.phone', 'Téléphone')"
           :error="contactErrors.phone"
         >
-          <input v-model.trim="contactForm.phone" type="tel" class="form-input" maxlength="40" />
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <input :id="id" v-model.trim="contactForm.phone" type="tel" class="form-input" maxlength="40" :aria-invalid="ariaInvalid" :aria-describedby="describedBy" />
+          </template>
         </FormField>
         <FormField
           :id="'travel-contact-message'"
@@ -46,7 +54,9 @@
           class="col-span-full"
           required
         >
-          <textarea v-model.trim="contactForm.message" class="form-input" rows="4" required maxlength="2000"></textarea>
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <textarea :id="id" v-model.trim="contactForm.message" class="form-input" rows="4" required maxlength="2000" :aria-invalid="ariaInvalid" :aria-describedby="describedBy"></textarea>
+          </template>
         </FormField>
 
         <label class="col-span-full flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300">
@@ -144,7 +154,9 @@
           :error="notifyErrors.message"
           required
         >
-          <textarea v-model.trim="notifyForm.message" class="form-input" rows="4" required maxlength="2000"></textarea>
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <textarea :id="id" v-model.trim="notifyForm.message" class="form-input" rows="4" required maxlength="2000" :aria-invalid="ariaInvalid" :aria-describedby="describedBy"></textarea>
+          </template>
         </FormField>
 
         <fieldset>
