@@ -10,6 +10,7 @@ use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException;
 use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use Illuminate\Console\Command;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -79,10 +80,10 @@ class TravelOutboxDispatchCommand extends Command
     private function claimBatch(int $limit): array
     {
         $ids = DB::table('travel_outbox_events')
-            ->where(function ($query): void {
+            ->where(function (Builder $query): void {
                 $query->where('status', TravelOutboxEvent::STATUS_PENDING)
                     ->where('available_at', '<=', now())
-                    ->orWhere(function ($query): void {
+                    ->orWhere(function (Builder $query): void {
                         $query->where('status', TravelOutboxEvent::STATUS_PROCESSING)
                             ->where('updated_at', '<', now()->subMinutes(self::PROCESSING_LEASE_MINUTES));
                     });
