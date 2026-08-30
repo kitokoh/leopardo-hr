@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Delivery\Application\Services;
 
 use App\Modules\Delivery\Domain\Models\Delivery;
+use App\Modules\Delivery\Domain\Enums\DeliveryStatus;
 use App\Modules\Delivery\Domain\Models\DeliveryRoute;
 use App\Modules\Delivery\Domain\Models\DeliveryStop;
 use Illuminate\Support\Carbon;
@@ -130,6 +131,14 @@ final class DeliveryRouteService
                 'vehicle_code' => $vehicleCode,
                 'status' => 'assigned',
             ])->save();
+
+            // Les colis de la tournée passent à `assigned` (machine à états :
+            // created → picked_up est illégal — l'affectation EST la transition).
+            $route->stops()->with('delivery')->get()->each(function (DeliveryStop $stop): void {
+                if ($stop->delivery !== null && $stop->delivery->status === 'created') {
+                    $stop->delivery->transitionTo(DeliveryStatus::Assigned);
+                }
+            });
 
             return $route->load('stops');
         });
