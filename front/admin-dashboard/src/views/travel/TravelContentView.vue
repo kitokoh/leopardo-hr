@@ -82,7 +82,7 @@
             :class="advertTab === sub.key
               ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200'
               : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'"
-            @click="advertTab = sub.key"
+            @click="selectAdvertTab(sub.key)"
           >
             {{ sub.label }}
           </button>
@@ -286,9 +286,10 @@
     <!-- Modale générique -->
     <TravelFormModal
       v-if="modalOpen"
+      :open="modalOpen"
       :title="modalTitle"
       :fields="modalFields"
-      :initial="editing"
+      :values="editing || {}"
       @save="saveRow"
       @cancel="modalOpen = false"
     />
@@ -316,9 +317,10 @@
     <!-- Modale question -->
     <TravelFormModal
       v-if="questionModalOpen"
+      :open="questionModalOpen"
       :title="t('travel.quiz.addQuestion', 'Ajouter une question')"
       :fields="questionFields"
-      :initial="null"
+      :values="{}"
       @save="saveQuestion"
       @cancel="questionModalOpen = false"
     />
@@ -352,9 +354,10 @@
     <!-- Modale notification contact -->
     <TravelFormModal
       v-if="notifyOpen"
+      :open="notifyOpen"
       :title="t('travel.contacts.notify', 'Notifier le contact')"
       :fields="notifyFields"
-      :initial="null"
+      :values="{}"
       @save="saveNotify"
       @cancel="notifyOpen = false"
     />
@@ -362,9 +365,10 @@
     <!-- Modale rejet annonce -->
     <TravelFormModal
       v-if="rejectOpen"
+      :open="rejectOpen"
       :title="t('travel.adverts.reject', 'Rejeter')"
       :fields="rejectFields"
-      :initial="null"
+      :values="{}"
       @save="saveReject"
       @cancel="rejectOpen = false"
     />
@@ -444,12 +448,9 @@ async function loadQuizzes() {
 function openQuizCreate() {
   editing.value = null
   modalTitle.value = t('travel.quiz.create', 'Créer un quiz')
-  modalFields.value = [
-    { key: 'title', label: 'travel.quiz.title', type: 'text', required: true, max: 160 },
-    { key: 'description', label: 'travel.quiz.description', type: 'text', max: 2000 },
-    { key: 'status', label: 'travel.common.status', type: 'select', options: quizStatusOptions },
-  ]
+  modalFields.value = entityConfigs.quizzes.fields()
   modalOpen.value = true
+  saveTargetKey.value = 'quizzes'
 }
 
 async function openQuizQuestions(quiz) {
@@ -524,6 +525,22 @@ const siteStatusOptions = computed(() => [
 ])
 
 const entityConfigs = {
+  quizzes: {
+    resource: 'quizzes',
+    labelField: 'title',
+    canCreate: true,
+    canDelete: false,
+    searchKeys: ['title'],
+    columns: () => [
+      { key: 'title', label: t('travel.quiz.title', 'Titre'), sortable: true },
+      { key: 'status', label: t('travel.common.status', 'Statut'), sortable: true },
+    ],
+    fields: () => [
+      { key: 'title', label: 'travel.quiz.title', type: 'text', required: true, max: 160 },
+      { key: 'description', label: 'travel.quiz.description', type: 'text', max: 2000 },
+      { key: 'status', label: 'travel.common.status', type: 'select', options: quizStatusOptions },
+    ],
+  },
   types: {
     resource: 'advert-types',
     labelField: 'label',
@@ -614,6 +631,8 @@ const entityConfigs = {
 }
 
 async function loadList(key) {
+  // Le tableau quiz est piloté par loadQuizzes() (quizzes.value), pas par lists.
+  if (key === 'quizzes') return loadQuizzes()
   const cfg = entityConfigs[key]
   try {
     const response = await listTravel(cfg.resource)
@@ -623,10 +642,16 @@ async function loadList(key) {
   }
 }
 
+function selectAdvertTab(key) {
+  advertTab.value = key
+  if (['types', 'positions', 'prices'].includes(key)) loadList(key)
+  if (key === 'adverts') loadAdverts()
+}
+
 function switchTab(key) {
   activeTab.value = key
   if (key === 'quiz') loadQuizzes()
-  if (key === 'adverts' && advertTab.value === 'adverts') loadAdverts()
+  if (key === 'adverts') selectAdvertTab(advertTab.value)
   if (key === 'sites') loadList('sites')
   if (key === 'contacts') loadContacts()
 }
@@ -659,7 +684,12 @@ async function saveRow(payload) {
       await createTravel(cfg.resource, payload)
     }
     modalOpen.value = false
-    await loadList(key)
+    // Le cycle de vie des annonces s'affiche depuis adverts.value (loadAdverts).
+    if (key === 'adverts') {
+      await loadAdverts()
+    } else {
+      await loadList(key)
+    }
   } catch {
     modalOpen.value = false
   }
@@ -739,7 +769,7 @@ const consentChannels = computed(() => [
 
 async function loadContacts() {
   try {
-    const response = await listTravel('contacts', { search: contactSearch.value || undefined })
+    const response = await listTravel('contacts', { email: contactSearch.value || undefined })
     contacts.value = travelList(response)
   } catch {
     contacts.value = []

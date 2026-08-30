@@ -4664,6 +4664,23 @@
         "receivedBody": "Merci, votre demande a bien été transmise à l’agence.",
         "newRequest": "Nouvelle demande"
       }
+    },
+    "publicContact": {
+      "title": "Contactez l’agence de voyage",
+      "subtitle": "Une question sur vos trajets, réservations ou billets ? Écrivez-nous.",
+      "noLink": "Ce formulaire nécessite le lien de contact fourni par l'agence (lien signé).",
+      "invalidLink": "Lien de contact invalide ou expiré. Demandez un nouveau lien à l'agence.",
+      "sendFailed": "L'envoi a échoué. Réessayez.",
+      "ackTitle": "Demande bien reçue",
+      "ackBody": "Merci ! L'agence vous répondra dans les meilleurs délais.",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Email",
+      "phone": "Téléphone",
+      "message": "Message",
+      "consent": "J'accepte d'être contacté(e) par email au sujet de ma demande.",
+      "sending": "Envoi…",
+      "send": "Envoyer la demande"
     }
   }
 }
