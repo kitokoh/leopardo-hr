@@ -11,10 +11,13 @@ use App\Modules\EduManager\Domain\Models\EduAcademicYear;
 use App\Modules\EduManager\Domain\Models\EduAdmission;
 use App\Modules\EduManager\Domain\Models\EduAssessment;
 use App\Modules\EduManager\Domain\Models\EduAttendance;
+use App\Modules\EduManager\Domain\Models\EduCampus;
 use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduGrade;
 use App\Modules\EduManager\Domain\Models\EduStudent;
 use App\Modules\EduManager\Domain\Models\EduSubject;
+use App\Modules\EduManager\Infrastructure\Services\EduAcademicYearService;
+use App\Modules\EduManager\Infrastructure\Services\EduGradeService;
 use App\Modules\EduManager\Infrastructure\Services\EduReportService;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -31,6 +34,10 @@ class EduReportServiceTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
+
+    private EduCampus $campusA;
+
+    private EduAcademicYear $yearA;
 
     private Company $companyB;
 
@@ -62,17 +69,25 @@ class EduReportServiceTest extends TestCase
         ]);
         $this->principalA = $principalA;
 
-        $yearService = app(\App\Modules\EduManager\Infrastructure\Services\EduAcademicYearService::class);
+        /** @var EduCampus $campusA */
+        $campusA = EduCampus::query()->create([
+            'company_id' => $companyA->id,
+            'code' => 'CAMPUS-A',
+            'name' => 'Campus A',
+        ]);
+        $this->campusA = $campusA;
+        $yearService = app(EduAcademicYearService::class);
         /** @var EduAcademicYear $year */
         $year = $yearService->createYear($principalA, [
             'name' => '2025-2026',
             'start_date' => '2025-09-01',
             'end_date' => '2026-08-31',
         ]);
+        $this->yearA = $year;
 
         /** @var EduClass $classA */
         $classA = $yearService->createClass($principalA, [
-            'campus_id' => 1,
+            'campus_id' => (int) $this->campusA->getAttribute('id'),
             'academic_year_id' => (int) $year->getAttribute('id'),
             'code' => 'CL-1',
             'name' => '6ème A',
@@ -131,8 +146,8 @@ class EduReportServiceTest extends TestCase
 
         EduAdmission::query()->create([
             'company_id' => $this->companyA->id,
-            'academic_year_id' => 1,
-            'campus_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
+            'campus_id' => (int) $this->campusA->getAttribute('id'),
             'admission_number' => 'ADM-1',
             'applicant_first_name' => 'Lina',
             'applicant_last_name' => 'Benali',
@@ -141,8 +156,8 @@ class EduReportServiceTest extends TestCase
         ]);
         EduAdmission::query()->create([
             'company_id' => $this->companyA->id,
-            'academic_year_id' => 1,
-            'campus_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
+            'campus_id' => (int) $this->campusA->getAttribute('id'),
             'admission_number' => 'ADM-2',
             'applicant_first_name' => 'Yacine',
             'applicant_last_name' => 'Meziane',
@@ -150,7 +165,11 @@ class EduReportServiceTest extends TestCase
             'status' => EduAdmission::STATUS_NEW,
         ]);
 
-        $rows = $service->enrollment($this->principalA, 1, 1);
+        $rows = $service->enrollment(
+            $this->principalA,
+            (int) $this->campusA->getAttribute('id'),
+            (int) $this->yearA->getAttribute('id')
+        );
 
         $this->assertCount(2, $rows);
         $statuses = array_column($rows, 'status');
@@ -167,33 +186,31 @@ class EduReportServiceTest extends TestCase
             'company_id' => $this->companyA->id,
             'class_id' => (int) $this->classA->getAttribute('id'),
             'subject_id' => (int) $this->math->getAttribute('id'),
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'title' => 'DS n°1',
             'type' => EduAssessment::TYPE_EXAM,
             'max_score' => 20,
         ]);
 
-        // Brouillon exclu.
-        EduGrade::query()->create([
-            'company_id' => $this->companyA->id,
-            'assessment_id' => (int) $assessment->getAttribute('id'),
-            'student_id' => (int) $this->studentA->getAttribute('id'),
-            'score' => 5,
-            'status' => EduGrade::STATUS_DRAFT,
-        ]);
-        // Publié inclus.
-        EduGrade::query()->create([
+        // Brouillon exclu (unicité assessment+student : une seule note possible).
+        /** @var EduGrade $grade */
+        $grade = EduGrade::query()->create([
             'company_id' => $this->companyA->id,
             'assessment_id' => (int) $assessment->getAttribute('id'),
             'student_id' => (int) $this->studentA->getAttribute('id'),
             'score' => 15,
-            'status' => EduGrade::STATUS_PUBLISHED,
+            'status' => EduGrade::STATUS_DRAFT,
         ]);
 
         $rows = $service->results($this->principalA, null, null);
+        $this->assertCount(0, $rows);
 
+        // Publié inclus.
+        app(EduGradeService::class)->publish($this->principalA, $grade);
+
+        $rows = $service->results($this->principalA, null, null);
         $this->assertCount(1, $rows);
-        $this->assertSame('15.00', $rows[0]['average']);
+        $this->assertSame('15', $rows[0]['average']);
     }
 
     public function test_capacity_report_sums_class_capacities(): void
@@ -225,9 +242,32 @@ class EduReportServiceTest extends TestCase
             'display_name' => 'Élève B',
             'status' => EduStudent::STATUS_ACTIVE,
         ]);
+        /** @var EduCampus $campusB */
+        $campusB = EduCampus::query()->create([
+            'company_id' => $this->companyB->id,
+            'code' => 'CAMPUS-B',
+            'name' => 'Campus B',
+        ]);
+        /** @var EduAcademicYear $yearB */
+        $yearB = EduAcademicYear::query()->create([
+            'company_id' => $this->companyB->id,
+            'name' => '2025-2026',
+            'start_date' => '2025-09-01',
+            'end_date' => '2026-08-31',
+            'status' => EduAcademicYear::STATUS_ACTIVE,
+        ]);
+        /** @var EduClass $classB */
+        $classB = EduClass::query()->create([
+            'company_id' => $this->companyB->id,
+            'campus_id' => (int) $campusB->getAttribute('id'),
+            'academic_year_id' => (int) $yearB->getAttribute('id'),
+            'code' => 'CL-B1',
+            'name' => '6ème B',
+        ]);
         EduAttendance::query()->create([
             'company_id' => $this->companyB->id,
-            'class_id' => 1,
+            'class_id' => (int) $classB->getAttribute('id'),
+
             'student_id' => (int) $studentB->getAttribute('id'),
             'attendance_date' => '2026-09-07',
             'status' => EduAttendance::STATUS_PRESENT,

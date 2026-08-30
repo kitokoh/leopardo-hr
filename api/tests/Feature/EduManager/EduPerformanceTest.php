@@ -7,6 +7,7 @@ namespace Tests\Feature\EduManager;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EduManager\Domain\Models\EduAcademicYear;
+use App\Modules\EduManager\Domain\Models\EduCampus;
 use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Infrastructure\Services\EduAcademicYearService;
 use Illuminate\Support\Facades\Cache;
@@ -26,6 +27,8 @@ class EduPerformanceTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
+
+    private EduCampus $campusA;
 
     private Company $companyB;
 
@@ -55,6 +58,12 @@ class EduPerformanceTest extends TestCase
     public function test_class_index_eager_loads_campus_and_year_no_n_plus_1(): void
     {
         $yearService = app(EduAcademicYearService::class);
+        /** @var EduCampus $campusA */
+        $campusA = EduCampus::query()->create([
+            'company_id' => $this->companyA->id,
+            'code' => 'CAMPUS-A',
+            'name' => 'Campus A',
+        ]);
         /** @var EduAcademicYear $year */
         $year = $yearService->createYear($this->principalA, [
             'name' => '2025-2026',
@@ -64,7 +73,7 @@ class EduPerformanceTest extends TestCase
 
         for ($i = 1; $i <= 5; $i++) {
             $yearService->createClass($this->principalA, [
-                'campus_id' => 1,
+                'campus_id' => (int) $campusA->getAttribute('id'),
                 'academic_year_id' => (int) $year->getAttribute('id'),
                 'code' => "CL-{$i}",
                 'name' => "Classe {$i}",
@@ -90,8 +99,8 @@ class EduPerformanceTest extends TestCase
         for ($i = 1; $i <= 20; $i++) {
             $yearService->createYear($this->principalA, [
                 'name' => "Année {$i}",
-                'start_date' => "20{$i}-09-01",
-                'end_date' => "20{$i}-08-31",
+                'start_date' => sprintf('%d-09-01', 2000 + $i),
+                'end_date' => sprintf('%d-08-31', 2001 + $i),
             ]);
         }
 

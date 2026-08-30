@@ -6,9 +6,11 @@ namespace Tests\Feature\EduManager;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\EduManager\Domain\Models\EduAcademicYear;
 use App\Modules\EduManager\Domain\Models\EduAdmission;
 use App\Modules\EduManager\Domain\Models\EduStudent;
 use App\Modules\EduManager\Infrastructure\Services\EduAdmissionService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -26,6 +28,8 @@ class EduAdmissionServiceTest extends TestCase
 
     private Company $companyA;
 
+    private EduAcademicYear $yearA;
+
     private Employee $managerA;
 
     protected function setUp(): void
@@ -42,6 +46,16 @@ class EduAdmissionServiceTest extends TestCase
             'role' => 'manager',
             'manager_role' => 'principal',
         ]);
+        /** @var EduAcademicYear $yearA */
+        $yearA = EduAcademicYear::query()->create([
+            'company_id' => $companyA->id,
+            'name' => '2025-2026',
+            'start_date' => '2025-09-01',
+            'end_date' => '2026-08-31',
+            'status' => EduAcademicYear::STATUS_ACTIVE,
+        ]);
+        $this->yearA = $yearA;
+
         $this->managerA = $managerA;
     }
 
@@ -51,7 +65,7 @@ class EduAdmissionServiceTest extends TestCase
     private function admissionPayload(array $overrides = []): array
     {
         return array_merge([
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'applicant_first_name' => 'Lina',
             'applicant_last_name' => 'Benali',
             'applicant_email' => 'lina@example.com',
@@ -137,6 +151,6 @@ class EduAdmissionServiceTest extends TestCase
 
         $this->assertSame('crm-contract-1', $admission->crm_contact_id);
         // Aucune table CRM touchée : la référence est une simple colonne.
-        $this->assertSame(0, \Illuminate\Support\Facades\DB::table('crm_imports')->count());
+        $this->assertSame(0, DB::table('crm_imports')->count());
     }
 }

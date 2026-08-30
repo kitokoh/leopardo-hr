@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EduManager\Domain\Models\EduAcademicYear;
 use App\Modules\EduManager\Domain\Models\EduAssessment;
+use App\Modules\EduManager\Domain\Models\EduCampus;
 use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduGrade;
 use App\Modules\EduManager\Domain\Models\EduGradeVersion;
@@ -16,6 +17,7 @@ use App\Modules\EduManager\Domain\Models\EduSubject;
 use App\Modules\EduManager\Infrastructure\Services\EduAcademicYearService;
 use App\Modules\EduManager\Infrastructure\Services\EduGradeService;
 use Illuminate\Support\Facades\Schema;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -31,6 +33,8 @@ class EduGradeServiceTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
+
+    private EduCampus $campusA;
 
     private Company $companyB;
 
@@ -56,6 +60,13 @@ class EduGradeServiceTest extends TestCase
         $teacherA = Employee::factory()->create(['company_id' => $companyA->id]);
         $this->teacherA = $teacherA;
 
+        /** @var EduCampus $campusA */
+        $campusA = EduCampus::query()->create([
+            'company_id' => $companyA->id,
+            'code' => 'CAMPUS-A',
+            'name' => 'Campus A',
+        ]);
+        $this->campusA = $campusA;
         $yearService = app(EduAcademicYearService::class);
         /** @var EduAcademicYear $year */
         $year = $yearService->createYear(Employee::factory()->create([
@@ -74,7 +85,7 @@ class EduGradeServiceTest extends TestCase
             'role' => 'manager',
             'manager_role' => 'principal',
         ]), [
-            'campus_id' => 1,
+            'campus_id' => (int) $this->campusA->getAttribute('id'),
             'academic_year_id' => (int) $year->getAttribute('id'),
             'code' => 'CL-1',
             'name' => '6ème A',
@@ -207,20 +218,13 @@ class EduGradeServiceTest extends TestCase
 
     public function test_other_tenant_assessment_is_rejected(): void
     {
-        /** @var EduAssessment $assessmentB */
-        $assessmentB = EduAssessment::query()->create([
-            'company_id' => $this->companyB->id,
-            'class_id' => 1,
-            'subject_id' => 1,
-            'academic_year_id' => 1,
-            'title' => 'DS B',
-            'type' => EduAssessment::TYPE_EXAM,
-            'max_score' => 20,
-        ]);
+        // Un enseignant du tenant B ne peut pas noter une évaluation du tenant A.
+        /** @var Employee $teacherB */
+        $teacherB = Employee::factory()->create(['company_id' => $this->companyB->id]);
 
-        $this->expectExceptionCode(404);
+        $this->expectException(NotFoundHttpException::class);
 
-        app(EduGradeService::class)->grade($this->teacherA, $assessmentB, [
+        app(EduGradeService::class)->grade($teacherB, $this->assessmentA, [
             'student_id' => (int) $this->studentA->getAttribute('id'),
             'score' => 12,
         ]);
