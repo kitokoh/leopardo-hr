@@ -21,9 +21,24 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertControlle
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelArticleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCancellationPolicyController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCommentController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelConnectionController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCorporateController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelEngagementController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelLoyaltyController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelMobileSyncController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPdvController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuizController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
@@ -34,11 +49,6 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTouristSiteController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCorporateController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelConnectionController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPdvController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
@@ -166,6 +176,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/loyalty/redeem', [TravelLoyaltyController::class, 'redeem']);
         Route::get('/loyalty/rewards', [TravelLoyaltyController::class, 'rewards']);
         Route::post('/loyalty/rewards', [TravelLoyaltyController::class, 'storeReward']);
+
+        // Synchronisation offline mobile (TRAVEL-704/#6091) — file idempotente.
+        Route::post('/mobile/sync', [TravelMobileSyncController::class, 'sync']);
 
         // Boutique publique — gestion du jeton (TRAVEL-1001/#6114, travel.manage).
         Route::get('/public-shop-token', [TravelPublicShopController::class, 'token']);

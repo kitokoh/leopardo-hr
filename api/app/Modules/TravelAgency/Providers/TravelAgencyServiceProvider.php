@@ -24,6 +24,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelAgentPushConsumer;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelNotificationConsumer;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookConsumer;
@@ -79,6 +80,8 @@ class TravelAgencyServiceProvider extends ServiceProvider
             $registry = new TravelOutboxConsumerRegistry;
             $registry->register(app(TravelWebhookConsumer::class));
             $registry->register(app(TravelNotificationConsumer::class));
+            // TRAVEL-703 (#6090) — push agents (FCM) sur réservation.
+            $registry->register(app(TravelAgentPushConsumer::class));
 
             return $registry;
         });
