@@ -4333,7 +4333,29 @@
     },
     "bookings": {
       "title": "Bookings",
-      "subtitle": "Counter sales, confirmation, cancellation, refund and tickets."
+      "subtitle": "Counter sales, confirmation, cancellation, refund and tickets.",
+      "reference": "Reference",
+      "referencePlaceholder": "e.g. GV-2026-0001…",
+      "detail": "Details",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "refund": "Refund",
+      "issueTickets": "Issue tickets",
+      "detailTitle": "Booking",
+      "paymentStatus": "Payment",
+      "trip": "Trip",
+      "source": "Source",
+      "passengerCount": "Passengers",
+      "total": "Total",
+      "passengers": "Passengers",
+      "seat": "Seat",
+      "noTickets": "No tickets issued",
+      "confirmTitle": "Confirm booking",
+      "confirmBody": "Confirm booking {ref}? Seats will be marked as sold.",
+      "issueTicketsTitle": "Issue tickets",
+      "issueTicketsBody": "Issue one named ticket per passenger of {ref}?",
+      "cancelTitle": "Cancel booking",
+      "refundTitle": "Refund booking"
     },
     "checkin": {
       "title": "Check-in & manifest",
@@ -4402,6 +4424,34 @@
       "scheduled": "Scheduled",
       "published": "Published",
       "cancelled": "Cancelled"
+    },
+    "bookingStatus": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded",
+      "completed": "Completed"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "ticketStatus": {
+      "issued": "Issued",
+      "checked_in": "Checked in",
+      "void": "Void"
+    },
+    "bookingSource": {
+      "office": "Counter",
+      "phone": "Phone",
+      "online": "Online"
+    },
+    "ageCategory": {
+      "infant": "Infant",
+      "child": "Child",
+      "adult": "Adult"
     }
   }
 }
