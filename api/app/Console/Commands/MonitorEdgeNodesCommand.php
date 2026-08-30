@@ -2,14 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
-use App\Modules\EdgeSync\Infrastructure\Notifications\EdgeNodeSilentNotification;
+use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Infrastructure\Notifications\EdgeLicenseExpiringNotification;
+use App\Modules\EdgeSync\Infrastructure\Notifications\EdgeNodeSilentNotification;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Carbon;
 
 /**
  * Priority 3.4 — Monitor Edge nodes for silence / license expiry.
@@ -17,14 +15,15 @@ use Illuminate\Support\Carbon;
  */
 class MonitorEdgeNodesCommand extends Command
 {
-    protected $signature   = 'edge:monitor';
+    protected $signature = 'edge:monitor';
+
     protected $description = 'Monitor Edge nodes — alert on silence or expiring licenses';
 
     public function handle(): void
     {
         $this->info('[EdgeMonitor] Starting...');
 
-        $silentThreshold  = now()->subMinutes(30);
+        $silentThreshold = now()->subMinutes(30);
         $renewalThreshold = now()->addDays(7);
 
         // ── Silent nodes (not seen in 30+ minutes) ────────────────
@@ -93,4 +92,3 @@ class MonitorEdgeNodesCommand extends Command
         ));
     }
 }
-

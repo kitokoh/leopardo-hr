@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Balaye les trial provisionings restés bloqués en attente du worker.
@@ -74,7 +75,7 @@ class SweepStaleTrialProvisioningsCommand extends Command
 
             $this->line("[failed] {$message}");
             // Alerte visible dans les logs (monitoring Sentry/Discord).
-            \Illuminate\Support\Facades\Log::warning('trial_provisionings.sweep_timeout', [
+            Log::warning('trial_provisionings.sweep_timeout', [
                 'id' => $row->id,
                 'email' => $row->email,
                 'provisioning_token' => $row->provisioning_token,

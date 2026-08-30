@@ -28,7 +28,7 @@ class AlertExpiringContracts extends Command
                 ->get();
 
             foreach ($contracts as $contract) {
-                $employee     = $contract->employee;
+                $employee = $contract->employee;
                 $employeeName = $employee !== null
                     ? "{$employee->first_name} {$employee->last_name}"
                     : '(employee not found)';
@@ -42,4 +42,3 @@ class AlertExpiringContracts extends Command
         return self::SUCCESS;
     }
 }
-

@@ -30,4 +30,3 @@ class CheckOverdueInvoices extends Command
         return self::SUCCESS;
     }
 }
-

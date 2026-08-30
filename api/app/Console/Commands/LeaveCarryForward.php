@@ -39,7 +39,6 @@ class LeaveCarryForward extends Command
             ->where('carry_forward', true)
             ->get();
 
-
         $carried = 0;
         $expired = 0;
 
@@ -49,7 +48,6 @@ class LeaveCarryForward extends Command
                 ->where('absence_type_id', $policy->absence_type_id)
                 ->where('year', $fromYear)
                 ->get();
-
 
             foreach ($balances as $oldBalance) {
                 try {
@@ -149,4 +147,3 @@ class LeaveCarryForward extends Command
         }
     }
 }
-

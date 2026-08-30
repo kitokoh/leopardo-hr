@@ -36,4 +36,3 @@ class BackfillNotificationPreferences extends Command
         return self::SUCCESS;
     }
 }
-

@@ -1569,3 +1569,12 @@ Suite de l'épic 4xx : `POST /travel/payments/{payment}/verify`, `POST /travel/p
   confirmé + motif (422 sinon), réservé manage ; PDF généré localement (magic %PDF) ; URL signée 30 min ; révocation → void
   + PDF supprimé + 410 au téléchargement ; cross-tenant → 404.
 - Couverture : `api/tests/Feature/Travel/TravelPaymentReconcileTest.php`, `TravelTicketPdfTest.php` (192 tests Travel au total).
+
+## BC-24 TRAVEL — Outbox & expiration des réservations (TRAVEL-414/418, 2026-08-30)
+
+`travel:outbox-dispatch` (consommation outbox événementielle, retry/backoff, dead-letter) et `travel:expire-bookings`
+(expiration des pending + libération des sièges + événement `travel.booking.expired.v1`).
+- Scénarios à vérifier : réservation pending expirée → cancelled + sièges libérés + événement outbox ; non-expirée
+  intacte ; rejeu idempotent (0 re-traitement) ; claim atomique (2 workers → 1 seul traite) ; outbox : aucun
+  consommateur → dead-letter, erreur transitoire → retry avec backoff, attempts ≥ max → failed.
+- Couverture : `api/tests/Feature/Travel/TravelBookingExpiryTest.php` (195 tests Travel au total).

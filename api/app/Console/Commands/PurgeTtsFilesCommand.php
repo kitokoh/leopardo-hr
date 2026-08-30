@@ -44,6 +44,7 @@ class PurgeTtsFilesCommand extends Command
             // généré par VoiceController (tts_<hex>.mp3).
             if (! preg_match('/^tts\/tts_[a-f0-9]+\.mp3$/', $file)) {
                 $skipped++;
+
                 continue;
             }
 

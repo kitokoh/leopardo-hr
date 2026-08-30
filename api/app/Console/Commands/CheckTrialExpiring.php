@@ -39,4 +39,3 @@ class CheckTrialExpiring extends Command
         return self::SUCCESS;
     }
 }
-

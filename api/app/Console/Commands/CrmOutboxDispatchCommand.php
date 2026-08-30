@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\CRM\Domain\Exceptions\PermanentOutboxException;
-use App\Modules\CRM\Domain\Exceptions\TransientOutboxException;
 use App\Modules\CRM\Domain\Models\CrmOutboxEvent;
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxConsumerRegistry;
 use Illuminate\Console\Command;
@@ -112,8 +112,8 @@ class CrmOutboxDispatchCommand extends Command
         }
 
         try {
-            /** @var \App\Core\Tenant\Domain\Models\Company $company */
-            $company = \App\Core\Tenant\Domain\Models\Company::query()->findOrFail($event->company_id);
+            /** @var Company $company */
+            $company = Company::query()->findOrFail($event->company_id);
 
             $this->tenants->withinTenant($company, fn () => $consumer->handle($event->payload));
 
