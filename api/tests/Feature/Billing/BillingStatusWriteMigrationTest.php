@@ -366,6 +366,7 @@ class BillingStatusWriteMigrationTest extends TestCase
         $manager = Employee::factory()->manager()->create([
             'company_id' => $company->id,
         ]);
+        assert($manager instanceof \App\Core\Auth\Domain\Models\Employee);
         $subscription = $this->subscription($company, [
             'status' => SubscriptionStatus::PastDue->value,
         ]);
@@ -390,6 +391,7 @@ class BillingStatusWriteMigrationTest extends TestCase
         $manager = Employee::factory()->manager()->create([
             'company_id' => $company->id,
         ]);
+        assert($manager instanceof \App\Core\Auth\Domain\Models\Employee);
         $subscription = $this->subscription($company);
 
         Sanctum::actingAs($manager);
@@ -415,6 +417,7 @@ class BillingStatusWriteMigrationTest extends TestCase
         $manager = Employee::factory()->manager()->create([
             'company_id' => $company->id,
         ]);
+        assert($manager instanceof \App\Core\Auth\Domain\Models\Employee);
         $subscription = $this->subscription($company, [
             'status' => SubscriptionStatus::Cancelled->value,
             'cancelled_at' => now()->subDay(),

@@ -2052,11 +2052,6 @@ parameters:
 			count: 1
 			path: app/Modules/Billing/Infrastructure/Services/PartnerService.php
 
-		-
-			message: '#^Access to an undefined property App\\Core\\Tenant\\Domain\\Models\\Company\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Core\\Tenant\\Domain\\Models\\Company\>\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Billing/Infrastructure/Services/StripeService.php
 
 		-
 			message: '#^Call to an undefined method App\\Core\\Tenant\\Domain\\Models\\Company\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Core\\Tenant\\Domain\\Models\\Company\>\:\:update\(\)\.$#'
