@@ -2519,6 +2519,7 @@ trait CreatesMvpSchema
                 $table->uuid('company_id')->index();
 
     
+        // ── BC-25 RESTAURANT (restaurant_branches) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('restaurant_branches'))) {
             Schema::create($this->moduleTable('restaurant_branches'), function (Blueprint $table): void {
                 
@@ -2548,6 +2549,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_zones) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_zones'))) {
+            Schema::create($this->moduleTable('restaurant_zones'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2573,6 +2578,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_tables) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_tables'))) {
+            Schema::create($this->moduleTable('restaurant_tables'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2600,6 +2609,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_categories) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_categories'))) {
+            Schema::create($this->moduleTable('restaurant_categories'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2624,6 +2637,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_products) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_products'))) {
+            Schema::create($this->moduleTable('restaurant_products'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2656,6 +2673,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_product_ingredients) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_product_ingredients'))) {
+            Schema::create($this->moduleTable('restaurant_product_ingredients'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2680,6 +2701,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_ingredients) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_ingredients'))) {
+            Schema::create($this->moduleTable('restaurant_ingredients'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2711,6 +2736,10 @@ trait CreatesMvpSchema
 
                 $table->timestamps();
 
+
+        // ── BC-25 RESTAURANT (restaurant_units) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_units'))) {
+            Schema::create($this->moduleTable('restaurant_units'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2730,6 +2759,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_tax_rates) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_tax_rates'))) {
+            Schema::create($this->moduleTable('restaurant_tax_rates'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2754,6 +2787,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_menus) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_menus'))) {
+            Schema::create($this->moduleTable('restaurant_menus'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2781,6 +2818,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_menu_items) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_menu_items'))) {
+            Schema::create($this->moduleTable('restaurant_menu_items'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2805,6 +2846,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_hours) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_hours'))) {
+            Schema::create($this->moduleTable('restaurant_hours'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2829,6 +2874,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_suppliers) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_suppliers'))) {
+            Schema::create($this->moduleTable('restaurant_suppliers'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2853,6 +2902,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_stock_levels) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_stock_levels'))) {
+            Schema::create($this->moduleTable('restaurant_stock_levels'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2878,6 +2931,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_inventory_movements) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_movements'))) {
+            Schema::create($this->moduleTable('restaurant_inventory_movements'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3283,6 +3340,10 @@ trait CreatesMvpSchema
                 $table->uuid('company_id')->index();
                 $table->string('reference', 40);
                 $table->unsignedBigInteger('booking_id');
+
+        // ── BC-25 RESTAURANT (restaurant_purchase_orders) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_purchase_orders'))) {
+            Schema::create($this->moduleTable('restaurant_purchase_orders'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3311,6 +3372,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_purchase_order_items) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_purchase_order_items'))) {
+            Schema::create($this->moduleTable('restaurant_purchase_order_items'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3335,6 +3400,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_receivings) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_receivings'))) {
+            Schema::create($this->moduleTable('restaurant_receivings'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3360,6 +3429,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_inventory_counts) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_counts'))) {
+            Schema::create($this->moduleTable('restaurant_inventory_counts'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3385,6 +3458,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_inventory_count_items) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_count_items'))) {
+            Schema::create($this->moduleTable('restaurant_inventory_count_items'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3411,6 +3488,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_pos_sessions) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_pos_sessions'))) {
+            Schema::create($this->moduleTable('restaurant_pos_sessions'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3443,6 +3524,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_orders) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_orders'))) {
+            Schema::create($this->moduleTable('restaurant_orders'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3484,6 +3569,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_order_items) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_order_items'))) {
+            Schema::create($this->moduleTable('restaurant_order_items'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3514,6 +3603,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_order_payments) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_order_payments'))) {
+            Schema::create($this->moduleTable('restaurant_order_payments'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3567,6 +3660,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_refunds) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_refunds'))) {
+            Schema::create($this->moduleTable('restaurant_refunds'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3595,6 +3692,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_table_sessions) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_table_sessions'))) {
+            Schema::create($this->moduleTable('restaurant_table_sessions'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3622,6 +3723,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_reservations) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_reservations'))) {
+            Schema::create($this->moduleTable('restaurant_reservations'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3656,6 +3761,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_delivery_zones) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_delivery_zones'))) {
+            Schema::create($this->moduleTable('restaurant_delivery_zones'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3680,6 +3789,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_delivery_riders) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_delivery_riders'))) {
+            Schema::create($this->moduleTable('restaurant_delivery_riders'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3705,6 +3818,10 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
 
+
+        // ── BC-25 RESTAURANT (restaurant_deliveries) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_deliveries'))) {
+            Schema::create($this->moduleTable('restaurant_deliveries'), function (Blueprint $table): void {
                 
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3772,6 +3889,23 @@ trait CreatesMvpSchema
                 $table->timestamps();
             });
         }
+
+        // ── BC-25 RESTAURANT (restaurant_loyalty_programs) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_programs'))) {
+            Schema::create($this->moduleTable('restaurant_loyalty_programs'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedInteger('points_per_amount_minor')->default(100);
+                $table->unsignedInteger('redeem_rate_minor')->default(100);
+                $table->boolean('is_active')->default(true);
+                
+                $table->timestamps();
+            });
+        }
+
+        // ── BC-25 RESTAURANT (restaurant_loyalty_customers) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_customers'))) {
             Schema::create($this->moduleTable('restaurant_loyalty_customers'), function (Blueprint $table): void {
                 
@@ -3787,6 +3921,8 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'customer_contact_id'], 'restaurant_loyalty_customers_company_customer_unique');
             });
         }
+
+        // ── BC-25 RESTAURANT (restaurant_loyalty_points_movements) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_points_movements'))) {
             Schema::create($this->moduleTable('restaurant_loyalty_points_movements'), function (Blueprint $table): void {
                 
@@ -3816,6 +3952,8 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'customer_id'], 'restaurant_loyalty_points_movements_company_customer_idx');
             });
         }
+
+        // ── BC-25 RESTAURANT (restaurant_promotions) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('restaurant_promotions'))) {
             Schema::create($this->moduleTable('restaurant_promotions'), function (Blueprint $table): void {
                 
@@ -3851,6 +3989,8 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'code'], 'restaurant_promotions_company_code_unique');
             });
         }
+
+        // ── BC-25 RESTAURANT (restaurant_outbox_events) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('restaurant_outbox_events'))) {
             Schema::create($this->moduleTable('restaurant_outbox_events'), function (Blueprint $table): void {
                 
@@ -4291,6 +4431,7 @@ trait CreatesMvpSchema
             });
         }
 }
+    }
 
     private function dropMvpTables(): void
     {
