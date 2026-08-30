@@ -23,9 +23,7 @@ use Illuminate\Support\Facades\DB;
  */
 final class TravelGeoSeederService
 {
-    public function __construct(private readonly TenantManager $tenants)
-    {
-    }
+    public function __construct(private readonly TenantManager $tenants) {}
 
     public function seed(Company $company): void
     {
