@@ -3758,7 +3758,8 @@
       "loading": "Chargement...",
       "loadError": "Impossible de charger les données livraison/fidélité.",
       "createError": "Erreur de création de la livraison.",
-      "actionError": "Action impossible."
+      "actionError": "Action impossible.",
+      "riderPrompt": "ID du livreur à assigner :"
     },
     "reports": {
       "title": "Rapports",

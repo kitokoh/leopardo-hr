@@ -3758,7 +3758,8 @@
       "loading": "Yükleniyor...",
       "loadError": "Teslimat/sadakat verileri yüklenemedi.",
       "createError": "Teslimat oluşturma başarısız.",
-      "actionError": "İşlem başarısız."
+      "actionError": "İşlem başarısız.",
+      "riderPrompt": "Atanacak kurye ID'si:"
     },
     "reports": {
       "title": "Raporlar",

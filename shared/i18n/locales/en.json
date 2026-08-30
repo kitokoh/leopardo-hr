@@ -3758,7 +3758,8 @@
       "loading": "Loading...",
       "loadError": "Unable to load delivery/loyalty data.",
       "createError": "Delivery creation failed.",
-      "actionError": "Action failed."
+      "actionError": "Action failed.",
+      "riderPrompt": "Rider ID to assign:"
     },
     "reports": {
       "title": "Reports",
