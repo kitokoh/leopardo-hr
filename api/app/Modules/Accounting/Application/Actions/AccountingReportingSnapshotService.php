@@ -62,7 +62,10 @@ final class AccountingReportingSnapshotService
 
             // Idempotence : contenu identique → même version, fraîcheur
             // rafraîchie ; contenu différent → version suivante.
-            $sameContent = $existing->payload === $payload;
+            // NB : PostgreSQL jsonb normalise l'ordre des clés → comparaison
+            // canonique (clés triées récursivement), jamais d'égalité stricte
+            // sur l'ordre d'insertion.
+            $sameContent = $this->samePayload($existing->payload, $payload);
 
             $existing->forceFill([
                 'payload' => $payload,
@@ -101,7 +104,7 @@ final class AccountingReportingSnapshotService
             'source' => 'snapshot',
             'report' => $snapshot->report,
             'version' => $snapshot->version,
-            'refreshed_at' => $snapshot->refreshed_at?->toIso8601String(),
+            'refreshed_at' => $snapshot->refreshed_at->toIso8601String(),
         ];
     }
 
@@ -128,6 +131,35 @@ final class AccountingReportingSnapshotService
             ->where('report', $report)
             ->where('period_from', $from)
             ->where('period_to', $to);
+    }
+
+    /**
+     * Égalité sémantique de deux payloads (indépendante de l'ordre des clés —
+     * jsonb trie les clés au stockage).
+     *
+     * @param  array<string, mixed>  $a
+     * @param  array<string, mixed>  $b
+     */
+    private function samePayload(array $a, array $b): bool
+    {
+        return $this->canonicalize($a) === $this->canonicalize($b);
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
+    private function canonicalize(array $payload): array
+    {
+        ksort($payload);
+
+        foreach ($payload as $key => $value) {
+            if (is_array($value)) {
+                $payload[$key] = $this->canonicalize($value);
+            }
+        }
+
+        return $payload;
     }
 
     /**

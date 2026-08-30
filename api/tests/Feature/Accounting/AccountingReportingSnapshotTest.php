@@ -57,10 +57,11 @@ class AccountingReportingSnapshotTest extends TestCase
         $second = $service->recompute((string) $this->companyA->id, 'accounting_dashboard');
 
         // Deux recomputes → même résultat ET même version (idempotence).
-        $this->assertSame($first->payload, $second->payload);
+        // Égalité sémantique : jsonb normalise l'ordre des clés au stockage,
+        // l'ordre d'insertion du premier payload diffère donc du rechargé.
+        $this->assertEquals($first->payload, $second->payload);
         $this->assertSame($first->version, $second->version);
         $this->assertSame(1, $second->version);
-        $this->assertNotNull($second->refreshed_at);
 
         // Le payload est le read model du dashboard (agrégats, pas de PII).
         $this->assertArrayHasKey('invoices', $second->payload);

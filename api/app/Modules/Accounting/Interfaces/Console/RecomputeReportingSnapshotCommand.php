@@ -68,7 +68,7 @@ final class RecomputeReportingSnapshotCommand extends Command
                 $snapshot->version,
                 $snapshot->period_from->toDateString(),
                 $snapshot->period_to->toDateString(),
-                $snapshot->refreshed_at?->toIso8601String(),
+                $snapshot->refreshed_at->toIso8601String(),
             ));
 
             return self::SUCCESS;

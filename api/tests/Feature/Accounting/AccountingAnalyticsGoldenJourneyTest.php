@@ -42,6 +42,9 @@ class AccountingAnalyticsGoldenJourneyTest extends TestCase
         $this->pilot = $pilot;
     }
 
+    /**
+     * @return array{from: string, to: string}
+     */
     private function periodQuery(): array
     {
         // Période large couvrant TOUTES les dates du seed (relatives à J-60)
