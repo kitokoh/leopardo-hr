@@ -4546,21 +4546,77 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-912 — Contacts voyageurs (gestion, consentements)'
+      summary: 'TRAVEL-913 — Registre admin des contacts voyageurs (liste paginée, recherche, filtre consentement)'
       security:
       - BearerAuth: []
       parameters:
       - name: search
         in: query
         required: false
+        description: Recherche email / prénom / nom / téléphone (ilike)
         schema:
           type: string
+      - name: consent
+        in: query
+        required: false
+        description: Ne renvoyer que les contacts ayant consenti au canal (email|sms|whatsapp)
+        schema:
+          type: string
+          enum: [email, sms, whatsapp]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 50
       responses:
         '200':
-          description: Contacts + consentements par canal
+          description: Contacts du tenant (data + meta pagination)
+        '401':
+          description: Non authentifié
         '403':
-          description: Rôle insuffisant
+          description: Rôle principal / RH / manager requis
   /travel/contacts/{travelCustomerContact}/consent:
+    patch:
+      tags:
+      - Travel
+      summary: "TRAVEL-913 — Opt-in / opt-out d'un canal de consentement (horodaté)"
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - channel
+              - given
+              properties:
+                channel:
+                  type: string
+                  enum: [email, sms, whatsapp]
+                given:
+                  type: boolean
+      responses:
+        '200':
+          description: Consentement mis à jour (horodatage conservé)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Rôle principal / RH / manager requis
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Validation échouée (canal inconnu)
     post:
       tags:
       - Travel
@@ -4786,6 +4842,57 @@ paths:
           description: Supprimé
         '404':
           description: Introuvable
+  /travel/public/contact:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-913 — Formulaire de contact public (URL signée + throttle, consentement obligatoire)'
+      parameters:
+      - name: company
+        in: query
+        required: true
+        description: Identifiant du tenant (paramètre signé de l'URL — forger un lien pour un autre tenant est impossible)
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - message
+              - consent_email
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 120
+                last_name:
+                  type: string
+                  maxLength: 120
+                email:
+                  type: string
+                  maxLength: 190
+                phone:
+                  type: string
+                  maxLength: 40
+                message:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                consent_email:
+                  type: boolean
+                  description: Consentement obligatoire (accepted)
+      responses:
+        '202':
+          description: Demande reçue (événement travel.contact.submitted.v1)
+        '403':
+          description: Signature invalide ou expirée
+        '404':
+          description: Tenant introuvable
+        '422':
+          description: Validation échouée (consentement manquant, bornes)
   /travel/contact:
     post:
       tags:
