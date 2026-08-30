@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Providers;
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
+use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelHotel;
@@ -23,9 +24,11 @@ use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelNotificationConsumer;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookConsumer;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
+use App\Modules\TravelAgency\Policies\TravelCancellationPolicyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
 use App\Modules\TravelAgency\Policies\TravelClassPolicy;
 use App\Modules\TravelAgency\Policies\TravelHotelPolicy;
@@ -75,6 +78,7 @@ class TravelAgencyServiceProvider extends ServiceProvider
         $this->app->singleton(TravelOutboxConsumerRegistry::class, function (): TravelOutboxConsumerRegistry {
             $registry = new TravelOutboxConsumerRegistry;
             $registry->register(app(TravelWebhookConsumer::class));
+            $registry->register(app(TravelNotificationConsumer::class));
 
             return $registry;
         });
@@ -90,6 +94,7 @@ class TravelAgencyServiceProvider extends ServiceProvider
         Gate::policy(TravelRoute::class, TravelRoutePolicy::class);
         Gate::policy(TravelTrip::class, TravelTripPolicy::class);
         Gate::policy(TravelBooking::class, TravelBookingPolicy::class);
+        Gate::policy(TravelCancellationPolicy::class, TravelCancellationPolicyPolicy::class);
         Gate::policy(TravelTicket::class, TravelTicketPolicy::class);
         Gate::policy(TravelRentalVehicle::class, TravelRentalVehiclePolicy::class);
         Gate::policy(TravelRentalBooking::class, TravelRentalBookingPolicy::class);

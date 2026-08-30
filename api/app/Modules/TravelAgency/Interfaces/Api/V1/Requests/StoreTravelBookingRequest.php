@@ -40,6 +40,9 @@ class StoreTravelBookingRequest extends FormRequest
             'booking_source' => ['sometimes', 'string', Rule::in($sources)],
             'idempotency_key' => ['required', 'string', 'max:255'],
             'customer_contact_id' => ['nullable', 'integer'],
+            'contact_email' => ['nullable', 'email', 'max:255'],
+            'contact_phone' => ['nullable', 'string', 'max:40'],
+            'notify_consent' => ['nullable', 'boolean'],
             'passengers' => ['required', 'array', 'min:1', 'max:20'],
             'passengers.*.full_name' => ['required', 'string', 'max:160'],
             'passengers.*.birth_date' => ['nullable', 'date'],
@@ -48,6 +51,13 @@ class StoreTravelBookingRequest extends FormRequest
             'passengers.*.age_category' => ['required', 'string', Rule::in($ages)],
             'passengers.*.class_id' => ['required', 'integer', 'exists:travel_classes,id'],
             'passengers.*.seat_number' => ['nullable', 'integer', 'min:1'],
+            // TRAVEL-802 (#6093) — aller-retour (jambe retour optionnelle).
+            'return_trip_id' => ['nullable', 'integer', 'exists:travel_trips,id', 'different:trip_id'],
+            'return_passengers' => ['nullable', 'array', 'min:1', 'max:20'],
+            'return_passengers.*.full_name' => ['required_with:return_passengers', 'string', 'max:160'],
+            'return_passengers.*.age_category' => ['required_with:return_passengers', 'string', Rule::in($ages)],
+            'return_passengers.*.class_id' => ['required_with:return_passengers', 'integer', 'exists:travel_classes,id'],
+            'return_passengers.*.seat_number' => ['nullable', 'integer', 'min:1'],
         ];
     }
 }

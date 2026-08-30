@@ -6,7 +6,6 @@ namespace App\Console\Commands;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
-use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
 use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use Illuminate\Console\Command;
@@ -63,9 +62,9 @@ class TravelOutboxDispatchCommand extends Command
                 continue;
             }
 
-            $consumer = $this->registry->consumerFor($event->event_type);
+            $consumers = $this->registry->consumersFor($event->event_type);
 
-            if (! $consumer instanceof TravelOutboxConsumer) {
+            if ($consumers === []) {
                 $this->deadLetter($event, 'Aucun consommateur pour '.$event->event_type);
 
                 continue;
@@ -83,11 +82,18 @@ class TravelOutboxDispatchCommand extends Command
 
                 // Enveloppe d'événement : identifiant + métadonnées disponibles
                 // pour tous les consommateurs (webhooks, notifications, CRM…).
-                $this->tenants->withinTenant($company, fn () => $consumer->handle(array_merge([
-                    'event_id' => $event->id,
-                    'event_type' => $event->event_type,
-                    'company_id' => $event->company_id,
-                ], $event->payload_redacted ?? [])));
+                // Multi-consommation : chaque consumer applique son effet de
+                // façon idempotente — un échec sur l'un retente l'événement
+                // (retry/backoff), les autres restent rejouables sans doublon.
+                $this->tenants->withinTenant($company, function () use ($consumers, $event): void {
+                    foreach ($consumers as $consumer) {
+                        $consumer->handle(array_merge([
+                            'event_id' => $event->id,
+                            'event_type' => $event->event_type,
+                            'company_id' => $event->company_id,
+                        ], $event->payload_redacted ?? []));
+                    }
+                });
 
                 $event->forceFill([
                     'status' => TravelOutboxEvent::STATUS_PUBLISHED,

@@ -11,10 +11,12 @@ use App\Modules\TravelAgency\Application\Actions\ConfirmBookingAction;
 use App\Modules\TravelAgency\Application\Actions\CreateBookingAction;
 use App\Modules\TravelAgency\Application\Actions\IssueTicketsAction;
 use App\Modules\TravelAgency\Application\Actions\RefundBookingAction;
+use App\Modules\TravelAgency\Application\Actions\RefundPassengersAction;
 use App\Modules\TravelAgency\Domain\Enums\BookingSource;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelBookingRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RefundTravelBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelBookingResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTicketResource;
@@ -76,6 +78,11 @@ class TravelBookingController extends Controller
             actor: $actor,
             idempotencyKey: $request->validated('idempotency_key'),
             customerContactId: $request->validated('customer_contact_id'),
+            contactEmail: $request->validated('contact_email'),
+            contactPhone: $request->validated('contact_phone'),
+            notifyConsent: (bool) $request->validated('notify_consent', false),
+            returnTripId: $request->validated('return_trip_id'),
+            returnPassengers: $request->validated('return_passengers'),
         );
 
         return (new TravelBookingResource($booking))->response()->setStatusCode(201);
@@ -135,7 +142,7 @@ class TravelBookingController extends Controller
         return (new TravelBookingResource($booking))->response();
     }
 
-    public function refund(CancelTravelBookingRequest $request, TravelBooking $travelBooking): JsonResponse
+    public function refund(RefundTravelBookingRequest $request, TravelBooking $travelBooking): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -148,11 +155,20 @@ class TravelBookingController extends Controller
             abort(403);
         }
 
-        $booking = app(RefundBookingAction::class)->execute(
-            $travelBooking,
-            $actor,
-            $request->validated('reason'),
-        );
+        $passengerIds = $request->validated('passenger_ids');
+
+        $booking = $passengerIds !== null && $passengerIds !== []
+            ? app(RefundPassengersAction::class)->execute(
+                $travelBooking,
+                $actor,
+                $request->validated('reason'),
+                $passengerIds,
+            )
+            : app(RefundBookingAction::class)->execute(
+                $travelBooking,
+                $actor,
+                $request->validated('reason'),
+            );
 
         return (new TravelBookingResource($booking))->response();
     }
