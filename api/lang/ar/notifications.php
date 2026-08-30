@@ -34,4 +34,6 @@ return [
 
     'payment_document_ready_title' => 'المستند جاهز',
     'payment_document_ready_body' => 'تم إنشاء مسтد مدفوعاتك وهو متاح للتنزيل.',
+    'weekly_manager_digest_title' => 'ملخص الفريق الأسبوعي',
+    'weekly_manager_digest_body' => 'أسبوع :week_start — فريق من :team_size شخص(ًا) · :present حضور مسجل · :pending_absences غياب قيد الانتظار · :pending_advances سلف قيد الانتظار · :pending_corrections تصحيحات قيد الانتظار.',
 ];
