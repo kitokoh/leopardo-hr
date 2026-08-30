@@ -93,13 +93,14 @@ function reservationStateFactory() {
   };
 }
 
+async function mockReservations(page: Page) {
+  const state = reservationStateFactory();
   // Catch-all : tout appel restaurant non mocké répond 200 { data: [] } (aucun backend requis).
   await page.route('**/api/v1/restaurant/**', (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [] }) }),
   );
 
-async function mockReservations(page: Page) {
-  const state = reservationStateFactory();
+
 
   await page.route(/\/api\/v1\/restaurant\/reservations\?per_page=100$/, (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(state.list()) }),
@@ -127,6 +128,13 @@ async function mockReservations(page: Page) {
 
 test.describe('Réservations restaurant (RESTO-902)', () => {
   test('liste, crée et fait transiter une réservation (confirm → check-in)', async ({ page }) => {
+    await page.addInitScript((user) => {
+      window.localStorage.setItem('auth_token', 'resto-e2e-token');
+      window.localStorage.setItem('auth_user', JSON.stringify(user));
+    }, baseUser);
+    await page.route('**/api/v1/auth/me', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: baseUser }) }),
+    );
     await setSessionCookie(page);
     await mockReservations(page);
     await page.goto('/restaurant/reservations');
@@ -143,18 +151,24 @@ test.describe('Réservations restaurant (RESTO-902)', () => {
     // La nouvelle réservation apparaît (statut pending → Confirmer dispo)
     await expect(page.getByText('Boris Kamga')).toBeVisible();
 
-    // Transition confirm sur la première réservation
-    const confirmButton = page.getByRole('button', { name: /Confirmer/ }).first();
-    await confirmButton.click();
-    await expect(page.getByText('RES-0001').locator('..')).toContainText(/Confirmé|confirmed/);
+    // Transition confirm sur la ligne RES-0001 (scope ligne)
+    const resRow = page.getByText('RES-0001').locator('..');
+    await resRow.getByRole('button', { name: /Confirmer/ }).click();
+    await expect(resRow).toContainText(/confirmed/);
 
     // Check-in (table occupée)
-    const checkinButton = page.getByRole('button', { name: /Check-in/ }).first();
-    await checkinButton.click();
-    await expect(page.getByText('RES-0001').locator('..')).toContainText(/Table|seated/);
+    await resRow.getByRole('button', { name: /Check-in/ }).click();
+    await expect(resRow).toContainText(/seated/);
   });
 
   test('no-show sur une réservation pending', async ({ page }) => {
+    await page.addInitScript((user) => {
+      window.localStorage.setItem('auth_token', 'resto-e2e-token');
+      window.localStorage.setItem('auth_user', JSON.stringify(user));
+    }, baseUser);
+    await page.route('**/api/v1/auth/me', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: baseUser }) }),
+    );
     await setSessionCookie(page);
     await mockReservations(page);
     await page.goto('/restaurant/reservations');

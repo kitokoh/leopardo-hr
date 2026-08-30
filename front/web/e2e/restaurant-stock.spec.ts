@@ -43,8 +43,8 @@ const baseUser = {
 
 const stockLevels = {
   data: [
-    { id: 1, product_code: 'P-01', product_name: 'Poulet braisé', quantity: 24, min_level: 10, unit: 'kg' },
-    { id: 2, product_code: 'P-02', product_name: 'Jus de bissap', quantity: 3, min_level: 10, unit: 'L' },
+    { id: 1, branch_id: 1, ingredient_id: 'ING-01', quantity: 24, avg_cost_minor: 500, alert_threshold: 10, is_below_threshold: false },
+    { id: 2, branch_id: 1, ingredient_id: 'ING-02', quantity: 3, avg_cost_minor: 300, alert_threshold: 10, is_below_threshold: true },
   ],
 };
 
@@ -73,13 +73,14 @@ function purchaseOrderStateFactory() {
   };
 }
 
+async function mockStock(page: Page) {
+  const state = purchaseOrderStateFactory();
   // Catch-all : tout appel restaurant non mocké répond 200 { data: [] } (aucun backend requis).
   await page.route('**/api/v1/restaurant/**', (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [] }) }),
   );
 
-async function mockStock(page: Page) {
-  const state = purchaseOrderStateFactory();
+
 
   await page.route(/\/api\/v1\/restaurant\/stock-levels\?per_page=200$/, (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(stockLevels) }),
@@ -89,6 +90,13 @@ async function mockStock(page: Page) {
   );
   await page.route(/\/api\/v1\/restaurant\/receivings\?per_page=100$/, (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(state.listReceivings()) }),
+  );
+  await page.route(/\/api\/v1\/restaurant\/purchase-orders\/\d+$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: { id: 1, items: [{ ingredient_id: 1, quantity: 2, unit_price_minor: 500 }] } }),
+    }),
   );
   await page.route(/\/api\/v1\/restaurant\/purchase-orders\/\d+\/(send|receive)$/, async (route) => {
     const match = route.request().url().match(/\/purchase-orders\/(\d+)\/([a-z]+)$/);
@@ -105,31 +113,49 @@ async function mockStock(page: Page) {
 
 test.describe('Stock & achats restaurant (RESTO-902)', () => {
   test('affiche les niveaux de stock et les bons de commande', async ({ page }) => {
+    await page.addInitScript((user) => {
+      window.localStorage.setItem('auth_token', 'resto-e2e-token');
+      window.localStorage.setItem('auth_user', JSON.stringify(user));
+    }, baseUser);
+    await page.route('**/api/v1/auth/me', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: baseUser }) }),
+    );
     await setSessionCookie(page);
     await mockStock(page);
     await page.goto('/restaurant/stock');
 
     // Niveaux de stock (onglet par défaut)
-    await expect(page.getByText('Poulet braisé')).toBeVisible();
-    await expect(page.getByText('Jus de bissap')).toBeVisible();
+    await expect(page.getByText('ING-01')).toBeVisible();
+    await expect(page.getByText('ING-02')).toBeVisible();
+    await expect(page.getByText('Seuil atteint')).toBeVisible();
 
     // Onglet bons de commande
     await page.getByRole('button', { name: /Bons de commande/ }).click();
-    await expect(page.getByText('Ferme de l’Ouest')).toBeVisible();
+    await expect(page.getByText('PO-0001')).toBeVisible();
 
     // Bon draft → Envoyer → sent
-    await page.getByRole('button', { name: /Envoyer/ }).click();
-    await expect(page.getByText('PO-0001').locator('..')).toContainText(/sent/);
+    const poRow = page.getByText('PO-0001').locator('..');
+    await poRow.getByRole('button', { name: /Envoyer/ }).click();
+    await expect(poRow).toContainText(/sent/);
   });
 
   test('réceptionne un bon de commande envoyé', async ({ page }) => {
+    await page.addInitScript((user) => {
+      window.localStorage.setItem('auth_token', 'resto-e2e-token');
+      window.localStorage.setItem('auth_user', JSON.stringify(user));
+    }, baseUser);
+    await page.route('**/api/v1/auth/me', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: baseUser }) }),
+    );
     await setSessionCookie(page);
     await mockStock(page);
     await page.goto('/restaurant/stock');
 
     await page.getByRole('button', { name: /Bons de commande/ }).click();
-    await page.getByRole('button', { name: /Envoyer/ }).click();
-    await page.getByRole('button', { name: /Réceptionner/ }).click();
-    await expect(page.getByText('PO-0001').locator('..')).toContainText(/received/);
+    const poRow = page.getByText('PO-0001').locator('..');
+    await poRow.getByRole('button', { name: /Envoyer/ }).click();
+    await expect(poRow).toContainText(/sent/);
+    await poRow.getByRole('button', { name: /Réceptionner/ }).click();
+    await expect(poRow).toContainText(/received/);
   });
 });
