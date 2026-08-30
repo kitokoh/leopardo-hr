@@ -2188,7 +2188,6 @@ paths:
           description: Permission travel.manage requise
         '422':
           description: Validation échouée
-<<<<<<< HEAD
   /travel/trips/connections:
     get:
       tags:
@@ -2238,8 +2237,6 @@ paths:
           description: Non authentifié
         '422':
           description: Paramètres requis manquants
-=======
->>>>>>> ca6863f60 (feat(travel): API réseau & trajets — véhicules, routes/étapes, trajets, tarifs, publish/cancel, search (TRAVEL-306..311))
   /travel/trips/search:
     get:
       tags:
@@ -2271,7 +2268,6 @@ paths:
         schema:
           type: string
           format: date
-<<<<<<< HEAD
       - name: flexible_days
         in: query
         required: false
@@ -2281,8 +2277,6 @@ paths:
           minimum: 0
           maximum: 7
           default: 0
-=======
->>>>>>> ca6863f60 (feat(travel): API réseau & trajets — véhicules, routes/étapes, trajets, tarifs, publish/cancel, search (TRAVEL-306..311))
       - name: date_from
         in: query
         required: false
@@ -2676,7 +2670,6 @@ paths:
           description: Tarif ou trajet introuvable ou hors tenant
         '403':
           description: Permission travel.manage requise
-<<<<<<< HEAD
   /travel/bookings:
     get:
       tags:
@@ -2959,6 +2952,7 @@ paths:
           description: Permission travel.manage requise
         '422':
           description: Seule une réservation confirmée peut émettre des billets
+<<<<<<< HEAD
   /travel/partner-keys:
     post:
       tags:
@@ -3883,6 +3877,8 @@ paths:
         '404':
           description: Politique introuvable ou hors tenant
 
+=======
+>>>>>>> d953a6d18 (feat(travel): API réservations & billetterie — guichet, confirm, cancel, refund, tickets, check-in, manifest (TRAVEL-312..318))
   /travel/tickets/{travelTicket}/check-in:
     post:
       tags:
@@ -3936,6 +3932,7 @@ paths:
                       $ref: '#/components/schemas/TravelPassenger'
         '404':
           description: Trajet introuvable ou hors tenant
+<<<<<<< HEAD
   /travel/rental-vehicles:
     get:
       tags:
@@ -4768,7 +4765,7 @@ paths:
         '422':
           description: Validation échouée (consentement manquant, message hors bornes, email/téléphone absents)
 =======
->>>>>>> ca6863f60 (feat(travel): API réseau & trajets — véhicules, routes/étapes, trajets, tarifs, publish/cancel, search (TRAVEL-306..311))
+>>>>>>> d953a6d18 (feat(travel): API réservations & billetterie — guichet, confirm, cancel, refund, tickets, check-in, manifest (TRAVEL-312..318))
   /health:
     get:
       tags:
@@ -30027,7 +30024,6 @@ components:
         updated_at:
           type: string
           nullable: true
-<<<<<<< HEAD
     TravelBooking:
       type: object
       properties:
@@ -30071,6 +30067,7 @@ components:
         updated_at:
           type: string
           nullable: true
+<<<<<<< HEAD
     TravelRefund:
       type: object
       properties:
@@ -30232,6 +30229,8 @@ components:
           type: integer
           minimum: 1
           nullable: true
+=======
+>>>>>>> d953a6d18 (feat(travel): API réservations & billetterie — guichet, confirm, cancel, refund, tickets, check-in, manifest (TRAVEL-312..318))
     TravelPassenger:
       type: object
       properties:
@@ -30289,6 +30288,7 @@ components:
         created_at:
           type: string
           nullable: true
+<<<<<<< HEAD
     TravelRentalVehicle:
       type: object
       properties:
@@ -30441,7 +30441,7 @@ components:
           type: string
           nullable: true
 =======
->>>>>>> ca6863f60 (feat(travel): API réseau & trajets — véhicules, routes/étapes, trajets, tarifs, publish/cancel, search (TRAVEL-306..311))
+>>>>>>> d953a6d18 (feat(travel): API réservations & billetterie — guichet, confirm, cancel, refund, tickets, check-in, manifest (TRAVEL-312..318))
     TravelCarrier:
       type: object
       properties:
