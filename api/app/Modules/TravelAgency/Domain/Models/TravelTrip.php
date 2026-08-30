@@ -57,7 +57,7 @@ class TravelTrip extends Model
      */
     public function route(): BelongsTo
     {
-        return $this->belongsTo(TravelRoute::class);
+        return $this->belongsTo(TravelRoute::class, 'route_id');
     }
 
     /**
@@ -65,7 +65,7 @@ class TravelTrip extends Model
      */
     public function carrier(): BelongsTo
     {
-        return $this->belongsTo(TravelCarrier::class);
+        return $this->belongsTo(TravelCarrier::class, 'carrier_id');
     }
 
     /**
@@ -73,7 +73,7 @@ class TravelTrip extends Model
      */
     public function vehicle(): BelongsTo
     {
-        return $this->belongsTo(TravelVehicle::class);
+        return $this->belongsTo(TravelVehicle::class, 'vehicle_id');
     }
 
     /**
@@ -81,6 +81,6 @@ class TravelTrip extends Model
      */
     public function prices(): HasMany
     {
-        return $this->hasMany(TravelTripPrice::class);
+        return $this->hasMany(TravelTripPrice::class, 'trip_id');
     }
 }

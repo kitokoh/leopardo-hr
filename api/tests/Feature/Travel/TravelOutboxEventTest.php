@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -57,7 +58,7 @@ class TravelOutboxEventTest extends TestCase
             TravelOutboxEvent::factory()->create(['idempotency_key' => 'evt-key-001']);
 
             $this->expectException(QueryException::class);
-            TravelOutboxEvent::factory()->create(['idempotency_key' => 'evt-key-001']);
+            DB::transaction(fn () => TravelOutboxEvent::factory()->create(['idempotency_key' => 'evt-key-001']));
         });
     }
 
