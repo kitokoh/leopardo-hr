@@ -7511,6 +7511,293 @@ paths:
         '422':
           description: Transition interdite ou validation
 
+  /fuel-station/accounts:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les comptes professionnels B2B (manager, paginé, FUEL-016 #5810)
+      description: "Filtres : station_id, status, search (name/code). Pagination bornée. Ne lit jamais les leads du CRM commercial Leopardo."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [active, inactive, archived]
+      - name: search
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Comptes paginés
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FuelProfessionalAccount'
+                  meta:
+                    type: object
+                    properties:
+                      current_page: {type: integer}
+                      last_page: {type: integer}
+                      total: {type: integer}
+                      per_page: {type: integer}
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Créer ou mettre à jour un compte professionnel (manager, upsert idempotent, FUEL-016 #5810)
+      description: "Upsert par code unique par tenant. Contact chiffré au stockage (RGPD) ; consentements allowlist ; publie fuel.account.upserted.v1 (outbox)."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              properties:
+                station_id:
+                  type: integer
+                  nullable: true
+                code:
+                  type: string
+                  maxLength: 60
+                name:
+                  type: string
+                  maxLength: 200
+                  nullable: true
+                industry:
+                  type: string
+                  maxLength: 60
+                  nullable: true
+                contact:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+                  description: Référent (email/téléphone) — chiffré au stockage
+                consents:
+                  type: object
+                  additionalProperties:
+                    type: boolean
+                status:
+                  type: string
+                  enum: [active, inactive, archived]
+                external_id:
+                  type: string
+                  maxLength: 120
+                  nullable: true
+      responses:
+        '201':
+          description: Compte créé ou mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelProfessionalAccount'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation
+
+  /fuel-station/accounts/{account}:
+    get:
+      tags:
+      - FuelStation
+      summary: Détail d'un compte professionnel (manager, FUEL-016 #5810)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: account
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail du compte (contact jamais exposé)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelProfessionalAccount'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Compte introuvable ou autre tenant
+
+  /fuel-station/accounts/{account}/visits:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les visites d'un compte (manager, paginé, FUEL-016 #5810)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: account
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Visites paginées
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FuelAccountVisit'
+                  meta:
+                    type: object
+                    properties:
+                      current_page: {type: integer}
+                      last_page: {type: integer}
+                      total: {type: integer}
+                      per_page: {type: integer}
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Compte introuvable ou autre tenant
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer une visite sur un compte (manager, idempotent, FUEL-016 #5810)
+      description: "Idempotent par external_id. Publie fuel.visit.recorded.v1 (outbox)."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: account
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                visited_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                purpose:
+                  type: string
+                  enum: [commercial, operational, loyalty, other]
+                notes_redacted:
+                  type: string
+                  maxLength: 2000
+                  nullable: true
+                external_id:
+                  type: string
+                  maxLength: 120
+                  nullable: true
+      responses:
+        '201':
+          description: Visite enregistrée (ou rejouée)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelAccountVisit'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Compte introuvable ou autre tenant
+
+  /fuel-station/accounts/{account}/consents:
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre à jour les consentements marketing d'un compte (manager, FUEL-016 #5810)
+      description: "Allowlist stricte des canaux (email, sms, whatsapp, call). Publie fuel.consent.updated.v1 (outbox)."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: account
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - consents
+              properties:
+                consents:
+                  type: object
+                  properties:
+                    email: {type: boolean}
+                    sms: {type: boolean}
+                    whatsapp: {type: boolean}
+                    call: {type: boolean}
+      responses:
+        '200':
+          description: Consentements mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelProfessionalAccount'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Compte introuvable ou autre tenant
+        '422':
+          description: Validation
+
   /fuel-station/{resource}:
     get:
       tags:
@@ -34162,6 +34449,39 @@ components:
           type: string
           format: date-time
           nullable: true
+    FuelProfessionalAccount:
+      type: object
+      properties:
+        id: {type: integer}
+        station_id: {type: integer, nullable: true}
+        code: {type: string}
+        name: {type: string}
+        industry: {type: string, nullable: true}
+        status: {type: string, enum: [active, inactive, archived]}
+        consents:
+          type: object
+          properties:
+            email: {type: boolean}
+            sms: {type: boolean}
+            whatsapp: {type: boolean}
+            call: {type: boolean}
+        visits_count: {type: integer, nullable: true}
+        external_id: {type: string, nullable: true}
+        created_by: {type: integer, nullable: true}
+        created_at: {type: string, format: date-time, nullable: true}
+    FuelAccountVisit:
+      type: object
+      properties:
+        id: {type: integer}
+        account_id: {type: integer}
+        visited_at: {type: string, format: date-time}
+        purpose: {type: string, enum: [commercial, operational, loyalty, other]}
+        notes_redacted: {type: string, nullable: true}
+        external_id: {type: string, nullable: true}
+        created_by: {type: integer, nullable: true}
+        created_at: {type: string, format: date-time, nullable: true}
+
+
     FuelIncident:
       type: object
       properties:

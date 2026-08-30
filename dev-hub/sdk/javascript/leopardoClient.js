@@ -2250,6 +2250,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/fuel-station/{resource}/{id}", options);
     },
 
+    /** Lister les comptes professionnels B2B (manager, paginé, FUEL-016 #5810) */
+    getFuelStationAccounts(options = {}) {
+      return request("GET", "/fuel-station/accounts", options);
+    },
+
+    /** Créer ou mettre à jour un compte professionnel (manager, upsert idempotent, FUEL-016 #5810) */
+    postFuelStationAccounts(options = {}) {
+      return request("POST", "/fuel-station/accounts", options);
+    },
+
+    /** Détail d'un compte professionnel (manager, FUEL-016 #5810) */
+    getFuelStationAccountsByAccount(options = {}) {
+      return request("GET", "/fuel-station/accounts/{account}", options);
+    },
+
+    /** Mettre à jour les consentements marketing d'un compte (manager, FUEL-016 #5810) */
+    putFuelStationAccountsByAccountConsents(options = {}) {
+      return request("PUT", "/fuel-station/accounts/{account}/consents", options);
+    },
+
+    /** Lister les visites d'un compte (manager, paginé, FUEL-016 #5810) */
+    getFuelStationAccountsByAccountVisits(options = {}) {
+      return request("GET", "/fuel-station/accounts/{account}/visits", options);
+    },
+
+    /** Enregistrer une visite sur un compte (manager, idempotent, FUEL-016 #5810) */
+    postFuelStationAccountsByAccountVisits(options = {}) {
+      return request("POST", "/fuel-station/accounts/{account}/visits", options);
+    },
+
     /** Lister les sessions de caisse (manager) */
     getFuelStationCashSessions(options = {}) {
       return request("GET", "/fuel-station/cash-sessions", options);

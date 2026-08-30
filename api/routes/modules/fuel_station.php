@@ -17,6 +17,7 @@ declare(strict_types=1);
  */
 
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCrmController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelIncidentController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
@@ -113,6 +114,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/fuel-station/maintenance-tasks', [FuelIncidentController::class, 'storeTask']);
         Route::post('/fuel-station/maintenance-tasks/{task}/transition', [FuelIncidentController::class, 'transitionTask'])
             ->whereNumber('task');
+
+        // FUEL-016 (#5810) : comptes professionnels & visites (manager).
+        Route::get('/fuel-station/accounts', [FuelCrmController::class, 'index']);
+        Route::post('/fuel-station/accounts', [FuelCrmController::class, 'store']);
+        Route::get('/fuel-station/accounts/{account}', [FuelCrmController::class, 'show'])
+            ->whereNumber('account');
+        Route::get('/fuel-station/accounts/{account}/visits', [FuelCrmController::class, 'visits'])
+            ->whereNumber('account');
+        Route::post('/fuel-station/accounts/{account}/visits', [FuelCrmController::class, 'recordVisit'])
+            ->whereNumber('account');
+        Route::put('/fuel-station/accounts/{account}/consents', [FuelCrmController::class, 'updateConsents'])
+            ->whereNumber('account');
 
         // FUEL-011 (#5805) : référentiel CRUD manager (stations, sites,
         // pompes, cuves, compteurs, produits) — deny-by-default, filtres

@@ -1820,6 +1820,30 @@ class LeopardoClient:
         """Mettre à jour une ressource du référentiel (manager, FUEL-011 #5805)"""
         return self.request("PUT", "/fuel-station/{resource}/{id}", **kwargs)
 
+    def get_fuel_station_accounts(self, **kwargs):
+        """Lister les comptes professionnels B2B (manager, paginé, FUEL-016 #5810)"""
+        return self.request("GET", "/fuel-station/accounts", **kwargs)
+
+    def post_fuel_station_accounts(self, **kwargs):
+        """Créer ou mettre à jour un compte professionnel (manager, upsert idempotent, FUEL-016 #5810)"""
+        return self.request("POST", "/fuel-station/accounts", **kwargs)
+
+    def get_fuel_station_accounts_by_account(self, **kwargs):
+        """Détail d'un compte professionnel (manager, FUEL-016 #5810)"""
+        return self.request("GET", "/fuel-station/accounts/{account}", **kwargs)
+
+    def put_fuel_station_accounts_by_account_consents(self, **kwargs):
+        """Mettre à jour les consentements marketing d'un compte (manager, FUEL-016 #5810)"""
+        return self.request("PUT", "/fuel-station/accounts/{account}/consents", **kwargs)
+
+    def get_fuel_station_accounts_by_account_visits(self, **kwargs):
+        """Lister les visites d'un compte (manager, paginé, FUEL-016 #5810)"""
+        return self.request("GET", "/fuel-station/accounts/{account}/visits", **kwargs)
+
+    def post_fuel_station_accounts_by_account_visits(self, **kwargs):
+        """Enregistrer une visite sur un compte (manager, idempotent, FUEL-016 #5810)"""
+        return self.request("POST", "/fuel-station/accounts/{account}/visits", **kwargs)
+
     def get_fuel_station_cash_sessions(self, **kwargs):
         """Lister les sessions de caisse (manager)"""
         return self.request("GET", "/fuel-station/cash-sessions", **kwargs)
