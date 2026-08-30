@@ -19,10 +19,12 @@ use App\Modules\TravelAgency\Domain\Models\TravelStation;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
+use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookConsumer;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
 use App\Modules\TravelAgency\Policies\TravelClassPolicy;
@@ -36,6 +38,7 @@ use App\Modules\TravelAgency\Policies\TravelStationPolicy;
 use App\Modules\TravelAgency\Policies\TravelTicketPolicy;
 use App\Modules\TravelAgency\Policies\TravelTripPolicy;
 use App\Modules\TravelAgency\Policies\TravelVehiclePolicy;
+use App\Modules\TravelAgency\Policies\TravelWebhookSubscriptionPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -70,7 +73,10 @@ class TravelAgencyServiceProvider extends ServiceProvider
 
         // Outbox (TRAVEL-414) : registre des consommateurs d'événements.
         $this->app->singleton(TravelOutboxConsumerRegistry::class, function (): TravelOutboxConsumerRegistry {
-            return new TravelOutboxConsumerRegistry;
+            $registry = new TravelOutboxConsumerRegistry;
+            $registry->register(app(TravelWebhookConsumer::class));
+
+            return $registry;
         });
     }
 
@@ -89,5 +95,6 @@ class TravelAgencyServiceProvider extends ServiceProvider
         Gate::policy(TravelRentalBooking::class, TravelRentalBookingPolicy::class);
         Gate::policy(TravelHotel::class, TravelHotelPolicy::class);
         Gate::policy(TravelReportExport::class, TravelReportPolicy::class);
+        Gate::policy(TravelWebhookSubscription::class, TravelWebhookSubscriptionPolicy::class);
     }
 }

@@ -4456,6 +4456,72 @@ paths:
           description: Non authentifié
         '422':
           description: Type d'export inconnu
+  /travel/webhook-subscriptions:
+    get:
+      tags:
+      - Travel
+      summary: Liste des abonnements webhooks transporteurs (TRAVEL-806/#6097)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Abonnements (secret jamais exposé — préfixe de hash uniquement)
+        '403':
+          description: Permission travel.manage requise
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: Créer/mettre à jour un abonnement webhook transporteur (upsert par transporteur)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [carrier_id, url, secret, events]
+              properties:
+                carrier_id: {type: integer}
+                url: {type: string, format: uri, maxLength: 500}
+                secret: {type: string, minLength: 16, maxLength: 200, description: Chiffré au repos, jamais restitué}
+                events:
+                  type: array
+                  items: {type: string}
+                  minItems: 1
+                active: {type: boolean, default: true}
+      responses:
+        '201':
+          description: Abonnement créé ou mis à jour (secret_prefix exposé)
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Validation échouée (transporteur inconnu, événement inconnu)
+        '401':
+          description: Non authentifié
+  /travel/webhook-subscriptions/{subscription}:
+    delete:
+      tags:
+      - Travel
+      summary: Supprimer un abonnement webhook transporteur
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: subscription
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '204':
+          description: Supprimé
+        '403':
+          description: Permission travel.manage requise
+        '404':
+          description: Abonnement introuvable (ou autre tenant)
+        '401':
+          description: Non authentifié
   /health:
     get:
       tags:

@@ -3704,6 +3704,18 @@ class LeopardoClient:
         """Mise à jour d'un véhicule (TRAVEL-306/#6036)"""
         return self.request("PUT", "/travel/vehicles/{travelVehicle}", **kwargs)
 
+    def get_travel_webhook_subscriptions(self, **kwargs):
+        """Liste des abonnements webhooks transporteurs (TRAVEL-806/#6097)"""
+        return self.request("GET", "/travel/webhook-subscriptions", **kwargs)
+
+    def post_travel_webhook_subscriptions(self, **kwargs):
+        """Créer/mettre à jour un abonnement webhook transporteur (upsert par transporteur)"""
+        return self.request("POST", "/travel/webhook-subscriptions", **kwargs)
+
+    def delete_travel_webhook_subscriptions_by_subscription(self, **kwargs):
+        """Supprimer un abonnement webhook transporteur"""
+        return self.request("DELETE", "/travel/webhook-subscriptions/{subscription}", **kwargs)
+
     def post_trial_signup(self, **kwargs):
         """Demande d'essai guidé / auto-service (onboarding)"""
         return self.request("POST", "/trial/signup", **kwargs)

@@ -34,6 +34,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelReportController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelWebhookSubscriptionController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
@@ -140,6 +141,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/reports/cancellations', [TravelReportController::class, 'cancellations']);
         Route::get('/reports/dashboard', [TravelReportController::class, 'dashboard']);
         Route::get('/reports/export', [TravelReportController::class, 'export']);
+
+        // Abonnements webhooks transporteurs (TRAVEL-806/#6097) — travel.manage.
+        Route::get('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'index']);
+        Route::post('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'store']);
+        Route::delete('/webhook-subscriptions/{subscription}', [TravelWebhookSubscriptionController::class, 'destroy']);
 
         // Boutique en ligne (TRAVEL-401..404/#6053..#6056).
         Route::get('/shop/trips', [TravelShopController::class, 'search']);

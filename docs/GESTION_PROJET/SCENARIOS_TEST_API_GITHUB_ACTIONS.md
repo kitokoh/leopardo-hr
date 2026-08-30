@@ -1593,3 +1593,11 @@ Suite de l'épic 4xx : `POST /travel/payments/{payment}/verify`, `POST /travel/p
   employé simple → 403 ; export idempotent (même requête = même hash sha256 = même fichier, URL signée 30 min) ; type
   inconnu → 422 ; read models recalculés → état identique après reprise.
 - Couverture : `api/tests/Feature/Travel/TravelReportApiTest.php` (208 tests Travel au total).
+
+## BC-24 TRAVEL — Webhooks transporteurs (TRAVEL-806, 2026-08-30)
+
+`GET/POST/DELETE /travel/webhook-subscriptions` (travel.manage) + livraison HMAC depuis l'outbox.
+- Scénarios à vérifier : création → secret jamais exposé (préfixe hash 8 car.) ; upsert par transporteur (pas de doublon) ;
+  employé simple → 403 ; événement outbox → livraison signée (en-têtes HMAC + timestamp) ; rejeu → pas de doublon ;
+  échec HTTP → retry/backoff puis dead-letter après 5 tentatives.
+- Couverture : `api/tests/Feature/Travel/TravelWebhookTest.php` (215 tests Travel au total).
