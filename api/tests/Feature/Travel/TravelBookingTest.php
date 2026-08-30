@@ -60,7 +60,7 @@ class TravelBookingTest extends TestCase
             TravelBooking::factory()->create(['idempotency_key' => 'replay-key-001']);
 
             $this->expectException(QueryException::class);
-            TravelBooking::factory()->create(['idempotency_key' => 'replay-key-001']);
+            DB::transaction(fn () => TravelBooking::factory()->create(['idempotency_key' => 'replay-key-001']));
         });
     }
 

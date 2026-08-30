@@ -28,7 +28,7 @@ class TravelClassResource extends JsonResource
             'label' => $this->label,
             'color' => $this->color,
             'priority' => $this->priority,
-            'status' => $this->status->value,
+            'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
