@@ -2766,6 +2766,30 @@ trait CreatesMvpSchema
             });
         }
 
+        // ── BC-24 TRAVEL — TRAVEL-415 (issue #6067) ────────────────────────
+        // Contacts voyageurs + registre de consentement par canal : aucun
+        // envoi sans opt-in explicite (spéc §8.5, RGPD).
+        if (! Schema::hasTable($this->moduleTable('travel_customer_contacts'))) {
+            Schema::create($this->moduleTable('travel_customer_contacts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('first_name', 120)->nullable();
+                $table->string('last_name', 120)->nullable();
+                $table->string('email', 190)->nullable();
+                $table->string('phone', 40)->nullable();
+                $table->boolean('email_consent_given')->default(false);
+                $table->timestampTz('email_consent_at')->nullable();
+                $table->boolean('sms_consent_given')->default(false);
+                $table->timestampTz('sms_consent_at')->nullable();
+                $table->boolean('whatsapp_consent_given')->default(false);
+                $table->timestampTz('whatsapp_consent_at')->nullable();
+                $table->string('metadata_json', 2000)->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'email'], 'travel_customer_contacts_company_email_unique');
+                $table->unique(['company_id', 'phone'], 'travel_customer_contacts_company_phone_unique');
+            });
+        }
+
         // ── BC-24 TRAVEL — TRAVEL-212 (issue #6025) ────────────────────────
         if (! Schema::hasTable($this->moduleTable('travel_rental_vehicles'))) {
             Schema::create($this->moduleTable('travel_rental_vehicles'), function (Blueprint $table): void {
@@ -2932,6 +2956,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "travel_rental_vehicle_images"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_rental_vehicles"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_outbox_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_customer_contacts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_payments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_tickets"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_passengers"'.$cascade);
