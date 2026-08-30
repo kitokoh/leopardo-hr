@@ -28,6 +28,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeControlle
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyRateController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuoteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRoundTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
@@ -139,6 +140,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/rental-bookings', [TravelRentalBookingController::class, 'store']);
         Route::get('/rental-bookings/{travelRentalBooking}', [TravelRentalBookingController::class, 'show']);
         Route::post('/rental-bookings/{travelRentalBooking}/cancel', [TravelRentalBookingController::class, 'cancel']);
+
+        // Taux de conversion multi-devise (TRAVEL-805/#6096).
+        Route::get('/currency-rates', [TravelCurrencyRateController::class, 'index']);
+        Route::post('/currency-rates', [TravelCurrencyRateController::class, 'store']);
+        Route::get('/currency-rates/convert', [TravelCurrencyRateController::class, 'convert']);
+        Route::get('/currency-rates/{travelCurrencyRate}', [TravelCurrencyRateController::class, 'show']);
+        Route::put('/currency-rates/{travelCurrencyRate}', [TravelCurrencyRateController::class, 'update']);
 
         // Devis & réservations de groupe (TRAVEL-803/#6094).
         Route::get('/quotes', [TravelQuoteController::class, 'index']);
