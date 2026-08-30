@@ -4280,7 +4280,35 @@
       "routes": "Routes & stops",
       "trips": "Trips & pricing",
       "publish": "Publish",
-      "cancelTrip": "Cancel trip"
+      "cancelTrip": "Cancel trip",
+      "stops": "Stops",
+      "routeStopsTitle": "Route stops",
+      "addStop": "Add stop",
+      "prices": "Pricing",
+      "tripPricesTitle": "Trip pricing",
+      "addPrice": "Add price",
+      "origin": "Origin",
+      "destination": "Destination",
+      "distance": "Distance (km)",
+      "duration": "Duration (min)",
+      "rank": "Rank",
+      "stopover": "Stopover",
+      "minDuration": "Min duration (min)",
+      "route": "Route",
+      "departure": "Departure",
+      "arrival": "Arrival",
+      "means": "Means",
+      "class": "Class",
+      "adultPrice": "Adult price",
+      "childPrice": "Child price",
+      "currency": "Currency",
+      "routeCode": "Route code",
+      "tripCode": "Trip code",
+      "vehicle": "Vehicle",
+      "departureDate": "Departure date",
+      "departureTime": "Departure time",
+      "arrivalDate": "Arrival date",
+      "arrivalTime": "Arrival time"
     },
     "bookings": {
       "title": "Bookings",
@@ -4347,6 +4375,12 @@
       "train": "Train",
       "plane": "Plane",
       "boat": "Boat"
+    },
+    "tripStatus": {
+      "draft": "Draft",
+      "scheduled": "Scheduled",
+      "published": "Published",
+      "cancelled": "Cancelled"
     }
   }
 }
