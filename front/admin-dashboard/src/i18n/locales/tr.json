@@ -1577,7 +1577,8 @@
     "accountingActivation": "Muhasebe — Başlayın",
     "accountingDashboard": "Muhasebe — Panel",
     "accountingSettings": "Muhasebe — Ayarlar",
-    "travelAgency": "Seyahat acentesi"
+    "travelAgency": "Seyahat acentesi",
+    "travelContactForm": "İletişim formu"
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?",
@@ -4255,7 +4256,9 @@
       "checkin": "Check-in",
       "tickets": "Biletler",
       "reports": "Raporlar",
-      "rentals": "Kiralama ve Oteller"
+      "rentals": "Kiralama ve Oteller",
+      "content": "İçerik ve Gelir",
+      "contacts": "Kişiler"
     },
     "referentiel": {
       "tabsLabel": "Referans alt bölümleri",
@@ -4289,7 +4292,9 @@
       "report": "Raporda ara…",
       "rentalVehicle": "Kiralık araç ara…",
       "rentalBooking": "Kiralama rezervasyonu ara…",
-      "hotel": "Otel ara…"
+      "hotel": "Otel ara…",
+      "quiz": "Quiz ara…",
+      "site": "Site ara…"
     },
     "field": {
       "iso2": "ISO2",
@@ -4361,7 +4366,9 @@
       "availableUntil": "Şu tarihe kadar",
       "ownerCarrier": "Sahip şirket",
       "title": "Başlık",
-      "vehicle": "Araç"
+      "vehicle": "Araç",
+      "startsAt": "Başlangıç",
+      "endsAt": "Bitiş"
     },
     "action": {
       "create": "Oluştur",
@@ -4379,12 +4386,14 @@
       "publish": "Yayınla",
       "cancelTrip": "Seferi iptal et",
       "addNested": "Ekle",
-      "add": "Ekle"
+      "add": "Ekle",
+      "refresh": "Yenile"
     },
     "status": {
       "active": "Aktif",
       "inactive": "Pasif",
-      "archived": "Arşivlendi"
+      "archived": "Arşivlendi",
+      "disabled": "Devre dışı"
     },
     "carrierType": {
       "bus": "Otobüs",
@@ -4525,6 +4534,135 @@
     "form": {
       "selectPlaceholder": "— Seçin —",
       "moneyMinor": "Para birimi cinsinden tutar (1 = 100 birim)"
+    },
+    "quiz": {
+      "title": "Quizler ve yarışmalar",
+      "subtitle": "Sunucu tarafında puanlanır — doğru cevap katılımcılara asla gösterilmez.",
+      "questionsAction": "Sorular",
+      "resultsAction": "Sonuçlar",
+      "questionsTitle": "Sorular",
+      "resultsTitle": "Sonuçlar",
+      "emptyQuestions": "Bu quiz için henüz soru yok.",
+      "addQuestion": "Soru ekle",
+      "editQuestion": "Soruyu düzenle",
+      "questionLabel": "Soru",
+      "optionsLabel": "Seçenekler (2-10)",
+      "removeOption": "Seçeneği kaldır",
+      "addOption": "Seçenek ekle",
+      "correctIndex": "Doğru cevap",
+      "points": "Puan",
+      "position": "Sıra",
+      "maxParticipation": "Maks. katılım / kişi",
+      "colParticipant": "Katılımcı",
+      "colEmail": "E-posta",
+      "colScore": "Puan",
+      "colBonus": "Bonus",
+      "colSubmitted": "Gönderim"
+    },
+    "quizStatus": {
+      "draft": "Taslak",
+      "active": "Aktif",
+      "closed": "Kapalı"
+    },
+    "advert": {
+      "title": "Ücretli ilanlar",
+      "subtitle": "Türler, konumlar, fiyat tablosu ve ilan yaşam döngüsü.",
+      "typesTitle": "İlan türleri",
+      "typesSubtitle": "Tür referansı (kiracı başına benzersiz kod).",
+      "positionsTitle": "Konumlar",
+      "positionsSubtitle": "Mevcut reklam yerleşimleri.",
+      "pricesTitle": "Fiyat tablosu",
+      "pricesSubtitle": "Küçük birimlerde, kiracı para birimiyle.",
+      "advertsTitle": "İlanlar",
+      "colType": "Tür",
+      "colPosition": "Konum",
+      "colPriceImage": "Fiyat / görsel",
+      "colPriceChar": "Fiyat / karakter",
+      "colPrice": "Fiyat",
+      "colPaidAt": "Ödeme tarihi",
+      "colExpiresAt": "Bitiş tarihi",
+      "fieldType": "Tür",
+      "fieldPosition": "Konum",
+      "fieldTitle": "Başlık",
+      "fieldContent": "İçerik",
+      "fieldImageAsset": "Görsel (varlık kimliği)",
+      "fieldValidityDays": "Geçerlilik (gün)",
+      "payAction": "Öde",
+      "validateAction": "Onayla",
+      "rejectAction": "Reddet",
+      "rejectTitle": "İlanı reddet",
+      "rejectReason": "Ret nedeni",
+      "rejectSubmit": "Reddet",
+      "renewAction": "Yenile",
+      "createTitle": "Yeni ilan",
+      "filterStatus": "Duruma göre filtrele",
+      "allStatuses": "Tüm durumlar",
+      "searchPlaceholder": "İlan ara…",
+      "confirmPay": "Bu ilanın ödemesini onaylıyor musunuz?",
+      "confirmValidate": "Bu ilan onaylansın mı? Yayınlanacaktır.",
+      "confirmRenew": "Bu ilan yenilensin mi (yeni ödeme)?"
+    },
+    "advertStatus": {
+      "draft": "Taslak",
+      "submitted": "Gönderildi",
+      "paid": "Ödendi",
+      "validated": "Onaylandı",
+      "rejected": "Reddedildi",
+      "expired": "Süresi doldu",
+      "archived": "Arşivlendi"
+    },
+    "sites": {
+      "title": "Turistik yerler",
+      "subtitle": "Şehre göre yerler dizini.",
+      "cityFilter": "Şehre göre filtrele",
+      "allCities": "Tüm şehirler",
+      "fieldLatitude": "Enlem",
+      "fieldLongitude": "Boylam",
+      "fieldImageAsset": "Görsel (varlık kimliği)"
+    },
+    "contacts": {
+      "title": "Gezgin kişileri",
+      "subtitle": "Talep kayıtları ve kanal bazlı onaylar (GDPR).",
+      "openForm": "İletişim formu",
+      "searchPlaceholder": "Kişi ara…",
+      "consentsAction": "Onaylar",
+      "notifyAction": "Bildir",
+      "consentsTitle": "Kanal bazlı onaylar",
+      "consentsHint": "Kanal için açık onay olmadan hiçbir bildirim gönderilemez.",
+      "notifyTitle": "Manuel bildirim",
+      "messageLabel": "Mesaj",
+      "messagePlaceholder": "Mesajınız (en fazla 2.000 karakter)…",
+      "channelsLabel": "Kanallar",
+      "channelEmail": "E-posta",
+      "channelSms": "SMS",
+      "channelWhatsapp": "WhatsApp",
+      "channelApp": "Uygulama içi",
+      "colName": "Ad",
+      "colEmail": "E-posta",
+      "colPhone": "Telefon",
+      "colConsents": "Onaylar",
+      "colCreated": "Kişi olduğu tarih",
+      "sendNotify": "Gönder",
+      "notifySent": "Bildirim gönderildi."
+    },
+    "contactForm": {
+      "title": "Bize ulaşın",
+      "subtitle": "Ajansa talep gönderin: bir danışman size dönecektir.",
+      "ackTitle": "Talep alındı",
+      "ackBody": "Teşekkürler, talebiniz ajansımıza iletildi. En kısa sürede size döneceğiz.",
+      "newRequest": "Yeni talep",
+      "firstName": "Ad",
+      "firstNamePlaceholder": "Adınız",
+      "lastName": "Soyad",
+      "lastNamePlaceholder": "Soyadınız",
+      "email": "E-posta",
+      "emailPlaceholder": "ornek@example.com",
+      "phone": "Telefon",
+      "phonePlaceholder": "Telefonunuz",
+      "message": "Mesaj",
+      "messagePlaceholder": "Talebiniz (en fazla 2.000 karakter)…",
+      "consent": "Talebimle ilgili e-posta ile iletişime geçilmesini kabul ediyorum.",
+      "submit": "Talebi gönder"
     }
   }
 }

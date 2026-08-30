@@ -57,6 +57,7 @@
             {{ actionLabel(action) }}
           </button>
           <button
+            v-if="config.canEdit !== false"
             class="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
             type="button"
             :aria-label="$t('travel.action.edit', 'Modifier')"

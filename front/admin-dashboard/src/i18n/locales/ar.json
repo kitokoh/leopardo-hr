@@ -1577,7 +1577,8 @@
     "accountingActivation": "المحاسبة — ابدأ",
     "accountingDashboard": "المحاسبة — لوحة القيادة",
     "accountingSettings": "المحاسبة — الإعدادات",
-    "travelAgency": "وكالة السفر"
+    "travelAgency": "وكالة السفر",
+    "travelContactForm": "نموذج الاتصال"
   },
   "webhooks": {
     "confirm_delete": "حذف خطاف الويب هذا؟",
@@ -4255,7 +4256,9 @@
       "checkin": "تسجيل الدخول",
       "tickets": "التذاكر",
       "reports": "التقارير",
-      "rentals": "الإيجارات والفنادق"
+      "rentals": "الإيجارات والفنادق",
+      "content": "المحتوى والربح",
+      "contacts": "جهات الاتصال"
     },
     "referentiel": {
       "tabsLabel": "الأقسام الفرعية للمرجع",
@@ -4289,7 +4292,9 @@
       "report": "ابحث في التقرير…",
       "rentalVehicle": "ابحث عن مركبة إيجار…",
       "rentalBooking": "ابحث عن حجز إيجار…",
-      "hotel": "ابحث عن فندق…"
+      "hotel": "ابحث عن فندق…",
+      "quiz": "ابحث عن مسابقة…",
+      "site": "ابحث عن موقع…"
     },
     "field": {
       "iso2": "كود ISO2",
@@ -4361,7 +4366,9 @@
       "availableUntil": "متاح حتى",
       "ownerCarrier": "الشركة المالكة",
       "title": "العنوان",
-      "vehicle": "المركبة"
+      "vehicle": "المركبة",
+      "startsAt": "البداية",
+      "endsAt": "النهاية"
     },
     "action": {
       "create": "إنشاء",
@@ -4379,12 +4386,14 @@
       "publish": "نشر",
       "cancelTrip": "إلغاء الرحلة",
       "addNested": "إضافة",
-      "add": "إضافة"
+      "add": "إضافة",
+      "refresh": "تحديث"
     },
     "status": {
       "active": "نشط",
       "inactive": "غير نشط",
-      "archived": "مؤرشف"
+      "archived": "مؤرشف",
+      "disabled": "معطّل"
     },
     "carrierType": {
       "bus": "حافلة",
@@ -4525,6 +4534,135 @@
     "form": {
       "selectPlaceholder": "— اختر —",
       "moneyMinor": "المبلغ بالعملة (1 = 100 وحدة صغيرة)"
+    },
+    "quiz": {
+      "title": "المسابقات والألعاب",
+      "subtitle": "التصحيح على الخادم — لا تُكشف الإجابة الصحيحة للمشاركين أبداً.",
+      "questionsAction": "الأسئلة",
+      "resultsAction": "النتائج",
+      "questionsTitle": "الأسئلة",
+      "resultsTitle": "النتائج",
+      "emptyQuestions": "لا توجد أسئلة لهذه المسابقة بعد.",
+      "addQuestion": "إضافة سؤال",
+      "editQuestion": "تعديل السؤال",
+      "questionLabel": "السؤال",
+      "optionsLabel": "الخيارات (2 إلى 10)",
+      "removeOption": "إزالة الخيار",
+      "addOption": "إضافة خيار",
+      "correctIndex": "الإجابة الصحيحة",
+      "points": "النقاط",
+      "position": "الترتيب",
+      "maxParticipation": "الحد الأقصى للمشاركات / جهة اتصال",
+      "colParticipant": "المشارك",
+      "colEmail": "البريد",
+      "colScore": "النتيجة",
+      "colBonus": "المكافأة",
+      "colSubmitted": "أُرسل في"
+    },
+    "quizStatus": {
+      "draft": "مسودة",
+      "active": "نشط",
+      "closed": "مغلق"
+    },
+    "advert": {
+      "title": "الإعلانات المدفوعة",
+      "subtitle": "الأنواع والمواضع وشبكة الأسعار ودورة حياة الإعلانات.",
+      "typesTitle": "أنواع الإعلانات",
+      "typesSubtitle": "مرجع الأنواع (رمز فريد لكل مستأجر).",
+      "positionsTitle": "المواضع",
+      "positionsSubtitle": "مواضع الإعلانات المتاحة.",
+      "pricesTitle": "شبكة الأسعار",
+      "pricesSubtitle": "الأسعار بالوحدات الصغرى، بعملة المستأجر.",
+      "advertsTitle": "الإعلانات",
+      "colType": "النوع",
+      "colPosition": "الموضع",
+      "colPriceImage": "السعر / صورة",
+      "colPriceChar": "السعر / حرف",
+      "colPrice": "السعر",
+      "colPaidAt": "دُفع في",
+      "colExpiresAt": "ينتهي في",
+      "fieldType": "النوع",
+      "fieldPosition": "الموضع",
+      "fieldTitle": "العنوان",
+      "fieldContent": "المحتوى",
+      "fieldImageAsset": "الصورة (معرّف الأصل)",
+      "fieldValidityDays": "مدة الصلاحية (أيام)",
+      "payAction": "دفع",
+      "validateAction": "اعتماد",
+      "rejectAction": "رفض",
+      "rejectTitle": "رفض الإعلان",
+      "rejectReason": "سبب الرفض",
+      "rejectSubmit": "رفض",
+      "renewAction": "تجديد",
+      "createTitle": "إعلان جديد",
+      "filterStatus": "تصفية حسب الحالة",
+      "allStatuses": "كل الحالات",
+      "searchPlaceholder": "ابحث عن إعلان…",
+      "confirmPay": "تأكيد دفع هذا الإعلان؟",
+      "confirmValidate": "اعتماد هذا الإعلان؟ سيتم نشره.",
+      "confirmRenew": "تجديد هذا الإعلان (دفع جديد)؟"
+    },
+    "advertStatus": {
+      "draft": "مسودة",
+      "submitted": "مُرسل",
+      "paid": "مدفوع",
+      "validated": "معتمد",
+      "rejected": "مرفوض",
+      "expired": "منتهي",
+      "archived": "مؤرشف"
+    },
+    "sites": {
+      "title": "المواقع السياحية",
+      "subtitle": "دليل المواقع حسب المدينة.",
+      "cityFilter": "تصفية حسب المدينة",
+      "allCities": "كل المدن",
+      "fieldLatitude": "خط العرض",
+      "fieldLongitude": "خط الطول",
+      "fieldImageAsset": "الصورة (معرّف الأصل)"
+    },
+    "contacts": {
+      "title": "جهات اتصال المسافرين",
+      "subtitle": "سجل الطلبات والموافقات حسب القناة (GDPR).",
+      "openForm": "نموذج الاتصال",
+      "searchPlaceholder": "ابحث عن جهة اتصال…",
+      "consentsAction": "الموافقات",
+      "notifyAction": "إشعار",
+      "consentsTitle": "الموافقات حسب القناة",
+      "consentsHint": "لا يمكن إرسال أي إشعار دون موافقة صريحة على القناة.",
+      "notifyTitle": "إشعار يدوي",
+      "messageLabel": "الرسالة",
+      "messagePlaceholder": "رسالتك (2000 حرف كحد أقصى)…",
+      "channelsLabel": "القنوات",
+      "channelEmail": "البريد",
+      "channelSms": "رسالة نصية",
+      "channelWhatsapp": "واتساب",
+      "channelApp": "داخل التطبيق",
+      "colName": "الاسم",
+      "colEmail": "البريد",
+      "colPhone": "الهاتف",
+      "colConsents": "الموافقات",
+      "colCreated": "جهة اتصال منذ",
+      "sendNotify": "إرسال",
+      "notifySent": "تم إرسال الإشعار."
+    },
+    "contactForm": {
+      "title": "اتصل بنا",
+      "subtitle": "أرسل طلباً إلى الوكالة: سيتواصل معك مستشار.",
+      "ackTitle": "تم استلام الطلب",
+      "ackBody": "شكراً لك، تم تحويل طلبك إلى وكالتنا. سنعود إليك قريباً.",
+      "newRequest": "طلب جديد",
+      "firstName": "الاسم الأول",
+      "firstNamePlaceholder": "اسمك الأول",
+      "lastName": "الاسم العائلي",
+      "lastNamePlaceholder": "اسمك العائلي",
+      "email": "البريد",
+      "emailPlaceholder": "بريدك@example.com",
+      "phone": "الهاتف",
+      "phonePlaceholder": "هاتفك",
+      "message": "الرسالة",
+      "messagePlaceholder": "طلبك (2000 حرف كحد أقصى)…",
+      "consent": "أوافق على التواصل معي عبر البريد بخصوص طلبي.",
+      "submit": "إرسال الطلب"
     }
   }
 }

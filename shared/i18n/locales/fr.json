@@ -1498,7 +1498,8 @@
     "legalRates": "Taux legaux",
     "account": "Mon compte",
     "notFound": "Page non trouvee",
-    "travelAgency": "Agence de voyage"
+    "travelAgency": "Agence de voyage",
+    "travelContactForm": "Formulaire de contact"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?"
@@ -3653,7 +3654,9 @@
       "checkin": "Check-in",
       "tickets": "Billets",
       "reports": "Rapports",
-      "rentals": "Locations & Hôtels"
+      "rentals": "Locations & Hôtels",
+      "content": "Contenu & Monétisation",
+      "contacts": "Contacts"
     },
     "referentiel": {
       "tabsLabel": "Sous-sections du référentiel",
@@ -3687,7 +3690,9 @@
       "report": "Rechercher dans le rapport…",
       "rentalVehicle": "Rechercher un véhicule de location…",
       "rentalBooking": "Rechercher une réservation de location…",
-      "hotel": "Rechercher un hôtel…"
+      "hotel": "Rechercher un hôtel…",
+      "quiz": "Rechercher un quiz…",
+      "site": "Rechercher un site…"
     },
     "field": {
       "iso2": "ISO2",
@@ -3759,7 +3764,9 @@
       "availableUntil": "Disponible au",
       "ownerCarrier": "Compagnie propriétaire",
       "title": "Intitulé",
-      "vehicle": "Véhicule"
+      "vehicle": "Véhicule",
+      "startsAt": "Début",
+      "endsAt": "Fin"
     },
     "action": {
       "create": "Créer",
@@ -3777,12 +3784,14 @@
       "publish": "Publier",
       "cancelTrip": "Annuler le trajet",
       "addNested": "Ajouter",
-      "add": "Ajouter"
+      "add": "Ajouter",
+      "refresh": "Actualiser"
     },
     "status": {
       "active": "Actif",
       "inactive": "Inactif",
-      "archived": "Archivé"
+      "archived": "Archivé",
+      "disabled": "Désactivé"
     },
     "carrierType": {
       "bus": "Bus / autocar",
@@ -3923,6 +3932,135 @@
     "form": {
       "selectPlaceholder": "— Sélectionner —",
       "moneyMinor": "Montant en devises (1 = 100 minor)"
+    },
+    "quiz": {
+      "title": "Quiz & jeux-concours",
+      "subtitle": "Participation notée côté serveur — la bonne réponse n'est jamais exposée aux participants.",
+      "questionsAction": "Questions",
+      "resultsAction": "Résultats",
+      "questionsTitle": "Questions",
+      "resultsTitle": "Résultats",
+      "emptyQuestions": "Aucune question pour ce quiz.",
+      "addQuestion": "Ajouter une question",
+      "editQuestion": "Modifier la question",
+      "questionLabel": "Question",
+      "optionsLabel": "Options (2 à 10)",
+      "removeOption": "Retirer l'option",
+      "addOption": "Ajouter une option",
+      "correctIndex": "Bonne réponse",
+      "points": "Points",
+      "position": "Position",
+      "maxParticipation": "Participations max / contact",
+      "colParticipant": "Participant",
+      "colEmail": "Email",
+      "colScore": "Score",
+      "colBonus": "Bonus",
+      "colSubmitted": "Soumis le"
+    },
+    "quizStatus": {
+      "draft": "Brouillon",
+      "active": "Actif",
+      "closed": "Clôturé"
+    },
+    "advert": {
+      "title": "Annonces payantes",
+      "subtitle": "Types, positions, grille tarifaire et cycle de vie des annonces.",
+      "typesTitle": "Types d'annonces",
+      "typesSubtitle": "Référentiel des types (code unique par tenant).",
+      "positionsTitle": "Positions",
+      "positionsSubtitle": "Emplacements publicitaires disponibles.",
+      "pricesTitle": "Grille tarifaire",
+      "pricesSubtitle": "Tarifs en unités mineures, devise du tenant.",
+      "advertsTitle": "Annonces",
+      "colType": "Type",
+      "colPosition": "Position",
+      "colPriceImage": "Prix / image",
+      "colPriceChar": "Prix / caractère",
+      "colPrice": "Prix",
+      "colPaidAt": "Payé le",
+      "colExpiresAt": "Expire le",
+      "fieldType": "Type",
+      "fieldPosition": "Position",
+      "fieldTitle": "Titre",
+      "fieldContent": "Contenu",
+      "fieldImageAsset": "Image (asset id)",
+      "fieldValidityDays": "Durée de validité (jours)",
+      "payAction": "Payer",
+      "validateAction": "Valider",
+      "rejectAction": "Rejeter",
+      "rejectTitle": "Rejeter l'annonce",
+      "rejectReason": "Motif du rejet",
+      "rejectSubmit": "Rejeter",
+      "renewAction": "Renouveler",
+      "createTitle": "Nouvelle annonce",
+      "filterStatus": "Filtrer par statut",
+      "allStatuses": "Tous les statuts",
+      "searchPlaceholder": "Rechercher une annonce…",
+      "confirmPay": "Confirmer le paiement de cette annonce ?",
+      "confirmValidate": "Valider cette annonce ? Elle sera publiée.",
+      "confirmRenew": "Renouveler cette annonce (nouveau paiement) ?"
+    },
+    "advertStatus": {
+      "draft": "Brouillon",
+      "submitted": "Soumise",
+      "paid": "Payée",
+      "validated": "Validée",
+      "rejected": "Rejetée",
+      "expired": "Expirée",
+      "archived": "Archivée"
+    },
+    "sites": {
+      "title": "Sites touristiques",
+      "subtitle": "Annuaire des sites par ville.",
+      "cityFilter": "Filtrer par ville",
+      "allCities": "Toutes les villes",
+      "fieldLatitude": "Latitude",
+      "fieldLongitude": "Longitude",
+      "fieldImageAsset": "Image (asset id)"
+    },
+    "contacts": {
+      "title": "Contacts voyageurs",
+      "subtitle": "Registre des demandes et consentements par canal (RGPD).",
+      "openForm": "Formulaire de contact",
+      "searchPlaceholder": "Rechercher un contact…",
+      "consentsAction": "Consentements",
+      "notifyAction": "Notifier",
+      "consentsTitle": "Consentements par canal",
+      "consentsHint": "Aucune notification ne peut être envoyée sans consentement explicite du canal.",
+      "notifyTitle": "Notification manuelle",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Votre message (2 000 caractères max)…",
+      "channelsLabel": "Canaux",
+      "channelEmail": "Email",
+      "channelSms": "SMS",
+      "channelWhatsapp": "WhatsApp",
+      "channelApp": "In-app",
+      "colName": "Nom",
+      "colEmail": "Email",
+      "colPhone": "Téléphone",
+      "colConsents": "Consentements",
+      "colCreated": "Contact depuis",
+      "sendNotify": "Envoyer",
+      "notifySent": "Notification envoyée."
+    },
+    "contactForm": {
+      "title": "Nous contacter",
+      "subtitle": "Envoyez une demande à l'agence : un conseiller vous répondra.",
+      "ackTitle": "Demande bien reçue",
+      "ackBody": "Merci, votre demande a bien été transmise à notre agence. Nous reviendrons vers vous rapidement.",
+      "newRequest": "Nouvelle demande",
+      "firstName": "Prénom",
+      "firstNamePlaceholder": "Votre prénom",
+      "lastName": "Nom",
+      "lastNamePlaceholder": "Votre nom",
+      "email": "Email",
+      "emailPlaceholder": "vous@exemple.com",
+      "phone": "Téléphone",
+      "phonePlaceholder": "Votre téléphone",
+      "message": "Message",
+      "messagePlaceholder": "Votre demande (2 000 caractères max)…",
+      "consent": "J'accepte d'être contacté(e) par email au sujet de ma demande.",
+      "submit": "Envoyer la demande"
     }
   }
 }

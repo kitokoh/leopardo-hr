@@ -1498,7 +1498,8 @@
     "legalRates": "Legal rates",
     "account": "My account",
     "notFound": "Page not found",
-    "travelAgency": "Travel agency"
+    "travelAgency": "Travel agency",
+    "travelContactForm": "Contact form"
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?"
@@ -3653,7 +3654,9 @@
       "checkin": "Check-in",
       "tickets": "Tickets",
       "reports": "Reports",
-      "rentals": "Rentals & Hotels"
+      "rentals": "Rentals & Hotels",
+      "content": "Content & Monetization",
+      "contacts": "Contacts"
     },
     "referentiel": {
       "tabsLabel": "Referential sub-sections",
@@ -3687,7 +3690,9 @@
       "report": "Search in report…",
       "rentalVehicle": "Search a rental vehicle…",
       "rentalBooking": "Search a rental booking…",
-      "hotel": "Search a hotel…"
+      "hotel": "Search a hotel…",
+      "quiz": "Search a quiz…",
+      "site": "Search a site…"
     },
     "field": {
       "iso2": "ISO2",
@@ -3759,7 +3764,9 @@
       "availableUntil": "Available until",
       "ownerCarrier": "Owner carrier",
       "title": "Title",
-      "vehicle": "Vehicle"
+      "vehicle": "Vehicle",
+      "startsAt": "Starts",
+      "endsAt": "Ends"
     },
     "action": {
       "create": "Create",
@@ -3777,12 +3784,14 @@
       "publish": "Publish",
       "cancelTrip": "Cancel trip",
       "addNested": "Add",
-      "add": "Add"
+      "add": "Add",
+      "refresh": "Refresh"
     },
     "status": {
       "active": "Active",
       "inactive": "Inactive",
-      "archived": "Archived"
+      "archived": "Archived",
+      "disabled": "Disabled"
     },
     "carrierType": {
       "bus": "Bus / coach",
@@ -3923,6 +3932,135 @@
     "form": {
       "selectPlaceholder": "— Select —",
       "moneyMinor": "Amount in currency (1 = 100 minor)"
+    },
+    "quiz": {
+      "title": "Quizzes & contests",
+      "subtitle": "Server-graded participation — the correct answer is never exposed to participants.",
+      "questionsAction": "Questions",
+      "resultsAction": "Results",
+      "questionsTitle": "Questions",
+      "resultsTitle": "Results",
+      "emptyQuestions": "No questions for this quiz yet.",
+      "addQuestion": "Add a question",
+      "editQuestion": "Edit question",
+      "questionLabel": "Question",
+      "optionsLabel": "Options (2 to 10)",
+      "removeOption": "Remove option",
+      "addOption": "Add an option",
+      "correctIndex": "Correct answer",
+      "points": "Points",
+      "position": "Position",
+      "maxParticipation": "Max participations / contact",
+      "colParticipant": "Participant",
+      "colEmail": "Email",
+      "colScore": "Score",
+      "colBonus": "Bonus",
+      "colSubmitted": "Submitted"
+    },
+    "quizStatus": {
+      "draft": "Draft",
+      "active": "Active",
+      "closed": "Closed"
+    },
+    "advert": {
+      "title": "Paid adverts",
+      "subtitle": "Types, positions, pricing grid and advert lifecycle.",
+      "typesTitle": "Advert types",
+      "typesSubtitle": "Type referential (tenant-unique code).",
+      "positionsTitle": "Positions",
+      "positionsSubtitle": "Available ad placements.",
+      "pricesTitle": "Pricing grid",
+      "pricesSubtitle": "Prices in minor units, tenant currency.",
+      "advertsTitle": "Adverts",
+      "colType": "Type",
+      "colPosition": "Position",
+      "colPriceImage": "Price / image",
+      "colPriceChar": "Price / character",
+      "colPrice": "Price",
+      "colPaidAt": "Paid on",
+      "colExpiresAt": "Expires on",
+      "fieldType": "Type",
+      "fieldPosition": "Position",
+      "fieldTitle": "Title",
+      "fieldContent": "Content",
+      "fieldImageAsset": "Image (asset id)",
+      "fieldValidityDays": "Validity (days)",
+      "payAction": "Pay",
+      "validateAction": "Validate",
+      "rejectAction": "Reject",
+      "rejectTitle": "Reject advert",
+      "rejectReason": "Rejection reason",
+      "rejectSubmit": "Reject",
+      "renewAction": "Renew",
+      "createTitle": "New advert",
+      "filterStatus": "Filter by status",
+      "allStatuses": "All statuses",
+      "searchPlaceholder": "Search an advert…",
+      "confirmPay": "Confirm payment for this advert?",
+      "confirmValidate": "Validate this advert? It will be published.",
+      "confirmRenew": "Renew this advert (new payment)?"
+    },
+    "advertStatus": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "paid": "Paid",
+      "validated": "Validated",
+      "rejected": "Rejected",
+      "expired": "Expired",
+      "archived": "Archived"
+    },
+    "sites": {
+      "title": "Tourist sites",
+      "subtitle": "Directory of sites by city.",
+      "cityFilter": "Filter by city",
+      "allCities": "All cities",
+      "fieldLatitude": "Latitude",
+      "fieldLongitude": "Longitude",
+      "fieldImageAsset": "Image (asset id)"
+    },
+    "contacts": {
+      "title": "Traveler contacts",
+      "subtitle": "Requests registry and per-channel consents (GDPR).",
+      "openForm": "Contact form",
+      "searchPlaceholder": "Search a contact…",
+      "consentsAction": "Consents",
+      "notifyAction": "Notify",
+      "consentsTitle": "Per-channel consents",
+      "consentsHint": "No notification can be sent without explicit channel consent.",
+      "notifyTitle": "Manual notification",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Your message (2,000 characters max)…",
+      "channelsLabel": "Channels",
+      "channelEmail": "Email",
+      "channelSms": "SMS",
+      "channelWhatsapp": "WhatsApp",
+      "channelApp": "In-app",
+      "colName": "Name",
+      "colEmail": "Email",
+      "colPhone": "Phone",
+      "colConsents": "Consents",
+      "colCreated": "Contact since",
+      "sendNotify": "Send",
+      "notifySent": "Notification sent."
+    },
+    "contactForm": {
+      "title": "Contact us",
+      "subtitle": "Send a request to the agency: an advisor will get back to you.",
+      "ackTitle": "Request received",
+      "ackBody": "Thank you, your request has been forwarded to our agency. We will get back to you shortly.",
+      "newRequest": "New request",
+      "firstName": "First name",
+      "firstNamePlaceholder": "Your first name",
+      "lastName": "Last name",
+      "lastNamePlaceholder": "Your last name",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "phone": "Phone",
+      "phonePlaceholder": "Your phone",
+      "message": "Message",
+      "messagePlaceholder": "Your request (2,000 characters max)…",
+      "consent": "I agree to be contacted by email regarding my request.",
+      "submit": "Send request"
     }
   }
 }

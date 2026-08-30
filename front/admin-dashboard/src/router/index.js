@@ -223,6 +223,16 @@ const routes = [
         }
       },
       {
+        // TRAVEL-912 (#6417) : formulaire de contact (consomme POST /travel/contact).
+        path: '/travel/contact-form',
+        name: 'travel-contact-form',
+        component: () => import('../views/travel/TravelContactFormView.vue'),
+        meta: {
+          title: 'navigation.travelContactForm',
+          icon: 'GlobeAltIcon'
+        }
+      },
+      {
         path: '/chat',
         name: 'chat',
         component: () => import('@/views/chat/ChatView.vue'),

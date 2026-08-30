@@ -113,7 +113,7 @@ test.describe('TravelAgency — gate feature flag (TRAVEL-601)', () => {
     await expect(page.getByRole('heading', { name: /Agence de voyage/i }).first()).toBeVisible({
       timeout: 15_000,
     })
-    for (const tab of ['Référentiel', 'Réservations', 'Check-in', 'Billets', 'Rapports', 'Locations & Hôtels']) {
+    for (const tab of ['Référentiel', 'Réservations', 'Check-in', 'Billets', 'Rapports', 'Locations & Hôtels', 'Contenu & Monétisation', 'Contacts']) {
       await expect(page.getByRole('tab', { name: new RegExp(tab, 'i') })).toBeVisible()
     }
   })
