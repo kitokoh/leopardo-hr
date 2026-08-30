@@ -1535,6 +1535,7 @@ Note 2026-08-31 (BC-22 ANALYTICS, PR #6280) : snapshots horodatés des read mode
 - `GET /api/v1/accounting/dashboard` expose désormais un bloc `data.snapshot` (`source: live|snapshot`, `version`, `refreshed_at`) — scénarios : lecture live par défaut (aucun snapshot actif → `source: live`) ; après activation du recompute (budget p95 dépassé, jamais préventif) → `source: snapshot` avec `version` incrémentée uniquement si le contenu change (2 recomputes identiques → même version) ; rejeu de la commande `accounting:reporting-snapshot` → aucune écriture dupliquée (clé unique `(company_id, report, period_from, period_to)`).
 - Seed pilote synthétique `analytics-pilot-001` (DZD, 100 % synthétique, refusé en production MAT-012) : agrégats cohérents + déterminisme (2 lectures → mêmes totaux), export CSV impayés téléchargeable et sanitisé (`CsvCellSanitizer`), tenant vide → agrégats zéro, RBAC 403 pour un employé simple. Tests : `AccountingReportingSnapshotTest`, `AccountingAnalyticsGoldenJourneyTest`.
 >>>>>>> 33b8aa543 (docs(scenarios): surface API BC-24 TRAVEL (garde Governance Gates, TRAVEL-101..305))
+>>>>>>> 91f7c4c9a (docs(scenarios): surface API BC-24 TRAVEL (garde Governance Gates, TRAVEL-101..305))
 ## BC-24 TRAVEL — Verticale TravelAgency (TRAVEL-101..305, 2026-08-30)
 
 Surface API ajoutée par la verticale TravelAgency (module `api/app/Modules/TravelAgency`,
@@ -1593,7 +1594,6 @@ Dernière tranche de l'épic 3xx : `GET|POST /travel/rental-vehicles` (+ images)
   non authentifié → 401.
 - Couverture : `api/tests/Feature/Travel/TravelRentalApiTest.php`, `TravelHotelApiTest.php`, `TravelRbacMatrixTest.php`
   (168 tests Travel au total) + `docs/security/TRAVEL_RBAC_MATRIX.md`.
-=======
   `TravelFeatureFlagTest.php`, `TravelIsolationTest.php` (harness verticale TRAVEL-108).
 
 ## BC-24 TRAVEL — API réseau & trajets (TRAVEL-306..311, 2026-08-30)
@@ -1638,4 +1638,6 @@ Dernière tranche de l'épic 3xx : `GET|POST /travel/rental-vehicles` (+ images)
 - Couverture : `api/tests/Feature/Travel/TravelRentalApiTest.php`, `TravelHotelApiTest.php`, `TravelRbacMatrixTest.php`
   (168 tests Travel au total) + `docs/security/TRAVEL_RBAC_MATRIX.md`.
 =======
->>>>>>> 24df3e4bc (feat(travel): schéma, domaine & API back-office TravelAgency (Closes #6017-#6035) (#6129))
+=======
+  `TravelFeatureFlagTest.php`, `TravelIsolationTest.php` (harness verticale TRAVEL-108).
+
