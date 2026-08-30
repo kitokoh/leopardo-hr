@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus;
 use App\Shared\Traits\BelongsToCompany;
+use Database\Factories\TravelRouteFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,7 +23,7 @@ class TravelRoute extends Model
 {
     use BelongsToCompany;
 
-    /** @use HasFactory<Database\Factories\TravelRouteFactory> */
+    /** @use HasFactory<TravelRouteFactory> */
     use HasFactory;
 
     protected $fillable = [
