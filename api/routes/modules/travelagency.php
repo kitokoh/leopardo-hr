@@ -17,7 +17,11 @@
  * Référence : docs/specifications/SOLUTION_TRAVEL_AGENCY.md (§7 API v1).
  */
 
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelArticleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCommentController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelEngagementController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelExportController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
@@ -27,6 +31,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelReportController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
@@ -148,4 +153,39 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/hotels/{travelHotel}/rooms', [TravelHotelController::class, 'storeRoom']);
         Route::put('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'updateRoom']);
         Route::delete('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'destroyRoom']);
+
+        // ── Rapports & dashboard (TRAVEL-501..504/507, #6071..#6074/#6077) ─
+        Route::get('/reports/sales', [TravelReportController::class, 'sales']);
+        Route::get('/reports/occupancy', [TravelReportController::class, 'occupancy']);
+        Route::get('/reports/revenue', [TravelReportController::class, 'revenue']);
+        Route::get('/reports/cancellations', [TravelReportController::class, 'cancellations']);
+        Route::get('/reports/dashboard', [TravelReportController::class, 'dashboard']);
+
+        // ── Export CSV idempotent (TRAVEL-505/#6075) ────────────────────────
+        Route::post('/reports/export', [TravelExportController::class, 'store']);
+        Route::get('/reports/export/{travelExportAsset}', [TravelExportController::class, 'show']);
+
+        // ── Contenu éditorial — articles & catégories (TRAVEL-901/#6104) ────
+        Route::get('/articles', [TravelArticleController::class, 'index']);
+        Route::post('/articles', [TravelArticleController::class, 'store']);
+        Route::get('/articles/{travelArticle}', [TravelArticleController::class, 'show']);
+        Route::put('/articles/{travelArticle}', [TravelArticleController::class, 'update']);
+        Route::post('/articles/{travelArticle}/moderate', [TravelArticleController::class, 'moderate']);
+        Route::delete('/articles/{travelArticle}', [TravelArticleController::class, 'destroy']);
+        Route::get('/article-categories', [TravelArticleController::class, 'indexCategories']);
+        Route::post('/article-categories', [TravelArticleController::class, 'storeCategory']);
+
+        // ── Commentaires (TRAVEL-902/#6105) ─────────────────────────────────
+        Route::get('/comments', [TravelCommentController::class, 'index']);
+        Route::post('/comments', [TravelCommentController::class, 'store']);
+        Route::post('/comments/{travelComment}/moderate', [TravelCommentController::class, 'moderate']);
+        Route::post('/comments/{travelComment}/report', [TravelCommentController::class, 'report']);
+        Route::delete('/comments/{travelComment}', [TravelCommentController::class, 'destroy']);
+
+        // ── Engagement — likes/partages/notes (TRAVEL-903/#6106) ────────────
+        Route::post('/articles/{travelArticle}/like', [TravelEngagementController::class, 'like']);
+        Route::post('/articles/{travelArticle}/unlike', [TravelEngagementController::class, 'unlike']);
+        Route::post('/articles/{travelArticle}/share', [TravelEngagementController::class, 'share']);
+        Route::post('/articles/{travelArticle}/rate', [TravelEngagementController::class, 'rate']);
+        Route::get('/articles/{travelArticle}/engagement', [TravelEngagementController::class, 'aggregates']);
     });
