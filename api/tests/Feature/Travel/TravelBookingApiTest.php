@@ -179,6 +179,8 @@ class TravelBookingApiTest extends TestCase
         ])->assertStatus(409);
     }
 
+<<<<<<< HEAD
+=======
     public function test_only_one_booking_wins_the_last_seat_under_race(): void
     {
         /** @var Company $company */
@@ -233,6 +235,7 @@ class TravelBookingApiTest extends TestCase
         $this->assertSame($first->json('data.id'), $seatBookingId);
     }
 
+>>>>>>> origin/feat/travel-101-202-foundations
     public function test_booking_of_another_tenant_returns_404(): void
     {
         /** @var Company $companyA */

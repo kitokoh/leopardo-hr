@@ -335,6 +335,8 @@ const routes = [
         }
       },
       {
+<<<<<<< HEAD
+=======
         path: '/travel/content',
         name: 'travel-content',
         component: () => import('../views/travel/TravelContentView.vue'),
@@ -344,6 +346,7 @@ const routes = [
         }
       },
       {
+>>>>>>> origin/feat/travel-101-202-foundations
         path: '/travel/catalog',
         name: 'travel-catalog',
         component: () => import('../views/travel/TravelCatalogView.vue'),

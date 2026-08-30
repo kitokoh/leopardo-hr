@@ -25,7 +25,11 @@ return new class extends Migration
                 $table->unique(['company_id', 'slug'], 'travel_article_categories_company_slug_unique');
             });
 
+<<<<<<< HEAD
+            DB::statement("COMMENT ON TABLE travel_article_categories IS 'Catégories d'articles éditoriaux (TRAVEL-901/#6104).'");
+=======
             DB::statement("COMMENT ON TABLE travel_article_categories IS 'Catégories d''articles éditoriaux (TRAVEL-901/#6104).'");
+>>>>>>> origin/feat/travel-101-202-foundations
         }
 
         if (! schemaTableExists('travel_articles')) {

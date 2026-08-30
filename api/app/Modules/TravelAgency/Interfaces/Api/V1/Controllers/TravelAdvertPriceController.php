@@ -8,6 +8,10 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelAdvertPriceRequest;
+<<<<<<< HEAD
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelAdvertPriceRequest;
+=======
+>>>>>>> origin/feat/travel-101-202-foundations
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -25,6 +29,11 @@ class TravelAdvertPriceController extends Controller
             ->get()
             ->map(fn (TravelAdvertPrice $p) => [
                 'id' => $p->id,
+<<<<<<< HEAD
+                'advert_type_id' => $p->advert_type_id,
+                'advert_position_id' => $p->advert_position_id,
+=======
+>>>>>>> origin/feat/travel-101-202-foundations
                 'advert_type' => $p->advertType?->code,
                 'advert_position' => $p->advertPosition?->code,
                 'price_per_image_minor' => $p->price_per_image_minor,
@@ -52,6 +61,36 @@ class TravelAdvertPriceController extends Controller
         return response()->json(['data' => ['id' => $price->id]], 201);
     }
 
+<<<<<<< HEAD
+    /**
+     * TRAVEL-914 (#6422) — Mise à jour d'une grille tarifaire.
+     */
+    public function update(UpdateTravelAdvertPriceRequest $request, TravelAdvertPrice $travelAdvertPrice): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+            abort(403);
+        }
+
+        if ($actor->company_id !== $travelAdvertPrice->company_id) {
+            abort(404);
+        }
+
+        $travelAdvertPrice->forceFill([
+            'advert_type_id' => (int) $request->validated('advert_type_id'),
+            'advert_position_id' => (int) $request->validated('advert_position_id'),
+            'price_per_image_minor' => (int) $request->validated('price_per_image_minor'),
+            'price_per_character_minor' => (int) $request->validated('price_per_character_minor'),
+            'currency' => strtoupper((string) $request->validated('currency')),
+        ])->save();
+
+        return response()->json(['data' => ['id' => $travelAdvertPrice->id]]);
+    }
+
+=======
+>>>>>>> origin/feat/travel-101-202-foundations
     public function destroy(Request $request, TravelAdvertPrice $travelAdvertPrice): JsonResponse
     {
         /** @var Employee $actor */

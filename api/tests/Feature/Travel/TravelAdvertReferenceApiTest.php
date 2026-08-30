@@ -8,6 +8,10 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
+<<<<<<< HEAD
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
+=======
+>>>>>>> origin/feat/travel-101-202-foundations
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -158,4 +162,103 @@ class TravelAdvertReferenceApiTest extends TestCase
             'currency' => 'XAF',
         ])->assertStatus(422);
     }
+<<<<<<< HEAD
+
+    /* ── TRAVEL-914 (#6422) — PUT des référentiels (complétion CRUD) ── */
+
+    public function test_advert_type_can_be_updated(): void
+    {
+        $this->actingManager();
+        $type = $this->tenants->withinTenant($this->company, fn (): TravelAdvertType => TravelAdvertType::factory()->create());
+
+        $this->putJson("/api/v1/travel/advert-types/{$type->id}", [
+            'code' => 'sponso_v2',
+            'label' => 'Sponsoring édition',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.id', $type->id);
+
+        $type->refresh();
+        self::assertSame('sponso_v2', $type->code);
+        self::assertSame('Sponsoring édition', $type->label);
+    }
+
+    public function test_advert_type_update_keeps_code_unique_per_tenant(): void
+    {
+        $this->actingManager();
+        [$typeA, $typeB] = $this->tenants->withinTenant($this->company, function (): array {
+            return [
+                TravelAdvertType::factory()->create(['code' => 'sponso']),
+                TravelAdvertType::factory()->create(['code' => 'autre']),
+            ];
+        });
+
+        $this->putJson("/api/v1/travel/advert-types/{$typeB->id}", [
+            'code' => 'sponso',
+            'label' => 'Conflit',
+        ])->assertStatus(422);
+    }
+
+    public function test_advert_position_can_be_updated(): void
+    {
+        $this->actingManager();
+        $position = $this->tenants->withinTenant($this->company, fn (): TravelAdvertPosition => TravelAdvertPosition::factory()->create());
+
+        $this->putJson("/api/v1/travel/advert-positions/{$position->id}", [
+            'code' => 'hero_v2',
+            'label' => 'Bannière héro (v2)',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.id', $position->id);
+
+        $position->refresh();
+        self::assertSame('hero_v2', $position->code);
+    }
+
+    public function test_advert_price_can_be_updated(): void
+    {
+        $this->actingManager();
+        [$type, $position, $price] = $this->tenants->withinTenant($this->company, function (): array {
+            $type = TravelAdvertType::factory()->create();
+            $position = TravelAdvertPosition::factory()->create();
+            $price = TravelAdvertPrice::factory()->create([
+                'advert_type_id' => $type->id,
+                'advert_position_id' => $position->id,
+                'price_per_image_minor' => 5000,
+                'price_per_character_minor' => 100,
+            ]);
+
+            return [$type, $position, $price];
+        });
+
+        $this->putJson("/api/v1/travel/advert-prices/{$price->id}", [
+            'advert_type_id' => $type->id,
+            'advert_position_id' => $position->id,
+            'price_per_image_minor' => 7500,
+            'price_per_character_minor' => 150,
+            'currency' => 'XAF',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.id', $price->id);
+
+        $price->refresh();
+        self::assertSame(7500, $price->price_per_image_minor);
+        self::assertSame(150, $price->price_per_character_minor);
+    }
+
+    public function test_reference_update_is_isolated_per_tenant(): void
+    {
+        /** @var Company $companyB */
+        $companyB = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $foreignType = $this->tenants->withinTenant($companyB, fn (): TravelAdvertType => TravelAdvertType::factory()->create());
+
+        $this->actingManager();
+
+        $this->putJson("/api/v1/travel/advert-types/{$foreignType->id}", [
+            'code' => 'pirate',
+            'label' => 'Intrusion',
+        ])->assertStatus(404);
+    }
+=======
+>>>>>>> origin/feat/travel-101-202-foundations
 }
