@@ -23,8 +23,9 @@ class TravelCustomerContactController extends Controller
 
     /**
      * Liste des contacts voyageurs (gestion : rôles principal/rh/manager).
-     * Expose les consentements par canal — nécessaire à l'UI admin
-     * (TRAVEL-912/#6417).
+     * Expose les consentements par canal horodatés — nécessaire à l'UI admin
+     * (TRAVEL-912/#6417). Recherche nom/email/téléphone, pagination bornée
+     * (TRAVEL-913/#6426).
      */
     public function index(Request $request): JsonResponse
     {
@@ -35,24 +36,46 @@ class TravelCustomerContactController extends Controller
             abort(403);
         }
 
-        $contacts = TravelCustomerContact::query()
-            ->where('company_id', $actor->company_id)
-            ->when($request->has('search'), fn ($query) => $query->where('email', 'ilike', '%'.$request->query('search').'%'))
-            ->orderByDesc('id')
-            ->get()
-            ->map(fn (TravelCustomerContact $c) => [
-                'id' => $c->id,
-                'first_name' => $c->first_name,
-                'last_name' => $c->last_name,
-                'email' => $c->email,
-                'phone' => $c->phone,
-                'email_consent_given' => $c->email_consent_given,
-                'sms_consent_given' => $c->sms_consent_given,
-                'whatsapp_consent_given' => $c->whatsapp_consent_given,
-                'created_at' => $c->created_at?->toIso8601String(),
-            ]);
+        $search = (string) $request->query('search', '');
+        $perPage = min(max((int) $request->integer('per_page', 50), 1), 100);
 
-        return response()->json(['data' => $contacts]);
+        $paginator = TravelCustomerContact::query()
+            ->where('company_id', $actor->company_id)
+            ->when($search !== '', function ($query) use ($search): void {
+                $query->where(function ($query) use ($search): void {
+                    $query->where('email', 'ilike', '%'.$search.'%')
+                        ->orWhere('first_name', 'ilike', '%'.$search.'%')
+                        ->orWhere('last_name', 'ilike', '%'.$search.'%')
+                        ->orWhere('phone', 'ilike', '%'.$search.'%');
+                });
+            })
+            ->orderByDesc('created_at')
+            ->paginate($perPage);
+
+        $contacts = collect($paginator->items())->map(fn (TravelCustomerContact $c): array => [
+            'id' => $c->id,
+            'first_name' => $c->first_name,
+            'last_name' => $c->last_name,
+            'email' => $c->email,
+            'phone' => $c->phone,
+            'email_consent_given' => $c->email_consent_given,
+            'email_consent_at' => $c->email_consent_at?->toIso8601String(),
+            'sms_consent_given' => $c->sms_consent_given,
+            'sms_consent_at' => $c->sms_consent_at?->toIso8601String(),
+            'whatsapp_consent_given' => $c->whatsapp_consent_given,
+            'whatsapp_consent_at' => $c->whatsapp_consent_at?->toIso8601String(),
+            'created_at' => $c->created_at?->toIso8601String(),
+        ]);
+
+        return response()->json([
+            'data' => $contacts,
+            'meta' => [
+                'total' => $paginator->total(),
+                'per_page' => $paginator->perPage(),
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+            ],
+        ]);
     }
 
     /**
