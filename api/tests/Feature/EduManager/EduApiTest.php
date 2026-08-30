@@ -98,7 +98,11 @@ class EduApiTest extends TestCase
         Sanctum::actingAs($this->lambdaA);
 
         $this->getJson($this->baseUrl().'/campuses')->assertStatus(403);
-        $this->postJson($this->baseUrl().'/academic-years', [])->assertStatus(403);
+        $this->postJson($this->baseUrl().'/academic-years', [
+            'name' => '2025-2026',
+            'start_date' => '2025-09-01',
+            'end_date' => '2026-08-31',
+        ])->assertStatus(403);
         $this->getJson($this->baseUrl().'/admissions')->assertStatus(403);
     }
 
@@ -201,7 +205,7 @@ class EduApiTest extends TestCase
             'day_of_week' => 1,
             'start_time' => '08:30',
             'end_time' => '09:30',
-        ])->assertStatus(422)->assertJsonPath('error', 'EDU_COURSE_SLOT_CLASS_CONFLICT');
+        ])->assertStatus(422)->assertJsonPath('error', 'EDU_COURSE_SLOT_TEACHER_CONFLICT');
 
         // Évaluation + note + publication + correction
         Sanctum::actingAs($teacher);

@@ -9,11 +9,13 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EduManager\Domain\Models\EduAcademicYear;
 use App\Modules\EduManager\Domain\Models\EduAttendance;
 use App\Modules\EduManager\Domain\Models\EduAttendanceCorrection;
+use App\Modules\EduManager\Domain\Models\EduCampus;
 use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduStudent;
 use App\Modules\EduManager\Infrastructure\Services\EduAcademicYearService;
 use App\Modules\EduManager\Infrastructure\Services\EduAttendanceService;
 use Illuminate\Support\Facades\Schema;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -29,6 +31,8 @@ class EduAttendanceServiceTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
+
+    private EduCampus $campusA;
 
     private Company $companyB;
 
@@ -64,6 +68,13 @@ class EduAttendanceServiceTest extends TestCase
         $teacherA = Employee::factory()->create(['company_id' => $companyA->id]);
         $this->teacherA = $teacherA;
 
+        /** @var EduCampus $campusA */
+        $campusA = EduCampus::query()->create([
+            'company_id' => $companyA->id,
+            'code' => 'CAMPUS-A',
+            'name' => 'Campus A',
+        ]);
+        $this->campusA = $campusA;
         $yearService = app(EduAcademicYearService::class);
         /** @var EduAcademicYear $year */
         $year = $yearService->createYear($managerA, [
@@ -74,7 +85,7 @@ class EduAttendanceServiceTest extends TestCase
 
         /** @var EduClass $classA */
         $classA = $yearService->createClass($managerA, [
-            'campus_id' => 1,
+            'campus_id' => (int) $this->campusA->getAttribute('id'),
             'academic_year_id' => (int) $year->getAttribute('id'),
             'code' => 'CL-1',
             'name' => '6ème A',
@@ -195,14 +206,20 @@ class EduAttendanceServiceTest extends TestCase
             'end_date' => '2026-08-31',
         ]);
         /** @var EduClass $classB */
+        /** @var EduCampus $campusB */
+        $campusB = EduCampus::query()->create([
+            'company_id' => $this->companyB->id,
+            'code' => 'CAMPUS-B',
+            'name' => 'Campus B',
+        ]);
         $classB = $yearService->createClass($managerB, [
-            'campus_id' => 2,
+            'campus_id' => (int) $campusB->getAttribute('id'),
             'academic_year_id' => (int) $yearB->getAttribute('id'),
             'code' => 'CL-B1',
             'name' => '6ème B',
         ]);
 
-        $this->expectExceptionCode(404);
+        $this->expectException(NotFoundHttpException::class);
 
         app(EduAttendanceService::class)->record($this->teacherA, $classB, [
             'student_id' => (int) $this->studentA->getAttribute('id'),
