@@ -4697,6 +4697,58 @@ paths:
           description: Chambre ou hôtel introuvable ou hors tenant
         '403':
           description: Permission travel.manage requise
+  /travel/contact:
+    post:
+      tags:
+      - Travel
+      summary: Formulaire de contact → lead CRM (TRAVEL-416/#6068)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - message
+              - consent
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                email:
+                  type: string
+                  format: email
+                  maxLength: 190
+                phone:
+                  type: string
+                  maxLength: 40
+                message:
+                  type: string
+                  minLength: 10
+                  maxLength: 1000
+                consent:
+                  type: boolean
+                  description: Consentement RGPD — requis (true)
+                idempotency_key:
+                  type: string
+                  maxLength: 64
+                  description: Clé d'idempotence client (uuid) pour rejouer sans doublon
+      responses:
+        '202':
+          description: Demande acceptée — événement travel.contact.submitted.v1 publié (outbox)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Demande envoyée.
+        '422':
+          description: Validation échouée (consentement manquant, message hors bornes, email/téléphone absents)
   /health:
     get:
       tags:
