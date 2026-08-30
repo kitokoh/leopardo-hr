@@ -179,10 +179,26 @@ class TravelArticleController extends Controller
             abort(403);
         }
 
+        $slug = trim((string) $request->json('slug'));
+        $name = trim((string) $request->json('name'));
+
+        if ($slug === '' || $name === '') {
+            abort(422, 'Category slug and name are required.');
+        }
+
+        $exists = TravelArticleCategory::query()
+            ->where('company_id', $actor->company_id)
+            ->where('slug', $slug)
+            ->exists();
+
+        if ($exists) {
+            abort(422, 'Category slug already exists for this tenant.');
+        }
+
         $category = TravelArticleCategory::query()->create([
             'company_id' => $actor->company_id,
-            'slug' => (string) $request->json('slug'),
-            'name' => (string) $request->json('name'),
+            'slug' => $slug,
+            'name' => $name,
         ]);
 
         return new JsonResponse(['data' => $category], 201);
