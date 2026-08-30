@@ -12,11 +12,8 @@ use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
-<<<<<<< HEAD
 use App\Modules\CRM\Domain\Models\CrmConsent;
 use App\Modules\CRM\Domain\Models\CrmSegment;
-=======
->>>>>>> origin/main
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;

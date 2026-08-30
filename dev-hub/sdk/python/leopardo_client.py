@@ -1480,12 +1480,12 @@ class LeopardoClient:
         """Creer une tache CRM (issue #5720)"""
         return self.request("POST", "/crm/tasks", **kwargs)
 
+    def delete_crm_tasks_by_task(self, **kwargs):
+        """Supprimer une tache CRM"""
+        return self.request("DELETE", "/crm/tasks/{task}", **kwargs)
+
     def get_crm_tasks_by_task(self, **kwargs):
         """Detail d'une tache CRM"""
-        return self.request("GET", "/crm/tasks/{task}", **kwargs)
-
-    def get_crm_tasks_by_task_2(self, **kwargs):
-        """Lister les releves d'un compteur"""
         return self.request("GET", "/crm/tasks/{task}", **kwargs)
 
     def patch_crm_tasks_by_task(self, **kwargs):
@@ -1988,10 +1988,6 @@ class LeopardoClient:
         """Revoir un intervalle en anomalie (accept/reject) — manager principal/rh"""
         return self.request("POST", "/fuel-station/meter-intervals/{interval}/review", **kwargs)
 
-    def delete_fuel_station_meter_readings_by_reading_corrections(self, **kwargs):
-        """Supprimer une tache CRM"""
-        return self.request("DELETE", "/fuel-station/meter-readings/{reading}/corrections", **kwargs)
-
     def post_fuel_station_meter_readings_by_reading_corrections(self, **kwargs):
         """Corriger un releve (versionne, audite) — manager principal/rh"""
         return self.request("POST", "/fuel-station/meter-readings/{reading}/corrections", **kwargs)
@@ -2047,6 +2043,10 @@ class LeopardoClient:
     def get_fuel_station_stations_by_station_pumps_by_pump_meters_by_meter_intervals(self, **kwargs):
         """Lister les intervalles calcules d'un compteur"""
         return self.request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals", **kwargs)
+
+    def get_fuel_station_stations_by_station_pumps_by_pump_meters_by_meter_readings(self, **kwargs):
+        """Lister les releves d'un compteur"""
+        return self.request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", **kwargs)
 
     def post_fuel_station_stations_by_station_pumps_by_pump_meters_by_meter_readings(self, **kwargs):
         """Enregistrer un releve de compteur (cumulatif, idempotent)"""

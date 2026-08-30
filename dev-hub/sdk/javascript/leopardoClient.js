@@ -1825,13 +1825,13 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/crm/tasks", options);
     },
 
-    /** Detail d'une tache CRM */
-    getCrmTasksByTask(options = {}) {
-      return request("GET", "/crm/tasks/{task}", options);
+    /** Supprimer une tache CRM */
+    deleteCrmTasksByTask(options = {}) {
+      return request("DELETE", "/crm/tasks/{task}", options);
     },
 
-    /** Lister les releves d'un compteur */
-    getCrmTasksByTask2(options = {}) {
+    /** Detail d'une tache CRM */
+    getCrmTasksByTask(options = {}) {
       return request("GET", "/crm/tasks/{task}", options);
     },
 
@@ -2460,11 +2460,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/fuel-station/meter-intervals/{interval}/review", options);
     },
 
-    /** Supprimer une tache CRM */
-    deleteFuelStationMeterReadingsByReadingCorrections(options = {}) {
-      return request("DELETE", "/fuel-station/meter-readings/{reading}/corrections", options);
-    },
-
     /** Corriger un releve (versionne, audite) — manager principal/rh */
     postFuelStationMeterReadingsByReadingCorrections(options = {}) {
       return request("POST", "/fuel-station/meter-readings/{reading}/corrections", options);
@@ -2533,6 +2528,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Lister les intervalles calcules d'un compteur */
     getFuelStationStationsByStationPumpsByPumpMetersByMeterIntervals(options = {}) {
       return request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals", options);
+    },
+
+    /** Lister les releves d'un compteur */
+    getFuelStationStationsByStationPumpsByPumpMetersByMeterReadings(options = {}) {
+      return request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", options);
     },
 
     /** Enregistrer un releve de compteur (cumulatif, idempotent) */

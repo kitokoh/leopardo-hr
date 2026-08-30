@@ -2507,10 +2507,8 @@
   "settingsBiometricSubmitFailed": "فشل الإرسال: {error}",
   "settingsNotificationsSaveFailed": "تعذّر حفظ تفضيلات الإشعارات: {error}",
   "companydetailPlanWithPrice": "الخطة {planName} — {price}",
-<<<<<<< HEAD
   "crmHubTitle": "إدارة علاقات العملاء",
   "crmHubSubtitle": "حسابات وجهات الاتصال والعملاء المحتملين والفرص الخاصة بشركتك.",
-=======
   "crmTitle": "CRM العميل",
   "crmSubtitle": "إدارة العملاء المحتملين والحسابات وجهات الاتصال والفرص — البيانات معزولة لكل شركة (مستأجر).",
   "crmIsolationnote": "بيانات نطاق المستأجر: لا وصول إلى CRM ليوباردو التجاري من هذه المساحة.",
@@ -2522,7 +2520,6 @@
   "crmPaginationprev": "السابق",
   "crmPaginationnext": "التالي",
   "crmPaginationpage": "صفحة",
->>>>>>> origin/main
   "crmAccountsTitle": "الحسابات",
   "crmAccountsDescription": "مؤسسات العملاء لشركتك",
   "crmAccountsSubtitle": "قائمة الحسابات (نطاق المستأجر).",
@@ -2547,7 +2544,6 @@
   "crmLeadsColsource": "المصدر",
   "crmLeadsColemail": "البريد",
   "crmLeadsColcreated": "أنشئ في",
-<<<<<<< HEAD
   "crmOpportunities": "الفرص",
   "crmAccountDetail": "الحساب",
   "crmStage": "المرحلة",
@@ -2573,8 +2569,6 @@
   "crmPaginationprev": "السابق",
   "crmPaginationnext": "التالي",
   "crmPaginationpage": "صفحة",
-=======
->>>>>>> origin/main
   "crmPipelineTitle": "خط الأنابيب",
   "crmPipelineDescription": "نظرة عامة على الفرص حسب المرحلة",
   "crmPipelineSubtitle": "الفرص مجمعة حسب المرحلة (نطاق المستأجر).",

@@ -6030,7 +6030,6 @@ paths:
                           type: integer
                         month:
                           type: integer
-<<<<<<< HEAD
   /crm/dashboard/pipeline:
     get:
       tags:
@@ -6193,54 +6192,21 @@ paths:
       tags:
       - CRM
       summary: Creer une tache CRM (issue #5720)
-=======
-  /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings:
-    post:
-      tags:
-      - FuelStation
-      summary: Enregistrer un releve de compteur (cumulatif, idempotent)
-      description: |-
-        Releve cumule d'un compteur (valeur en unites mineures entieres).
-        Idempotent (idempotency_key). Valeur decroissante sans rollover
-        documente → intervalle en anomalie (revue obligatoire). Solution
-        FuelStation active requise (403 sinon). Issue #5798.
-      parameters:
-      - name: station
-        in: path
-        required: true
-        schema: {type: integer}
-      - name: pump
-        in: path
-        required: true
-        schema: {type: integer}
-      - name: meter
-        in: path
-        required: true
-        schema: {type: integer}
->>>>>>> origin/main
       requestBody:
         required: true
         content:
           application/json:
             schema:
-<<<<<<< HEAD
               $ref: '#/components/schemas/CrmTaskPayload'
       responses:
         '201':
           description: Tache creee
-=======
-              $ref: '#/components/schemas/FuelMeterReadingPayload'
-      responses:
-        '201':
-          description: Releve accepte
->>>>>>> origin/main
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-<<<<<<< HEAD
                     $ref: '#/components/schemas/CrmTask'
         '422':
           $ref: '#/components/responses/Validation422'
@@ -6277,74 +6243,11 @@ paths:
         required: true
         schema:
           type: integer
-=======
-                    $ref: '#/components/schemas/FuelMeterReadingResult'
-        '200':
-          description: Rejeu idempotent (aucun doublon)
-        '403':
-          description: Solution inactive ou permission manquante
-        '404':
-          description: Station/pompe/compteur introuvable (hors tenant)
-        '422':
-          $ref: '#/components/responses/Validation422'
-    get:
-      tags:
-      - FuelStation
-      summary: Lister les releves d'un compteur
-      parameters:
-      - name: station
-        in: path
-        required: true
-        schema: {type: integer}
-      - name: pump
-        in: path
-        required: true
-        schema: {type: integer}
-      - name: meter
-        in: path
-        required: true
-        schema: {type: integer}
-      responses:
-        '200':
-          description: Liste des releves (100 max, plus recents d'abord)
-  /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals:
-    get:
-      tags:
-      - FuelStation
-      summary: Lister les intervalles calcules d'un compteur
-      parameters:
-      - name: station
-        in: path
-        required: true
-        schema: {type: integer}
-      - name: pump
-        in: path
-        required: true
-        schema: {type: integer}
-      - name: meter
-        in: path
-        required: true
-        schema: {type: integer}
-      responses:
-        '200':
-          description: Liste des intervalles (valid|rollover|anomaly|pending_review)
-  /fuel-station/meter-readings/{reading}/corrections:
-    post:
-      tags:
-      - FuelStation
-      summary: Corriger un releve (versionne, audite) — manager principal/rh
-      parameters:
-      - name: reading
-        in: path
-        required: true
-        schema: {type: integer}
->>>>>>> origin/main
       requestBody:
         required: true
         content:
           application/json:
             schema:
-<<<<<<< HEAD
               $ref: '#/components/schemas/CrmTaskPayload'
       responses:
         '200':
@@ -6467,84 +6370,6 @@ paths:
           enum:
           - account
           - contact
-=======
-              type: object
-              required: [reading_value_minor, reason]
-              properties:
-                reading_value_minor: {type: integer, minimum: 0}
-                reason: {type: string, maxLength: 1000}
-      responses:
-        '200':
-          description: Correction enregistree (nouvelle version, original marque corrected)
-        '403':
-          description: Permission manager requise
-        '409':
-          description: Releve deja corrige ou rejete
-  /fuel-station/meter-intervals/{interval}/review:
-    post:
-      tags:
-      - FuelStation
-      summary: Revoir un intervalle en anomalie (accept/reject) — manager principal/rh
-      parameters:
-      - name: interval
-        in: path
-        required: true
-        schema: {type: integer}
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [decision]
-              properties:
-                decision: {type: string, enum: [accept, reject]}
-                note: {type: string, maxLength: 1000}
-      responses:
-        '200':
-          description: Revue enregistree
-        '403':
-          description: Permission manager requise
-        '409':
-          description: Intervalle deja revu
-
-  /fuel-station/me/shifts:
-    get:
-      tags:
-      - FuelStation
-      summary: Affectations de shifts du pompiste connecte (self-service)
-      description: FUEL-005 — liste les affectations du salarie authentifie sur une fenetre de dates (date_from/date_to, Y-m-d).
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: date_from
-        in: query
-        schema:
-          type: string
-          example: '2026-09-01'
-      - name: date_to
-        in: query
-        schema:
-          type: string
-          example: '2026-09-30'
-      responses:
-        '200':
-          description: Liste des affectations
-        '401':
-          $ref: '#/components/responses/Error401'
-  /fuel-station/shifts:
-    get:
-      tags:
-      - FuelStation
-      summary: Lister les shifts (manager)
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: station_id
-        in: query
-        schema:
-          type: integer
->>>>>>> origin/main
       - name: status
         in: query
         schema:
@@ -6552,7 +6377,6 @@ paths:
           enum:
           - active
           - inactive
-<<<<<<< HEAD
           - archived
       - name: owner_id
         in: query
@@ -6633,7 +6457,198 @@ paths:
                         type: integer
                       total:
                         type: integer
-=======
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings:
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer un releve de compteur (cumulatif, idempotent)
+      description: |-
+        Releve cumule d'un compteur (valeur en unites mineures entieres).
+        Idempotent (idempotency_key). Valeur decroissante sans rollover
+        documente → intervalle en anomalie (revue obligatoire). Solution
+        FuelStation active requise (403 sinon). Issue #5798.
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: pump
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: meter
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FuelMeterReadingPayload'
+      responses:
+        '201':
+          description: Releve accepte
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelMeterReadingResult'
+        '200':
+          description: Rejeu idempotent (aucun doublon)
+        '403':
+          description: Solution inactive ou permission manquante
+        '404':
+          description: Station/pompe/compteur introuvable (hors tenant)
+        '422':
+          $ref: '#/components/responses/Validation422'
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les releves d'un compteur
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: pump
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: meter
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Liste des releves (100 max, plus recents d'abord)
+  /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les intervalles calcules d'un compteur
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: pump
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: meter
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Liste des intervalles (valid|rollover|anomaly|pending_review)
+  /fuel-station/meter-readings/{reading}/corrections:
+    post:
+      tags:
+      - FuelStation
+      summary: Corriger un releve (versionne, audite) — manager principal/rh
+      parameters:
+      - name: reading
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reading_value_minor, reason]
+              properties:
+                reading_value_minor: {type: integer, minimum: 0}
+                reason: {type: string, maxLength: 1000}
+      responses:
+        '200':
+          description: Correction enregistree (nouvelle version, original marque corrected)
+        '403':
+          description: Permission manager requise
+        '409':
+          description: Releve deja corrige ou rejete
+  /fuel-station/meter-intervals/{interval}/review:
+    post:
+      tags:
+      - FuelStation
+      summary: Revoir un intervalle en anomalie (accept/reject) — manager principal/rh
+      parameters:
+      - name: interval
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision]
+              properties:
+                decision: {type: string, enum: [accept, reject]}
+                note: {type: string, maxLength: 1000}
+      responses:
+        '200':
+          description: Revue enregistree
+        '403':
+          description: Permission manager requise
+        '409':
+          description: Intervalle deja revu
+
+  /fuel-station/me/shifts:
+    get:
+      tags:
+      - FuelStation
+      summary: Affectations de shifts du pompiste connecte (self-service)
+      description: FUEL-005 — liste les affectations du salarie authentifie sur une fenetre de dates (date_from/date_to, Y-m-d).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      responses:
+        '200':
+          description: Liste des affectations
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/shifts:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les shifts (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
       responses:
         '200':
           description: Liste des shifts
@@ -6681,15 +6696,11 @@ paths:
       responses:
         '201':
           description: Shift cree
->>>>>>> origin/main
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
         '422':
-<<<<<<< HEAD
-          $ref: '#/components/responses/Validation422'
-=======
           description: Validation (nom duplique, horaires invalides)
   /fuel-station/shifts/{shift}:
     get:
@@ -7300,7 +7311,6 @@ paths:
         '404':
           description: Affectation introuvable ou autre tenant
 
->>>>>>> origin/main
   /accounting/contacts:
     get:
       tags:
@@ -34459,9 +34469,6 @@ components:
           type: integer
           nullable: true
           description: Paiement candidat proposé par le matching auto (issue #5523)
-
-<<<<<<< HEAD
-=======
     FuelMeterReadingPayload:
       type: object
       required: [reading_value_minor, idempotency_key]
@@ -34516,4 +34523,3 @@ components:
           type: boolean
         correlation_id:
           type: string
->>>>>>> origin/main

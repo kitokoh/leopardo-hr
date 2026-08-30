@@ -2507,10 +2507,8 @@
   "settingsBiometricSubmitFailed": "Submission failed: {error}",
   "settingsNotificationsSaveFailed": "Failed to save notification preferences: {error}",
   "companydetailPlanWithPrice": "{planName} — {price}",
-<<<<<<< HEAD
   "crmHubTitle": "CRM",
   "crmHubSubtitle": "Accounts, contacts, leads and opportunities for your company.",
-=======
   "crmTitle": "Client CRM",
   "crmSubtitle": "Manage your prospects, accounts, contacts and opportunities — data isolated per company (tenant).",
   "crmIsolationnote": "Tenant-scoped data: no access to the Leopardo commercial CRM from this space.",
@@ -2522,7 +2520,6 @@
   "crmPaginationprev": "Previous",
   "crmPaginationnext": "Next",
   "crmPaginationpage": "Page",
->>>>>>> origin/main
   "crmAccountsTitle": "Accounts",
   "crmAccountsDescription": "Client organizations of your company",
   "crmAccountsSubtitle": "Account list (tenant-scoped).",
@@ -2547,7 +2544,6 @@
   "crmLeadsColsource": "Source",
   "crmLeadsColemail": "Email",
   "crmLeadsColcreated": "Created",
-<<<<<<< HEAD
   "crmOpportunities": "Opportunities",
   "crmAccountDetail": "Account",
   "crmStage": "Stage",
@@ -2573,8 +2569,6 @@
   "crmPaginationprev": "Previous",
   "crmPaginationnext": "Next",
   "crmPaginationpage": "Page",
-=======
->>>>>>> origin/main
   "crmPipelineTitle": "Pipeline",
   "crmPipelineDescription": "Opportunities overview by stage",
   "crmPipelineSubtitle": "Opportunities grouped by stage (tenant-scoped).",
