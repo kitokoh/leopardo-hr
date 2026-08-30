@@ -455,7 +455,13 @@ class StripeService
                 'company_id' => $invoice->company_id,
                 'invoice_id' => $invoice->id,
                 'from' => $invoice->status,
+                'to' => $target->value,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
 
+    /**
      * Transition d'état GARDÉE pour les webhooks (DEP-BC21 #6246).
      *
      * Toutes les écritures de `status` de souscription passent par la machine
