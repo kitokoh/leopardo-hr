@@ -158,6 +158,27 @@ Schedule::command('announcements:publish-scheduled')
     ->withoutOverlapping()
     ->onOneServer();
 
+// BC-24 TRAVEL — dispatch des événements d'outbox TravelAgency (#6066,
+// pattern crm:outbox-dispatch #5741) : consommation asynchrone idempotente.
+Schedule::command('travel:outbox-dispatch')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// BC-24 TRAVEL — synthèse mensuelle des ventes pour Accounting (#6069) :
+// période glissante = mois précédent, événement rejouable et idempotent.
+Schedule::command('travel:settle-sales')
+    ->monthlyOn(1, '02:30')
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// BC-24 TRAVEL — expiration des réservations pending (#6070) : annulation
+// + libération des sièges + événement (idempotent, log borné).
+Schedule::command('travel:expire-pending-bookings')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->onOneServer();
+
 Schedule::command('growth:archive-clicks --days=90')
     ->weekly();
 
