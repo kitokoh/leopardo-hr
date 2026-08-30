@@ -37,6 +37,15 @@ class TravelBookingResource extends JsonResource
             'version' => $this->version,
             'passengers' => TravelPassengerResource::collection($this->whenLoaded('passengers')),
             'tickets' => TravelTicketResource::collection($this->whenLoaded('tickets')),
+            // TRAVEL-415 (#6067) — contact voyageur (PII : jamais le numéro de
+            // pièce d'identité, seulement les coordonnées de contact).
+            'contact_email' => $this->contact_email,
+            'contact_phone' => $this->contact_phone,
+            'notify_consent' => $this->notify_consent,
+            // TRAVEL-802 (#6093) — aller-retour (groupe + liaison + jambe).
+            'round_trip_group_id' => $this->round_trip_group_id,
+            'return_booking_id' => $this->return_booking_id,
+            'leg' => $this->leg,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

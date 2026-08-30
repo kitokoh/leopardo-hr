@@ -45,6 +45,13 @@ class TravelBooking extends Model
         'expires_at',
         'idempotency_key',
         'version',
+        'contact_email',
+        'contact_phone',
+        'notify_consent',
+        'consent_recorded_at',
+        'round_trip_group_id',
+        'return_booking_id',
+        'leg',
     ];
 
     protected $casts = [
@@ -56,6 +63,9 @@ class TravelBooking extends Model
         'expires_at' => 'datetime',
         'cancelled_at' => 'datetime',
         'version' => 'integer',
+        'notify_consent' => 'boolean',
+        'consent_recorded_at' => 'datetime',
+        'return_booking_id' => 'integer',
     ];
 
     protected static function booted(): void
