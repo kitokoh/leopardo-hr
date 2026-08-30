@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -317,6 +318,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get modulesEvaluations => 'التقييمات';
+
+  @override
+  String get modulesRestaurant => 'المطبخ';
 
   @override
   String get emailsInvitationSubject =>
@@ -1115,7 +1119,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dashboardLeaveBalanceTitle => 'رصيد إجازاتي';
 
   @override
-  String get dashboardLeaveBalanceSubtitle => 'الأيام المتبقية حسب النوع، السنة الحالية';
+  String get dashboardLeaveBalanceSubtitle =>
+      'الأيام المتبقية حسب النوع، السنة الحالية';
 
   @override
   String get dashboardLeaveBalanceLoading => 'جارٍ تحميل الرصيد…';
@@ -1230,7 +1235,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-      Object date, Object hours, Object range, Object status) {
+    Object date,
+    Object hours,
+    Object range,
+    Object status,
+  ) {
     return 'يوم $date، الحالة $status، $range، $hours.';
   }
 
@@ -8054,4 +8063,196 @@ class AppLocalizationsAr extends AppLocalizations {
   String companydetailPlanWithPrice(Object planName, Object price) {
     return 'الخطة $planName — $price';
   }
+
+  @override
+  String get crmTitle => 'CRM العميل';
+
+  @override
+  String get crmSubtitle =>
+      'إدارة العملاء المحتملين والحسابات وجهات الاتصال والفرص — البيانات معزولة لكل شركة (مستأجر).';
+
+  @override
+  String get crmIsolationnote =>
+      'بيانات نطاق المستأجر: لا وصول إلى CRM ليوباردو التجاري من هذه المساحة.';
+
+  @override
+  String get crmLoading => 'جارٍ التحميل…';
+
+  @override
+  String get crmFeaturelocked => 'وحدة CRM غير مفعّلة لشركتك.';
+
+  @override
+  String get crmErrorloading => 'تعذر تحميل البيانات.';
+
+  @override
+  String get crmSearchplaceholder => 'بحث…';
+
+  @override
+  String get crmRefresh => 'تحديث';
+
+  @override
+  String get crmPaginationprev => 'السابق';
+
+  @override
+  String get crmPaginationnext => 'التالي';
+
+  @override
+  String get crmPaginationpage => 'صفحة';
+
+  @override
+  String get crmAccountsTitle => 'الحسابات';
+
+  @override
+  String get crmAccountsDescription => 'مؤسسات العملاء لشركتك';
+
+  @override
+  String get crmAccountsSubtitle => 'قائمة الحسابات (نطاق المستأجر).';
+
+  @override
+  String get crmAccountsEmpty => 'لا توجد حسابات بعد.';
+
+  @override
+  String get crmAccountsColname => 'الاسم';
+
+  @override
+  String get crmAccountsColstatus => 'الحالة';
+
+  @override
+  String get crmAccountsColemail => 'البريد';
+
+  @override
+  String get crmAccountsColphone => 'الهاتف';
+
+  @override
+  String get crmAccountsColcreated => 'أنشئ في';
+
+  @override
+  String get crmContactsTitle => 'جهات الاتصال';
+
+  @override
+  String get crmContactsDescription => 'الأشخاص المرتبطون بحساباتك';
+
+  @override
+  String get crmContactsSubtitle => 'قائمة جهات الاتصال (نطاق المستأجر).';
+
+  @override
+  String get crmContactsEmpty => 'لا توجد جهات اتصال بعد.';
+
+  @override
+  String get crmContactsPrimary => 'أساسي';
+
+  @override
+  String get crmLeadsTitle => 'العملاء المحتملون';
+
+  @override
+  String get crmLeadsDescription => 'فرص أعمال للتأهيل';
+
+  @override
+  String get crmLeadsSubtitle => 'قائمة العملاء المحتملين (نطاق المستأجر).';
+
+  @override
+  String get crmLeadsEmpty => 'لا يوجد عملاء محتملون بعد.';
+
+  @override
+  String get crmLeadsColname => 'الاسم';
+
+  @override
+  String get crmLeadsColcompany => 'الشركة';
+
+  @override
+  String get crmLeadsColstatus => 'الحالة';
+
+  @override
+  String get crmLeadsColsource => 'المصدر';
+
+  @override
+  String get crmLeadsColemail => 'البريد';
+
+  @override
+  String get crmLeadsColcreated => 'أنشئ في';
+
+  @override
+  String get crmPipelineTitle => 'خط الأنابيب';
+
+  @override
+  String get crmPipelineDescription => 'نظرة عامة على الفرص حسب المرحلة';
+
+  @override
+  String get crmPipelineSubtitle => 'الفرص مجمعة حسب المرحلة (نطاق المستأجر).';
+
+  @override
+  String get crmPipelineEmpty => 'لا توجد فرص بعد.';
+
+  @override
+  String get crmPipelineStageProspecting => 'استكشاف';
+
+  @override
+  String get crmPipelineStageQualification => 'تأهيل';
+
+  @override
+  String get crmPipelineStageProposal => 'اقتراح';
+
+  @override
+  String get crmPipelineStageNegotiation => 'تفاوض';
+
+  @override
+  String get crmPipelineStageWon => 'مربوحة';
+
+  @override
+  String get crmPipelineStageLost => 'خاسرة';
+
+  @override
+  String get restaurantKitchentitle => 'شاشة المطبخ';
+
+  @override
+  String get restaurantKitchensubtitle =>
+      'قائمة الطلبات لحظيًا — التحضير والتجهيز';
+
+  @override
+  String get restaurantBranch => 'الفرع';
+
+  @override
+  String get restaurantBranchall => 'جميع الفروع';
+
+  @override
+  String get restaurantInpreparation => 'قيد التحضير';
+
+  @override
+  String get restaurantReady => 'جاهز';
+
+  @override
+  String get restaurantEmpty => 'لا توجد طلبات معلقة. القائمة فارغة.';
+
+  @override
+  String get restaurantStart => 'ابدأ';
+
+  @override
+  String get restaurantMarkready => 'جاهز';
+
+  @override
+  String get restaurantOrderref => 'طلب';
+
+  @override
+  String get restaurantTable => 'طاولة';
+
+  @override
+  String get restaurantCovers => 'أشخاص';
+
+  @override
+  String get restaurantTakeaway => 'للطلب الخارجي';
+
+  @override
+  String get restaurantDelivery => 'توصيل';
+
+  @override
+  String get restaurantDinein => 'في المكان';
+
+  @override
+  String get restaurantLoaderror => 'تعذر تحميل قائمة المطبخ.';
+
+  @override
+  String get restaurantActionerror => 'تعذر تنفيذ الإجراء، حاول مجددًا.';
+
+  @override
+  String get restaurantLoading => 'جارٍ تحميل قائمة المطبخ…';
 }

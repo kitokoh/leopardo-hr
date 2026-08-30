@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -320,6 +321,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get modulesEvaluations => 'Degerlendirmeler';
+
+  @override
+  String get modulesRestaurant => 'Mutfak ekranı';
 
   @override
   String get emailsInvitationSubject =>
@@ -1129,7 +1133,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dashboardLeaveBalanceTitle => 'İzin bakiyem';
 
   @override
-  String get dashboardLeaveBalanceSubtitle => 'Türe göre kalan günler, cari yıl';
+  String get dashboardLeaveBalanceSubtitle =>
+      'Türe göre kalan günler, cari yıl';
 
   @override
   String get dashboardLeaveBalanceLoading => 'Bakiye yükleniyor…';
@@ -1138,7 +1143,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dashboardLeaveBalanceError => 'İzin bakiyesi yüklenemedi.';
 
   @override
-  String get dashboardLeaveBalanceEmpty => 'Bu hesap için bakiye yapılandırılmamış.';
+  String get dashboardLeaveBalanceEmpty =>
+      'Bu hesap için bakiye yapılandırılmamış.';
 
   @override
   String dashboardLeaveBalanceAvailable(Object days) {
@@ -1244,7 +1250,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-      Object date, Object hours, Object range, Object status) {
+    Object date,
+    Object hours,
+    Object range,
+    Object status,
+  ) {
     return '$date günü, durum $status, $range, $hours.';
   }
 
@@ -8141,4 +8151,198 @@ class AppLocalizationsTr extends AppLocalizations {
   String companydetailPlanWithPrice(Object planName, Object price) {
     return '$planName — $price';
   }
+
+  @override
+  String get crmTitle => 'Müşteri CRM';
+
+  @override
+  String get crmSubtitle =>
+      'Potansiyel müşterilerinizi, hesaplarınızı, kişilerinizi ve fırsatlarınızı yönetin — veriler şirket başına (tenant) izole edilir.';
+
+  @override
+  String get crmIsolationnote =>
+      'Tenant kapsamlı veri: bu alandan Leopardo ticari CRM\'ine erişim yoktur.';
+
+  @override
+  String get crmLoading => 'Yükleniyor…';
+
+  @override
+  String get crmFeaturelocked => 'CRM modülü şirketiniz için etkin değil.';
+
+  @override
+  String get crmErrorloading => 'Veriler yüklenemedi.';
+
+  @override
+  String get crmSearchplaceholder => 'Ara…';
+
+  @override
+  String get crmRefresh => 'Yenile';
+
+  @override
+  String get crmPaginationprev => 'Önceki';
+
+  @override
+  String get crmPaginationnext => 'Sonraki';
+
+  @override
+  String get crmPaginationpage => 'Sayfa';
+
+  @override
+  String get crmAccountsTitle => 'Hesaplar';
+
+  @override
+  String get crmAccountsDescription => 'Şirketinizin müşteri kuruluşları';
+
+  @override
+  String get crmAccountsSubtitle => 'Hesap listesi (tenant kapsamlı).';
+
+  @override
+  String get crmAccountsEmpty => 'Henüz hesap yok.';
+
+  @override
+  String get crmAccountsColname => 'Ad';
+
+  @override
+  String get crmAccountsColstatus => 'Durum';
+
+  @override
+  String get crmAccountsColemail => 'E-posta';
+
+  @override
+  String get crmAccountsColphone => 'Telefon';
+
+  @override
+  String get crmAccountsColcreated => 'Oluşturulma';
+
+  @override
+  String get crmContactsTitle => 'Kişiler';
+
+  @override
+  String get crmContactsDescription => 'Hesaplarınıza bağlı kişiler';
+
+  @override
+  String get crmContactsSubtitle => 'Kişi listesi (tenant kapsamlı).';
+
+  @override
+  String get crmContactsEmpty => 'Henüz kişi yok.';
+
+  @override
+  String get crmContactsPrimary => 'Birincil';
+
+  @override
+  String get crmLeadsTitle => 'Potansiyel Müşteriler';
+
+  @override
+  String get crmLeadsDescription => 'Nitelendirilecek iş fırsatları';
+
+  @override
+  String get crmLeadsSubtitle =>
+      'Potansiyel müşteri listesi (tenant kapsamlı).';
+
+  @override
+  String get crmLeadsEmpty => 'Henüz potansiyel müşteri yok.';
+
+  @override
+  String get crmLeadsColname => 'Ad';
+
+  @override
+  String get crmLeadsColcompany => 'Şirket';
+
+  @override
+  String get crmLeadsColstatus => 'Durum';
+
+  @override
+  String get crmLeadsColsource => 'Kaynak';
+
+  @override
+  String get crmLeadsColemail => 'E-posta';
+
+  @override
+  String get crmLeadsColcreated => 'Oluşturulma';
+
+  @override
+  String get crmPipelineTitle => 'Pipeline';
+
+  @override
+  String get crmPipelineDescription => 'Aşamalara göre fırsat genel bakışı';
+
+  @override
+  String get crmPipelineSubtitle =>
+      'Aşamalara göre gruplandırılmış fırsatlar (tenant kapsamlı).';
+
+  @override
+  String get crmPipelineEmpty => 'Henüz fırsat yok.';
+
+  @override
+  String get crmPipelineStageProspecting => 'Araştırma';
+
+  @override
+  String get crmPipelineStageQualification => 'Nitelendirme';
+
+  @override
+  String get crmPipelineStageProposal => 'Teklif';
+
+  @override
+  String get crmPipelineStageNegotiation => 'Müzakere';
+
+  @override
+  String get crmPipelineStageWon => 'Kazanıldı';
+
+  @override
+  String get crmPipelineStageLost => 'Kaybedildi';
+
+  @override
+  String get restaurantKitchentitle => 'Mutfak ekranı';
+
+  @override
+  String get restaurantKitchensubtitle =>
+      'Gerçek zamanlı sipariş kuyruğu — hazırlık ve teslim';
+
+  @override
+  String get restaurantBranch => 'Şube';
+
+  @override
+  String get restaurantBranchall => 'Tüm şubeler';
+
+  @override
+  String get restaurantInpreparation => 'Hazırlanıyor';
+
+  @override
+  String get restaurantReady => 'Hazır';
+
+  @override
+  String get restaurantEmpty => 'Bekleyen sipariş yok. Kuyruk boş.';
+
+  @override
+  String get restaurantStart => 'Başlat';
+
+  @override
+  String get restaurantMarkready => 'Hazır';
+
+  @override
+  String get restaurantOrderref => 'Sipariş';
+
+  @override
+  String get restaurantTable => 'Masa';
+
+  @override
+  String get restaurantCovers => 'kişi';
+
+  @override
+  String get restaurantTakeaway => 'Paket servis';
+
+  @override
+  String get restaurantDelivery => 'Teslimat';
+
+  @override
+  String get restaurantDinein => 'Salon';
+
+  @override
+  String get restaurantLoaderror => 'Mutfak kuyruğu yüklenemedi.';
+
+  @override
+  String get restaurantActionerror => 'İşlem başarısız, tekrar deneyin.';
+
+  @override
+  String get restaurantLoading => 'Mutfak kuyruğu yükleniyor…';
 }

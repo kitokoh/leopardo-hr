@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -319,6 +320,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get modulesEvaluations => 'Evaluations';
+
+  @override
+  String get modulesRestaurant => 'Kitchen display';
 
   @override
   String get emailsInvitationSubject =>
@@ -1128,7 +1132,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardLeaveBalanceTitle => 'My leave balance';
 
   @override
-  String get dashboardLeaveBalanceSubtitle => 'Remaining days by type, current year';
+  String get dashboardLeaveBalanceSubtitle =>
+      'Remaining days by type, current year';
 
   @override
   String get dashboardLeaveBalanceLoading => 'Loading balance…';
@@ -1137,7 +1142,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardLeaveBalanceError => 'Unable to load leave balance.';
 
   @override
-  String get dashboardLeaveBalanceEmpty => 'No balance configured for this account.';
+  String get dashboardLeaveBalanceEmpty =>
+      'No balance configured for this account.';
 
   @override
   String dashboardLeaveBalanceAvailable(Object days) {
@@ -1242,7 +1248,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-      Object date, Object hours, Object range, Object status) {
+    Object date,
+    Object hours,
+    Object range,
+    Object status,
+  ) {
     return 'Day of $date, status $status, $range, $hours.';
   }
 
@@ -8131,4 +8141,197 @@ class AppLocalizationsEn extends AppLocalizations {
   String companydetailPlanWithPrice(Object planName, Object price) {
     return '$planName — $price';
   }
+
+  @override
+  String get crmTitle => 'Client CRM';
+
+  @override
+  String get crmSubtitle =>
+      'Manage your prospects, accounts, contacts and opportunities — data isolated per company (tenant).';
+
+  @override
+  String get crmIsolationnote =>
+      'Tenant-scoped data: no access to the Leopardo commercial CRM from this space.';
+
+  @override
+  String get crmLoading => 'Loading…';
+
+  @override
+  String get crmFeaturelocked => 'CRM module not enabled for your company.';
+
+  @override
+  String get crmErrorloading => 'Unable to load data.';
+
+  @override
+  String get crmSearchplaceholder => 'Search…';
+
+  @override
+  String get crmRefresh => 'Refresh';
+
+  @override
+  String get crmPaginationprev => 'Previous';
+
+  @override
+  String get crmPaginationnext => 'Next';
+
+  @override
+  String get crmPaginationpage => 'Page';
+
+  @override
+  String get crmAccountsTitle => 'Accounts';
+
+  @override
+  String get crmAccountsDescription => 'Client organizations of your company';
+
+  @override
+  String get crmAccountsSubtitle => 'Account list (tenant-scoped).';
+
+  @override
+  String get crmAccountsEmpty => 'No accounts yet.';
+
+  @override
+  String get crmAccountsColname => 'Name';
+
+  @override
+  String get crmAccountsColstatus => 'Status';
+
+  @override
+  String get crmAccountsColemail => 'Email';
+
+  @override
+  String get crmAccountsColphone => 'Phone';
+
+  @override
+  String get crmAccountsColcreated => 'Created';
+
+  @override
+  String get crmContactsTitle => 'Contacts';
+
+  @override
+  String get crmContactsDescription => 'People linked to your accounts';
+
+  @override
+  String get crmContactsSubtitle => 'Contact list (tenant-scoped).';
+
+  @override
+  String get crmContactsEmpty => 'No contacts yet.';
+
+  @override
+  String get crmContactsPrimary => 'Primary';
+
+  @override
+  String get crmLeadsTitle => 'Leads';
+
+  @override
+  String get crmLeadsDescription => 'Business opportunities to qualify';
+
+  @override
+  String get crmLeadsSubtitle => 'Lead list (tenant-scoped).';
+
+  @override
+  String get crmLeadsEmpty => 'No leads yet.';
+
+  @override
+  String get crmLeadsColname => 'Name';
+
+  @override
+  String get crmLeadsColcompany => 'Company';
+
+  @override
+  String get crmLeadsColstatus => 'Status';
+
+  @override
+  String get crmLeadsColsource => 'Source';
+
+  @override
+  String get crmLeadsColemail => 'Email';
+
+  @override
+  String get crmLeadsColcreated => 'Created';
+
+  @override
+  String get crmPipelineTitle => 'Pipeline';
+
+  @override
+  String get crmPipelineDescription => 'Opportunities overview by stage';
+
+  @override
+  String get crmPipelineSubtitle =>
+      'Opportunities grouped by stage (tenant-scoped).';
+
+  @override
+  String get crmPipelineEmpty => 'No opportunities yet.';
+
+  @override
+  String get crmPipelineStageProspecting => 'Prospecting';
+
+  @override
+  String get crmPipelineStageQualification => 'Qualification';
+
+  @override
+  String get crmPipelineStageProposal => 'Proposal';
+
+  @override
+  String get crmPipelineStageNegotiation => 'Negotiation';
+
+  @override
+  String get crmPipelineStageWon => 'Won';
+
+  @override
+  String get crmPipelineStageLost => 'Lost';
+
+  @override
+  String get restaurantKitchentitle => 'Kitchen display';
+
+  @override
+  String get restaurantKitchensubtitle =>
+      'Real-time order queue — preparation and pickup';
+
+  @override
+  String get restaurantBranch => 'Branch';
+
+  @override
+  String get restaurantBranchall => 'All branches';
+
+  @override
+  String get restaurantInpreparation => 'In preparation';
+
+  @override
+  String get restaurantReady => 'Ready';
+
+  @override
+  String get restaurantEmpty => 'No pending orders. The queue is empty.';
+
+  @override
+  String get restaurantStart => 'Start';
+
+  @override
+  String get restaurantMarkready => 'Ready';
+
+  @override
+  String get restaurantOrderref => 'Order';
+
+  @override
+  String get restaurantTable => 'Table';
+
+  @override
+  String get restaurantCovers => 'covers';
+
+  @override
+  String get restaurantTakeaway => 'Takeaway';
+
+  @override
+  String get restaurantDelivery => 'Delivery';
+
+  @override
+  String get restaurantDinein => 'Dine-in';
+
+  @override
+  String get restaurantLoaderror => 'Unable to load the kitchen queue.';
+
+  @override
+  String get restaurantActionerror => 'Action failed, please retry.';
+
+  @override
+  String get restaurantLoading => 'Loading kitchen queue…';
 }

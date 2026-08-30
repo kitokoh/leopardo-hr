@@ -65,7 +65,7 @@ import 'app_localizations_tr.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -88,18 +88,18 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
     Locale('en'),
     Locale('fr'),
-    Locale('tr')
+    Locale('tr'),
   ];
 
   /// No description provided for @appTitle.
@@ -701,6 +701,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Evaluations'**
   String get modulesEvaluations;
+
+  /// No description provided for @modulesRestaurant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écran cuisine'**
+  String get modulesRestaurant;
 
   /// No description provided for @emailsInvitationSubject.
   ///
@@ -2423,7 +2429,11 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Journée du {date}, statut {status}, {range}, {hours}.'**
   String attendanceDaySummary(
-      Object date, Object hours, Object range, Object status);
+    Object date,
+    Object hours,
+    Object range,
+    Object status,
+  );
 
   /// No description provided for @attendanceDayToday.
   ///
@@ -15144,6 +15154,384 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{planName} — {price}'**
   String companydetailPlanWithPrice(Object planName, Object price);
+
+  /// No description provided for @crmTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'CRM Client'**
+  String get crmTitle;
+
+  /// No description provided for @crmSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérez vos prospects, comptes, contacts et opportunités — données isolées par entreprise (tenant).'**
+  String get crmSubtitle;
+
+  /// No description provided for @crmIsolationnote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données tenant-scoped : aucun accès au CRM commercial Leopardo depuis cet espace.'**
+  String get crmIsolationnote;
+
+  /// No description provided for @crmLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement…'**
+  String get crmLoading;
+
+  /// No description provided for @crmFeaturelocked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Module CRM non activé pour votre entreprise.'**
+  String get crmFeaturelocked;
+
+  /// No description provided for @crmErrorloading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les données.'**
+  String get crmErrorloading;
+
+  /// No description provided for @crmSearchplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher…'**
+  String get crmSearchplaceholder;
+
+  /// No description provided for @crmRefresh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actualiser'**
+  String get crmRefresh;
+
+  /// No description provided for @crmPaginationprev.
+  ///
+  /// In fr, this message translates to:
+  /// **'Précédent'**
+  String get crmPaginationprev;
+
+  /// No description provided for @crmPaginationnext.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivant'**
+  String get crmPaginationnext;
+
+  /// No description provided for @crmPaginationpage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Page'**
+  String get crmPaginationpage;
+
+  /// No description provided for @crmAccountsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comptes'**
+  String get crmAccountsTitle;
+
+  /// No description provided for @crmAccountsDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Organisations clientes de votre entreprise'**
+  String get crmAccountsDescription;
+
+  /// No description provided for @crmAccountsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste des comptes (tenant-scoped).'**
+  String get crmAccountsSubtitle;
+
+  /// No description provided for @crmAccountsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun compte pour le moment.'**
+  String get crmAccountsEmpty;
+
+  /// No description provided for @crmAccountsColname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get crmAccountsColname;
+
+  /// No description provided for @crmAccountsColstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get crmAccountsColstatus;
+
+  /// No description provided for @crmAccountsColemail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email'**
+  String get crmAccountsColemail;
+
+  /// No description provided for @crmAccountsColphone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get crmAccountsColphone;
+
+  /// No description provided for @crmAccountsColcreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créé le'**
+  String get crmAccountsColcreated;
+
+  /// No description provided for @crmContactsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacts'**
+  String get crmContactsTitle;
+
+  /// No description provided for @crmContactsDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Personnes rattachées à vos comptes'**
+  String get crmContactsDescription;
+
+  /// No description provided for @crmContactsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste des contacts (tenant-scoped).'**
+  String get crmContactsSubtitle;
+
+  /// No description provided for @crmContactsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun contact pour le moment.'**
+  String get crmContactsEmpty;
+
+  /// No description provided for @crmContactsPrimary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Principal'**
+  String get crmContactsPrimary;
+
+  /// No description provided for @crmLeadsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prospects'**
+  String get crmLeadsTitle;
+
+  /// No description provided for @crmLeadsDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Opportunités d\'affaires à qualifier'**
+  String get crmLeadsDescription;
+
+  /// No description provided for @crmLeadsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste des prospects (tenant-scoped).'**
+  String get crmLeadsSubtitle;
+
+  /// No description provided for @crmLeadsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun prospect pour le moment.'**
+  String get crmLeadsEmpty;
+
+  /// No description provided for @crmLeadsColname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get crmLeadsColname;
+
+  /// No description provided for @crmLeadsColcompany.
+  ///
+  /// In fr, this message translates to:
+  /// **'Société'**
+  String get crmLeadsColcompany;
+
+  /// No description provided for @crmLeadsColstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get crmLeadsColstatus;
+
+  /// No description provided for @crmLeadsColsource.
+  ///
+  /// In fr, this message translates to:
+  /// **'Source'**
+  String get crmLeadsColsource;
+
+  /// No description provided for @crmLeadsColemail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email'**
+  String get crmLeadsColemail;
+
+  /// No description provided for @crmLeadsColcreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créé le'**
+  String get crmLeadsColcreated;
+
+  /// No description provided for @crmPipelineTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pipeline'**
+  String get crmPipelineTitle;
+
+  /// No description provided for @crmPipelineDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vue d\'ensemble des opportunités par étape'**
+  String get crmPipelineDescription;
+
+  /// No description provided for @crmPipelineSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Opportunités regroupées par étape (tenant-scoped).'**
+  String get crmPipelineSubtitle;
+
+  /// No description provided for @crmPipelineEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune opportunité pour le moment.'**
+  String get crmPipelineEmpty;
+
+  /// No description provided for @crmPipelineStageProspecting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prospection'**
+  String get crmPipelineStageProspecting;
+
+  /// No description provided for @crmPipelineStageQualification.
+  ///
+  /// In fr, this message translates to:
+  /// **'Qualification'**
+  String get crmPipelineStageQualification;
+
+  /// No description provided for @crmPipelineStageProposal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Proposition'**
+  String get crmPipelineStageProposal;
+
+  /// No description provided for @crmPipelineStageNegotiation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Négociation'**
+  String get crmPipelineStageNegotiation;
+
+  /// No description provided for @crmPipelineStageWon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gagné'**
+  String get crmPipelineStageWon;
+
+  /// No description provided for @crmPipelineStageLost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Perdu'**
+  String get crmPipelineStageLost;
+
+  /// No description provided for @restaurantKitchentitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écran cuisine'**
+  String get restaurantKitchentitle;
+
+  /// No description provided for @restaurantKitchensubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'File de commandes en temps réel — préparation et mise à disposition'**
+  String get restaurantKitchensubtitle;
+
+  /// No description provided for @restaurantBranch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Branche'**
+  String get restaurantBranch;
+
+  /// No description provided for @restaurantBranchall.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les branches'**
+  String get restaurantBranchall;
+
+  /// No description provided for @restaurantInpreparation.
+  ///
+  /// In fr, this message translates to:
+  /// **'En préparation'**
+  String get restaurantInpreparation;
+
+  /// No description provided for @restaurantReady.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prêtes'**
+  String get restaurantReady;
+
+  /// No description provided for @restaurantEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune commande en attente. La file est vide.'**
+  String get restaurantEmpty;
+
+  /// No description provided for @restaurantStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Démarrer'**
+  String get restaurantStart;
+
+  /// No description provided for @restaurantMarkready.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prête'**
+  String get restaurantMarkready;
+
+  /// No description provided for @restaurantOrderref.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commande'**
+  String get restaurantOrderref;
+
+  /// No description provided for @restaurantTable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Table'**
+  String get restaurantTable;
+
+  /// No description provided for @restaurantCovers.
+  ///
+  /// In fr, this message translates to:
+  /// **'couverts'**
+  String get restaurantCovers;
+
+  /// No description provided for @restaurantTakeaway.
+  ///
+  /// In fr, this message translates to:
+  /// **'À emporter'**
+  String get restaurantTakeaway;
+
+  /// No description provided for @restaurantDelivery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison'**
+  String get restaurantDelivery;
+
+  /// No description provided for @restaurantDinein.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sur place'**
+  String get restaurantDinein;
+
+  /// No description provided for @restaurantLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger la file cuisine.'**
+  String get restaurantLoaderror;
+
+  /// No description provided for @restaurantActionerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Action impossible, réessayez.'**
+  String get restaurantActionerror;
+
+  /// No description provided for @restaurantLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement de la file cuisine…'**
+  String get restaurantLoading;
 }
 
 class _AppLocalizationsDelegate
@@ -15177,8 +15565,9 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
 }
