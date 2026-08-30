@@ -76,4 +76,14 @@ class FuelStation extends Model
     {
         return $this->hasMany(FuelSite::class, 'station_id');
     }
+
+    public function pumps(): HasMany
+    {
+        return $this->hasMany(FuelPump::class, 'station_id');
+    }
+
+    public function tanks(): HasMany
+    {
+        return $this->hasMany(FuelTank::class, 'station_id');
+    }
 }
