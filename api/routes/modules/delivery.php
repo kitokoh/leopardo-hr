@@ -23,6 +23,7 @@
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryNotificationController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryEventController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRouteController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryReportController;
@@ -73,15 +74,24 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             });
 
             // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
-            // pending→collected→settled→reconciled, idempotent. Le contrôleur
-            // vérifie le rôle (admin requis pour settle/reconcile) ; la
-            // matrice RBAC fine (delivery.role) est BC-26-D05/#6312.
-            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])->whereNumber('route');
-            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
-            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
-            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
+            // pending→collected→settled→reconciled, idempotent.
+            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])
+                ->middleware('delivery.permission:dispatcher|admin|manager')->whereNumber('route');
+            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])
+                ->middleware('delivery.permission:admin|manager')->whereNumber('settlement');
+            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])
+                ->middleware('delivery.permission:admin')->whereNumber('settlement');
+            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])
+                ->middleware('delivery.permission:admin')->whereNumber('settlement');
+            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index'])
+                ->middleware('delivery.permission:admin|manager');
+            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report'])
+                ->middleware('delivery.permission:admin|manager');
+
+            // Notifications destinataire (DELIVERY-206/#6290) — opt-out
+            // effectif + outbox (numéros masqués RGPD hors admin).
+            Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
+            Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
         });
     });
 

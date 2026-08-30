@@ -2356,6 +2356,36 @@ trait CreatesMvpSchema
             });
         }
 
+        // ── BC-26 DELIVERY (delivery_notifications) ────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('delivery_notifications'))) {
+            Schema::create($this->moduleTable('delivery_notifications'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('delivery_id');
+                $table->string('event_type', 30);
+                $table->string('channel', 20)->default('whatsapp');
+                $table->string('recipient_phone', 40);
+                $table->string('template_key', 80);
+                $table->string('status', 20)->default('pending');
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->json('payload')->nullable();
+                $table->timestamp('sent_at')->nullable();
+                $table->timestamps();
+                $table->index(['company_id', 'delivery_id'], 'delivery_notifications_company_delivery_idx');
+                $table->index(['company_id', 'status'], 'delivery_notifications_company_status_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('delivery_recipient_opt_outs'))) {
+            Schema::create($this->moduleTable('delivery_recipient_opt_outs'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('phone', 40);
+                $table->timestamps();
+                $table->unique(['company_id', 'phone'], 'delivery_recipient_opt_outs_company_phone_unique');
+            });
+        }
+
         // ── BC-26 DELIVERY (delivery_tracking_shares) ─────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('delivery_tracking_shares'))) {
             Schema::create($this->moduleTable('delivery_tracking_shares'), function (Blueprint $table): void {
