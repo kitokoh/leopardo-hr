@@ -2952,7 +2952,6 @@ paths:
           description: Permission travel.manage requise
         '422':
           description: Seule une réservation confirmée peut émettre des billets
-<<<<<<< HEAD
   /travel/partner-keys:
     post:
       tags:
@@ -3877,8 +3876,6 @@ paths:
         '404':
           description: Politique introuvable ou hors tenant
 
-=======
->>>>>>> 4c8983464 (feat(travel): API réservations & billetterie — guichet, confirm, cancel, refund, tickets, check-in, manifest (TRAVEL-312..318))
   /travel/tickets/{travelTicket}/check-in:
     post:
       tags:
@@ -3932,7 +3929,6 @@ paths:
                       $ref: '#/components/schemas/TravelPassenger'
         '404':
           description: Trajet introuvable ou hors tenant
-<<<<<<< HEAD
   /travel/rental-vehicles:
     get:
       tags:
@@ -4712,6 +4708,7 @@ paths:
           description: Chambre ou hôtel introuvable ou hors tenant
         '403':
           description: Permission travel.manage requise
+<<<<<<< HEAD
   /travel/contact:
     post:
       tags:
@@ -4765,7 +4762,7 @@ paths:
         '422':
           description: Validation échouée (consentement manquant, message hors bornes, email/téléphone absents)
 =======
->>>>>>> 4c8983464 (feat(travel): API réservations & billetterie — guichet, confirm, cancel, refund, tickets, check-in, manifest (TRAVEL-312..318))
+>>>>>>> 4b9efb054 (feat(travel): API locations, hôtellerie & matrice RBAC — TRAVEL-319..322 (issues #6049..#6052))
   /health:
     get:
       tags:
@@ -30083,7 +30080,6 @@ components:
         updated_at:
           type: string
           nullable: true
-<<<<<<< HEAD
     TravelRefund:
       type: object
       properties:
@@ -30245,8 +30241,6 @@ components:
           type: integer
           minimum: 1
           nullable: true
-=======
->>>>>>> 4c8983464 (feat(travel): API réservations & billetterie — guichet, confirm, cancel, refund, tickets, check-in, manifest (TRAVEL-312..318))
     TravelPassenger:
       type: object
       properties:
@@ -30304,7 +30298,6 @@ components:
         created_at:
           type: string
           nullable: true
-<<<<<<< HEAD
     TravelRentalVehicle:
       type: object
       properties:
@@ -30456,8 +30449,6 @@ components:
         updated_at:
           type: string
           nullable: true
-=======
->>>>>>> 4c8983464 (feat(travel): API réservations & billetterie — guichet, confirm, cancel, refund, tickets, check-in, manifest (TRAVEL-312..318))
     TravelCarrier:
       type: object
       properties:
