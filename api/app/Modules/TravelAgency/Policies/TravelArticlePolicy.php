@@ -37,4 +37,13 @@ class TravelArticlePolicy
     {
         return $this->update($actor, $article);
     }
+
+    /**
+     * Engagement (like/partage/note) : tout employé authentifié du tenant
+     * (lecture + interaction, sans droits d'écriture éditoriale).
+     */
+    public function engage(Employee $actor, TravelArticle $article): bool
+    {
+        return $article->company_id === $actor->company_id;
+    }
 }

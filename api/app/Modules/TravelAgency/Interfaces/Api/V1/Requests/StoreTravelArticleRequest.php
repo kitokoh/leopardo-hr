@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Requests;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\TravelAgency\Domain\Models\TravelArticle;
+use App\Modules\TravelAgency\Domain\Models\TravelArticleCategory;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -28,7 +29,13 @@ class StoreTravelArticleRequest extends FormRequest
         $companyId = $this->user() instanceof Employee ? $this->user()->company_id : null;
 
         return [
-            'category_id' => ['nullable', 'integer'],
+            'category_id' => [
+                'nullable',
+                'integer',
+                Rule::exists((new TravelArticleCategory)->getTable(), 'id')->where(
+                    fn (Builder $query) => $query->where('company_id', $companyId)
+                ),
+            ],
             'slug' => [
                 'required',
                 'string',
