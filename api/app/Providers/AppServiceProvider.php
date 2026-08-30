@@ -6,6 +6,8 @@ use App\AI\LLMClient;
 use App\AI\Providers\ClaudeClient;
 use App\AI\Providers\OpenAIClient;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\HR\Infrastructure\Services\PiiLifecycleService;
+use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
 use App\Core\Tenant\TenantManager;
 use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
@@ -32,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
     {
         // Canonical singleton — tous les nouveaux usages
         $this->app->singleton(TenantManager::class);
+
+        // MAT-011 (#5869) — classification PII + cycle de vie RGPD.
+        $this->app->singleton(PiiRegistry::class, fn (): PiiRegistry => new PiiRegistry((array) config('pii')));
+        $this->app->singleton(PiiLifecycleService::class);
 
         // Issue #1811 : service jours fériés — cache Redis (repository par défaut).
         // Issue #1812 : le calendrier islamique (dates mobiles saisies par
