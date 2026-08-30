@@ -423,6 +423,7 @@ async function save(values) {
     }
     closeModal()
     await loadTab(activeTab.value)
+    decorate()
   } catch (error) {
     formError.value = apiError(error)
   } finally {
@@ -443,6 +444,7 @@ async function confirmDelete() {
     deleteOpen.value = false
     deleteTarget.value = null
     await loadTab(activeTab.value)
+    decorate()
   } catch (error) {
     deleteOpen.value = false
     errors[activeTab.value] = apiError(error)
