@@ -21,6 +21,11 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingContro
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelEquipmentController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelIncidentController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMaintenanceTaskController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStationController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -85,4 +90,41 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/fuel-station/sales', [FuelSaleController::class, 'index']);
         Route::get('/fuel-station/sales/{sale}', [FuelSaleController::class, 'show'])->whereNumber('sale');
     });
+    // ── FUEL-009 (#5803) — stocks, cuves et rapprochement (manager) ─────────
+    Route::middleware('api.manager')->group(function (): void {
+        Route::get('/fuel-station/stock/movements/{tank}', [FuelStockController::class, 'movements'])->whereNumber('tank');
+        Route::post('/fuel-station/stock/movements/{tank}', [FuelStockController::class, 'recordMovement'])->whereNumber('tank');
+        Route::post('/fuel-station/stock/reconcile/{station}', [FuelStockController::class, 'reconcile'])->whereNumber('station');
+        Route::get('/fuel-station/stock/reports', [FuelStockController::class, 'reports']);
+    });
+
+    // ── FUEL-010 (#5804) — incidents & maintenance (manager + assigné) ─────
+    Route::get('/fuel-station/incidents', [FuelIncidentController::class, 'index']);
+    Route::post('/fuel-station/incidents', [FuelIncidentController::class, 'store']);
+    Route::get('/fuel-station/incidents/{incident}', [FuelIncidentController::class, 'show'])->whereNumber('incident');
+    Route::middleware('api.manager')->group(function (): void {
+        Route::post('/fuel-station/incidents/{incident}/assign', [FuelIncidentController::class, 'assign'])->whereNumber('incident');
+    });
+    Route::post('/fuel-station/incidents/{incident}/transition', [FuelIncidentController::class, 'transition'])->whereNumber('incident');
+
+    Route::get('/fuel-station/maintenance-tasks', [FuelMaintenanceTaskController::class, 'index']);
+    Route::get('/fuel-station/maintenance-tasks/{task}', [FuelMaintenanceTaskController::class, 'show'])->whereNumber('task');
+    Route::middleware('api.manager')->group(function (): void {
+        Route::post('/fuel-station/maintenance-tasks', [FuelMaintenanceTaskController::class, 'store']);
+        Route::put('/fuel-station/maintenance-tasks/{task}', [FuelMaintenanceTaskController::class, 'update'])->whereNumber('task');
+    });
+    Route::post('/fuel-station/maintenance-tasks/{task}/complete', [FuelMaintenanceTaskController::class, 'complete'])->whereNumber('task');
+
+    // ── FUEL-011 (#5805) — référentiel stations/équipements (manager + lecture) ──
+    Route::get('/fuel-station/stations', [FuelStationController::class, 'index']);
+    Route::post('/fuel-station/stations', [FuelStationController::class, 'store'])->middleware('api.manager');
+    Route::get('/fuel-station/stations/{station}', [FuelStationController::class, 'show'])->whereNumber('station');
+    Route::put('/fuel-station/stations/{station}', [FuelStationController::class, 'update'])->middleware('api.manager')->whereNumber('station');
+    Route::delete('/fuel-station/stations/{station}', [FuelStationController::class, 'destroy'])->middleware('api.manager')->whereNumber('station');
+    Route::get('/fuel-station/stations/{station}/pumps', [FuelEquipmentController::class, 'pumps'])->whereNumber('station');
+    Route::post('/fuel-station/stations/{station}/pumps', [FuelEquipmentController::class, 'storePump'])->middleware('api.manager')->whereNumber('station');
+    Route::get('/fuel-station/stations/{station}/tanks', [FuelEquipmentController::class, 'tanks'])->whereNumber('station');
+    Route::post('/fuel-station/stations/{station}/tanks', [FuelEquipmentController::class, 'storeTank'])->middleware('api.manager')->whereNumber('station');
+    Route::get('/fuel-station/products', [FuelEquipmentController::class, 'products']);
+    Route::post('/fuel-station/products', [FuelEquipmentController::class, 'storeProduct'])->middleware('api.manager');
 });

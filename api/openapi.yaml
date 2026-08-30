@@ -25528,6 +25528,357 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: Fichier introuvable
+  /fuel-station/stock/movements/{tank}:
+    get:
+      tags:
+        - FuelStation
+      summary: Liste des mouvements de stock d'une cuve (FUEL-009)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/stock/movements/{tank}:
+    post:
+      tags:
+        - FuelStation
+      summary: Enregistre un mouvement de stock idempotent (FUEL-009)
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/stock/reconcile/{station}:
+    post:
+      tags:
+        - FuelStation
+      summary: Lance/rejoue le rapprochement stock d'une période (FUEL-009)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/stock/reports:
+    get:
+      tags:
+        - FuelStation
+      summary: Rapports de rapprochement (FUEL-009)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/incidents:
+    get:
+      tags:
+        - FuelStation
+      summary: Liste des incidents (FUEL-010)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/incidents:
+    post:
+      tags:
+        - FuelStation
+      summary: Signale un incident (FUEL-010)
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/incidents/{incident}:
+    get:
+      tags:
+        - FuelStation
+      summary: Détail d'un incident (FUEL-010)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/incidents/{incident}/assign:
+    post:
+      tags:
+        - FuelStation
+      summary: Assigne un incident (FUEL-010)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/incidents/{incident}/transition:
+    post:
+      tags:
+        - FuelStation
+      summary: Transition de statut d'un incident (FUEL-010)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/maintenance-tasks:
+    get:
+      tags:
+        - FuelStation
+      summary: Liste des tâches de maintenance (FUEL-010)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/maintenance-tasks:
+    post:
+      tags:
+        - FuelStation
+      summary: Crée une tâche de maintenance (FUEL-010)
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/maintenance-tasks/{task}:
+    get:
+      tags:
+        - FuelStation
+      summary: Détail d'une tâche de maintenance (FUEL-010)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/maintenance-tasks/{task}:
+    put:
+      tags:
+        - FuelStation
+      summary: Met à jour une tâche de maintenance (FUEL-010)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/maintenance-tasks/{task}/complete:
+    post:
+      tags:
+        - FuelStation
+      summary: Achève une tâche de maintenance (FUEL-010)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/stations:
+    get:
+      tags:
+        - FuelStation
+      summary: Liste des stations (FUEL-011)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/stations:
+    post:
+      tags:
+        - FuelStation
+      summary: Crée une station (FUEL-011)
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/stations/{station}:
+    get:
+      tags:
+        - FuelStation
+      summary: Détail d'une station (FUEL-011)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/stations/{station}:
+    put:
+      tags:
+        - FuelStation
+      summary: Met à jour une station (FUEL-011)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/stations/{station}:
+    delete:
+      tags:
+        - FuelStation
+      summary: Supprime une station (FUEL-011)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/stations/{station}/pumps:
+    get:
+      tags:
+        - FuelStation
+      summary: Pompes d'une station (FUEL-011)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/stations/{station}/pumps:
+    post:
+      tags:
+        - FuelStation
+      summary: Ajoute une pompe à une station (FUEL-011)
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/stations/{station}/tanks:
+    get:
+      tags:
+        - FuelStation
+      summary: Cuves d'une station (FUEL-011)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/stations/{station}/tanks:
+    post:
+      tags:
+        - FuelStation
+      summary: Ajoute une cuve à une station (FUEL-011)
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/products:
+    get:
+      tags:
+        - FuelStation
+      summary: Catalogue produits (FUEL-011)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+  /fuel-station/products:
+    post:
+      tags:
+        - FuelStation
+      summary: Crée un produit (FUEL-011)
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Interdit (policy deny-by-default)
+
 components:
   securitySchemes:
     BearerAuth:

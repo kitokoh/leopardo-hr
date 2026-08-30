@@ -1824,6 +1824,46 @@ class LeopardoClient:
         """Ajouter un mouvement in/out (proprietaire, session ouverte)"""
         return self.request("POST", "/fuel-station/cash-sessions/{session}/movements", **kwargs)
 
+    def get_fuel_station_incidents(self, **kwargs):
+        """Liste des incidents (FUEL-010)"""
+        return self.request("GET", "/fuel-station/incidents", **kwargs)
+
+    def post_fuel_station_incidents(self, **kwargs):
+        """Signale un incident (FUEL-010)"""
+        return self.request("POST", "/fuel-station/incidents", **kwargs)
+
+    def get_fuel_station_incidents_by_incident(self, **kwargs):
+        """Détail d'un incident (FUEL-010)"""
+        return self.request("GET", "/fuel-station/incidents/{incident}", **kwargs)
+
+    def post_fuel_station_incidents_by_incident_assign(self, **kwargs):
+        """Assigne un incident (FUEL-010)"""
+        return self.request("POST", "/fuel-station/incidents/{incident}/assign", **kwargs)
+
+    def post_fuel_station_incidents_by_incident_transition(self, **kwargs):
+        """Transition de statut d'un incident (FUEL-010)"""
+        return self.request("POST", "/fuel-station/incidents/{incident}/transition", **kwargs)
+
+    def get_fuel_station_maintenance_tasks(self, **kwargs):
+        """Liste des tâches de maintenance (FUEL-010)"""
+        return self.request("GET", "/fuel-station/maintenance-tasks", **kwargs)
+
+    def post_fuel_station_maintenance_tasks(self, **kwargs):
+        """Crée une tâche de maintenance (FUEL-010)"""
+        return self.request("POST", "/fuel-station/maintenance-tasks", **kwargs)
+
+    def get_fuel_station_maintenance_tasks_by_task(self, **kwargs):
+        """Détail d'une tâche de maintenance (FUEL-010)"""
+        return self.request("GET", "/fuel-station/maintenance-tasks/{task}", **kwargs)
+
+    def put_fuel_station_maintenance_tasks_by_task(self, **kwargs):
+        """Met à jour une tâche de maintenance (FUEL-010)"""
+        return self.request("PUT", "/fuel-station/maintenance-tasks/{task}", **kwargs)
+
+    def post_fuel_station_maintenance_tasks_by_task_complete(self, **kwargs):
+        """Achève une tâche de maintenance (FUEL-010)"""
+        return self.request("POST", "/fuel-station/maintenance-tasks/{task}/complete", **kwargs)
+
     def get_fuel_station_me_cash_sessions(self, **kwargs):
         """Sessions de caisse du pompiste connecte (self-service)"""
         return self.request("GET", "/fuel-station/me/cash-sessions", **kwargs)
@@ -1847,6 +1887,14 @@ class LeopardoClient:
     def post_fuel_station_meter_readings_by_reading_corrections(self, **kwargs):
         """Corriger un releve (versionne, audite) — manager principal/rh"""
         return self.request("POST", "/fuel-station/meter-readings/{reading}/corrections", **kwargs)
+
+    def get_fuel_station_products(self, **kwargs):
+        """Catalogue produits (FUEL-011)"""
+        return self.request("GET", "/fuel-station/products", **kwargs)
+
+    def post_fuel_station_products(self, **kwargs):
+        """Crée un produit (FUEL-011)"""
+        return self.request("POST", "/fuel-station/products", **kwargs)
 
     def get_fuel_station_sales(self, **kwargs):
         """Lister les ventes (manager, pagine)"""
@@ -1896,6 +1944,34 @@ class LeopardoClient:
         """Roster de presence du shift pour une date (manager)"""
         return self.request("GET", "/fuel-station/shifts/{shift}/presence", **kwargs)
 
+    def get_fuel_station_stations(self, **kwargs):
+        """Liste des stations (FUEL-011)"""
+        return self.request("GET", "/fuel-station/stations", **kwargs)
+
+    def post_fuel_station_stations(self, **kwargs):
+        """Crée une station (FUEL-011)"""
+        return self.request("POST", "/fuel-station/stations", **kwargs)
+
+    def delete_fuel_station_stations_by_station(self, **kwargs):
+        """Supprime une station (FUEL-011)"""
+        return self.request("DELETE", "/fuel-station/stations/{station}", **kwargs)
+
+    def get_fuel_station_stations_by_station(self, **kwargs):
+        """Détail d'une station (FUEL-011)"""
+        return self.request("GET", "/fuel-station/stations/{station}", **kwargs)
+
+    def put_fuel_station_stations_by_station(self, **kwargs):
+        """Met à jour une station (FUEL-011)"""
+        return self.request("PUT", "/fuel-station/stations/{station}", **kwargs)
+
+    def get_fuel_station_stations_by_station_pumps(self, **kwargs):
+        """Pompes d'une station (FUEL-011)"""
+        return self.request("GET", "/fuel-station/stations/{station}/pumps", **kwargs)
+
+    def post_fuel_station_stations_by_station_pumps(self, **kwargs):
+        """Ajoute une pompe à une station (FUEL-011)"""
+        return self.request("POST", "/fuel-station/stations/{station}/pumps", **kwargs)
+
     def get_fuel_station_stations_by_station_pumps_by_pump_meters_by_meter_intervals(self, **kwargs):
         """Lister les intervalles calcules d'un compteur"""
         return self.request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals", **kwargs)
@@ -1907,6 +1983,30 @@ class LeopardoClient:
     def post_fuel_station_stations_by_station_pumps_by_pump_meters_by_meter_readings(self, **kwargs):
         """Enregistrer un releve de compteur (cumulatif, idempotent)"""
         return self.request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", **kwargs)
+
+    def get_fuel_station_stations_by_station_tanks(self, **kwargs):
+        """Cuves d'une station (FUEL-011)"""
+        return self.request("GET", "/fuel-station/stations/{station}/tanks", **kwargs)
+
+    def post_fuel_station_stations_by_station_tanks(self, **kwargs):
+        """Ajoute une cuve à une station (FUEL-011)"""
+        return self.request("POST", "/fuel-station/stations/{station}/tanks", **kwargs)
+
+    def get_fuel_station_stock_movements_by_tank(self, **kwargs):
+        """Liste des mouvements de stock d'une cuve (FUEL-009)"""
+        return self.request("GET", "/fuel-station/stock/movements/{tank}", **kwargs)
+
+    def post_fuel_station_stock_movements_by_tank(self, **kwargs):
+        """Enregistre un mouvement de stock idempotent (FUEL-009)"""
+        return self.request("POST", "/fuel-station/stock/movements/{tank}", **kwargs)
+
+    def post_fuel_station_stock_reconcile_by_station(self, **kwargs):
+        """Lance/rejoue le rapprochement stock d'une période (FUEL-009)"""
+        return self.request("POST", "/fuel-station/stock/reconcile/{station}", **kwargs)
+
+    def get_fuel_station_stock_reports(self, **kwargs):
+        """Rapports de rapprochement (FUEL-009)"""
+        return self.request("GET", "/fuel-station/stock/reports", **kwargs)
 
     def post_growth_partner_apply(self, **kwargs):
         """Candidature partenaire"""

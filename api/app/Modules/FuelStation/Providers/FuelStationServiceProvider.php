@@ -6,6 +6,8 @@ namespace App\Modules\FuelStation\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
 use App\Modules\FuelStation\Domain\Solution\FuelStationManifest;
+use App\Modules\FuelStation\Infrastructure\Services\FuelIncidentService;
+use App\Modules\FuelStation\Infrastructure\Services\FuelStockService;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -16,6 +18,10 @@ class FuelStationServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        // #5803/#5804 — services métier stock & incidents (FUEL-009/FUEL-010).
+        $this->app->singleton(FuelStockService::class);
+        $this->app->singleton(FuelIncidentService::class);
+
         $this->app->singleton(SolutionCatalogue::class, function (): SolutionCatalogue {
             return new SolutionCatalogue;
         });
