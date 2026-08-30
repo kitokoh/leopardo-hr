@@ -45,6 +45,7 @@ class DeliveryCodSettlement extends Model
         'expected_minor',
         'collected_minor',
         'commission_minor',
+        'collected_at',
         'status',
         'accounting_ref',
         'settled_at',
@@ -52,6 +53,8 @@ class DeliveryCodSettlement extends Model
     ];
 
     protected $casts = [
+        'collected_at' => 'datetime',
+        'settled_at' => 'datetime',
         'settled_at' => 'datetime',
         'expected_minor' => 'int',
         'collected_minor' => 'int',

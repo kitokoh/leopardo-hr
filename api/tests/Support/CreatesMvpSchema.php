@@ -2346,6 +2346,7 @@ trait CreatesMvpSchema
                 $table->unsignedInteger('expected_minor')->default(0);
                 $table->unsignedInteger('collected_minor')->default(0);
                 $table->unsignedInteger('commission_minor')->default(0);
+                $table->timestamp('collected_at')->nullable();
                 $table->string('status', 20)->default('pending');
                 $table->string('accounting_ref', 120)->nullable();
                 $table->timestamp('settled_at')->nullable();
