@@ -65,8 +65,12 @@
 - [x] Un tenant en défaut est traité selon une politique explicite (**nouveau** :
     actif expiré → past_due → expired après grâce ; récupération → active)
 
-## Reste à faire (hors périmètre de cette PR courte)
+## Suite (issues BC-21 dédiées)
 
-- Migrer les écritures `status` directes de `StripeService` vers `transitionTo()`
-- Prorata et grace period liée aux invoices
-- Réconciliation paiements/invoices (rapprochement Stripe ↔ factures)
+- [#6246] Migrer toutes les écritures `status` (services + endpoints) vers la machine à états — livré
+- [#6248] Machine à états des factures + **grace period pilotée par `due_date`** — livré
+- [#6247] Garde entitlement (un paiement ne débloque jamais un module hors plan) — livré
+- [#6249] Réconciliation paiements/invoices (rapprochement Stripe ↔ factures)
+- [#6250] Contrat OpenAPI du périmètre billing
+- [#6251] Runbook exploitation billing + supervision du recouvrement
+- [#6252] Isolation tenant & RBAC billing (tests cross-tenant, droits support)

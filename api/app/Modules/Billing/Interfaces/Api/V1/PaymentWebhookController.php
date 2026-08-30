@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Billing\Domain\Enums\InvoiceStatus;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Infrastructure\Services\ChargilyService;
 use App\Modules\Payroll\Domain\Models\Payment;
@@ -12,6 +13,7 @@ use App\Modules\Platform\Infrastructure\Services\WebhookEventRegistry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 
 class PaymentWebhookController extends Controller
 {
@@ -63,11 +65,25 @@ class PaymentWebhookController extends Controller
                 if ($invoiceNumber !== null) {
                     $invoice = Invoice::where('number', $invoiceNumber)->first();
                     if ($invoice !== null) {
-                        $invoice->update([
-                            'status' => 'paid',
-                            'paid_at' => now(),
-                            'payment_method' => 'chargily',
-                        ]);
+                        // DEP-BC21 #6248 : paiement via la machine à états. Une
+                        // facture déjà payée/annulée ne peut pas être re-payée :
+                        // on acquitte le webhook (idempotence #5444) sans créer
+                        // de paiement fantôme.
+                        try {
+                            $invoice->transitionTo(InvoiceStatus::Paid, [
+                                'paid_at' => now(),
+                                'payment_method' => 'chargily',
+                            ]);
+                        } catch (InvalidArgumentException $e) {
+                            Log::warning('Chargily: Transition de facture refusée — paiement non enregistré', [
+                                'invoice_id' => $invoice->id,
+                                'status' => $invoice->status,
+                                'error' => $e->getMessage(),
+                            ]);
+                            $this->registry->complete('chargily', $eventId, 200, json_encode(['received' => true, 'skipped' => 'invoice_transition_refused']) ?: '');
+
+                            return new JsonResponse(['received' => true, 'skipped' => 'invoice_transition_refused']);
+                        }
 
                         Payment::create([
                             'invoice_id' => $invoice->id,

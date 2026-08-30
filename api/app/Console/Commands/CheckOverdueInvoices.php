@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Modules\Billing\Domain\Enums\InvoiceStatus;
 use App\Modules\Billing\Domain\Models\Invoice;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -16,12 +17,17 @@ class CheckOverdueInvoices extends Command
 
     public function handle(): int
     {
-        $overdueInvoices = Invoice::where('status', 'pending')
+        // DEP-BC21 #6248 : `pending` (hérité de la génération mensuelle) et
+        // `sent` passent par la machine à états → `overdue` dès due_date passée.
+        $overdueInvoices = Invoice::whereIn('status', [
+            InvoiceStatus::Pending->value,
+            InvoiceStatus::Sent->value,
+        ])
             ->where('due_date', '<', now())
             ->get();
 
         foreach ($overdueInvoices as $invoice) {
-            $invoice->update(['status' => 'overdue']);
+            $invoice->transitionTo(InvoiceStatus::Overdue);
             Log::warning("Invoice overdue: id={$invoice->id} company={$invoice->company_id} amount={$invoice->amount}");
         }
 
@@ -30,4 +36,3 @@ class CheckOverdueInvoices extends Command
         return self::SUCCESS;
     }
 }
-
