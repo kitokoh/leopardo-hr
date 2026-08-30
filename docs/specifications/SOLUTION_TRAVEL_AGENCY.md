@@ -908,6 +908,13 @@ logs sans PII inutile · PR courte fusionnable sur `main` · entrée `CHANGELOG.
 
 ### Épic 9xx — Contenu & monétisation (parents TRAVEL-060..062, désormais détaillés)
 
+> **Statut (lot 2026-08-30, PR `feat/travel-batch2-community`) :** ✅ TRAVEL-901
+> (articles + catégories), ✅ TRAVEL-902 (commentaires + modération), ✅ TRAVEL-903
+> (likes/partages/notes), ✅ TRAVEL-904 (quiz), ✅ TRAVEL-905 (référentiels
+> annonces), ✅ TRAVEL-906 (tarifs), ✅ TRAVEL-907 (cycle de paiement +
+> validation), ✅ TRAVEL-908 (expiration + renouvellement), ✅ TRAVEL-909 (sites
+> touristiques), ✅ TRAVEL-910 (notifications legacy → canaux plateforme).
+
 | ID | Tâche fine | Parent |
 |---|---|---|
 | TRAVEL-901 | `travel_articles` + catégories (CRUD, statuts, modération) | TRAVEL-060 |

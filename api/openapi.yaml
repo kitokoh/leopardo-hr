@@ -4292,6 +4292,479 @@ paths:
           description: Jeton transporteur invalide ou manquant
         '422':
           description: Validation échouée (bornes, tarifs, clé externe)
+  /travel/community/categories:
+    get:
+      tags:
+      - Travel
+      summary: Liste des catégories d'articles (TRAVEL-901/#6104)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Catégories
+    post:
+      tags:
+      - Travel
+      summary: Création d'une catégorie (TRAVEL-901/#6104, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, name]
+              properties:
+                code: {type: string, maxLength: 60}
+                name: {type: string, maxLength: 160}
+                is_active: {type: boolean, default: true}
+      responses:
+        '201':
+          description: Catégorie créée (code unique par tenant)
+        '422':
+          description: Code dupliqué
+  /travel/community/articles:
+    get:
+      tags:
+      - Travel
+      summary: Liste des articles (TRAVEL-901/#6104)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Articles paginés
+    post:
+      tags:
+      - Travel
+      summary: Création d'un article (TRAVEL-901/#6104, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, body]
+              properties:
+                category_id: {type: integer, nullable: true}
+                title: {type: string, maxLength: 200}
+                body: {type: string, minLength: 10, maxLength: 50000}
+                status: {type: string, enum: [draft, published], default: draft}
+      responses:
+        '201':
+          description: Article créé (statut + published_at serveur)
+  /travel/community/articles/{article}/publish:
+    post:
+      tags:
+      - Travel
+      summary: Publication contrôlée d'un article (TRAVEL-901/#6104)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Article publié
+  /travel/community/articles/{article}/comments:
+    get:
+      tags:
+      - Travel
+      summary: Commentaires d'un article (TRAVEL-902/#6105)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commentaires
+    post:
+      tags:
+      - Travel
+      summary: Ajout d'un commentaire (TRAVEL-902/#6105)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [body]
+              properties:
+                body: {type: string, minLength: 3, maxLength: 1000}
+                author_name: {type: string, maxLength: 160, nullable: true}
+      responses:
+        '201':
+          description: Commentaire créé (pending, modéré)
+        '422':
+          description: Contenu hors bornes
+  /travel/community/comments/{comment}/approve:
+    post:
+      tags:
+      - Travel
+      summary: Approbation d'un commentaire (TRAVEL-902/#6105, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: comment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commentaire approuvé
+  /travel/community/comments/{comment}/report:
+    post:
+      tags:
+      - Travel
+      summary: Signalement d'un commentaire (TRAVEL-902/#6105, tracé unique)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: comment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: {type: string, minLength: 3, maxLength: 255}
+      responses:
+        '200':
+          description: Signalement enregistré
+        '422':
+          description: Déjà signalé
+  /travel/community/articles/{article}/like:
+    post:
+      tags:
+      - Travel
+      summary: Like d'un article (TRAVEL-903/#6106, idempotent)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Un acteur = un like par cible
+  /travel/community/articles/{article}/engagement:
+    get:
+      tags:
+      - Travel
+      summary: Agrégats likes/partages/notes (TRAVEL-903/#6106)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: likes_count, shares_count, rating_avg, ratings_count
+  /travel/community/quizzes:
+    get:
+      tags:
+      - Travel
+      summary: Liste des quiz (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Quiz
+    post:
+      tags:
+      - Travel
+      summary: Création d'un quiz (TRAVEL-904/#6107, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: {type: string, maxLength: 200}
+                description: {type: string, maxLength: 2000, nullable: true}
+                max_participations_per_contact: {type: integer, minimum: 1, default: 1}
+                bonus_points: {type: integer, minimum: 0, default: 0}
+      responses:
+        '201':
+          description: Quiz créé
+  /travel/community/quizzes/{quiz}/questions:
+    post:
+      tags:
+      - Travel
+      summary: Ajout d'une question (TRAVEL-904/#6107, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [label, choices, correct_answer]
+              properties:
+                label: {type: string, maxLength: 500}
+                choices: {type: array, minItems: 2, maxItems: 6, items: {type: string, maxLength: 200}}
+                correct_answer: {type: string, maxLength: 200, description: "Hachée au repos, jamais restituée"}
+                points: {type: integer, minimum: 1, default: 1}
+      responses:
+        '201':
+          description: Question créée (bonne réponse hachée)
+  /travel/community/quizzes/{quiz}/participate:
+    post:
+      tags:
+      - Travel
+      summary: Participation à un quiz (TRAVEL-904/#6107, unique par contact)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [participant_identifier, answers]
+              properties:
+                participant_identifier: {type: string, maxLength: 255}
+                answers: {type: object, additionalProperties: {type: string, maxLength: 200}}
+      responses:
+        '201':
+          description: Score calculé serveur
+        '422':
+          description: Participation déjà enregistrée ou quiz fermé
+  /travel/community/advert-types:
+    get:
+      tags:
+      - Travel
+      summary: Types d'annonces (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Types
+    post:
+      tags:
+      - Travel
+      summary: Création d'un type (TRAVEL-905/#6108, travel.manage)
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Type créé (code unique)
+  /travel/community/advert-prices:
+    get:
+      tags:
+      - Travel
+      summary: Grille tarifaire (TRAVEL-906/#6109)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Tarifs en minor units
+    post:
+      tags:
+      - Travel
+      summary: Création d'un tarif (TRAVEL-906/#6109, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type_id, position_id]
+              properties:
+                type_id: {type: integer}
+                position_id: {type: integer}
+                price_per_image_minor: {type: integer, minimum: 0}
+                price_per_character_minor: {type: integer, minimum: 0}
+                currency: {type: string, maxLength: 3, description: "Défaut : devise tenant"}
+      responses:
+        '201':
+          description: Tarif créé
+  /travel/community/adverts:
+    get:
+      tags:
+      - Travel
+      summary: Annonces VISIBLES (payées + validées + non expirées, TRAVEL-907/#6110)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Annonces publiées
+    post:
+      tags:
+      - Travel
+      summary: Soumission d'une annonce (TRAVEL-907/#6110, prix calculé serveur)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type_id, position_id, title, body]
+              properties:
+                type_id: {type: integer}
+                position_id: {type: integer}
+                title: {type: string, maxLength: 200}
+                body: {type: string, minLength: 10, maxLength: 5000}
+                image_path: {type: string, maxLength: 500, nullable: true}
+      responses:
+        '201':
+          description: Annonce soumise (submitted, prix + devise serveur)
+  /travel/community/adverts/{advert}/pay:
+    post:
+      tags:
+      - Travel
+      summary: Paiement d'une annonce (TRAVEL-907/#6110, idempotent)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: advert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Annonce payée
+  /travel/community/adverts/{advert}/validate:
+    post:
+      tags:
+      - Travel
+      summary: Validation + publication (TRAVEL-907/#6110, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: advert
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                valid_days: {type: integer, minimum: 1, maximum: 90, default: 30}
+      responses:
+        '200':
+          description: Annonce publiée (visible)
+  /travel/community/adverts/{advert}/renew:
+    post:
+      tags:
+      - Travel
+      summary: Renouvellement payé (TRAVEL-908/#6111, requalifie)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: advert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Annonce republiée
+  /travel/community/tourist-sites:
+    get:
+      tags:
+      - Travel
+      summary: Sites touristiques (TRAVEL-909/#6112)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Sites paginés
+    post:
+      tags:
+      - Travel
+      summary: Création d'un site (TRAVEL-909/#6112, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, city_id]
+              properties:
+                name: {type: string, maxLength: 200}
+                description: {type: string, maxLength: 5000, nullable: true}
+                city_id: {type: integer}
+                latitude: {type: number, minimum: -90, maximum: 90, nullable: true}
+                longitude: {type: number, minimum: -180, maximum: 180, nullable: true}
+                images: {type: array, maxItems: 10, items: {type: string}, nullable: true}
+      responses:
+        '201':
+          description: Site créé
+  /travel/community/tourist-sites/search:
+    get:
+      tags:
+      - Travel
+      summary: Recherche de sites par ville (TRAVEL-909/#6112)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: city_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Sites actifs de la ville
+
   /travel/shop/trips:
     get:
       tags:
