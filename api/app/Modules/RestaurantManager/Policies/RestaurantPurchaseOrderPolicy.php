@@ -10,9 +10,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrder;
 /**
  * RESTO-502 (#6201) — Policy des bons de commande fournisseurs.
  *
- * Création/modification : gérant, RH ou manager de salle (achats
- * opérationnels). Lecture : tout employé authentifié du tenant (404 sûr
- * cross-tenant au niveau contrôleur).
+ * Lecture : tout employé du tenant. Écriture (création, transitions) :
+ * `principal`/`rh` — les achats restent une décision de gestion.
  */
 class RestaurantPurchaseOrderPolicy
 {
@@ -21,23 +20,23 @@ class RestaurantPurchaseOrderPolicy
         return true;
     }
 
-    public function view(Employee $actor, RestaurantPurchaseOrder $po): bool
+    public function view(Employee $actor, RestaurantPurchaseOrder $order): bool
     {
-        return $po->company_id === $actor->company_id;
+        return $order->company_id === $actor->company_id;
     }
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
-    public function update(Employee $actor, RestaurantPurchaseOrder $po): bool
+    public function update(Employee $actor, RestaurantPurchaseOrder $order): bool
     {
-        return $this->create($actor) && $po->company_id === $actor->company_id;
+        return $this->create($actor) && $order->company_id === $actor->company_id;
     }
 
-    public function delete(Employee $actor, RestaurantPurchaseOrder $po): bool
+    public function delete(Employee $actor, RestaurantPurchaseOrder $order): bool
     {
-        return $this->update($actor, $po);
+        return $this->update($actor, $order);
     }
 }

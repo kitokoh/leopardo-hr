@@ -10,8 +10,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantReceiving;
 /**
  * RESTO-503 (#6202) — Policy des réceptions de marchandises.
  *
- * Réceptionner : gérant, RH ou manager de salle (achats opérationnels).
- * Lecture : tout employé authentifié du tenant (404 sûr cross-tenant).
+ * Lecture : tout employé du tenant. Écriture : `principal`/`rh` — la
+ * réception valorise le stock, c'est une décision de gestion.
  */
 class RestaurantReceivingPolicy
 {
@@ -27,6 +27,6 @@ class RestaurantReceivingPolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 }

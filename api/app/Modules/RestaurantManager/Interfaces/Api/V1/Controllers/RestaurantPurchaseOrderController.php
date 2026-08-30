@@ -6,27 +6,28 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\RestaurantManager\Application\Actions\PurchaseOrderAction;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrder;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPurchaseOrderService;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\ReceiveRestaurantPurchaseOrderRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantPurchaseOrderRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantPurchaseOrderRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantPurchaseOrderResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use RuntimeException;
 
 /**
- * RESTO-502 (#6201) — Bons de commande fournisseurs (CRUD + transitions).
+ * RESTO-502 (#6201) — Bons de commande fournisseurs (draft → sent → received).
  *
- * `POST /purchase-orders/{po}/send` : draft → sent.
- * `POST /purchase-orders/{po}/receive` : sent → received — réception
- * intégrale → entrées de stock + coût moyen pondéré (RESTO-503).
- * `POST /purchase-orders/{po}/cancel` : draft|sent → cancelled.
- * Le total est TOUJOURS recalculé serveur (Σ lignes) ; 404 sûr cross-tenant.
+ * Le total est recalculé serveur (`RestaurantPurchaseOrderService`), les
+ * transitions `send`/`receive` passent par le service (réception → mouvements
+ * de stock, raison `receiving`). Un bon reçu ou annulé est immutable.
  */
 class RestaurantPurchaseOrderController extends Controller
 {
-    public function __construct(private readonly PurchaseOrderAction $poAction)
-    {
+    public function __construct(
+        private readonly RestaurantPurchaseOrderService $purchaseOrders,
+    ) {
     }
 
     public function index(Request $request): JsonResponse
@@ -41,10 +42,11 @@ class RestaurantPurchaseOrderController extends Controller
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
         $orders = RestaurantPurchaseOrder::query()
-            ->with(['supplier', 'items'])
-            ->when($request->has('branch_id'), fn ($query) => $query->where('branch_id', (int) $request->query('branch_id')))
-            ->when($request->has('status'), fn ($query) => $query->where('status', (string) $request->query('status')))
-            ->orderByDesc('created_at')
+            ->with('items')
+            ->when($request->query('branch_id'), fn ($q, $v) => $q->where('branch_id', (int) $v))
+            ->when($request->query('supplier_id'), fn ($q, $v) => $q->where('supplier_id', (int) $v))
+            ->when($request->query('status'), fn ($q, $v) => $q->where('status', (string) $v))
+            ->orderByDesc('id')
             ->paginate($perPage);
 
         return RestaurantPurchaseOrderResource::collection($orders)->response();
@@ -59,9 +61,18 @@ class RestaurantPurchaseOrderController extends Controller
             abort(403);
         }
 
-        $order = RestaurantPurchaseOrder::query()->create($request->validated());
+        /** @var RestaurantPurchaseOrder $order */
+        $order = RestaurantPurchaseOrder::query()->create([
+            'company_id' => $actor->company_id,
+            'branch_id' => (int) $request->validated('branch_id'),
+            'supplier_id' => (int) $request->validated('supplier_id'),
+            'expected_at' => $request->validated('expected_at'),
+            'currency' => $request->validated('currency', 'DZD'),
+        ]);
 
-        return (new RestaurantPurchaseOrderResource($order))->response()->setStatusCode(201);
+        $this->purchaseOrders->syncItems($order, $request->validated('items'));
+
+        return (new RestaurantPurchaseOrderResource($order->load('items')))->response()->setStatusCode(201);
     }
 
     public function show(Request $request, RestaurantPurchaseOrder $restaurantPurchaseOrder): JsonResponse
@@ -73,9 +84,7 @@ class RestaurantPurchaseOrderController extends Controller
             abort(404);
         }
 
-        $restaurantPurchaseOrder->load(['supplier', 'items']);
-
-        return (new RestaurantPurchaseOrderResource($restaurantPurchaseOrder))->response();
+        return (new RestaurantPurchaseOrderResource($restaurantPurchaseOrder->load('items')))->response();
     }
 
     public function update(UpdateRestaurantPurchaseOrderRequest $request, RestaurantPurchaseOrder $restaurantPurchaseOrder): JsonResponse
@@ -92,12 +101,17 @@ class RestaurantPurchaseOrderController extends Controller
         }
 
         if ($restaurantPurchaseOrder->status->value !== 'draft') {
-            abort(409, 'Only a draft purchase order can be edited.');
+            return response()->json(['message' => 'Un bon envoyé ou reçu est immutable.'], 422);
         }
 
-        $restaurantPurchaseOrder->update($request->validated());
+        $restaurantPurchaseOrder->expected_at = $request->validated('expected_at', $restaurantPurchaseOrder->expected_at);
+        $restaurantPurchaseOrder->save();
 
-        return (new RestaurantPurchaseOrderResource($restaurantPurchaseOrder))->response();
+        if ($request->filled('items')) {
+            $this->purchaseOrders->syncItems($restaurantPurchaseOrder, $request->validated('items'));
+        }
+
+        return (new RestaurantPurchaseOrderResource($restaurantPurchaseOrder->load('items')))->response();
     }
 
     public function destroy(Request $request, RestaurantPurchaseOrder $restaurantPurchaseOrder): JsonResponse
@@ -114,9 +128,10 @@ class RestaurantPurchaseOrderController extends Controller
         }
 
         if ($restaurantPurchaseOrder->status->value !== 'draft') {
-            abort(409, 'Only a draft purchase order can be deleted.');
+            return response()->json(['message' => 'Seul un bon en brouillon peut être supprimé.'], 422);
         }
 
+        $restaurantPurchaseOrder->items()->delete();
         $restaurantPurchaseOrder->delete();
 
         return new JsonResponse(null, 204);
@@ -124,38 +139,49 @@ class RestaurantPurchaseOrderController extends Controller
 
     public function send(Request $request, RestaurantPurchaseOrder $restaurantPurchaseOrder): JsonResponse
     {
-        return $this->transition($request, $restaurantPurchaseOrder, 'send');
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $restaurantPurchaseOrder->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('update', $restaurantPurchaseOrder)) {
+            abort(403);
+        }
+
+        try {
+            $order = $this->purchaseOrders->send($restaurantPurchaseOrder, $actor);
+        } catch (RuntimeException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
+
+        return (new RestaurantPurchaseOrderResource($order->load('items')))->response();
     }
 
     public function receive(Request $request, RestaurantPurchaseOrder $restaurantPurchaseOrder): JsonResponse
     {
-        return $this->transition($request, $restaurantPurchaseOrder, 'receive');
-    }
-
-    public function cancel(Request $request, RestaurantPurchaseOrder $restaurantPurchaseOrder): JsonResponse
-    {
-        return $this->transition($request, $restaurantPurchaseOrder, 'cancel');
-    }
-
-    private function transition(Request $request, RestaurantPurchaseOrder $po, string $action): JsonResponse
-    {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->company_id !== $po->company_id) {
+        if ($actor->company_id !== $restaurantPurchaseOrder->company_id) {
             abort(404);
         }
 
-        if ($actor->cannot('update', $po)) {
+        if ($actor->cannot('update', $restaurantPurchaseOrder)) {
             abort(403);
         }
 
-        $po = match ($action) {
-            'send' => $this->poAction->send($actor, $po),
-            'receive' => $this->poAction->receive($actor, $po),
-            default => $this->poAction->cancel($actor, $po),
-        };
+        try {
+            $result = $this->purchaseOrders->receive(
+                $restaurantPurchaseOrder,
+                $actor,
+                $request->validated('items'),
+            );
+        } catch (RuntimeException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
 
-        return (new RestaurantPurchaseOrderResource($po->load('items')))->response();
+        return (new RestaurantPurchaseOrderResource($result['order']->load('items')))->response();
     }
 }
