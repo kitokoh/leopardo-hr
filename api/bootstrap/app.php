@@ -73,6 +73,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // dont l'onboarding comporte encore des étapes requises non complétées.
         $schedule->command('onboarding:send-reminders')->dailyAt('09:00');
         $schedule->command('travel:outbox-dispatch')->everyMinute()->withoutOverlapping();
+        $schedule->command('travel:expire-adverts')->daily();
         // Issue #5616 — Purge des fichiers TTS temporaires (RGPD + espace disque).
         // Les URLs signées expirent en 60 s ; purger les fichiers > 60 min suffit
         // pour garantir qu'aucun fichier accessible ne subsiste sur disque.

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Providers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Console\Commands\TravelExpireAdvertsCommand;
 use App\Console\Commands\TravelOutboxDispatchCommand;
 use App\Modules\TravelAgency\Console\Commands\RecalculateTravelReadModelsCommand;
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
@@ -75,6 +76,7 @@ class TravelAgencyServiceProvider extends ServiceProvider
         $this->commands([
             RecalculateTravelReadModelsCommand::class,
             TravelOutboxDispatchCommand::class,
+            TravelExpireAdvertsCommand::class,
         ]);
 
         $this->app->singleton(TravelOutboxConsumerRegistry::class);

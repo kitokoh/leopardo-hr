@@ -187,6 +187,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/adverts/{travelAdvert}', [TravelAdvertController::class, 'showAdvert']);
         Route::post('/adverts/{travelAdvert}/pay', [TravelAdvertController::class, 'payAdvert']);
         Route::post('/adverts/{travelAdvert}/validate', [TravelAdvertController::class, 'validateAdvert']);
+        Route::post('/adverts/{travelAdvert}/renew', [TravelAdvertController::class, 'renewAdvert']); // TRAVEL-908/#6111
         Route::delete('/adverts/{travelAdvert}', [TravelAdvertController::class, 'destroyAdvert']);
 
 

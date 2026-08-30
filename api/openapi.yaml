@@ -4140,6 +4140,46 @@ paths:
           description: Annonce introuvable ou d'un autre tenant
         '422':
           description: Statut non payable ou fournisseur inconnu
+  /travel/adverts/{travelAdvert}/renew:
+    post:
+      tags:
+      - Travel
+      summary: Renouvellement d'une annonce expirée (nouveau paiement) (TRAVEL-908/#6111)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider]
+              properties:
+                provider:
+                  type: string
+                  enum: [cash, pvit, momo, card]
+                provider_reference:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Annonce renouvelée (republiée, expires_at prolongé)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvert'
+        '403':
+          description: Permission travel.manage requise (principal/rh)
+        '404':
+          description: Annonce introuvable ou d'un autre tenant
+        '422':
+          description: Annonce ni expirée ni publiée, ou fournisseur inconnu
   /travel/adverts/{travelAdvert}/validate:
     post:
       tags:
