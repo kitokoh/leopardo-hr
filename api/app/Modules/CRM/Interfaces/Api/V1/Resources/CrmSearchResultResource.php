@@ -19,7 +19,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class CrmSearchResultResource extends JsonResource
 {
     /**
-     * @param  array{type: string, model: object}  $resource
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array

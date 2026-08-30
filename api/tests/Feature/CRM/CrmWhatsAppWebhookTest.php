@@ -9,6 +9,8 @@ use App\Modules\CRM\Domain\Models\CrmChannel;
 use App\Modules\CRM\Domain\Models\CrmChannelConversation;
 use App\Modules\CRM\Domain\Models\CrmChannelMessage;
 use App\Modules\CRM\Domain\Models\CrmWebhookChannelLookup;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Testing\TestResponse;
 use Illuminate\Support\Facades\Log;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -38,7 +40,8 @@ class CrmWhatsAppWebhookTest extends TestCase
         config()->set('crm.webhooks.whatsapp_verify_token', 'verify-abc');
 
         /** @var \App\Core\Tenant\Domain\Models\Company $company */
-        $this->company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $this->company = $company;
 
         $this->channel = CrmChannel::query()->create([
             'company_id' => $this->company->id,
@@ -189,11 +192,9 @@ class CrmWhatsAppWebhookTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $payload
+     * @return TestResponse<JsonResponse>
      */
-    /**
-     * @return \Illuminate\Testing\TestResponse<\Illuminate\Http\Response>
-     */
-    private function postSigned(array $payload): \Illuminate\Testing\TestResponse
+    private function postSigned(array $payload): TestResponse
     {
         $raw = json_encode($payload, JSON_THROW_ON_ERROR);
         $signature = 'sha256='.hash_hmac('sha256', $raw, self::SECRET);

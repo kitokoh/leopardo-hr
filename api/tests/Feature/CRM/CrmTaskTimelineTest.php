@@ -206,8 +206,12 @@ class CrmTaskTimelineTest extends TestCase
         $this->assertCount(2, $page2->json('data'));
 
         // Les ids doivent être strictement décroissants entre pages.
-        $idsPage1 = collect($page1->json('data'))->pluck('id');
-        $idsPage2 = collect($page2->json('data'))->pluck('id');
+        /** @var array<int, array<string, mixed>> $page1Data */
+        $page1Data = $page1->json('data') ?? [];
+        $idsPage1 = collect($page1Data)->pluck('id');
+        /** @var array<int, array<string, mixed>> $page2Data */
+        $page2Data = $page2->json('data') ?? [];
+        $idsPage2 = collect($page2Data)->pluck('id');
         $this->assertTrue($idsPage2->every(fn (int $id) => $id < (int) $idsPage1->min()));
     }
 

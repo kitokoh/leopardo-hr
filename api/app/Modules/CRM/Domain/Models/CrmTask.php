@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $description
  * @property Carbon|null $due_at
  * @property int|null $assignee_id
+ * @property int|null $assigned_to
  * @property bool $done
  * @property string $status
  * @property string|null $priority

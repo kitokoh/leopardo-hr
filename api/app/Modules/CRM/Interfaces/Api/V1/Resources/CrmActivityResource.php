@@ -20,6 +20,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property int|null $opportunity_id
  * @property \Illuminate\Support\Carbon|null $occurred_at
  * @property \Illuminate\Support\Carbon $created_at
+ * @property \App\Core\Auth\Domain\Models\Employee|null $actor
  */
 class CrmActivityResource extends JsonResource
 {
@@ -40,7 +41,7 @@ class CrmActivityResource extends JsonResource
                 'first_name' => $this->actor->first_name,
                 'last_name' => $this->actor->last_name,
             ] : null,
-            'created_at' => $this->created_at?->toIso8601String(),
+            'created_at' => $this->created_at->toIso8601String(),
         ];
     }
 }

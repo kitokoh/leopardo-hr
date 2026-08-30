@@ -32,8 +32,12 @@ class CrmExportTest extends TestCase
     {
         parent::setUp();
 
-        $this->companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
-        $this->companyB = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
+        /** @var \App\Core\Tenant\Domain\Models\Company $companyA */
+        $companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $this->companyA = $companyA;
+        /** @var \App\Core\Tenant\Domain\Models\Company $companyB */
+        $companyB = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
+        $this->companyB = $companyB;
 
         // Table source V0 minimale (miroir de la migration #5708) pour tester
         // le flux d'export de bout en bout avant merge du socle V0.

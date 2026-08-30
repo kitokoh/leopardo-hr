@@ -32,6 +32,10 @@ use App\Modules\CRM\Infrastructure\Repositories\CrmLeadRepository;
 use App\Modules\CRM\Infrastructure\Services\CrmContactSegmentSource;
 use App\Modules\CRM\Infrastructure\Services\CrmImportRowPersister;
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxConsumerRegistry;
+use App\Modules\CRM\Infrastructure\Services\AutomationEngine;
+use App\Modules\CRM\Infrastructure\Services\CrmChannelRegistry;
+use App\Modules\CRM\Infrastructure\Services\CrmConditionEvaluator;
+
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxPublisher;
 use App\Modules\CRM\Policies\CrmImportPolicy;
 use App\Modules\CRM\Policies\CrmLeadPolicy;

@@ -29,7 +29,9 @@ class CrmAutomationTest extends TestCase
     {
         parent::setUp();
 
-        $this->company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $this->company = $company;
     }
 
     protected function tearDown(): void
@@ -265,6 +267,7 @@ class CrmAutomationTest extends TestCase
     {
         Sanctum::actingAs($this->manager());
 
+        /** @var \App\Core\Tenant\Domain\Models\Company $otherCompany */
         $otherCompany = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
         $automation = CrmAutomation::query()->create([
             'company_id' => $otherCompany->id,

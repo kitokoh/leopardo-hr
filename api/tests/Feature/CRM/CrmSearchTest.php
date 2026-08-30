@@ -131,7 +131,9 @@ class CrmSearchTest extends TestCase
         $response->assertJsonPath('data.0.type', 'account');
         $response->assertJsonPath('data.0.name', 'Transports Alpha SARL');
 
-        $types = collect($response->json('data'))->pluck('type')->unique()->values();
+        /** @var array<int, array<string, mixed>> $searchData */
+        $searchData = $response->json('data') ?? [];
+        $types = collect($searchData)->pluck('type')->unique()->values();
 
         $this->assertContains('account', $types);
         $this->assertContains('contact', $types);
@@ -144,7 +146,9 @@ class CrmSearchTest extends TestCase
         $response = $this->getJson('/api/v1/crm/search?q=jean&type=contact');
 
         $response->assertOk();
-        $types = collect($response->json('data'))->pluck('type')->unique();
+        /** @var array<int, array<string, mixed>> $searchData2 */
+        $searchData2 = $response->json('data') ?? [];
+        $types = collect($searchData2)->pluck('type')->unique();
 
         $this->assertEquals(['contact'], $types->values()->all());
     }
@@ -158,14 +162,18 @@ class CrmSearchTest extends TestCase
         $response = $this->getJson('/api/v1/crm/search?q=alpha');
 
         $response->assertOk();
-        $names = collect($response->json('data'))->pluck('name');
+        /** @var array<int, array<string, mixed>> $searchData */
+        $searchData = $response->json('data') ?? [];
+        $names = collect($searchData)->pluck('name');
 
         $this->assertNotContains('Transports Alpha Maroc', $names);
 
         $response2 = $this->getJson('/api/v1/crm/search?q=jean&type=contact');
 
         $response2->assertOk();
-        $lastNames = collect($response2->json('data'))->pluck('last_name');
+        /** @var array<int, array<string, mixed>> $searchData2 */
+        $searchData2 = $response2->json('data') ?? [];
+        $lastNames = collect($searchData2)->pluck('last_name');
 
         $this->assertNotContains('Martin', $lastNames);
         $this->assertContains('Dupont', $lastNames);
@@ -178,7 +186,9 @@ class CrmSearchTest extends TestCase
         $response = $this->getJson('/api/v1/crm/search?q=transports');
 
         $response->assertOk();
-        $names = collect($response->json('data'))->pluck('name');
+        /** @var array<int, array<string, mixed>> $searchData */
+        $searchData = $response->json('data') ?? [];
+        $names = collect($searchData)->pluck('name');
 
         $this->assertContains('Transports Alpha Maroc', $names);
         $this->assertNotContains('Transports Alpha SARL', $names);
@@ -192,7 +202,7 @@ class CrmSearchTest extends TestCase
 
         $response->assertOk();
         $this->assertCount(1, $response->json('data'));
-        $this->assertJsonPath('data.0.name', 'Beta Logistique');
+        $response->assertJsonPath('data.0.name', 'Beta Logistique');
 
         $this->getJson('/api/v1/crm/search?q=transports&status=churned')
             ->assertStatus(422);

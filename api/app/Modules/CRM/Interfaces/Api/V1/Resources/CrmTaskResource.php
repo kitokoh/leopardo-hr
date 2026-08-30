@@ -9,6 +9,18 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Issue #5720 — Ressource tâche CRM (assignee + account eager-loadés).
+ *
+ * @property int $id
+ * @property string $title
+ * @property string|null $description
+ * @property string $status
+ * @property string|null $priority
+ * @property \Illuminate\Support\Carbon|null $due_at
+ * @property \App\Core\Auth\Domain\Models\Employee|null $assignee
+ * @property \App\Modules\CRM\Domain\Models\CrmAccount|null $account
+ * @property int|null $contact_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class CrmTaskResource extends JsonResource
 {

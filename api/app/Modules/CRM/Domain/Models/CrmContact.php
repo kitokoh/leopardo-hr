@@ -24,6 +24,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $email
  * @property string|null $phone
  * @property string|null $title
+ * @property string|null $job_title
+ * @property string|null $owner_id
+ * @property \App\Core\Auth\Domain\Models\Employee|null $owner
  * @property bool $is_primary
  * @property string|null $notes
  * @property string|null $archived_at

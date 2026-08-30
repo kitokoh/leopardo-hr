@@ -82,6 +82,7 @@ class CrmHardeningNegativeTest extends TestCase
         return $employee;
     }
 
+    /** @param array<string, mixed> $overrides */
     private function account(Company $company, array $overrides = []): CrmAccount
     {
         /** @var CrmAccount $account */
@@ -94,6 +95,7 @@ class CrmHardeningNegativeTest extends TestCase
         return $account;
     }
 
+    /** @param array<string, mixed> $overrides */
     private function contact(Company $company, array $overrides = []): CrmContact
     {
         /** @var CrmContact $contact */
@@ -108,6 +110,7 @@ class CrmHardeningNegativeTest extends TestCase
         return $contact;
     }
 
+    /** @param array<string, mixed> $overrides */
     private function lead(Company $company, array $overrides = []): CrmLead
     {
         /** @var CrmLead $lead */
@@ -162,8 +165,8 @@ class CrmHardeningNegativeTest extends TestCase
         // Tentative d'injection via filtre de recherche → jamais de 500
         // (la recherche plein texte est libre, la propriété de sécurité est
         // l'absence d'erreur SQL / d'exécution).
-        $this->getJson("/api/v1/crm/accounts?search=' OR '1'='1")->assertNotStatus(500);
-        $this->getJson('/api/v1/crm/accounts?search=1;DROP TABLE crm_accounts;--')->assertNotStatus(500);
+        $this->assertNotSame(500, $this->getJson("/api/v1/crm/accounts?search=' OR '1'='1")->getStatusCode());
+        $this->assertNotSame(500, $this->getJson('/api/v1/crm/accounts?search=1;DROP TABLE crm_accounts;--')->getStatusCode());
 
         // Statut hors whitelist → 422 (Rule\In, ADR-CRM-005).
         $this->getJson('/api/v1/crm/accounts?status=active;DROP TABLE crm_accounts')->assertStatus(422);
@@ -222,7 +225,7 @@ class CrmHardeningNegativeTest extends TestCase
         $response->assertStatus(201);
         $this->assertStringNotContainsString(
             'pii-leak-test@acme.dz',
-            json_encode($response->json('data.preview.errors') ?? []),
+            (string) json_encode($response->json('data.preview.errors') ?? []),
             'Les erreurs par ligne ne doivent jamais contenir de PII.'
         );
     }

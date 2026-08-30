@@ -122,11 +122,13 @@ class CrmDashboardTest extends TestCase
         $this->assertSame(0, $data['totals']['lost_count']);
 
         // Par stage : Prospection 1 / 10 000, Négociation 1 / 25 000.
-        $byStage = collect($data['by_stage'])->keyBy('stage_name');
-        $this->assertSame(1, $byStage['Prospection']['count']);
-        $this->assertSame(10000.0, $byStage['Prospection']['value']);
-        $this->assertSame(1, $byStage['Négociation']['count']);
-        $this->assertSame(25000.0, $byStage['Négociation']['value']);
+        /** @var array<int, array<string, mixed>> $byStageRaw */
+        $byStageRaw = $data['by_stage'] ?? [];
+        $byStage = collect($byStageRaw)->keyBy('stage_name');
+        $this->assertSame(1, $byStage['Prospection']['count'] ?? null);
+        $this->assertSame(10000.0, $byStage['Prospection']['value'] ?? null);
+        $this->assertSame(1, $byStage['Négociation']['count'] ?? null);
+        $this->assertSame(25000.0, $byStage['Négociation']['value'] ?? null);
 
         $this->assertSame(1, $data['overdue_tasks']);
     }
@@ -188,7 +190,9 @@ class CrmDashboardTest extends TestCase
         $response = $this->getJson('/api/v1/crm/dashboard/pipeline');
 
         $response->assertOk();
-        $owners = collect($response->json('data.owners_without_open_opportunities'))->pluck('owner_id');
+        /** @var array<int, array<string, mixed>> $ownersRaw */
+        $ownersRaw = $response->json('data.owners_without_open_opportunities') ?? [];
+        $owners = collect($ownersRaw)->pluck('owner_id');
 
         $this->assertContains($owner->id, $owners);
     }

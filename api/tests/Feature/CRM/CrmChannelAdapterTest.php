@@ -35,7 +35,8 @@ class CrmChannelAdapterTest extends TestCase
         parent::setUp();
 
         /** @var \App\Core\Tenant\Domain\Models\Company $company */
-        $this->company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $this->company = $company;
     }
 
     protected function tearDown(): void
@@ -196,8 +197,10 @@ class CrmChannelAdapterTest extends TestCase
     {
         Sanctum::actingAs($this->manager());
 
+        /** @var \App\Core\Tenant\Domain\Models\Company $otherCompany */
+        $otherCompany = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
         $channel = CrmChannel::query()->create([
-            'company_id' => Company::factory()->create(['country' => 'MA', 'currency' => 'MAD'])->id,
+            'company_id' => $otherCompany->id,
             'type' => 'sms',
             'provider' => 'sms_audit',
             'status' => 'active',
