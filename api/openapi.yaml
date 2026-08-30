@@ -18336,8 +18336,8 @@ paths:
                 plan:
                   type: string
                   enum:
-                  - starter
-                  - business
+                  - pilot
+                  - operations
                   - enterprise
                 payment_method:
                   type: string
@@ -18436,8 +18436,8 @@ paths:
                 plan:
                   type: string
                   enum:
-                  - starter
-                  - business
+                  - pilot
+                  - operations
                   - enterprise
                 success_url:
                   type: string
@@ -33462,29 +33462,40 @@ components:
           type: string
           enum:
           - free
-          - starter
-          - pro
+          - pilot
+          - operations
           - enterprise
-        billing_cycle:
-          type: string
-          enum:
-          - monthly
-          - yearly
         status:
           type: string
           enum:
+          - trial
           - active
-          - cancelled
           - past_due
-          - trialing
+          - cancelled
+          - expired
+        payment_method:
+          type: string
+          enum:
+          - stripe
+          - chargily
+          - bank_transfer
+          - manual
+          nullable: true
         current_period_start:
           type: string
-          format: date
+          format: date-time
+          nullable: true
         current_period_end:
           type: string
-          format: date
-        employee_limit:
-          type: integer
+          format: date-time
+          nullable: true
+        cancelled_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
           nullable: true
     Invoice:
       type: object
@@ -33493,27 +33504,49 @@ components:
           type: integer
         company_id:
           type: integer
+        subscription_id:
+          type: integer
+          nullable: true
+        number:
+          type: string
+          nullable: true
         amount:
           type: number
         currency:
           type: string
+        tax_amount:
+          type: number
+        total:
+          type: number
         status:
           type: string
           enum:
           - draft
           - sent
+          - pending
           - paid
           - overdue
           - cancelled
-        issued_at:
-          type: string
-          format: date
-        due_at:
+        due_date:
           type: string
           format: date
         paid_at:
           type: string
-          format: date
+          format: date-time
+          nullable: true
+        payment_method:
+          type: string
+          nullable: true
+        pdf_path:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
           nullable: true
     Loan:
       type: object
