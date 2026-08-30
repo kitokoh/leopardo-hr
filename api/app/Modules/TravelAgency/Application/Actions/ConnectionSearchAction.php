@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Application\Actions;
 
+use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use Carbon\CarbonImmutable;
@@ -40,7 +41,14 @@ final class ConnectionSearchAction
 
         foreach ($firstLegs as $first) {
             foreach ($secondLegs as $second) {
-                if ($first->route->destination_city_id !== $second->route->origin_city_id) {
+                $routeA = $first->route;
+                $routeB = $second->route;
+
+                if (! $routeA instanceof TravelRoute || ! $routeB instanceof TravelRoute) {
+                    continue;
+                }
+
+                if ($routeA->destination_city_id !== $routeB->origin_city_id) {
                     continue;
                 }
 
@@ -72,6 +80,8 @@ final class ConnectionSearchAction
     /**
      * Trajets publiés du jour : départ depuis `cityId` (isOrigin) ou arrivée
      * à `cityId` (destination).
+     *
+     * @return Collection<int, TravelTrip>
      */
     private function legs(int $cityId, string $date, bool $isOrigin): Collection
     {
