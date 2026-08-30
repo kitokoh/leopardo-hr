@@ -2208,6 +2208,15 @@ paths:
         schema:
           type: string
           format: date
+      - name: flexible_days
+        in: query
+        required: false
+        description: Recherche flexible — fenêtre ± N jours autour de departure_date (0..7, défaut 0)
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 7
+          default: 0
       - name: date_from
         in: query
         required: false
