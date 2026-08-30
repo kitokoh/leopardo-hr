@@ -19,6 +19,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelPassengerResource
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTripResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -194,6 +195,20 @@ class TravelTripController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
+        // TRAVEL-804 (#6095) — recherche flexible : fenêtre de dates ± N jours
+        // autour de `departure_date` (bornée 0..7), résultats triés par prix
+        // croissant puis date (le jour le moins cher d'abord — le groupement
+        // visuel par date reste côté client).
+        $flexibleDays = max(0, min(7, (int) $request->query('flexible_days', 0)));
+        $departureDate = $request->query('departure_date') ? (string) $request->query('departure_date') : null;
+        $flexibleWindow = null;
+
+        if ($departureDate !== null && $flexibleDays > 0) {
+            $from = Carbon::parse($departureDate)->subDays($flexibleDays)->toDateString();
+            $to = Carbon::parse($departureDate)->addDays($flexibleDays)->toDateString();
+            $flexibleWindow = ['from' => $from, 'to' => $to];
+        }
+
         $trips = TravelTrip::query()
             ->with(['prices', 'route.stops'])
             ->when($request->query('origin_city_id'), function ($q, $cityId) {
@@ -202,7 +217,10 @@ class TravelTripController extends Controller
             ->when($request->query('destination_city_id'), function ($q, $cityId) {
                 $q->whereHas('route', fn ($route) => $route->where('destination_city_id', $cityId));
             })
-            ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', (string) $date))
+            ->when($departureDate !== null && $flexibleWindow !== null, function ($q) use ($flexibleWindow) {
+                $q->whereBetween('departure_date', [$flexibleWindow['from'], $flexibleWindow['to']]);
+            })
+            ->when($departureDate !== null && $flexibleWindow === null, fn ($q) => $q->whereDate('departure_date', $departureDate))
             ->when($request->query('date_from'), fn ($q, $date) => $q->whereDate('departure_date', '>=', (string) $date))
             ->when($request->query('date_to'), fn ($q, $date) => $q->whereDate('departure_date', '<=', (string) $date))
             ->when($request->query('means_of_transport'), fn ($q, $means) => $q->where('means_of_transport', $means))
@@ -213,9 +231,27 @@ class TravelTripController extends Controller
             ->when($request->query('price_max'), function ($q, $max) {
                 $q->whereHas('prices', fn ($price) => $price->where('adult_price_minor', '<=', $max));
             })
+            ->when($flexibleDays > 0, function ($q) {
+                // Tri par prix (le moins cher d'abord) puis par date : le
+                // « meilleur jour » apparaît en tête des résultats flexibles.
+                $q->orderBy(
+                    TravelTripPrice::query()
+                        ->selectRaw('MIN(adult_price_minor)')
+                        ->whereColumn('trip_id', 'travel_trips.id'),
+                    'asc'
+                );
+            })
             ->orderBy('departure_date')
             ->orderBy('departure_time')
             ->paginate($perPage);
+
+        if ($flexibleWindow !== null) {
+            $trips->appends([
+                'flexible_days' => $flexibleDays,
+                'date_from' => $flexibleWindow['from'],
+                'date_to' => $flexibleWindow['to'],
+            ]);
+        }
 
         return TravelTripResource::collection($trips)->response();
     }
