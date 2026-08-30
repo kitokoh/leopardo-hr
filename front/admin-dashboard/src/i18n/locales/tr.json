@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-25T00:00:00Z",
+  "_updated_at": "2026-08-30T12:00:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -171,7 +171,8 @@
     "payroll": "Bordro",
     "cabinet": "Belge kasasi",
     "notifications": "Bildirimler",
-    "evaluations": "Degerlendirmeler"
+    "evaluations": "Degerlendirmeler",
+    "restaurant": "Mutfak ekranı"
   },
   "emails": {
     "invitation": {
@@ -4228,5 +4229,25 @@
   "settingsQrRejected": "QR reddedildi: {error}",
   "settingsBiometricSubmitFailed": "Gönderim başarısız: {error}",
   "settingsNotificationsSaveFailed": "Bildirim tercihleri kaydedilemedi: {error}",
-  "companydetailPlanWithPrice": "{planName} — {price}"
+  "companydetailPlanWithPrice": "{planName} — {price}",
+  "restaurant": {
+    "kitchenTitle": "Mutfak ekranı",
+    "kitchenSubtitle": "Gerçek zamanlı sipariş kuyruğu — hazırlık ve teslim",
+    "branch": "Şube",
+    "branchAll": "Tüm şubeler",
+    "inPreparation": "Hazırlanıyor",
+    "ready": "Hazır",
+    "empty": "Bekleyen sipariş yok. Kuyruk boş.",
+    "start": "Başlat",
+    "markReady": "Hazır",
+    "orderRef": "Sipariş",
+    "table": "Masa",
+    "covers": "kişi",
+    "takeaway": "Paket servis",
+    "delivery": "Teslimat",
+    "dineIn": "Salon",
+    "loadError": "Mutfak kuyruğu yüklenemedi.",
+    "actionError": "İşlem başarısız, tekrar deneyin.",
+    "loading": "Mutfak kuyruğu yükleniyor…"
+  }
 }
