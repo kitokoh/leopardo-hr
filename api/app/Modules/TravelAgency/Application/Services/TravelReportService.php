@@ -180,6 +180,8 @@ final class TravelReportService
         $payments = TravelPayment::query()
             ->where('company_id', $companyId)
             ->whereBetween('created_at', [$from, $to])
+            ->when($tripId !== null, fn ($q) => $q->whereHas('booking', fn ($b) => $b->where('trip_id', $tripId)))
+            ->when($source !== null, fn ($q) => $q->whereHas('booking', fn ($b) => $b->where('booking_source', $source)))
             ->get(['booking_id', 'amount_minor', 'status']);
 
         $confirmed = 0;

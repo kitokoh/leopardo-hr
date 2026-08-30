@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\UniqueConstraintViolationException;
 use App\Modules\TravelAgency\Domain\Models\TravelExportAsset;
 use App\Modules\TravelAgency\Infrastructure\Jobs\ExportTravelReportJob;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelExportRequest;
@@ -31,19 +32,29 @@ class TravelExportController extends Controller
 
         $data = $request->validated();
 
-        $asset = TravelExportAsset::query()->firstOrCreate(
-            [
-                'company_id' => $actor->company_id,
-                'idempotency_key' => (string) $data['idempotency_key'],
-            ],
-            [
-                'report_type' => (string) $data['report_type'],
-                'from_at' => $data['from'],
-                'to_at' => $data['to'],
-                'status' => TravelExportAsset::STATUS_PENDING,
-                'created_by_user_id' => $actor->id,
-            ],
-        );
+        try {
+            $asset = TravelExportAsset::query()->firstOrCreate(
+                [
+                    'company_id' => $actor->company_id,
+                    'idempotency_key' => (string) $data['idempotency_key'],
+                ],
+                [
+                    'report_type' => (string) $data['report_type'],
+                    'from_at' => $data['from'],
+                    'to_at' => $data['to'],
+                    'status' => TravelExportAsset::STATUS_PENDING,
+                    'created_by_user_id' => $actor->id,
+                ],
+            );
+        } catch (UniqueConstraintViolationException) {
+            // Course entre deux demandes identiques : le gagnant a créé la
+            // ligne — on rejoue sur l'existante (idempotence garantie).
+            /** @var TravelExportAsset $asset */
+            $asset = TravelExportAsset::query()
+                ->where('company_id', $actor->company_id)
+                ->where('idempotency_key', (string) $data['idempotency_key'])
+                ->firstOrFail();
+        }
 
         if ($asset->status === TravelExportAsset::STATUS_FAILED) {
             $asset->forceFill(['status' => TravelExportAsset::STATUS_PENDING])->save();
@@ -51,6 +62,10 @@ class TravelExportController extends Controller
 
         if ($asset->wasRecentlyCreated || $asset->status === TravelExportAsset::STATUS_PENDING) {
             ExportTravelReportJob::dispatch($asset->id);
+
+            // Queue sync (tests) : le job met à jour la ligne en base — on
+            // recharge pour refléter le statut réel (generated/failed).
+            $asset->refresh();
         }
 
         return (new TravelExportAssetResource($asset))->response()->setStatusCode(202);
