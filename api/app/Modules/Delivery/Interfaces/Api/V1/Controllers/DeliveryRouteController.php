@@ -11,6 +11,7 @@ use App\Modules\Delivery\Interfaces\Api\V1\Requests\DeliveryRouteStoreRequest;
 use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryRouteResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -29,13 +30,13 @@ final class DeliveryRouteController
     public function store(DeliveryRouteStoreRequest $request): JsonResponse
     {
         $validated = $request->validated();
-        $routeDate = \Illuminate\Support\Carbon::parse($validated['route_date']);
+        $routeDate = Carbon::parse($validated['route_date']);
 
         $route = $this->routes->create(
             companyId: $this->companyId($request),
             routeDate: $routeDate,
             zone: $validated['zone'] ?? null,
-            deliveryIds: array_map('intval', $validated['delivery_ids']),
+            deliveryIds: array_values(array_map('intval', $validated['delivery_ids'])),
         );
 
         return (new DeliveryRouteResource($route))

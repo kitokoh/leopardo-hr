@@ -6,6 +6,7 @@ namespace App\Modules\Delivery\Application\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
+use App\Modules\Delivery\Application\Services\DeliveryRouteService;
 use App\Modules\Delivery\Domain\Models\DeliveryDeadLetter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -60,7 +61,7 @@ final class CloseDeliveryRouteJob implements ShouldQueue, TenantScopedJob
         );
     }
 
-    public function tenantCompanyId(): ?string
+    public function tenantCompanyId(): string
     {
         return $this->companyId;
     }
@@ -73,12 +74,12 @@ final class CloseDeliveryRouteJob implements ShouldQueue, TenantScopedJob
         return [new EnsureTenantContext];
     }
 
-    public function handle(\App\Modules\Delivery\Application\Services\DeliveryRouteService $routes): void
+    public function handle(DeliveryRouteService $routes): void
     {
         $route = $routes->close($this->routeId, $this->companyId);
 
         Log::info('delivery.route.closed', [
-            'job' => static::class,
+            'job' => self::class,
             'job_id' => (string) $this->job?->getJobId(),
             'company_id' => $this->companyId,
             'route_id' => $this->routeId,
@@ -89,7 +90,7 @@ final class CloseDeliveryRouteJob implements ShouldQueue, TenantScopedJob
     public function failed(Throwable $exception): void
     {
         Log::error('delivery.job.failed', [
-            'job' => static::class,
+            'job' => self::class,
             'job_id' => (string) ($this->job?->getJobId() ?? ''),
             'company_id' => $this->companyId,
             'route_id' => $this->routeId,
@@ -98,7 +99,7 @@ final class CloseDeliveryRouteJob implements ShouldQueue, TenantScopedJob
 
         DeliveryDeadLetter::query()->withoutGlobalScopes()->create([
             'company_id' => $this->companyId,
-            'job_class' => static::class,
+            'job_class' => self::class,
             'payload' => ['route_id' => $this->routeId, 'company_id' => $this->companyId],
             'queue' => $this->queue ?? 'delivery',
             'error' => $exception->getMessage(),

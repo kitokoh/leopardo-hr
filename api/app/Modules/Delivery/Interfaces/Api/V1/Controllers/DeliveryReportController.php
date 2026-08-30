@@ -50,6 +50,11 @@ final class DeliveryReportController
 
         $stream = function () use ($deliveries): void {
             $handle = fopen('php://output', 'wb');
+
+            if ($handle === false) {
+                abort(500, 'Unable to open export stream');
+            }
+
             fputcsv($handle, [
                 'reference', 'source', 'type', 'status', 'cod_amount_minor',
                 'dropoff_address', 'created_at', 'delivered_at',

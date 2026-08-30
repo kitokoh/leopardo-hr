@@ -54,7 +54,7 @@ final class PublicDeliveryTrackingController
                     ->get()
                     ->map(fn ($event): array => [
                         'type' => $event->type,
-                        'event_at' => $event->event_at?->toIso8601String(),
+                        'event_at' => $event->event_at->toIso8601String(),
                     ])
                     ->values()
                     ->all(),

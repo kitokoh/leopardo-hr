@@ -8,6 +8,7 @@ use App\Modules\Delivery\Application\Jobs\CloseDeliveryRouteJob;
 use App\Modules\Delivery\Application\Jobs\ExportDeliveryReportJob;
 use App\Modules\Delivery\Domain\Models\DeliveryDeadLetter;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -42,6 +43,7 @@ final class ReplayDeliveryDlqCommand extends Command
 
         $query->orderBy('id')->get()->each(function (DeliveryDeadLetter $letter) use (&$replayed, &$failed): void {
             try {
+                /** @var ShouldQueue|null $job */
                 $job = $this->rebuild($letter);
 
                 if ($job === null) {
@@ -51,7 +53,7 @@ final class ReplayDeliveryDlqCommand extends Command
                     return;
                 }
 
-                dispatch($job->onQueue($letter->queue));
+                dispatch($job)->onQueue($letter->queue);
 
                 $letter->markReplayed();
                 $replayed++;

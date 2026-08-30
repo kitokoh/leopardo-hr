@@ -159,7 +159,7 @@ class DeliveryRiderApiTest extends TestCase
 
     public function test_stop_status_replay_is_idempotent(): void
     {
-        $route = $this->createRouteFor(11);
+        $route = $this->createRouteFor(11, deliveryStatus: 'out_for_delivery');
         $stopId = (int) $route->stops()->first()->id;
 
         Sanctum::actingAs($this->rider(11));

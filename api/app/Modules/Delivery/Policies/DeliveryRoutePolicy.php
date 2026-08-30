@@ -32,7 +32,7 @@ final class DeliveryRoutePolicy
             return false;
         }
 
-        if ($this->canDispatch($actor)) {
+        if ($this->canDispatch($actor) || $this->canRead($actor)) {
             return true;
         }
 
@@ -40,6 +40,13 @@ final class DeliveryRoutePolicy
         return $actor->isEmployee()
             && $actor->status === 'active'
             && $route->driver_id === $actor->id;
+    }
+
+    /** Managers en lecture (principal/manager/rh) — parité delivery.manager. */
+    private function canRead(Employee $actor): bool
+    {
+        return $actor->isManager()
+            && in_array($actor->manager_role, ['principal', 'manager', 'rh'], true);
     }
 
     public function create(Employee $actor): bool
