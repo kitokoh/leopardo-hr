@@ -38,7 +38,6 @@ return [
     'TOO_MANY_PENDING_REQUESTS' => 'Cok fazla bekleyen talep.',
     'SHARE_EXPIRED' => 'Bu paylasim baglantisinin suresi doldu.',
     'SOLUTION_NOT_FOUND' => 'Bilinmeyen çözüm.',
-    'SOLUTION_MISSING_DEPENDENCY' => 'Bu çözüm için gereken modüller aktif değil.',
     'SOLUTION_MISSING_DEPENDENCY' => 'Bu çözüm için gerekli modüller etkin değil.',
     'FUEL_SOLUTION_INACTIVE' => 'FuelStation çözümü bu müşteri için etkin değil.',
     'FUEL_READING_FUTURE' => 'Okuma gelecekte bir tarihte.',
