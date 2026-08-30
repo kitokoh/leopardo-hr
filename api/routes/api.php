@@ -152,6 +152,9 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/public/travel/shop/trips/{travelTrip}', [TravelPublicShopController::class, 'show']);
         Route::post('/public/travel/shop/bookings', [TravelPublicShopController::class, 'storeBooking']);
         Route::get('/public/travel/shop/bookings/{reference}', [TravelPublicShopController::class, 'track']);
+        // TRAVEL-1002 (#6115) — tunnel complet : paiement en ligne + e-billet.
+        Route::post('/public/travel/payments/initiate', [TravelPublicShopController::class, 'initiatePayment']);
+        Route::get('/public/travel/tickets/{ticket}/pdf', [TravelPublicShopController::class, 'ticketPdf']);
     });
 
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {

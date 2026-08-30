@@ -8,6 +8,13 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\CreateBookingAction;
 use App\Modules\TravelAgency\Domain\Enums\BookingSource;
+use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
+use App\Modules\TravelAgency\Domain\Enums\TicketStatus;
+use App\Modules\TravelAgency\Domain\Models\TravelPayment;
+use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelTicketPdfGenerator;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelTicketPdfStorage;
+use Illuminate\Support\Facades\DB;
 use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
 use App\Modules\TravelAgency\Domain\Enums\TripStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
@@ -135,6 +142,113 @@ class TravelPublicShopController extends Controller
                     'departure_time' => $booking->trip->departure_time,
                 ] : null,
                 'passenger_count' => $booking->passenger_count,
+            ],
+        ]);
+    }
+
+    // ── Paiement public & e-billet (TRAVEL-1002/#6115) ──────────────────────
+
+    /**
+     * Initiation de paiement EN LIGNE (source `online`, jeton boutique).
+     * Réutilise le contrat de passerelle existant (TRAVEL-408) ; le callback
+     * de confirmation reste public et signé HMAC (TRAVEL-409).
+     */
+    public function initiatePayment(Request $request, PaymentGatewayRegistry $gateways): JsonResponse
+    {
+        $data = $request->validate([
+            'booking_reference' => ['required', 'string', 'max:40'],
+            'provider_code' => ['required', 'string', 'in:cash,pvit,momo,card'],
+            'idempotency_key' => ['required', 'string', 'max:255'],
+        ]);
+
+        $booking = TravelBooking::query()
+            ->where('reference', $data['booking_reference'])
+            ->first();
+
+        if (! $booking instanceof TravelBooking || $booking->booking_source->value !== 'online') {
+            abort(404, 'Réservation en ligne introuvable.');
+        }
+
+        $existing = TravelPayment::query()
+            ->where('booking_id', $booking->id)
+            ->where('provider_code', $data['provider_code'])
+            ->where('idempotency_key', $data['idempotency_key'])
+            ->first();
+
+        if ($existing instanceof TravelPayment) {
+            return response()->json([
+                'data' => [
+                    'reference' => $existing->reference,
+                    'provider_reference' => $existing->provider_reference,
+                    'status' => $existing->status->value,
+                ],
+            ]);
+        }
+
+        $gateway = $gateways->get($data['provider_code']);
+
+        $result = $gateway->initiate([
+            'booking_reference' => $booking->reference,
+            'amount_minor' => $booking->total_amount_minor,
+            'currency' => $booking->currency,
+            'idempotency_key' => $data['idempotency_key'],
+        ]);
+
+        $payment = DB::transaction(fn (): TravelPayment => TravelPayment::query()->create([
+            'booking_id' => $booking->id,
+            'provider_code' => $data['provider_code'],
+            'amount_minor' => $booking->total_amount_minor,
+            'currency' => $booking->currency,
+            'status' => PaymentStatus::PENDING,
+            'provider_reference' => $result['provider_reference'] ?? null,
+            'idempotency_key' => $data['idempotency_key'],
+        ]));
+
+        return response()->json([
+            'data' => [
+                'reference' => $payment->reference,
+                'provider_reference' => $payment->provider_reference,
+                'status' => $payment->status->value,
+            ],
+        ])->setStatusCode(201);
+    }
+
+    /**
+     * E-billet public : accès au PDF par code de validation (jamais par
+     * identité) — lien signé temporaire via le stockage existant.
+     */
+    public function ticketPdf(Request $request, TravelTicket $ticket): JsonResponse
+    {
+        // Binding implicite pré-middleware → contrôle explicite du tenant.
+        if ($ticket->company_id !== currentCompany()->id) {
+            abort(404);
+        }
+
+        if ($ticket->status === TicketStatus::VOID) {
+            abort(410, 'Ce billet a été révoqué.');
+        }
+
+        $code = (string) $request->query('code', '');
+
+        if ($code === '' || ! $ticket->validationCodeMatches($code)) {
+            abort(403, 'Code de validation invalide.');
+        }
+
+        $storage = app(TravelTicketPdfStorage::class);
+
+        if ($ticket->pdf_asset_id === null) {
+            $pdf = app(TravelTicketPdfGenerator::class)->generate($ticket);
+            $path = $storage->store($ticket, $pdf);
+            $ticket->forceFill(['pdf_asset_id' => crc32($path)])->save();
+        }
+
+        $path = TravelTicketPdfStorage::PREFIX.'/'.$ticket->company_id.'/'.$ticket->ticket_number.'.pdf';
+
+        return response()->json([
+            'data' => [
+                'ticket_number' => $ticket->ticket_number,
+                'pdf_url' => $storage->signedUrl($path),
+                'expires_in_minutes' => 30,
             ],
         ]);
     }
