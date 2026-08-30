@@ -8,6 +8,7 @@ use App\Core\Auth\Infrastructure\Services\SensitiveDataEncryptor;
 use App\Modules\TravelAgency\Domain\Enums\AgeCategory;
 use App\Modules\TravelAgency\Domain\Enums\DocumentType;
 use App\Shared\Traits\BelongsToCompany;
+use Database\Factories\TravelPassengerFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,7 +28,7 @@ class TravelPassenger extends Model
 {
     use BelongsToCompany;
 
-    /** @use HasFactory<Database\Factories\TravelPassengerFactory> */
+    /** @use HasFactory<TravelPassengerFactory> */
     use HasFactory;
 
     protected $fillable = [

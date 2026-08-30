@@ -26,10 +26,10 @@ class TravelCarrierResource extends JsonResource
             'id' => $this->id,
             'code' => $this->code,
             'name' => $this->name,
-            'type' => $this->type?->value,
+            'type' => $this->type->value,
             'contact_phone' => $this->contact_phone,
             'logo_asset_id' => $this->logo_asset_id,
-            'status' => $this->status?->value,
+            'status' => $this->status->value,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Domain\Models;
 use App\Modules\TravelAgency\Domain\Enums\PaymentProvider;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
 use App\Shared\Traits\BelongsToCompany;
+use Database\Factories\TravelPaymentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,7 +24,7 @@ class TravelPayment extends Model
 {
     use BelongsToCompany;
 
-    /** @use HasFactory<Database\Factories\TravelPaymentFactory> */
+    /** @use HasFactory<TravelPaymentFactory> */
     use HasFactory;
 
     protected $fillable = [
