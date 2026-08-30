@@ -102,6 +102,7 @@ class Company extends Model
         'muhasebe',
         'leo_ai',
         'fuel_station',
+        'edumanager',
     ];
 
     /**
