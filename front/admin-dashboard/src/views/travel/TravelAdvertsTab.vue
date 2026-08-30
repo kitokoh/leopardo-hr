@@ -35,8 +35,8 @@
       @saved="loadReferenceLookups"
     />
 
-    <!-- Annonces : soumission + annonces visibles (cycle complet : pay/validate/reject
-         via endpoint admin dédié — #6428) -->
+    <!-- Annonces : soumission + cycle de vie complet (mode gestion — l'index
+         renvoie tous les statuts pour les rôles moderateur, #6428) -->
     <div v-else class="space-y-4">
       <div class="flex items-center justify-between gap-4">
         <div>
@@ -44,7 +44,7 @@
             {{ t('travel.adverts.title', 'Annonces payantes') }}
           </h2>
           <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
-            {{ t('travel.adverts.subtitle', 'Soumettre une annonce et suivre les annonces visibles.') }}
+            {{ t('travel.adverts.subtitle', 'Soumettre, encaisser, valider/rejeter et renouveler les annonces.') }}
           </p>
         </div>
         <button class="btn-primary" type="button" @click="openCreate">
@@ -62,11 +62,45 @@
         :search-placeholder="t('travel.search.advert', 'Rechercher une annonce…')"
         :caption="t('travel.adverts.title', 'Annonces payantes')"
       >
+        <template #cell-status="{ value }">
+          <StatusBadge :status="value" :map="advertStatusMap" />
+        </template>
         <template #cell-price_minor="{ row, value }">
           {{ formatMoney(value, row.currency || 'XAF') }}
         </template>
         <template #row-actions="{ row }">
           <button
+            v-if="['submitted', 'draft'].includes(row.status)"
+            class="rounded-md px-2 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+            type="button"
+            :aria-label="t('travel.adverts.action.pay', 'Encaisser')"
+            :title="t('travel.adverts.action.pay', 'Encaisser')"
+            @click="pay(row)"
+          >
+            {{ t('travel.adverts.action.pay', 'Encaisser') }}
+          </button>
+          <button
+            v-if="row.status === 'paid'"
+            class="rounded-md px-2 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+            type="button"
+            :aria-label="t('travel.adverts.action.validate', 'Valider')"
+            :title="t('travel.adverts.action.validate', 'Valider')"
+            @click="validate(row)"
+          >
+            {{ t('travel.adverts.action.validate', 'Valider') }}
+          </button>
+          <button
+            v-if="['submitted', 'paid', 'validated'].includes(row.status)"
+            class="rounded-md px-2 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-300"
+            type="button"
+            :aria-label="t('travel.adverts.action.reject', 'Rejeter')"
+            :title="t('travel.adverts.action.reject', 'Rejeter')"
+            @click="openReject(row)"
+          >
+            {{ t('travel.adverts.action.reject', 'Rejeter') }}
+          </button>
+          <button
+            v-if="['validated', 'expired'].includes(row.status)"
             class="rounded-md px-2 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
             type="button"
             :aria-label="t('travel.adverts.action.renew', 'Renouveler')"
@@ -78,6 +112,50 @@
         </template>
       </DataTable>
     </div>
+
+    <!-- Rejet avec motif obligatoire (TRAVEL-908/#6111) -->
+    <TravelModal
+      :open="rejectOpen"
+      :title="t('travel.adverts.rejectTitle', 'Rejeter l’annonce')"
+      @close="closeReject"
+    >
+      <form class="grid grid-cols-1 gap-4" @submit.prevent="confirmReject">
+        <p class="text-sm text-slate-600 dark:text-slate-300">
+          {{ t('travel.adverts.rejectTarget', 'Annonce') }} :
+          <strong>{{ rejectRow?.title }}</strong>
+        </p>
+        <FormField
+          :id="'travel-advert-reject-reason'"
+          :label="t('travel.adverts.field.rejectReason', 'Motif du rejet')"
+          :error="rejectErrors.reason"
+          required
+        >
+          <template #default="{ id, ariaInvalid, describedBy }">
+            <textarea
+              :id="id"
+              v-model.trim="rejectForm.reason"
+              class="form-input"
+              rows="3"
+              required
+              maxlength="500"
+              :aria-invalid="ariaInvalid"
+              :aria-describedby="describedBy"
+            ></textarea>
+          </template>
+        </FormField>
+        <div v-if="rejectError" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+          {{ rejectError }}
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" class="btn-secondary" @click="closeReject">
+            {{ $t('common.cancel', 'Annuler') }}
+          </button>
+          <button type="submit" class="btn-primary" :disabled="rejectSaving">
+            {{ rejectSaving ? $t('common.busy', 'En cours…') : t('travel.adverts.action.reject', 'Rejeter') }}
+          </button>
+        </div>
+      </form>
+    </TravelModal>
 
     <!-- Formulaire de soumission d'annonce -->
     <TravelModal
@@ -167,6 +245,7 @@ import { PlusIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import DataTable from '@/components/common/DataTable.vue'
 import FormField from '@/components/common/FormField.vue'
+import StatusBadge from '@/components/common/StatusBadge.vue'
 import TravelCrudSection from '@/components/travel/TravelCrudSection.vue'
 import TravelModal from '@/components/travel/TravelModal.vue'
 import { useToast } from 'vue-toastification'
@@ -279,9 +358,26 @@ const saving = ref(false)
 const form = ref({})
 const formErrors = ref({})
 const globalError = ref('')
+const rejectOpen = ref(false)
+const rejectRow = ref(null)
+const rejectForm = ref({ reason: '' })
+const rejectErrors = ref({})
+const rejectError = ref('')
+const rejectSaving = ref(false)
+
+const advertStatusMap = computed(() => ({
+  draft: { labelKey: 'travel.advertStatus.draft', color: 'gray' },
+  submitted: { labelKey: 'travel.advertStatus.submitted', color: 'yellow' },
+  paid: { labelKey: 'travel.advertStatus.paid', color: 'blue' },
+  validated: { labelKey: 'travel.advertStatus.validated', color: 'green' },
+  rejected: { labelKey: 'travel.advertStatus.rejected', color: 'red' },
+  expired: { labelKey: 'travel.advertStatus.expired', color: 'gray' },
+  archived: { labelKey: 'travel.advertStatus.archived', color: 'gray' }
+}))
 
 const advertColumns = computed(() => [
   { key: 'title', label: t('travel.field.title', 'Titre'), sortable: true },
+  { key: 'status', label: t('travel.field.status', 'Statut'), sortable: true },
   { key: 'price_minor', label: t('travel.adverts.field.price', 'Prix'), sortable: true },
   { key: 'expires_at', label: t('travel.adverts.field.expiresAt', 'Expire le'), sortable: true }
 ])
@@ -347,6 +443,66 @@ async function renew(row) {
     await loadAdverts()
   } catch (err) {
     toast.error(err.response?.data?.message || t('travel.error.saveFailed', "Échec de l'enregistrement."))
+  }
+}
+
+async function pay(row) {
+  try {
+    await api.post(`/travel/adverts/${row.id}/pay`, {}, { _skipAuthRedirect: true })
+    toast.success(t('travel.toast.saved', 'Enregistré.'))
+    await loadAdverts()
+  } catch (err) {
+    toast.error(err.response?.data?.message || t('travel.error.saveFailed', "Échec de l'enregistrement."))
+  }
+}
+
+async function validate(row) {
+  try {
+    await api.post(`/travel/adverts/${row.id}/validate`, {}, { _skipAuthRedirect: true })
+    toast.success(t('travel.toast.saved', 'Enregistré.'))
+    await loadAdverts()
+  } catch (err) {
+    toast.error(err.response?.data?.message || t('travel.error.saveFailed', "Échec de l'enregistrement."))
+  }
+}
+
+function openReject(row) {
+  rejectRow.value = row
+  rejectForm.value = { reason: '' }
+  rejectErrors.value = {}
+  rejectError.value = ''
+  rejectOpen.value = true
+}
+
+function closeReject() {
+  rejectOpen.value = false
+  rejectRow.value = null
+}
+
+async function confirmReject() {
+  if (!rejectRow.value) return
+  rejectSaving.value = true
+  rejectErrors.value = {}
+  rejectError.value = ''
+  try {
+    await api.post(
+      `/travel/adverts/${rejectRow.value.id}/reject`,
+      { reason: rejectForm.value.reason },
+      { _skipAuthRedirect: true }
+    )
+    toast.success(t('travel.toast.saved', 'Enregistré.'))
+    rejectOpen.value = false
+    await loadAdverts()
+  } catch (err) {
+    const data = err.response?.data || {}
+    if (data.errors) {
+      rejectErrors.value = Object.fromEntries(
+        Object.entries(data.errors).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])
+      )
+    }
+    rejectError.value = data.message || data.localized_message || t('travel.error.saveFailed', "Échec de l'enregistrement.")
+  } finally {
+    rejectSaving.value = false
   }
 }
 

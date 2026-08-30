@@ -274,9 +274,11 @@ async function loadContacts() {
 
 async function toggleConsent(row, ch) {
   try {
-    await api.patch(
-      `/travel/contacts/${row.id}`,
-      { channel: ch.key, consent: !row[`${ch.key}_consent_given`] },
+    // Contrat backend (TRAVEL-914/#6427) : POST /contacts/{id}/consent,
+    // un booléen par canal ({email_consent|sms_consent|whatsapp_consent}).
+    await api.post(
+      `/travel/contacts/${row.id}/consent`,
+      { [`${ch.key}_consent`]: !row[`${ch.key}_consent_given`] },
       { _skipAuthRedirect: true }
     )
     toast.success(t('travel.toast.saved', 'Enregistré.'))
