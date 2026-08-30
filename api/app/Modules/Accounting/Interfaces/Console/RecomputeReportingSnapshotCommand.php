@@ -46,7 +46,7 @@ final class RecomputeReportingSnapshotCommand extends Command
 
         $company = $this->resolveCompany(trim($input));
 
-        if (! $company instanceof Company) {
+        if ($company === null) {
             $this->error("Entreprise introuvable : {$input}");
 
             return self::FAILURE;
