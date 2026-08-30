@@ -69,6 +69,6 @@ class TravelPayment extends Model
      */
     public function booking(): BelongsTo
     {
-        return $this->belongsTo(TravelBooking::class);
+        return $this->belongsTo(TravelBooking::class, 'booking_id');
     }
 }

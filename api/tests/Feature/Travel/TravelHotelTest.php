@@ -9,6 +9,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelHotel;
 use App\Modules\TravelAgency\Domain\Models\TravelHotelRoom;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -47,7 +48,7 @@ class TravelHotelTest extends TestCase
     {
         $this->tenants->withinTenant($this->companyA, function (): void {
             $this->expectException(QueryException::class);
-            TravelHotel::factory()->create(['classification' => 6]);
+            DB::transaction(fn () => TravelHotel::factory()->create(['classification' => 6]));
         });
     }
 
@@ -55,7 +56,7 @@ class TravelHotelTest extends TestCase
     {
         $this->tenants->withinTenant($this->companyA, function (): void {
             $this->expectException(QueryException::class);
-            TravelHotel::factory()->create(['classification' => 0]);
+            DB::transaction(fn () => TravelHotel::factory()->create(['classification' => 0]));
         });
     }
 
@@ -77,7 +78,7 @@ class TravelHotelTest extends TestCase
             TravelHotelRoom::factory()->create(['hotel_id' => $hotel->id, 'room_number' => '101']);
 
             $this->expectException(QueryException::class);
-            TravelHotelRoom::factory()->create(['hotel_id' => $hotel->id, 'room_number' => '101']);
+            DB::transaction(fn () => TravelHotelRoom::factory()->create(['hotel_id' => $hotel->id, 'room_number' => '101']));
         });
     }
 
@@ -98,7 +99,7 @@ class TravelHotelTest extends TestCase
     {
         $this->tenants->withinTenant($this->companyA, function (): void {
             $this->expectException(QueryException::class);
-            TravelHotelRoom::factory()->create(['capacity' => 0]);
+            DB::transaction(fn () => TravelHotelRoom::factory()->create(['capacity' => 0]));
         });
     }
 }
