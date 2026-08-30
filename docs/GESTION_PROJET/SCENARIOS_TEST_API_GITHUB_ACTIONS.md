@@ -1554,3 +1554,14 @@ Deuxième tranche de l'épic 3xx : `GET|POST /travel/vehicles`, `GET|PUT|DELETE 
 - Couverture : `api/tests/Feature/Travel/TravelVehicleApiTest.php`, `TravelRouteApiTest.php`,
   `TravelTripApiTest.php`, `TravelTripPriceApiTest.php`, `TravelTripWorkflowTest.php`, `TravelTripSearchTest.php`
   (+ 135 tests Travel au total, dont correctifs d'invariants 2xx protégés par savepoint).
+
+## BC-24 TRAVEL — API réservations & billetterie (TRAVEL-312..318, 2026-08-30)
+
+Troisième tranche de l'épic 3xx : `GET|POST /travel/bookings` (+ détails), `POST /travel/bookings/{booking}/confirm|cancel|refund|issue-ticket`,
+`POST /travel/tickets/{ticket}/check-in`, `GET /travel/trips/{trip}/manifest`.
+- Scénarios à vérifier : création avec verrouillage transactionnel des sièges (2 réservations concurrentes → 1 seule obtient le siège) ;
+  idempotence (`idempotency_key` rejouée → même réservation, pas de doublon) ; total calculé côté serveur depuis les tarifs ;
+  PII jamais exposée (`has_document` booléen, jamais le n° de pièce) ; trajet non publié → 409 ; siège explicite indisponible → 409 ;
+  transition invalide → 422 ; motif obligatoire (cancel/refund) ; billets : 1 par passager, ré-émission idempotente, check-in → checked_in ;
+  manifeste trié par siège sans n° de pièce ; cross-tenant → 404.
+- Couverture : `api/tests/Feature/Travel/TravelBookingApiTest.php`, `TravelBookingWorkflowTest.php` (148 tests Travel au total).

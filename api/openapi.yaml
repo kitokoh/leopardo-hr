@@ -2601,6 +2601,341 @@ paths:
           description: Tarif ou trajet introuvable ou hors tenant
         '403':
           description: Permission travel.manage requise
+  /travel/bookings:
+    get:
+      tags:
+      - Travel
+      summary: Liste des réservations (TRAVEL-312/#6042)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [pending, confirmed, cancelled, refunded, completed]
+      - name: trip_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: reference
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste paginée des réservations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelBooking'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'une réservation guichet (TRAVEL-312/#6042)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - trip_id
+              - booking_source
+              - idempotency_key
+              - passengers
+              properties:
+                trip_id:
+                  type: integer
+                booking_source:
+                  type: string
+                  enum: [online, office, phone, partner]
+                idempotency_key:
+                  type: string
+                  maxLength: 255
+                customer_contact_id:
+                  type: integer
+                  nullable: true
+                passengers:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: object
+                    required:
+                    - full_name
+                    - age_category
+                    - class_id
+                    properties:
+                      full_name:
+                        type: string
+                        maxLength: 160
+                      birth_date:
+                        type: string
+                        format: date
+                        nullable: true
+                      document_type:
+                        type: string
+                        enum: [national_id, passport, birth_certificate, other]
+                        nullable: true
+                      document_number:
+                        type: string
+                        maxLength: 40
+                        nullable: true
+                      age_category:
+                        type: string
+                        enum: [infant, child, adult]
+                      class_id:
+                        type: integer
+                      seat_number:
+                        type: integer
+                        nullable: true
+      responses:
+        '201':
+          description: Réservation créée (pending, sièges réservés)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelBooking'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission travel.manage requise
+        '409':
+          description: Trajet non publié ou sièges indisponibles
+        '422':
+          description: Validation échouée (aucun tarif pour la classe, passagers invalides)
+  /travel/bookings/{travelBooking}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'une réservation (TRAVEL-312/#6042)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation (passagers + billets)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelBooking'
+        '404':
+          description: Réservation introuvable ou hors tenant
+  /travel/bookings/{travelBooking}/confirm:
+    post:
+      tags:
+      - Travel
+      summary: Confirmation d'une réservation (TRAVEL-313/#6043)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation confirmée (sièges vendus)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelBooking'
+        '404':
+          description: Réservation introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Transition invalide
+  /travel/bookings/{travelBooking}/cancel:
+    post:
+      tags:
+      - Travel
+      summary: Annulation d'une réservation (TRAVEL-314/#6044)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+      responses:
+        '200':
+          description: Réservation annulée (sièges libérés)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelBooking'
+        '404':
+          description: Réservation introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Motif manquant ou transition invalide
+  /travel/bookings/{travelBooking}/refund:
+    post:
+      tags:
+      - Travel
+      summary: Remboursement d'une réservation (TRAVEL-315/#6045)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+      responses:
+        '200':
+          description: Réservation remboursée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelBooking'
+        '404':
+          description: Réservation introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Seule une réservation confirmée est remboursable
+  /travel/bookings/{travelBooking}/issue-ticket:
+    post:
+      tags:
+      - Travel
+      summary: Émission des billets (TRAVEL-316/#6046)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Billets émis (un par passager)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelTicket'
+        '404':
+          description: Réservation introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Seule une réservation confirmée peut émettre des billets
+  /travel/tickets/{travelTicket}/check-in:
+    post:
+      tags:
+      - Travel
+      summary: Check-in / embarquement (TRAVEL-317/#6047)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTicket
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Billet enregistré
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTicket'
+        '404':
+          description: Billet introuvable ou hors tenant
+        '403':
+          description: Permission de check-in requise
+        '422':
+          description: Billet non émis ou annulé
+  /travel/trips/{travelTrip}/manifest:
+    get:
+      tags:
+      - Travel
+      summary: Manifeste des passagers d'un trajet (TRAVEL-318/#6048)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Passagers triés par siège (jamais de n° de pièce)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelPassenger'
+        '404':
+          description: Trajet introuvable ou hors tenant
   /health:
     get:
       tags:
@@ -27742,6 +28077,106 @@ components:
           type: string
           nullable: true
         updated_at:
+          type: string
+          nullable: true
+    TravelBooking:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+        trip_id:
+          type: integer
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled, refunded, completed]
+        passenger_count:
+          type: integer
+        total_amount_minor:
+          type: integer
+        currency:
+          type: string
+        booking_source:
+          type: string
+          enum: [online, office, phone, partner]
+        payment_status:
+          type: string
+          enum: [pending, confirmed, failed, refunded]
+        expires_at:
+          type: string
+          nullable: true
+        version:
+          type: integer
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelPassenger'
+        tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelTicket'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelPassenger:
+      type: object
+      properties:
+        id:
+          type: integer
+        booking_id:
+          type: integer
+        full_name:
+          type: string
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        document_type:
+          type: string
+          nullable: true
+        has_document:
+          type: boolean
+        age_category:
+          type: string
+          enum: [infant, child, adult]
+        class_id:
+          type: integer
+        seat_number:
+          type: integer
+          nullable: true
+        unit_price_minor:
+          type: integer
+    TravelTicket:
+      type: object
+      properties:
+        id:
+          type: integer
+        ticket_number:
+          type: string
+        booking_id:
+          type: integer
+        passenger_id:
+          type: integer
+        status:
+          type: string
+          enum: [issued, checked_in, void]
+        issued_at:
+          type: string
+          nullable: true
+        valid_from:
+          type: string
+          nullable: true
+        valid_until:
+          type: string
+          nullable: true
+        checked_in_at:
+          type: string
+          nullable: true
+        created_at:
           type: string
           nullable: true
     TravelCarrier:

@@ -3312,6 +3312,34 @@ class LeopardoClient:
         """Inscrire un employe"""
         return self.request("POST", "/training/sessions/{trainingSession}/enroll", **kwargs)
 
+    def get_travel_bookings(self, **kwargs):
+        """Liste des réservations (TRAVEL-312/#6042)"""
+        return self.request("GET", "/travel/bookings", **kwargs)
+
+    def post_travel_bookings(self, **kwargs):
+        """Création d'une réservation guichet (TRAVEL-312/#6042)"""
+        return self.request("POST", "/travel/bookings", **kwargs)
+
+    def get_travel_bookings_by_travelbooking(self, **kwargs):
+        """Détail d'une réservation (TRAVEL-312/#6042)"""
+        return self.request("GET", "/travel/bookings/{travelBooking}", **kwargs)
+
+    def post_travel_bookings_by_travelbooking_cancel(self, **kwargs):
+        """Annulation d'une réservation (TRAVEL-314/#6044)"""
+        return self.request("POST", "/travel/bookings/{travelBooking}/cancel", **kwargs)
+
+    def post_travel_bookings_by_travelbooking_confirm(self, **kwargs):
+        """Confirmation d'une réservation (TRAVEL-313/#6043)"""
+        return self.request("POST", "/travel/bookings/{travelBooking}/confirm", **kwargs)
+
+    def post_travel_bookings_by_travelbooking_issue_ticket(self, **kwargs):
+        """Émission des billets (TRAVEL-316/#6046)"""
+        return self.request("POST", "/travel/bookings/{travelBooking}/issue-ticket", **kwargs)
+
+    def post_travel_bookings_by_travelbooking_refund(self, **kwargs):
+        """Remboursement d'une réservation (TRAVEL-315/#6045)"""
+        return self.request("POST", "/travel/bookings/{travelBooking}/refund", **kwargs)
+
     def get_travel_carriers(self, **kwargs):
         """Liste des compagnies de transport (TRAVEL-304/#6034)"""
         return self.request("GET", "/travel/carriers", **kwargs)
@@ -3440,6 +3468,10 @@ class LeopardoClient:
         """Modification d'une gare/terminal (TRAVEL-302/#6032)"""
         return self.request("PUT", "/travel/stations/{travelStation}", **kwargs)
 
+    def post_travel_tickets_by_travelticket_check_in(self, **kwargs):
+        """Check-in / embarquement (TRAVEL-317/#6047)"""
+        return self.request("POST", "/travel/tickets/{travelTicket}/check-in", **kwargs)
+
     def get_travel_trips(self, **kwargs):
         """Liste des trajets (TRAVEL-308/#6038)"""
         return self.request("GET", "/travel/trips", **kwargs)
@@ -3463,6 +3495,10 @@ class LeopardoClient:
     def post_travel_trips_by_traveltrip_cancel(self, **kwargs):
         """Annulation d'un trajet (TRAVEL-310/#6040)"""
         return self.request("POST", "/travel/trips/{travelTrip}/cancel", **kwargs)
+
+    def get_travel_trips_by_traveltrip_manifest(self, **kwargs):
+        """Manifeste des passagers d'un trajet (TRAVEL-318/#6048)"""
+        return self.request("GET", "/travel/trips/{travelTrip}/manifest", **kwargs)
 
     def get_travel_trips_by_traveltrip_prices(self, **kwargs):
         """Tarifs d'un trajet par classe (TRAVEL-309/#6039)"""
