@@ -2298,6 +2298,74 @@ trait CreatesMvpSchema
                 $table->unsignedBigInteger('city_id');
                 $table->string('address', 255)->nullable();
                 $table->string('contact_phone', 40)->nullable();
+            });
+        }
+
+        // — FuelStation (solution verticale, FUEL-002..008, issues #5795..#5802) :
+        // parité fixture ↔ migrations tenant récentes (garde #5443) — mêmes
+        // colonnes que les migrations (PK bigint, company_id uuid indexé),
+        // sans FKs (style fixture, les contraintes sont couvertes par
+        // RefreshTenantDatabase avec les vraies migrations).
+        if (! Schema::hasTable($this->moduleTable('fuel_stations'))) {
+            Schema::create($this->moduleTable('fuel_stations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->string('address', 255)->nullable();
+                $table->string('phone', 40)->nullable();
+                $table->string('timezone', 64)->default('UTC');
+                $table->string('currency', 10)->nullable();
+                $table->text('metadata')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'fuel_stations_company_code_unique');
+            });
+        }
+
+        // FUEL-002 — sites opérationnels (parité migration 000100).
+        if (! Schema::hasTable($this->moduleTable('fuel_sites'))) {
+            Schema::create($this->moduleTable('fuel_sites'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id');
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->string('address', 255)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->text('metadata')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'fuel_sites_company_code_unique');
+                $table->index(['company_id', 'station_id'], 'fuel_sites_company_station_idx');
+            });
+        }
+
+        // FUEL-003 — catalogue produits (parité migration 000200).
+        if (! Schema::hasTable($this->moduleTable('fuel_products'))) {
+            Schema::create($this->moduleTable('fuel_products'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->string('unit_code', 20)->default('l');
+                $table->string('status', 20)->default('active');
+                $table->text('metadata')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'fuel_products_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_pumps'))) {
+            Schema::create($this->moduleTable('fuel_pumps'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id');
+                $table->string('code', 40);
+                $table->json('product_types')->nullable();
+
                 $table->string('status', 20)->default('active');
                 $table->timestamps();
             });
@@ -2500,6 +2568,111 @@ trait CreatesMvpSchema
                 $table->timestamp('refunded_at')->nullable();
                 $table->unsignedBigInteger('refunded_amount_minor')->nullable();
                 $table->string('refund_reason', 500)->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_tanks'))) {
+            Schema::create($this->moduleTable('fuel_tanks'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id');
+                $table->string('code', 40);
+                $table->string('product_type', 40);
+                $table->unsignedBigInteger('capacity_minor')->default(0);
+                $table->unsignedBigInteger('current_level_minor')->default(0);
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_meter_registers'))) {
+            Schema::create($this->moduleTable('fuel_meter_registers'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id');
+                $table->unsignedBigInteger('pump_id');
+                $table->string('meter_code', 40);
+                $table->string('meter_type', 30)->default('electronic');
+                $table->string('product_code', 40)->nullable();
+                $table->string('unit_code', 20)->default('l');
+                $table->unsignedSmallInteger('precision_scale')->default(0);
+                $table->unsignedBigInteger('rollover_limit')->nullable();
+                $table->timestamp('installed_at')->nullable();
+                $table->timestamp('retired_at')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_meter_readings'))) {
+            Schema::create($this->moduleTable('fuel_meter_readings'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id');
+                $table->unsignedBigInteger('pump_id');
+                $table->unsignedBigInteger('meter_id');
+                $table->unsignedBigInteger('reading_value_minor');
+                $table->string('reading_unit', 20)->default('l');
+                $table->timestamp('captured_at_utc');
+                $table->timestamp('captured_at_station_local');
+                $table->string('timezone', 64)->default('UTC');
+                $table->unsignedBigInteger('captured_by_employee_id')->nullable();
+                $table->unsignedBigInteger('shift_id')->nullable();
+                $table->string('source_code', 20)->default('operator');
+                $table->string('device_reference', 120)->nullable();
+                $table->string('idempotency_key', 191);
+                $table->string('status', 20)->default('submitted');
+                $table->text('correction_reason')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_meter_intervals'))) {
+            Schema::create($this->moduleTable('fuel_meter_intervals'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('meter_id');
+                $table->unsignedBigInteger('previous_reading_id');
+                $table->unsignedBigInteger('current_reading_id');
+                $table->unsignedBigInteger('previous_value_minor');
+                $table->unsignedBigInteger('current_value_minor');
+                $table->bigInteger('delta_minor');
+                $table->unsignedBigInteger('interval_seconds')->default(0);
+                $table->timestamp('calculated_at')->useCurrent();
+                $table->string('calculation_status', 20)->default('valid');
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_shifts'))) {
+            Schema::create($this->moduleTable('fuel_shifts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id')->nullable();
+                $table->string('name', 120);
+                $table->time('start_time');
+                $table->time('end_time');
+                $table->string('status', 20)->default('active');
+                $table->text('notes')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'name'], 'fuel_shifts_company_name_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_shift_assignments'))) {
+            Schema::create($this->moduleTable('fuel_shift_assignments'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('shift_id');
+                $table->unsignedInteger('employee_id');
+                $table->date('assignment_date');
+                $table->string('status', 20)->default('scheduled');
+                $table->text('notes')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+
                 $table->timestamps();
             });
         }
@@ -3036,6 +3209,64 @@ trait CreatesMvpSchema
                 $table->timestamps();
             });
         }
+        if (! Schema::hasTable($this->moduleTable('fuel_cash_sessions'))) {
+            Schema::create($this->moduleTable('fuel_cash_sessions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id')->nullable();
+                $table->unsignedInteger('opened_by');
+                $table->timestampTz('opened_at')->useCurrent();
+                $table->unsignedInteger('closed_by')->nullable();
+                $table->timestampTz('closed_at')->nullable();
+                $table->decimal('opening_balance', 14, 2)->default(0);
+                $table->decimal('closing_balance', 14, 2)->nullable();
+                $table->decimal('expected_balance', 14, 2)->nullable();
+                $table->decimal('variance', 14, 2)->nullable();
+                $table->string('status', 20)->default('open');
+                $table->unsignedInteger('approved_by')->nullable();
+                $table->timestampTz('approved_at')->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_cash_session_movements'))) {
+            Schema::create($this->moduleTable('fuel_cash_session_movements'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('session_id');
+                $table->string('type', 10);
+                $table->decimal('amount', 14, 2);
+                $table->string('reason', 255);
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_sales'))) {
+            Schema::create($this->moduleTable('fuel_sales'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id')->nullable();
+                $table->unsignedBigInteger('pump_id')->nullable();
+                $table->unsignedBigInteger('cash_session_id')->nullable();
+                $table->unsignedInteger('employee_id');
+                $table->string('product', 80);
+                $table->decimal('quantity', 14, 3);
+                $table->decimal('unit_price', 14, 2);
+                $table->decimal('amount', 14, 2);
+                $table->timestampTz('sale_time')->useCurrent();
+                $table->string('source', 20)->default('manual');
+                $table->string('external_id', 120)->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'external_id'], 'fuel_sales_external_unique');
+            });
+        }
+
+
     }
 
     private function dropMvpTables(): void

@@ -21,15 +21,6 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertControlle
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelArticleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCancellationPolicyController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCommentController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelEngagementController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelLoyaltyController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;

@@ -34,6 +34,9 @@ class CrmOutboxDispatchCommand extends Command
 
     protected $description = 'Consomme les événements d\'outbox CRM dus (idempotent, retry avec backoff, dead-letter).';
 
+    /** Durée de lease d\'un événement en cours de traitement (BC-14). */
+    private const PROCESSING_LEASE_MINUTES = 15;
+
     public function __construct(
         private readonly CrmOutboxConsumerRegistry $registry,
         private readonly TenantManager $tenants,
@@ -65,15 +68,27 @@ class CrmOutboxDispatchCommand extends Command
     }
 
     /**
-     * Claim atomique d'un lot : pending+due → processing.
+     * Claim atomique d'un lot : pending+due → processing, ET reprise des
+     * `processing` orphelins (lease expirée — worker crash, BC-14).
+     *
+     * Un événement `processing` dont le lease a expiré est re-claimé par le
+     * prochain worker : le crash d'un worker ne bloque plus la file. Les
+     * tentatives ne sont PAS réinitialisées (une boucle crash-reclaim est
+     * bornée par MAX_ATTEMPTS → dead-letter).
      *
      * @return list<int>
      */
     private function claimBatch(int $limit): array
     {
         $ids = DB::table('crm_outbox_events')
-            ->where('status', CrmOutboxEvent::STATUS_PENDING)
-            ->where('available_at', '<=', now())
+            ->where(function ($query): void {
+                $query->where('status', CrmOutboxEvent::STATUS_PENDING)
+                    ->where('available_at', '<=', now())
+                    ->orWhere(function ($query): void {
+                        $query->where('status', CrmOutboxEvent::STATUS_PROCESSING)
+                            ->where('updated_at', '<', now()->subMinutes(self::PROCESSING_LEASE_MINUTES));
+                    });
+            })
             ->orderBy('id')
             ->limit($limit)
             ->pluck('id')
@@ -83,7 +98,7 @@ class CrmOutboxDispatchCommand extends Command
         foreach ($ids as $id) {
             $updated = DB::table('crm_outbox_events')
                 ->where('id', $id)
-                ->where('status', CrmOutboxEvent::STATUS_PENDING)
+                ->whereIn('status', [CrmOutboxEvent::STATUS_PENDING, CrmOutboxEvent::STATUS_PROCESSING])
                 ->update(['status' => CrmOutboxEvent::STATUS_PROCESSING, 'updated_at' => now()]);
 
             if ($updated === 1) {

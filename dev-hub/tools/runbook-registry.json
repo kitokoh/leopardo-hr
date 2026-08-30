@@ -31,5 +31,7 @@
     { "code": "BC-21", "name": "BILLING", "runbooks": ["docs/deployment/RUNBOOK_SUPER_ADMIN.md", "docs/GESTION_PROJET/RUNBOOK_DEPLOY.md"], "notes": "Abonnements/activation : runbook super-admin + deploy." },
     { "code": "BC-22", "name": "ANALYTICS", "status": "planned", "runbooks": [], "notes": "À formaliser avec le module Reporting." },
     { "code": "BC-23", "name": "AI", "runbooks": [], "notes": "Services IA assistifs couverts par backup/restore plateforme + incident P1." }
+  ,
+  { "code": "BC-25", "name": "RESTAURANT", "runbooks": ["docs/ops/RUNBOOK_PILOT_RESTAURANTMANAGER.md"], "notes": "Pilote RestaurantManager : runbook dédié (activation, smoke, incidents, rollback) + runbooks plateforme (backup/restore/rollback/incident) + recette UAT docs/ops/RECETTE_UAT_RESTAURANTMANAGER.md (RESTO-903/#6232)." }
   ]
 }

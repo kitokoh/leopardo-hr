@@ -253,6 +253,7 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - `WebhookListener` dispatche les events vers les endpoints webhook du tenant
 - Les events sont dispatches depuis les services (EmployeeCreated, EmployeeArchived, AttendanceCheckedIn/Out, AbsenceRequested/Approved/Rejected, PayrollValidated)
 - `EventServiceProvider` cable chaque event aux listeners AuditLogger et WebhookListener
+- **Digest email hebdomadaire manager (issue #5695)** : la commande `manager:weekly-digest` (schedulee chaque lundi 07:00, `api/routes/console.php`) dispatche un job `SendWeeklyManagerDigestJob` par entreprise ACTIVE ; le job notifie chaque manager actif du tenant sur le canal email uniquement (template `weekly_manager_digest`, cles i18n `notifications.weekly_manager_digest_*` dans les 4 locales), avec contexte `week_start`/`team_size`/`present`/`pending_absences`/`pending_advances`/`pending_corrections`, scope manager respecte (principal/rh → toute l'entreprise ; dept → son departement ; superviseur → equipe directe, PA2-SEC-002/003) et entreprise inactive ignoree. Couvert par `WeeklyManagerDigestTest`.
 
 ### 11. Resilience et erreurs
 
@@ -1548,9 +1549,7 @@ Dernière tranche de l'épic 3xx : `GET|POST /travel/rental-vehicles` (+ images)
   non authentifié → 401.
 - Couverture : `api/tests/Feature/Travel/TravelRentalApiTest.php`, `TravelHotelApiTest.php`, `TravelRbacMatrixTest.php`
   (168 tests Travel au total) + `docs/security/TRAVEL_RBAC_MATRIX.md`.
-
 ## BC-24 TRAVEL — Boutique en ligne & paiements (TRAVEL-401..409, 2026-08-30)
-
 Début de l'épic 4xx : `GET /travel/shop/trips` (recherche trajets publiés), `GET /travel/shop/trips/{trip}` (+ available_seats),
 `POST /travel/shop/bookings` (source online, expiration), `GET /travel/shop/bookings/{reference}` (suivi sans code en clair),
 `POST /travel/payments/initiate` (idempotent), `POST /travel/payments/callback` (webhook public signé HMAC, résolution par référence),
@@ -1560,44 +1559,44 @@ Début de l'épic 4xx : `GET /travel/shop/trips` (recherche trajets publiés), `
   montant incohérent → 422, référence inconnue → 404, rejeu → `replayed: true` sans effet de bord, confirmation → payment_status
   confirmé + événement outbox ; PII jamais exposée.
 - Couverture : `api/tests/Feature/Travel/TravelShopTest.php`, `TravelPaymentTest.php` (184 tests Travel au total).
-
 ## BC-24 TRAVEL — Re-conciliation, remboursement & billets PDF (TRAVEL-410..413, 2026-08-30)
-
 Suite de l'épic 4xx : `POST /travel/payments/{payment}/verify`, `POST /travel/payments/{payment}/refund`,
 `GET /travel/tickets/{ticket}/pdf` (URL signée), `POST /travel/tickets/{ticket}/revoke`.
 - Scénarios à vérifier : verify() ne re-concilie que les paiements pending (idempotent) ; refund() exige un paiement
   confirmé + motif (422 sinon), réservé manage ; PDF généré localement (magic %PDF) ; URL signée 30 min ; révocation → void
   + PDF supprimé + 410 au téléchargement ; cross-tenant → 404.
 - Couverture : `api/tests/Feature/Travel/TravelPaymentReconcileTest.php`, `TravelTicketPdfTest.php` (192 tests Travel au total).
-
 ## BC-24 TRAVEL — Outbox & expiration des réservations (TRAVEL-414/418, 2026-08-30)
-
 `travel:outbox-dispatch` (consommation outbox événementielle, retry/backoff, dead-letter) et `travel:expire-bookings`
 (expiration des pending + libération des sièges + événement `travel.booking.expired.v1`).
 - Scénarios à vérifier : réservation pending expirée → cancelled + sièges libérés + événement outbox ; non-expirée
   intacte ; rejeu idempotent (0 re-traitement) ; claim atomique (2 workers → 1 seul traite) ; outbox : aucun
   consommateur → dead-letter, erreur transitoire → retry avec backoff, attempts ≥ max → failed.
 - Couverture : `api/tests/Feature/Travel/TravelBookingExpiryTest.php` (195 tests Travel au total).
-
 ## BC-24 TRAVEL — Formulaire de contact (TRAVEL-416, 2026-08-30)
-
 `POST /travel/contact` → événement `travel.contact.submitted.v1` (lead CRM par événement, jamais d'import direct).
 - Scénarios à vérifier : 202 + événement publié ; consentement absent/faux → 422 ; message > 2000 → 422 ; email invalide → 422.
 - Couverture : `api/tests/Feature/Travel/TravelContactTest.php` (198 tests Travel au total).
-
 ## BC-24 TRAVEL — Rapports & exports (TRAVEL-501..507, 2026-08-30)
-
 `GET /travel/reports/{sales,occupancy,revenue,cancellations,dashboard,export}` (permission `travel.reports`).
 - Scénarios à vérifier : agrégats exacts (count, passagers, montants minor units) ; isolation tenant ; taux d'occupation
   = vendus/total borné [0,1] trié décroissant ; recettes = confirmés − remboursés ; annulations groupées par motif/source ;
   employé simple → 403 ; export idempotent (même requête = même hash sha256 = même fichier, URL signée 30 min) ; type
   inconnu → 422 ; read models recalculés → état identique après reprise.
 - Couverture : `api/tests/Feature/Travel/TravelReportApiTest.php` (208 tests Travel au total).
-
 ## BC-24 TRAVEL — Webhooks transporteurs (TRAVEL-806, 2026-08-30)
-
 `GET/POST/DELETE /travel/webhook-subscriptions` (travel.manage) + livraison HMAC depuis l'outbox.
 - Scénarios à vérifier : création → secret jamais exposé (préfixe hash 8 car.) ; upsert par transporteur (pas de doublon) ;
   employé simple → 403 ; événement outbox → livraison signée (en-têtes HMAC + timestamp) ; rejeu → pas de doublon ;
   échec HTTP → retry/backoff puis dead-letter après 5 tentatives.
 - Couverture : `api/tests/Feature/Travel/TravelWebhookTest.php` (215 tests Travel au total).
+Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (manifest + stations/sites + équipements + relevés + shifts + présence + caisse + ventes).
+- Manifest de solution : `App\Core\Solutions` (contrat `SolutionManifest`, catalogue allowlist fail-closed, activateur audité, commande `leopardo:solution:activate`) + `FuelStationManifest` (FUEL-001). Activation idempotente par feature flag, dépendances manquantes → 422 `SOLUTION_MISSING_DEPENDENCY`, code inconnu → 404 `SOLUTION_NOT_FOUND`. Tests : `SolutionManifestTest`.
+- Stations et sites tenant-first (FUEL-002) : tables `fuel_stations` (code unique par tenant, timezone, statut CHECK active|inactive|archived) et `fuel_sites` (FK composite `(station_id, company_id)` → `fuel_stations`, statut CHECK active|inactive) — company_id non nullable partout, références cross-tenant physiquement impossibles. Tests : `FuelStationMigrationTest`, `FuelSitesInvariantTest`.
+- Équipements (FUEL-003) : `fuel_pumps`, `fuel_tanks` (capacity_minor CHECK > 0, unit_code CHECK l|gal), `fuel_meter_registers` (meter_type/status/unit CHECKs, `UNIQUE (company_id, pump_id, meter_code)`) — FK composites anti cross-tenant. Tests : `FuelEquipmentTest`.
+- Relevés de compteur (FUEL-004) : `POST/GET /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings` — cumul en unités mineures, heure UTC + locale, delta/rollover/anomalie, idempotence par `UNIQUE (company_id, idempotency_key)` (zéro doublon au rejeu), correction versionnée `POST /fuel-station/meter-readings/{reading}/corrections` et revue `POST /fuel-station/meter-intervals/{interval}/review` (RBAC `api.manager`). Tests : `FuelMeterReadingTest`.
+- Shifts et affectations (FUEL-005) : `GET/POST /fuel-station/shifts`, affectations par date, chevauchements contrôlés (`FuelShiftService::assertNoOverlap`), self-service pompiste `GET /fuel-station/me/shifts`. Tests : `FuelShiftApiTest`.
+- Présence opérateur (FUEL-006) : `GET /fuel-station/me/presence`, `GET /fuel-station/shifts/{shift}/presence` — résolue via la logique Attendance (pas de duplication). Tests : `FuelPresenceApiTest`.
+- Sessions de caisse (FUEL-007) : ouverture `POST /fuel-station/cash-sessions`, mouvements, clôture idempotente `POST /fuel-station/cash-sessions/{session}/close` (écarts + approbation manager, événement `FuelCashSessionClosed`). Tests : `FuelCashSessionApiTest`.
+- Ventes (FUEL-008) : `POST/GET /fuel-station/sales` — transactions par pompe liées shift/session. Tests : `FuelSaleApiTest`.
+- Couverture globale : solution inactive → 403 `FUEL_SOLUTION_INACTIVE` (fail-closed) ; OpenAPI 3 chemins `/fuel-station/*` + SDK régénérés (885 ops) ; i18n ×4 (`FUEL_*`).

@@ -11238,6 +11238,854 @@ paths:
                           type: integer
                         month:
                           type: integer
+  /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings:
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer un releve de compteur (cumulatif, idempotent)
+      description: |-
+        Releve cumule d'un compteur (valeur en unites mineures entieres).
+        Idempotent (idempotency_key). Valeur decroissante sans rollover
+        documente → intervalle en anomalie (revue obligatoire). Solution
+        FuelStation active requise (403 sinon). Issue #5798.
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: pump
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: meter
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FuelMeterReadingPayload'
+      responses:
+        '201':
+          description: Releve accepte
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelMeterReadingResult'
+        '200':
+          description: Rejeu idempotent (aucun doublon)
+        '403':
+          description: Solution inactive ou permission manquante
+        '404':
+          description: Station/pompe/compteur introuvable (hors tenant)
+        '422':
+          $ref: '#/components/responses/Validation422'
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les releves d'un compteur
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: pump
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: meter
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Liste des releves (100 max, plus recents d'abord)
+  /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les intervalles calcules d'un compteur
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: pump
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: meter
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Liste des intervalles (valid|rollover|anomaly|pending_review)
+  /fuel-station/meter-readings/{reading}/corrections:
+    post:
+      tags:
+      - FuelStation
+      summary: Corriger un releve (versionne, audite) — manager principal/rh
+      parameters:
+      - name: reading
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reading_value_minor, reason]
+              properties:
+                reading_value_minor: {type: integer, minimum: 0}
+                reason: {type: string, maxLength: 1000}
+      responses:
+        '200':
+          description: Correction enregistree (nouvelle version, original marque corrected)
+        '403':
+          description: Permission manager requise
+        '409':
+          description: Releve deja corrige ou rejete
+  /fuel-station/meter-intervals/{interval}/review:
+    post:
+      tags:
+      - FuelStation
+      summary: Revoir un intervalle en anomalie (accept/reject) — manager principal/rh
+      parameters:
+      - name: interval
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision]
+              properties:
+                decision: {type: string, enum: [accept, reject]}
+                note: {type: string, maxLength: 1000}
+      responses:
+        '200':
+          description: Revue enregistree
+        '403':
+          description: Permission manager requise
+        '409':
+          description: Intervalle deja revu
+
+  /fuel-station/me/shifts:
+    get:
+      tags:
+      - FuelStation
+      summary: Affectations de shifts du pompiste connecte (self-service)
+      description: FUEL-005 — liste les affectations du salarie authentifie sur une fenetre de dates (date_from/date_to, Y-m-d).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      responses:
+        '200':
+          description: Liste des affectations
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/shifts:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les shifts (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+      responses:
+        '200':
+          description: Liste des shifts
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer un shift (manager)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - start_time
+              - end_time
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                station_id:
+                  type: integer
+                  nullable: true
+                start_time:
+                  type: string
+                  example: '06:00'
+                end_time:
+                  type: string
+                  example: '14:00'
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Shift cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation (nom duplique, horaires invalides)
+  /fuel-station/shifts/{shift}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'un shift (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Shift
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour un shift (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                station_id:
+                  type: integer
+                  nullable: true
+                start_time:
+                  type: string
+                  example: '06:00'
+                end_time:
+                  type: string
+                  example: '14:00'
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Shift mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+        '422':
+          description: Validation
+    delete:
+      tags:
+      - FuelStation
+      summary: Supprimer un shift (manager, refus si affectations actives)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Shift supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+        '422':
+          description: SHIFT_HAS_ASSIGNMENTS
+  /fuel-station/shifts/{shift}/assignments:
+    get:
+      tags:
+      - FuelStation
+      summary: Affectations d'un shift (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      responses:
+        '200':
+          description: Affectations du shift
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+    post:
+      tags:
+      - FuelStation
+      summary: Affecter un employe a un shift pour une date (manager)
+      description: Rejette un employe d'un autre tenant (EMPLOYEE_OUTSIDE_TENANT), un shift inactif (SHIFT_INACTIVE) et un chevauchement horaire le meme jour (SHIFT_OVERLAP).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              - assignment_date
+              properties:
+                employee_id:
+                  type: integer
+                assignment_date:
+                  type: string
+                  example: '2026-09-01'
+                status:
+                  type: string
+                  enum:
+                  - scheduled
+                  - confirmed
+                  - completed
+                  - cancelled
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Affectation creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+        '422':
+          description: SHIFT_OVERLAP / SHIFT_INACTIVE / EMPLOYEE_OUTSIDE_TENANT
+  /fuel-station/shifts/{shift}/presence:
+    get:
+      tags:
+      - FuelStation
+      summary: Roster de presence du shift pour une date (manager)
+      description: "FUEL-006 - resout la presence des employes affectes depuis attendance_logs (source canonique Attendance) : present/late/absent/leave/holiday/incomplete + outside_shift si le check_in sort de la fenetre du shift."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2026-09-01'
+      responses:
+        '200':
+          description: Roster de presence
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+        '422':
+          description: Date invalide
+  /fuel-station/me/presence:
+    get:
+      tags:
+      - FuelStation
+      summary: Presence du pompiste connecte pour une date (self-service)
+      description: FUEL-006 - presence resolue depuis attendance_logs pour le salarie authentifie, avec le shift affecte ce jour.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2026-09-01'
+      responses:
+        '200':
+          description: Presence du pompiste
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Date invalide
+  /fuel-station/cash-sessions:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les sessions de caisse (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - open
+          - closed
+          - approved
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: date
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Sessions paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Ouvrir une session de caisse (pompiste)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                station_id:
+                  type: integer
+                  nullable: true
+                opening_balance:
+                  type: number
+                  default: 0
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Session ouverte
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation
+  /fuel-station/cash-sessions/{session}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une session (proprietaire ou manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Session avec mouvements
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Session introuvable ou autre tenant
+  /fuel-station/cash-sessions/{session}/movements:
+    post:
+      tags:
+      - FuelStation
+      summary: Ajouter un mouvement in/out (proprietaire, session ouverte)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              - amount
+              - reason
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - in
+                  - out
+                amount:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: true
+                reason:
+                  type: string
+                  maxLength: 255
+      responses:
+        '201':
+          description: Mouvement ajoute
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Pas le proprietaire
+        '422':
+          description: SESSION_NOT_OPEN ou validation
+  /fuel-station/cash-sessions/{session}/close:
+    post:
+      tags:
+      - FuelStation
+      summary: Cloturer une session (proprietaire, idempotente)
+      description: "Expected balance et variance calcules serveur. Rejeu sans effet (statut terminal)."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - closing_balance
+              properties:
+                closing_balance:
+                  type: number
+                  minimum: 0
+      responses:
+        '200':
+          description: Session close (ou etat courant si deja close)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Pas le proprietaire
+  /fuel-station/cash-sessions/{session}/approve:
+    post:
+      tags:
+      - FuelStation
+      summary: Approuver une cloture (manager, verrouille l'ecart)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Session approuvee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager requis
+        '422':
+          description: SESSION_NOT_CLOSED
+  /fuel-station/me/cash-sessions:
+    get:
+      tags:
+      - FuelStation
+      summary: Sessions de caisse du pompiste connecte (self-service)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - open
+          - closed
+          - approved
+      responses:
+        '200':
+          description: Sessions du pompiste
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/sales:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les ventes (manager, pagine)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: pump_id
+        in: query
+        schema:
+          type: integer
+      - name: cash_session_id
+        in: query
+        schema:
+          type: integer
+      - name: product
+        in: query
+        schema:
+          type: string
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ventes paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer une vente (pompiste, idempotent via external_id)
+      description: "Montant calcule serveur (quantity x unit_price). Rejeu external_id sans doublon. Relation pompe/station validee quand les tables FUEL-002/003 existent."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - product
+              - quantity
+              - unit_price
+              properties:
+                station_id:
+                  type: integer
+                  nullable: true
+                pump_id:
+                  type: integer
+                  nullable: true
+                cash_session_id:
+                  type: integer
+                  nullable: true
+                product:
+                  type: string
+                  maxLength: 80
+                quantity:
+                  type: number
+                  exclusiveMinimum: true
+                  minimum: 0
+                unit_price:
+                  type: number
+                  minimum: 0
+                sale_time:
+                  type: string
+                  format: date-time
+                source:
+                  type: string
+                  enum:
+                  - manual
+                  - kiosk
+                  - pos
+                external_id:
+                  type: string
+                  maxLength: 120
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Vente enregistree (ou vente existante si rejeu external_id)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation ou session/cash hors tenant
+  /fuel-station/sales/{sale}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une vente (proprietaire ou manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: sale
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Vente
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Vente introuvable ou autre tenant
+  /fuel-station/me/sales:
+    get:
+      tags:
+      - FuelStation
+      summary: Ventes du pompiste connecte (self-service, pagine)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      responses:
+        '200':
+          description: Ventes du pompiste
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/shift-assignments/{assignment}:
+    delete:
+      tags:
+      - FuelStation
+      summary: Annuler une affectation (manager, statut cancelled)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: assignment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Affectation annulee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Affectation introuvable ou autre tenant
+
   /accounting/contacts:
     get:
       tags:
@@ -38095,3 +38943,58 @@ components:
           type: integer
           nullable: true
           description: Paiement candidat proposé par le matching auto (issue #5523)
+
+    FuelMeterReadingPayload:
+      type: object
+      required: [reading_value_minor, idempotency_key]
+      properties:
+        reading_value_minor:
+          type: integer
+          minimum: 0
+          description: Valeur cumulee en unites mineures entieres (ex. centilitres)
+        reading_unit:
+          type: string
+          enum: [l, ml, gal, ft3]
+          default: l
+        captured_at:
+          type: string
+          format: date-time
+          nullable: true
+        timezone:
+          type: string
+          maxLength: 64
+        shift_id:
+          type: integer
+          nullable: true
+        device_reference:
+          type: string
+          maxLength: 120
+          nullable: true
+        idempotency_key:
+          type: string
+          maxLength: 191
+    FuelMeterReadingResult:
+      type: object
+      properties:
+        reading:
+          type: object
+          properties:
+            id: {type: integer}
+            meter_id: {type: integer}
+            reading_value_minor: {type: integer}
+            reading_unit: {type: string}
+            captured_at_utc: {type: string, format: date-time}
+            status: {type: string}
+            source_code: {type: string}
+        interval:
+          type: object
+          nullable: true
+          properties:
+            id: {type: integer}
+            delta_minor: {type: integer}
+            calculation_status: {type: string}
+            interval_seconds: {type: integer}
+        replayed:
+          type: boolean
+        correlation_id:
+          type: string
