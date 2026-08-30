@@ -179,6 +179,13 @@ Schedule::command('travel:expire-pending-bookings')
     ->withoutOverlapping()
     ->onOneServer();
 
+// BC-24 TRAVEL — expiration des annonces validées (#6111) : durée de
+// validité dépassée → invisible (idempotent).
+Schedule::command('travel:expire-adverts')
+    ->hourly()
+    ->withoutOverlapping()
+    ->onOneServer();
+
 Schedule::command('growth:archive-clicks --days=90')
     ->weekly();
 
