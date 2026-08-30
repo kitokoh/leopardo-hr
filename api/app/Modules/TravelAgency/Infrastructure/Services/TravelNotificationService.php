@@ -40,7 +40,8 @@ final class TravelNotificationService
 
         foreach ($bookings as $booking) {
             $contact = $this->contactFor($booking);
-            $template = $this->templateFor($eventType, $payload, $booking);
+            $locale = isset($payload['locale']) && is_string($payload['locale']) ? $payload['locale'] : 'fr';
+            $template = $this->templateFor($eventType, $payload, $booking, $locale);
 
             if ($contact['email'] === null && $contact['phone'] === null) {
                 $this->log($companyId, $payload, $eventType, 'n/a', 'n/a', 'skipped', 'Aucun contact sur la réservation.');
@@ -112,50 +113,43 @@ final class TravelNotificationService
     }
 
     /**
+     * TRAVEL-1009 (#6122) — templates i18n (config, locale du payload).
+     *
      * @param  array<string, mixed>  $payload
      * @return array{title: string, body: string}
      */
-    private function templateFor(string $eventType, array $payload, TravelBooking $booking): array
+    private function templateFor(string $eventType, array $payload, TravelBooking $booking, string $locale): array
     {
         $reference = (string) $booking->reference;
         $trackingUrl = $this->trackingUrl($reference);
 
-        return match ($eventType) {
-            'travel.booking.confirmed.v1' => [
-                'title' => 'Réservation confirmée',
-                'body' => "Votre réservation {$reference} est confirmée. Suivez-la : {$trackingUrl}",
-            ],
-            'travel.booking.cancelled.v1' => [
-                'title' => 'Réservation annulée',
-                'body' => "Votre réservation {$reference} a été annulée.".(
-                    ! empty($payload['reason']) ? ' Motif : '.(string) $payload['reason'].'.' : ''
-                ),
-            ],
-            'travel.booking.expired.v1' => [
-                'title' => 'Réservation expirée',
-                'body' => "Votre réservation {$reference} a expiré faute de paiement.",
-            ],
-            'travel.payment.confirmed.v1' => [
-                'title' => 'Paiement confirmé',
-                'body' => "Le paiement de la réservation {$reference} est confirmé.",
-            ],
-            'travel.payment.refunded.v1' => [
-                'title' => 'Remboursement effectué',
-                'body' => "Le remboursement de la réservation {$reference} a été effectué.",
-            ],
-            'travel.ticket.issued.v1' => [
-                'title' => 'Billets disponibles',
-                'body' => "Les billets de la réservation {$reference} sont disponibles : {$trackingUrl}",
-            ],
-            'travel.trip.cancelled.v1' => [
-                'title' => 'Trajet annulé par l\'agence',
-                'body' => "Le trajet de votre réservation {$reference} est annulé. Les remboursements sont en cours.",
-            ],
-            default => [
-                'title' => 'Mise à jour de votre réservation',
-                'body' => "Votre réservation {$reference} a été mise à jour : {$trackingUrl}",
-            ],
-        };
+        $templates = (array) config('travel.notifications.templates', []);
+        $entry = isset($templates[$eventType]) && is_array($templates[$eventType]) ? $templates[$eventType] : [];
+        $template = $entry[$locale] ?? $entry['fr'] ?? null;
+
+        if (! is_array($template)) {
+            $title = 'Mise à jour de votre réservation';
+            $body = "Votre réservation {$reference} a été mise à jour : {$trackingUrl}";
+
+            return ['title' => $title, 'body' => $body];
+        }
+
+        $body = str_replace(
+            ['{reference}', '{tracking_url}'],
+            [$reference, $trackingUrl],
+            (string) ($template['body'] ?? ''),
+        );
+
+        // Motif d'annulation ajouté au corps (fr/en).
+        if (in_array($eventType, ['travel.booking.cancelled.v1', 'travel.trip.cancelled.v1'], true)
+            && ! empty($payload['reason'])) {
+            $body .= $locale === 'en' ? ' Reason: '.(string) $payload['reason'].'.' : ' Motif : '.(string) $payload['reason'].'.';
+        }
+
+        return [
+            'title' => (string) ($template['title'] ?? 'Mise à jour'),
+            'body' => $body,
+        ];
     }
 
     /**
