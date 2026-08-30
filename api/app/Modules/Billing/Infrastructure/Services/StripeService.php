@@ -229,6 +229,8 @@ class StripeService
 
             return;
         }
+        assert($company instanceof \App\Core\Tenant\Domain\Models\Company);
+        }
 
         // Update company status
         $company->update([
