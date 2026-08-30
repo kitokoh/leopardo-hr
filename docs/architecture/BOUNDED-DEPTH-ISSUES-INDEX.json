@@ -32,30 +32,34 @@
     {
       "key": "DEP-BC05",
       "title": "[DEP-BC05] Deep maturity — BC-05 WORKFORCE",
-      "status": "created",
+      "status": "audited",
       "number": 5881,
-      "url": "https://github.com/kitokoh/leopardo-hr/issues/5881"
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5881",
+      "report": "docs/architecture/maturity/MATURITY-BC05-WORKFORCE.md"
     },
     {
       "key": "DEP-BC06",
       "title": "[DEP-BC06] Deep maturity — BC-06 LEAVE",
-      "status": "created",
+      "status": "audited",
       "number": 5882,
-      "url": "https://github.com/kitokoh/leopardo-hr/issues/5882"
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5882",
+      "report": "docs/architecture/maturity/MATURITY-BC06-LEAVE.md"
     },
     {
       "key": "DEP-BC07",
       "title": "[DEP-BC07] Deep maturity — BC-07 PAYROLL",
-      "status": "created",
+      "status": "audited",
       "number": 5883,
-      "url": "https://github.com/kitokoh/leopardo-hr/issues/5883"
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5883",
+      "report": "docs/architecture/maturity/MATURITY-BC07-PAYROLL.md"
     },
     {
       "key": "DEP-BC08",
       "title": "[DEP-BC08] Deep maturity — BC-08 ACCOUNTING",
-      "status": "created",
+      "status": "audited",
       "number": 5884,
-      "url": "https://github.com/kitokoh/leopardo-hr/issues/5884"
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5884",
+      "report": "docs/architecture/maturity/MATURITY-BC08-ACCOUNTING.md"
     },
     {
       "key": "DEP-BC09",
@@ -137,9 +141,10 @@
     {
       "key": "DEP-BC20",
       "title": "[DEP-BC20] Deep maturity — BC-20 DOCUMENTS",
-      "status": "created",
+      "status": "audited",
       "number": 5896,
-      "url": "https://github.com/kitokoh/leopardo-hr/issues/5896"
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/5896",
+      "report": "docs/architecture/maturity/DEP_BC20_DOCUMENTS_MATURITY.md"
     },
     {
       "key": "DEP-BC21",
