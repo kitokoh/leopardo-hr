@@ -2612,6 +2612,7 @@ paths:
           description: Tarif ou trajet introuvable ou hors tenant
         '403':
           description: Permission travel.manage requise
+<<<<<<< HEAD
   /travel/bookings:
     get:
       tags:
@@ -3726,6 +3727,8 @@ paths:
           description: Chambre ou hôtel introuvable ou hors tenant
         '403':
           description: Permission travel.manage requise
+=======
+>>>>>>> 24df3e4bc (feat(travel): schéma, domaine & API back-office TravelAgency (Closes #6017-#6035) (#6129))
   /health:
     get:
       tags:
@@ -28968,6 +28971,7 @@ components:
         updated_at:
           type: string
           nullable: true
+<<<<<<< HEAD
     TravelBooking:
       type: object
       properties:
@@ -29219,6 +29223,8 @@ components:
         updated_at:
           type: string
           nullable: true
+=======
+>>>>>>> 24df3e4bc (feat(travel): schéma, domaine & API back-office TravelAgency (Closes #6017-#6035) (#6129))
     TravelCarrier:
       type: object
       properties:
