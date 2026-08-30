@@ -35,7 +35,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          lfs: false
 
       # Le contexte `secrets` n'est pas disponible dans les `if` de job
       # (actionlint) : la présence du token est testée au niveau step via env.

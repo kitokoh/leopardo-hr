@@ -42,7 +42,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          lfs: false
 
       - name: Guard production URLs (fail-closed, #4720)
         if: ${{ (!github.event.inputs.api_url && !vars.PROD_API_BASE_URL) || (!github.event.inputs.web_url && !vars.PROD_WEB_URL) || (!github.event.inputs.admin_url && !vars.PROD_ADMIN_URL) }}
