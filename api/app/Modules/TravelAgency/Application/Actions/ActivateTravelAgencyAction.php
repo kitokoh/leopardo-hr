@@ -21,9 +21,7 @@ use App\Modules\TravelAgency\Infrastructure\Services\TravelGeoSeederService;
  */
 final class ActivateTravelAgencyAction
 {
-    public function __construct(private readonly TravelGeoSeederService $geoSeeder)
-    {
-    }
+    public function __construct(private readonly TravelGeoSeederService $geoSeeder) {}
 
     public function execute(Company $company): void
     {
