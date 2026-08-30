@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Providers;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\TravelAgency\Console\Commands\ExpirePendingBookingsCommand;
 use App\Modules\TravelAgency\Console\Commands\RecalculateTravelReadModelsCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelOutboxDispatchCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelSalesSettleCommand;
@@ -73,7 +72,6 @@ class TravelAgencyServiceProvider extends ServiceProvider
         $this->commands([
             RecalculateTravelReadModelsCommand::class,
             TravelOutboxDispatchCommand::class,
-            ExpirePendingBookingsCommand::class,
             TravelSalesSettleCommand::class,
         ]);
 

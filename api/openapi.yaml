@@ -4199,49 +4199,6 @@ paths:
           description: Likes/partages/notes agrégés
         '401':
           description: Non authentifié
-  /travel/contact:
-    post:
-      tags:
-      - Travel
-      summary: Formulaire de contact - publication de l'evenement lead CRM (TRAVEL-416)
-      security:
-      - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - name
-              - email
-              - message
-              - consent
-              properties:
-                name:
-                  type: string
-                  maxLength: 150
-                email:
-                  type: string
-                  format: email
-                  maxLength: 190
-                phone:
-                  type: string
-                  maxLength: 30
-                  nullable: true
-                message:
-                  type: string
-                  maxLength: 2000
-                consent:
-                  type: boolean
-                  description: Consentement explicite obligatoire
-      responses:
-        '202':
-          description: Demande recueillie, evenement publie
-        '401':
-          $ref: '#/components/responses/Error401'
-        '422':
-          description: Validation ou regle metier
   /health:
     get:
       tags:

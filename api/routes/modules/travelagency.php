@@ -23,7 +23,6 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierControll
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCommentController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelEngagementController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelExportController;
@@ -190,6 +189,4 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/articles/{travelArticle}/rate', [TravelEngagementController::class, 'rate']);
         Route::get('/articles/{travelArticle}/engagement', [TravelEngagementController::class, 'aggregates']);
 
-        // ── Formulaire de contact → lead CRM (TRAVEL-416/#6068) ────────────
-        Route::post('/contact', [TravelContactController::class, 'submit']);
     });
