@@ -211,6 +211,15 @@ const routes = [
         }
       },
       {
+        path: '/fuel',
+        name: 'fuel',
+        component: () => import('@/views/fuel/FuelStationView.vue'),
+        meta: {
+          title: 'navigation.fuel',
+          icon: 'MapPinIcon'
+        }
+      },
+      {
         path: '/chat',
         name: 'chat',
         component: () => import('@/views/chat/ChatView.vue'),
