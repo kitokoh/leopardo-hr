@@ -17,9 +17,9 @@
       "label": "EduManager (verticale)",
       "status": "planned"
     },
-    "travelagency": {
-      "label": "TravelAgency (verticale voyage)",
-      "status": "planned"
+    "delivery": {
+      "label": "DeliveryAgency (BC-26 DELIVERY)",
+      "status": "active"
     }
   },
   "journeys": [
@@ -290,59 +290,59 @@
       ]
     },
     {
-      "id": "GJ-TRAVEL-01",
-      "name": "Vente de billet en ligne (recherche → réservation → paiement → billet → check-in)",
-      "solution": "travelagency",
-      "acceptance": "Un voyageur recherche un trajet, réserve pour des passagers, paie en mobile money (callback signé), reçoit son billet PDF nominatif et fait son check-in (TRAVEL-1007/#6120, spec §4.1).",
+      "id": "GJ-DELIVERY-01",
+      "name": "Livraison dernier-kilomètre — parcours agence complet",
+      "solution": "delivery",
+      "acceptance": "3 colis (dont 1 COD) → tournée affectée livreur+véhicule → events mobile picked_up→delivered (POD) / failed→returned → clôture (totaux) → rapport manager (taux de succès, COD) → lien destinataire. Deux clôtures → mêmes totaux.",
       "steps": [
         {
           "order": 1,
-          "action": "Rechercher un voyage",
-          "method": "GET",
-          "route": "/api/v1/travel/shop/trips",
-          "role": "public"
+          "action": "Créer les colis (dont 1 COD)",
+          "method": "POST",
+          "route": "/api/v1/delivery/deliveries",
+          "role": "delivery.dispatcher"
         },
         {
           "order": 2,
-          "action": "Consulter le trajet",
-          "method": "GET",
-          "route": "/api/v1/travel/shop/trips/{travelTrip}",
-          "role": "public"
+          "action": "Créer la tournée du jour",
+          "method": "POST",
+          "route": "/api/v1/delivery/deliveries/routes",
+          "role": "delivery.dispatcher"
         },
         {
           "order": 3,
-          "action": "Réserver (passagers)",
+          "action": "Affecter livreur + véhicule",
           "method": "POST",
-          "route": "/api/v1/travel/shop/bookings",
-          "role": "public"
+          "route": "/api/v1/delivery/deliveries/routes/{route}/assign",
+          "role": "delivery.dispatcher"
         },
         {
           "order": 4,
-          "action": "Initier le paiement mobile money",
+          "action": "Événements mobile (picked_up→delivered avec POD, failed→returned)",
           "method": "POST",
-          "route": "/api/v1/travel/payments/initiate",
-          "role": "public"
+          "route": "/api/v1/delivery/deliveries/events",
+          "role": "delivery.rider"
         },
         {
           "order": 5,
-          "action": "Émettre le billet",
+          "action": "Clôturer la tournée (totaux, idempotente)",
           "method": "POST",
-          "route": "/api/v1/travel/bookings/{travelBooking}/issue-ticket",
-          "role": "manager:principal"
+          "route": "/api/v1/delivery/deliveries/routes/{route}/close",
+          "role": "delivery.dispatcher"
         },
         {
           "order": 6,
-          "action": "Télécharger le billet PDF",
+          "action": "Rapport manager (taux de succès, COD)",
           "method": "GET",
-          "route": "/api/v1/travel/tickets/{travelTicket}/pdf",
-          "role": "manager:principal"
+          "route": "/api/v1/delivery/deliveries/reports/summary",
+          "role": "delivery.manager"
         },
         {
           "order": 7,
-          "action": "Check-in du voyageur",
-          "method": "POST",
-          "route": "/api/v1/travel/tickets/{travelTicket}/check-in",
-          "role": "manager:principal"
+          "action": "Suivi destinataire par lien borné",
+          "method": "GET",
+          "route": "/api/v1/deliveries/tracking/{token}",
+          "role": "public"
         }
       ]
     }
