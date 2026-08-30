@@ -46,12 +46,16 @@ use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantOrderRep
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPosSessionRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantReservationRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantStockLevelRepository;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoAdapter;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsAdapter;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGatewayRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CashPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\MobileMoneyPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\ReceivingService;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDeliveryWebhookService;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPublicOrderService;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
 use App\Modules\RestaurantManager\Policies\RestaurantBranchPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantCategoryPolicy;
@@ -149,6 +153,20 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             );
         });
         $this->app->singleton(CogsCalculator::class);
+
+        // RESTO-805 (#6226) — commande en ligne publique (menu par tenant via
+        // token signé, panier, paiement via le contrat PaymentGatewayInterface).
+        $this->app->singleton(RestaurantPublicOrderService::class);
+
+        // RESTO-806 (#6227) — webhooks des apps de livraison (adaptateurs
+        // Uber Eats / Glovo, signature HMAC par tenant, idempotence).
+        $this->app->singleton(RestaurantDeliveryWebhookService::class, function ($app): RestaurantDeliveryWebhookService {
+            return new RestaurantDeliveryWebhookService(
+                $app->make(RestaurantPublicOrderService::class),
+                new UberEatsAdapter,
+                new GlovoAdapter,
+            );
+        });
     }
 
     public function boot(): void

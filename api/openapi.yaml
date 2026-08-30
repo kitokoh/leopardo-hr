@@ -734,6 +734,228 @@ paths:
                 properties:
                   data:
                     type: array
+  /restaurant/branches/{restaurantBranch}/public-menu-link:
+    post:
+      tags:
+      - Restaurant
+      summary: Generer un lien public signe (menu + commande en ligne, RESTO-805)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expires_in_hours:
+                  type: integer
+                  minimum: 1
+                  maximum: 168
+                  nullable: true
+      responses:
+        '201':
+          description: Lien signe genere
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/public/menu:
+    get:
+      tags:
+      - Restaurant
+      summary: Menu public par tenant (token signe, RESTO-805)
+      security: []
+      parameters:
+      - name: company
+        in: query
+        required: true
+        schema:
+          type: string
+        description: company_id signe dans l'URL
+      - name: expires
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: signature
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '403':
+          description: Signature invalide ou lien expire
+  /restaurant/public/orders:
+    post:
+      tags:
+      - Restaurant
+      summary: Creer une commande en ligne (panier valide serveur, RESTO-805)
+      security: []
+      parameters:
+      - name: company
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: expires
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: signature
+        in: query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - branch_id
+              - order_type
+              - items
+              - consent
+              properties:
+                branch_id:
+                  type: integer
+                order_type:
+                  type: string
+                  enum:
+                  - takeaway
+                  - delivery
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - menu_item_id
+                    - quantity
+                    properties:
+                      menu_item_id:
+                        type: integer
+                      quantity:
+                        type: number
+                customer_name:
+                  type: string
+                  nullable: true
+                customer_phone:
+                  type: string
+                  nullable: true
+                customer_email:
+                  type: string
+                  format: email
+                  nullable: true
+                note:
+                  type: string
+                  nullable: true
+                consent:
+                  type: boolean
+                idempotency_key:
+                  type: string
+                  nullable: true
+                source:
+                  type: string
+                  enum:
+                  - web
+                  - kiosk
+                  nullable: true
+      responses:
+        '201':
+          description: Commande creee
+        '403':
+          description: Signature invalide ou lien expire
+        '422':
+          description: Validation ou regle metier
+  /restaurant/public/orders/{order}/pay:
+    post:
+      tags:
+      - Restaurant
+      summary: Payer une commande en ligne (contrat PaymentGatewayInterface)
+      security: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: company
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: expires
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: signature
+        in: query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider_code:
+                  type: string
+                  nullable: true
+                idempotency_key:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Paiement initie
+        '403':
+          description: Signature invalide ou lien expire
+        '409':
+          description: Commande deja soldee ou statut non payable
+        '422':
+          description: Validation ou regle metier
+  /restaurant/webhooks/delivery-apps/{provider}:
+    post:
+      tags:
+      - Restaurant
+      summary: Webhook entrant d'une app de livraison (signature HMAC, RESTO-806)
+      security: []
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - uber_eats
+          - glovo
+      headers:
+        X-Signature:
+          description: Signature HMAC-SHA256 du corps brut (secret par tenant)
+          schema:
+            type: string
+      responses:
+        '202':
+          description: Commande marketplace recue
+        '401':
+          description: Signature invalide
+        '404':
+          description: Restaurant marketplace inconnu
+        '422':
+          description: Validation ou regle metier
   /restaurant/ping:
     get:
       tags:
