@@ -220,4 +220,29 @@ class TravelNotificationApiTest extends TestCase
         Mail::assertSent(CommunicationMail::class, fn ($mail) => $mail->hasTo('a@example.com'));
         Mail::assertSent(CommunicationMail::class, fn ($mail) => $mail->hasTo('b@example.com'));
     }
+
+    public function test_notification_uses_locale_template(): void
+    {
+        Mail::fake();
+        config()->set('travel.notifications.enabled_channels', ['mail']);
+
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->activateTravel($company);
+        $this->principal($company);
+
+        ['booking' => $booking] = $this->bookingWithContact($company, consent: true);
+
+        // Locale EN demandée dans le payload → titre anglais.
+        $this->dispatch('travel.booking.confirmed.v1', [
+            'company_id' => $company->id,
+            'event_id' => 4242,
+            'event_type' => 'travel.booking.confirmed.v1',
+            'booking_reference' => $booking->reference,
+            'locale' => 'en',
+        ]);
+
+        Mail::assertSent(CommunicationMail::class, fn ($mail) => $mail->hasTo('client@example.com'));
+        Mail::assertSent(CommunicationMail::class, fn ($mail) => str_contains((string) $mail->subjectLine, 'Booking confirmed'));
+    }
 }

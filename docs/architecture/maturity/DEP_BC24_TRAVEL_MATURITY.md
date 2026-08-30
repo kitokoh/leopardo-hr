@@ -3,7 +3,7 @@
 > **Issue :** [TRAVEL-050 #5998](https://github.com/kitokoh/leopardo-hr/issues/5998)
 > **Contexte :** BC-24 — TravelAgency (verticale agence de voyage : réseau, trajets, réservations, passagers, billets, paiements mobile money, locations, hôtels, rapports)
 > **Date :** 2026-08-29
-> **Statut :** **Planifié** — la solution n'est pas encore sur `main` ; maturité à mesurer à l'arrivée du code (issues TRAVEL-001..051).
+> **Statut :** **Code livré (branche travel, PRs #6127/#6273/#6330/#6334/#6351 + lot 3b)** — maturité à verrouiller au merge `main` et au GO pilote (gates MAT-018, `pilot-gates.json` entrée `travel`). 302 tests Feature verts, PHPStan 0 erreur, OpenAPI coverage 0 drift, Redocly 0 erreur.
 > **Spécification :** `docs/specifications/SOLUTION_TRAVEL_AGENCY.md`
 
 ## 1. Cartographie (état `main`)
@@ -21,7 +21,14 @@
 
 | Dimension | Statut | Constat |
 |---|---|---|
-| Toutes (1-12) | ⏳ Planifié | Chaque dimension sera évaluée à l'arrivée du code sur `main` — le DoD commun (12 dimensions, §11 de la spec) est le critère de sortie du pilote |
+| Architecture DDD (1) | ✅ | Module `TravelAgency` complet (Domain/Application/Infrastructure/Interfaces), Actions, Policies, outbox |
+| Tests & isolation (2-3) | ✅ | 302 tests Feature Travel (654→761 assertions), tests cross-tenant 401/403/404, RBAC `travel.*` |
+| API & contrats (4-5) | ✅ | OpenAPI 1009+ opérations, coverage 0 drift, Redocly 0 erreur, Postman + guide partenaires |
+| Sécurité & RGPD (6) | ✅ | Audit livré (`AUDIT_SECURITE_RGPD_TRAVEL.md`), PII chiffrée, callbacks HMAC, consentements |
+| Observabilité (7) | ✅ | Outbox + dead-letter, jobs planifiés (expiration, adverts, synthèse Accounting) |
+| Performance (8) | ⏳ | Budgets p95 à valider au pilote (gate `performance`, MAT-014) |
+| Golden journey (9) | ✅ | GJ-TRAVEL-01 vert (`TravelGoldenJourneyTest`) + tunnel public E2E |
+| Runbook & pilote (10-12) | ✅ | Runbook + recette UAT + pilot gates + pilot-check livrés |
 
 ## 3. Gates pilote (MAT-018 #5876)
 

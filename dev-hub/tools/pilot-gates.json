@@ -6,15 +6,51 @@
       "label": "FuelStation",
       "go_decision": "pending",
       "gates": [
-        { "id": "manifest", "label": "Manifest + activation tenant (FUEL-001)", "status": "pending" },
-        { "id": "core_flow", "label": "Parcours station → pompe → compteur → vente → écart (FUEL-002..009)", "status": "pending" },
-        { "id": "api_security", "label": "API, Policies, tests cross-tenant (FUEL-011)", "status": "pending" },
-        { "id": "runbook", "label": "Pilote, runbook et rollback (FUEL-021)", "status": "pending" },
-        { "id": "security_review", "label": "Revue sécurité uploads/OCR/WhatsApp/POS/devices (MAT-017)", "status": "pending" },
-        { "id": "performance", "label": "Budgets performance (MAT-014)", "status": "pending" },
-        { "id": "observability", "label": "Observabilité et corrélation (MAT-009)", "status": "pending" },
-        { "id": "golden_journey", "label": "Golden journey pilote (GJ-06)", "status": "pending" },
-        { "id": "recette", "label": "Recette métier signée (FUEL-022)", "status": "pending" }
+        {
+          "id": "manifest",
+          "label": "Manifest + activation tenant (FUEL-001)",
+          "status": "pending"
+        },
+        {
+          "id": "core_flow",
+          "label": "Parcours station → pompe → compteur → vente → écart (FUEL-002..009)",
+          "status": "pending"
+        },
+        {
+          "id": "api_security",
+          "label": "API, Policies, tests cross-tenant (FUEL-011)",
+          "status": "pending"
+        },
+        {
+          "id": "runbook",
+          "label": "Pilote, runbook et rollback (FUEL-021)",
+          "status": "pending"
+        },
+        {
+          "id": "security_review",
+          "label": "Revue sécurité uploads/OCR/WhatsApp/POS/devices (MAT-017)",
+          "status": "pending"
+        },
+        {
+          "id": "performance",
+          "label": "Budgets performance (MAT-014)",
+          "status": "pending"
+        },
+        {
+          "id": "observability",
+          "label": "Observabilité et corrélation (MAT-009)",
+          "status": "pending"
+        },
+        {
+          "id": "golden_journey",
+          "label": "Golden journey pilote (GJ-06)",
+          "status": "pending"
+        },
+        {
+          "id": "recette",
+          "label": "Recette métier signée (FUEL-022)",
+          "status": "pending"
+        }
       ]
     },
     {
@@ -22,15 +58,103 @@
       "label": "EduManager",
       "go_decision": "pending",
       "gates": [
-        { "id": "manifest", "label": "Manifest + activation tenant (EDU-001)", "status": "pending" },
-        { "id": "core_flow", "label": "Parcours campus → classe → élève → présence → notes (EDU-002..008)", "status": "pending" },
-        { "id": "api_security", "label": "API, Policies, RBAC scolaire (EDU-009..010)", "status": "pending" },
-        { "id": "runbook", "label": "Pilote établissement et runbook (EDU-021)", "status": "pending" },
-        { "id": "security_review", "label": "Revue sécurité (MAT-017)", "status": "pending" },
-        { "id": "performance", "label": "Budgets performance (MAT-014)", "status": "pending" },
-        { "id": "observability", "label": "Observabilité (MAT-009)", "status": "pending" },
-        { "id": "golden_journey", "label": "Golden journey pilote (GJ-07)", "status": "pending" },
-        { "id": "recette", "label": "Recette métier signée (EDU-022)", "status": "pending" }
+        {
+          "id": "manifest",
+          "label": "Manifest + activation tenant (EDU-001)",
+          "status": "pending"
+        },
+        {
+          "id": "core_flow",
+          "label": "Parcours campus → classe → élève → présence → notes (EDU-002..008)",
+          "status": "pending"
+        },
+        {
+          "id": "api_security",
+          "label": "API, Policies, RBAC scolaire (EDU-009..010)",
+          "status": "pending"
+        },
+        {
+          "id": "runbook",
+          "label": "Pilote établissement et runbook (EDU-021)",
+          "status": "pending"
+        },
+        {
+          "id": "security_review",
+          "label": "Revue sécurité (MAT-017)",
+          "status": "pending"
+        },
+        {
+          "id": "performance",
+          "label": "Budgets performance (MAT-014)",
+          "status": "pending"
+        },
+        {
+          "id": "observability",
+          "label": "Observabilité (MAT-009)",
+          "status": "pending"
+        },
+        {
+          "id": "golden_journey",
+          "label": "Golden journey pilote (GJ-07)",
+          "status": "pending"
+        },
+        {
+          "id": "recette",
+          "label": "Recette métier signée (EDU-022)",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "travel",
+      "label": "TravelAgency (BC-24)",
+      "go_decision": "pending",
+      "gates": [
+        {
+          "id": "manifest",
+          "label": "Manifest + activation tenant (TRAVEL-101..107)",
+          "status": "pending"
+        },
+        {
+          "id": "core_flow",
+          "label": "Parcours réseau → trajet → réservation → paiement → billet → check-in (TRAVEL-301..318, 401..413)",
+          "status": "pending"
+        },
+        {
+          "id": "api_security",
+          "label": "API, Policies, tests cross-tenant + RBAC (TRAVEL-322)",
+          "status": "pending"
+        },
+        {
+          "id": "runbook",
+          "label": "Runbook pilote + recette UAT + rollback (TRAVEL-1010)",
+          "status": "pending"
+        },
+        {
+          "id": "security_review",
+          "label": "Audit sécurité & RGPD (PII passagers, paiements, exports — TRAVEL-1013)",
+          "status": "pending"
+        },
+        {
+          "id": "performance",
+          "label": "Budgets p95 & index (MAT-014 — endpoints livraison/reservations)",
+          "status": "pending"
+        },
+        {
+          "id": "observability",
+          "label": "Observabilité (outbox, jobs, erreurs — TRAVEL-414/418)",
+          "status": "pending"
+        },
+        {
+          "id": "golden_journey",
+          "label": "Golden journey GJ-TRAVEL-01 (TRAVEL-1007)",
+          "status": "pending"
+        },
+        {
+          "id": "recette",
+          "label": "Recette signée tenant pilote (TRAVEL-1012)",
+          "status": "pending"
+        }
       ]
     }
   ,

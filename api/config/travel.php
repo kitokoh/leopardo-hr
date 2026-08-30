@@ -52,5 +52,38 @@ return [
         'whatsapp_access_token' => (string) env('WHATSAPP_ACCESS_TOKEN', ''),
         // Base du lien authentifié de suivi de réservation (boutique/portail).
         'tracking_base_url' => rtrim((string) env('TRAVEL_NOTIFICATION_TRACKING_BASE_URL', env('APP_URL', 'http://localhost')), '/'),
+        // TRAVEL-1009 (#6122) — templates i18n (fr par défaut, en disponible ;
+        // ar/tr à venir avec les surfaces UI RTL). `{reference}` et `{tracking_url}`
+        // sont substitués par le service.
+        'templates' => [
+            'travel.booking.confirmed.v1' => [
+                'fr' => ['title' => 'Réservation confirmée', 'body' => 'Votre réservation {reference} est confirmée. Suivez-la : {tracking_url}'],
+                'en' => ['title' => 'Booking confirmed', 'body' => 'Your booking {reference} is confirmed. Track it: {tracking_url}'],
+            ],
+            'travel.booking.cancelled.v1' => [
+                'fr' => ['title' => 'Réservation annulée', 'body' => 'Votre réservation {reference} a été annulée.'],
+                'en' => ['title' => 'Booking cancelled', 'body' => 'Your booking {reference} has been cancelled.'],
+            ],
+            'travel.booking.expired.v1' => [
+                'fr' => ['title' => 'Réservation expirée', 'body' => 'Votre réservation {reference} a expiré faute de paiement.'],
+                'en' => ['title' => 'Booking expired', 'body' => 'Your booking {reference} expired due to missing payment.'],
+            ],
+            'travel.payment.confirmed.v1' => [
+                'fr' => ['title' => 'Paiement confirmé', 'body' => 'Le paiement de la réservation {reference} est confirmé.'],
+                'en' => ['title' => 'Payment confirmed', 'body' => 'The payment for booking {reference} is confirmed.'],
+            ],
+            'travel.payment.refunded.v1' => [
+                'fr' => ['title' => 'Remboursement effectué', 'body' => 'Le remboursement de la réservation {reference} a été effectué.'],
+                'en' => ['title' => 'Refund processed', 'body' => 'The refund for booking {reference} has been processed.'],
+            ],
+            'travel.ticket.issued.v1' => [
+                'fr' => ['title' => 'Billets disponibles', 'body' => 'Les billets de la réservation {reference} sont disponibles : {tracking_url}'],
+                'en' => ['title' => 'Tickets available', 'body' => 'Tickets for booking {reference} are available: {tracking_url}'],
+            ],
+            'travel.trip.cancelled.v1' => [
+                'fr' => ['title' => 'Trajet annulé par l\'agence', 'body' => 'Le trajet de votre réservation {reference} est annulé. Les remboursements sont en cours.'],
+                'en' => ['title' => 'Trip cancelled by agency', 'body' => 'The trip for booking {reference} is cancelled. Refunds are being processed.'],
+            ],
+        ],
     ],
 ];
