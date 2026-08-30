@@ -4260,6 +4260,61 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/sessions/{trainingSession}/enroll", options);
     },
 
+    /** TRAVEL-901 — Catégories d''articles */
+    getTravelArticleCategories(options = {}) {
+      return request("GET", "/travel/article-categories", options);
+    },
+
+    /** TRAVEL-901 — Création d''une catégorie */
+    postTravelArticleCategories(options = {}) {
+      return request("POST", "/travel/article-categories", options);
+    },
+
+    /** TRAVEL-901 — Suppression d''un article */
+    deleteTravelArticlesByTravelArticle(options = {}) {
+      return request("DELETE", "/travel/articles/{travelArticle}", options);
+    },
+
+    /** TRAVEL-901 — Détail d''un article */
+    getTravelArticlesByTravelArticle(options = {}) {
+      return request("GET", "/travel/articles/{travelArticle}", options);
+    },
+
+    /** TRAVEL-901 — Mise à jour d''un article */
+    putTravelArticlesByTravelArticle(options = {}) {
+      return request("PUT", "/travel/articles/{travelArticle}", options);
+    },
+
+    /** TRAVEL-903 — Agrégats d''engagement */
+    getTravelArticlesByTravelArticleEngagement(options = {}) {
+      return request("GET", "/travel/articles/{travelArticle}/engagement", options);
+    },
+
+    /** TRAVEL-903 — Like (unicité acteur/article) */
+    postTravelArticlesByTravelArticleLike(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/like", options);
+    },
+
+    /** TRAVEL-901 — Modération d''un article (draft/published/flagged) */
+    postTravelArticlesByTravelArticleModerate(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/moderate", options);
+    },
+
+    /** TRAVEL-903 — Note 1..5 (unicité, agrégats) */
+    postTravelArticlesByTravelArticleRate(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/rate", options);
+    },
+
+    /** TRAVEL-903 — Partage (canal) */
+    postTravelArticlesByTravelArticleShare(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/share", options);
+    },
+
+    /** TRAVEL-903 — Unlike */
+    postTravelArticlesByTravelArticleUnlike(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/unlike", options);
+    },
+
     /** Liste des réservations (TRAVEL-312/#6042) */
     getTravelBookings(options = {}) {
       return request("GET", "/travel/bookings", options);
@@ -4375,8 +4430,38 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/travel/classes/{travelClass}", options);
     },
 
+    /** TRAVEL-902 — Liste des commentaires */
+    getTravelComments(options = {}) {
+      return request("GET", "/travel/comments", options);
+    },
+
+    /** TRAVEL-902 — Création d''un commentaire (pending) */
+    postTravelComments(options = {}) {
+      return request("POST", "/travel/comments", options);
+    },
+
+    /** TRAVEL-902 — Suppression d''un commentaire */
+    deleteTravelCommentsByTravelComment(options = {}) {
+      return request("DELETE", "/travel/comments/{travelComment}", options);
+    },
+
+    /** TRAVEL-902 — Modération (approved/rejected/flagged) */
+    postTravelCommentsByTravelCommentModerate(options = {}) {
+      return request("POST", "/travel/comments/{travelComment}/moderate", options);
+    },
+
+    /** TRAVEL-902 — Signalement d''un commentaire */
+    postTravelCommentsByTravelCommentReport(options = {}) {
+      return request("POST", "/travel/comments/{travelComment}/report", options);
+    },
+
     /** Formulaire de contact → lead CRM (TRAVEL-416/#6068) */
     postTravelContact(options = {}) {
+      return request("POST", "/travel/contact", options);
+    },
+
+    /** TRAVEL-416 — Formulaire de contact → lead CRM (événement outbox) */
+    postTravelContact2(options = {}) {
       return request("POST", "/travel/contact", options);
     },
 
