@@ -81,7 +81,13 @@ class TravelOutboxDispatchCommand extends Command
                     continue;
                 }
 
-                $this->tenants->withinTenant($company, fn () => $consumer->handle($event->payload_redacted ?? []));
+                // Enveloppe d'événement : identifiant + métadonnées disponibles
+                // pour tous les consommateurs (webhooks, notifications, CRM…).
+                $this->tenants->withinTenant($company, fn () => $consumer->handle(array_merge([
+                    'event_id' => $event->id,
+                    'event_type' => $event->event_type,
+                    'company_id' => $event->company_id,
+                ], $event->payload_redacted ?? [])));
 
                 $event->forceFill([
                     'status' => TravelOutboxEvent::STATUS_PUBLISHED,
