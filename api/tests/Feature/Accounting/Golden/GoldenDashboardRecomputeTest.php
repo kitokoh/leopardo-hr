@@ -20,7 +20,7 @@ use Tests\TestCase;
  *
  * Le read model `AccountingDashboardService::summary()` est une agrégation
  * de pilotage (lecture seule, scopée company_id) : ce test verrouille
- *  - la DÉTERMINISME : deux recalculs successifs → résultats identiques ;
+ *  - le DÉTERMINISME : deux recalculs successifs → résultats identiques ;
  *  - les MONTANTS CALCULÉS À LA MAIN (méthodologie golden) ;
  *  - l'ISOLATION tenant : les données d'un autre tenant n'altèrent jamais le
  *    read model du tenant courant.
@@ -103,9 +103,12 @@ class GoldenDashboardRecomputeTest extends TestCase
         //   AV-1   fourn. HT  1 000 + TVA   190 = TTC  1 190  (émise le 08-14)
         //   PAIEMENT FAC-1 : 11 900 (reçu le 08-10)
         //   PAIEMENT FAC-2 :  2 380 (reçu le 08-15)
-        // Période 2026-08 : invoices = 2 factures (14 280 TTC), expenses = 1 (1 190),
-        // collections = 2 (14 280), outstanding = FAC-2 partiellement? non — FAC-2 payé.
-        // → outstanding : aucune facture impayée (FAC-1 et FAC-2 payées en intégralité).
+        //
+        // Période 2026-08 :
+        //   invoices   = 2 factures client (14 280 TTC)
+        //   collections = 2 encaissements (14 280)
+        //   expenses   = 1 dépense fournisseur (1 190)
+        //   outstanding = 1 (AV-1 fournisseur non soldée, 1 190) — FAC-1/FAC-2 payées.
         $customer = $this->contact($company, 'customer', 'client@exemple.dz');
         $supplier = $this->contact($company, 'supplier', 'fournisseur@exemple.dz');
         $fac1 = $this->document($company, $customer, 'invoice', '2026-08-05', 10000.0, 1900.0, 'FAC-2026-0001');
@@ -116,13 +119,26 @@ class GoldenDashboardRecomputeTest extends TestCase
 
         $first = $service->summary((string) $company->id, '2026-08-01', '2026-08-31');
 
-        // Montants calculés à la main.
-        self::assertSame(2, $first['invoices']['count']);
-        self::assertSame(14280.0, $first['invoices']['total_ttc']);
-        self::assertSame(2, $first['collections']['count']);
-        self::assertSame(14280.0, $first['collections']['total']);
-        self::assertSame(1, $first['expenses']['count']);
-        self::assertSame(1190.0, $first['expenses']['total_ttc']);
+        // Montants calculés à la main (méthodologie golden).
+        /** @var array{count: int, total_ttc: float} $invoices */
+        $invoices = $first['invoices'];
+        self::assertSame(2, $invoices['count']);
+        self::assertSame(14280.0, $invoices['total_ttc']);
+
+        /** @var array{count: int, total: float} $collections */
+        $collections = $first['collections'];
+        self::assertSame(2, $collections['count']);
+        self::assertSame(14280.0, $collections['total']);
+
+        /** @var array{count: int, total_ttc: float} $expenses */
+        $expenses = $first['expenses'];
+        self::assertSame(1, $expenses['count']);
+        self::assertSame(1190.0, $expenses['total_ttc']);
+
+        /** @var array{count: int, total_due: float} $outstanding */
+        $outstanding = $first['outstanding'];
+        self::assertSame(1, $outstanding['count']);
+        self::assertSame(1190.0, $outstanding['total_due']);
 
         // DÉTERMINISME : deux recalculs successifs → résultats identiques
         // (exigence backlog : « deux recalculs produisent le même résultat »).
@@ -144,8 +160,10 @@ class GoldenDashboardRecomputeTest extends TestCase
         $summaryA = $service->summary((string) $companyA->id, '2026-08-01', '2026-08-31');
 
         // Le read model du tenant A ne voit QUE ses données (isolation).
-        self::assertSame(1, $summaryA['invoices']['count']);
-        self::assertSame(11900.0, $summaryA['invoices']['total_ttc']);
+        /** @var array{count: int, total_ttc: float} $invoices */
+        $invoices = $summaryA['invoices'];
+        self::assertSame(1, $invoices['count']);
+        self::assertSame(11900.0, $invoices['total_ttc']);
 
         // Déterminisme après l'ajout de données chez B : inchangé.
         $this->document($companyB, $customerB, 'invoice', '2026-08-06', 900.0, 171.0, 'FAC-B-0002');
