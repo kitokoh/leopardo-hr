@@ -88,7 +88,7 @@ type DataTableProps<T> = {
 
 export function DataTable<T>({ columns, rows, rowKey, emptyLabel, loading, error, onRetry }: DataTableProps<T>) {
   if (loading) {
-    return <Spinner label="Chargement…" />;
+    return <Spinner label={t(getPreferredLocale(), 'edu.common.loading')} />;
   }
 
   if (error) {
