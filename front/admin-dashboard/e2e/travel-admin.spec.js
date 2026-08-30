@@ -183,6 +183,17 @@ test.describe('TravelAgency — écrans (TRAVEL-602..608)', () => {
 
 
 
+
+  test('onglet Contacts : liste, consentements, notification (TRAVEL-912)', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /Contacts/i }).click()
+    await expect(page.getByRole('heading', { name: /Contacts voyageurs/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('button', { name: /Consentements/i }).first()).toBeVisible()
+    await expect(page.getByRole('button', { name: /Notifier/i }).first()).toBeVisible()
+  })
   test('onglet Référentiel : pays & villes + sections CRUD', async ({ page }) => {
     await loginViaToken(page)
     await mockTravelApi(page)

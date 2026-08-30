@@ -93,6 +93,7 @@ import TravelRentalsHotelsTab from '@/views/travel/TravelRentalsHotelsTab.vue'
 import TravelQuizTab from '@/views/travel/TravelQuizTab.vue'
 import TravelAdvertsTab from '@/views/travel/TravelAdvertsTab.vue'
 import TravelTouristSitesTab from '@/views/travel/TravelTouristSitesTab.vue'
+import TravelContactsTab from '@/views/travel/TravelContactsTab.vue'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
