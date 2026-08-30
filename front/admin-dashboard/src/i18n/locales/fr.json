@@ -1577,11 +1577,8 @@
     "accountingActivation": "Comptabilité — Démarrer",
     "accountingDashboard": "Comptabilité — Tableau de bord",
     "accountingSettings": "Comptabilité — Paramétrage",
-<<<<<<< HEAD
-    "travel": "Agence de voyage"
-=======
+    "travel": "Agence de voyage",
     "fuelStation": "Stations-service"
->>>>>>> origin/feat/travel-101-202-foundations
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?",
@@ -4239,8 +4236,6 @@
     "actionError": "Action impossible, réessayez.",
     "loading": "Chargement de la file cuisine…"
   },
-<<<<<<< HEAD
-=======
   "fuel": {
     "statStations": "Stations",
     "statOpenIncidents": "Incidents ouverts",
@@ -4287,7 +4282,6 @@
     "incidentsCaption": "Incidents signalés",
     "reconciliationsCaption": "Rapports de rapprochement"
   },
->>>>>>> origin/feat/travel-101-202-foundations
   "travel": {
     "common": {
       "retry": "Réessayer",
@@ -4572,8 +4566,6 @@
       "infant": "Bébé",
       "child": "Enfant",
       "adult": "Adulte"
-<<<<<<< HEAD
-=======
     },
     "content": {
       "title": "Contenu & annonces",
@@ -4672,7 +4664,6 @@
         "receivedBody": "Merci, votre demande a bien été transmise à l’agence.",
         "newRequest": "Nouvelle demande"
       }
->>>>>>> origin/feat/travel-101-202-foundations
     }
   }
 }

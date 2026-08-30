@@ -73,12 +73,9 @@ import {
   NewspaperIcon,
   QrCodeIcon,
   TicketIcon,
-<<<<<<< HEAD
   ChartBarIcon
-=======
   ChartBarIcon,
   MegaphoneIcon
->>>>>>> origin/feat/travel-101-202-foundations
 } from '@heroicons/vue/24/outline'
 
 const localeStore = useLocaleStore()
@@ -139,8 +136,6 @@ const sections = computed(() => [
     description: t('travel.reports.subtitle', 'Ventes, occupation, recettes, annulations et exports CSV.')
   },
   {
-<<<<<<< HEAD
-=======
     name: 'travel-content',
     path: '/travel/content',
     icon: MegaphoneIcon,
@@ -148,7 +143,6 @@ const sections = computed(() => [
     description: t('travel.content.subtitle', 'Quiz, annonces payantes et sites touristiques.')
   },
   {
->>>>>>> origin/feat/travel-101-202-foundations
     name: 'travel-catalog',
     path: '/travel/catalog',
     icon: NewspaperIcon,

@@ -1577,11 +1577,8 @@
     "accountingActivation": "Accounting — Get started",
     "accountingDashboard": "Accounting — Dashboard",
     "accountingSettings": "Accounting — Settings",
-<<<<<<< HEAD
-    "travel": "Travel Agency"
-=======
+    "travel": "Travel Agency",
     "fuelStation": "Fuel stations"
->>>>>>> origin/feat/travel-101-202-foundations
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?",
@@ -4239,8 +4236,6 @@
     "actionError": "Action failed, please retry.",
     "loading": "Loading kitchen queue…"
   },
-<<<<<<< HEAD
-=======
   "fuel": {
     "statStations": "Stations",
     "statOpenIncidents": "Open incidents",
@@ -4287,7 +4282,6 @@
     "incidentsCaption": "Reported incidents",
     "reconciliationsCaption": "Reconciliation reports"
   },
->>>>>>> origin/feat/travel-101-202-foundations
   "travel": {
     "common": {
       "retry": "Retry",
@@ -4572,8 +4566,6 @@
       "infant": "Infant",
       "child": "Child",
       "adult": "Adult"
-<<<<<<< HEAD
-=======
     },
     "content": {
       "title": "Content & ads",
@@ -4672,7 +4664,6 @@
         "receivedBody": "Thank you, your request has been forwarded to the agency.",
         "newRequest": "New request"
       }
->>>>>>> origin/feat/travel-101-202-foundations
     }
   }
 }
