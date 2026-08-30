@@ -4540,8 +4540,6 @@ paths:
           description: Résultats triés par score
         '403':
           description: Rôle insuffisant
-<<<<<<< HEAD
-=======
   /travel/contacts:
     get:
       tags:
@@ -4647,7 +4645,6 @@ paths:
           description: Consentements mis à jour
         '404':
           description: Contact introuvable
->>>>>>> origin/feat/travel-101-202-foundations
   /travel/contacts/{travelCustomerContact}/notify:
     post:
       tags:

@@ -188,7 +188,6 @@ class TravelQuizApiTest extends TestCase
             ->assertOk()
             ->assertJsonMissing(['title' => 'Quiz tenant B']);
     }
-<<<<<<< HEAD
 
     /* ── TRAVEL-914 (#6422) — gestion admin : update quiz / questions ── */
 
@@ -304,6 +303,4 @@ class TravelQuizApiTest extends TestCase
 
         $this->getJson("/api/v1/travel/quizzes/{$quiz->id}/questions")->assertStatus(403);
     }
-=======
->>>>>>> origin/feat/travel-101-202-foundations
 }
