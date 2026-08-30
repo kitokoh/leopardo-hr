@@ -23,6 +23,7 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingContro
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelOutboxController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelProductController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReportController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStationController;
@@ -130,5 +131,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // FUEL-015 (#5809) : outbox contrat Accounting (audit + rejeu dead-letter).
         Route::get('/fuel-station/outbox/events', [FuelOutboxController::class, 'index']);
         Route::post('/fuel-station/outbox/events/{event}/retry', [FuelOutboxController::class, 'retry'])->whereNumber('event');
+        // FUEL-017 (#5811) : reporting opérationnel (read models + exports).
+        Route::get('/fuel-station/reports/daily-volumes', [FuelReportController::class, 'dailyVolumes']);
+        Route::get('/fuel-station/reports/sales', [FuelReportController::class, 'sales']);
+        Route::get('/fuel-station/reports/stock', [FuelReportController::class, 'stock']);
+        Route::get('/fuel-station/reports/variances', [FuelReportController::class, 'variances']);
+        Route::get('/fuel-station/reports/shifts', [FuelReportController::class, 'shifts']);
+        Route::post('/fuel-station/reports/exports', [FuelReportController::class, 'createExport']);
+        Route::get('/fuel-station/reports/exports', [FuelReportController::class, 'exports']);
+        Route::get('/fuel-station/reports/exports/{export}/download', [FuelReportController::class, 'download'])->whereNumber('export');
     });
 });
