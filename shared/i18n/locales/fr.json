@@ -3631,5 +3631,39 @@
     "loadError": "Impossible de charger la file cuisine.",
     "actionError": "Action impossible, réessayez.",
     "loading": "Chargement de la file cuisine…"
+  },
+  "fuel": {
+    "pump": {
+      "nav": "Pompiste",
+      "title": "Écran pompiste",
+      "subtitle": "Relevés de compteurs en quelques secondes, même en mauvaise connexion.",
+      "noShift": "Aucun shift actif aujourd'hui — les relevés seront enregistrés sans shift.",
+      "shift": "Shift",
+      "selectStation": "1. Station",
+      "selectPump": "2. Pompe",
+      "selectMeter": "3. Compteur",
+      "reading": "Relevé du compteur",
+      "unitHint": "Valeur en litres (minor units ×100 envoyées au serveur).",
+      "capturedAt": "Horodatage",
+      "now": "Maintenant",
+      "submit": "Enregistrer le relevé",
+      "submitting": "Enregistrement…",
+      "saved": "Relevé enregistré.",
+      "delta": "Delta",
+      "noDelta": "Premier relevé — pas de delta.",
+      "anomaly": "Signaler une anomalie",
+      "anomalyTitle": "Titre de l'anomalie",
+      "anomalySeverity": "Gravité",
+      "anomalySaved": "Anomalie signalée.",
+      "low": "basse",
+      "medium": "moyenne",
+      "high": "haute",
+      "critical": "critique",
+      "emptyStations": "Aucune station disponible.",
+      "loadError": "Impossible de charger les données. Réessayez.",
+      "offlineHint": "Saisie idempotente : en cas de coupure, la reprise ne duplique pas le relevé.",
+      "retry": "Réessayer",
+      "back": "Retour"
+    }
   }
 }
