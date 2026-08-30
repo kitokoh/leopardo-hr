@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-08-25T00:00:00Z",
+  "generated_at": "2026-08-30T12:00:00Z",
   "default_locale": "fr",
   "rtl_locales": [
     "ar"
@@ -25,35 +25,35 @@
   },
   "locales": {
     "fr": {
-      "checksum": "c67fa9803409c56b9e97db13335a159b59edffc3086fb2a64cf3707671e538f6",
+      "checksum": "62d830a76eff79492f8292dd1c463a21ccd9aa47235a8a3a2e59670e719f4bee",
       "version": "1.0.0",
-      "updated_at": "2026-08-25T00:00:00Z"
+      "updated_at": "2026-08-30T12:00:00Z"
     },
     "ar": {
-      "checksum": "c6afceda59b57732d0ba02b35226ce93210810235b6b377041824b7845220895",
+      "checksum": "506fc89e93340c8bfe11af56c384cb8a4096ab514140a853c58753d77982b666",
       "version": "1.0.0",
-      "updated_at": "2026-08-25T00:00:00Z"
+      "updated_at": "2026-08-30T12:00:00Z"
     },
     "tr": {
-      "checksum": "079a0c20b4f7fb07b588244aa2ae61bcb0f5663294c8fc79d31b274d0b2b0c31",
+      "checksum": "13a4fd0e858562fd9290238ac723f9c056caef087dad32ba9120ea4edbe85802",
       "version": "1.0.0",
-      "updated_at": "2026-08-25T00:00:00Z"
+      "updated_at": "2026-08-30T12:00:00Z"
     },
     "en": {
-      "checksum": "f1e69c573cc0abf53581aff4dfe9dc99f48a3d7431ce75d8c4a4103b34d1b8f1",
+      "checksum": "dea85c25954664ddcc6f786bdc7af8825b5417482b1fa1fd2d8b79f096bb72c1",
       "version": "1.0.0",
-      "updated_at": "2026-08-25T00:00:00Z"
+      "updated_at": "2026-08-30T12:00:00Z"
     }
   },
   "surfaces": {
     "web": {
       "checksums": {
-        "ar": "c6afceda59b57732d0ba02b35226ce93210810235b6b377041824b7845220895",
-        "en": "f1e69c573cc0abf53581aff4dfe9dc99f48a3d7431ce75d8c4a4103b34d1b8f1",
-        "fr": "c67fa9803409c56b9e97db13335a159b59edffc3086fb2a64cf3707671e538f6",
-        "tr": "079a0c20b4f7fb07b588244aa2ae61bcb0f5663294c8fc79d31b274d0b2b0c31"
+        "ar": "506fc89e93340c8bfe11af56c384cb8a4096ab514140a853c58753d77982b666",
+        "en": "dea85c25954664ddcc6f786bdc7af8825b5417482b1fa1fd2d8b79f096bb72c1",
+        "fr": "62d830a76eff79492f8292dd1c463a21ccd9aa47235a8a3a2e59670e719f4bee",
+        "tr": "13a4fd0e858562fd9290238ac723f9c056caef087dad32ba9120ea4edbe85802"
       },
-      "updated_at": "2026-08-30T11:03:26.010Z"
+      "updated_at": "2026-08-30T14:15:08.903Z"
     },
     "admin": {
       "checksums": {
