@@ -3700,30 +3700,6 @@ class LeopardoClient:
         """Suppression d'une image (TRAVEL-319/#6049)"""
         return self.request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}/images/{travelRentalVehicleImage}", **kwargs)
 
-    def get_travel_reports_cancellations(self, **kwargs):
-        """Annulations & motifs (TRAVEL-504/#6074)"""
-        return self.request("GET", "/travel/reports/cancellations", **kwargs)
-
-    def get_travel_reports_dashboard(self, **kwargs):
-        """KPIs du dashboard (TRAVEL-507/#6077)"""
-        return self.request("GET", "/travel/reports/dashboard", **kwargs)
-
-    def get_travel_reports_export(self, **kwargs):
-        """Export CSV idempotent (TRAVEL-505/#6075)"""
-        return self.request("GET", "/travel/reports/export", **kwargs)
-
-    def get_travel_reports_occupancy(self, **kwargs):
-        """Taux d'occupation par trajet (TRAVEL-502/#6072)"""
-        return self.request("GET", "/travel/reports/occupancy", **kwargs)
-
-    def get_travel_reports_revenue(self, **kwargs):
-        """Recettes encaissées (TRAVEL-503/#6073)"""
-        return self.request("GET", "/travel/reports/revenue", **kwargs)
-
-    def get_travel_reports_sales(self, **kwargs):
-        """Rapport des ventes (TRAVEL-501/#6071)"""
-        return self.request("GET", "/travel/reports/sales", **kwargs)
-
     def post_travel_round_trips(self, **kwargs):
         """Création d'un aller-retour combiné (TRAVEL-802/#6093)"""
         return self.request("POST", "/travel/round-trips", **kwargs)
@@ -3871,18 +3847,6 @@ class LeopardoClient:
     def put_travel_vehicles_by_travelvehicle(self, **kwargs):
         """Mise à jour d'un véhicule (TRAVEL-306/#6036)"""
         return self.request("PUT", "/travel/vehicles/{travelVehicle}", **kwargs)
-
-    def get_travel_webhook_subscriptions(self, **kwargs):
-        """Liste des abonnements webhooks transporteurs (TRAVEL-806/#6097)"""
-        return self.request("GET", "/travel/webhook-subscriptions", **kwargs)
-
-    def post_travel_webhook_subscriptions(self, **kwargs):
-        """Créer/mettre à jour un abonnement webhook transporteur (upsert par transporteur)"""
-        return self.request("POST", "/travel/webhook-subscriptions", **kwargs)
-
-    def delete_travel_webhook_subscriptions_by_subscription(self, **kwargs):
-        """Supprimer un abonnement webhook transporteur"""
-        return self.request("DELETE", "/travel/webhook-subscriptions/{subscription}", **kwargs)
 
     def post_trial_signup(self, **kwargs):
         """Demande d'essai guidé / auto-service (onboarding)"""
