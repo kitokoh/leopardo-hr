@@ -21,6 +21,7 @@ final class OccupancyReportQuery
 {
     /**
      * @param  array<string, mixed>  $filters
+     * @return LengthAwarePaginator<int, array{id: int, code: string, route_id: int, departure_date: string, departure_time: string, total_seats: int, sold_seats: int, reserved_seats: int, free_seats: int, occupancy_rate: float}>
      */
     public function execute(array $filters): LengthAwarePaginator
     {

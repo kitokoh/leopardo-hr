@@ -35,6 +35,10 @@ final class RefundPaymentAction
             abort(422, 'Seul un paiement confirmé peut être remboursé.');
         }
 
+        if ($payment->provider_reference === null) {
+            abort(422, 'Référence provider manquante — remboursement impossible.');
+        }
+
         $this->gateways->get($payment->provider_code->value)->refund($payment->provider_reference);
 
         DB::transaction(function () use ($payment): void {

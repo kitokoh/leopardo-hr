@@ -45,9 +45,21 @@ class TravelShopController extends Controller
             ->when($request->query('destination_city_id'), function ($q, $cityId) {
                 $q->whereHas('route', fn ($route) => $route->where('destination_city_id', $cityId));
             })
-            ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', (string) $date))
-            ->when($request->query('date_from'), fn ($q, $date) => $q->whereDate('departure_date', '>=', (string) $date))
-            ->when($request->query('date_to'), fn ($q, $date) => $q->whereDate('departure_date', '<=', (string) $date))
+            ->when($request->query('departure_date'), function ($q, $date): void {
+                if (is_string($date)) {
+                    $q->whereDate('departure_date', $date);
+                }
+            })
+            ->when($request->query('date_from'), function ($q, $date): void {
+                if (is_string($date)) {
+                    $q->whereDate('departure_date', '>=', $date);
+                }
+            })
+            ->when($request->query('date_to'), function ($q, $date): void {
+                if (is_string($date)) {
+                    $q->whereDate('departure_date', '<=', $date);
+                }
+            })
             ->when($request->query('means_of_transport'), fn ($q, $means) => $q->where('means_of_transport', $means))
             ->when($request->query('price_min'), function ($q, $min) {
                 $q->whereHas('prices', fn ($price) => $price->where('adult_price_minor', '>=', $min));

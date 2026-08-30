@@ -21,6 +21,7 @@ final class SalesReportQuery
 {
     /**
      * @param  array<string, mixed>  $filters
+     * @return LengthAwarePaginator<int, TravelBooking>
      */
     public function paginated(array $filters): LengthAwarePaginator
     {
@@ -30,7 +31,7 @@ final class SalesReportQuery
 
         $this->applyFilters($query, $filters);
 
-        /** @var LengthAwarePaginator $paginator */
+        /** @var LengthAwarePaginator<int, TravelBooking> $paginator */
         $paginator = $query->orderByDesc('created_at')->paginate($this->perPage($filters));
 
         $paginator->appends($filters);
@@ -62,6 +63,7 @@ final class SalesReportQuery
 
     /**
      * @param  array<string, mixed>  $filters
+     * @param  Builder<TravelBooking>  $query
      */
     private function applyFilters(Builder $query, array $filters): void
     {

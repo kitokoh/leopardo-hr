@@ -27,8 +27,8 @@ final class CancellationsReportQuery
         $cancelledCount = (int) $this->cancelledQuery($filters)->count();
         $totalCount = (int) $this->totalQuery($filters)->count();
 
-        $byReason = $this->groupBy($filters, 'cancel_reason', 'reason');
-        $bySource = $this->groupBy($filters, 'booking_source', 'source');
+        $byReason = $this->groupByReason($filters);
+        $bySource = $this->groupBySource($filters);
 
         return [
             'cancelled_count' => $cancelledCount,
@@ -41,17 +41,51 @@ final class CancellationsReportQuery
 
     /**
      * @param  array<string, mixed>  $filters
-     * @return array<int, array{reason: string, count: int}>|array<int, array{source: string, count: int}>
+     * @return array<int, array{reason: string, count: int}>
      */
-    private function groupBy(array $filters, string $column, string $alias): array
+    private function groupByReason(array $filters): array
     {
         $rows = DB::table('travel_bookings')
             ->where('status', BookingStatus::CANCELLED->value)
-            ->selectRaw("{$column} as {$alias}")
+            ->selectRaw('cancel_reason as reason')
             ->selectRaw('COUNT(*) as count')
-            ->groupBy($column)
+            ->groupBy('cancel_reason')
             ->orderByDesc('count');
 
+        $this->applyPeriod($rows, $filters);
+
+        return $rows->get()->map(fn (object $row): array => [
+            'reason' => (string) $row->reason,
+            'count' => (int) $row->count,
+        ])->all();
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     * @return array<int, array{source: string, count: int}>
+     */
+    private function groupBySource(array $filters): array
+    {
+        $rows = DB::table('travel_bookings')
+            ->where('status', BookingStatus::CANCELLED->value)
+            ->selectRaw('booking_source as source')
+            ->selectRaw('COUNT(*) as count')
+            ->groupBy('booking_source')
+            ->orderByDesc('count');
+
+        $this->applyPeriod($rows, $filters);
+
+        return $rows->get()->map(fn (object $row): array => [
+            'source' => (string) $row->source,
+            'count' => (int) $row->count,
+        ])->all();
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    private function applyPeriod(\Illuminate\Database\Query\Builder $rows, array $filters): void
+    {
         if (! empty($filters['from'])) {
             $rows->where('cancelled_at', '>=', $filters['from']);
         }
@@ -61,15 +95,14 @@ final class CancellationsReportQuery
         if (! empty($filters['source'])) {
             $rows->where('booking_source', $filters['source']);
         }
-
-        return $rows->get()->map(fn (object $row): array => [
-            $alias => (string) $row->{$alias},
-            'count' => (int) $row->count,
-        ])->all();
     }
 
     /**
      * @param  array<string, mixed>  $filters
+     */
+    /**
+     * @param  array<string, mixed>  $filters
+     * @return Builder<TravelBooking>
      */
     private function cancelledQuery(array $filters): Builder
     {
@@ -83,6 +116,10 @@ final class CancellationsReportQuery
     /**
      * @param  array<string, mixed>  $filters
      */
+    /**
+     * @param  array<string, mixed>  $filters
+     * @return Builder<TravelBooking>
+     */
     private function totalQuery(array $filters): Builder
     {
         $query = TravelBooking::query()
@@ -95,6 +132,10 @@ final class CancellationsReportQuery
 
     /**
      * @param  array<string, mixed>  $filters
+     */
+    /**
+     * @param  array<string, mixed>  $filters
+     * @param  Builder<TravelBooking>  $query
      */
     private function applyFilters(Builder $query, array $filters): void
     {

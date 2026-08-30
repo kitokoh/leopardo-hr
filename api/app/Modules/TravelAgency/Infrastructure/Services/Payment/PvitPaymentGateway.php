@@ -16,6 +16,9 @@ use App\Modules\TravelAgency\Domain\Contracts\PaymentGatewayInterface;
  */
 final class PvitPaymentGateway implements PaymentGatewayInterface
 {
+    /**
+     * @param  array<string, mixed>  $config
+     */
     public function __construct(private readonly array $config) {}
 
     public function initiate(array $request): array
