@@ -29,6 +29,8 @@ use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduRetentionController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduStudentController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduSubjectController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduMeController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduTeacherInterfaceController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -102,7 +104,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/edu-manager/report-cards', [EduReportCardController::class, 'index']);
     Route::post('/edu-manager/report-cards/generate', [EduReportCardController::class, 'generate']);
     Route::get('/edu-manager/report-cards/{card}', [EduReportCardController::class, 'show'])->whereNumber('card');
-    Route::post('/edu-manager/report-cards/{card}/validate', [EduReportCardController::class, 'validate'])->whereNumber('card');
+    Route::post('/edu-manager/report-cards/{card}/validate', [EduReportCardController::class, 'validateCard'])->whereNumber('card');
     Route::post('/edu-manager/report-cards/{card}/publish', [EduReportCardController::class, 'publish'])->whereNumber('card');
 
     // EDU-017 (#5833) — import/export sécurisé (direction).
@@ -120,6 +122,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // EDU-019 (#5835) — RGPD : anonymisation + export individuel (direction).
     Route::post('/edu-manager/students/{student}/anonymize', [EduRetentionController::class, 'anonymize'])->whereNumber('student');
     Route::get('/edu-manager/students/{student}/privacy-export', [EduRetentionController::class, 'privacyExport'])->whereNumber('student');
+
+
+    // EDU-011 — profil rôle-aware (navigation direction/enseignant).
+    Route::get('/edu-manager/me', [EduMeController::class, 'show']);
+
+    // EDU-012 — interface enseignant (périmètre = SES classes, 404 sinon).
+    Route::get('/edu-manager/teacher/classes', [EduTeacherInterfaceController::class, 'classes']);
+    Route::get('/edu-manager/teacher/classes/{class}/students', [EduTeacherInterfaceController::class, 'students'])->whereNumber('class');
+    Route::get('/edu-manager/teacher/classes/{class}/assessments', [EduTeacherInterfaceController::class, 'assessments'])->whereNumber('class');
+    Route::post('/edu-manager/teacher/grades/{grade}/submit', [EduTeacherInterfaceController::class, 'submitGrade'])->whereNumber('grade');
 
     // EDU-013/EDU-010 — portail guardian : émission d'un lien d'accès
     // expirable à usage unique (direction uniquement, policy createAccessLink).

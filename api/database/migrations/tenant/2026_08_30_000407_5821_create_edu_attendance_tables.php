@@ -48,6 +48,8 @@ return new class extends Migration
                 );
                 $table->index(['company_id', 'attendance_date'], 'edu_attendances_company_date_idx');
                 $table->index(['company_id', 'student_id'], 'edu_attendances_company_student_idx');
+                // Clé d'intégrité des FK composites (id, company_id).
+                $table->unique(['id', 'company_id'], 'edu_attendances_id_company_unique');
 
                 $table->foreign(['class_id', 'company_id'], 'edu_attendances_class_company_fk')
                     ->references(['id', 'company_id'])
@@ -65,7 +67,12 @@ return new class extends Migration
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_attendances_status_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_attendances\" ADD CONSTRAINT edu_attendances_status_check "
                     ."CHECK (status IN ('present','absent','late','excused')); END IF; END $$"
+                );                DB::statement(
+                    "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_attendances_id_company_unique') "
+                    ."THEN ALTER TABLE \"{$schema}\".\"edu_attendances\" ADD CONSTRAINT edu_attendances_id_company_unique "
+                    ."UNIQUE (id, company_id); END IF; END $$"
                 );
+
             }
         }
 
