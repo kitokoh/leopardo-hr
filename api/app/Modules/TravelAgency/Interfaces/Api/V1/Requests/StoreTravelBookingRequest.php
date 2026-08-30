@@ -51,6 +51,9 @@ class StoreTravelBookingRequest extends FormRequest
             'passengers.*.age_category' => ['required', 'string', Rule::in($ages)],
             'passengers.*.class_id' => ['required', 'integer', 'exists:travel_classes,id'],
             'passengers.*.seat_number' => ['nullable', 'integer', 'min:1'],
+            // TRAVEL-803 (#6094) — réservation corporate (compte + devis).
+            'corporate_account_id' => ['nullable', 'integer', 'exists:travel_corporate_accounts,id'],
+            'quote_id' => ['nullable', 'integer', 'exists:travel_quotes,id'],
             // TRAVEL-802 (#6093) — aller-retour (jambe retour optionnelle).
             'return_trip_id' => ['nullable', 'integer', 'exists:travel_trips,id', 'different:trip_id'],
             'return_passengers' => ['nullable', 'array', 'min:1', 'max:20'],

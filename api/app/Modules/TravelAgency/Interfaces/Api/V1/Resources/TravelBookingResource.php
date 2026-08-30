@@ -46,6 +46,12 @@ class TravelBookingResource extends JsonResource
             'round_trip_group_id' => $this->round_trip_group_id,
             'return_booking_id' => $this->return_booking_id,
             'leg' => $this->leg,
+            // TRAVEL-803 (#6094) — réservation corporate (facturation différée).
+            'corporate_account_id' => $this->corporate_account_id,
+            'quote_id' => $this->quote_id,
+            'billing_deferred' => $this->billing_deferred,
+            // TRAVEL-809 (#6099) — correspondances (groupe de liaison).
+            'connection_group_id' => $this->connection_group_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

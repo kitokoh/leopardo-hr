@@ -16,6 +16,12 @@ return [
         'callback_secret' => env('TRAVEL_PAYMENT_CALLBACK_SECRET', ''),
     ],
 
+    // TRAVEL-803 (#6094) — réservations corporate.
+    'corporate' => [
+        'min_group_size' => (int) env('TRAVEL_CORPORATE_MIN_GROUP_SIZE', 5),
+        'quote_validity_days' => (int) env('TRAVEL_CORPORATE_QUOTE_VALIDITY_DAYS', 14),
+    ],
+
     // TRAVEL-802 (#6093) — tarif combiné aller-retour (remise serveur, %).
     'pricing' => [
         'round_trip_discount_percent' => (int) env('TRAVEL_ROUND_TRIP_DISCOUNT_PERCENT', 0),

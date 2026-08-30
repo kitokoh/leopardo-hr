@@ -13,6 +13,7 @@ use App\Modules\TravelAgency\Domain\Enums\TripStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelCurrencyService;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelBookingResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTripResource;
@@ -80,7 +81,54 @@ class TravelShopController extends Controller
             ->orderBy('departure_time')
             ->paginate($perPage);
 
+        // TRAVEL-805 (#6096) — affichage multi-devise (conversion pure,
+        // les montants canoniques restent en devise de référence).
+        $this->convertDisplayPrices($trips, $request, $actor);
+
         return TravelTripResource::collection($trips)->response();
+    }
+
+    /**
+     * TRAVEL-805 (#6096) — convertit les tarifs affichés dans la devise
+     * demandée (param `currency`), sans toucher aux montants stockés.
+     *
+     * @param  mixed  $trips
+     */
+    private function convertDisplayPrices(mixed $trips, Request $request, Employee $actor): void
+    {
+        $currency = $request->query('currency');
+
+        if (! is_string($currency) || $currency === '' || strtoupper($currency) === strtoupper((string) ($actor->company?->currency ?? ''))) {
+            return;
+        }
+
+        $service = app(TravelCurrencyService::class);
+
+        foreach ($trips as $trip) {
+            if (! $trip instanceof TravelTrip) {
+                continue;
+            }
+
+            foreach ($trip->prices as $price) {
+                $price->adult_price_minor = $service->convert(
+                    $actor->company_id,
+                    (int) $price->adult_price_minor,
+                    (string) $price->currency,
+                    strtoupper($currency),
+                );
+
+                if ($price->child_price_minor !== null) {
+                    $price->child_price_minor = $service->convert(
+                        $actor->company_id,
+                        (int) $price->child_price_minor,
+                        (string) $price->currency,
+                        strtoupper($currency),
+                    );
+                }
+
+                $price->currency = strtoupper($currency);
+            }
+        }
     }
 
     /**

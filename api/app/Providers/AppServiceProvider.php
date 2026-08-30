@@ -189,6 +189,13 @@ class AppServiceProvider extends ServiceProvider
         // instead of relying on the generic 'api' limiter which only applies to
         // authenticated routes further down the group. Keyed by IP since the
         // caller is a third-party payment provider, not a tenant.
+        // TRAVEL-1001 (#6114) — boutique publique : throttling renforcé
+        // (endpoints publics, sans auth utilisateur) — anti-scraping par IP.
+        RateLimiter::for('shop-public', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.shop_public_per_minute', 30))
+                ->by('shop-public:'.$request->ip());
+        });
+
         RateLimiter::for('webhooks-inbound', function (Request $request) {
             return Limit::perMinute((int) config('security.rate_limits.webhooks_inbound_per_minute', 60))
                 ->by('webhooks-inbound:'.$request->ip());
