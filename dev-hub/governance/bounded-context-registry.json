@@ -3,7 +3,7 @@
     "title": "Bounded Context Registry — Leopardo HR",
     "description": "Registre canonique machine-readable des bounded contexts (MAT-001, issue #5859). Référence humaine : docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (plan de gouvernance, PR agent-readiness).",
     "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
-    "updated": "2026-08-28"
+    "updated": "2026-08-30"
   },
   "_shared_exceptions": [
     {
@@ -724,6 +724,42 @@
         "BC-11",
         "BC-13",
         "BC-20"
+      ]
+    },
+    {
+      "code": "BC-26",
+      "name": "DELIVERY",
+      "context": "Delivery",
+      "responsibility": "Module de livraison dernier-kilomètre générique : livraisons/colis (sources manual/restaurant/retail/ecommerce/crm/field), tournées, livreurs, preuves (POD), suivi temps réel, règlement COD et rapports — activable par tout tenant (agence, restaurant, retail, e-commerce, pharmacie).",
+      "owner": "Agent 26 — BC-DELIVERY",
+      "priority": "P1",
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Modules/Delivery",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\DeliveryAgency\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04",
+        "BC-05",
+        "BC-08",
+        "BC-11",
+        "BC-13",
+        "BC-14",
+        "BC-17",
+        "BC-18",
+        "BC-20",
+        "BC-22"
       ]
     }
   ]
