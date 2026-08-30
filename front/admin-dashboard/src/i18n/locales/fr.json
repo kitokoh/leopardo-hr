@@ -4526,7 +4526,8 @@
       "tabs": {
         "quiz": "Quiz",
         "adverts": "Annonces",
-        "sites": "Sites touristiques"
+        "sites": "Sites touristiques",
+        "contacts": "Contacts"
       }
     },
     "quiz": {
@@ -4588,6 +4589,17 @@
       "description": "Description",
       "latitude": "Latitude",
       "longitude": "Longitude"
+    },
+    "contacts": {
+      "title": "Contacts voyageurs",
+      "search": "Rechercher par email",
+      "name": "Nom",
+      "consents": "Consentements",
+      "notify": "Notifier",
+      "message": "Message",
+      "channelEmail": "Email",
+      "channelSms": "SMS",
+      "channelWhatsapp": "WhatsApp"
     }
   }
 }
