@@ -8149,6 +8149,223 @@ paths:
         '422':
           description: Evenement non dead-letter
 
+  /fuel-station/reports/daily-volumes:
+    get:
+      tags:
+      - FuelStation
+      summary: Volumes par pompe (read model, manager, FUEL-017)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: date
+        in: query
+        schema:
+          type: string
+          example: '2026-08-30'
+      responses:
+        '200':
+          description: Snapshot volumes par pompe
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station introuvable ou autre tenant
+  /fuel-station/reports/sales:
+    get:
+      tags:
+      - FuelStation
+      summary: Ventes par produit et totaux (read model, manager, FUEL-017)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: date
+        in: query
+        schema:
+          type: string
+          example: '2026-08-30'
+      responses:
+        '200':
+          description: Snapshot ventes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station introuvable ou autre tenant
+  /fuel-station/reports/stock:
+    get:
+      tags:
+      - FuelStation
+      summary: Etat des stocks par cuve (read model, manager, FUEL-017)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Snapshot stocks
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station introuvable ou autre tenant
+  /fuel-station/reports/variances:
+    get:
+      tags:
+      - FuelStation
+      summary: Derniers rapprochements et ecarts (read model, manager, FUEL-017)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Snapshot ecarts
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station introuvable ou autre tenant
+  /fuel-station/reports/shifts:
+    get:
+      tags:
+      - FuelStation
+      summary: Ventes par shift (read model, manager, FUEL-017)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: date
+        in: query
+        schema:
+          type: string
+          example: '2026-08-30'
+      responses:
+        '200':
+          description: Snapshot shifts
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station introuvable ou autre tenant
+  /fuel-station/reports/exports:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les exports de rapports (manager, FUEL-017)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - pending
+          - generating
+          - generated
+          - failed
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Exports pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Lancer un export CSV asynchrone (manager, FUEL-017)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - report_type
+              properties:
+                report_type:
+                  type: string
+                  enum:
+                  - daily_volumes
+                  - shift_summary
+                  - sales_summary
+                  - stock_status
+                  - variance_summary
+                station_id:
+                  type: integer
+                  nullable: true
+                date:
+                  type: string
+                  nullable: true
+                  example: '2026-08-30'
+      responses:
+        '201':
+          description: Export cree (job asynchrone)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation
+  /fuel-station/reports/exports/{export}/download:
+    get:
+      tags:
+      - FuelStation
+      summary: Telecharger un export genere (lien borne 24 h, FUEL-017)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: export
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fichier CSV
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Export introuvable / autre tenant / fichier absent
+        '422':
+          description: Export pas encore genere ou expire
+
   /accounting/contacts:
     get:
       tags:
