@@ -1509,6 +1509,46 @@ Note 2026-08-26 (PM hygiene, PR #5597) : retour au vert des checks backend — R
 - Payroll : `PayrollPaymentOrder::items()` a une FK explicite `payment_order_id` → l'ordre de virement prépare ses lignes sans QueryException (`column payroll_payment_order_id does not exist`).
 - Couverture : `VatDeclarationTest`, `AccountingMultiCurrencyTest`, `WebhookIdempotenceTest`, `EmailBounceWebhookControllerTest`, `ShareAccessAuditTest`, `PayrollPaymentOrderFlowTest`, `TwoFactorAuthTest`, `AccountingActivationTest` (route `/activation/complete`), `LangCatalogParityTest` (fins de fichier `];` tolérées), `OpenApiDocsTest` (`openapi: "3.0.3"` quoté).
 
+## BC-24 TRAVEL — API réseau & trajets (TRAVEL-306..311, 2026-08-30)
+
+Deuxième tranche de l'épic 3xx : `GET|POST /travel/vehicles`, `GET|PUT|DELETE /travel/vehicles/{travelVehicle}` ;
+`GET|POST /travel/routes`, `GET|PUT|DELETE /travel/routes/{travelRoute}` ; sous-ressource étapes
+`GET|POST /travel/routes/{travelRoute}/stops` + `PUT|DELETE /travel/routes/{travelRoute}/stops/{travelRouteStop}`
+(rank auto-attribué, réordonnancement) ; `GET|POST /travel/trips` (génération transactionnelle des sièges),
+`GET|PUT|DELETE /travel/trips/{travelTrip}` ; `GET|POST /travel/trips/{travelTrip}/prices` +
+`GET|PUT|DELETE /travel/trips/{travelTrip}/prices/{travelTripPrice}` (409 sur doublon (trip, classe)) ;
+`POST /travel/trips/{travelTrip}/publish|cancel` (transitions validées, motif obligatoire à l'annulation,
+événements outbox `travel.trip.published.v1`/`travel.trip.cancelled.v1`) ; `GET /travel/trips/search`
+(filtres origin/destination/date/plage/moyen/statut/prix).
+- Scénarios à vérifier : 401 sans auth ; 403 feature flag inactif ; référence cross-tenant (ville, route,
+  carrier, classe) → 422 ; ressource cross-tenant → 404 ; trajet publié verrouillé → 422 ; doublon
+  (trip, classe) → 409 ; doublon code classe → 422 ; sièges générés en nombre exact ; outbox dédup par
+  (tenant, idempotency_key) ; recherche paginée sans N+1.
+- Couverture : `api/tests/Feature/Travel/TravelVehicleApiTest.php`, `TravelRouteApiTest.php`,
+  `TravelTripApiTest.php`, `TravelTripPriceApiTest.php`, `TravelTripWorkflowTest.php`, `TravelTripSearchTest.php`
+  (+ 135 tests Travel au total, dont correctifs d'invariants 2xx protégés par savepoint).
+
+## BC-24 TRAVEL — API réservations & billetterie (TRAVEL-312..318, 2026-08-30)
+
+Troisième tranche de l'épic 3xx : `GET|POST /travel/bookings` (+ détails), `POST /travel/bookings/{booking}/confirm|cancel|refund|issue-ticket`,
+`POST /travel/tickets/{ticket}/check-in`, `GET /travel/trips/{trip}/manifest`.
+- Scénarios à vérifier : création avec verrouillage transactionnel des sièges (2 réservations concurrentes → 1 seule obtient le siège) ;
+  idempotence (`idempotency_key` rejouée → même réservation, pas de doublon) ; total calculé côté serveur depuis les tarifs ;
+  PII jamais exposée (`has_document` booléen, jamais le n° de pièce) ; trajet non publié → 409 ; siège explicite indisponible → 409 ;
+  transition invalide → 422 ; motif obligatoire (cancel/refund) ; billets : 1 par passager, ré-émission idempotente, check-in → checked_in ;
+  manifeste trié par siège sans n° de pièce ; cross-tenant → 404.
+- Couverture : `api/tests/Feature/Travel/TravelBookingApiTest.php`, `TravelBookingWorkflowTest.php` (148 tests Travel au total).
+
+## BC-24 TRAVEL — API locations, hôtels & RBAC (TRAVEL-319..322, 2026-08-30)
+
+Dernière tranche de l'épic 3xx : `GET|POST /travel/rental-vehicles` (+ images), `GET|POST /travel/rental-bookings` + cancel,
+`GET|POST /travel/hotels` + chambres, matrice RBAC globale.
+- Scénarios à vérifier : non-chevauchement des réservations de location (409) ; montant calculé serveur (prix/jour × durée) ;
+  idempotence ; classification hôtel 1-5 (422 hors bornes) ; recherche par ville ; image sous-ressource (404/403) ;
+  matrice RBAC : employé simple → 403 sur toutes les écritures, lecture ouverte, cross-tenant → 404, flag inactif → 403,
+  non authentifié → 401.
+- Couverture : `api/tests/Feature/Travel/TravelRentalApiTest.php`, `TravelHotelApiTest.php`, `TravelRbacMatrixTest.php`
+  (168 tests Travel au total) + `docs/security/TRAVEL_RBAC_MATRIX.md`.
 Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (manifest + stations/sites + équipements + relevés + shifts + présence + caisse + ventes).
 - Manifest de solution : `App\Core\Solutions` (contrat `SolutionManifest`, catalogue allowlist fail-closed, activateur audité, commande `leopardo:solution:activate`) + `FuelStationManifest` (FUEL-001). Activation idempotente par feature flag, dépendances manquantes → 422 `SOLUTION_MISSING_DEPENDENCY`, code inconnu → 404 `SOLUTION_NOT_FOUND`. Tests : `SolutionManifestTest`.
 - Stations et sites tenant-first (FUEL-002) : tables `fuel_stations` (code unique par tenant, timezone, statut CHECK active|inactive|archived) et `fuel_sites` (FK composite `(station_id, company_id)` → `fuel_stations`, statut CHECK active|inactive) — company_id non nullable partout, références cross-tenant physiquement impossibles. Tests : `FuelStationMigrationTest`, `FuelSitesInvariantTest`.

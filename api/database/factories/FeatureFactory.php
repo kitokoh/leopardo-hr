@@ -238,4 +238,3 @@ class FeatureFactory extends Factory
         ]);
     }
 }
-

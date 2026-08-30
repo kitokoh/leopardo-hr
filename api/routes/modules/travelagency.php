@@ -17,31 +17,36 @@
  * Référence : docs/specifications/SOLUTION_TRAVEL_AGENCY.md (§7 API v1).
  */
 
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCancellationPolicyController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelArticleController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCommentController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelEngagementController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelExportController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelReportController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyRateController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPositionController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertTypeController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelArticleController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCommentController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCustomerContactController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelEngagementController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelExportController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelLoyaltyController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPartnerController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuoteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicContactController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuizController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicContactController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicContactLinkController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelReportController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRoundTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
@@ -112,6 +117,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/trips', [TravelTripController::class, 'index']);
         Route::post('/trips', [TravelTripController::class, 'store']);
         Route::get('/trips/search', [TravelTripController::class, 'search']); // TRAVEL-311/#6041 — AVANT {trip}
+        Route::get('/trips/connections', [TravelTripController::class, 'connections']); // TRAVEL-809/#6099 — AVANT {trip}
         Route::get('/trips/{travelTrip}', [TravelTripController::class, 'show']);
         Route::put('/trips/{travelTrip}', [TravelTripController::class, 'update']);
         Route::delete('/trips/{travelTrip}', [TravelTripController::class, 'destroy']);
@@ -134,6 +140,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/bookings/{travelBooking}/cancel', [TravelBookingController::class, 'cancel']);
         Route::post('/bookings/{travelBooking}/refund', [TravelBookingController::class, 'refund']);
         Route::post('/bookings/{travelBooking}/issue-ticket', [TravelBookingController::class, 'issueTickets']);
+        Route::post('/bookings/{travelBooking}/refund-passenger', [TravelBookingController::class, 'refundPassenger']); // TRAVEL-808/#6098
 
         // Check-in / embarquement (TRAVEL-317/#6047).
         Route::post('/tickets/{travelTicket}/check-in', [TravelTicketController::class, 'checkIn']);
@@ -154,6 +161,39 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/rental-bookings/{travelRentalBooking}', [TravelRentalBookingController::class, 'show']);
         Route::post('/rental-bookings/{travelRentalBooking}/cancel', [TravelRentalBookingController::class, 'cancel']);
 
+        // Fidélité voyageur (TRAVEL-811/#6101).
+        Route::get('/loyalty/{contact}', [TravelLoyaltyController::class, 'balance']);
+        Route::post('/loyalty/opt-in', [TravelLoyaltyController::class, 'optIn']);
+        Route::post('/loyalty/opt-out', [TravelLoyaltyController::class, 'optOut']);
+        Route::post('/loyalty/{contact}/redeem', [TravelLoyaltyController::class, 'redeem']);
+
+        // Politiques d'annulation configurables (TRAVEL-813/#6103).
+        Route::get('/cancellation-policies', [TravelCancellationPolicyController::class, 'index']);
+        Route::post('/cancellation-policies', [TravelCancellationPolicyController::class, 'store']);
+        Route::put('/cancellation-policies/{travelCancellationPolicy}', [TravelCancellationPolicyController::class, 'update']);
+        Route::delete('/cancellation-policies/{travelCancellationPolicy}', [TravelCancellationPolicyController::class, 'destroy']);
+
+        // Clés API transporteurs (TRAVEL-807/#6086).
+        Route::post('/partner-keys', [TravelPartnerController::class, 'storePartnerKey']);
+        Route::delete('/partner-keys/{travelCarrierApiKey}', [TravelPartnerController::class, 'revokePartnerKey']);
+
+        // Taux de conversion multi-devise (TRAVEL-805/#6096).
+        Route::get('/currency-rates', [TravelCurrencyRateController::class, 'index']);
+        Route::post('/currency-rates', [TravelCurrencyRateController::class, 'store']);
+        Route::get('/currency-rates/convert', [TravelCurrencyRateController::class, 'convert']);
+        Route::get('/currency-rates/{travelCurrencyRate}', [TravelCurrencyRateController::class, 'show']);
+        Route::put('/currency-rates/{travelCurrencyRate}', [TravelCurrencyRateController::class, 'update']);
+
+        // Devis & réservations de groupe (TRAVEL-803/#6094).
+        Route::get('/quotes', [TravelQuoteController::class, 'index']);
+        Route::post('/quotes', [TravelQuoteController::class, 'store']);
+        Route::get('/quotes/{travelQuote}', [TravelQuoteController::class, 'show']);
+        Route::post('/quotes/{travelQuote}/book', [TravelQuoteController::class, 'book']);
+
+        // Allers-retours combinés (TRAVEL-802/#6093).
+        Route::post('/round-trips', [TravelRoundTripController::class, 'store']);
+        Route::get('/round-trips/{travelRoundTrip}', [TravelRoundTripController::class, 'show']);
+
         // Hôtels + chambres (TRAVEL-321/#6051).
         Route::get('/hotels', [TravelHotelController::class, 'index']);
         Route::post('/hotels', [TravelHotelController::class, 'store']);
@@ -164,6 +204,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/hotels/{travelHotel}/rooms', [TravelHotelController::class, 'storeRoom']);
         Route::put('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'updateRoom']);
         Route::delete('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'destroyRoom']);
+
+        // Formulaire de contact → lead CRM (TRAVEL-416/#6068) — publication
+        // asynchrone de l'événement travel.contact.submitted.v1 (outbox).
+        Route::post('/contact', [TravelContactController::class, 'store']);
 
         // ── Rapports & dashboard (TRAVEL-501..504/507, #6071..#6074/#6077) ─
         Route::get('/reports/sales', [TravelReportController::class, 'sales']);
@@ -259,6 +303,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/articles/{travelArticle}/share', [TravelEngagementController::class, 'share']);
         Route::post('/articles/{travelArticle}/rate', [TravelEngagementController::class, 'rate']);
         Route::get('/articles/{travelArticle}/engagement', [TravelEngagementController::class, 'aggregates']);
+
+    });
+
+// ── API entrante transporteurs (TRAVEL-807/#6086) — hors auth:sanctum : le
+// transporteur s'authentifie par sa clé API (header X-Partner-Key), le
+// middleware travel.partner pose le contexte tenant. Idempotence par clé
+// externe (external_ref), lot borné (200/200).
+Route::middleware(['throttle:api', 'travel.partner'])
+    ->prefix('travel/partner')
+    ->group(function (): void {
+        Route::post('/sync', [TravelPartnerController::class, 'sync']);
     });
 
 /**

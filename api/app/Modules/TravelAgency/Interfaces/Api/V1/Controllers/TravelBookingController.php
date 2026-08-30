@@ -11,12 +11,16 @@ use App\Modules\TravelAgency\Application\Actions\ConfirmBookingAction;
 use App\Modules\TravelAgency\Application\Actions\CreateBookingAction;
 use App\Modules\TravelAgency\Application\Actions\IssueTicketsAction;
 use App\Modules\TravelAgency\Application\Actions\RefundBookingAction;
+use App\Modules\TravelAgency\Application\Actions\RefundPassengerAction;
 use App\Modules\TravelAgency\Domain\Enums\BookingSource;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
+use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelBookingRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RefundTravelPassengerRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelBookingResource;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelRefundResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTicketResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -155,6 +159,36 @@ class TravelBookingController extends Controller
         );
 
         return (new TravelBookingResource($booking))->response();
+    }
+
+    /**
+     * TRAVEL-808 (#6098) — Remboursement partiel d'un passager.
+     */
+    public function refundPassenger(RefundTravelPassengerRequest $request, TravelBooking $travelBooking): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelBooking->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('update', $travelBooking)) {
+            abort(403);
+        }
+
+        /** @var TravelPassenger $passenger */
+        $passenger = TravelPassenger::query()->findOrFail((int) $request->validated('passenger_id'));
+
+        $refund = app(RefundPassengerAction::class)->execute(
+            booking: $travelBooking,
+            passenger: $passenger,
+            actor: $actor,
+            reason: (string) $request->validated('reason'),
+            refundKey: (string) $request->validated('refund_key'),
+        );
+
+        return (new TravelRefundResource($refund))->response()->setStatusCode(201);
     }
 
     public function issueTickets(Request $request, TravelBooking $travelBooking): JsonResponse

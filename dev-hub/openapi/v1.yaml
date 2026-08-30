@@ -9,7 +9,7 @@
 # To update: change api/openapi.yaml, then run:
 #   node dev-hub/tools/generate-openapi-sdk.mjs
 # CI (openapi-ci.yml) fails the build if this file drifts from the source.
-openapi: "3.0.3"
+openapi: 3.0.3
 info:
   title: Leopardo RH API
   version: 4.24.0
@@ -748,10 +748,13 @@ paths:
       tags:
       - Travel
       summary: Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977)
-      description: |
-        Route de contrôle : prouve que le module est chargé, que le feature flag
+      description: 'Route de contrôle : prouve que le module est chargé, que le feature flag
+
         `travelagency` est actif pour le tenant courant et que le pipeline
+
         middleware (auth → tenant → module) est opérationnel. Lecture pure.
+
+        '
       security:
       - BearerAuth: []
       responses:
@@ -780,9 +783,11 @@ paths:
       tags:
       - Travel
       summary: Référentiel pays en lecture (TRAVEL-301/#6031)
-      description: |
-        Liste paginée du référentiel pays tenant-scoped, destinée aux listes
+      description: 'Liste paginée du référentiel pays tenant-scoped, destinée aux listes
+
         déroulantes. Filtres : statut, recherche par nom. Lecture pure.
+
+        '
       security:
       - BearerAuth: []
       parameters:
@@ -791,7 +796,9 @@ paths:
         required: false
         schema:
           type: string
-          enum: [active, disabled]
+          enum:
+          - active
+          - disabled
       - name: search
         in: query
         required: false
@@ -840,10 +847,13 @@ paths:
       tags:
       - Travel
       summary: Référentiel villes en lecture (TRAVEL-301/#6031)
-      description: |
-        Liste paginée du référentiel villes tenant-scoped, destinée aux listes
+      description: 'Liste paginée du référentiel villes tenant-scoped, destinée aux listes
+
         déroulantes. Filtres : pays (ISO2), statut, recherche par nom. Lecture
+
         pure.
+
+        '
       security:
       - BearerAuth: []
       parameters:
@@ -859,7 +869,9 @@ paths:
         required: false
         schema:
           type: string
-          enum: [active, disabled]
+          enum:
+          - active
+          - disabled
       - name: search
         in: query
         required: false
@@ -975,7 +987,9 @@ paths:
                   type: boolean
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '201':
           description: Gare créée
@@ -1052,7 +1066,9 @@ paths:
                   type: boolean
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '200':
           description: Gare modifiée
@@ -1149,7 +1165,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '201':
           description: Bureau créé
@@ -1219,7 +1237,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '200':
           description: Bureau modifié
@@ -1311,7 +1331,11 @@ paths:
                   maxLength: 120
                 type:
                   type: string
-                  enum: [bus, train, plane, boat]
+                  enum:
+                  - bus
+                  - train
+                  - plane
+                  - boat
                 contact_phone:
                   type: string
                   nullable: true
@@ -1320,7 +1344,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '201':
           description: Compagnie créée
@@ -1385,7 +1411,11 @@ paths:
                   maxLength: 120
                 type:
                   type: string
-                  enum: [bus, train, plane, boat]
+                  enum:
+                  - bus
+                  - train
+                  - plane
+                  - boat
                 contact_phone:
                   type: string
                   nullable: true
@@ -1394,7 +1424,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '200':
           description: Compagnie modifiée
@@ -1492,7 +1524,9 @@ paths:
                   minimum: 0
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '201':
           description: Classe créée
@@ -1563,7 +1597,9 @@ paths:
                   minimum: 0
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '200':
           description: Classe modifiée
@@ -1662,7 +1698,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
                 notes:
                   type: string
                   nullable: true
@@ -1735,7 +1773,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
                 notes:
                   type: string
                   nullable: true
@@ -1832,7 +1872,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '201':
           description: Route créée
@@ -1902,7 +1944,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '200':
           description: Route mise à jour
@@ -2094,7 +2138,11 @@ paths:
         required: false
         schema:
           type: string
-          enum: [draft, scheduled, published, cancelled]
+          enum:
+          - draft
+          - scheduled
+          - published
+          - cancelled
       - name: route_id
         in: query
         required: false
@@ -2159,22 +2207,30 @@ paths:
                   format: date
                 departure_time:
                   type: string
-                  example: "08:00"
+                  example: 08:00
                 arrival_date:
                   type: string
                   format: date
                 arrival_time:
                   type: string
-                  example: "12:30"
+                  example: '12:30'
                 means_of_transport:
                   type: string
-                  enum: [bus, train, plane, boat]
+                  enum:
+                  - bus
+                  - train
+                  - plane
+                  - boat
                 total_seats:
                   type: integer
                   minimum: 1
                 status:
                   type: string
-                  enum: [draft, scheduled, published, cancelled]
+                  enum:
+                  - draft
+                  - scheduled
+                  - published
+                  - cancelled
       responses:
         '201':
           description: Trajet créé (sièges générés)
@@ -2236,13 +2292,21 @@ paths:
         required: false
         schema:
           type: string
-          enum: [bus, train, plane, boat]
+          enum:
+          - bus
+          - train
+          - plane
+          - boat
       - name: status
         in: query
         required: false
         schema:
           type: string
-          enum: [draft, scheduled, published, cancelled]
+          enum:
+          - draft
+          - scheduled
+          - published
+          - cancelled
       - name: price_min
         in: query
         required: false
@@ -2253,6 +2317,15 @@ paths:
         required: false
         schema:
           type: integer
+      - name: flexible_days
+        in: query
+        required: false
+        description: Recherche flexible — fenêtre ± N jours autour de departure_date (0..7, défaut 0)
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 7
+          default: 0
       responses:
         '200':
           description: Trajets correspondant aux filtres
@@ -2333,13 +2406,21 @@ paths:
                   type: string
                 means_of_transport:
                   type: string
-                  enum: [bus, train, plane, boat]
+                  enum:
+                  - bus
+                  - train
+                  - plane
+                  - boat
                 total_seats:
                   type: integer
                   minimum: 1
                 status:
                   type: string
-                  enum: [draft, scheduled, published, cancelled]
+                  enum:
+                  - draft
+                  - scheduled
+                  - published
+                  - cancelled
       responses:
         '200':
           description: Trajet mis à jour
@@ -2632,7 +2713,12 @@ paths:
         required: false
         schema:
           type: string
-          enum: [pending, confirmed, cancelled, refunded, completed]
+          enum:
+          - pending
+          - confirmed
+          - cancelled
+          - refunded
+          - completed
       - name: trip_id
         in: query
         required: false
@@ -2681,7 +2767,11 @@ paths:
                   type: integer
                 booking_source:
                   type: string
-                  enum: [online, office, phone, partner]
+                  enum:
+                  - online
+                  - office
+                  - phone
+                  - partner
                 idempotency_key:
                   type: string
                   maxLength: 255
@@ -2708,7 +2798,11 @@ paths:
                         nullable: true
                       document_type:
                         type: string
-                        enum: [national_id, passport, birth_certificate, other]
+                        enum:
+                        - national_id
+                        - passport
+                        - birth_certificate
+                        - other
                         nullable: true
                       document_number:
                         type: string
@@ -2716,7 +2810,10 @@ paths:
                         nullable: true
                       age_category:
                         type: string
-                        enum: [infant, child, adult]
+                        enum:
+                        - infant
+                        - child
+                        - adult
                       class_id:
                         type: integer
                       seat_number:
@@ -3024,7 +3121,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
                 notes:
                   type: string
                   nullable: true
@@ -3109,7 +3208,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
                 notes:
                   type: string
                   nullable: true
@@ -3257,7 +3358,11 @@ paths:
         required: false
         schema:
           type: string
-          enum: [pending, confirmed, cancelled, completed]
+          enum:
+          - pending
+          - confirmed
+          - cancelled
+          - completed
       responses:
         '200':
           description: Liste paginée des réservations de location
@@ -3459,7 +3564,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '201':
           description: Hôtel créé
@@ -3534,7 +3641,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '200':
           description: Hôtel mis à jour
@@ -3634,7 +3743,9 @@ paths:
                   maxLength: 3
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '201':
           description: Chambre créée
@@ -3690,7 +3801,9 @@ paths:
                   maxLength: 3
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '200':
           description: Chambre mise à jour
@@ -3730,7 +3843,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-501 — Ventes (réservations nettes) sur période'
+      summary: TRAVEL-501 — Ventes (réservations nettes) sur période
       security:
       - BearerAuth: []
       parameters:
@@ -3747,7 +3860,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-502 — Occupation par trajet'
+      summary: TRAVEL-502 — Occupation par trajet
       security:
       - BearerAuth: []
       parameters:
@@ -3764,7 +3877,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-503 — Recettes (confirmés − remboursements)'
+      summary: TRAVEL-503 — Recettes (confirmés − remboursements)
       security:
       - BearerAuth: []
       parameters:
@@ -3781,7 +3894,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-504 — Annulations sur période'
+      summary: TRAVEL-504 — Annulations sur période
       security:
       - BearerAuth: []
       parameters:
@@ -3798,7 +3911,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-507 — Dashboard KPIs'
+      summary: TRAVEL-507 — Dashboard KPIs
       security:
       - BearerAuth: []
       responses:
@@ -3812,7 +3925,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-505 — Export CSV idempotent'
+      summary: TRAVEL-505 — Export CSV idempotent
       security:
       - BearerAuth: []
       requestBody:
@@ -3851,7 +3964,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-505 — Lecture d''un export (URL signée éphémère)'
+      summary: TRAVEL-505 — Lecture d'un export (URL signée éphémère)
       security:
       - BearerAuth: []
       parameters:
@@ -3871,7 +3984,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Liste des articles'
+      summary: TRAVEL-901 — Liste des articles
       security:
       - BearerAuth: []
       responses:
@@ -3882,7 +3995,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Création d''un article'
+      summary: TRAVEL-901 — Création d'un article
       security:
       - BearerAuth: []
       requestBody:
@@ -3919,7 +4032,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Détail d''un article'
+      summary: TRAVEL-901 — Détail d'un article
       security:
       - BearerAuth: []
       parameters:
@@ -3938,7 +4051,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Mise à jour d''un article'
+      summary: TRAVEL-901 — Mise à jour d'un article
       security:
       - BearerAuth: []
       parameters:
@@ -3963,7 +4076,7 @@ paths:
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Suppression d''un article'
+      summary: TRAVEL-901 — Suppression d'un article
       security:
       - BearerAuth: []
       parameters:
@@ -3981,7 +4094,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Modération d''un article (draft/published/flagged)'
+      summary: TRAVEL-901 — Modération d'un article (draft/published/flagged)
       security:
       - BearerAuth: []
       parameters:
@@ -4001,7 +4114,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Catégories d''articles'
+      summary: TRAVEL-901 — Catégories d'articles
       security:
       - BearerAuth: []
       responses:
@@ -4012,7 +4125,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Création d''une catégorie'
+      summary: TRAVEL-901 — Création d'une catégorie
       security:
       - BearerAuth: []
       responses:
@@ -4024,7 +4137,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-906 — Grille tarifaire des annonces'
+      summary: TRAVEL-906 — Grille tarifaire des annonces
       security:
       - BearerAuth: []
       responses:
@@ -4035,7 +4148,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-906 — Création d''une grille tarifaire (minor units)'
+      summary: TRAVEL-906 — Création d'une grille tarifaire (minor units)
       security:
       - BearerAuth: []
       requestBody:
@@ -4075,7 +4188,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
+      summary: TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)
       security:
       - BearerAuth: []
       parameters:
@@ -4102,11 +4215,10 @@ paths:
           description: Élément mis à jour
         '422':
           description: Code dupliqué (tenant)
-
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-906 — Suppression d''une grille tarifaire'
+      summary: TRAVEL-906 — Suppression d'une grille tarifaire
       security:
       - BearerAuth: []
       parameters:
@@ -4124,7 +4236,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-905 — Types d''annonces'
+      summary: TRAVEL-905 — Types d'annonces
       security:
       - BearerAuth: []
       responses:
@@ -4135,7 +4247,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-905 — Création d''un type d''annonce'
+      summary: TRAVEL-905 — Création d'un type d'annonce
       security:
       - BearerAuth: []
       requestBody:
@@ -4165,7 +4277,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
+      summary: TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)
       security:
       - BearerAuth: []
       parameters:
@@ -4192,11 +4304,10 @@ paths:
           description: Élément mis à jour
         '422':
           description: Code dupliqué (tenant)
-
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-905 — Suppression d''un type d''annonce'
+      summary: TRAVEL-905 — Suppression d'un type d'annonce
       security:
       - BearerAuth: []
       parameters:
@@ -4214,7 +4325,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-905 — Positions de publication'
+      summary: TRAVEL-905 — Positions de publication
       security:
       - BearerAuth: []
       responses:
@@ -4225,7 +4336,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-905 — Création d''une position'
+      summary: TRAVEL-905 — Création d'une position
       security:
       - BearerAuth: []
       requestBody:
@@ -4255,7 +4366,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
+      summary: TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)
       security:
       - BearerAuth: []
       parameters:
@@ -4282,11 +4393,10 @@ paths:
           description: Élément mis à jour
         '422':
           description: Code dupliqué (tenant)
-
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-905 — Suppression d''une position'
+      summary: TRAVEL-905 — Suppression d'une position
       security:
       - BearerAuth: []
       parameters:
@@ -4304,7 +4414,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Annonces en gestion (tous statuts, filtrables)'
+      summary: TRAVEL-914 — Annonces en gestion (tous statuts, filtrables)
       security:
       - BearerAuth: []
       parameters:
@@ -4323,7 +4433,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-907 — Annonces visibles (payées + validées + non expirées)'
+      summary: TRAVEL-907 — Annonces visibles (payées + validées + non expirées)
       security:
       - BearerAuth: []
       responses:
@@ -4334,7 +4444,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-907 — Soumission d''une annonce (prix calculé serveur)'
+      summary: TRAVEL-907 — Soumission d'une annonce (prix calculé serveur)
       security:
       - BearerAuth: []
       requestBody:
@@ -4378,7 +4488,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-907 — Détail d''une annonce'
+      summary: TRAVEL-907 — Détail d'une annonce
       security:
       - BearerAuth: []
       parameters:
@@ -4396,7 +4506,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-907 — Paiement d''une annonce (idempotent)'
+      summary: TRAVEL-907 — Paiement d'une annonce (idempotent)
       security:
       - BearerAuth: []
       parameters:
@@ -4416,7 +4526,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-907 — Validation d''une annonce (travel.manage)'
+      summary: TRAVEL-907 — Validation d'une annonce (travel.manage)
       security:
       - BearerAuth: []
       parameters:
@@ -4436,7 +4546,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-907 — Rejet d''une annonce (motif)'
+      summary: TRAVEL-907 — Rejet d'une annonce (motif)
       security:
       - BearerAuth: []
       parameters:
@@ -4466,7 +4576,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-908 — Renouvellement (nouveau paiement, prolongation)'
+      summary: TRAVEL-908 — Renouvellement (nouveau paiement, prolongation)
       security:
       - BearerAuth: []
       parameters:
@@ -4486,7 +4596,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-904 — Liste des quiz'
+      summary: TRAVEL-904 — Liste des quiz
       security:
       - BearerAuth: []
       responses:
@@ -4497,7 +4607,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-904 — Création d''un quiz'
+      summary: TRAVEL-904 — Création d'un quiz
       security:
       - BearerAuth: []
       requestBody:
@@ -4526,7 +4636,10 @@ paths:
                   default: 1
                 status:
                   type: string
-                  enum: [draft, active, closed]
+                  enum:
+                  - draft
+                  - active
+                  - closed
       responses:
         '201':
           description: Quiz créé
@@ -4536,11 +4649,11 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-904 — Détail d''un quiz (questions SANS réponses correctes)'
+      summary: TRAVEL-904 — Détail d'un quiz (questions SANS réponses correctes)
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour d''un quiz (titre, période, statut)'
+      summary: TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut)
       security:
       - BearerAuth: []
       parameters:
@@ -4570,22 +4683,10 @@ paths:
                   format: date-time
                 status:
                   type: string
-                  enum: [draft, active, closed]
-      responses:
-        '200':
-          description: Quiz mis à jour
-        '403':
-          description: Rôle insuffisant
-        '404':
-          description: Quiz introuvable
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: travelQuiz
-        in: path
-        required: true
-        schema:
-          type: integer
+                  enum:
+                  - draft
+                  - active
+                  - closed
       responses:
         '200':
           description: Quiz + questions
@@ -4595,7 +4696,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-904 — Ajout d''une question'
+      summary: TRAVEL-904 — Ajout d'une question
       security:
       - BearerAuth: []
       parameters:
@@ -4642,7 +4743,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Questions d''un quiz (admin, bonne réponse exposée)'
+      summary: TRAVEL-914 — Questions d'un quiz (admin, bonne réponse exposée)
       security:
       - BearerAuth: []
       parameters:
@@ -4660,7 +4761,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour d''une question'
+      summary: TRAVEL-914 — Mise à jour d'une question
       security:
       - BearerAuth: []
       parameters:
@@ -4705,7 +4806,7 @@ paths:
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Suppression d''une question'
+      summary: TRAVEL-914 — Suppression d'une question
       security:
       - BearerAuth: []
       parameters:
@@ -4728,7 +4829,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-904 — Participation (notation serveur)'
+      summary: TRAVEL-904 — Participation (notation serveur)
       security:
       - BearerAuth: []
       parameters:
@@ -4756,7 +4857,9 @@ paths:
                   type: array
                   items:
                     type: object
-                    required: [question_id, selected_option]
+                    required:
+                    - question_id
+                    - selected_option
                     properties:
                       question_id:
                         type: integer
@@ -4775,7 +4878,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-904 — Résultats (gestion)'
+      summary: TRAVEL-904 — Résultats (gestion)
       security:
       - BearerAuth: []
       parameters:
@@ -4793,7 +4896,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-913 — Registre admin des contacts voyageurs (liste paginée, recherche, filtre consentement)'
+      summary: TRAVEL-913 — Registre admin des contacts voyageurs (liste paginée, recherche, filtre consentement)
       security:
       - BearerAuth: []
       parameters:
@@ -4809,7 +4912,10 @@ paths:
         description: Ne renvoyer que les contacts ayant consenti au canal (email|sms|whatsapp)
         schema:
           type: string
-          enum: [email, sms, whatsapp]
+          enum:
+          - email
+          - sms
+          - whatsapp
       - name: per_page
         in: query
         required: false
@@ -4829,7 +4935,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-912/913 — Mise à jour des consentements par canal'
+      summary: TRAVEL-912/913 — Mise à jour des consentements par canal
       security:
       - BearerAuth: []
       parameters:
@@ -4861,7 +4967,7 @@ paths:
     patch:
       tags:
       - Travel
-      summary: "TRAVEL-913 — Opt-in / opt-out d'un canal de consentement (horodaté)"
+      summary: TRAVEL-913 — Opt-in / opt-out d'un canal de consentement (horodaté)
       security:
       - BearerAuth: []
       parameters:
@@ -4882,7 +4988,10 @@ paths:
               properties:
                 channel:
                   type: string
-                  enum: [email, sms, whatsapp]
+                  enum:
+                  - email
+                  - sms
+                  - whatsapp
                 given:
                   type: boolean
       responses:
@@ -4899,7 +5008,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-912 — Mise à jour des consentements par canal'
+      summary: TRAVEL-912 — Mise à jour des consentements par canal
       security:
       - BearerAuth: []
       parameters:
@@ -4930,7 +5039,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-910 — Notification manuelle (canaux plateforme + consentement)'
+      summary: TRAVEL-910 — Notification manuelle (canaux plateforme + consentement)
       security:
       - BearerAuth: []
       parameters:
@@ -4956,7 +5065,9 @@ paths:
                   maxItems: 2
                   items:
                     type: string
-                    enum: [email, app]
+                    enum:
+                    - email
+                    - app
       responses:
         '200':
           description: Notification envoyée (canaux respectant le consentement)
@@ -4970,7 +5081,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-909 — Sites touristiques (recherche par ville/nom)'
+      summary: TRAVEL-909 — Sites touristiques (recherche par ville/nom)
       security:
       - BearerAuth: []
       parameters:
@@ -4989,7 +5100,9 @@ paths:
         required: false
         schema:
           type: string
-          enum: [active, disabled]
+          enum:
+          - active
+          - disabled
       responses:
         '200':
           description: Sites touristiques
@@ -4998,7 +5111,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-909 — Création d''un site touristique'
+      summary: TRAVEL-909 — Création d'un site touristique
       security:
       - BearerAuth: []
       requestBody:
@@ -5032,7 +5145,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '201':
           description: Site créé
@@ -5044,7 +5159,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-909 — Détail d''un site touristique'
+      summary: TRAVEL-909 — Détail d'un site touristique
       security:
       - BearerAuth: []
       parameters:
@@ -5061,7 +5176,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-909 — Mise à jour d''un site touristique'
+      summary: TRAVEL-909 — Mise à jour d'un site touristique
       security:
       - BearerAuth: []
       parameters:
@@ -5097,7 +5212,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '200':
           description: Site mis à jour
@@ -5106,7 +5223,7 @@ paths:
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-909 — Suppression d''un site touristique'
+      summary: TRAVEL-909 — Suppression d'un site touristique
       security:
       - BearerAuth: []
       parameters:
@@ -5124,7 +5241,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-913 — Formulaire de contact public (URL signée + throttle, consentement obligatoire)'
+      summary: TRAVEL-913 — Formulaire de contact public (URL signée + throttle, consentement obligatoire)
       parameters:
       - name: company
         in: query
@@ -5175,7 +5292,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-913 — Génération du lien public signé du formulaire de contact'
+      summary: TRAVEL-913 — Génération du lien public signé du formulaire de contact
       security:
       - BearerAuth: []
       requestBody:
@@ -5199,7 +5316,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-416 — Formulaire de contact → lead CRM (événement outbox)'
+      summary: Formulaire de contact → lead CRM (TRAVEL-416/#6068)
       security:
       - BearerAuth: []
       requestBody:
@@ -5212,6 +5329,8 @@ paths:
               - email
               - message
               - consent_email
+              - name
+              - consent
               properties:
                 first_name:
                   type: string
@@ -5228,22 +5347,41 @@ paths:
                   maxLength: 40
                 message:
                   type: string
-                  maxLength: 2000
+                  maxLength: 1000
+                  minLength: 10
                 consent_email:
                   type: boolean
                   description: Consentement de contact explicite (obligatoire, RGPD)
+                name:
+                  type: string
+                  maxLength: 120
+                consent:
+                  type: boolean
+                  description: Consentement RGPD — requis (true)
+                idempotency_key:
+                  type: string
+                  maxLength: 64
+                  description: Clé d'idempotence client (uuid) pour rejouer sans doublon
       responses:
         '202':
-          description: Demande reçue (événement travel.contact.submitted.v1 publié)
+          description: Demande acceptée — événement travel.contact.submitted.v1 publié (outbox)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Demande envoyée.
         '401':
           description: Non authentifié
         '422':
-          description: Validation échouée (bornes, consentement manquant)
+          description: Validation échouée (consentement manquant, message hors bornes, email/téléphone absents)
   /travel/comments:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-902 — Liste des commentaires'
+      summary: TRAVEL-902 — Liste des commentaires
       security:
       - BearerAuth: []
       responses:
@@ -5254,7 +5392,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-902 — Création d''un commentaire (pending)'
+      summary: TRAVEL-902 — Création d'un commentaire (pending)
       security:
       - BearerAuth: []
       requestBody:
@@ -5283,7 +5421,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-902 — Modération (approved/rejected/flagged)'
+      summary: TRAVEL-902 — Modération (approved/rejected/flagged)
       security:
       - BearerAuth: []
       parameters:
@@ -5303,7 +5441,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-902 — Signalement d''un commentaire'
+      summary: TRAVEL-902 — Signalement d'un commentaire
       security:
       - BearerAuth: []
       parameters:
@@ -5321,7 +5459,7 @@ paths:
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-902 — Suppression d''un commentaire'
+      summary: TRAVEL-902 — Suppression d'un commentaire
       security:
       - BearerAuth: []
       parameters:
@@ -5339,7 +5477,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-903 — Like (unicité acteur/article)'
+      summary: TRAVEL-903 — Like (unicité acteur/article)
       security:
       - BearerAuth: []
       parameters:
@@ -5357,7 +5495,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-903 — Unlike'
+      summary: TRAVEL-903 — Unlike
       security:
       - BearerAuth: []
       parameters:
@@ -5375,7 +5513,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-903 — Partage (canal)'
+      summary: TRAVEL-903 — Partage (canal)
       security:
       - BearerAuth: []
       parameters:
@@ -5395,7 +5533,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-903 — Note 1..5 (unicité, agrégats)'
+      summary: TRAVEL-903 — Note 1..5 (unicité, agrégats)
       security:
       - BearerAuth: []
       parameters:
@@ -5415,7 +5553,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-903 — Agrégats d''engagement'
+      summary: TRAVEL-903 — Agrégats d'engagement
       security:
       - BearerAuth: []
       parameters:
@@ -10719,24 +10857,29 @@ paths:
       tags:
       - FuelStation
       summary: Enregistrer un releve de compteur (cumulatif, idempotent)
-      description: |-
-        Releve cumule d'un compteur (valeur en unites mineures entieres).
+      description: 'Releve cumule d''un compteur (valeur en unites mineures entieres).
+
         Idempotent (idempotency_key). Valeur decroissante sans rollover
+
         documente → intervalle en anomalie (revue obligatoire). Solution
-        FuelStation active requise (403 sinon). Issue #5798.
+
+        FuelStation active requise (403 sinon). Issue #5798.'
       parameters:
       - name: station
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       - name: pump
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       - name: meter
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -10769,15 +10912,18 @@ paths:
       - name: station
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       - name: pump
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       - name: meter
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       responses:
         '200':
           description: Liste des releves (100 max, plus recents d'abord)
@@ -10790,15 +10936,18 @@ paths:
       - name: station
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       - name: pump
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       - name: meter
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       responses:
         '200':
           description: Liste des intervalles (valid|rollover|anomaly|pending_review)
@@ -10811,17 +10960,24 @@ paths:
       - name: reading
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [reading_value_minor, reason]
+              required:
+              - reading_value_minor
+              - reason
               properties:
-                reading_value_minor: {type: integer, minimum: 0}
-                reason: {type: string, maxLength: 1000}
+                reading_value_minor:
+                  type: integer
+                  minimum: 0
+                reason:
+                  type: string
+                  maxLength: 1000
       responses:
         '200':
           description: Correction enregistree (nouvelle version, original marque corrected)
@@ -10838,17 +10994,25 @@ paths:
       - name: interval
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [decision]
+              required:
+              - decision
               properties:
-                decision: {type: string, enum: [accept, reject]}
-                note: {type: string, maxLength: 1000}
+                decision:
+                  type: string
+                  enum:
+                  - accept
+                  - reject
+                note:
+                  type: string
+                  maxLength: 1000
       responses:
         '200':
           description: Revue enregistree
@@ -10856,7 +11020,6 @@ paths:
           description: Permission manager requise
         '409':
           description: Intervalle deja revu
-
   /fuel-station/me/shifts:
     get:
       tags:
@@ -10932,7 +11095,7 @@ paths:
                   nullable: true
                 start_time:
                   type: string
-                  example: '06:00'
+                  example: 06:00
                 end_time:
                   type: string
                   example: '14:00'
@@ -11002,7 +11165,7 @@ paths:
                   nullable: true
                 start_time:
                   type: string
-                  example: '06:00'
+                  example: 06:00
                 end_time:
                   type: string
                   example: '14:00'
@@ -11134,7 +11297,7 @@ paths:
       tags:
       - FuelStation
       summary: Roster de presence du shift pour une date (manager)
-      description: "FUEL-006 - resout la presence des employes affectes depuis attendance_logs (source canonique Attendance) : present/late/absent/leave/holiday/incomplete + outside_shift si le check_in sort de la fenetre du shift."
+      description: 'FUEL-006 - resout la presence des employes affectes depuis attendance_logs (source canonique Attendance) : present/late/absent/leave/holiday/incomplete + outside_shift si le check_in sort de la fenetre du shift.'
       security:
       - BearerAuth: []
       parameters:
@@ -11319,7 +11482,7 @@ paths:
       tags:
       - FuelStation
       summary: Cloturer une session (proprietaire, idempotente)
-      description: "Expected balance et variance calcules serveur. Rejeu sans effet (statut terminal)."
+      description: Expected balance et variance calcules serveur. Rejeu sans effet (statut terminal).
       security:
       - BearerAuth: []
       parameters:
@@ -11439,7 +11602,7 @@ paths:
       tags:
       - FuelStation
       summary: Enregistrer une vente (pompiste, idempotent via external_id)
-      description: "Montant calcule serveur (quantity x unit_price). Rejeu external_id sans doublon. Relation pompe/station validee quand les tables FUEL-002/003 existent."
+      description: Montant calcule serveur (quantity x unit_price). Rejeu external_id sans doublon. Relation pompe/station validee quand les tables FUEL-002/003 existent.
       security:
       - BearerAuth: []
       requestBody:
@@ -11561,7 +11724,6 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           description: Affectation introuvable ou autre tenant
-
   /accounting/contacts:
     get:
       tags:
@@ -18849,7 +19011,7 @@ paths:
       tags:
       - Payroll
       summary: Valider la session de paie
-      description: Issue #5623 — un pays a baremes 'placeholder' (BF/ML/TG, non valides legalement) exige confirm_placeholder=true, sinon 422 PAYROLL_PLACEHOLDER_CONFIRM_REQUIRED.
+      description: Issue
       parameters:
       - name: payrollRun
         in: path
@@ -23983,14 +24145,14 @@ paths:
       tags:
       - Exports
       summary: Export CSV mensuel des presences par employe
-      description: "Synthese mensuelle par employe (jours travailles, heures, HS, retards, sorties manquantes, corrections, estimation brute) - meme agregation que /attendance/monthly-report, surface d'export canonique avec historique. Manager uniquement."
+      description: Synthese mensuelle par employe (jours travailles, heures, HS, retards, sorties manquantes, corrections, estimation brute) - meme agregation que /attendance/monthly-report, surface d'export canonique avec historique. Manager uniquement.
       parameters:
       - name: month
         in: query
-        description: "Mois au format YYYY-MM (defaut : mois courant)"
+        description: 'Mois au format YYYY-MM (defaut : mois courant)'
         schema:
           type: string
-          example: '2026-08'
+          example: 2026-08
       responses:
         '200':
           description: Enveloppe JSON {format, content, filename, count, month}
@@ -25973,7 +26135,7 @@ paths:
       tags:
       - CRM
       summary: Convertir un lead en account + contact + opportunity
-      description: "Conversion guidée et transactionnelle (#5717). Idempotente : un lead déjà converti répond 409 (CRM_LEAD_ALREADY_CONVERTED). Le compte est réutilisé si un compte du tenant porte le même nom."
+      description: 'Conversion guidée et transactionnelle (#5717). Idempotente : un lead déjà converti répond 409 (CRM_LEAD_ALREADY_CONVERTED). Le compte est réutilisé si un compte du tenant porte le même nom.'
       security:
       - BearerAuth: []
       parameters:
@@ -26033,7 +26195,7 @@ paths:
       tags:
       - CRM
       summary: Suggestions de doublons (explicables, tenant-scoped)
-      description: "Déduplication supervisée (#5718) : paires par email normalisé identique ou nom similaire (Levenshtein ≤ 2). Jamais cross-tenant. Permission : principal/rh."
+      description: 'Déduplication supervisée (#5718) : paires par email normalisé identique ou nom similaire (Levenshtein ≤ 2). Jamais cross-tenant. Permission : principal/rh.'
       security:
       - BearerAuth: []
       parameters:
@@ -26097,7 +26259,7 @@ paths:
       tags:
       - CRM
       summary: Preview d'une fusion (aucune écriture)
-      description: "Diff de champs + relations à transférer avant fusion (#5718). Permission : principal/rh."
+      description: 'Diff de champs + relations à transférer avant fusion (#5718). Permission : principal/rh.'
       security:
       - BearerAuth: []
       parameters:
@@ -26134,7 +26296,7 @@ paths:
       tags:
       - CRM
       summary: Fusion supervisée (principal uniquement)
-      description: "Fusion transactionnelle : champs complétés, relations transférées, perdant ARCHIVÉ (jamais supprimé — rollback logique), audit crm.merge.* (#5718)."
+      description: 'Fusion transactionnelle : champs complétés, relations transférées, perdant ARCHIVÉ (jamais supprimé — rollback logique), audit crm.merge.* (#5718).'
       security:
       - BearerAuth: []
       requestBody:
@@ -26196,7 +26358,7 @@ paths:
       tags:
       - CRM
       summary: Uploader et prévisualiser un import CSV CRM (preview sans écriture)
-      description: "Parse et valide structurellement un fichier CSV (accounts/contacts/leads) sans rien écrire dans les tables cibles. Retourne une session d'import en statut previewed avec compteurs, erreurs par ligne et aperçu PII masqué. Issue #5714."
+      description: 'Parse et valide structurellement un fichier CSV (accounts/contacts/leads) sans rien écrire dans les tables cibles. Retourne une session d''import en statut previewed avec compteurs, erreurs par ligne et aperçu PII masqué. Issue #5714.'
       security:
       - BearerAuth: []
       requestBody:
@@ -26268,7 +26430,7 @@ paths:
       tags:
       - CRM
       summary: Committer un import CSV prévisualisé (explicite, idempotent)
-      description: "Claim atomique puis persistance asynchrone des lignes validées. Un second commit répond 409 (CRM_IMPORT_ALREADY_COMMITTED). Issue #5714."
+      description: 'Claim atomique puis persistance asynchrone des lignes validées. Un second commit répond 409 (CRM_IMPORT_ALREADY_COMMITTED). Issue #5714.'
       security:
       - BearerAuth: []
       parameters:
@@ -28322,7 +28484,7 @@ paths:
     post:
       tags:
       - Accounting
-      summary: Activer le module Comptabilite (wizard 4 etapes, #5626)
+      summary: Activer le module Comptabilite (wizard 4 etapes,
       description: 'Execute l''activation complete : parametrage (langue des documents, devise, taux TVA, series de numerotation, modele PDF, mentions) puis creation du contact de test et de la facture d''exemple. Idempotent (RBAC principal/comptable).'
       security:
       - BearerAuth: []
@@ -29638,25 +29800,29 @@ paths:
           $ref: '#/components/responses/Validation422'
   /attendance/day-closures:
     get:
-      tags: ["Attendance"]
-      summary: "Lister les fermetures de journée (manager/RH/principal)"
-      description: "Fermetures de journée du pointage (issue #5265) : verrous quotidiens par employé, filtrables par date et/ou employé. RBAC api.manager:rh,principal."
+      tags:
+      - Attendance
+      summary: Lister les fermetures de journée (manager/RH/principal)
+      description: 'Fermetures de journée du pointage (issue #5265) : verrous quotidiens par employé, filtrables par date et/ou employé. RBAC api.manager:rh,principal.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: date
-          in: query
-          required: false
-          description: "Filtre par date (YYYY-MM-DD)."
-          schema: { type: string, format: date }
-        - name: employee_id
-          in: query
-          required: false
-          description: "Filtre par employé."
-          schema: { type: integer }
+      - name: date
+        in: query
+        required: false
+        description: Filtre par date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      - name: employee_id
+        in: query
+        required: false
+        description: Filtre par employé.
+        schema:
+          type: integer
       responses:
-        "200":
-          description: "Liste des fermetures de journée"
+        '200':
+          description: Liste des fermetures de journée
           content:
             application/json:
               schema:
@@ -29665,60 +29831,70 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/AttendanceDayClosure"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
+                      $ref: '#/components/schemas/AttendanceDayClosure'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
     post:
-      tags: ["Attendance"]
-      summary: "Verrouiller la journée d'un employé (manager/RH/principal)"
-      description: "Crée une fermeture de journée (idempotent) : plus aucun pointage (check-in/check-out, import, approbation géo) n'est accepté pour cet employé ce jour-là → 409 ATTENDANCE_DAY_CLOSED. Issue #5265."
+      tags:
+      - Attendance
+      summary: Verrouiller la journée d'un employé (manager/RH/principal)
+      description: 'Crée une fermeture de journée (idempotent) : plus aucun pointage (check-in/check-out, import, approbation géo) n''est accepté pour cet employé ce jour-là → 409 ATTENDANCE_DAY_CLOSED. Issue #5265.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [employee_id, date]
+              required:
+              - employee_id
+              - date
               properties:
-                employee_id: { type: integer, description: "Employé de l'entreprise courante (404 si hors tenant)." }
-                date: { type: string, format: date, description: "Date locale entreprise (YYYY-MM-DD)." }
-                note: { type: string, nullable: true }
+                employee_id:
+                  type: integer
+                  description: Employé de l'entreprise courante (404 si hors tenant).
+                date:
+                  type: string
+                  format: date
+                  description: Date locale entreprise (YYYY-MM-DD).
+                note:
+                  type: string
+                  nullable: true
       responses:
-        "201":
-          description: "Fermeture créée (ou déjà existante — idempotent)"
+        '201':
+          description: Fermeture créée (ou déjà existante — idempotent)
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/AttendanceDayClosure"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-        "404":
-          $ref: "#/components/responses/Error404"
-        "422":
-          description: "Validation (employé hors entreprise, date invalide)."
-
+                    $ref: '#/components/schemas/AttendanceDayClosure'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Validation (employé hors entreprise, date invalide).
   /attendance/day-closures/{id}/validate:
     post:
-      tags: ["Attendance"]
-      summary: "Valider une journée verrouillée (manager/RH/principal)"
-      description: "Marque une fermeture comme validée (review manager). Idempotent. Issue #5265."
+      tags:
+      - Attendance
+      summary: Valider une journée verrouillée (manager/RH/principal)
+      description: 'Marque une fermeture comme validée (review manager). Idempotent. Issue #5265.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: false
         content:
@@ -29726,54 +29902,54 @@ paths:
             schema:
               type: object
               properties:
-                note: { type: string, nullable: true }
+                note:
+                  type: string
+                  nullable: true
       responses:
-        "200":
-          description: "Fermeture validée"
+        '200':
+          description: Fermeture validée
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/AttendanceDayClosure"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-        "404":
-          $ref: "#/components/responses/Error404"
-
+                    $ref: '#/components/schemas/AttendanceDayClosure'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /attendance/day-closures/{id}:
     delete:
-      tags: ["Attendance"]
-      summary: "Lever une fermeture de journée (manager/RH/principal)"
-      description: "Supprime le verrou : la journée redevient ouverte aux pointages. Issue #5265."
+      tags:
+      - Attendance
+      summary: Lever une fermeture de journée (manager/RH/principal)
+      description: 'Supprime le verrou : la journée redevient ouverte aux pointages. Issue #5265.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
-        "204":
-          description: "Verrou levé"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-        "404":
-          $ref: "#/components/responses/Error404"
-
-
+        '204':
+          description: Verrou levé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /accounting/activation/complete:
     post:
       tags:
       - Accounting
       summary: Completer l'activation du module Comptabilite (wizard)
-      description: "Marque le wizard d'activation comme termine (RBAC principal/comptable)."
+      description: Marque le wizard d'activation comme termine (RBAC principal/comptable).
       responses:
         '200':
           description: Activation completee
@@ -29785,163 +29961,163 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
-
   /auth/2fa/verify:
     post:
-      tags: ["Auth"]
-      summary: "Verifier le challenge 2FA et obtenir le token"
+      tags:
+      - Auth
+      summary: Verifier le challenge 2FA et obtenir le token
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TwoFactorVerifyRequest"
+              $ref: '#/components/schemas/TwoFactorVerifyRequest'
       responses:
-        "200":
-          description: "Token Sanctum delivre"
+        '200':
+          description: Token Sanctum delivre
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TwoFactorVerifyResponse"
-        "401":
-          description: "TWO_FACTOR_CHALLENGE_EXPIRED"
-        "422":
-          description: "TWO_FACTOR_INVALID ou validation"
-
-
+                $ref: '#/components/schemas/TwoFactorVerifyResponse'
+        '401':
+          description: TWO_FACTOR_CHALLENGE_EXPIRED
+        '422':
+          description: TWO_FACTOR_INVALID ou validation
   /auth/2fa/recovery-codes:
     post:
-      tags: ["Auth"]
-      summary: "Regenerer les codes de recuperation 2FA"
+      tags:
+      - Auth
+      summary: Regenerer les codes de recuperation 2FA
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
-        "201":
-          description: "Nouveaux codes de recuperation"
+        '201':
+          description: Nouveaux codes de recuperation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TwoFactorConfirmResponse"
-
-
+                $ref: '#/components/schemas/TwoFactorConfirmResponse'
   /auth/2fa/disable:
     post:
-      tags: ["Auth"]
-      summary: "Desactiver la 2FA (re-verification par code)"
+      tags:
+      - Auth
+      summary: Desactiver la 2FA (re-verification par code)
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [code]
+              required:
+              - code
               properties:
                 code:
                   type: string
       responses:
-        "200":
-          description: "2FA desactivee"
+        '200':
+          description: 2FA desactivee
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TwoFactorStatusResponse"
-        "422":
-          description: "TWO_FACTOR_INVALID"
-
-
+                $ref: '#/components/schemas/TwoFactorStatusResponse'
+        '422':
+          description: TWO_FACTOR_INVALID
   /auth/2fa/confirm:
     post:
-      tags: ["Auth"]
-      summary: "Confirmer l'enrolement 2FA (premier code) et activer"
+      tags:
+      - Auth
+      summary: Confirmer l'enrolement 2FA (premier code) et activer
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [code]
+              required:
+              - code
               properties:
                 code:
                   type: string
-                  description: "Code TOTP a verifier"
+                  description: Code TOTP a verifier
       responses:
-        "201":
-          description: "2FA activee + codes de recuperation"
+        '201':
+          description: 2FA activee + codes de recuperation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TwoFactorConfirmResponse"
-        "422":
-          description: "TWO_FACTOR_INVALID (code invalide)"
-        "409":
-          description: "TWO_FACTOR_ALREADY_ENABLED"
-
-
+                $ref: '#/components/schemas/TwoFactorConfirmResponse'
+        '422':
+          description: TWO_FACTOR_INVALID (code invalide)
+        '409':
+          description: TWO_FACTOR_ALREADY_ENABLED
   /auth/2fa/enroll:
     post:
-      tags: ["Auth"]
-      summary: "Demarrer l'enrolement 2FA (secret + QR)"
+      tags:
+      - Auth
+      summary: Demarrer l'enrolement 2FA (secret + QR)
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
-        "201":
-          description: "Secret TOTP et URL du QR code"
+        '201':
+          description: Secret TOTP et URL du QR code
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TwoFactorEnrollResponse"
-        "409":
-          description: "TWO_FACTOR_ALREADY_ENABLED"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-
+                $ref: '#/components/schemas/TwoFactorEnrollResponse'
+        '409':
+          description: TWO_FACTOR_ALREADY_ENABLED
+        '401':
+          $ref: '#/components/responses/Error401'
   /auth/2fa/status:
     get:
-      tags: ["Auth"]
-      summary: "Etat 2FA du compte connecte"
+      tags:
+      - Auth
+      summary: Etat 2FA du compte connecte
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
-        "200":
-          description: "Etat 2FA (activee ? politique requise ?)"
+        '200':
+          description: Etat 2FA (activee ? politique requise ?)
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TwoFactorStatusResponse"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-
+                $ref: '#/components/schemas/TwoFactorStatusResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
   /accounting/bank-statement-lines/{line}/match:
     post:
-      tags: ["Accounting"]
-      summary: "Rapprochement manuel d'une ligne"
-      description: "Matche une ligne pending avec un paiement recorded explicite (lettrage). 409 si déjà rapproché. RBAC comptable/principal. Issue #5435."
+      tags:
+      - Accounting
+      summary: Rapprochement manuel d'une ligne
+      description: 'Matche une ligne pending avec un paiement recorded explicite (lettrage). 409 si déjà rapproché. RBAC comptable/principal. Issue #5435.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: line
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
+      - name: line
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [payment_id]
+              required:
+              - payment_id
               properties:
-                payment_id: { type: integer }
+                payment_id:
+                  type: integer
       responses:
-        "200":
-          description: "Ligne rapprochée"
+        '200':
+          description: Ligne rapprochée
           content:
             application/json:
               schema:
@@ -29950,34 +30126,49 @@ paths:
                   data:
                     type: object
                     properties:
-                      line_id: { type: string }
-                      status: { type: string, enum: [pending, matched] }
-                      matched_payment_id: { type: string, nullable: true }
-                      confidence: { type: integer, nullable: true }
-                      payment_status: { type: string }
-                      reconciled_at: { type: string, format: date-time, nullable: true }
-        "404":
-          description: "Ligne ou paiement introuvable (ou autre tenant)"
-          $ref: "#/components/responses/Error404"
-        "409":
-          description: "Ligne ou paiement déjà rapproché (BANK_STATEMENT_LINE_ALREADY_MATCHED)"
-          $ref: "#/components/responses/Error409"
-
+                      line_id:
+                        type: string
+                      status:
+                        type: string
+                        enum:
+                        - pending
+                        - matched
+                      matched_payment_id:
+                        type: string
+                        nullable: true
+                      confidence:
+                        type: integer
+                        nullable: true
+                      payment_status:
+                        type: string
+                      reconciled_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+        '404':
+          description: Ligne ou paiement introuvable (ou autre tenant)
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Ligne ou paiement déjà rapproché (BANK_STATEMENT_LINE_ALREADY_MATCHED)
+          $ref: '#/components/responses/Error409'
   /accounting/bank-statements/{statement}/status:
     get:
-      tags: ["Accounting"]
-      summary: "État de rapprochement"
-      description: "Soldes attendus/réels, lignes rapprochées/en attente, écart de clôture. RBAC comptable/principal. Issue #5435."
+      tags:
+      - Accounting
+      summary: État de rapprochement
+      description: 'Soldes attendus/réels, lignes rapprochées/en attente, écart de clôture. RBAC comptable/principal. Issue #5435.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: statement
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
+      - name: statement
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
-        "200":
-          description: "État de rapprochement"
+        '200':
+          description: État de rapprochement
           content:
             application/json:
               schema:
@@ -29986,28 +30177,47 @@ paths:
                   data:
                     type: object
                     properties:
-                      statement_id: { type: string }
-                      statement_period: { type: string }
-                      status: { type: string, enum: [imported, reconciling, reconciled] }
-                      opening_balance: { type: number, nullable: true }
-                      closing_balance_expected: { type: number, nullable: true }
-                      closing_balance_reported: { type: number, nullable: true }
-                      closing_gap: { type: number, nullable: true }
-                      total_lines: { type: integer }
-                      matched_lines: { type: integer }
-                      pending_lines: { type: integer }
-                      matched_amount: { type: number }
-                      pending_amount: { type: number }
-        "404":
-          description: "Relevé introuvable (ou autre tenant)"
-          $ref: "#/components/responses/Error404"
-
+                      statement_id:
+                        type: string
+                      statement_period:
+                        type: string
+                      status:
+                        type: string
+                        enum:
+                        - imported
+                        - reconciling
+                        - reconciled
+                      opening_balance:
+                        type: number
+                        nullable: true
+                      closing_balance_expected:
+                        type: number
+                        nullable: true
+                      closing_balance_reported:
+                        type: number
+                        nullable: true
+                      closing_gap:
+                        type: number
+                        nullable: true
+                      total_lines:
+                        type: integer
+                      matched_lines:
+                        type: integer
+                      pending_lines:
+                        type: integer
+                      matched_amount:
+                        type: number
+                      pending_amount:
+                        type: number
+        '404':
+          description: Relevé introuvable (ou autre tenant)
+          $ref: '#/components/responses/Error404'
   /accounting/bank-statements/{statement}/export:
     get:
       tags:
       - Accounting
       summary: Export CSV de l'état de rapprochement bancaire
-      description: "Lignes du relevé (statut, paiement rapproché, confiance) + totaux et écart de clôture. Format expert-comptable (UTF-8 BOM, ';', anti-injection #4169). RBAC principal/comptable."
+      description: 'Lignes du relevé (statut, paiement rapproché, confiance) + totaux et écart de clôture. Format expert-comptable (UTF-8 BOM, '';'', anti-injection #4169). RBAC principal/comptable.'
       parameters:
       - name: statement
         in: path
@@ -30030,19 +30240,22 @@ paths:
           $ref: '#/components/responses/Error404'
   /accounting/bank-statements/{statement}/reconcile:
     post:
-      tags: ["Accounting"]
-      summary: "Lancer le rapprochement automatique"
-      description: "Matching heuristique lignes relevé ↔ paiements recorded (montant ± tolérance, date ± N jours, référence). Score 100 → auto ; sinon proposition en file manuelle. RBAC comptable/principal. Issue #5435."
+      tags:
+      - Accounting
+      summary: Lancer le rapprochement automatique
+      description: 'Matching heuristique lignes relevé ↔ paiements recorded (montant ± tolérance, date ± N jours, référence). Score 100 → auto ; sinon proposition en file manuelle. RBAC comptable/principal. Issue #5435.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: statement
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
+      - name: statement
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
-        "200":
-          description: "Résultat du matching (auto_matched, proposed, pending + état)"
+        '200':
+          description: Résultat du matching (auto_matched, proposed, pending + état)
           content:
             application/json:
               schema:
@@ -30051,71 +30264,83 @@ paths:
                   data:
                     type: object
                     properties:
-                      auto_matched: { type: integer }
-                      proposed: { type: integer }
-                      pending: { type: integer }
-                      matched_lines: { type: integer }
-                      pending_lines: { type: integer }
-                      closing_gap: { type: number, nullable: true }
-        "404":
-          description: "Relevé introuvable (ou autre tenant)"
-          $ref: "#/components/responses/Error404"
-
+                      auto_matched:
+                        type: integer
+                      proposed:
+                        type: integer
+                      pending:
+                        type: integer
+                      matched_lines:
+                        type: integer
+                      pending_lines:
+                        type: integer
+                      closing_gap:
+                        type: number
+                        nullable: true
+        '404':
+          description: Relevé introuvable (ou autre tenant)
+          $ref: '#/components/responses/Error404'
   /accounting/bank-statements/{statement}:
     get:
-      tags: ["Accounting"]
-      summary: "Détail d'un relevé (avec lignes)"
-      description: "Relevé du tenant avec ses lignes. 404 cross-tenant (fail-closed). RBAC comptable/principal. Issue #5435."
+      tags:
+      - Accounting
+      summary: Détail d'un relevé (avec lignes)
+      description: 'Relevé du tenant avec ses lignes. 404 cross-tenant (fail-closed). RBAC comptable/principal. Issue #5435.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: statement
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
+      - name: statement
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
-        "200":
-          description: "Relevé détaillé"
+        '200':
+          description: Relevé détaillé
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/BankStatement"
-        "404":
-          description: "Relevé introuvable (ou autre tenant)"
-          $ref: "#/components/responses/Error404"
-
+                    $ref: '#/components/schemas/BankStatement'
+        '404':
+          description: Relevé introuvable (ou autre tenant)
+          $ref: '#/components/responses/Error404'
   /accounting/bank-statements/import:
     post:
-      tags: ["Accounting"]
-      summary: "Importer un relevé bancaire CSV"
-      description: "Import CSV paramétrable (mapping par entreprise). Idempotent : ré-import refusé (409). Erreurs de ligne signalées dans errors[]. RBAC comptable/principal. Issue #5435."
+      tags:
+      - Accounting
+      summary: Importer un relevé bancaire CSV
+      description: 'Import CSV paramétrable (mapping par entreprise). Idempotent : ré-import refusé (409). Erreurs de ligne signalées dans errors[]. RBAC comptable/principal. Issue #5435.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
               type: object
-              required: [file, statement_period, import_reference]
+              required:
+              - file
+              - statement_period
+              - import_reference
               properties:
                 file:
                   type: string
                   format: binary
-                  description: "Fichier CSV (séparateur configurable, défaut ';')"
+                  description: Fichier CSV (séparateur configurable, défaut ';')
                 statement_period:
                   type: string
-                  pattern: "^\\d{4}-\\d{2}$"
-                  description: "Période du relevé, ex. 2026-08"
+                  pattern: ^\d{4}-\d{2}$
+                  description: Période du relevé, ex. 2026-08
                 import_reference:
                   type: string
-                  description: "Référence externe d'import (unicité avec la période)"
+                  description: Référence externe d'import (unicité avec la période)
       responses:
-        "201":
-          description: "Relevé importé (imported lignes, skipped, errors par ligne)"
+        '201':
+          description: Relevé importé (imported lignes, skipped, errors par ligne)
           content:
             application/json:
               schema:
@@ -30125,39 +30350,48 @@ paths:
                     type: object
                     properties:
                       statement:
-                        $ref: "#/components/schemas/BankStatement"
-                      imported: { type: integer }
-                      skipped: { type: integer }
+                        $ref: '#/components/schemas/BankStatement'
+                      imported:
+                        type: integer
+                      skipped:
+                        type: integer
                       errors:
                         type: array
                         items:
                           type: object
                           properties:
-                            line: { type: integer }
-                            error: { type: string }
-        "409":
-          description: "Relevé déjà importé pour cette période (BANK_STATEMENT_DUPLICATE_IMPORT)"
-          $ref: "#/components/responses/Error409"
-        "422":
-          description: "En-tête invalide ou validation échouée (BANK_STATEMENT_IMPORT_FORMAT)"
-          $ref: "#/components/responses/Error422"
-
+                            line:
+                              type: integer
+                            error:
+                              type: string
+        '409':
+          description: Relevé déjà importé pour cette période (BANK_STATEMENT_DUPLICATE_IMPORT)
+          $ref: '#/components/responses/Error409'
+        '422':
+          description: En-tête invalide ou validation échouée (BANK_STATEMENT_IMPORT_FORMAT)
+          $ref: '#/components/responses/Error422'
   /accounting/bank-statements:
     get:
-      tags: ["Accounting"]
-      summary: "Lister les relevés bancaires"
-      description: "Relevés du tenant (filtre status). RBAC comptable/principal. Issue #5435."
+      tags:
+      - Accounting
+      summary: Lister les relevés bancaires
+      description: 'Relevés du tenant (filtre status). RBAC comptable/principal. Issue #5435.'
       parameters:
-        - name: status
-          in: query
-          required: false
-          description: "Filtre par statut (imported, reconciling, reconciled)."
-          schema: { type: string, enum: [imported, reconciling, reconciled] }
+      - name: status
+        in: query
+        required: false
+        description: Filtre par statut (imported, reconciling, reconciled).
+        schema:
+          type: string
+          enum:
+          - imported
+          - reconciling
+          - reconciled
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
-        "200":
-          description: "Liste des relevés"
+        '200':
+          description: Liste des relevés
           content:
             application/json:
               schema:
@@ -30166,18 +30400,16 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/BankStatement"
-        "403":
-          description: "Rôle insuffisant (manager requis)"
-          $ref: "#/components/responses/Error403"
-
-
+                      $ref: '#/components/schemas/BankStatement'
+        '403':
+          description: Rôle insuffisant (manager requis)
+          $ref: '#/components/responses/Error403'
   /hr/candidates/{applicant}/hire:
     post:
       tags:
       - HR
       summary: Embauche d'un candidat (principal/RH)
-      description: "Convertit un candidat en employé (parcours candidat → employé, issue #5261). RBAC principal/RH."
+      description: 'Convertit un candidat en employé (parcours candidat → employé, issue #5261). RBAC principal/RH.'
       parameters:
       - name: applicant
         in: path
@@ -30203,7 +30435,6 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
-
   /voice/tts/{filename}:
     get:
       tags:
@@ -30225,6 +30456,982 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: Fichier introuvable
+  /travel/trips/connections:
+    get:
+      tags:
+      - Travel
+      summary: Recherche de correspondances multi-trajets (TRAVEL-809/#6099)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: origin_city_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: destination_city_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Correspondances valides (horaires compatibles ≥ 45 min)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        total_price_minor:
+                          type: integer
+                        connection_minutes:
+                          type: integer
+                        first:
+                          $ref: '#/components/schemas/TravelTrip'
+                        second:
+                          $ref: '#/components/schemas/TravelTrip'
+        '401':
+          description: Non authentifié
+        '422':
+          description: Paramètres requis manquants
+  /travel/partner-keys:
+    post:
+      tags:
+      - Travel
+      summary: Émission d'une clé API transporteur (TRAVEL-807/#6086)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - carrier_id
+              properties:
+                carrier_id:
+                  type: integer
+                label:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Clé créée — api_key affiché une seule fois
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      carrier_id:
+                        type: integer
+                      label:
+                        type: string
+                        nullable: true
+                      api_key:
+                        type: string
+                      created_at:
+                        type: string
+                        nullable: true
+        '403':
+          description: Permission travel.manage requise
+  /travel/partner-keys/{travelCarrierApiKey}:
+    delete:
+      tags:
+      - Travel
+      summary: Révocation d'une clé API transporteur (TRAVEL-807/#6086)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCarrierApiKey
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Clé révoquée
+        '404':
+          description: Clé introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+  /travel/partner/sync:
+    post:
+      tags:
+      - Travel
+      summary: Synchronisation entrante des trajets transporteurs (TRAVEL-807/#6086)
+      security: []
+      parameters:
+      - name: X-Partner-Key
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Clé API du transporteur (émise via POST /travel/partner-keys)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - routes
+              - trips
+              properties:
+                routes:
+                  type: array
+                  maxItems: 200
+                  items:
+                    type: object
+                    required:
+                    - external_ref
+                    properties:
+                      external_ref:
+                        type: string
+                        maxLength: 100
+                      code:
+                        type: string
+                        nullable: true
+                      origin_city_id:
+                        type: integer
+                        nullable: true
+                      destination_city_id:
+                        type: integer
+                        nullable: true
+                      distance_km:
+                        type: integer
+                        nullable: true
+                      duration_min:
+                        type: integer
+                        nullable: true
+                      status:
+                        type: string
+                        nullable: true
+                trips:
+                  type: array
+                  maxItems: 200
+                  items:
+                    type: object
+                    required:
+                    - external_ref
+                    - route_external_ref
+                    - departure_date
+                    - departure_time
+                    - arrival_date
+                    - arrival_time
+                    properties:
+                      external_ref:
+                        type: string
+                        maxLength: 100
+                      route_external_ref:
+                        type: string
+                        maxLength: 100
+                      code:
+                        type: string
+                        nullable: true
+                      departure_date:
+                        type: string
+                        format: date
+                      departure_time:
+                        type: string
+                      arrival_date:
+                        type: string
+                        format: date
+                      arrival_time:
+                        type: string
+                      means_of_transport:
+                        type: string
+                        nullable: true
+                      total_seats:
+                        type: integer
+                        nullable: true
+                      status:
+                        type: string
+                        nullable: true
+                      prices:
+                        type: array
+                        items:
+                          type: object
+                          required:
+                          - class_code
+                          - adult_price_minor
+                          - currency
+                          properties:
+                            class_code:
+                              type: string
+                            adult_price_minor:
+                              type: integer
+                            child_price_minor:
+                              type: integer
+                              nullable: true
+                            currency:
+                              type: string
+      responses:
+        '200':
+          description: Synchro effectuée (upsert idempotent par clé externe)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      routes_created:
+                        type: integer
+                      routes_updated:
+                        type: integer
+                      trips_created:
+                        type: integer
+                      trips_updated:
+                        type: integer
+                      errors:
+                        type: array
+                        items:
+                          type: string
+        '401':
+          description: Clé partenaire manquante ou invalide
+        '422':
+          description: Lot trop grand ou payload invalide
+  /travel/currency-rates:
+    get:
+      tags:
+      - Travel
+      summary: Liste des taux de conversion (TRAVEL-805/#6096)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des taux
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelCurrencyRate'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'un taux de conversion par période (TRAVEL-805/#6096)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - from_currency
+              - to_currency
+              - rate_minor
+              - valid_from
+              properties:
+                from_currency:
+                  type: string
+                  maxLength: 3
+                to_currency:
+                  type: string
+                  maxLength: 3
+                rate_minor:
+                  type: integer
+                  description: Taux × 10000 (4 décimales, entier)
+                  minimum: 1
+                valid_from:
+                  type: string
+                  format: date
+                valid_to:
+                  type: string
+                  format: date
+                  nullable: true
+      responses:
+        '201':
+          description: Taux créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelCurrencyRate'
+        '422':
+          description: Chevauchement de période pour la même paire
+  /travel/currency-rates/convert:
+    get:
+      tags:
+      - Travel
+      summary: Conversion multi-devise (TRAVEL-805/#6096)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: amount
+        in: query
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          maxLength: 3
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          maxLength: 3
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Montant converti (unités mineures, math entière)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      amount_minor:
+                        type: integer
+                      currency:
+                        type: string
+                      rate_minor:
+                        type: integer
+        '422':
+          description: Aucun taux applicable à la date ou paramètres invalides
+  /travel/currency-rates/{travelCurrencyRate}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un taux (TRAVEL-805/#6096)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCurrencyRate
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Taux
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelCurrencyRate'
+        '404':
+          description: Taux introuvable ou hors tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'un taux (TRAVEL-805/#6096)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCurrencyRate
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - from_currency
+              - to_currency
+              - rate_minor
+              - valid_from
+              properties:
+                from_currency:
+                  type: string
+                  maxLength: 3
+                to_currency:
+                  type: string
+                  maxLength: 3
+                rate_minor:
+                  type: integer
+                  minimum: 1
+                valid_from:
+                  type: string
+                  format: date
+                valid_to:
+                  type: string
+                  format: date
+                  nullable: true
+      responses:
+        '200':
+          description: Taux mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelCurrencyRate'
+        '404':
+          description: Taux introuvable ou hors tenant
+        '422':
+          description: Chevauchement de période
+  /travel/quotes:
+    get:
+      tags:
+      - Travel
+      summary: Liste des devis de groupe (TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - draft
+          - confirmed
+          - booked
+          - cancelled
+          - expired
+      responses:
+        '200':
+          description: Liste paginée des devis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelQuote'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'un devis de groupe (≥ 5 passagers, TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - trip_id
+              - idempotency_key
+              - passengers
+              properties:
+                trip_id:
+                  type: integer
+                customer_contact_id:
+                  type: integer
+                  nullable: true
+                idempotency_key:
+                  type: string
+                  maxLength: 255
+                passengers:
+                  type: array
+                  minItems: 5
+                  maxItems: 50
+                  items:
+                    $ref: '#/components/schemas/TravelPassengerInput'
+      responses:
+        '201':
+          description: Devis créé (total figé serveur)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelQuote'
+        '422':
+          description: Groupe insuffisant ou tarif manquant
+  /travel/quotes/{travelQuote}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un devis (TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuote
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Devis avec passagers nominatifs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelQuote'
+        '404':
+          description: Devis introuvable ou hors tenant
+  /travel/quotes/{travelQuote}/book:
+    post:
+      tags:
+      - Travel
+      summary: Réservation groupée depuis un devis (TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuote
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation créée (plafond du devis respecté)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelBooking'
+        '404':
+          description: Devis introuvable ou hors tenant
+        '409':
+          description: Tarifs modifiés — le devis doit être régénéré
+        '410':
+          description: Devis expiré
+  /travel/round-trips:
+    post:
+      tags:
+      - Travel
+      summary: Création d'un aller-retour combiné (TRAVEL-802/#6093)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - outbound_trip_id
+              - return_trip_id
+              - booking_source
+              - idempotency_key
+              - passengers
+              properties:
+                outbound_trip_id:
+                  type: integer
+                return_trip_id:
+                  type: integer
+                booking_source:
+                  type: string
+                  enum:
+                  - online
+                  - office
+                  - phone
+                  - partner
+                idempotency_key:
+                  type: string
+                  maxLength: 255
+                passengers:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    $ref: '#/components/schemas/TravelPassengerInput'
+      responses:
+        '201':
+          description: Aller-retour créé (2 réservations liées)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelRoundTrip'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, flag inactif ou permission travel.manage requise
+        '409':
+          description: Sièges indisponibles sur l'un des trajets
+  /travel/round-trips/{travelRoundTrip}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un aller-retour (TRAVEL-802/#6093)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelRoundTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Aller-retour avec ses deux réservations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelRoundTrip'
+        '404':
+          description: Aller-retour introuvable ou hors tenant
+  /travel/bookings/{travelBooking}/refund-passenger:
+    post:
+      tags:
+      - Travel
+      summary: Remboursement partiel d'un passager (TRAVEL-808/#6098)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - passenger_id
+              - reason
+              - refund_key
+              properties:
+                passenger_id:
+                  type: integer
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+                refund_key:
+                  type: string
+                  maxLength: 255
+      responses:
+        '201':
+          description: Remboursement enregistré (pénalité calculée serveur)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelRefund'
+        '404':
+          description: Réservation ou passager introuvable / hors tenant
+        '422':
+          description: Réservation non confirmée ou rejeu sans double remboursement
+  /travel/loyalty/{contact}:
+    get:
+      tags:
+      - Travel
+      summary: Solde fidélité d'un contact (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: contact
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Solde + statut opt-in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      points_balance:
+                        type: integer
+                      opted_in:
+                        type: boolean
+  /travel/loyalty/opt-in:
+    post:
+      tags:
+      - Travel
+      summary: Opt-in RGPD fidélité (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - contact_id
+              properties:
+                contact_id:
+                  type: integer
+      responses:
+        '201':
+          description: Compte créé ou opt-in activé
+  /travel/loyalty/opt-out:
+    post:
+      tags:
+      - Travel
+      summary: Opt-out fidélité (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - contact_id
+              properties:
+                contact_id:
+                  type: integer
+      responses:
+        '200':
+          description: Crédits gelés (solde conservé)
+  /travel/loyalty/{contact}/redeem:
+    post:
+      tags:
+      - Travel
+      summary: Récompense — conversion points en avoir (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: contact
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - points
+              properties:
+                points:
+                  type: integer
+                  minimum: 1
+                booking_id:
+                  type: integer
+                  nullable: true
+                reason:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+      responses:
+        '200':
+          description: Points brûlés, avoir généré (1 point = 10 unités mineures)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      discount_minor:
+                        type: integer
+                      points_burned:
+                        type: integer
+        '422':
+          description: Solde insuffisant ou points invalides
+  /travel/cancellation-policies:
+    get:
+      tags:
+      - Travel
+      summary: Liste des politiques d'annulation (TRAVEL-813/#6103)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste paginée des politiques
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelCancellationPolicy'
+    post:
+      tags:
+      - Travel
+      summary: Création d'une politique d'annulation (TRAVEL-813/#6103)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - hours_before_departure
+              - penalty_percent
+              properties:
+                trip_id:
+                  type: integer
+                  nullable: true
+                class_id:
+                  type: integer
+                  nullable: true
+                hours_before_departure:
+                  type: integer
+                  minimum: 0
+                penalty_percent:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                refundable:
+                  type: boolean
+                  default: true
+      responses:
+        '201':
+          description: Politique créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelCancellationPolicy'
+  /travel/cancellation-policies/{travelCancellationPolicy}:
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'une politique (TRAVEL-813/#6103)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCancellationPolicy
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - hours_before_departure
+              - penalty_percent
+              properties:
+                trip_id:
+                  type: integer
+                  nullable: true
+                class_id:
+                  type: integer
+                  nullable: true
+                hours_before_departure:
+                  type: integer
+                  minimum: 0
+                penalty_percent:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                refundable:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: Politique mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelCancellationPolicy'
+        '404':
+          description: Politique introuvable ou hors tenant
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une politique (TRAVEL-813/#6103)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCancellationPolicy
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Politique supprimée
+        '404':
+          description: Politique introuvable ou hors tenant
 components:
   securitySchemes:
     BearerAuth:
@@ -30237,18 +31444,25 @@ components:
       bearerFormat: Sanctum
   parameters:
     TravelReportPeriod:
-      name: from
+      name: period
       in: query
+      description: Période du rapport travel (TRAVEL-501..504)
       required: false
-      description: 'Borne basse de la période (YYYY-MM-DD)'
       schema:
         type: string
         format: date
+        enum:
+        - today
+        - week
+        - month
+        - quarter
+        - year
+        - range
     TravelReportPeriodTo:
-      name: to
+      name: period_to
       in: query
+      description: Fin de période (YYYY-MM-DD) quand period=range
       required: false
-      description: 'Borne haute de la période (YYYY-MM-DD)'
       schema:
         type: string
         format: date
@@ -30357,22 +31571,6 @@ components:
       required: true
       schema:
         type: string
-    TravelReportPeriod:
-      name: period_from
-      in: query
-      description: Début de période (YYYY-MM-DD) — agrégation des rapports TRAVEL-501..504.
-      required: false
-      schema:
-        type: string
-        format: date
-    TravelReportPeriodTo:
-      name: period_to
-      in: query
-      description: Fin de période (YYYY-MM-DD) — agrégation des rapports TRAVEL-501..504.
-      required: false
-      schema:
-        type: string
-        format: date
   headers:
     XRequestId:
       description: Identifiant de correlation a fournir au support en cas d'incident.
@@ -30416,17 +31614,20 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
-
     Error409:
       description: Conflit — état déjà traité (idempotence)
       content:
         application/json:
           schema:
             type: object
-            required: [error, message]
+            required:
+            - error
+            - message
             properties:
-              error: { type: string }
-              message: { type: string }
+              error:
+                type: string
+              message:
+                type: string
     Validation422:
       description: Erreur de validation
       content:
@@ -30450,7 +31651,9 @@ components:
           type: integer
         status:
           type: string
-          enum: [active, disabled]
+          enum:
+          - active
+          - disabled
         created_at:
           type: string
           nullable: true
@@ -30474,7 +31677,9 @@ components:
           nullable: true
         status:
           type: string
-          enum: [active, disabled]
+          enum:
+          - active
+          - disabled
         notes:
           type: string
           nullable: true
@@ -30503,7 +31708,9 @@ components:
           nullable: true
         status:
           type: string
-          enum: [active, disabled]
+          enum:
+          - active
+          - disabled
         stops:
           type: array
           items:
@@ -30563,12 +31770,20 @@ components:
           type: string
         means_of_transport:
           type: string
-          enum: [bus, train, plane, boat]
+          enum:
+          - bus
+          - train
+          - plane
+          - boat
         total_seats:
           type: integer
         status:
           type: string
-          enum: [draft, scheduled, published, cancelled]
+          enum:
+          - draft
+          - scheduled
+          - published
+          - cancelled
         published_at:
           type: string
           nullable: true
@@ -30615,7 +31830,12 @@ components:
           type: integer
         status:
           type: string
-          enum: [pending, confirmed, cancelled, refunded, completed]
+          enum:
+          - pending
+          - confirmed
+          - cancelled
+          - refunded
+          - completed
         passenger_count:
           type: integer
         total_amount_minor:
@@ -30624,10 +31844,18 @@ components:
           type: string
         booking_source:
           type: string
-          enum: [online, office, phone, partner]
+          enum:
+          - online
+          - office
+          - phone
+          - partner
         payment_status:
           type: string
-          enum: [pending, confirmed, failed, refunded]
+          enum:
+          - pending
+          - confirmed
+          - failed
+          - refunded
         expires_at:
           type: string
           nullable: true
@@ -30667,7 +31895,10 @@ components:
           type: boolean
         age_category:
           type: string
-          enum: [infant, child, adult]
+          enum:
+          - infant
+          - child
+          - adult
         class_id:
           type: integer
         seat_number:
@@ -30688,7 +31919,10 @@ components:
           type: integer
         status:
           type: string
-          enum: [issued, checked_in, void]
+          enum:
+          - issued
+          - checked_in
+          - void
         issued_at:
           type: string
           nullable: true
@@ -30732,7 +31966,9 @@ components:
           nullable: true
         status:
           type: string
-          enum: [active, disabled]
+          enum:
+          - active
+          - disabled
         notes:
           type: string
           nullable: true
@@ -30784,10 +32020,18 @@ components:
           nullable: true
         payment_status:
           type: string
-          enum: [pending, confirmed, failed, refunded]
+          enum:
+          - pending
+          - confirmed
+          - failed
+          - refunded
         status:
           type: string
-          enum: [pending, confirmed, cancelled, completed]
+          enum:
+          - pending
+          - confirmed
+          - cancelled
+          - completed
         created_at:
           type: string
           nullable: true
@@ -30818,7 +32062,9 @@ components:
           nullable: true
         status:
           type: string
-          enum: [active, disabled]
+          enum:
+          - active
+          - disabled
         rooms:
           type: array
           items:
@@ -30848,7 +32094,9 @@ components:
           type: string
         status:
           type: string
-          enum: [active, disabled]
+          enum:
+          - active
+          - disabled
         created_at:
           type: string
           nullable: true
@@ -30866,7 +32114,11 @@ components:
           type: string
         type:
           type: string
-          enum: [bus, train, plane, boat]
+          enum:
+          - bus
+          - train
+          - plane
+          - boat
         contact_phone:
           type: string
           nullable: true
@@ -30875,7 +32127,9 @@ components:
           nullable: true
         status:
           type: string
-          enum: [active, disabled]
+          enum:
+          - active
+          - disabled
         created_at:
           type: string
           nullable: true
@@ -30899,7 +32153,9 @@ components:
           nullable: true
         status:
           type: string
-          enum: [active, disabled]
+          enum:
+          - active
+          - disabled
         created_at:
           type: string
           nullable: true
@@ -30929,7 +32185,9 @@ components:
           type: boolean
         status:
           type: string
-          enum: [active, disabled]
+          enum:
+          - active
+          - disabled
         created_at:
           type: string
           nullable: true
@@ -38183,62 +39441,135 @@ components:
     ExpenseAccountingEntry:
       type: object
       properties:
-        id: { type: integer }
-        expense_claim_id: { type: integer }
-        employee_id: { type: integer, nullable: true }
-        date: { type: string, format: date }
-        account_code: { type: string }
-        account_label: { type: string }
-        debit: { type: number, format: float }
-        credit: { type: number, format: float }
-        reference: { type: string }
-        created_by: { type: integer, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
-
+        id:
+          type: integer
+        expense_claim_id:
+          type: integer
+        employee_id:
+          type: integer
+          nullable: true
+        date:
+          type: string
+          format: date
+        account_code:
+          type: string
+        account_label:
+          type: string
+        debit:
+          type: number
+          format: float
+        credit:
+          type: number
+          format: float
+        reference:
+          type: string
+        created_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
     PayrollAccountingEntry:
       type: object
       properties:
-        id: { type: integer }
-        payroll_run_id: { type: integer }
-        pay_slip_id: { type: integer, nullable: true }
-        employee_id: { type: integer, nullable: true }
-        date: { type: string, format: date }
-        account_code: { type: string }
-        account_label: { type: string }
-        debit: { type: number, format: float }
-        credit: { type: number, format: float }
-        reference: { type: string }
-        created_by: { type: integer, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
-
+        id:
+          type: integer
+        payroll_run_id:
+          type: integer
+        pay_slip_id:
+          type: integer
+          nullable: true
+        employee_id:
+          type: integer
+          nullable: true
+        date:
+          type: string
+          format: date
+        account_code:
+          type: string
+        account_label:
+          type: string
+        debit:
+          type: number
+          format: float
+        credit:
+          type: number
+          format: float
+        reference:
+          type: string
+        created_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
     PayrollPaymentOrder:
       type: object
       properties:
-        id: { type: integer }
-        payroll_run_id: { type: integer }
-        status: { type: string, enum: [prepared, executed, reconciled] }
-        format: { type: string }
-        file_path: { type: string, nullable: true }
-        total_amount: { type: number, format: float }
-        transfer_count: { type: integer }
-        bank_reference: { type: string, nullable: true }
-        executed_by: { type: integer, nullable: true }
-        executed_at: { type: string, format: date-time, nullable: true }
-        reconciled_at: { type: string, format: date-time, nullable: true }
-        created_by: { type: integer, nullable: true }
+        id:
+          type: integer
+        payroll_run_id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - prepared
+          - executed
+          - reconciled
+        format:
+          type: string
+        file_path:
+          type: string
+          nullable: true
+        total_amount:
+          type: number
+          format: float
+        transfer_count:
+          type: integer
+        bank_reference:
+          type: string
+          nullable: true
+        executed_by:
+          type: integer
+          nullable: true
+        executed_at:
+          type: string
+          format: date-time
+          nullable: true
+        reconciled_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_by:
+          type: integer
+          nullable: true
         items:
           type: array
           items:
             type: object
             properties:
-              id: { type: integer }
-              payment_order_id: { type: integer }
-              employee_id: { type: integer }
-              net_amount: { type: number, format: float }
-              iban: { type: string, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
-        updated_at: { type: string, format: date-time, nullable: true }
-
+              id:
+                type: integer
+              payment_order_id:
+                type: integer
+              employee_id:
+                type: integer
+              net_amount:
+                type: number
+                format: float
+              iban:
+                type: string
+                nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     AccountingActivation:
       type: object
       properties:
@@ -38257,7 +39588,9 @@ components:
       properties:
         totals:
           type: object
-          additionalProperties: { type: number, format: double }
+          additionalProperties:
+            type: number
+            format: double
         overdue_count:
           type: integer
         period_from:
@@ -38266,33 +39599,52 @@ components:
         period_to:
           type: string
           format: date
-
-
     AttendanceDayClosure:
       type: object
       properties:
-        id: { type: integer }
-        employee_id: { type: integer }
+        id:
+          type: integer
+        employee_id:
+          type: integer
         employee:
           type: object
           nullable: true
           properties:
-            id: { type: integer }
-            first_name: { type: string }
-            last_name: { type: string }
-        date: { type: string, format: date }
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+        date:
+          type: string
+          format: date
         status:
           type: string
-          enum: [locked, validated]
-        locked_by: { type: integer, nullable: true }
-        locked_at: { type: string, format: date-time, nullable: true }
-        validated_by: { type: integer, nullable: true }
-        validated_at: { type: string, format: date-time, nullable: true }
-        note: { type: string, nullable: true }
-
+          enum:
+          - locked
+          - validated
+        locked_by:
+          type: integer
+          nullable: true
+        locked_at:
+          type: string
+          format: date-time
+          nullable: true
+        validated_by:
+          type: integer
+          nullable: true
+        validated_at:
+          type: string
+          format: date-time
+          nullable: true
+        note:
+          type: string
+          nullable: true
     TwoFactorStatusResponse:
       type: object
-      required: [enabled]
+      required:
+      - enabled
       properties:
         enabled:
           type: boolean
@@ -38301,7 +39653,9 @@ components:
           nullable: true
     TwoFactorEnrollResponse:
       type: object
-      required: [secret, recovery_codes]
+      required:
+      - secret
+      - recovery_codes
       properties:
         secret:
           type: string
@@ -38313,7 +39667,8 @@ components:
             type: string
     TwoFactorVerifyRequest:
       type: object
-      required: [code]
+      required:
+      - code
       properties:
         code:
           type: string
@@ -38321,25 +39676,29 @@ components:
           type: string
     TwoFactorVerifyResponse:
       type: object
-      required: [verified]
+      required:
+      - verified
       properties:
         verified:
           type: boolean
     TwoFactorConfirmResponse:
       type: object
-      required: [confirmed]
+      required:
+      - confirmed
       properties:
         confirmed:
           type: boolean
     TwoFactorDisableResponse:
       type: object
-      required: [disabled]
+      required:
+      - disabled
       properties:
         disabled:
           type: boolean
     TwoFactorRecoveryCodesResponse:
       type: object
-      required: [recovery_codes]
+      required:
+      - recovery_codes
       properties:
         recovery_codes:
           type: array
@@ -38358,7 +39717,10 @@ components:
           type: string
         status:
           type: string
-          enum: [pending, partially_reconciled, reconciled]
+          enum:
+          - pending
+          - partially_reconciled
+          - reconciled
         opening_balance:
           type: number
           format: double
@@ -38401,7 +39763,10 @@ components:
           nullable: true
         status:
           type: string
-          enum: [pending, matched, manual]
+          enum:
+          - pending
+          - matched
+          - manual
         matched_payment_id:
           type: integer
           nullable: true
@@ -38411,11 +39776,12 @@ components:
         proposed_payment_id:
           type: integer
           nullable: true
-          description: Paiement candidat proposé par le matching auto (issue #5523)
-
+          description: Paiement candidat proposé par le matching auto (issue
     FuelMeterReadingPayload:
       type: object
-      required: [reading_value_minor, idempotency_key]
+      required:
+      - reading_value_minor
+      - idempotency_key
       properties:
         reading_value_minor:
           type: integer
@@ -38423,7 +39789,11 @@ components:
           description: Valeur cumulee en unites mineures entieres (ex. centilitres)
         reading_unit:
           type: string
-          enum: [l, ml, gal, ft3]
+          enum:
+          - l
+          - ml
+          - gal
+          - ft3
           default: l
         captured_at:
           type: string
@@ -38448,22 +39818,206 @@ components:
         reading:
           type: object
           properties:
-            id: {type: integer}
-            meter_id: {type: integer}
-            reading_value_minor: {type: integer}
-            reading_unit: {type: string}
-            captured_at_utc: {type: string, format: date-time}
-            status: {type: string}
-            source_code: {type: string}
+            id:
+              type: integer
+            meter_id:
+              type: integer
+            reading_value_minor:
+              type: integer
+            reading_unit:
+              type: string
+            captured_at_utc:
+              type: string
+              format: date-time
+            status:
+              type: string
+            source_code:
+              type: string
         interval:
           type: object
           nullable: true
           properties:
-            id: {type: integer}
-            delta_minor: {type: integer}
-            calculation_status: {type: string}
-            interval_seconds: {type: integer}
+            id:
+              type: integer
+            delta_minor:
+              type: integer
+            calculation_status:
+              type: string
+            interval_seconds:
+              type: integer
         replayed:
           type: boolean
         correlation_id:
           type: string
+    TravelRefund:
+      type: object
+      properties:
+        id:
+          type: integer
+        booking_id:
+          type: integer
+        passenger_id:
+          type: integer
+          nullable: true
+        amount_minor:
+          type: integer
+        penalty_minor:
+          type: integer
+        currency:
+          type: string
+        reason:
+          type: string
+        refund_key:
+          type: string
+        created_at:
+          type: string
+          nullable: true
+    TravelCancellationPolicy:
+      type: object
+      properties:
+        id:
+          type: integer
+        trip_id:
+          type: integer
+          nullable: true
+        class_id:
+          type: integer
+          nullable: true
+        hours_before_departure:
+          type: integer
+        penalty_percent:
+          type: integer
+        refundable:
+          type: boolean
+        created_by_user_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelCurrencyRate:
+      type: object
+      properties:
+        id:
+          type: integer
+        from_currency:
+          type: string
+        to_currency:
+          type: string
+        rate_minor:
+          type: integer
+        valid_from:
+          type: string
+          format: date
+          nullable: true
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelQuote:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+        trip_id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - draft
+          - confirmed
+          - booked
+          - cancelled
+          - expired
+        customer_contact_id:
+          type: integer
+          nullable: true
+        passenger_count:
+          type: integer
+        total_amount_minor:
+          type: integer
+        currency:
+          type: string
+        expires_at:
+          type: string
+          nullable: true
+        booking_id:
+          type: integer
+          nullable: true
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelPassengerInput'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelRoundTrip:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - partially_cancelled
+          - cancelled
+        outbound:
+          $ref: '#/components/schemas/TravelBooking'
+        return:
+          $ref: '#/components/schemas/TravelBooking'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelPassengerInput:
+      type: object
+      required:
+      - full_name
+      - age_category
+      - class_id
+      properties:
+        full_name:
+          type: string
+          maxLength: 160
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        document_type:
+          type: string
+          nullable: true
+        document_number:
+          type: string
+          maxLength: 40
+          nullable: true
+        age_category:
+          type: string
+          enum:
+          - infant
+          - child
+          - adult
+        class_id:
+          type: integer
+        seat_number:
+          type: integer
+          minimum: 1
+          nullable: true
