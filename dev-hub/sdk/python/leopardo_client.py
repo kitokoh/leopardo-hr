@@ -3524,10 +3524,6 @@ class LeopardoClient:
         """Formulaire de contact → lead CRM (TRAVEL-416/#6068)"""
         return self.request("POST", "/travel/contact", **kwargs)
 
-    def post_travel_contact_2(self, **kwargs):
-        """Formulaire de contact → lead CRM (TRAVEL-416/#6068)"""
-        return self.request("POST", "/travel/contact", **kwargs)
-
     def get_travel_countries(self, **kwargs):
         """Référentiel pays en lecture (TRAVEL-301/#6031)"""
         return self.request("GET", "/travel/countries", **kwargs)
@@ -3636,14 +3632,6 @@ class LeopardoClient:
         """Synchronisation entrante des trajets transporteurs (TRAVEL-807/#6086)"""
         return self.request("POST", "/travel/partner/sync", **kwargs)
 
-    def post_travel_payments_by_travelpayment_refund(self, **kwargs):
-        """Remboursement d'un paiement (TRAVEL-411/#6063)"""
-        return self.request("POST", "/travel/payments/{travelPayment}/refund", **kwargs)
-
-    def post_travel_payments_by_travelpayment_verify(self, **kwargs):
-        """Re-conciliation d'un paiement (TRAVEL-410/#6062)"""
-        return self.request("POST", "/travel/payments/{travelPayment}/verify", **kwargs)
-
     def get_travel_ping(self, **kwargs):
         """Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977)"""
         return self.request("GET", "/travel/ping", **kwargs)
@@ -3712,6 +3700,30 @@ class LeopardoClient:
         """Suppression d'une image (TRAVEL-319/#6049)"""
         return self.request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}/images/{travelRentalVehicleImage}", **kwargs)
 
+    def get_travel_reports_cancellations(self, **kwargs):
+        """Annulations & motifs (TRAVEL-504/#6074)"""
+        return self.request("GET", "/travel/reports/cancellations", **kwargs)
+
+    def get_travel_reports_dashboard(self, **kwargs):
+        """KPIs du dashboard (TRAVEL-507/#6077)"""
+        return self.request("GET", "/travel/reports/dashboard", **kwargs)
+
+    def get_travel_reports_export(self, **kwargs):
+        """Export CSV idempotent (TRAVEL-505/#6075)"""
+        return self.request("GET", "/travel/reports/export", **kwargs)
+
+    def get_travel_reports_occupancy(self, **kwargs):
+        """Taux d'occupation par trajet (TRAVEL-502/#6072)"""
+        return self.request("GET", "/travel/reports/occupancy", **kwargs)
+
+    def get_travel_reports_revenue(self, **kwargs):
+        """Recettes encaissées (TRAVEL-503/#6073)"""
+        return self.request("GET", "/travel/reports/revenue", **kwargs)
+
+    def get_travel_reports_sales(self, **kwargs):
+        """Rapport des ventes (TRAVEL-501/#6071)"""
+        return self.request("GET", "/travel/reports/sales", **kwargs)
+
     def post_travel_round_trips(self, **kwargs):
         """Création d'un aller-retour combiné (TRAVEL-802/#6093)"""
         return self.request("POST", "/travel/round-trips", **kwargs)
@@ -3779,14 +3791,6 @@ class LeopardoClient:
     def post_travel_tickets_by_travelticket_check_in(self, **kwargs):
         """Check-in / embarquement (TRAVEL-317/#6047)"""
         return self.request("POST", "/travel/tickets/{travelTicket}/check-in", **kwargs)
-
-    def get_travel_tickets_by_travelticket_pdf(self, **kwargs):
-        """URL signée du billet PDF (TRAVEL-412/413/#6064/#6065)"""
-        return self.request("GET", "/travel/tickets/{travelTicket}/pdf", **kwargs)
-
-    def post_travel_tickets_by_travelticket_revoke(self, **kwargs):
-        """Révocation d'un billet (TRAVEL-413/#6065)"""
-        return self.request("POST", "/travel/tickets/{travelTicket}/revoke", **kwargs)
 
     def get_travel_trips(self, **kwargs):
         """Liste des trajets (TRAVEL-308/#6038)"""

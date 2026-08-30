@@ -4380,11 +4380,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/contact", options);
     },
 
-    /** Formulaire de contact → lead CRM (TRAVEL-416/#6068) */
-    postTravelContact2(options = {}) {
-      return request("POST", "/travel/contact", options);
-    },
-
     /** Référentiel pays en lecture (TRAVEL-301/#6031) */
     getTravelCountries(options = {}) {
       return request("GET", "/travel/countries", options);
@@ -4520,16 +4515,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/partner/sync", options);
     },
 
-    /** Remboursement d'un paiement (TRAVEL-411/#6063) */
-    postTravelPaymentsByTravelPaymentRefund(options = {}) {
-      return request("POST", "/travel/payments/{travelPayment}/refund", options);
-    },
-
-    /** Re-conciliation d'un paiement (TRAVEL-410/#6062) */
-    postTravelPaymentsByTravelPaymentVerify(options = {}) {
-      return request("POST", "/travel/payments/{travelPayment}/verify", options);
-    },
-
     /** Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977) */
     getTravelPing(options = {}) {
       return request("GET", "/travel/ping", options);
@@ -4615,6 +4600,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}/images/{travelRentalVehicleImage}", options);
     },
 
+    /** Annulations & motifs (TRAVEL-504/#6074) */
+    getTravelReportsCancellations(options = {}) {
+      return request("GET", "/travel/reports/cancellations", options);
+    },
+
+    /** KPIs du dashboard (TRAVEL-507/#6077) */
+    getTravelReportsDashboard(options = {}) {
+      return request("GET", "/travel/reports/dashboard", options);
+    },
+
+    /** Export CSV idempotent (TRAVEL-505/#6075) */
+    getTravelReportsExport(options = {}) {
+      return request("GET", "/travel/reports/export", options);
+    },
+
+    /** Taux d'occupation par trajet (TRAVEL-502/#6072) */
+    getTravelReportsOccupancy(options = {}) {
+      return request("GET", "/travel/reports/occupancy", options);
+    },
+
+    /** Recettes encaissées (TRAVEL-503/#6073) */
+    getTravelReportsRevenue(options = {}) {
+      return request("GET", "/travel/reports/revenue", options);
+    },
+
+    /** Rapport des ventes (TRAVEL-501/#6071) */
+    getTravelReportsSales(options = {}) {
+      return request("GET", "/travel/reports/sales", options);
+    },
+
     /** Création d'un aller-retour combiné (TRAVEL-802/#6093) */
     postTravelRoundTrips(options = {}) {
       return request("POST", "/travel/round-trips", options);
@@ -4698,16 +4713,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Check-in / embarquement (TRAVEL-317/#6047) */
     postTravelTicketsByTravelTicketCheckIn(options = {}) {
       return request("POST", "/travel/tickets/{travelTicket}/check-in", options);
-    },
-
-    /** URL signée du billet PDF (TRAVEL-412/413/#6064/#6065) */
-    getTravelTicketsByTravelTicketPdf(options = {}) {
-      return request("GET", "/travel/tickets/{travelTicket}/pdf", options);
-    },
-
-    /** Révocation d'un billet (TRAVEL-413/#6065) */
-    postTravelTicketsByTravelTicketRevoke(options = {}) {
-      return request("POST", "/travel/tickets/{travelTicket}/revoke", options);
     },
 
     /** Liste des trajets (TRAVEL-308/#6038) */
