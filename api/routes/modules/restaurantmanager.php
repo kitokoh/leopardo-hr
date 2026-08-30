@@ -17,17 +17,37 @@
  * Référence : docs/specifications/SOLUTION_RESTAURANT_MANAGER.md (§5 API v1).
  */
 
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCancellationPolicyController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCogsController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryZoneController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantBillController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantBranchController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCategoryController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantHealthController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantHourController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantIngredientController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantInventoryCountController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantInventoryMovementController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKitchenController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuItemController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderItemController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderTransitionController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPosSessionController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductIngredientController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderItemController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReceivingController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantRefundController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReservationAvailabilityController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReservationController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantStockAlertController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantStockLevelController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantSupplierController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableSessionController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTaxRateController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantUnitController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantZoneController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.restaurantmanager'])
@@ -36,21 +56,126 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // Smoke test de la verticale (RESTO-101/#6158) — lecture pure.
         Route::get('/ping', [RestaurantHealthController::class, 'ping']);
 
-        // Stock — niveaux & mouvements (RESTO-501/#6200).
-        Route::get('/stock-levels', [RestaurantStockLevelController::class, 'index']);
-        Route::post('/stock-levels', [RestaurantStockLevelController::class, 'store']);
-        Route::get('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'show']);
-        Route::put('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'update']);
-        Route::delete('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'destroy']);
+        // Référentiel — établissements, plan de salle (RESTO-301/#6182).
+        Route::get('/branches', [RestaurantBranchController::class, 'index']);
+        Route::post('/branches', [RestaurantBranchController::class, 'store']);
+        Route::get('/branches/{restaurantBranch}', [RestaurantBranchController::class, 'show']);
+        Route::put('/branches/{restaurantBranch}', [RestaurantBranchController::class, 'update']);
+        Route::delete('/branches/{restaurantBranch}', [RestaurantBranchController::class, 'destroy']);
+        Route::get('/branches/{restaurantBranch}/zones', [RestaurantZoneController::class, 'indexForBranch']);
 
+        Route::get('/zones', [RestaurantZoneController::class, 'index']);
+        Route::post('/zones', [RestaurantZoneController::class, 'store']);
+        Route::get('/zones/{restaurantZone}', [RestaurantZoneController::class, 'show']);
+        Route::put('/zones/{restaurantZone}', [RestaurantZoneController::class, 'update']);
+        Route::delete('/zones/{restaurantZone}', [RestaurantZoneController::class, 'destroy']);
+
+        Route::get('/tables', [RestaurantTableController::class, 'index']);
+        Route::post('/tables', [RestaurantTableController::class, 'store']);
+        Route::get('/tables/{restaurantTable}', [RestaurantTableController::class, 'show']);
+        Route::put('/tables/{restaurantTable}', [RestaurantTableController::class, 'update']);
+        Route::delete('/tables/{restaurantTable}', [RestaurantTableController::class, 'destroy']);
+
+        // Référentiel — catalogue & recettes (RESTO-302/#6183).
+        Route::get('/categories', [RestaurantCategoryController::class, 'index']);
+        Route::post('/categories', [RestaurantCategoryController::class, 'store']);
+        Route::get('/categories/{restaurantCategory}', [RestaurantCategoryController::class, 'show']);
+        Route::put('/categories/{restaurantCategory}', [RestaurantCategoryController::class, 'update']);
+        Route::delete('/categories/{restaurantCategory}', [RestaurantCategoryController::class, 'destroy']);
+
+        Route::get('/products', [RestaurantProductController::class, 'index']);
+        Route::post('/products', [RestaurantProductController::class, 'store']);
+        Route::get('/products/{restaurantProduct}', [RestaurantProductController::class, 'show']);
+        Route::put('/products/{restaurantProduct}', [RestaurantProductController::class, 'update']);
+        Route::delete('/products/{restaurantProduct}', [RestaurantProductController::class, 'destroy']);
+        Route::get('/products/{restaurantProduct}/ingredients', [RestaurantProductIngredientController::class, 'index']);
+        Route::post('/products/{restaurantProduct}/ingredients', [RestaurantProductIngredientController::class, 'store']);
+        Route::delete('/products/{restaurantProduct}/ingredients/{restaurantProductIngredient}', [RestaurantProductIngredientController::class, 'destroy']);
+
+        // Référentiel — matières & fiscalité (RESTO-303/#6184).
+        Route::get('/ingredients', [RestaurantIngredientController::class, 'index']);
+        Route::post('/ingredients', [RestaurantIngredientController::class, 'store']);
+        Route::get('/ingredients/{restaurantIngredient}', [RestaurantIngredientController::class, 'show']);
+        Route::put('/ingredients/{restaurantIngredient}', [RestaurantIngredientController::class, 'update']);
+        Route::delete('/ingredients/{restaurantIngredient}', [RestaurantIngredientController::class, 'destroy']);
+
+        Route::get('/units', [RestaurantUnitController::class, 'index']);
+        Route::post('/units', [RestaurantUnitController::class, 'store']);
+        Route::get('/units/{restaurantUnit}', [RestaurantUnitController::class, 'show']);
+        Route::put('/units/{restaurantUnit}', [RestaurantUnitController::class, 'update']);
+        Route::delete('/units/{restaurantUnit}', [RestaurantUnitController::class, 'destroy']);
+
+        Route::get('/tax-rates', [RestaurantTaxRateController::class, 'index']);
+        Route::post('/tax-rates', [RestaurantTaxRateController::class, 'store']);
+        Route::get('/tax-rates/{restaurantTaxRate}', [RestaurantTaxRateController::class, 'show']);
+        Route::put('/tax-rates/{restaurantTaxRate}', [RestaurantTaxRateController::class, 'update']);
+        Route::delete('/tax-rates/{restaurantTaxRate}', [RestaurantTaxRateController::class, 'destroy']);
+
+        // Référentiel — menus & horaires (RESTO-304/#6185).
+        Route::get('/menus', [RestaurantMenuController::class, 'index']);
+        Route::post('/menus', [RestaurantMenuController::class, 'store']);
+        Route::get('/menus/{restaurantMenu}', [RestaurantMenuController::class, 'show']);
+        Route::put('/menus/{restaurantMenu}', [RestaurantMenuController::class, 'update']);
+        Route::delete('/menus/{restaurantMenu}', [RestaurantMenuController::class, 'destroy']);
+        Route::get('/menus/{restaurantMenu}/items', [RestaurantMenuItemController::class, 'index']);
+        Route::post('/menus/{restaurantMenu}/items', [RestaurantMenuItemController::class, 'store']);
+        Route::put('/menus/{restaurantMenu}/items/{restaurantMenuItem}', [RestaurantMenuItemController::class, 'update']);
+        Route::delete('/menus/{restaurantMenu}/items/{restaurantMenuItem}', [RestaurantMenuItemController::class, 'destroy']);
+
+        Route::get('/hours', [RestaurantHourController::class, 'index']);
+        Route::post('/hours', [RestaurantHourController::class, 'store']);
+        Route::get('/hours/{restaurantHour}', [RestaurantHourController::class, 'show']);
+        Route::put('/hours/{restaurantHour}', [RestaurantHourController::class, 'update']);
+        Route::delete('/hours/{restaurantHour}', [RestaurantHourController::class, 'destroy']);
+
+        // Référentiel — fournisseurs (RESTO-305/#6186).
+        Route::get('/suppliers', [RestaurantSupplierController::class, 'index']);
+        Route::post('/suppliers', [RestaurantSupplierController::class, 'store']);
+        Route::get('/suppliers/{restaurantSupplier}', [RestaurantSupplierController::class, 'show']);
+        Route::put('/suppliers/{restaurantSupplier}', [RestaurantSupplierController::class, 'update']);
+        Route::delete('/suppliers/{restaurantSupplier}', [RestaurantSupplierController::class, 'destroy']);
+
+        // ── POS & caisse (RESTO-401/#6188) ──────────────────────────────────
+        // Ouverture / consultation / clôture d'une session de caisse.
+        // `current` est déclaré AVANT `{restaurantPosSession}` (routage
+        // littéral prioritaire).
+        Route::post('/pos-sessions', [RestaurantPosSessionController::class, 'store']);
+        Route::get('/pos-sessions/current', [RestaurantPosSessionController::class, 'current']);
+        Route::get('/pos-sessions/{restaurantPosSession}', [RestaurantPosSessionController::class, 'show']);
+        Route::post('/pos-sessions/{restaurantPosSession}/close', [RestaurantPosSessionController::class, 'close']);
+
+        // ── Commandes (RESTO-402/403/404/405, #6189/#6190/#6191/#6192) ──────
+        Route::get('/orders', [RestaurantOrderController::class, 'index']);
+        Route::post('/orders', [RestaurantOrderController::class, 'store']);
+        Route::get('/orders/{restaurantOrder}', [RestaurantOrderController::class, 'show']);
+        Route::post('/orders/{restaurantOrder}/items', [RestaurantOrderItemController::class, 'store']);
+        Route::post('/orders/{restaurantOrder}/items/{restaurantOrderItem}/cancel', [RestaurantOrderItemController::class, 'cancel']);
+        Route::post('/orders/{restaurantOrder}/submit', [RestaurantOrderTransitionController::class, 'submit']);
+        Route::post('/orders/{restaurantOrder}/confirm', [RestaurantOrderTransitionController::class, 'confirm']);
+        Route::post('/orders/{restaurantOrder}/serve', [RestaurantOrderTransitionController::class, 'serve']);
+        Route::post('/orders/{restaurantOrder}/cancel', [RestaurantOrderTransitionController::class, 'cancel']);
+        Route::get('/orders/{restaurantOrder}/bill', [RestaurantBillController::class, 'show']);
+
+        // ── Paiements & remboursements (RESTO-407/408, #6194/#6195) ─────────
+        Route::post('/orders/{restaurantOrder}/pay', [RestaurantPaymentController::class, 'pay']);
+        Route::post('/orders/{restaurantOrder}/refund', [RestaurantRefundController::class, 'store']);
+
+        // ── Occupation des tables (RESTO-409/#6196) ─────────────────────────
+        Route::post('/tables/{restaurantTable}/open', [RestaurantTableSessionController::class, 'open']);
+        Route::post('/tables/{restaurantTable}/close', [RestaurantTableSessionController::class, 'close']);
+
+        // ── File cuisine (RESTO-410/#6197) ──────────────────────────────────
+        Route::get('/kitchen/orders', [RestaurantKitchenController::class, 'index']);
+        Route::post('/kitchen/orders/{restaurantOrder}/start', [RestaurantKitchenController::class, 'start']);
+        Route::post('/kitchen/orders/{restaurantOrder}/ready', [RestaurantKitchenController::class, 'ready']);
+
+        // ── Stock & mouvements (RESTO-501/#6200) ─────────────────────────────
+        Route::get('/stock-levels', [RestaurantStockLevelController::class, 'index']);
+        Route::put('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'update']);
         Route::get('/inventory-movements', [RestaurantInventoryMovementController::class, 'index']);
         Route::post('/inventory-movements', [RestaurantInventoryMovementController::class, 'store']);
-        Route::get('/inventory-movements/{restaurantInventoryMovement}', [RestaurantInventoryMovementController::class, 'show']);
 
-        // Stock — alertes de seuil (RESTO-505/#6204).
-        Route::get('/stock/alerts', [RestaurantStockAlertController::class, 'index']);
-
-        // Stock — bons de commande fournisseurs (RESTO-502/#6201).
+        // ── Achats : bons de commande & réceptions (RESTO-502/503) ───────────
         Route::get('/purchase-orders', [RestaurantPurchaseOrderController::class, 'index']);
         Route::post('/purchase-orders', [RestaurantPurchaseOrderController::class, 'store']);
         Route::get('/purchase-orders/{restaurantPurchaseOrder}', [RestaurantPurchaseOrderController::class, 'show']);
@@ -58,24 +183,25 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/purchase-orders/{restaurantPurchaseOrder}', [RestaurantPurchaseOrderController::class, 'destroy']);
         Route::post('/purchase-orders/{restaurantPurchaseOrder}/send', [RestaurantPurchaseOrderController::class, 'send']);
         Route::post('/purchase-orders/{restaurantPurchaseOrder}/receive', [RestaurantPurchaseOrderController::class, 'receive']);
+        Route::post('/purchase-orders/{restaurantPurchaseOrder}/cancel', [RestaurantPurchaseOrderController::class, 'cancel']);
+        Route::post('/purchase-orders/{restaurantPurchaseOrder}/items', [RestaurantPurchaseOrderItemController::class, 'store']);
+        Route::delete('/purchase-orders/{restaurantPurchaseOrder}/items/{restaurantPurchaseOrderItem}', [RestaurantPurchaseOrderItemController::class, 'destroy']);
 
-        // Stock — réceptions (RESTO-503/#6202).
         Route::get('/receivings', [RestaurantReceivingController::class, 'index']);
         Route::post('/receivings', [RestaurantReceivingController::class, 'store']);
-        Route::get('/receivings/{restaurantReceiving}', [RestaurantReceivingController::class, 'show']);
 
-        // Stock — inventaires physiques (RESTO-504/#6203).
+        // ── Inventaires physiques (RESTO-504/#6203) ──────────────────────────
         Route::get('/inventory-counts', [RestaurantInventoryCountController::class, 'index']);
         Route::post('/inventory-counts', [RestaurantInventoryCountController::class, 'store']);
         Route::get('/inventory-counts/{restaurantInventoryCount}', [RestaurantInventoryCountController::class, 'show']);
-        Route::put('/inventory-counts/{restaurantInventoryCount}/items/{item}', [RestaurantInventoryCountController::class, 'recordItem']);
+        Route::put('/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}', [RestaurantInventoryCountController::class, 'updateItem']);
         Route::post('/inventory-counts/{restaurantInventoryCount}/submit', [RestaurantInventoryCountController::class, 'submit']);
         Route::post('/inventory-counts/{restaurantInventoryCount}/approve', [RestaurantInventoryCountController::class, 'approve']);
 
-        // COGS — coût des marchandises vendues à la clôture (RESTO-506/#6205).
-        Route::get('/pos-sessions/{restaurantPosSession}/cogs', [RestaurantCogsController::class, 'show']);
-
-        // Réservations — CRUD + transitions + conflit de créneau (RESTO-601/#6206).
+        // ── Réservations & disponibilité (RESTO-601/602/#6206/#6207) ─────────
+        // `availability` est déclaré AVANT `{restaurantReservation}` (littéral
+        // prioritaire) — sinon le paramètre capterait la route.
+        Route::get('/reservations/availability', RestaurantReservationAvailabilityController::class);
         Route::get('/reservations', [RestaurantReservationController::class, 'index']);
         Route::post('/reservations', [RestaurantReservationController::class, 'store']);
         Route::get('/reservations/{restaurantReservation}', [RestaurantReservationController::class, 'show']);
@@ -84,15 +210,20 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/reservations/{restaurantReservation}/check-in', [RestaurantReservationController::class, 'checkIn']);
         Route::post('/reservations/{restaurantReservation}/no-show', [RestaurantReservationController::class, 'noShow']);
         Route::post('/reservations/{restaurantReservation}/cancel', [RestaurantReservationController::class, 'cancel']);
+
+
+        // --- Routes ajoutées (union PM) ---
+        Route::post('/stock-levels', [RestaurantStockLevelController::class, 'store']);
+        Route::get('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'show']);
+        Route::delete('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'destroy']);
+        Route::get('/inventory-movements/{restaurantInventoryMovement}', [RestaurantInventoryMovementController::class, 'show']);
+        Route::get('/stock/alerts', [RestaurantStockAlertController::class, 'index']);
+        Route::get('/receivings/{restaurantReceiving}', [RestaurantReceivingController::class, 'show']);
+        Route::put('/inventory-counts/{restaurantInventoryCount}/items/{item}', [RestaurantInventoryCountController::class, 'recordItem']);
+        Route::get('/pos-sessions/{restaurantPosSession}/cogs', [RestaurantCogsController::class, 'show']);
         Route::post('/reservations/{restaurantReservation}/deposit', [RestaurantReservationController::class, 'deposit']);
-
-        // Réservations — disponibilité de créneaux (RESTO-602/#6207).
         Route::get('/reservations/availability', [RestaurantReservationController::class, 'availability']);
-
-        // Réservations — politique d'annulation par branche (RESTO-603/#6208).
         Route::put('/branches/{restaurantBranch}/cancellation-policy', [RestaurantCancellationPolicyController::class, 'update']);
-
-        // Livraison — zones + frais (RESTO-604/#6209).
         Route::get('/delivery-zones', [RestaurantDeliveryZoneController::class, 'index']);
         Route::post('/delivery-zones', [RestaurantDeliveryZoneController::class, 'store']);
         Route::get('/delivery-zones/{restaurantDeliveryZone}', [RestaurantDeliveryZoneController::class, 'show']);
