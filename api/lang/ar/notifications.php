@@ -36,4 +36,8 @@ return [
     'payment_document_ready_body' => 'تم إنشاء مسтد مدفوعاتك وهو متاح للتنزيل.',
     'weekly_manager_digest_title' => 'ملخص الفريق الأسبوعي',
     'weekly_manager_digest_body' => 'أسبوع :week_start — فريق من :team_size شخص(ًا) · :present حضور مسجل · :pending_absences غياب قيد الانتظار · :pending_advances سلف قيد الانتظار · :pending_corrections تصحيحات قيد الانتظار.',
+    'restaurant_new_order_title' => 'طلب جديد',
+    'restaurant_new_order_body' => 'الطلب :reference — :covers شخصًا.',
+    'restaurant_order_ready_title' => 'الطلب جاهز',
+    'restaurant_order_ready_body' => 'الطلب :reference جاهز للتقديم (طاولة :table).',
 ];
