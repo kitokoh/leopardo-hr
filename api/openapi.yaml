@@ -7511,6 +7511,586 @@ paths:
         '422':
           description: Validation
 
+  /fuel-station/stations:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les stations (manager, FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+          - archived
+      - name: search
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+          enum:
+          - name
+          - code
+          - created_at
+      - name: direction
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Stations paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer une station (manager, FUEL-011)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - timezone
+              - status
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                address:
+                  type: string
+                  nullable: true
+                phone:
+                  type: string
+                  nullable: true
+                timezone:
+                  type: string
+                  example: Africa/Algiers
+                currency:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+                metadata:
+                  type: object
+                  nullable: true
+      responses:
+        '201':
+          description: Station creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation (code unique par tenant)
+  /fuel-station/stations/{station}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une station avec ses sites (FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Station
+        '404':
+          description: Station introuvable ou autre tenant
+    put:
+      tags:
+      - FuelStation
+      summary: Remplacer une station (manager, FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - timezone
+              - status
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                address:
+                  type: string
+                  nullable: true
+                phone:
+                  type: string
+                  nullable: true
+                timezone:
+                  type: string
+                currency:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+                metadata:
+                  type: object
+                  nullable: true
+      responses:
+        '200':
+          description: Station mise a jour
+        '404':
+          description: Station introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/stations/{station}/sites:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les sites d'une station (FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Sites
+        '404':
+          description: Station introuvable ou autre tenant
+    post:
+      tags:
+      - FuelStation
+      summary: Creer un site operationnel (manager, FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - status
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                address:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                metadata:
+                  type: object
+                  nullable: true
+      responses:
+        '201':
+          description: Site cree
+        '404':
+          description: Station introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/stations/{station}/pumps:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les pompes d'une station (manager, FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Pompes paginees
+        '404':
+          description: Station introuvable ou autre tenant
+    post:
+      tags:
+      - FuelStation
+      summary: Creer une pompe (manager, FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - product_types
+              - status
+              properties:
+                code:
+                  type: string
+                product_types:
+                  type: array
+                  items:
+                    type: string
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - retired
+      responses:
+        '201':
+          description: Pompe creee
+        '404':
+          description: Station introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/stations/{station}/tanks:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les cuves d'une station (manager, FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Cuves paginees
+        '404':
+          description: Station introuvable ou autre tenant
+    post:
+      tags:
+      - FuelStation
+      summary: Creer une cuve (manager, FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - product_type
+              - capacity_minor
+              - status
+              properties:
+                code:
+                  type: string
+                product_type:
+                  type: string
+                capacity_minor:
+                  type: integer
+                current_level_minor:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - retired
+      responses:
+        '201':
+          description: Cuve creee
+        '404':
+          description: Station introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/stations/{station}/meters:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les compteurs d'une station (manager, FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Compteurs pagines
+        '404':
+          description: Station introuvable ou autre tenant
+    post:
+      tags:
+      - FuelStation
+      summary: Creer un compteur (register, manager, FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - pump_id
+              - meter_code
+              - meter_type
+              - product_code
+              - unit_code
+              - precision_scale
+              - status
+              properties:
+                pump_id:
+                  type: integer
+                meter_code:
+                  type: string
+                meter_type:
+                  type: string
+                  enum:
+                  - mechanical
+                  - electronic
+                  - main_totalizer
+                  - secondary_totalizer
+                  - test
+                product_code:
+                  type: string
+                unit_code:
+                  type: string
+                precision_scale:
+                  type: integer
+                  minimum: 0
+                  maximum: 6
+                rollover_limit:
+                  type: integer
+                  nullable: true
+                installed_at:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - retired
+      responses:
+        '201':
+          description: Compteur cree
+        '404':
+          description: Station introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/products:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister le catalogue produits (manager, FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produits pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer un produit du catalogue (manager, FUEL-011)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - unit_code
+              - status
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                unit_code:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                metadata:
+                  type: object
+                  nullable: true
+      responses:
+        '201':
+          description: Produit cree
+        '422':
+          description: Validation (code unique par tenant)
+  /fuel-station/products/{product}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'un produit (FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit
+        '404':
+          description: Produit introuvable ou autre tenant
+    put:
+      tags:
+      - FuelStation
+      summary: Remplacer un produit (manager, FUEL-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - unit_code
+              - status
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                unit_code:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                metadata:
+                  type: object
+                  nullable: true
+      responses:
+        '200':
+          description: Produit mis a jour
+        '404':
+          description: Produit introuvable ou autre tenant
+        '422':
+          description: Validation
+
   /accounting/contacts:
     get:
       tags:
