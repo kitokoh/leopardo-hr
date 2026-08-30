@@ -2242,6 +2242,118 @@ trait CreatesMvpSchema
                     ->cascadeOnDelete();
             });
         }
+
+        // ── BC-26 DELIVERY (delivery_deliveries) ─────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('delivery_deliveries'))) {
+            Schema::create($this->moduleTable('delivery_deliveries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('reference', 40);
+                $table->string('source', 20);
+                $table->string('source_reference', 120)->nullable();
+                $table->string('type', 20)->default('parcel');
+                $table->string('status', 20)->default('created');
+                $table->unsignedInteger('weight_grams')->nullable();
+                $table->unsignedInteger('volume_cm3')->nullable();
+                $table->unsignedInteger('declared_value_minor')->default(0);
+                $table->unsignedInteger('cod_amount_minor')->nullable();
+                $table->string('pickup_contact', 150)->nullable();
+                $table->text('pickup_address')->nullable();
+                $table->string('dropoff_contact', 150);
+                $table->string('dropoff_phone', 40)->nullable();
+                $table->text('dropoff_address');
+                $table->timestamp('window_from')->nullable();
+                $table->timestamp('window_to')->nullable();
+                $table->uuid('idempotency_key')->nullable();
+                $table->timestamp('delivered_at')->nullable();
+                $table->timestamp('failed_at')->nullable();
+                $table->timestamp('returned_at')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'reference'], 'delivery_deliveries_company_reference_unique');
+                $table->unique(['company_id', 'source', 'source_reference'], 'delivery_deliveries_company_source_ref_unique');
+                $table->index(['company_id', 'status', 'created_at'], 'delivery_deliveries_company_status_date_idx');
+            });
+        }
+
+        // ── BC-26 DELIVERY (delivery_routes) ─────────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('delivery_routes'))) {
+            Schema::create($this->moduleTable('delivery_routes'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->date('route_date');
+                $table->unsignedBigInteger('driver_id')->nullable();
+                $table->string('vehicle_code', 40)->nullable();
+                $table->string('zone', 120)->nullable();
+                $table->string('status', 20)->default('draft');
+                $table->unsignedInteger('deliveries_count')->default(0);
+                $table->unsignedInteger('delivered_count')->default(0);
+                $table->unsignedInteger('failed_count')->default(0);
+                $table->unsignedInteger('cod_collected_minor')->default(0);
+                $table->timestamp('closed_at')->nullable();
+                $table->uuid('idempotency_key')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'route_date', 'driver_id'], 'delivery_routes_company_date_driver_unique');
+            });
+        }
+
+        // ── BC-26 DELIVERY (delivery_stops) ──────────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('delivery_stops'))) {
+            Schema::create($this->moduleTable('delivery_stops'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('route_id');
+                $table->unsignedBigInteger('delivery_id');
+                $table->unsignedInteger('sort_order')->default(0);
+                $table->string('status', 20)->default('pending');
+                $table->text('address');
+                $table->string('contact', 150)->nullable();
+                $table->string('phone', 40)->nullable();
+                $table->timestamp('eta')->nullable();
+                $table->timestamp('etd')->nullable();
+                $table->unsignedBigInteger('proof_id')->nullable();
+                $table->timestamp('arrived_at')->nullable();
+                $table->timestamp('delivered_at')->nullable();
+                $table->timestamps();
+                $table->unique(['route_id', 'delivery_id'], 'delivery_stops_route_delivery_unique');
+            });
+        }
+
+        // ── BC-26 DELIVERY (delivery_events) ─────────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('delivery_events'))) {
+            Schema::create($this->moduleTable('delivery_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('delivery_id');
+                $table->string('type', 30);
+                $table->timestamp('event_at');
+                $table->decimal('latitude', 10, 7)->nullable();
+                $table->decimal('longitude', 10, 7)->nullable();
+                $table->string('origin', 20)->default('mobile');
+                $table->uuid('idempotency_key')->nullable();
+                $table->json('payload')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'delivery_id', 'type', 'event_at'], 'delivery_events_company_delivery_type_at_unique');
+            });
+        }
+
+        // ── BC-26 DELIVERY (delivery_cod_settlements) ────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('delivery_cod_settlements'))) {
+            Schema::create($this->moduleTable('delivery_cod_settlements'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('route_id');
+                $table->unsignedBigInteger('driver_id')->nullable();
+                $table->unsignedInteger('expected_minor')->default(0);
+                $table->unsignedInteger('collected_minor')->default(0);
+                $table->unsignedInteger('commission_minor')->default(0);
+                $table->string('status', 20)->default('pending');
+                $table->string('accounting_ref', 120)->nullable();
+                $table->timestamp('settled_at')->nullable();
+                $table->uuid('idempotency_key')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'route_id'], 'delivery_cod_settlements_company_route_unique');
+            });
+        }
     }
 
     private function dropMvpTables(): void
