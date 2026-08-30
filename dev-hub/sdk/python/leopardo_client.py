@@ -3420,6 +3420,58 @@ class LeopardoClient:
         """Inscrire un employe"""
         return self.request("POST", "/training/sessions/{trainingSession}/enroll", **kwargs)
 
+    def get_travel_article_categories(self, **kwargs):
+        """TRAVEL-901 — Catégories d''articles"""
+        return self.request("GET", "/travel/article-categories", **kwargs)
+
+    def post_travel_article_categories(self, **kwargs):
+        """TRAVEL-901 — Création d''une catégorie"""
+        return self.request("POST", "/travel/article-categories", **kwargs)
+
+    def get_travel_articles(self, **kwargs):
+        """TRAVEL-901 — Liste des articles"""
+        return self.request("GET", "/travel/articles", **kwargs)
+
+    def post_travel_articles(self, **kwargs):
+        """TRAVEL-901 — Création d''un article"""
+        return self.request("POST", "/travel/articles", **kwargs)
+
+    def delete_travel_articles_by_travelarticle(self, **kwargs):
+        """TRAVEL-901 — Suppression d''un article"""
+        return self.request("DELETE", "/travel/articles/{travelArticle}", **kwargs)
+
+    def get_travel_articles_by_travelarticle(self, **kwargs):
+        """TRAVEL-901 — Détail d''un article"""
+        return self.request("GET", "/travel/articles/{travelArticle}", **kwargs)
+
+    def put_travel_articles_by_travelarticle(self, **kwargs):
+        """TRAVEL-901 — Mise à jour d''un article"""
+        return self.request("PUT", "/travel/articles/{travelArticle}", **kwargs)
+
+    def get_travel_articles_by_travelarticle_engagement(self, **kwargs):
+        """TRAVEL-903 — Agrégats d''engagement"""
+        return self.request("GET", "/travel/articles/{travelArticle}/engagement", **kwargs)
+
+    def post_travel_articles_by_travelarticle_like(self, **kwargs):
+        """TRAVEL-903 — Like (unicité acteur/article)"""
+        return self.request("POST", "/travel/articles/{travelArticle}/like", **kwargs)
+
+    def post_travel_articles_by_travelarticle_moderate(self, **kwargs):
+        """TRAVEL-901 — Modération d''un article (draft/published/flagged)"""
+        return self.request("POST", "/travel/articles/{travelArticle}/moderate", **kwargs)
+
+    def post_travel_articles_by_travelarticle_rate(self, **kwargs):
+        """TRAVEL-903 — Note 1..5 (unicité, agrégats)"""
+        return self.request("POST", "/travel/articles/{travelArticle}/rate", **kwargs)
+
+    def post_travel_articles_by_travelarticle_share(self, **kwargs):
+        """TRAVEL-903 — Partage (canal)"""
+        return self.request("POST", "/travel/articles/{travelArticle}/share", **kwargs)
+
+    def post_travel_articles_by_travelarticle_unlike(self, **kwargs):
+        """TRAVEL-903 — Unlike"""
+        return self.request("POST", "/travel/articles/{travelArticle}/unlike", **kwargs)
+
     def get_travel_bookings(self, **kwargs):
         """Liste des réservations (TRAVEL-312/#6042)"""
         return self.request("GET", "/travel/bookings", **kwargs)
@@ -3491,6 +3543,26 @@ class LeopardoClient:
     def put_travel_classes_by_travelclass(self, **kwargs):
         """Modification d'une classe de service (TRAVEL-305/#6035)"""
         return self.request("PUT", "/travel/classes/{travelClass}", **kwargs)
+
+    def get_travel_comments(self, **kwargs):
+        """TRAVEL-902 — Liste des commentaires"""
+        return self.request("GET", "/travel/comments", **kwargs)
+
+    def post_travel_comments(self, **kwargs):
+        """TRAVEL-902 — Création d''un commentaire (pending)"""
+        return self.request("POST", "/travel/comments", **kwargs)
+
+    def delete_travel_comments_by_travelcomment(self, **kwargs):
+        """TRAVEL-902 — Suppression d''un commentaire"""
+        return self.request("DELETE", "/travel/comments/{travelComment}", **kwargs)
+
+    def post_travel_comments_by_travelcomment_moderate(self, **kwargs):
+        """TRAVEL-902 — Modération (approved/rejected/flagged)"""
+        return self.request("POST", "/travel/comments/{travelComment}/moderate", **kwargs)
+
+    def post_travel_comments_by_travelcomment_report(self, **kwargs):
+        """TRAVEL-902 — Signalement d''un commentaire"""
+        return self.request("POST", "/travel/comments/{travelComment}/report", **kwargs)
 
     def get_travel_countries(self, **kwargs):
         """Référentiel pays en lecture (TRAVEL-301/#6031)"""
@@ -3603,6 +3675,34 @@ class LeopardoClient:
     def delete_travel_rental_vehicles_by_travelrentalvehicle_images_by_travelrentalvehicleimage(self, **kwargs):
         """Suppression d'une image (TRAVEL-319/#6049)"""
         return self.request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}/images/{travelRentalVehicleImage}", **kwargs)
+
+    def get_travel_reports_cancellations(self, **kwargs):
+        """TRAVEL-504 — Annulations sur période"""
+        return self.request("GET", "/travel/reports/cancellations", **kwargs)
+
+    def get_travel_reports_dashboard(self, **kwargs):
+        """TRAVEL-507 — Dashboard KPIs"""
+        return self.request("GET", "/travel/reports/dashboard", **kwargs)
+
+    def post_travel_reports_export(self, **kwargs):
+        """TRAVEL-505 — Export CSV idempotent"""
+        return self.request("POST", "/travel/reports/export", **kwargs)
+
+    def get_travel_reports_export_by_travelexportasset(self, **kwargs):
+        """TRAVEL-505 — Lecture d''un export (URL signée éphémère)"""
+        return self.request("GET", "/travel/reports/export/{travelExportAsset}", **kwargs)
+
+    def get_travel_reports_occupancy(self, **kwargs):
+        """TRAVEL-502 — Occupation par trajet"""
+        return self.request("GET", "/travel/reports/occupancy", **kwargs)
+
+    def get_travel_reports_revenue(self, **kwargs):
+        """TRAVEL-503 — Recettes (confirmés − remboursements)"""
+        return self.request("GET", "/travel/reports/revenue", **kwargs)
+
+    def get_travel_reports_sales(self, **kwargs):
+        """TRAVEL-501 — Ventes (réservations nettes) sur période"""
+        return self.request("GET", "/travel/reports/sales", **kwargs)
 
     def get_travel_routes(self, **kwargs):
         """Liste des routes (TRAVEL-307/#6037)"""
