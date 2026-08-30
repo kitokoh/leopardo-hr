@@ -12,6 +12,10 @@ return [
     'accounting_payment_reminder_title' => 'Payment reminder',
     'accounting_payment_reminder_body' => 'Invoice {document_number} ({document_total}) is unpaid since {due_date} — reminder day {days_overdue}.',
     'generic_body' => 'New information is available in your space.',
+    'fuel_incident_reported_title' => 'Incident reported (station :station_id)',
+    'fuel_incident_reported_body' => 'An incident with severity :severity was reported for station :station_id.',
+    'fuel_stock_low_title' => 'Low stock (station :station_id)',
+    'fuel_stock_low_body' => 'Product :product is below the threshold (:level L) for station :station_id.',
 
     'absence_approved_title' => 'Leave request approved',
     'absence_approved_body' => 'Your leave request has been approved.',

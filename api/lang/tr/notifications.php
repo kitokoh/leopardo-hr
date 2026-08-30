@@ -12,6 +12,10 @@ return [
     'accounting_payment_reminder_title' => 'Ödeme hatırlatması',
     'accounting_payment_reminder_body' => '{document_number} numaralı fatura ({document_total}) {due_date} tarihinden beri ödenmedi — {days_overdue}. gün hatırlatması.',
     'generic_body' => 'Alanınızda yeni bilgi mevcut.',
+    'fuel_incident_reported_title' => 'Olay bildirildi (istasyon :station_id)',
+    'fuel_incident_reported_body' => ':station_id istasyonu için :severity seviyesinde bir olay bildirildi.',
+    'fuel_stock_low_title' => 'Düşük stok (istasyon :station_id)',
+    'fuel_stock_low_body' => ':station_id istasyonunda :product ürünü eşiğin altında (:level L).',
 
     'absence_approved_title' => 'İzin talebi onaylandı',
     'absence_approved_body' => 'İzin talebiniz onaylandı.',

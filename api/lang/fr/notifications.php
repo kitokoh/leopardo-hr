@@ -12,6 +12,10 @@ return [
     'accounting_payment_reminder_title' => 'Relance de paiement',
     'accounting_payment_reminder_body' => 'La facture {document_number} ({document_total}) est impayée depuis {due_date} — relance J+{days_overdue}.',
     'generic_body' => 'Une nouvelle information est disponible dans votre espace.',
+    'fuel_incident_reported_title' => 'Incident signalé (station :station_id)',
+    'fuel_incident_reported_body' => 'Un incident de sévérité :severity a été signalé pour la station :station_id.',
+    'fuel_stock_low_title' => 'Stock bas (station :station_id)',
+    'fuel_stock_low_body' => 'Le produit :product est sous le seuil (:level L) pour la station :station_id.',
 
     'absence_approved_title' => 'Demande d’absence approuvée',
     'absence_approved_body' => 'Votre demande d’absence a été approuvée.',

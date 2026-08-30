@@ -179,6 +179,19 @@ return [
             'body_key' => 'notifications.platform_announcement_body',
         ],
 
+        'fuel_incident_reported' => [
+            'category' => 'fuel',
+            'title_key' => 'notifications.fuel_incident_reported_title',
+            'body_key' => 'notifications.fuel_incident_reported_body',
+            // Aucune PII : pas de nom client ni description d'incident.
+            'vars' => ['severity', 'station_id'],
+        ],
+        'fuel_stock_low' => [
+            'category' => 'fuel',
+            'title_key' => 'notifications.fuel_stock_low_title',
+            'body_key' => 'notifications.fuel_stock_low_body',
+            'vars' => ['station_id', 'product', 'level'],
+        ],
         'weekly_manager_digest' => [
             'category' => 'hr',
             'title_key' => 'notifications.weekly_manager_digest_title',
