@@ -32,6 +32,9 @@ class ExportTravelReportJob
 
     public const TYPES = ['sales', 'occupancy', 'revenue', 'cancellations'];
 
+    /**
+     * @param  array<string, mixed>  $filters
+     */
     public function __construct(
         private readonly string $companyId,
         private readonly string $reportType,
@@ -133,8 +136,8 @@ class ExportTravelReportJob
                 $booking->created_at?->toDateTimeString(),
                 $booking->trip?->code,
                 $booking->trip?->route_id,
-                $booking->booking_source?->value,
-                $booking->status?->value,
+                $booking->booking_source->value,
+                $booking->status->value,
                 $booking->passenger_count,
                 $booking->total_amount_minor,
                 $booking->currency,

@@ -35,7 +35,7 @@ final class DashboardKpisQuery
             ->whereBetween('created_at', [$from, $to])
             ->selectRaw('COALESCE(SUM(total_amount_minor), 0) as sales')
             ->selectRaw('COUNT(*) as bookings')
-            ->selectRaw('COALESCE(SUM(passenger_count), 0) as passengers')
+            ->selectRaw('COALESCE(SUM(passenger_count), 0) as total_passengers')
             ->first();
 
         $payments = TravelPayment::query()
@@ -62,7 +62,7 @@ final class DashboardKpisQuery
         return [
             'sales_minor' => (int) ($sales->sales ?? 0),
             'bookings_count' => (int) ($sales->bookings ?? 0),
-            'passengers_count' => (int) ($sales->passengers ?? 0),
+            'passengers_count' => (int) ($sales->total_passengers ?? 0),
             'revenue_minor' => (int) ($payments->revenue ?? 0),
             'refunds_minor' => (int) ($payments->refunds ?? 0),
             'occupancy_rate' => $occupancy,

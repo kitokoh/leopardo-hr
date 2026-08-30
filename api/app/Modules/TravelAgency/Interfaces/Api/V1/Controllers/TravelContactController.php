@@ -24,10 +24,10 @@ class TravelContactController extends Controller
 
     public function store(StoreTravelContactRequest $request): JsonResponse
     {
-        /** @var Employee|null $actor */
+        /** @var Employee $actor */
         $actor = $request->user();
 
-        $companyId = $actor?->company_id ?? (string) currentCompany()->id;
+        $companyId = (string) $actor->company_id;
 
         $this->outbox->publish($companyId, 'travel.contact.submitted.v1', [
             'name' => $request->validated('name'),

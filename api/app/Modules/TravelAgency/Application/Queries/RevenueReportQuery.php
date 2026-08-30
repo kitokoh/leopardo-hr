@@ -7,7 +7,9 @@ namespace App\Modules\TravelAgency\Application\Queries;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelPayment;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * TRAVEL-503 (#6073) — Recettes encaissées (spec §7.6).
@@ -59,7 +61,7 @@ final class RevenueReportQuery
      */
     private function groupByRoute(array $filters): array
     {
-        $query = TravelPayment::query()
+        $query = DB::table('travel_payments')
             ->join('travel_bookings', 'travel_bookings.id', '=', 'travel_payments.booking_id')
             ->join('travel_trips', 'travel_trips.id', '=', 'travel_bookings.trip_id')
             ->select('travel_trips.route_id')
@@ -70,10 +72,10 @@ final class RevenueReportQuery
 
         $this->applyPeriod($query, $filters);
 
-        /** @var Collection<int, object> $rows */
+        /** @var Collection<int, \stdClass> $rows */
         $rows = $query->get();
 
-        return $rows->map(fn (object $row): array => [
+        return $rows->map(fn (\stdClass $row): array => [
             'route_id' => (int) $row->route_id,
             'confirmed_minor' => (int) $row->confirmed_minor,
             'refunded_minor' => (int) $row->refunded_minor,
@@ -83,9 +85,9 @@ final class RevenueReportQuery
 
     /**
      * @param  array<string, mixed>  $filters
-     * @param  Builder|\Illuminate\Database\Query\Builder  $query
+     * @param  Builder<TravelPayment>|QueryBuilder  $query
      */
-    private function applyPeriod($query, array $filters): void
+    private function applyPeriod(Builder|QueryBuilder $query, array $filters): void
     {
         if (! empty($filters['from'])) {
             $query->where('travel_payments.created_at', '>=', $filters['from']);
