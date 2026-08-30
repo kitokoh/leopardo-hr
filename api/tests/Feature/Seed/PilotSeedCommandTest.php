@@ -29,6 +29,12 @@ class PilotSeedCommandTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO public');
+        }
+        \Illuminate\Support\Facades\Cache::forget('feature_kill_switches.active');
+
         $this->createCrmTables();
     }
 

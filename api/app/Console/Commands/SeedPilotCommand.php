@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Core\Seed\PilotSeedGuard;
 use Database\Seeders\CrmPilotSeeder;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 /**
@@ -42,6 +43,13 @@ final class SeedPilotCommand extends Command
 
     public function handle(PilotSeedGuard $guard): int
     {
+        // Déterministe : les seeds pilotes vivent dans le schéma public (les
+        // données tenant sont créées via withinTenant). Ne pas dépendre du
+        // search_path ambiant de la session.
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO public');
+        }
+
         $vertical = (string) $this->argument('vertical');
 
         $config = self::VERTICALS[$vertical] ?? null;

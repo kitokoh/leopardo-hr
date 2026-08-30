@@ -46,6 +46,11 @@ final class CleanupPilotCommand extends Command
 
     public function handle(PilotSeedGuard $guard, TenantManager $tenantManager): int
     {
+        // Déterministe : les tenants pilotes vivent dans le schéma public.
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO public');
+        }
+
         $vertical = (string) $this->argument('vertical');
 
         $config = self::VERTICALS[$vertical] ?? null;
