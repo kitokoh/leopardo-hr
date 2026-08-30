@@ -83,12 +83,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // opt-out (numéros masqués RGPD hors admin).
             Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
             Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
-
-            // Rapports & KPIs (DELIVERY-207/#6291) — read model déterministe
-            // + export CSV streamé (rétablis : la réécriture des routes du
-            // lot 203/205/206/208 les avait fait disparaître).
-            Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
-            Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
         });
 
         // Suivi temps réel (DELIVERY-204/#6288) :
