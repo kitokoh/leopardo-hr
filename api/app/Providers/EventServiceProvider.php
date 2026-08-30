@@ -24,6 +24,7 @@ use App\Listeners\ConvertMarketingLeadToContact;
 use App\Listeners\LinkPartnerToNewCompany;
 use App\Listeners\NotifyTaxRateValidation;
 use App\Listeners\ProcessCommissionOnPayment;
+use App\Listeners\PublishPlatformEventToOutbox;
 use App\Listeners\WebhookListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -40,8 +41,8 @@ class EventServiceProvider extends ServiceProvider
         AbsenceRejected::class => [AuditLogger::class, WebhookListener::class],
         PayrollValidated::class => [AuditLogger::class, WebhookListener::class],
         EmployeeRoleAssigned::class => [AuditLogger::class],
-        CompanyCreated::class => [LinkPartnerToNewCompany::class],
-        SubscriptionPaid::class => [ProcessCommissionOnPayment::class],
+        CompanyCreated::class => [LinkPartnerToNewCompany::class, PublishPlatformEventToOutbox::class.'@handleCompanyCreated'],
+        SubscriptionPaid::class => [ProcessCommissionOnPayment::class, PublishPlatformEventToOutbox::class.'@handleSubscriptionPaid'],
 
         // Issue #1813/#1923 — workflow de validation des taux légaux : le
         // listener n'était enregistré nulle part (mort) alors que le

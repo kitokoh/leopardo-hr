@@ -146,6 +146,12 @@ Schedule::command('growth:approve-commissions')
     ->daily()
     ->at('04:00');
 
+// MAT-008 (#5866) — consommation de l'outbox générique plateforme.
+Schedule::command('outbox:dispatch')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->onOneServer();
+
 // Module Marketing — publication des social_posts planifies devenus dus
 Schedule::command('marketing:publish-scheduled-posts')
     ->everyMinute()

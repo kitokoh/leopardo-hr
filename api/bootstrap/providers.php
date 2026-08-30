@@ -26,6 +26,7 @@ use App\Providers\EventServiceProvider;
 use App\Providers\FeatureDetectionServiceProvider;
 use App\Providers\FeatureRegistryServiceProvider;
 use App\Providers\QueueCorrelationServiceProvider;
+use App\Providers\OutboxServiceProvider;
 
 return [
     AppServiceProvider::class,
@@ -35,6 +36,8 @@ return [
     FeatureRegistryServiceProvider::class,
     // — Observabilité MAT-009 (#5867) : corrélation API→jobs + redaction PII
     QueueCorrelationServiceProvider::class,
+    // — Runtime inbox/outbox/queues (MAT-008, #5866)
+    OutboxServiceProvider::class,
     HRServiceProvider::class,
     PayrollServiceProvider::class,
     AttendanceServiceProvider::class,
