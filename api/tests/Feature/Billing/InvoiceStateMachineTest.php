@@ -82,7 +82,6 @@ class InvoiceStateMachineTest extends TestCase
         self::assertTrue(InvoiceStatus::Sent->canTransitionTo(InvoiceStatus::Paid));
         self::assertTrue(InvoiceStatus::Sent->canTransitionTo(InvoiceStatus::Overdue));
         self::assertTrue(InvoiceStatus::Overdue->canTransitionTo(InvoiceStatus::Paid));
-        self::assertTrue(InvoiceStatus::Pending->canTransitionTo(InvoiceStatus::Overdue));
         self::assertFalse(InvoiceStatus::Draft->canTransitionTo(InvoiceStatus::Paid));
         self::assertFalse(InvoiceStatus::Paid->canTransitionTo(InvoiceStatus::Overdue));
         self::assertFalse(InvoiceStatus::Cancelled->canTransitionTo(InvoiceStatus::Paid));
@@ -153,7 +152,7 @@ class InvoiceStateMachineTest extends TestCase
 
     // ── billing:check-overdue ───────────────────────────────────────────────
 
-    public function test_check_overdue_marks_sent_and_legacy_pending_invoices(): void
+    public function test_check_overdue_marks_sent_invoices(): void
     {
         $company = $this->company();
         $subscription = $this->subscription($company);
@@ -161,10 +160,6 @@ class InvoiceStateMachineTest extends TestCase
         $lateSent = $this->invoice($company, $subscription, [
             'status' => InvoiceStatus::Sent->value,
             'due_date' => now()->subDay(),
-        ]);
-        $latePending = $this->invoice($company, $subscription, [
-            'status' => InvoiceStatus::Pending->value,
-            'due_date' => now()->subDays(3),
         ]);
         $future = $this->invoice($company, $subscription, [
             'status' => InvoiceStatus::Sent->value,
@@ -175,7 +170,6 @@ class InvoiceStateMachineTest extends TestCase
         Artisan::call('billing:check-overdue'); // idempotent
 
         self::assertSame(InvoiceStatus::Overdue->value, $lateSent->refresh()->status);
-        self::assertSame(InvoiceStatus::Overdue->value, $latePending->refresh()->status);
         self::assertSame(InvoiceStatus::Sent->value, $future->refresh()->status, 'facture non échue → sent conservé');
     }
 

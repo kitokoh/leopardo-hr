@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
  *
  * Deux phases, appliquées de façon idempotente (rejouable) :
  *   1. `active` → `past_due` si la période courante est expirée OU si la
- *      dernière facture en cours (pending/sent/overdue) a dépassé sa
+ *      dernière facture en cours (sent/overdue) a dépassé sa
  *      `due_date` ;
  *   2. `past_due` au-delà du délai de grâce (--grace-days, défaut 7 j) →
  *      `expired`. La grâce est calculée sur la `due_date` de la dernière
@@ -84,18 +84,22 @@ class BillingEnforceDelinquencyCommand extends Command
     }
 
     /**
-     * Date d'échéance de la dernière facture impayée (pending/sent/overdue).
+     * Date d'échéance de la dernière facture impayée (sent/overdue).
      */
     private function latestOutstandingInvoiceDueAt(Subscription $subscription): ?Carbon
     {
         $dueDate = $subscription->invoices()
             ->whereIn('status', [
-                InvoiceStatus::Pending->value,
                 InvoiceStatus::Sent->value,
                 InvoiceStatus::Overdue->value,
             ])
             ->orderByDesc('due_date')
             ->value('due_date');
+
+        // `value()` applique le cast `date` du modèle → Carbon (pas une string).
+        if ($dueDate instanceof Carbon) {
+            return $dueDate;
+        }
 
         if (! is_string($dueDate) || $dueDate === '') {
             return null;
