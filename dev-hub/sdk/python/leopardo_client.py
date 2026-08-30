@@ -3056,9 +3056,285 @@ class LeopardoClient:
         """Taux de rotation (turnover) sur N mois"""
         return self.request("GET", "/reports/turnover", **kwargs)
 
-    def get_restaurant_ping(self, **kwargs):
-        """Smoke test de la verticale RestaurantManager (BC-25 RESTAURANT, RESTO-101/#6158)"""
-        return self.request("GET", "/restaurant/ping", **kwargs)
+    def get_restaurant_branches(self, **kwargs):
+        """Liste des branch (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/branches", **kwargs)
+
+    def post_restaurant_branches(self, **kwargs):
+        """Création d'une gare/terminal (TRAVEL-302/#6032)"""
+        return self.request("POST", "/restaurant/branches", **kwargs)
+
+    def delete_restaurant_branches_by_restaurantbranch(self, **kwargs):
+        """Suppression d'un branch"""
+        return self.request("DELETE", "/restaurant/branches/{restaurantBranch}", **kwargs)
+
+    def get_restaurant_branches_by_restaurantbranch(self, **kwargs):
+        """Détail d'un branch"""
+        return self.request("GET", "/restaurant/branches/{restaurantBranch}", **kwargs)
+
+    def put_restaurant_branches_by_restaurantbranch(self, **kwargs):
+        """Modification d'une compagnie de transport (TRAVEL-304/#6034)"""
+        return self.request("PUT", "/restaurant/branches/{restaurantBranch}", **kwargs)
+
+    def put_restaurant_branches_by_restaurantbranch_2(self, **kwargs):
+        """Mise à jour d'un branch"""
+        return self.request("PUT", "/restaurant/branches/{restaurantBranch}", **kwargs)
+
+    def get_restaurant_branches_by_restaurantbranch_zones(self, **kwargs):
+        """Liste des zone (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/branches/{restaurantBranch}/zones", **kwargs)
+
+    def get_restaurant_categories(self, **kwargs):
+        """Liste des category (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/categories", **kwargs)
+
+    def post_restaurant_categories(self, **kwargs):
+        """Création d'un category"""
+        return self.request("POST", "/restaurant/categories", **kwargs)
+
+    def delete_restaurant_categories_by_restaurantcategory(self, **kwargs):
+        """Suppression d'un category"""
+        return self.request("DELETE", "/restaurant/categories/{restaurantCategory}", **kwargs)
+
+    def get_restaurant_categories_by_restaurantcategory(self, **kwargs):
+        """Détail d'un category"""
+        return self.request("GET", "/restaurant/categories/{restaurantCategory}", **kwargs)
+
+    def put_restaurant_categories_by_restaurantcategory(self, **kwargs):
+        """Mise à jour d'un category"""
+        return self.request("PUT", "/restaurant/categories/{restaurantCategory}", **kwargs)
+
+    def get_restaurant_hours(self, **kwargs):
+        """Liste des hour (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/hours", **kwargs)
+
+    def post_restaurant_hours(self, **kwargs):
+        """Ajout d'une image (TRAVEL-319/#6049)"""
+        return self.request("POST", "/restaurant/hours", **kwargs)
+
+    def post_restaurant_hours_2(self, **kwargs):
+        """Création d'un hour"""
+        return self.request("POST", "/restaurant/hours", **kwargs)
+
+    def delete_restaurant_hours_by_restauranthour(self, **kwargs):
+        """Suppression d'un hour"""
+        return self.request("DELETE", "/restaurant/hours/{restaurantHour}", **kwargs)
+
+    def get_restaurant_hours_by_restauranthour(self, **kwargs):
+        """Détail d'un hour"""
+        return self.request("GET", "/restaurant/hours/{restaurantHour}", **kwargs)
+
+    def put_restaurant_hours_by_restauranthour(self, **kwargs):
+        """Mise à jour d'un hour"""
+        return self.request("PUT", "/restaurant/hours/{restaurantHour}", **kwargs)
+
+    def get_restaurant_ingredients(self, **kwargs):
+        """Liste des ingredient (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/ingredients", **kwargs)
+
+    def post_restaurant_ingredients(self, **kwargs):
+        """Création d'un ingredient"""
+        return self.request("POST", "/restaurant/ingredients", **kwargs)
+
+    def delete_restaurant_ingredients_by_restaurantingredient(self, **kwargs):
+        """Suppression d'un ingredient"""
+        return self.request("DELETE", "/restaurant/ingredients/{restaurantIngredient}", **kwargs)
+
+    def get_restaurant_ingredients_by_restaurantingredient(self, **kwargs):
+        """Détail d'un ingredient"""
+        return self.request("GET", "/restaurant/ingredients/{restaurantIngredient}", **kwargs)
+
+    def put_restaurant_ingredients_by_restaurantingredient(self, **kwargs):
+        """Mise à jour d'un ingredient"""
+        return self.request("PUT", "/restaurant/ingredients/{restaurantIngredient}", **kwargs)
+
+    def get_restaurant_menus(self, **kwargs):
+        """Liste des menu (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/menus", **kwargs)
+
+    def post_restaurant_menus(self, **kwargs):
+        """Création d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("POST", "/restaurant/menus", **kwargs)
+
+    def post_restaurant_menus_2(self, **kwargs):
+        """Création d'un menu"""
+        return self.request("POST", "/restaurant/menus", **kwargs)
+
+    def delete_restaurant_menus_by_restaurantmenu(self, **kwargs):
+        """Suppression d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("DELETE", "/restaurant/menus/{restaurantMenu}", **kwargs)
+
+    def delete_restaurant_menus_by_restaurantmenu_2(self, **kwargs):
+        """Suppression d'un menu"""
+        return self.request("DELETE", "/restaurant/menus/{restaurantMenu}", **kwargs)
+
+    def get_restaurant_menus_by_restaurantmenu(self, **kwargs):
+        """Détail d'un menu"""
+        return self.request("GET", "/restaurant/menus/{restaurantMenu}", **kwargs)
+
+    def put_restaurant_menus_by_restaurantmenu(self, **kwargs):
+        """Mise à jour d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("PUT", "/restaurant/menus/{restaurantMenu}", **kwargs)
+
+    def put_restaurant_menus_by_restaurantmenu_2(self, **kwargs):
+        """Mise à jour d'un menu"""
+        return self.request("PUT", "/restaurant/menus/{restaurantMenu}", **kwargs)
+
+    def get_restaurant_menus_by_restaurantmenu_items(self, **kwargs):
+        """Liste des menuitem (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/menus/{restaurantMenu}/items", **kwargs)
+
+    def post_restaurant_menus_by_restaurantmenu_items(self, **kwargs):
+        """Création d'un menuitem"""
+        return self.request("POST", "/restaurant/menus/{restaurantMenu}/items", **kwargs)
+
+    def put_restaurant_menus_by_restaurantmenu_items_by_restaurantmenuitem(self, **kwargs):
+        """Mise à jour d'un menuitem"""
+        return self.request("PUT", "/restaurant/menus/{restaurantMenu}/items/{restaurantMenuItem}", **kwargs)
+
+    def get_restaurant_products(self, **kwargs):
+        """Liste des product (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/products", **kwargs)
+
+    def post_restaurant_products(self, **kwargs):
+        """Création d'un product"""
+        return self.request("POST", "/restaurant/products", **kwargs)
+
+    def delete_restaurant_products_by_restaurantproduct(self, **kwargs):
+        """Suppression d'un product"""
+        return self.request("DELETE", "/restaurant/products/{restaurantProduct}", **kwargs)
+
+    def get_restaurant_products_by_restaurantproduct(self, **kwargs):
+        """Détail d'un product"""
+        return self.request("GET", "/restaurant/products/{restaurantProduct}", **kwargs)
+
+    def put_restaurant_products_by_restaurantproduct(self, **kwargs):
+        """Mise à jour d'un product"""
+        return self.request("PUT", "/restaurant/products/{restaurantProduct}", **kwargs)
+
+    def get_restaurant_products_by_restaurantproduct_ingredients(self, **kwargs):
+        """Liste des productingredient (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/products/{restaurantProduct}/ingredients", **kwargs)
+
+    def post_restaurant_products_by_restaurantproduct_ingredients(self, **kwargs):
+        """Création d'un productingredient"""
+        return self.request("POST", "/restaurant/products/{restaurantProduct}/ingredients", **kwargs)
+
+    def delete_restaurant_products_by_restaurantproduct_ingredients_by_restaurantproductingredient(self, **kwargs):
+        """Suppression d'un productingredient"""
+        return self.request("DELETE", "/restaurant/products/{restaurantProduct}/ingredients/{restaurantProductIngredient}", **kwargs)
+
+    def get_restaurant_suppliers(self, **kwargs):
+        """Liste des supplier (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/suppliers", **kwargs)
+
+    def post_restaurant_suppliers(self, **kwargs):
+        """Création d'un supplier"""
+        return self.request("POST", "/restaurant/suppliers", **kwargs)
+
+    def delete_restaurant_suppliers_by_restaurantsupplier(self, **kwargs):
+        """Suppression d'un supplier"""
+        return self.request("DELETE", "/restaurant/suppliers/{restaurantSupplier}", **kwargs)
+
+    def get_restaurant_suppliers_by_restaurantsupplier(self, **kwargs):
+        """Détail d'un supplier"""
+        return self.request("GET", "/restaurant/suppliers/{restaurantSupplier}", **kwargs)
+
+    def put_restaurant_suppliers_by_restaurantsupplier(self, **kwargs):
+        """Mise à jour d'un supplier"""
+        return self.request("PUT", "/restaurant/suppliers/{restaurantSupplier}", **kwargs)
+
+    def get_restaurant_tables(self, **kwargs):
+        """Liste des table (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/tables", **kwargs)
+
+    def post_restaurant_tables(self, **kwargs):
+        """Création d'un table"""
+        return self.request("POST", "/restaurant/tables", **kwargs)
+
+    def delete_restaurant_tables_by_restauranttable(self, **kwargs):
+        """Suppression d'un table"""
+        return self.request("DELETE", "/restaurant/tables/{restaurantTable}", **kwargs)
+
+    def get_restaurant_tables_by_restauranttable(self, **kwargs):
+        """Détail d'un table"""
+        return self.request("GET", "/restaurant/tables/{restaurantTable}", **kwargs)
+
+    def put_restaurant_tables_by_restauranttable(self, **kwargs):
+        """Mise à jour d'un table"""
+        return self.request("PUT", "/restaurant/tables/{restaurantTable}", **kwargs)
+
+    def get_restaurant_tax_rates(self, **kwargs):
+        """Liste des taxrate (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/tax-rates", **kwargs)
+
+    def post_restaurant_tax_rates(self, **kwargs):
+        """Création d'un véhicule de flotte (TRAVEL-306/#6036)"""
+        return self.request("POST", "/restaurant/tax-rates", **kwargs)
+
+    def post_restaurant_tax_rates_2(self, **kwargs):
+        """Création d'un taxrate"""
+        return self.request("POST", "/restaurant/tax-rates", **kwargs)
+
+    def get_restaurant_tax_rates_by_restauranttaxrate(self, **kwargs):
+        """Détail d'un taxrate"""
+        return self.request("GET", "/restaurant/tax-rates/{restaurantTaxRate}", **kwargs)
+
+    def put_restaurant_tax_rates_by_restauranttaxrate(self, **kwargs):
+        """Mise à jour d'un taux (TRAVEL-805/#6096)"""
+        return self.request("PUT", "/restaurant/tax-rates/{restaurantTaxRate}", **kwargs)
+
+    def put_restaurant_tax_rates_by_restauranttaxrate_2(self, **kwargs):
+        """Mise à jour d'un taxrate"""
+        return self.request("PUT", "/restaurant/tax-rates/{restaurantTaxRate}", **kwargs)
+
+    def get_restaurant_units(self, **kwargs):
+        """Liste des unit (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/units", **kwargs)
+
+    def post_restaurant_units(self, **kwargs):
+        """Création d'un unit"""
+        return self.request("POST", "/restaurant/units", **kwargs)
+
+    def delete_restaurant_units_by_restaurantunit(self, **kwargs):
+        """Suppression d'un unit"""
+        return self.request("DELETE", "/restaurant/units/{restaurantUnit}", **kwargs)
+
+    def get_restaurant_units_by_restaurantunit(self, **kwargs):
+        """Détail d'un unit"""
+        return self.request("GET", "/restaurant/units/{restaurantUnit}", **kwargs)
+
+    def put_restaurant_units_by_restaurantunit(self, **kwargs):
+        """Modification d'une classe de service (TRAVEL-305/#6035)"""
+        return self.request("PUT", "/restaurant/units/{restaurantUnit}", **kwargs)
+
+    def put_restaurant_units_by_restaurantunit_2(self, **kwargs):
+        """Mise à jour d'un unit"""
+        return self.request("PUT", "/restaurant/units/{restaurantUnit}", **kwargs)
+
+    def get_restaurant_zones(self, **kwargs):
+        """Liste des zone (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/zones", **kwargs)
+
+    def post_restaurant_zones(self, **kwargs):
+        """Création d'une classe de service (TRAVEL-305/#6035)"""
+        return self.request("POST", "/restaurant/zones", **kwargs)
+
+    def post_restaurant_zones_2(self, **kwargs):
+        """Création d'un zone"""
+        return self.request("POST", "/restaurant/zones", **kwargs)
+
+    def delete_restaurant_zones_by_restaurantzone(self, **kwargs):
+        """Suppression d'un zone"""
+        return self.request("DELETE", "/restaurant/zones/{restaurantZone}", **kwargs)
+
+    def get_restaurant_zones_by_restaurantzone(self, **kwargs):
+        """Détail d'un zone"""
+        return self.request("GET", "/restaurant/zones/{restaurantZone}", **kwargs)
+
+    def put_restaurant_zones_by_restaurantzone(self, **kwargs):
+        """Mise à jour d'un zone"""
+        return self.request("PUT", "/restaurant/zones/{restaurantZone}", **kwargs)
 
     def get_salary_advances(self, **kwargs):
         """Lister les avances sur salaire"""
@@ -3476,6 +3752,10 @@ class LeopardoClient:
         """Suppression d'une politique (TRAVEL-813/#6103)"""
         return self.request("DELETE", "/travel/cancellation-policies/{travelCancellationPolicy}", **kwargs)
 
+    def delete_travel_cancellation_policies_by_travelcancellationpolicy_2(self, **kwargs):
+        """Suppression d'un taxrate"""
+        return self.request("DELETE", "/travel/cancellation-policies/{travelCancellationPolicy}", **kwargs)
+
     def put_travel_cancellation_policies_by_travelcancellationpolicy(self, **kwargs):
         """Mise à jour d'une politique (TRAVEL-813/#6103)"""
         return self.request("PUT", "/travel/cancellation-policies/{travelCancellationPolicy}", **kwargs)
@@ -3488,17 +3768,13 @@ class LeopardoClient:
         """Création d'une compagnie de transport (TRAVEL-304/#6034)"""
         return self.request("POST", "/travel/carriers", **kwargs)
 
-    def delete_travel_carriers_by_travelcarrier(self, **kwargs):
-        """Suppression d'une compagnie de transport (TRAVEL-304/#6034)"""
-        return self.request("DELETE", "/travel/carriers/{travelCarrier}", **kwargs)
+    def post_travel_carriers_2(self, **kwargs):
+        """Création d'un branch"""
+        return self.request("POST", "/travel/carriers", **kwargs)
 
     def get_travel_carriers_by_travelcarrier(self, **kwargs):
         """Détail d'une compagnie de transport (TRAVEL-304/#6034)"""
         return self.request("GET", "/travel/carriers/{travelCarrier}", **kwargs)
-
-    def put_travel_carriers_by_travelcarrier(self, **kwargs):
-        """Modification d'une compagnie de transport (TRAVEL-304/#6034)"""
-        return self.request("PUT", "/travel/carriers/{travelCarrier}", **kwargs)
 
     def get_travel_cities(self, **kwargs):
         """Référentiel villes en lecture (TRAVEL-301/#6031)"""
@@ -3508,21 +3784,13 @@ class LeopardoClient:
         """Liste des classes de service (TRAVEL-305/#6035)"""
         return self.request("GET", "/travel/classes", **kwargs)
 
-    def post_travel_classes(self, **kwargs):
-        """Création d'une classe de service (TRAVEL-305/#6035)"""
-        return self.request("POST", "/travel/classes", **kwargs)
-
-    def delete_travel_classes_by_travelclass(self, **kwargs):
-        """Suppression d'une classe de service (TRAVEL-305/#6035)"""
-        return self.request("DELETE", "/travel/classes/{travelClass}", **kwargs)
-
     def get_travel_classes_by_travelclass(self, **kwargs):
         """Détail d'une classe de service (TRAVEL-305/#6035)"""
         return self.request("GET", "/travel/classes/{travelClass}", **kwargs)
 
-    def put_travel_classes_by_travelclass(self, **kwargs):
-        """Modification d'une classe de service (TRAVEL-305/#6035)"""
-        return self.request("PUT", "/travel/classes/{travelClass}", **kwargs)
+    def delete_travel_contact(self, **kwargs):
+        """Suppression d'un menuitem"""
+        return self.request("DELETE", "/travel/contact", **kwargs)
 
     def post_travel_contact(self, **kwargs):
         """Formulaire de contact → lead CRM (TRAVEL-416/#6068)"""
@@ -3543,10 +3811,6 @@ class LeopardoClient:
     def get_travel_currency_rates_by_travelcurrencyrate(self, **kwargs):
         """Détail d'un taux (TRAVEL-805/#6096)"""
         return self.request("GET", "/travel/currency-rates/{travelCurrencyRate}", **kwargs)
-
-    def put_travel_currency_rates_by_travelcurrencyrate(self, **kwargs):
-        """Mise à jour d'un taux (TRAVEL-805/#6096)"""
-        return self.request("PUT", "/travel/currency-rates/{travelCurrencyRate}", **kwargs)
 
     def get_travel_currency_rates_convert(self, **kwargs):
         """Conversion multi-devise (TRAVEL-805/#6096)"""
@@ -3676,29 +3940,13 @@ class LeopardoClient:
         """Liste des véhicules en location (TRAVEL-319/#6049)"""
         return self.request("GET", "/travel/rental-vehicles", **kwargs)
 
-    def post_travel_rental_vehicles(self, **kwargs):
-        """Création d'un véhicule en location (TRAVEL-319/#6049)"""
-        return self.request("POST", "/travel/rental-vehicles", **kwargs)
-
-    def delete_travel_rental_vehicles_by_travelrentalvehicle(self, **kwargs):
-        """Suppression d'un véhicule en location (TRAVEL-319/#6049)"""
-        return self.request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}", **kwargs)
-
     def get_travel_rental_vehicles_by_travelrentalvehicle(self, **kwargs):
         """Détail d'un véhicule en location (TRAVEL-319/#6049)"""
         return self.request("GET", "/travel/rental-vehicles/{travelRentalVehicle}", **kwargs)
 
-    def put_travel_rental_vehicles_by_travelrentalvehicle(self, **kwargs):
-        """Mise à jour d'un véhicule en location (TRAVEL-319/#6049)"""
-        return self.request("PUT", "/travel/rental-vehicles/{travelRentalVehicle}", **kwargs)
-
     def get_travel_rental_vehicles_by_travelrentalvehicle_images(self, **kwargs):
         """Images d'un véhicule en location (TRAVEL-319/#6049)"""
         return self.request("GET", "/travel/rental-vehicles/{travelRentalVehicle}/images", **kwargs)
-
-    def post_travel_rental_vehicles_by_travelrentalvehicle_images(self, **kwargs):
-        """Ajout d'une image (TRAVEL-319/#6049)"""
-        return self.request("POST", "/travel/rental-vehicles/{travelRentalVehicle}/images", **kwargs)
 
     def delete_travel_rental_vehicles_by_travelrentalvehicle_images_by_travelrentalvehicleimage(self, **kwargs):
         """Suppression d'une image (TRAVEL-319/#6049)"""
@@ -3751,10 +3999,6 @@ class LeopardoClient:
     def get_travel_stations(self, **kwargs):
         """Liste des gares/terminaux (TRAVEL-302/#6032)"""
         return self.request("GET", "/travel/stations", **kwargs)
-
-    def post_travel_stations(self, **kwargs):
-        """Création d'une gare/terminal (TRAVEL-302/#6032)"""
-        return self.request("POST", "/travel/stations", **kwargs)
 
     def delete_travel_stations_by_travelstation(self, **kwargs):
         """Suppression d'une gare/terminal (TRAVEL-302/#6032)"""
@@ -3835,10 +4079,6 @@ class LeopardoClient:
     def get_travel_vehicles(self, **kwargs):
         """Liste des véhicules de la flotte (TRAVEL-306/#6036)"""
         return self.request("GET", "/travel/vehicles", **kwargs)
-
-    def post_travel_vehicles(self, **kwargs):
-        """Création d'un véhicule de flotte (TRAVEL-306/#6036)"""
-        return self.request("POST", "/travel/vehicles", **kwargs)
 
     def delete_travel_vehicles_by_travelvehicle(self, **kwargs):
         """Suppression d'un véhicule (TRAVEL-306/#6036)"""
