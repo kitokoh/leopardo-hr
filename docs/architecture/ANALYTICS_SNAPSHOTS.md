@@ -35,7 +35,7 @@ préventivement sur des volumes sains.
 ## Schéma et versionnage
 
 - Table tenant `accounting_reporting_snapshots`
-  (migration `2026_08_30_000001_6243_create_accounting_reporting_snapshots_table.php`,
+  (migration `2026_08_30_000003_6243_create_accounting_reporting_snapshots_table.php`,
   additive et idempotente) ;
 - clé unique `(company_id, report, period_from, period_to)` ;
 - `version` : incrémentée **uniquement** quand le contenu change — deux
