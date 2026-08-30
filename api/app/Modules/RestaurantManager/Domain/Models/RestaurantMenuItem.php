@@ -32,6 +32,11 @@ class RestaurantMenuItem extends Model
         'is_optional',
     ];
 
+    protected $attributes = [
+        'position' => 0,
+        'is_optional' => false,
+    ];
+
     protected $casts = [
         'position' => 'integer',
         'is_optional' => 'boolean',

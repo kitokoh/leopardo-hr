@@ -11,6 +11,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantCategory;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantUnit;
+use Illuminate\Support\Facades\Artisan;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -71,8 +72,9 @@ class RestaurantActivationTest extends TestCase
             'currency' => 'XAF',
         ]);
 
-        $this->artisan('leopardo:restaurant:activate', ['company' => 'resto-activation-test'])
-            ->assertSuccessful();
+        $exitCode = Artisan::call('leopardo:restaurant:activate', ['company' => 'resto-activation-test']);
+
+        $this->assertSame(0, $exitCode);
 
         $company->refresh();
         $this->assertTrue($company->hasFeature('restaurantmanager'));
