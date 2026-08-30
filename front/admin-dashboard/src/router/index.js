@@ -325,6 +325,33 @@ const routes = [
         }
       },
       {
+        path: '/travel/adverts',
+        name: 'travel-adverts',
+        component: () => import('../views/travel/TravelAdvertsView.vue'),
+        meta: {
+          title: 'travel.adverts.title',
+          parent: 'travel'
+        }
+      },
+      {
+        path: '/travel/quizzes',
+        name: 'travel-quizzes',
+        component: () => import('../views/travel/TravelQuizzesView.vue'),
+        meta: {
+          title: 'travel.quiz.title',
+          parent: 'travel'
+        }
+      },
+      {
+        path: '/travel/sites',
+        name: 'travel-sites',
+        component: () => import('../views/travel/TravelSitesView.vue'),
+        meta: {
+          title: 'travel.sites.title',
+          parent: 'travel'
+        }
+      },
+      {
         path: '/travel/catalog',
         name: 'travel-catalog',
         component: () => import('../views/travel/TravelCatalogView.vue'),
