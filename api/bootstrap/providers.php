@@ -2,11 +2,11 @@
 
 use App\Modules\Absence\Providers\AbsenceServiceProvider;
 use App\Modules\Accounting\Providers\AccountingServiceProvider;
-use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\Attendance\Providers\AttendanceServiceProvider;
 use App\Modules\Billing\Providers\BillingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
 use App\Modules\Cameras\Providers\CamerasServiceProvider;
+use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
@@ -18,8 +18,8 @@ use App\Modules\Onboarding\Providers\OnboardingServiceProvider;
 use App\Modules\Payroll\Providers\PayrollServiceProvider;
 use App\Modules\Planning\Providers\PlanningServiceProvider;
 use App\Modules\Platform\Providers\PlatformServiceProvider;
-use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
 use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
+use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
