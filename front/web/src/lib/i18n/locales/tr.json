@@ -1497,7 +1497,8 @@
     "taxBrackets": "Vergi dilimleri",
     "legalRates": "Yasal oranlar",
     "account": "Hesabim",
-    "notFound": "Sayfa bulunamadi"
+    "notFound": "Sayfa bulunamadi",
+    "travelAgency": "Seyahat acentesi"
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?"
@@ -3631,5 +3632,297 @@
     "loadError": "Mutfak kuyruğu yüklenemedi.",
     "actionError": "İşlem başarısız, tekrar deneyin.",
     "loading": "Mutfak kuyruğu yükleniyor…"
+  },
+  "travel": {
+    "loading": "Yükleniyor…",
+    "section": {
+      "title": "Seyahat acentesi",
+      "subtitle": "TravelAgency dikeyini yönetin: referans, ağ, satışlar, biletleme ve raporlar."
+    },
+    "gate": {
+      "disabledTitle": "Seyahat acentesi modülü etkin değil",
+      "disabledBody": "TravelAgency dikeyi bağlı kiracı için etkinleştirilmemiş. Bu modüle erişmek için «travelagency» özelliğini etkinleştirin.",
+      "errorTitle": "Modül geçici olarak kullanılamıyor",
+      "errorBody": "TravelAgency hizmetine ulaşılamıyor. Kısa süre sonra tekrar deneyin.",
+      "retry": "Yeniden dene"
+    },
+    "tab": {
+      "referentiel": "Referans",
+      "routes": "Güzergâhlar ve Seferler",
+      "bookings": "Rezervasyonlar",
+      "checkin": "Check-in",
+      "tickets": "Biletler",
+      "reports": "Raporlar",
+      "rentals": "Kiralama ve Oteller"
+    },
+    "referentiel": {
+      "tabsLabel": "Referans alt bölümleri",
+      "tabGeo": "Ülkeler ve Şehirler",
+      "tabStations": "İstasyonlar",
+      "tabOffices": "Ofisler",
+      "tabCarriers": "Şirketler",
+      "tabClasses": "Sınıflar",
+      "tabVehicles": "Araçlar",
+      "countries": "Ülkeler",
+      "cities": "Şehirler",
+      "geoNote": "Coğrafi referans seed ile beslenir (salt okunur).",
+      "stations": "İstasyonlar / terminaller",
+      "offices": "Satış ofisleri",
+      "carriers": "Ulaşım şirketleri",
+      "classes": "Hizmet sınıfları",
+      "vehicles": "Araç filosu"
+    },
+    "search": {
+      "placeholder": "Ara…",
+      "country": "Ülke ara…",
+      "city": "Şehir ara…",
+      "station": "İstasyon ara…",
+      "office": "Ofis ara…",
+      "carrier": "Şirket ara…",
+      "class": "Sınıf ara…",
+      "vehicle": "Araç ara…",
+      "route": "Güzergâh ara…",
+      "trip": "Sefer ara…",
+      "booking": "Rezervasyon ara…",
+      "report": "Raporda ara…",
+      "rentalVehicle": "Kiralık araç ara…",
+      "rentalBooking": "Kiralama rezervasyonu ara…",
+      "hotel": "Otel ara…"
+    },
+    "field": {
+      "iso2": "ISO2",
+      "iso3": "ISO3",
+      "name": "Ad",
+      "phoneCode": "Telefon kodu",
+      "countryIso2": "Ülke",
+      "region": "Bölge",
+      "status": "Durum",
+      "code": "Kod",
+      "city": "Şehir",
+      "timezone": "Saat dilimi",
+      "isTerminal": "Ana terminal",
+      "address": "Adres",
+      "contactPhone": "Telefon",
+      "label": "Etiket",
+      "priority": "Öncelik",
+      "color": "Renk",
+      "registration": "Plaka",
+      "seatCapacity": "Koltuk",
+      "carrier": "Şirket",
+      "notes": "Notlar",
+      "origin": "Kalkış",
+      "destination": "Varış",
+      "distanceKm": "Mesafe (km)",
+      "durationMin": "Süre (dk)",
+      "rank": "Sıra",
+      "isStopover": "Ara durak",
+      "minDurationMin": "Min (dk)",
+      "route": "Güzergâh",
+      "departureDate": "Kalkış",
+      "departureTime": "Saat",
+      "arrivalDate": "Varış",
+      "arrivalTime": "Varış saati",
+      "means": "Araç",
+      "totalSeats": "Koltuk",
+      "class": "Sınıf",
+      "adultPrice": "Yetişkin",
+      "childPrice": "Çocuk",
+      "currency": "Para birimi",
+      "reference": "Referans",
+      "trip": "Sefer",
+      "passengerCount": "Yolcular",
+      "totalAmount": "Tutar",
+      "paymentStatus": "Ödeme",
+      "fullName": "Ad soyad",
+      "ageCategory": "Kategori",
+      "seat": "Koltuk",
+      "unitPrice": "Birim fiyat",
+      "ticketNumber": "Bilet no.",
+      "passenger": "Yolcu",
+      "issuedAt": "Düzenlenme",
+      "paymentRef": "Ödeme referansı",
+      "provider": "Sağlayıcı",
+      "amount": "Tutar",
+      "createdAt": "Oluşturulma",
+      "validationCode": "Doğrulama kodu",
+      "classification": "Sınıflandırma",
+      "description": "Açıklama",
+      "roomNumber": "Oda no.",
+      "roomType": "Tür",
+      "capacity": "Kapasite",
+      "pricePerNight": "Gece fiyatı",
+      "startDate": "Başlangıç",
+      "endDate": "Bitiş",
+      "deposit": "Depozito",
+      "pricePerDay": "Günlük fiyat",
+      "availableFrom": "Şu tarihten itibaren",
+      "availableUntil": "Şu tarihe kadar",
+      "ownerCarrier": "Sahip şirket",
+      "title": "Başlık",
+      "vehicle": "Araç"
+    },
+    "action": {
+      "create": "Oluştur",
+      "createTitle": "Öğe oluştur",
+      "edit": "Düzenle",
+      "editTitle": "Düzenle",
+      "save": "Kaydet",
+      "delete": "Sil",
+      "deleteTitle": "Silmeyi onayla",
+      "view": "Görüntüle",
+      "confirm": "Onayla",
+      "cancel": "İptal",
+      "refund": "Geri öde",
+      "issueTicket": "Bilet",
+      "publish": "Yayınla",
+      "cancelTrip": "Seferi iptal et",
+      "addNested": "Ekle",
+      "add": "Ekle"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Pasif",
+      "archived": "Arşivlendi"
+    },
+    "carrierType": {
+      "bus": "Otobüs",
+      "train": "Tren",
+      "boat": "Gemi",
+      "plane": "Uçak"
+    },
+    "means": {
+      "bus": "Otobüs",
+      "train": "Tren",
+      "boat": "Gemi",
+      "plane": "Uçak"
+    },
+    "tripStatus": {
+      "draft": "Taslak",
+      "published": "Yayınlandı",
+      "cancelled": "İptal edildi"
+    },
+    "bookingStatus": {
+      "pending": "Beklemede",
+      "confirmed": "Onaylandı",
+      "cancelled": "İptal edildi",
+      "refunded": "Geri ödendi",
+      "expired": "Süresi doldu"
+    },
+    "paymentStatus": {
+      "pending": "Beklemede",
+      "paid": "Ödendi",
+      "failed": "Başarısız",
+      "refunded": "Geri ödendi"
+    },
+    "ticketStatus": {
+      "issued": "Düzenlendi",
+      "checkedIn": "Check-in yapıldı",
+      "revoked": "İptal edildi",
+      "unknown": "Bilinmiyor"
+    },
+    "routes": {
+      "title": "Güzergâhlar ve güzergâhlar",
+      "subtitle": "Şehirler arası güzergâhlar, sıralı duraklar.",
+      "stopsTitle": "Güzergâh durakları"
+    },
+    "trips": {
+      "title": "Planlı seferler",
+      "subtitle": "Kalkışlar, sınıf fiyatları, yayın.",
+      "pricesTitle": "Sınıf başına fiyatlar"
+    },
+    "bookings": {
+      "title": "Rezervasyonlar",
+      "filterStatus": "Durum",
+      "allStatuses": "Tümü",
+      "filterTrip": "Sefer",
+      "allTrips": "Tümü",
+      "from": "Başlangıç",
+      "to": "Bitiş",
+      "reset": "Sıfırla",
+      "passengers": "Yolcular",
+      "tickets": "Biletler",
+      "payments": "Ödemeler",
+      "detailTitle": "Rezervasyon",
+      "cancelReasonTitle": "İptal nedeni",
+      "refundReasonTitle": "Geri ödeme nedeni",
+      "reason": "Neden",
+      "reasonRequired": "Neden zorunludur."
+    },
+    "checkin": {
+      "selectTrip": "Bir sefer seçin",
+      "chooseTrip": "— Bir sefer seçin —",
+      "refresh": "Yenile",
+      "boarded": "Biniş yapan",
+      "pending": "Bekleyen",
+      "searchManifest": "Yolcu / bilet ara",
+      "searchManifestPlaceholder": "Ad veya bilet no…",
+      "checkIn": "Biniş",
+      "checkedIn": "Biniş yapıldı ✓",
+      "emptyManifest": "Bu seferde yolcu yok.",
+      "noTicket": "Bu yolcuya bağlı bilet yok."
+    },
+    "tickets": {
+      "title": "Biletleme",
+      "filterTrip": "Sefer",
+      "manage": "Biletler",
+      "empty": "Bu rezervasyon için bilet düzenlenmemiş. Rezervasyonlar sekmesinde «Bilet» işlemini kullanın.",
+      "downloadPdf": "PDF",
+      "revoke": "İptal et",
+      "revokeTitle": "İptal nedeni",
+      "pdfError": "İndirme başarısız."
+    },
+    "reports": {
+      "tabsLabel": "Raporlar",
+      "sales": "Satışlar",
+      "occupancy": "Doluluk",
+      "revenue": "Gelirler",
+      "cancellations": "İptaller",
+      "exportCsv": "CSV dışa aktar",
+      "empty": "Dönem için veri yok.",
+      "exportError": "Dışa aktarma başarısız."
+    },
+    "rentals": {
+      "vehicles": "Kiralık araçlar",
+      "bookings": "Kiralama rezervasyonları",
+      "hotels": "Oteller",
+      "roomsTitle": "Odalar",
+      "images": "Görseller",
+      "noImages": "Görsel yok.",
+      "addImage": "Görsel ekle",
+      "rentalStatus": {
+        "completed": "Tamamlandı"
+      }
+    },
+    "toast": {
+      "saved": "Kaydedildi.",
+      "deleted": "Silindi.",
+      "published": "Sefer yayınlandı.",
+      "cancelled": "Rezervasyon iptal edildi.",
+      "confirmed": "Rezervasyon onaylandı.",
+      "refunded": "Rezervasyon geri ödendi.",
+      "ticketsIssued": "Biletler düzenlendi.",
+      "checkedIn": "Yolcu biniş yaptı.",
+      "ticketRevoked": "Bilet iptal edildi.",
+      "exported": "CSV dışa aktarıldı."
+    },
+    "error": {
+      "loadFailed": "Veriler yüklenemedi.",
+      "saveFailed": "Kaydetme başarısız.",
+      "deleteFailed": "Silme başarısız.",
+      "actionFailed": "İşlem başarısız oldu."
+    },
+    "confirm": {
+      "deleteMessage": "Bu öğe kalıcı olarak silinsin mi?",
+      "cancelTrip": "Bu sefer iptal edilsin mi? Rezervasyonlar iş kurallarına göre işlenecek.",
+      "cancelRental": "Bu kiralama rezervasyonu iptal edilsin mi?"
+    },
+    "table": {
+      "actions": "İşlemler",
+      "emptyNested": "Öğe yok."
+    },
+    "form": {
+      "selectPlaceholder": "— Seçin —",
+      "moneyMinor": "Para birimi cinsinden tutar (1 = 100 birim)"
+    }
   }
 }

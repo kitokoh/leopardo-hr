@@ -1576,7 +1576,8 @@
     "notFound": "الصفحة غير موجودة",
     "accountingActivation": "المحاسبة — ابدأ",
     "accountingDashboard": "المحاسبة — لوحة القيادة",
-    "accountingSettings": "المحاسبة — الإعدادات"
+    "accountingSettings": "المحاسبة — الإعدادات",
+    "travelAgency": "وكالة السفر"
   },
   "webhooks": {
     "confirm_delete": "حذف خطاف الويب هذا؟",
@@ -4233,5 +4234,297 @@
     "loadError": "تعذر تحميل قائمة المطبخ.",
     "actionError": "تعذر تنفيذ الإجراء، حاول مجددًا.",
     "loading": "جارٍ تحميل قائمة المطبخ…"
+  },
+  "travel": {
+    "loading": "جارٍ التحميل…",
+    "section": {
+      "title": "وكالة السفر",
+      "subtitle": "إدارة عمودية TravelAgency: المرجع، الشبكة، المبيعات، التذاكر والتقارير."
+    },
+    "gate": {
+      "disabledTitle": "وحدة وكالة السفر غير مفعّلة",
+      "disabledBody": "عمودية TravelAgency غير مفعّلة للمستأجر المتصل. فعّل خاصية «travelagency» للوصول إلى هذه الوحدة.",
+      "errorTitle": "الوحدة غير متاحة مؤقتًا",
+      "errorBody": "تعذّر الوصول إلى خدمة TravelAgency. أعد المحاولة بعد قليل.",
+      "retry": "إعادة المحاولة"
+    },
+    "tab": {
+      "referentiel": "المرجع",
+      "routes": "الخطوط والرحلات",
+      "bookings": "الحجوزات",
+      "checkin": "تسجيل الدخول",
+      "tickets": "التذاكر",
+      "reports": "التقارير",
+      "rentals": "الإيجارات والفنادق"
+    },
+    "referentiel": {
+      "tabsLabel": "الأقسام الفرعية للمرجع",
+      "tabGeo": "الدول والمدن",
+      "tabStations": "المحطات",
+      "tabOffices": "المكاتب",
+      "tabCarriers": "الشركات",
+      "tabClasses": "الدرجات",
+      "tabVehicles": "المركبات",
+      "countries": "الدول",
+      "cities": "المدن",
+      "geoNote": "مرجع جغرافي يتم تغذيته عبر البذرة (للقراءة فقط).",
+      "stations": "المحطات/المواقف",
+      "offices": "مكاتب البيع",
+      "carriers": "شركات النقل",
+      "classes": "درجات الخدمة",
+      "vehicles": "أسطول المركبات"
+    },
+    "search": {
+      "placeholder": "بحث…",
+      "country": "ابحث عن دولة…",
+      "city": "ابحث عن مدينة…",
+      "station": "ابحث عن محطة…",
+      "office": "ابحث عن مكتب…",
+      "carrier": "ابحث عن شركة…",
+      "class": "ابحث عن درجة…",
+      "vehicle": "ابحث عن مركبة…",
+      "route": "ابحث عن خط…",
+      "trip": "ابحث عن رحلة…",
+      "booking": "ابحث عن حجز…",
+      "report": "ابحث في التقرير…",
+      "rentalVehicle": "ابحث عن مركبة إيجار…",
+      "rentalBooking": "ابحث عن حجز إيجار…",
+      "hotel": "ابحث عن فندق…"
+    },
+    "field": {
+      "iso2": "كود ISO2",
+      "iso3": "كود ISO3",
+      "name": "الاسم",
+      "phoneCode": "رمز الهاتف",
+      "countryIso2": "الدولة",
+      "region": "المنطقة",
+      "status": "الحالة",
+      "code": "الرمز",
+      "city": "المدينة",
+      "timezone": "المنطقة الزمنية",
+      "isTerminal": "محطة رئيسية",
+      "address": "العنوان",
+      "contactPhone": "الهاتف",
+      "label": "التسمية",
+      "priority": "الأولوية",
+      "color": "اللون",
+      "registration": "رقم التسجيل",
+      "seatCapacity": "المقاعد",
+      "carrier": "الشركة",
+      "notes": "ملاحظات",
+      "origin": "المغادرة",
+      "destination": "الوصول",
+      "distanceKm": "المسافة (كم)",
+      "durationMin": "المدة (دقيقة)",
+      "rank": "الترتيب",
+      "isStopover": "توقف",
+      "minDurationMin": "الحد الأدنى (دقيقة)",
+      "route": "الخط",
+      "departureDate": "المغادرة",
+      "departureTime": "الوقت",
+      "arrivalDate": "الوصول",
+      "arrivalTime": "وقت الوصول",
+      "means": "الوسيلة",
+      "totalSeats": "المقاعد",
+      "class": "الدرجة",
+      "adultPrice": "بالغ",
+      "childPrice": "طفل",
+      "currency": "العملة",
+      "reference": "المرجع",
+      "trip": "الرحلة",
+      "passengerCount": "الركاب",
+      "totalAmount": "المبلغ",
+      "paymentStatus": "الدفع",
+      "fullName": "الاسم الكامل",
+      "ageCategory": "الفئة",
+      "seat": "المقعد",
+      "unitPrice": "سعر الوحدة",
+      "ticketNumber": "رقم التذكرة",
+      "passenger": "الراكب",
+      "issuedAt": "أُصدرت في",
+      "paymentRef": "مرجع الدفع",
+      "provider": "المزود",
+      "amount": "المبلغ",
+      "createdAt": "أُنشئت في",
+      "validationCode": "رمز التحقق",
+      "classification": "التصنيف",
+      "description": "الوصف",
+      "roomNumber": "رقم الغرفة",
+      "roomType": "النوع",
+      "capacity": "السعة",
+      "pricePerNight": "السعر/الليلة",
+      "startDate": "البداية",
+      "endDate": "النهاية",
+      "deposit": "الضمانة",
+      "pricePerDay": "السعر/اليوم",
+      "availableFrom": "متاح من",
+      "availableUntil": "متاح حتى",
+      "ownerCarrier": "الشركة المالكة",
+      "title": "العنوان",
+      "vehicle": "المركبة"
+    },
+    "action": {
+      "create": "إنشاء",
+      "createTitle": "إنشاء عنصر",
+      "edit": "تعديل",
+      "editTitle": "تعديل",
+      "save": "حفظ",
+      "delete": "حذف",
+      "deleteTitle": "تأكيد الحذف",
+      "view": "عرض",
+      "confirm": "تأكيد",
+      "cancel": "إلغاء",
+      "refund": "استرداد",
+      "issueTicket": "تذكرة",
+      "publish": "نشر",
+      "cancelTrip": "إلغاء الرحلة",
+      "addNested": "إضافة",
+      "add": "إضافة"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "archived": "مؤرشف"
+    },
+    "carrierType": {
+      "bus": "حافلة",
+      "train": "قطار",
+      "boat": "سفينة",
+      "plane": "طائرة"
+    },
+    "means": {
+      "bus": "حافلة",
+      "train": "قطار",
+      "boat": "سفينة",
+      "plane": "طائرة"
+    },
+    "tripStatus": {
+      "draft": "مسودة",
+      "published": "منشور",
+      "cancelled": "ملغى"
+    },
+    "bookingStatus": {
+      "pending": "قيد الانتظار",
+      "confirmed": "مؤكد",
+      "cancelled": "ملغى",
+      "refunded": "مسترجع",
+      "expired": "منتهي الصلاحية"
+    },
+    "paymentStatus": {
+      "pending": "قيد الانتظار",
+      "paid": "مدفوع",
+      "failed": "فشل",
+      "refunded": "مسترجع"
+    },
+    "ticketStatus": {
+      "issued": "صادر",
+      "checkedIn": "تم الصعود",
+      "revoked": "ملغى",
+      "unknown": "غير معروف"
+    },
+    "routes": {
+      "title": "الخطوط والمسارات",
+      "subtitle": "خطوط بين المدن مع محطات مرتبة.",
+      "stopsTitle": "محطات الخط"
+    },
+    "trips": {
+      "title": "الرحلات المجدولة",
+      "subtitle": "مواعيد الانطلاق والأسعار حسب الدرجة والنشر.",
+      "pricesTitle": "الأسعار حسب الدرجة"
+    },
+    "bookings": {
+      "title": "الحجوزات",
+      "filterStatus": "الحالة",
+      "allStatuses": "الكل",
+      "filterTrip": "الرحلة",
+      "allTrips": "الكل",
+      "from": "من",
+      "to": "إلى",
+      "reset": "إعادة تعيين",
+      "passengers": "الركاب",
+      "tickets": "التذاكر",
+      "payments": "المدفوعات",
+      "detailTitle": "حجز",
+      "cancelReasonTitle": "سبب الإلغاء",
+      "refundReasonTitle": "سبب الاسترداد",
+      "reason": "السبب",
+      "reasonRequired": "السبب إلزامي."
+    },
+    "checkin": {
+      "selectTrip": "اختر رحلة",
+      "chooseTrip": "— اختر رحلة —",
+      "refresh": "تحديث",
+      "boarded": "تم الصعود",
+      "pending": "قيد الانتظار",
+      "searchManifest": "بحث عن راكب/تذكرة",
+      "searchManifestPlaceholder": "الاسم أو رقم التذكرة…",
+      "checkIn": "صعود",
+      "checkedIn": "تم الصعود ✓",
+      "emptyManifest": "لا ركاب في هذه الرحلة.",
+      "noTicket": "لا تذكرة مرتبطة بهذا الراكب."
+    },
+    "tickets": {
+      "title": "إصدار التذاكر",
+      "filterTrip": "الرحلة",
+      "manage": "التذاكر",
+      "empty": "لا تذاكر صادرة لهذا الحجز. استخدم إجراء «تذكرة» في تبويب الحجوزات.",
+      "downloadPdf": "تحميل PDF",
+      "revoke": "إلغاء",
+      "revokeTitle": "سبب الإلغاء",
+      "pdfError": "فشل التنزيل."
+    },
+    "reports": {
+      "tabsLabel": "التقارير",
+      "sales": "المبيعات",
+      "occupancy": "الإشغال",
+      "revenue": "الإيرادات",
+      "cancellations": "الإلغاءات",
+      "exportCsv": "تصدير CSV",
+      "empty": "لا بيانات للفترة.",
+      "exportError": "فشل التصدير."
+    },
+    "rentals": {
+      "vehicles": "مركبات الإيجار",
+      "bookings": "حجوزات الإيجار",
+      "hotels": "الفنادق",
+      "roomsTitle": "الغرف",
+      "images": "الصور",
+      "noImages": "لا صور.",
+      "addImage": "إضافة صورة",
+      "rentalStatus": {
+        "completed": "مكتمل"
+      }
+    },
+    "toast": {
+      "saved": "تم الحفظ.",
+      "deleted": "تم الحذف.",
+      "published": "تم نشر الرحلة.",
+      "cancelled": "تم إلغاء الحجز.",
+      "confirmed": "تم تأكيد الحجز.",
+      "refunded": "تم استرداد الحجز.",
+      "ticketsIssued": "تم إصدار التذاكر.",
+      "checkedIn": "تم صعود الراكب.",
+      "ticketRevoked": "تم إلغاء التذكرة.",
+      "exported": "تم تنزيل تصدير CSV."
+    },
+    "error": {
+      "loadFailed": "تعذّر تحميل البيانات.",
+      "saveFailed": "فشل الحفظ.",
+      "deleteFailed": "فشل الحذف.",
+      "actionFailed": "فشل الإجراء."
+    },
+    "confirm": {
+      "deleteMessage": "حذف هذا العنصر نهائيًا؟",
+      "cancelTrip": "إلغاء هذه الرحلة؟ ستُعالج الحجوزات وفق القواعد.",
+      "cancelRental": "إلغاء حجز الإيجار هذا؟"
+    },
+    "table": {
+      "actions": "إجراءات",
+      "emptyNested": "لا عناصر."
+    },
+    "form": {
+      "selectPlaceholder": "— اختر —",
+      "moneyMinor": "المبلغ بالعملة (1 = 100 وحدة صغيرة)"
+    }
   }
 }
