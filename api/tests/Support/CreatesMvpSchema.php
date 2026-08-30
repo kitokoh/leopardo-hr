@@ -2243,7 +2243,7 @@ trait CreatesMvpSchema
             });
         }
 
-<<<<<<< HEAD
+
         // ── BC-25 RESTAURANT (restaurant_branches) ─────────────────────────────────────
         if (!Schema::hasTable($this->moduleTable('restaurant_branches'))) {
             Schema::create($this->moduleTable('restaurant_branches'), function (Blueprint $table): void {
@@ -3000,9 +3000,7 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'idempotency_key'], 'restaurant_outbox_events_company_idempotency_key_unique');
                 $table->index(['company_id', 'status', 'available_at'], 'restaurant_outbox_events_company_status_available_idx');
             });
-        }
-=======
-        // — FuelStation (solution verticale, FUEL-002..008, issues #5795..#5802) :
+                // — FuelStation (solution verticale, FUEL-002..008, issues #5795..#5802) :
         // parité fixture ↔ migrations tenant récentes (garde #5443) — mêmes
         // colonnes que les migrations (PK bigint, company_id uuid indexé),
         // sans FKs (style fixture, les contraintes sont couvertes par
@@ -3232,7 +3230,7 @@ trait CreatesMvpSchema
             });
         }
 
->>>>>>> origin/main
+}
     }
 
     private function dropMvpTables(): void
