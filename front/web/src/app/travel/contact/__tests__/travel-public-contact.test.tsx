@@ -40,7 +40,7 @@ beforeAll(() => {
 beforeEach(() => {
   jest.clearAllMocks();
   searchParamsValue = new URLSearchParams({
-    company_id: 'tenant-1',
+    company: 'tenant-1',
     signature: 'abc',
     expires: '1788123456',
   });
@@ -62,7 +62,7 @@ describe('Formulaire de contact voyageurs public (TRAVEL-913)', () => {
     });
 
     expect(mockedApiFetch).toHaveBeenCalledWith(
-      expect.stringContaining('/api/v1/travel/public/contact?company_id=tenant-1'),
+      expect.stringContaining('/api/v1/travel/public/contact?company=tenant-1'),
       expect.objectContaining({ method: 'POST' }),
     );
     const body = JSON.parse((mockedApiFetch.mock.calls[0][1] as RequestInit).body as string);

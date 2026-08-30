@@ -33,7 +33,7 @@ export default function TravelPublicContactPage() {
   const dir = catalogDirection(locale);
 
   const signed = useMemo(() => {
-    const companyId = searchParams.get('company_id');
+    const companyId = searchParams.get('company') || searchParams.get('company_id');
     const signature = searchParams.get('signature');
     const expires = searchParams.get('expires');
     return { companyId, signature, expires, valid: Boolean(companyId && signature && expires) };
@@ -68,7 +68,7 @@ export default function TravelPublicContactPage() {
 
     setSending(true);
     try {
-      const query = new URLSearchParams({ company_id: signed.companyId as string, signature: signed.signature as string, expires: signed.expires as string });
+      const query = new URLSearchParams({ company: signed.companyId as string, signature: signed.signature as string, expires: signed.expires as string });
       const response = await apiFetch(`/api/v1/travel/public/contact?${query.toString()}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
