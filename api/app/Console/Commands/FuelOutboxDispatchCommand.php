@@ -12,6 +12,7 @@ use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;
 use Illuminate\Console\Command;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -65,6 +66,13 @@ class FuelOutboxDispatchCommand extends Command
         }
 
         $this->info("[fuel:outbox-dispatch] {$processed} événement(s) traité(s).");
+
+        // Observabilité FUEL-020 : corrélation sans PII (jamais de payload
+        // dans les logs — uniquement type/statut/tenant).
+        Log::info('fuel.outbox.dispatch', [
+            'processed' => $processed,
+            'company_id' => request()->header('X-Tenant-Id'),
+        ]);
 
         return self::SUCCESS;
     }

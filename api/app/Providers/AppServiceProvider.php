@@ -140,6 +140,19 @@ class AppServiceProvider extends ServiceProvider
                 ->by('payroll:'.$key);
         });
 
+        // FUEL-020 (#5814) — rate limit dédié de la verticale FuelStation :
+        // les écritures (livraisons, ventes, relevés, imports, transitions)
+        // sont bornées par tenant pour limiter l'abus et le scraping.
+        RateLimiter::for('fuel', function (Request $request) {
+            $user = $request->user();
+            $key = $user instanceof Employee && $user->company_id
+                ? 'company:'.$user->company_id
+                : 'ip:'.$request->ip();
+
+            return Limit::perMinute((int) config('security.rate_limits.fuel_per_minute', 120))
+                ->by('fuel:'.$key);
+        });
+
         RateLimiter::for('metrics', function (Request $request) {
             // #4694 : les métriques plateforme sont du matériel de
             // fingerprinting (versions PHP/Laravel, drivers, compteurs
