@@ -1,22 +1,25 @@
-name: PLAN_ACTION2 Post-Merge Audit
+name: Post-Merge Conventions Audit
 # ============================================================
-# INTERNAL GOVERNANCE WORKFLOW — ne fait pas partie de la CI publique.
-# Depend de docs/PLAN_ACTION2 (process interne multi-agents).
-# Ne pas rendre bloquant pour les contributeurs externes (issue #1731).
+# Anciennement "PLAN_ACTION2 Post-Merge Audit" — renommé (nettoyage CI,
+# PLAN_ACTION2 est clos depuis le 2026-07-26, cf. PILOTAGE.md « Gouvernance
+# documentaire »). La logique elle-même n'a jamais été spécifique à
+# PLAN_ACTION2 : elle vérifie la cohérence CHANGELOG/openapi/i18n après
+# chaque merge sur `main`, une règle générale de CONVENTIONS.md, sans lien
+# avec le processus multi-agents PA2-* (issue #1731).
 # ============================================================
 
-# PA2-AUTO-010: audit post-merge automatique. Verifie, apres chaque push
-# sur `main` (typiquement un merge de PR), si CHANGELOG.md, api/openapi.yaml
-# et les catalogues i18n pertinents ont ete mis a jour en coherence avec les
-# fichiers reellement modifies. Voir dev-hub/tools/check-post-merge-audit.sh
-# pour la logique complete et sa justification.
+# PA2-AUTO-010 (ticket d'origine) : audit post-merge automatique. Verifie,
+# apres chaque push sur `main` (typiquement un merge de PR), si CHANGELOG.md,
+# api/openapi.yaml et les catalogues i18n pertinents ont ete mis a jour en
+# coherence avec les fichiers reellement modifies. Voir
+# dev-hub/tools/check-post-merge-audit.sh pour la logique complete et sa
+# justification.
 #
 # Design volontairement non bloquant (le job ne fait jamais echouer le
 # workflow): un audit sur `main` intervient apres le fait, bloquer ici
 # n'empecherait aucun merge deja effectue et casserait juste le badge de
 # statut de `main` sur un simple ecart de process. Le signal reste visible
-# dans le step summary de l'action pour revue humaine / rapport hebdo
-# (PA2-AUTO-005).
+# dans le step summary de l'action pour revue humaine.
 
 on:
   push:
@@ -29,7 +32,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
-  group: plan-action2-post-merge-audit-${{ github.workflow }}-${{ github.ref }}
+  group: post-merge-conventions-audit-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -40,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          lfs: true
+          lfs: false
           # fetch-depth: 0 (pas juste 2) car `github.event.before` peut etre
           # plusieurs commits en arriere si le push contient plus d'un
           # commit (ex. merge --no-ff avec des commits de la branche de

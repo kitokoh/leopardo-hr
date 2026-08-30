@@ -7,6 +7,7 @@
  * Notifications are available to all authenticated employees.
  */
 
+use App\Modules\Attendance\Interfaces\Api\V1\AttendanceExportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DashboardController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\ExportController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
@@ -47,6 +48,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::middleware('api.manager:principal,rh,comptable')->group(function (): void {
         Route::get('/export/employees', [ExportController::class, 'employees']);
         Route::get('/export/attendance', [ExportController::class, 'attendance']);
+        Route::get('/export/attendance/monthly', [AttendanceExportController::class, 'attendanceMonthly']);
         Route::get('/export/pay-slips', [ExportController::class, 'paySlips']);
         Route::get('/export/absences', [ExportController::class, 'absences']);
         Route::get('/export/training', [ExportController::class, 'training']);

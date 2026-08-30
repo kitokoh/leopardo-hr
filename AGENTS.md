@@ -173,6 +173,8 @@ vert alors que le correctif n'existe pas (vague du 2026-08-17 : #4690/#4687/
 
 ## Regles obligatoires
 
+- **Protocole branches CRM (#5746)** : pour toute issue du programme CRM (#5705→#5731, #5735→#5746), suivre `docs/GOUVERNANCE/CRM_BRANCH_PROTOCOL.md` — une issue = une branche = une PR ; marker branch immédiat après claim ; base `main` à jour ; migrations avec réf issue dans le nom ; jamais d'auto-merge d'une PR rouge ; arrêt si `main` rouge. Le garde `dev-hub/tools/check-crm-branch-protocol.sh` (workflow `crm-branch-protocol.yml`) signale doublons de branches, PRs sans `Closes #N` et PRs trop grosses.
+
 - **Lecon 2026-08-16 (#4164)** : le garde `validate-mobile-workflow-contracts.ps1`
   (scan forbidden-route) ne doit matcher que des ROUTES DE NAVIGATION, pas les
   chemins d'endpoints portes par les mocks API (`leopardo_core/lib/core/api/mock_interceptor.dart`
@@ -1030,5 +1032,5 @@ Deux collisions de préfixe le même jour (2026-08-24) ont bloqué toutes les PR
 - **main cassé = alerte immédiate** : ne pas empiler un merge sur un main rouge ; signaler et
   corriger d'abord (`fix/main-green-backend` est le lot dédié).
 - **Ticket créé = ticket assigné** : pas de création d'issue orpheline.
-- **Ratio fix/feat** : suivi hebdo dans `plan-action2-weekly-report.sh` (section 1bis, alerte > 3,
+- **Ratio fix/feat** : suivi hebdo dans `dev-hub/tools/fix-feat-ratio-report.sh` (alerte > 3,
   cible <= 2.5).
