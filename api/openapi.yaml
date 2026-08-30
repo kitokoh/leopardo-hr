@@ -3856,6 +3856,124 @@ paths:
           description: Non authentifié
         '404':
           description: Ressource introuvable ou hors tenant
+  /travel/advert-prices:
+    get:
+      tags:
+      - Travel
+      summary: Liste de la grille tarifaire des annonces (TRAVEL-906/#6109)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Grille tarifaire du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelAdvertPrice'
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: Création d'un tarif (type × position, devise tenant) (TRAVEL-906/#6109)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [advert_type_id, advert_position_id]
+              properties:
+                advert_type_id:
+                  type: integer
+                advert_position_id:
+                  type: integer
+                price_image_minor:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                price_character_minor:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                currency:
+                  type: string
+                  maxLength: 3
+                  description: Devise du tenant par défaut
+      responses:
+        '201':
+          description: Tarif créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvertPrice'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise (rôle opérationnel de l'agence)
+        '422':
+          description: Référence inconnue du tenant, devise différente, tarif négatif ou doublon (type/position/devise)
+  /travel/advert-prices/{travelAdvertPrice}:
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour des montants d'un tarif (TRAVEL-906/#6109)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPrice
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                price_image_minor:
+                  type: integer
+                  minimum: 0
+                price_character_minor:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: Tarif mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvertPrice'
+        '404':
+          description: Tarif introuvable ou d'un autre tenant
+        '422':
+          description: Montants négatifs
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un tarif (TRAVEL-906/#6109)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPrice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Tarif supprimé
+        '404':
+          description: Tarif introuvable ou d'un autre tenant
   /travel/advert-types:
     get:
       tags:
@@ -29858,6 +29976,27 @@ components:
         status:
           type: string
           enum: [active, disabled]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelAdvertPrice:
+      type: object
+      properties:
+        id:
+          type: integer
+        advert_type_id:
+          type: integer
+        advert_position_id:
+          type: integer
+        price_image_minor:
+          type: integer
+        price_character_minor:
+          type: integer
+        currency:
+          type: string
         created_at:
           type: string
           nullable: true

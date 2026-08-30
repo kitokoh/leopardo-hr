@@ -11,6 +11,7 @@ use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use App\Modules\TravelAgency\Domain\Models\TravelArticle;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
@@ -101,6 +102,7 @@ class TravelAgencyServiceProvider extends ServiceProvider
         // Annonces payantes (TRAVEL-905..908, #6108..#6111).
         Gate::policy(TravelAdvertType::class, TravelAdvertPolicy::class);
         Gate::policy(TravelAdvertPosition::class, TravelAdvertPolicy::class);
+        Gate::policy(TravelAdvertPrice::class, TravelAdvertPolicy::class);
 
         // TRAVEL-414 (#6066) — publication des événements travel.*.v1 sur le
         // bus tenant-scopé (BC consommateurs sans import inter-modules).
