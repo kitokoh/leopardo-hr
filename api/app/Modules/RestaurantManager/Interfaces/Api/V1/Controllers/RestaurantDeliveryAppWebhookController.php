@@ -88,7 +88,11 @@ class RestaurantDeliveryAppWebhookController extends Controller
             return new JsonResponse(['error' => 'no_valid_items'], 422);
         }
 
-        $idempotencyKey = 'delivery-app:'.$provider.':'.$externalId;
+        // Clé d'idempotence dérivée du webhook, bornée à 64 chars
+        // (contrainte `restaurant_orders.idempotency_key`) : hash SHA-256
+        // tronqué — rejeu du même external_id → même commande, jamais de
+        // doublon, quelle que soit la longueur de l'identifiant marketplace.
+        $idempotencyKey = 'da-'.substr(hash('sha256', $provider.'|'.$externalId), 0, 60);
 
         $result = $this->tenants->withinTenant($company, fn (): array => $this->orders->create(
             companyId: (string) $company->id,
