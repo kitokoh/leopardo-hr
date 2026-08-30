@@ -100,14 +100,7 @@ import TravelGate from '@/components/travel/TravelGate.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import {
-  listTravel,
-  getTravel,
-  travelAction,
-  travelGetAction,
-  travelList,
-  travelItem
-} from '@/services/travel'
+import { listTravel, getTravel, travelAction, travelGetAction, travelList, travelItem } from '@/services/travel'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
