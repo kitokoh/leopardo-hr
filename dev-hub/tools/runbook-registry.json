@@ -151,10 +151,9 @@
       "name": "BILLING",
       "runbooks": [
         "docs/deployment/RUNBOOK_SUPER_ADMIN.md",
-        "docs/GESTION_PROJET/RUNBOOK_DEPLOY.md",
-        "docs/ops/RUNBOOK_BILLING.md"
+        "docs/GESTION_PROJET/RUNBOOK_DEPLOY.md"
       ],
-      "notes": "Abonnements/activation : runbook super-admin + deploy + runbook exploitation billing (recouvrement, rejeu webhook, réconciliation, incidents)."
+      "notes": "Abonnements/activation : runbook super-admin + deploy."
     },
     {
       "code": "BC-22",
@@ -184,6 +183,14 @@
         "docs/ops/RUNBOOK_PILOT_TRAVELAGENCY.md"
       ],
       "notes": "Pilote TravelAgency : runbook dédié (tenant pilote, kill switch, backup/restore, incidents, rollback) + runbooks plateforme (backup/restore/rollback/incident) + recette UAT docs/ops/RECETTE_UAT_TRAVELAGENCY.md (TRAVEL-050/#5998)."
+    },
+    {
+      "code": "BC-26",
+      "name": "DELIVERY",
+      "runbooks": [
+        "docs/ops/RUNBOOK_DELIVERY.md"
+      ],
+      "notes": "Module de livraison dernier-kilomètre : runbook dédié (activation, endpoints, invariants, incidents, DLQ/replay, runbook rollback données tenant couvert par RUNBOOK_BACKUP_RESTORE/RUNBOOK_ROLLBACK plateforme)."
     }
   ]
 }
