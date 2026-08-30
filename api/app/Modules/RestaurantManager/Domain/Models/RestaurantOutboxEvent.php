@@ -39,6 +39,8 @@ class RestaurantOutboxEvent extends Model
 
     public const STATUS_PENDING = 'pending';
 
+    public const STATUS_PROCESSING = 'processing';
+
     public const STATUS_PUBLISHED = 'published';
 
     public const STATUS_FAILED = 'failed';

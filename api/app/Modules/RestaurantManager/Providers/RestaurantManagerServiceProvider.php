@@ -8,6 +8,7 @@ use App\Modules\RestaurantManager\Application\Services\CogsCalculator;
 use App\Modules\RestaurantManager\Application\Services\StockAlertService;
 use App\Modules\RestaurantManager\Application\Services\StockDecrementer;
 use App\Modules\RestaurantManager\Console\Commands\ActivateRestaurantManagerCommand;
+use App\Modules\RestaurantManager\Console\Commands\RestaurantOutboxDispatchCommand;
 use App\Modules\RestaurantManager\Console\Commands\SeedRestaurantDemoCommand;
 use App\Modules\RestaurantManager\Console\Commands\StockAlertsCommand;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantBranchRepositoryInterface;
@@ -46,11 +47,16 @@ use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantOrderRep
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPosSessionRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantReservationRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantStockLevelRepository;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoAdapter;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsAdapter;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGatewayRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CashPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\MobileMoneyPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\ReceivingService;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantMarketplaceStatusConsumer;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
 use App\Modules\RestaurantManager\Policies\RestaurantBranchPolicy;
@@ -126,13 +132,36 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             return $registry;
         });
 
+        // RESTO-806 (#6227) — registre des adaptateurs d'apps de livraison
+        // (webhooks entrants + statuts sortants, signature HMAC fail-closed).
+        $this->app->singleton(DeliveryAppRegistry::class, function (): DeliveryAppRegistry {
+            $registry = new DeliveryAppRegistry();
+            $registry->register(new UberEatsAdapter());
+            $registry->register(new GlovoAdapter());
+
+            return $registry;
+        });
+
+        // RESTO-806 (#6227) — consommateurs d'outbox (statuts sortants
+        // marketplace) ; le dispatch est assuré par `restaurant:outbox-dispatch`.
+        $this->app->singleton(RestaurantOutboxConsumerRegistry::class, function ($app): RestaurantOutboxConsumerRegistry {
+            $registry = new RestaurantOutboxConsumerRegistry();
+            $registry->register(new RestaurantMarketplaceStatusConsumer(
+                $app->make(DeliveryAppRegistry::class),
+            ));
+
+            return $registry;
+        });
+
         // RESTO-105 (#6162) — activation tenant (flag + référentiel) ;
         // RESTO-107 (#6164) — seed de démonstration idempotent ;
-        // RESTO-505 (#6204) — alerte de seuil de stock (rescan complet).
+        // RESTO-505 (#6204) — alerte de seuil de stock (rescan complet) ;
+        // RESTO-806 (#6227) — dispatch outbox (consommateurs marketplace…).
         $this->commands([
             ActivateRestaurantManagerCommand::class,
             SeedRestaurantDemoCommand::class,
             StockAlertsCommand::class,
+            RestaurantOutboxDispatchCommand::class,
         ]);
 
         // RESTO-501..506 (#6200..#6205) — stock : le service de mouvements
