@@ -101,6 +101,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/trips', [TravelTripController::class, 'index']);
         Route::post('/trips', [TravelTripController::class, 'store']);
         Route::get('/trips/search', [TravelTripController::class, 'search']); // TRAVEL-311/#6041 — AVANT {trip}
+        Route::get('/trips/connections', [TravelTripController::class, 'connections']); // TRAVEL-809/#6099 — AVANT {trip}
         Route::get('/trips/{travelTrip}', [TravelTripController::class, 'show']);
         Route::put('/trips/{travelTrip}', [TravelTripController::class, 'update']);
         Route::delete('/trips/{travelTrip}', [TravelTripController::class, 'destroy']);

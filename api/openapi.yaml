@@ -2177,6 +2177,55 @@ paths:
           description: Permission travel.manage requise
         '422':
           description: Validation échouée
+  /travel/trips/connections:
+    get:
+      tags:
+      - Travel
+      summary: Recherche de correspondances multi-trajets (TRAVEL-809/#6099)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: origin_city_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: destination_city_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Correspondances valides (horaires compatibles ≥ 45 min)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        total_price_minor:
+                          type: integer
+                        connection_minutes:
+                          type: integer
+                        first:
+                          $ref: '#/components/schemas/TravelTrip'
+                        second:
+                          $ref: '#/components/schemas/TravelTrip'
+        '401':
+          description: Non authentifié
+        '422':
+          description: Paramètres requis manquants
   /travel/trips/search:
     get:
       tags:

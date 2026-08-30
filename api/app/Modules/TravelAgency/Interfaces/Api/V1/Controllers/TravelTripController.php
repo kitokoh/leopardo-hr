@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\CancelTripAction;
+use App\Modules\TravelAgency\Application\Actions\ConnectionSearchAction;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Application\Actions\PublishTripAction;
 use App\Modules\TravelAgency\Domain\Enums\TripStatus;
@@ -297,6 +298,38 @@ class TravelTripController extends Controller
         }
 
         return TravelTripResource::collection($trips)->response();
+    }
+
+    /**
+     * TRAVEL-809 (#6099) — Correspondances (recherche multi-trajets).
+     */
+    public function connections(Request $request, ConnectionSearchAction $action): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('viewAny', TravelTrip::class)) {
+            abort(403);
+        }
+
+        $origin = $request->integer('origin_city_id');
+        $destination = $request->integer('destination_city_id');
+        $date = $request->query('date') ? (string) $request->query('date') : null;
+
+        if ($origin <= 0 || $destination <= 0 || $date === null) {
+            abort(422, 'origin_city_id, destination_city_id et date sont requis.');
+        }
+
+        $results = $action->search($origin, $destination, $date);
+
+        return response()->json(['data' => array_map(function (array $result): array {
+            return [
+                'total_price_minor' => $result['total_price_minor'],
+                'connection_minutes' => $result['connection_minutes'],
+                'first' => new TravelTripResource($result['first']),
+                'second' => new TravelTripResource($result['second']),
+            ];
+        }, $results)]);
     }
 
     /**
