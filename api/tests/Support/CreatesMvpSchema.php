@@ -2360,6 +2360,9 @@ trait CreatesMvpSchema
                 $table->unsignedInteger('distance_km')->nullable();
                 $table->unsignedInteger('duration_min')->nullable();
                 $table->string('status', 20)->default('active');
+                // TRAVEL-807 (#6086) — route synchronisée par un transporteur.
+                $table->unsignedBigInteger('carrier_id')->nullable();
+                $table->string('external_id', 120)->nullable();
                 $table->timestamps();
                 $table->unique(['company_id', 'code'], 'travel_routes_company_code_unique');
                 $table->unique(
@@ -2402,8 +2405,11 @@ trait CreatesMvpSchema
                 $table->string('status', 20)->default('draft');
                 $table->timestamp('published_at')->nullable();
                 $table->unsignedBigInteger('created_by_user_id')->nullable();
+                // TRAVEL-807 (#6086) — clé externe transporteur (upsert idempotent).
+                $table->string('external_id', 120)->nullable();
                 $table->timestamps();
                 $table->unique(['company_id', 'code'], 'travel_trips_company_code_unique');
+                $table->unique(['company_id', 'carrier_id', 'external_id'], 'travel_trips_company_carrier_external_unique');
             });
         }
 
@@ -2455,6 +2461,15 @@ trait CreatesMvpSchema
                 $table->timestamp('expires_at')->nullable();
                 $table->string('idempotency_key', 255);
                 $table->unsignedInteger('version')->default(1);
+                // TRAVEL-415 (#6067) — contact voyageur + consentement.
+                $table->string('contact_email', 255)->nullable();
+                $table->string('contact_phone', 40)->nullable();
+                $table->boolean('notify_consent')->default(false);
+                $table->timestamp('consent_recorded_at')->nullable();
+                // TRAVEL-802 (#6093) — aller-retour (groupe + liaison).
+                $table->uuid('round_trip_group_id')->nullable();
+                $table->unsignedBigInteger('return_booking_id')->nullable();
+                $table->string('leg', 10)->nullable();
                 $table->timestamps();
                 $table->unique(['company_id', 'reference'], 'travel_bookings_company_reference_unique');
                 $table->unique(['company_id', 'idempotency_key'], 'travel_bookings_company_idempotency_unique');
@@ -2475,6 +2490,10 @@ trait CreatesMvpSchema
                 $table->unsignedBigInteger('class_id');
                 $table->unsignedInteger('seat_number')->nullable();
                 $table->unsignedInteger('unit_price_minor');
+                // TRAVEL-808 (#6098) — remboursements partiels par passager.
+                $table->timestamp('refunded_at')->nullable();
+                $table->unsignedBigInteger('refunded_amount_minor')->nullable();
+                $table->string('refund_reason', 500)->nullable();
                 $table->timestamps();
             });
         }
@@ -2621,6 +2640,131 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'hotel_id', 'room_number'], 'travel_hotel_rooms_company_hotel_room_unique');
             });
         }
+
+        // TRAVEL-813 (#6103) — politiques d'annulation configurables.
+        if (! Schema::hasTable($this->moduleTable('travel_cancellation_policies'))) {
+            Schema::create($this->moduleTable('travel_cancellation_policies'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('trip_id')->nullable();
+                $table->unsignedBigInteger('class_id')->nullable();
+                $table->unsignedInteger('cancel_before_hours')->nullable();
+                $table->unsignedTinyInteger('penalty_percent')->default(0);
+                $table->boolean('refundable')->default(true);
+                $table->boolean('is_active')->default(true);
+                $table->string('description', 255)->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'trip_id', 'class_id'], 'travel_cancel_policies_company_trip_class_unique');
+            });
+        }
+
+        // TRAVEL-415 (#6067) — notifications voyageur (consentements + journal).
+        if (! Schema::hasTable($this->moduleTable('travel_notification_consents'))) {
+            Schema::create($this->moduleTable('travel_notification_consents'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('contact_identifier', 255);
+                $table->string('channel', 20);
+                $table->string('source', 40)->default('booking');
+                $table->timestamp('granted_at');
+                $table->timestamp('revoked_at')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'contact_identifier', 'channel'], 'travel_notif_consent_company_contact_channel_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_notification_logs'))) {
+            Schema::create($this->moduleTable('travel_notification_logs'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('event_id')->nullable();
+                $table->string('event_type', 60);
+                $table->string('contact_identifier', 255);
+                $table->string('channel', 20);
+                $table->string('status', 20);
+                $table->string('reason', 500)->nullable();
+                $table->json('payload_redacted')->nullable();
+                $table->timestamp('created_at')->useCurrent();
+            });
+        }
+
+        // TRAVEL-417 (#6069) — synthèse des ventes pour Accounting.
+        if (! Schema::hasTable($this->moduleTable('travel_sales_settlements'))) {
+            Schema::create($this->moduleTable('travel_sales_settlements'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->date('period_start');
+                $table->date('period_end');
+                $table->char('currency', 3);
+                $table->unsignedInteger('confirmed_payments_count')->default(0);
+                $table->unsignedBigInteger('confirmed_amount_minor')->default(0);
+                $table->unsignedInteger('refunded_count')->default(0);
+                $table->unsignedBigInteger('refunded_amount_minor')->default(0);
+                $table->bigInteger('net_amount_minor')->default(0);
+                $table->string('status', 20)->default('settled');
+                $table->timestamp('settled_at')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'period_start', 'period_end', 'currency'], 'travel_sales_settlements_company_period_currency_unique');
+            });
+        }
+
+        // TRAVEL-807 (#6086) — jetons d'API entrante transporteurs.
+        if (! Schema::hasTable($this->moduleTable('travel_carrier_tokens'))) {
+            Schema::create($this->moduleTable('travel_carrier_tokens'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('carrier_id');
+                $table->string('name', 80)->nullable();
+                $table->string('token_hash', 64);
+                $table->boolean('active')->default(true);
+                $table->timestamp('last_used_at')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'carrier_id'], 'travel_carrier_tokens_company_carrier_unique');
+            });
+        }
+
+        // TRAVEL-811 (#6101) — fidélité voyageur.
+        if (! Schema::hasTable($this->moduleTable('travel_loyalty_accounts'))) {
+            Schema::create($this->moduleTable('travel_loyalty_accounts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('contact_identifier', 255);
+                $table->integer('points_balance')->default(0);
+                $table->boolean('opt_in')->default(false);
+                $table->timestamp('opt_in_at')->nullable();
+                $table->timestamp('opt_out_at')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'contact_identifier'], 'travel_loyalty_accounts_company_contact_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_loyalty_entries'))) {
+            Schema::create($this->moduleTable('travel_loyalty_entries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('account_id');
+                $table->unsignedBigInteger('booking_id')->nullable();
+                $table->unsignedBigInteger('ticket_id')->nullable();
+                $table->integer('points');
+                $table->string('type', 20);
+                $table->string('reason', 255)->nullable();
+                $table->timestamp('created_at')->useCurrent();
+                $table->unique(['company_id', 'ticket_id'], 'travel_loyalty_entries_company_ticket_unique');
+                $table->unique(['company_id', 'booking_id', 'type'], 'travel_loyalty_entries_company_booking_type_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_loyalty_rewards'))) {
+            Schema::create($this->moduleTable('travel_loyalty_rewards'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('description', 500)->nullable();
+                $table->unsignedInteger('points_cost');
+                $table->boolean('active')->default(true);
+                $table->timestamps();
+            });
+        }
     }
 
     private function dropMvpTables(): void
@@ -2697,6 +2841,14 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
         // BC-24 TRAVEL (verticale TravelAgency)
         DB::statement('DROP TABLE IF EXISTS "travel_hotel_rooms"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_cancellation_policies"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_notification_logs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_notification_consents"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_sales_settlements"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_carrier_tokens"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_loyalty_rewards"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_loyalty_entries"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_loyalty_accounts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_hotels"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_rental_bookings"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_rental_vehicle_images"'.$cascade);
