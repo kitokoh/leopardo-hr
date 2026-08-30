@@ -11,6 +11,7 @@ use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
 use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -55,9 +56,23 @@ final class FuelAlertService
                 continue;
             }
 
-            $managers = $this->managers($companyId);
+            // Journalise la dédup AVANT de dispatcher (TOCTOU) : en cas de
+            // course entre deux runs, le perdant voit la violation unique et
+            // s'arrête — jamais de double notification, jamais de rejeu.
+            try {
+                FuelAlertLog::query()->create([
+                    'company_id' => $companyId,
+                    'alert_type' => $type,
+                    'alert_key' => $key,
+                    'station_id' => $anomaly['station_id'] ?? null,
+                    'payload' => json_encode($payload, JSON_THROW_ON_ERROR),
+                    'notified_by' => $actor->id,
+                ]);
+            } catch (UniqueConstraintViolationException) {
+                continue;
+            }
 
-            foreach ($managers as $manager) {
+            foreach ($this->managers($companyId) as $manager) {
                 DispatchCommunicationJob::dispatch(
                     employeeId: (int) $manager->id,
                     companyId: $companyId,
@@ -70,15 +85,6 @@ final class FuelAlertService
                     channels: ['app', 'push'],
                 );
             }
-
-            FuelAlertLog::query()->create([
-                'company_id' => $companyId,
-                'alert_type' => $type,
-                'alert_key' => $key,
-                'station_id' => $anomaly['station_id'] ?? null,
-                'payload' => json_encode($payload, JSON_THROW_ON_ERROR),
-                'notified_by' => $actor->id,
-            ]);
 
             $notified[] = $key;
         }
@@ -196,6 +202,7 @@ final class FuelAlertService
             ->where('company_id', $companyId)
             ->where('role', 'manager')
             ->whereIn('manager_role', ['principal', 'rh'])
+            ->where('status', 'active')
             ->limit(10)
             ->get()
             ->all();

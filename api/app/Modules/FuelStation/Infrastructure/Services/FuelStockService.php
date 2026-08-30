@@ -12,6 +12,7 @@ use App\Modules\FuelStation\Domain\Models\FuelTank;
 use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Stocks, cuves et rapprochement FuelStation (FUEL-009, issue #5803).
@@ -76,6 +77,8 @@ final class FuelStockService
 
             // Mise à jour du niveau courant (aucun ajustement silencieux :
             // la livraison EST un mouvement de stock légitime).
+            // Fige d'abord l'ouverture du jour au premier mouvement.
+            $this->captureDayOpening($tank, $quantityMinor);
             $tank->increment('current_level_minor', $quantityMinor);
 
             return $delivery;
@@ -83,10 +86,46 @@ final class FuelStockService
     }
 
     /**
+     * Fige le niveau de début de journée au premier mouvement du jour.
+     */
+    private function captureDayOpening(FuelTank $tank, int $quantityMinor): void
+    {
+        if (! Schema::hasTable('fuel_stock_daily_openings')) {
+            return;
+        }
+
+        $companyId = $tank->company_id;
+        $today = now()->toDateString();
+
+        $exists = DB::table('fuel_stock_daily_openings')
+            ->where('company_id', $companyId)
+            ->where('tank_id', $tank->id)
+            ->where('open_date', $today)
+            ->exists();
+
+        if ($exists) {
+            return;
+        }
+
+        // Le premier mouvement du jour fixe l'ouverture au niveau courant
+        // AVANT le mouvement (livraison : on fige avant l'incrément).
+        DB::table('fuel_stock_daily_openings')->insert([
+            'company_id' => $companyId,
+            'tank_id' => $tank->id,
+            'open_date' => $today,
+            'opening_level_minor' => (int) $tank->current_level_minor,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    /**
      * Exécute (ou rejoue) le rapprochement stock d'une station pour une date.
      *
-     * Rejouable : si un run existe déjà pour (station, run_date), il est
-     * renvoyé tel quel — jamais recalculé, jamais dupliqué.
+     * Rejouable : un run COMPLETÉ existant est renvoyé tel quel ; un run
+     * `failed` ou `running` orphelin (crash) est relancé. La contrainte
+     * unique (station, date) reste l'anti-doublon ; en cas de course
+     * concurrente, le gagnant de l'INSERT est renvoyé.
      *
      * @return array{run: FuelReconciliationRun, replayed: bool}
      */
@@ -101,26 +140,34 @@ final class FuelStockService
             ->where('run_date', $date)
             ->first();
 
-        if ($existing instanceof FuelReconciliationRun) {
+        if ($existing instanceof FuelReconciliationRun
+            && $existing->status === FuelReconciliationRun::STATUS_COMPLETED) {
             return ['run' => $existing, 'replayed' => true];
         }
 
-        $run = DB::transaction(function () use ($companyId, $station, $date, $actor): FuelReconciliationRun {
-            return FuelReconciliationRun::query()->create([
-                'company_id' => $companyId,
-                'station_id' => $station->id,
-                'run_date' => $date,
+        // Un run failed/orphelin est relancé (mise à jour de la ligne).
+        if ($existing instanceof FuelReconciliationRun) {
+            $run = $existing;
+            $run->update([
                 'status' => FuelReconciliationRun::STATUS_RUNNING,
                 'started_at' => Carbon::now('UTC'),
-                'created_by' => $actor?->id,
+                'last_error' => null,
             ]);
-        });
+        } else {
+            $run = DB::transaction(function () use ($companyId, $station, $date, $actor): FuelReconciliationRun {
+                return FuelReconciliationRun::query()->create([
+                    'company_id' => $companyId,
+                    'station_id' => $station->id,
+                    'run_date' => $date,
+                    'status' => FuelReconciliationRun::STATUS_RUNNING,
+                    'started_at' => Carbon::now('UTC'),
+                    'created_by' => $actor?->id,
+                ]);
+            });
+        }
 
         try {
-            // L'ouverture est un instantané des niveaux au début de la passe
-            // (jamais dérivée circulairement du niveau mesuré courant).
-            $openingLevels = $this->openingLevels($companyId, $station->id);
-            $summary = $this->computeSummary($companyId, $station->id, $date, $openingLevels);
+            $summary = $this->computeSummary($companyId, $station->id, $date);
             $run->update([
                 'status' => FuelReconciliationRun::STATUS_COMPLETED,
                 'summary' => $summary,
@@ -140,18 +187,35 @@ final class FuelStockService
     }
 
     /**
+     * Ouvreure persistée du jour pour une cuve (premier mouvement), sinon null.
+     */
+    private function dayOpening(FuelTank $tank, string $date): ?int
+    {
+        if (! Schema::hasTable('fuel_stock_daily_openings')) {
+            return null;
+        }
+
+        $opening = DB::table('fuel_stock_daily_openings')
+            ->where('company_id', $tank->company_id)
+            ->where('tank_id', $tank->id)
+            ->where('open_date', $date)
+            ->value('opening_level_minor');
+
+        return is_numeric($opening) ? (int) $opening : null;
+    }
+
+    /**
      * Calcule l'écart par cuve pour une station et une date.
      *
-     * Attendu = ouverture (instantané au début de la passe) + Σ livraisons
-     * − Σ ventes (même type de produit), rapporté contre le niveau mesuré
-     * courant. L'écart est RAPPORTÉ, jamais corrigé (aucun ajustement
-     * silencieux) ; un écart non expliqué doit être investigué (runbook
-     * pilote FuelStation §6 : gel des écritures + investigation).
+     * Ouverture = niveau figé au premier mouvement du jour
+     * (fuel_stock_daily_openings) ; attendu = ouverture + livraisons −
+     * ventes ; mesuré = niveau courant. Registre cohérent → écart 0
+     * (expliquable) ; vol/fuite/mouvement non répercuté → écart RAPPORTÉ,
+     * jamais corrigé (aucun ajustement silencieux — runbook pilote §6).
      *
-     * @param  array<int, int>  $openingLevels  tank_id => niveau d'ouverture (minor)
      * @return array<string, mixed>
      */
-    private function computeSummary(string $companyId, int $stationId, string $date, array $openingLevels): array
+    private function computeSummary(string $companyId, int $stationId, string $date): array
     {
         $dayStart = $date.' 00:00:00';
         $dayEnd = $date.' 23:59:59';
@@ -180,16 +244,27 @@ final class FuelStockService
 
             $deliveryMinor = (int) $deliveries;
             $saleMinor = (int) round((float) $sales * 1000); // litres → unités mineures (millièmes)
-            $openingMinor = (int) ($openingLevels[$tank->id] ?? $tank->current_level_minor);
+            $currentMinor = (int) $tank->current_level_minor;
+
+            // Ouverture = niveau figé au PREMIER mouvement du jour
+            // (fuel_stock_daily_openings) : valeur INDÉPENDANTE du niveau
+            // courant au moment du rapprochement. Sans mouvement ce jour-là,
+            // on retombe sur le niveau courant (aucune variation attendue).
+            $openingMinor = $this->dayOpening($tank, $date) ?? $currentMinor;
+
+            // Attendu = ouverture + livraisons − ventes ; mesuré = niveau
+            // courant. Registre cohérent → attendu == mesuré (écart 0,
+            // expliquable). Un écart (vol, fuite, mouvement non répercuté)
+            // est RAPPORTÉ, jamais corrigé silencieusement.
             $expectedMinor = max(0, $openingMinor + $deliveryMinor - $saleMinor);
-            $measuredMinor = (int) $tank->current_level_minor;
+            $measuredMinor = $currentMinor;
             $varianceMinor = $expectedMinor - $measuredMinor;
 
             $tankSummaries[] = [
                 'tank_id' => $tank->id,
                 'tank_code' => $tank->code,
                 'product_type' => $tank->product_type,
-                'opening_level_minor' => max(0, $openingMinor),
+                'opening_level_minor' => $openingMinor,
                 'deliveries_minor' => $deliveryMinor,
                 'sales_minor' => $saleMinor,
                 'expected_level_minor' => $expectedMinor,
@@ -209,21 +284,5 @@ final class FuelStockService
             'explainable' => $totalVariance === 0,
             'tanks' => $tankSummaries,
         ];
-    }
-
-    /**
-     * Instantané des niveaux de cuve au début de la passe.
-     *
-     * @return array<int, int> tank_id => current_level_minor
-     */
-    private function openingLevels(string $companyId, int $stationId): array
-    {
-        $levels = [];
-
-        foreach (FuelTank::query()->where('company_id', $companyId)->where('station_id', $stationId)->get() as $tank) {
-            $levels[(int) $tank->id] = (int) $tank->current_level_minor;
-        }
-
-        return $levels;
     }
 }

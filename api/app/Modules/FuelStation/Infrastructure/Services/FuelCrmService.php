@@ -66,6 +66,16 @@ final class FuelCrmService
             ]);
         }
 
+        // Clé versionnée par état : un changement de compte (nom, statut,
+        // contact…) publie un NOUVEL événement — la dédup par
+        // (company_id, idempotency_key) ne masque jamais une mise à jour.
+        $stateHash = md5(json_encode([
+            $account->name,
+            $account->industry,
+            $account->status,
+            $account->consentSummary(),
+        ], JSON_THROW_ON_ERROR));
+
         $this->outbox->publish(
             companyId: (string) $actor->company_id,
             eventType: 'fuel.account.upserted.v1',
@@ -73,7 +83,7 @@ final class FuelCrmService
                 'schema_version' => '1.0',
                 'event' => 'account.upserted',
                 'company_id' => (string) $actor->company_id,
-                'idempotency_key' => 'fuel.account.upserted.v1:'.$account->id,
+                'idempotency_key' => 'fuel.account.upserted.v1:'.$account->id.':'.$stateHash,
                 'aggregate' => [
                     'account_id' => $account->id,
                     'code' => $account->code,

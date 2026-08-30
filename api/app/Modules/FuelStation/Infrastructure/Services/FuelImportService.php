@@ -158,7 +158,7 @@ final class FuelImportService
             FuelImport::ENTITY_PUMPS => $this->validatePump($row),
             FuelImport::ENTITY_TANKS => $this->validateTank($row),
             FuelImport::ENTITY_SHIFTS => $this->validateShift($row),
-            FuelImport::ENTITY_READINGS => $this->validateReading($row),
+            FuelImport::ENTITY_READINGS => 'Import de relevés non supporté — utiliser l\'API de relevés idempotente (FUEL-004)',
             default => 'Type d\'import inconnu',
         };
     }
@@ -174,8 +174,12 @@ final class FuelImportService
     /** @param  array<string, mixed>  $row */
     private function validatePump(array $row): ?string
     {
-        return ($row['code'] ?? '') === ''
-            ? 'code requis'
+        if (($row['code'] ?? '') === '') {
+            return 'code requis';
+        }
+
+        return ($row['station_id'] ?? '') === '' || ! is_numeric($row['station_id'])
+            ? 'station_id requis (numérique)'
             : null;
     }
 
@@ -184,6 +188,10 @@ final class FuelImportService
     {
         if (($row['code'] ?? '') === '' || ($row['product_type'] ?? '') === '') {
             return 'code et product_type requis';
+        }
+
+        if (($row['station_id'] ?? '') === '' || ! is_numeric($row['station_id'])) {
+            return 'station_id requis (numérique)';
         }
 
         return isset($row['capacity_minor']) && ! is_numeric($row['capacity_minor'])
@@ -198,18 +206,8 @@ final class FuelImportService
             return 'name, start_time et end_time requis';
         }
 
-        return null;
-    }
-
-    /** @param  array<string, mixed>  $row */
-    private function validateReading(array $row): ?string
-    {
-        if (($row['meter_id'] ?? '') === '' || ($row['reading_value_minor'] ?? '') === '') {
-            return 'meter_id et reading_value_minor requis';
-        }
-
-        return isset($row['reading_value_minor']) && ! is_numeric($row['reading_value_minor'])
-            ? 'reading_value_minor doit être numérique'
+        return ($row['station_id'] ?? '') === '' || ! is_numeric($row['station_id'])
+            ? 'station_id requis (numérique)'
             : null;
     }
 

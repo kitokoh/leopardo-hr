@@ -90,28 +90,44 @@ class FuelImportApiTest extends TestCase
         $this->assertSame(0, FuelProduct::query()->count());
     }
 
-    public function test_commit_with_bad_row_rolls_back_logically(): void
+    public function test_readings_import_is_rejected_at_preview(): void
     {
         [$company, $manager] = $this->seedTenant();
 
         Sanctum::actingAs($manager);
 
-        // La ligne 2 est valide, la ligne 3 non (compteur inconnu pour readings).
+        // Les relevés passent par l'API idempotente (FUEL-004) — jamais par
+        // un import CSV : le preview doit rejeter toutes les lignes.
         $csv = "meter_id,reading_value_minor\n99999,100\n";
         $file = UploadedFile::fake()->createWithContent('readings.csv', $csv);
 
         $this->post('/api/v1/fuel-station/imports/preview', [
             'entity_type' => 'readings',
             'file' => $file,
-        ])->assertStatus(200);
+        ])
+            ->assertStatus(200)
+            ->assertJsonPath('data.valid_rows', 0)
+            ->assertJsonPath('data.error_rows', 1)
+            ->assertJsonPath('meta.errors.0.line', 2);
+    }
 
-        $import = FuelImport::query()->firstOrFail();
+    public function test_pump_import_requires_station_id(): void
+    {
+        [$company, $manager] = $this->seedTenant();
 
-        // Le commit échoue → statut failed, aucun effet partiel.
-        $this->postJson("/api/v1/fuel-station/imports/{$import->id}/commit")
-            ->assertStatus(500);
+        Sanctum::actingAs($manager);
 
-        $this->assertSame('failed', $import->refresh()->status);
+        $csv = "code,product_types\nP-01,essence\n";
+        $file = UploadedFile::fake()->createWithContent('pumps.csv', $csv);
+
+        $this->post('/api/v1/fuel-station/imports/preview', [
+            'entity_type' => 'pumps',
+            'file' => $file,
+        ])
+            ->assertStatus(200)
+            ->assertJsonPath('data.valid_rows', 0)
+            ->assertJsonPath('data.error_rows', 1)
+            ->assertJsonPath('meta.errors.0.error', 'station_id requis (numérique)');
     }
 
     public function test_manager_cancels_import(): void

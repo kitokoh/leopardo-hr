@@ -7,7 +7,6 @@ namespace Tests\Feature\Fuel;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
-use App\Modules\FuelStation\Domain\Models\FuelSale;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
 use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
@@ -132,20 +131,16 @@ class FuelStockApiTest extends TestCase
     {
         [$company, $manager, , $tank] = $this->seedTenant();
 
-        // Une vente du même produit que la cuve : attendu = ouverture + livraisons − ventes.
-        FuelSale::query()->create([
-            'company_id' => $company->id,
+        Sanctum::actingAs($manager);
+
+        // Vente du même produit que la cuve, via l'API (FuelSaleService) :
+        // le niveau de la cuve est décrémenté (10000 → 8000).
+        $this->postJson('/api/v1/fuel-station/sales', [
             'station_id' => $tank->station_id,
-            'employee_id' => $manager->id,
             'product' => $tank->product_type,
             'quantity' => 2.0,
             'unit_price' => 150.0,
-            'amount' => 300.0,
-            'sale_time' => now(),
-            'source' => FuelSale::SOURCE_MANUAL,
-        ]);
-
-        Sanctum::actingAs($manager);
+        ])->assertStatus(200);
 
         $this->postJson("/api/v1/fuel-station/stations/{$tank->station_id}/reconciliations", [
             'run_date' => now()->toDateString(),
@@ -174,10 +169,74 @@ class FuelStockApiTest extends TestCase
 
         $tankLine = collect($summary['tanks'])->firstWhere('tank_id', $tank->id);
         $this->assertNotNull($tankLine);
-        // Vente de 2 litres → 2000 unités mineures sorties : écart attendu −2000
-        // (niveau mesuré n'a pas été ajusté par la vente dans ce scénario).
-        $this->assertSame(-2000, $tankLine['variance_minor']);
+
+        // La vente de 2 L (2000 unités mineures) a décrémenté la cuve
+        // (FUEL-009) : niveau 10000 → 8000. Ouverture dérivée = 8000 + 2000
+        // = 10000 ; attendu = 10000 − 2000 = 8000 = mesuré → écart 0.
+        $this->assertSame(10000, $tankLine['opening_level_minor']);
+        $this->assertSame(0, $tankLine['deliveries_minor']);
+        $this->assertSame(2000, $tankLine['sales_minor']);
+        $this->assertSame(8000, $tankLine['expected_level_minor']);
+        $this->assertSame(8000, $tankLine['measured_level_minor']);
+        $this->assertSame(0, $tankLine['variance_minor']);
+        $this->assertTrue($tankLine['explainable']);
+    }
+
+    public function test_reconciliation_reports_unexplained_variance(): void
+    {
+        [$company, $manager, , $tank] = $this->seedTenant();
+
+        Sanctum::actingAs($manager);
+
+        // Vente de 2 L via l'API : la cuve passe de 10000 à 8000 (décrément).
+        $this->postJson('/api/v1/fuel-station/sales', [
+            'station_id' => $tank->station_id,
+            'product' => $tank->product_type,
+            'quantity' => 2.0,
+            'unit_price' => 150.0,
+        ])->assertStatus(200);
+
+        // Simule une perte non enregistrée (vol/fuite) : le niveau physique
+        // est plus bas que ce que le registre (ventes) justifie.
+        $tank->update(['current_level_minor' => 6000]);
+
+        $this->postJson("/api/v1/fuel-station/stations/{$tank->station_id}/reconciliations", [
+            'run_date' => now()->toDateString(),
+        ])->assertStatus(200);
+
+        $run = FuelReconciliationRun::query()->firstOrFail();
+        $tankLine = collect($run->summary['tanks'])->firstWhere('tank_id', $tank->id);
+
+        // Registre : ouverture 10000 − ventes 2000 = attendu 8000 ; mesuré
+        // physique 6000 → écart +2000, NON expliqué (aucun ajustement).
+        $this->assertSame(8000, $tankLine['expected_level_minor']);
+        $this->assertSame(6000, $tankLine['measured_level_minor']);
+        $this->assertSame(2000, $tankLine['variance_minor']);
         $this->assertFalse($tankLine['explainable']);
+    }
+
+    public function test_reconciliation_relaunches_failed_run(): void
+    {
+        [$company, $manager, , $tank] = $this->seedTenant();
+
+        $failed = FuelReconciliationRun::query()->create([
+            'company_id' => $company->id,
+            'station_id' => $tank->station_id,
+            'run_date' => now()->toDateString(),
+            'status' => FuelReconciliationRun::STATUS_FAILED,
+            'last_error' => 'boom',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson("/api/v1/fuel-station/stations/{$tank->station_id}/reconciliations", [
+            'run_date' => now()->toDateString(),
+        ])
+            ->assertStatus(200)
+            ->assertJsonPath('data.status', 'completed')
+            ->assertJsonPath('data.id', $failed->id);
+
+        $this->assertSame(1, FuelReconciliationRun::query()->count());
     }
 
     public function test_reconciliation_lists_and_shows(): void
