@@ -152,6 +152,7 @@ import {
   ArrowRightOnRectangleIcon,
   AcademicCapIcon,
   TruckIcon,
+  FireIcon,
   SparklesIcon,
   LinkIcon,
   ArrowDownTrayIcon,
@@ -243,6 +244,12 @@ const navigation = computed(() => [
     title: t('navigation.fleet', 'Flotte véhicules'),
     path: '/fleet',
     icon: TruckIcon
+  },
+  {
+    name: 'fuel-station',
+    title: t('navigation.fuelStation', 'Stations-service'),
+    path: '/fuel-station',
+    icon: FireIcon
   },
   {
     name: 'chat',

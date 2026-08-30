@@ -200,6 +200,15 @@ const routes = [
         }
       },
       {
+        path: '/fuel-station',
+        name: 'fuel-station',
+        component: () => import('@/views/fuel/FuelStationView.vue'),
+        meta: {
+          title: 'navigation.fuelStation',
+          icon: 'FireIcon'
+        }
+      },
+      {
         path: '/fleet',
         name: 'fleet',
         component: () => import('@/views/fleet/FleetView.vue'),
