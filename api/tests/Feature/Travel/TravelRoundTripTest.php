@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
+use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelRoundTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
@@ -109,7 +110,7 @@ class TravelRoundTripTest extends TestCase
 
         // Deux réservations + un lien, aucune réservation orpheline.
         $this->assertSame(2, app(TenantManager::class)->withinTenant($company, function (): int {
-            return \App\Modules\TravelAgency\Domain\Models\TravelBooking::query()->count();
+            return TravelBooking::query()->count();
         }));
         $this->assertSame(1, app(TenantManager::class)->withinTenant($company, function (): int {
             return TravelRoundTrip::query()->count();
@@ -142,7 +143,7 @@ class TravelRoundTripTest extends TestCase
             return TravelRoundTrip::query()->count();
         }));
         $this->assertSame(2, app(TenantManager::class)->withinTenant($company, function (): int {
-            return \App\Modules\TravelAgency\Domain\Models\TravelBooking::query()->count();
+            return TravelBooking::query()->count();
         }));
     }
 

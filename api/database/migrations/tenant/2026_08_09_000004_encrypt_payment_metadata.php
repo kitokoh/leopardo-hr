@@ -46,12 +46,12 @@ return new class extends Migration
                 continue;
             }
 
-            $columnType = DB::selectOne("
+            $columnType = DB::selectOne('
                 SELECT data_type FROM information_schema.columns
                 WHERE table_name = ?
                   AND column_name = ?
                   AND table_schema = ?
-            ", [$table, $column, $schema]);
+            ', [$table, $column, $schema]);
 
             if ($columnType && $columnType->data_type === 'json') {
                 Schema::table("{$schema}.{$table}", function (Blueprint $table) use ($column): void {
@@ -68,6 +68,7 @@ return new class extends Migration
                 try {
                     // Déjà chiffré → rien à faire (idempotence).
                     Crypt::decryptString((string) $row->{$column});
+
                     continue;
                 } catch (DecryptException) {
                     // En clair → chiffrer.
@@ -86,14 +87,14 @@ return new class extends Migration
      */
     private function resolveTableSchema(string $table): ?string
     {
-        $row = DB::selectOne("
+        $row = DB::selectOne('
             SELECT t.table_schema
             FROM information_schema.tables t
             WHERE t.table_name = ?
               AND t.table_schema = ANY (current_schemas(false))
             ORDER BY array_position(current_schemas(false), t.table_schema)
             LIMIT 1
-        ", [$table]);
+        ', [$table]);
 
         return $row ? (string) $row->table_schema : null;
     }

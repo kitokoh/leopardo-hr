@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
-/** @extends \Illuminate\Database\Eloquent\Factories\Factory<Company> */
+/** @extends Factory<Company> */
 /**
  * CompanyFactory — Génère des entreprises de test
  *
@@ -152,4 +152,3 @@ class CompanyFactory extends Factory
         ]);
     }
 }
-

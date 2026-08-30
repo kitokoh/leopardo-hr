@@ -10,6 +10,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Enums\QuoteStatus;
+use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelQuote;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
@@ -197,7 +198,7 @@ class TravelQuoteTest extends TestCase
 
         $this->assertSame($first->json('data.id'), $second->json('data.id'));
         $this->assertSame(1, app(TenantManager::class)->withinTenant($company, function (): int {
-            return \App\Modules\TravelAgency\Domain\Models\TravelBooking::query()->count();
+            return TravelBooking::query()->count();
         }));
     }
 

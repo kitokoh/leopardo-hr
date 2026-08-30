@@ -46,12 +46,12 @@ return new class extends Migration
             // 'locked' (clôture 2 étapes), 'processing' et 'error'
             // (ProcessPayrollBatchJob). Ajout idempotent.
             foreach (['locked', 'processing', 'error'] as $label) {
-                $exists = DB::selectOne("
+                $exists = DB::selectOne('
                     SELECT 1 FROM pg_enum pe
                     JOIN pg_type pt ON pt.oid = pe.enumtypid
                     WHERE pt.typname = ?
                       AND pe.enumlabel = ?
-                ", [$enumName, $label]);
+                ', [$enumName, $label]);
 
                 if (! $exists) {
                     DB::statement("ALTER TYPE {$enumName} ADD VALUE IF NOT EXISTS '{$label}'");

@@ -6,10 +6,11 @@ use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/** @extends \Illuminate\Database\Eloquent\Factories\Factory<Absence> */
+/** @extends Factory<Absence> */
 class AbsenceFactory extends Factory
 {
     protected $model = Absence::class;
+
     public function definition(): array
     {
         $start = $this->faker->dateTimeBetween('+1 day', '+30 days');
@@ -64,4 +65,3 @@ class AbsenceFactory extends Factory
         return $this->state(fn () => ['absence_type_id' => $type->id]);
     }
 }
-

@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Core\Auth\Domain\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
  * @extends Factory<User>
@@ -22,7 +21,7 @@ class UserFactory extends Factory
      */
     public function newModel(array $attributes = [])
     {
-        $model = new $this->model();
+        $model = new $this->model;
         $model->forceFill($attributes);
 
         return $model;

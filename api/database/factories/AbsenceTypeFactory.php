@@ -2,14 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Modules\Planning\Domain\Models\AbsenceType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-use App\Modules\Planning\Domain\Models\AbsenceType;
-
-/** @extends \Illuminate\Database\Eloquent\Factories\Factory<AbsenceType> */
+/** @extends Factory<AbsenceType> */
 class AbsenceTypeFactory extends Factory
 {
     protected $model = AbsenceType::class;
+
     public function definition(): array
     {
         return [
