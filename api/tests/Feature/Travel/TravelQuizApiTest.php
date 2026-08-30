@@ -86,10 +86,12 @@ class TravelQuizApiTest extends TestCase
         $this->actingManager();
         $quiz = $this->makeQuizWithQuestions();
 
-        $this->getJson("/api/v1/travel/quizzes/{$quiz->id}")
+        $response = $this->getJson("/api/v1/travel/quizzes/{$quiz->id}")
             ->assertOk()
-            ->assertJsonMissingPath('data.questions.0.correct_option_index')
             ->assertJsonPath('data.questions.0.question', 'Capitale du Cameroun ?');
+
+        $payload = $response->json();
+        self::assertArrayNotHasKey('correct_option_index', $payload['data']['questions'][0], 'la bonne réponse n\'est jamais exposée');
     }
 
     public function test_participation_is_graded_server_side(): void
