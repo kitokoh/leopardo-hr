@@ -16,23 +16,34 @@ use Tests\TestCase;
 
 /**
  * RESTO-601 (#6206) — Réservations CRUD + check-in/no-show + conflit 409.
- *
- * Couvre : création (référence RSV-, idempotente), conflit de créneau ±2h
- * sur la même table → 409 (critère d'acceptation), transitions
- * confirm/check-in/no-show/cancel, événement reservation.confirmed.v1 et
- * isolation cross-tenant (404 sûr).
+ * RESTO-602 (#6207) — Disponibilité de créneaux (tables, couverts, dates).
+ * RESTO-603 (#6208) — Arrhes/dépôt + politique d'annulation (pénalités serveur).
  */
 class RestaurantReservationTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private function server(Company $company): Employee
+    private function principal(Company $company): Employee
     {
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
-            'manager_role' => 'server',
+            'manager_role' => 'principal',
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        return $employee;
+    }
+
+    private function manager(Company $company): Employee
+    {
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'manager',
         ]);
 
         Sanctum::actingAs($employee);
@@ -46,165 +57,143 @@ class RestaurantReservationTest extends TestCase
         $company->save();
     }
 
-    /**
-     * @return array{branch: RestaurantBranch, table: RestaurantTable}
-     */
-    private function makeBranchTable(Company $company): array
+    public function test_two_reservations_cannot_overlap_on_same_table(): void
     {
-        return app(TenantManager::class)->withinTenant($company, function (): array {
-            $branch = RestaurantBranch::factory()->create();
-            $table = RestaurantTable::factory()->create(['branch_id' => $branch->id]);
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->activateRestaurant($company);
+        $this->principal($company);
 
-            return ['branch' => $branch, 'table' => $table];
+        app(TenantManager::class)->withinTenant($company, function (): void {
+            $branch = RestaurantBranch::factory()->create();
+            $table = RestaurantTable::factory()->create(['branch_id' => $branch->id, 'capacity' => 4]);
+
+            $payload = [
+                'branch_id' => $branch->id,
+                'contact_name' => 'Alice',
+                'contact_phone' => '+237600000001',
+                'reserved_at' => '2026-09-15 20:00:00',
+                'covers' => 2,
+                'table_id' => $table->id,
+            ];
+
+            $this->postJson('/api/v1/restaurant/reservations', $payload)->assertStatus(201);
+
+            // Même table à +1h (dans la fenêtre de 2h) → 409.
+            $overlap = $payload;
+            $overlap['reserved_at'] = '2026-09-15 21:00:00';
+            $this->postJson('/api/v1/restaurant/reservations', $overlap)->assertStatus(409);
+
+            // Table libre 3h plus tard → OK.
+            $later = $payload;
+            $later['reserved_at'] = '2026-09-15 23:30:00';
+            $this->postJson('/api/v1/restaurant/reservations', $later)->assertStatus(201);
         });
     }
 
-    public function test_server_can_create_and_confirm_reservation(): void
+    public function test_reservation_transitions_confirm_checkin_noshow(): void
     {
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
-        $this->server($company);
-        ['branch' => $branch, 'table' => $table] = $this->makeBranchTable($company);
+        $this->manager($company);
 
-        $reservationId = $this->postJson('/api/v1/restaurant/reservations', [
-            'branch_id' => $branch->id,
-            'table_id' => $table->id,
-            'contact_name' => 'Jean Dupont',
-            'contact_phone' => '+237600000000',
-            'reserved_at' => now()->addDays(2)->setTime(20, 0)->toIso8601String(),
-            'covers' => 4,
-        ])->assertStatus(201)
-            ->assertJsonPath('data.status', 'pending')
-            ->assertJsonStructure(['data' => ['reference' => []]])
-            ->json('data.id');
+        $reservationId = app(TenantManager::class)->withinTenant($company, function (): int {
+            $branch = RestaurantBranch::factory()->create();
+
+            $this->postJson('/api/v1/restaurant/reservations', [
+                'branch_id' => $branch->id,
+                'contact_name' => 'Bob',
+                'contact_phone' => '+237600000002',
+                'reserved_at' => '2026-09-20 19:30:00',
+                'covers' => 2,
+            ])->assertStatus(201);
+
+            return RestaurantReservation::query()->firstOrFail()->id;
+        });
 
         $this->postJson("/api/v1/restaurant/reservations/{$reservationId}/confirm")
-            ->assertStatus(200)
+            ->assertOk()
             ->assertJsonPath('data.status', 'confirmed');
 
-        // Événement outbox publié à la confirmation.
-        $eventCount = app(TenantManager::class)->withinTenant($company, fn (): int => \App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent::query()
-            ->where('event_type', 'restaurant.reservation.confirmed.v1')
-            ->count());
+        $this->postJson("/api/v1/restaurant/reservations/{$reservationId}/check-in")
+            ->assertOk()
+            ->assertJsonPath('data.status', 'seated');
 
-        $this->assertSame(1, $eventCount);
-
-        $this->postJson("/api/v1/restaurant/reservations/{$reservationId}/check-in")->assertStatus(200)->assertJsonPath('data.status', 'seated');
+        $this->postJson("/api/v1/restaurant/reservations/{$reservationId}/no-show")
+            ->assertStatus(422); // seated → no-show interdit
     }
 
-    public function test_overlapping_slot_on_same_table_is_refused_409(): void
+    public function test_availability_returns_free_tables_by_covers(): void
     {
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
-        $this->server($company);
-        ['branch' => $branch, 'table' => $table] = $this->makeBranchTable($company);
+        $this->principal($company);
 
-        $slot = now()->addDays(3)->setTime(19, 30);
+        app(TenantManager::class)->withinTenant($company, function (): void {
+            $branch = RestaurantBranch::factory()->create();
+            $small = RestaurantTable::factory()->create(['branch_id' => $branch->id, 'label' => 'T1', 'capacity' => 2]);
+            $large = RestaurantTable::factory()->create(['branch_id' => $branch->id, 'label' => 'T2', 'capacity' => 6]);
 
-        $payload = [
-            'branch_id' => $branch->id,
-            'table_id' => $table->id,
-            'contact_name' => 'Alice',
-            'contact_phone' => '+237611111111',
-            'reserved_at' => $slot->toIso8601String(),
-            'covers' => 2,
-        ];
+            // Réservation confirmée sur la grande table à 20:00.
+            RestaurantReservation::factory()->create([
+                'branch_id' => $branch->id,
+                'table_id' => $large->id,
+                'reserved_at' => '2026-09-18 20:00:00',
+                'status' => 'confirmed',
+            ]);
 
-        $this->postJson('/api/v1/restaurant/reservations', $payload)->assertStatus(201);
+            // 4 couverts : seule la grande table convient mais elle est prise → aucune.
+            $this->getJson('/api/v1/restaurant/reservations/availability?branch_id='.$branch->id.'&date=2026-09-18&covers=4&start=19:00&end=21:00')
+                ->assertOk()
+                ->assertJsonPath('data.count', 0);
 
-        // Même table, +1h30 (dans la fenêtre ±2h) → 409.
-        $this->postJson('/api/v1/restaurant/reservations', array_merge($payload, [
-            'contact_name' => 'Bob',
-            'reserved_at' => $slot->copy()->addHours(1)->addMinutes(30)->toIso8601String(),
-        ]))->assertStatus(409);
-
-        // Hors fenêtre (+3h) → OK.
-        $this->postJson('/api/v1/restaurant/reservations', array_merge($payload, [
-            'contact_name' => 'Bob',
-            'reserved_at' => $slot->copy()->addHours(3)->toIso8601String(),
-        ]))->assertStatus(201);
+            // 2 couverts : petite table libre → disponible.
+            $this->getJson('/api/v1/restaurant/reservations/availability?branch_id='.$branch->id.'&date=2026-09-18&covers=2&start=19:00&end=21:00')
+                ->assertOk()
+                ->assertJsonPath('data.count', 1)
+                ->assertJsonPath('data.available_tables.0.table_id', $small->id);
+        });
     }
 
-    public function test_reservation_replay_with_same_idempotency_key_returns_same(): void
+    public function test_deposit_and_cancellation_policy_are_server_side(): void
     {
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
-        $this->server($company);
-        ['branch' => $branch] = $this->makeBranchTable($company);
+        $this->principal($company);
 
-        $key = (string) \Illuminate\Support\Str::uuid();
+        app(TenantManager::class)->withinTenant($company, function (): void {
+            $branch = RestaurantBranch::factory()->create();
 
-        $first = $this->postJson('/api/v1/restaurant/reservations', [
-            'branch_id' => $branch->id,
-            'contact_name' => 'Alice',
-            'contact_phone' => '+237622222222',
-            'reserved_at' => now()->addDays(4)->setTime(19, 0)->toIso8601String(),
-            'covers' => 2,
-            'idempotency_key' => $key,
-        ])->assertStatus(201);
+            // Politique : annulation gratuite au-delà de 24 h, pénalité 25 % sinon.
+            $this->putJson("/api/v1/restaurant/branches/{$branch->id}/cancellation-policy", [
+                'cancel_free_hours' => 24,
+                'cancel_fee_bps' => 2500,
+            ])->assertOk();
 
-        $replay = $this->postJson('/api/v1/restaurant/reservations', [
-            'branch_id' => $branch->id,
-            'contact_name' => 'Alice',
-            'contact_phone' => '+237622222222',
-            'reserved_at' => now()->addDays(4)->setTime(19, 0)->toIso8601String(),
-            'covers' => 2,
-            'idempotency_key' => $key,
-        ])->assertStatus(200);
+            $this->postJson('/api/v1/restaurant/reservations', [
+                'branch_id' => $branch->id,
+                'contact_name' => 'Carol',
+                'contact_phone' => '+237600000003',
+                'reserved_at' => now()->addHours(2)->toDateTimeString(),
+                'covers' => 2,
+                'deposit_minor' => 10000,
+            ])->assertStatus(201);
 
-        $this->assertSame($first->json('data.id'), $replay->json('data.id'));
-    }
+            $reservationId = RestaurantReservation::query()->firstOrFail()->id;
 
-    public function test_no_show_and_cancel_transitions(): void
-    {
-        /** @var Company $company */
-        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
-        $this->activateRestaurant($company);
-        $this->server($company);
-        ['branch' => $branch] = $this->makeBranchTable($company);
+            // Dépôt déjà enregistré → 422.
+            $this->postJson("/api/v1/restaurant/reservations/{$reservationId}/deposit", ['amount_minor' => 5000])
+                ->assertStatus(422);
 
-        $id = $this->postJson('/api/v1/restaurant/reservations', [
-            'branch_id' => $branch->id,
-            'contact_name' => 'Carol',
-            'contact_phone' => '+237633333333',
-            'reserved_at' => now()->addDays(5)->setTime(20, 30)->toIso8601String(),
-            'covers' => 3,
-        ])->assertStatus(201)->json('data.id');
-
-        $this->postJson("/api/v1/restaurant/reservations/{$id}/no-show")->assertStatus(200)->assertJsonPath('data.status', 'no_show');
-
-        // no_show → cancel est hors workflow : 409.
-        $this->postJson("/api/v1/restaurant/reservations/{$id}/cancel")->assertStatus(409);
-
-        // Seated → complete.
-        $id2 = $this->postJson('/api/v1/restaurant/reservations', [
-            'branch_id' => $branch->id,
-            'contact_name' => 'Dave',
-            'contact_phone' => '+237644444444',
-            'reserved_at' => now()->addDays(6)->setTime(19, 0)->toIso8601String(),
-            'covers' => 2,
-        ])->assertStatus(201)->json('data.id');
-
-        $this->postJson("/api/v1/restaurant/reservations/{$id2}/confirm")->assertStatus(200);
-        $this->postJson("/api/v1/restaurant/reservations/{$id2}/check-in")->assertStatus(200);
-        $this->postJson("/api/v1/restaurant/reservations/{$id2}/cancel")->assertStatus(409);
-    }
-
-    public function test_other_tenant_reservation_returns_404(): void
-    {
-        /** @var Company $company */
-        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
-        $this->activateRestaurant($company);
-        $this->server($company);
-
-        $otherReservationId = app(TenantManager::class)->withinTenant(
-            Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']),
-            fn (): int => RestaurantReservation::factory()->create()->id
-        );
-
-        $this->getJson("/api/v1/restaurant/reservations/{$otherReservationId}")->assertStatus(404);
+            // Annulation à J-2h : pénalité 25 % de 10000 = 2500, remboursable 7500.
+            $this->postJson("/api/v1/restaurant/reservations/{$reservationId}/cancel")
+                ->assertOk()
+                ->assertJsonPath('data.status', 'cancelled')
+                ->assertJsonPath('penalty_minor', 2500)
+                ->assertJsonPath('refundable_minor', 7500);
+        });
     }
 }

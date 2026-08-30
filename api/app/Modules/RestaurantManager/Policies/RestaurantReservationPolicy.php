@@ -10,9 +10,9 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
 /**
  * RESTO-601 (#6206) — Policy des réservations.
  *
- * Création/modification : serveur, manager de salle ou supérieur (persona
- * « réservations, affectation des tables »). Lecture : tout employé
- * authentifié du tenant (404 sûr cross-tenant au niveau contrôleur).
+ * Lecture : tout employé du tenant. Création/modification/transitions :
+ * `principal`/`rh`/`manager` (pilotage de la salle). L'annulation est
+ * ouverte au même périmètre (la politique d'annulation est appliquée serveur).
  */
 class RestaurantReservationPolicy
 {
@@ -28,11 +28,16 @@ class RestaurantReservationPolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager', 'server');
+        return $actor->hasManagerRole('principal', 'rh', 'manager');
     }
 
     public function update(Employee $actor, RestaurantReservation $reservation): bool
     {
         return $this->create($actor) && $reservation->company_id === $actor->company_id;
+    }
+
+    public function cancel(Employee $actor, RestaurantReservation $reservation): bool
+    {
+        return $this->update($actor, $reservation);
     }
 }
