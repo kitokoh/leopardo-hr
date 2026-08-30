@@ -161,6 +161,20 @@
       "status": "created",
       "number": 5899,
       "url": "https://github.com/kitokoh/leopardo-hr/issues/5899"
+    },
+    {
+      "key": "DEP-BC24",
+      "title": "[DEP-BC24] Deep maturity — BC-24 TRAVEL",
+      "status": "created",
+      "number": 6275,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/6275"
+    },
+    {
+      "key": "DEP-BC25",
+      "title": "[DEP-BC25] Deep maturity — BC-25 RESTAURANT",
+      "status": "created",
+      "number": 6276,
+      "url": "https://github.com/kitokoh/leopardo-hr/issues/6276"
     }
   ]
 }
