@@ -3653,7 +3653,11 @@
       "checkin": "Check-in",
       "tickets": "Billets",
       "reports": "Rapports",
-      "rentals": "Locations & Hôtels"
+      "rentals": "Locations & Hôtels",
+      "quizzes": "Quiz",
+      "adverts": "Annonces",
+      "sites": "Sites touristiques",
+      "contacts": "Contacts"
     },
     "referentiel": {
       "tabsLabel": "Sous-sections du référentiel",
@@ -3687,7 +3691,11 @@
       "report": "Rechercher dans le rapport…",
       "rentalVehicle": "Rechercher un véhicule de location…",
       "rentalBooking": "Rechercher une réservation de location…",
-      "hotel": "Rechercher un hôtel…"
+      "hotel": "Rechercher un hôtel…",
+      "quiz": "Rechercher un quiz…",
+      "advert": "Rechercher une annonce…",
+      "site": "Rechercher un site…",
+      "contact": "Rechercher un contact…"
     },
     "field": {
       "iso2": "ISO2",
@@ -3923,6 +3931,106 @@
     "form": {
       "selectPlaceholder": "— Sélectionner —",
       "moneyMinor": "Montant en devises (1 = 100 minor)"
+    },
+    "quiz": {
+      "title": "Quiz & jeux-concours",
+      "subtitle": "Créez des quiz, ajoutez des questions et consultez les participations.",
+      "questionsTitle": "Questions du quiz",
+      "resultsTitle": "Résultats",
+      "field": {
+        "question": "Question",
+        "options": "Choix",
+        "points": "Points",
+        "correctIndex": "Index de la bonne réponse",
+        "maxParticipations": "Participations max. par contact",
+        "participantName": "Nom",
+        "participantEmail": "Email",
+        "score": "Score",
+        "bonus": "Bonus",
+        "submittedAt": "Soumis le"
+      },
+      "action": {
+        "questions": "Questions",
+        "results": "Résultats",
+        "addQuestion": "Ajouter une question"
+      },
+      "hint": {
+        "options": "Une option par ligne.",
+        "correctIndex": "Commence à 0 (première ligne = 0)."
+      }
+    },
+    "quizStatus": {
+      "draft": "Brouillon",
+      "active": "Actif",
+      "closed": "Clôturé"
+    },
+    "adverts": {
+      "tabsLabel": "Sous-sections annonces",
+      "tabTypes": "Types",
+      "tabPositions": "Emplacements",
+      "tabPrices": "Grille tarifaire",
+      "tabAdverts": "Annonces",
+      "title": "Annonces payantes",
+      "subtitle": "Soumettre une annonce et suivre les annonces visibles.",
+      "createTitle": "Soumettre une annonce",
+      "types": "Types d’annonces",
+      "positions": "Emplacements publicitaires",
+      "prices": "Grille tarifaire",
+      "field": {
+        "type": "Type",
+        "position": "Emplacement",
+        "validityDays": "Durée de validité (jours)",
+        "content": "Contenu",
+        "price": "Prix",
+        "pricePerImage": "Prix par image",
+        "pricePerCharacter": "Prix par caractère",
+        "expiresAt": "Expire le"
+      },
+      "action": {
+        "renew": "Renouveler",
+        "submit": "Soumettre"
+      }
+    },
+    "sites": {
+      "title": "Sites touristiques",
+      "subtitle": "Lieux d’intérêt avec localisation et recherche par ville.",
+      "filterCity": "Filtrer par ville",
+      "allCities": "Toutes les villes",
+      "statusDisabled": "Désactivé",
+      "field": {
+        "latitude": "Latitude",
+        "longitude": "Longitude"
+      }
+    },
+    "contacts": {
+      "formTitle": "Formulaire de contact",
+      "formSubtitle": "Saisir une demande de contact — le consentement email est obligatoire.",
+      "registryTitle": "Registre des contacts",
+      "registrySubtitle": "Consentements par canal (opt-in/opt-out horodaté) et notification manuelle.",
+      "registryUnavailable": "Registre indisponible — endpoint de liste non encore livré sur ce déploiement.",
+      "consentLabel": "J’accepte d’être contacté par email au sujet de ma demande.",
+      "consentOn": "Consenti",
+      "consentOff": "Non consenti",
+      "notifyTitle": "Notification manuelle",
+      "notifyTarget": "Destinataire",
+      "notifyHint": "Un canal sans consentement est ignoré ; 422 si aucun canal consenti.",
+      "channelApp": "Application (employé lié)",
+      "success": "Demande reçue — merci, nous reviendrons vers vous.",
+      "field": {
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "email": "Email",
+        "phone": "Téléphone",
+        "message": "Message",
+        "consents": "Consentements",
+        "channels": "Canaux"
+      },
+      "action": {
+        "submit": "Envoyer la demande",
+        "toggleConsent": "Basculer le consentement",
+        "notify": "Notifier",
+        "send": "Envoyer"
+      }
     }
   }
 }
