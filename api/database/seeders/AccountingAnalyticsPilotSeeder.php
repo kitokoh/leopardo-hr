@@ -111,7 +111,7 @@ class AccountingAnalyticsPilotSeeder extends Seeder
 
     private function seedAccountingVitrine(Company $company): void
     {
-        if (!schemaTableExists('accounting_documents')) {
+        if (schemaTableExists('accounting_documents') === false) {
             $this->command?->warn('Tables comptables absentes — vitrine du pilote Analytics ignorée.');
 
             return;
