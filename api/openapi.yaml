@@ -29731,8 +29731,240 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           description: Fichier introuvable
+  /public/restaurant/menu:
+    get:
+      tags:
+        - Restaurant
+      summary: 'Menu public du tenant (RESTO-805/#6226) — catégories + produits actifs/disponibles'
+      security:
+        - RestaurantPublicShopTokenAuth: []
+      parameters:
+        - name: branch_id
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Menu public du tenant (aucune donnée cross-tenant)
+        '401':
+          description: Jeton boutique manquant ou invalide
+        '429':
+          description: Trop de requêtes (restaurant-shop-public)
+  /public/restaurant/branches:
+    get:
+      tags:
+        - Restaurant
+      summary: 'Branches actives du tenant (RESTO-807/#6228 — sélecteur kiosque)'
+      security:
+        - RestaurantPublicShopTokenAuth: []
+      responses:
+        '200':
+          description: Branches actives (id, code, name)
+        '401':
+          description: Jeton boutique manquant ou invalide
+  /public/restaurant/orders:
+    post:
+      tags:
+        - Restaurant
+      summary: 'Commande en ligne publique (RESTO-805/#6226) — source online, totaux serveur, idempotente'
+      security:
+        - RestaurantPublicShopTokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - branch_id
+                - items
+              properties:
+                branch_id:
+                  type: integer
+                order_type:
+                  type: string
+                  enum:
+                    - takeaway
+                    - delivery
+                  default: takeaway
+                items:
+                  type: array
+                  minItems: 1
+                  maxItems: 50
+                  items:
+                    type: object
+                    required:
+                      - product_id
+                      - quantity
+                    properties:
+                      product_id:
+                        type: integer
+                      quantity:
+                        type: number
+                        minimum: 0
+                        exclusiveMinimum: true
+                customer_name:
+                  type: string
+                  maxLength: 120
+                customer_phone:
+                  type: string
+                  maxLength: 40
+                note_redacted:
+                  type: string
+                  maxLength: 1000
+                idempotency_key:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Commande créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrder'
+        '401':
+          description: Jeton boutique manquant ou invalide
+        '422':
+          description: Validation échouée (produit indisponible, quantité, montants serveur)
+        '429':
+          description: Trop de requêtes
+  /public/restaurant/orders/{reference}:
+    get:
+      tags:
+        - Restaurant
+      summary: 'Suivi public d''une commande par référence (RESTO-805/#6226) — statut + totaux'
+      security:
+        - RestaurantPublicShopTokenAuth: []
+      parameters:
+        - name: reference
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Commande du tenant courant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrder'
+        '401':
+          description: Jeton boutique manquant ou invalide
+        '404':
+          description: Commande introuvable (ou autre tenant)
+  /public/restaurant/orders/{reference}/pay:
+    post:
+      tags:
+        - Restaurant
+      summary: 'Paiement en ligne d''une commande (RESTO-805/#6226) — cash confirmé immédiat, mobile money via callback signé'
+      security:
+        - RestaurantPublicShopTokenAuth: []
+      parameters:
+        - name: reference
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - provider_code
+                - amount_minor
+              properties:
+                provider_code:
+                  type: string
+                  enum:
+                    - cash
+                    - mobile_money
+                amount_minor:
+                  type: integer
+                  minimum: 0
+                idempotency_key:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Paiement initié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrderPayment'
+        '401':
+          description: Jeton boutique manquant ou invalide
+        '404':
+          description: Commande introuvable
+        '409':
+          description: Commande déjà payée ou non payable
+        '422':
+          description: Montant ne correspondant pas au reste à payer
+  /restaurant/public-shop-token:
+    get:
+      tags:
+        - Restaurant
+      summary: 'État du jeton de boutique publique (RESTO-805/#6226) — jamais le jeton en clair'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Jeton (préfixe hash, actif, dernière utilisation) ou data:null
+        '401':
+          description: Non authentifié
+        '403':
+          description: Feature flag inactif ou permission manquante
+  /restaurant/public-shop-token/rotate:
+    post:
+      tags:
+        - Restaurant
+      summary: '(Re)génère le jeton de boutique publique (RESTO-805/#6226) — l''ancien est invalidé, le jeton en clair n''est renvoyé qu''ici'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Nouveau jeton (retourné une seule fois)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission manquante (principal/rh/manager)
+  /restaurant/marketplace/{provider}/webhooks:
+    post:
+      tags:
+        - Restaurant
+      summary: 'Webhook entrant d''une app de livraison (RESTO-806/#6227) — signature HMAC fail-closed, idempotent par event_id'
+      security:
+        - RestaurantPublicShopTokenAuth: []
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - uber_eats
+              - glovo
+      responses:
+        '201':
+          description: Commande marketplace traitée (même workflow interne)
+        '200':
+          description: Événement rejoué (idempotence)
+        '401':
+          description: Signature invalide
+        '404':
+          description: Provider inconnu
+        '422':
+          description: Payload invalide ou produit introuvable
+
 components:
   securitySchemes:
+    RestaurantPublicShopTokenAuth:
+      type: apiKey
+      in: header
+      name: X-Restaurant-Shop-Token
+      description: 'Jeton de boutique publique RestaurantManager (RESTO-805/#6226) — hash SHA-256 en base, un par tenant.'
     BearerAuth:
       type: http
       scheme: bearer
