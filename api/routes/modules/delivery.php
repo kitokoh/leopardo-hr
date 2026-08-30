@@ -22,7 +22,9 @@
 
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryEventController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRouteController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\PublicDeliveryTrackingController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.delivery'])
@@ -40,9 +42,23 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
             // Tournées (DELIVERY-202/#6286) — création, affectation idempotente,
             // clôture idempotente, détail avec stops ordonnés.
+            // Tracking (DELIVERY-204/#6288) — événements idempotents, lien
+            // public borné, ligne du temps interne.
+            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
+            Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
+            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
+
+            // Tournées (DELIVERY-202/#6286) — création, affectation idempotente,
+            // clôture idempotente, détail avec stops ordonnés.
             Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
             Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
             Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
             Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
         });
     });
+
+    // Suivi public par lien borné (DELIVERY-204/#6288) — PAS d'auth : le
+    // token 64 chars expirant EST la credential (pattern AccountingDocumentShare).
+    Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::class, 'show'])
+        ->middleware('throttle:60,1')
+        ->where('token', '[A-Za-z0-9]{64}');
