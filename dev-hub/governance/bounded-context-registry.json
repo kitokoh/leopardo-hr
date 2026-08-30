@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 [
   {
     "code": "BC-01",
@@ -32,15 +33,21 @@
     ],
     "dependencies": []
 =======
+=======
+>>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
 {
   "_meta": {
     "title": "Bounded Context Registry — Leopardo HR",
     "description": "Registre canonique machine-readable des bounded contexts (MAT-001, issue #5859). Référence humaine : docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (plan de gouvernance, PR agent-readiness).",
     "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
     "updated": "2026-08-30"
+<<<<<<< HEAD
 >>>>>>> 5c68931d1 (feat(restaurant): registre BC-25 actif + CODEOWNERS (RESTO-103, #6160))
   },
 <<<<<<< ours
+=======
+  },
+>>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
   "_shared_exceptions": [
     {
       "path": "api/app/Core/Http",
@@ -487,6 +494,13 @@
         {
           "path": "api/app/Solutions/FuelStation",
           "status": "planned"
+<<<<<<< HEAD
+=======
+        },
+        {
+          "path": "api/app/Modules/FuelStation",
+          "status": "active"
+>>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
         }
       ],
       "routes": [],
@@ -739,6 +753,7 @@
       "responsibility": "Agences, compagnies, routes, trajets, réservations, passagers, billets, paiements, locations, hôtels, rapports.",
       "owner": "Agent 24 — BC-TRAVEL",
       "priority": "P1",
+<<<<<<< HEAD
       "status": "active",
       "paths": [
         {
@@ -749,6 +764,16 @@
       "routes": [
         "api/routes/modules/travelagency.php"
       ],
+=======
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Modules/TravelAgency",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
+>>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
       "migrations": [
         "api/database/migrations/tenant"
       ],
@@ -765,12 +790,46 @@
       ]
     },
     {
+<<<<<<< HEAD
+=======
+      "code": "BC-25",
+      "name": "RESTAURANT",
+      "context": "RestaurantManager",
+      "responsibility": "Établissements, plan de salle, catalogue & recettes, POS/caisse, commandes, réservations, stock & achats (COGS), livraison, fidélité, promotions, rapports.",
+      "owner": "Agent 25 — BC-RESTAURANT",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/RestaurantManager",
+          "status": "active"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\RestaurantManager\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04",
+        "BC-11",
+        "BC-13",
+        "BC-20"
+      ]
+    },
+    {
+>>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
       "code": "BC-26",
       "name": "DELIVERY",
       "context": "Delivery",
       "responsibility": "Module de livraison dernier-kilomètre générique : livraisons/colis (sources manual/restaurant/retail/ecommerce/crm/field), tournées, livreurs, preuves (POD), suivi temps réel, règlement COD et rapports — activable par tout tenant (agence, restaurant, retail, e-commerce, pharmacie).",
       "owner": "Agent 26 — BC-DELIVERY",
       "priority": "P1",
+<<<<<<< HEAD
       "status": "active",
       "paths": [
         {
@@ -781,6 +840,13 @@
           "path": "api/app/Modules/RestaurantManager",
           "status": "active"
 >>>>>>> 5c68931d1 (feat(restaurant): registre BC-25 actif + CODEOWNERS (RESTO-103, #6160))
+=======
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Modules/Delivery",
+          "status": "planned"
+>>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
         }
       ],
       "routes": [],
@@ -806,6 +872,7 @@
       ]
     }
   ]
+<<<<<<< HEAD
 <<<<<<< HEAD
 }
 =======
@@ -1562,3 +1629,6 @@
 =======
 }
 >>>>>>> 5c68931d1 (feat(restaurant): registre BC-25 actif + CODEOWNERS (RESTO-103, #6160))
+=======
+}
+>>>>>>> d2495696a (fix(governance): registre bounded-contexts format canonique + docs architecture RestaurantManager (MAT-001 #5859, #5589))
