@@ -4250,6 +4250,86 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/sessions/{trainingSession}/enroll", options);
     },
 
+    /** TRAVEL-905 — Positions de publication */
+    getTravelAdvertPositions(options = {}) {
+      return request("GET", "/travel/advert-positions", options);
+    },
+
+    /** TRAVEL-905 — Création d''une position */
+    postTravelAdvertPositions(options = {}) {
+      return request("POST", "/travel/advert-positions", options);
+    },
+
+    /** TRAVEL-905 — Suppression d''une position */
+    deleteTravelAdvertPositionsByTravelAdvertPosition(options = {}) {
+      return request("DELETE", "/travel/advert-positions/{travelAdvertPosition}", options);
+    },
+
+    /** TRAVEL-906 — Grille tarifaire des annonces */
+    getTravelAdvertPrices(options = {}) {
+      return request("GET", "/travel/advert-prices", options);
+    },
+
+    /** TRAVEL-906 — Création d''une grille tarifaire (minor units) */
+    postTravelAdvertPrices(options = {}) {
+      return request("POST", "/travel/advert-prices", options);
+    },
+
+    /** TRAVEL-906 — Suppression d''une grille tarifaire */
+    deleteTravelAdvertPricesByTravelAdvertPrice(options = {}) {
+      return request("DELETE", "/travel/advert-prices/{travelAdvertPrice}", options);
+    },
+
+    /** TRAVEL-905 — Types d''annonces */
+    getTravelAdvertTypes(options = {}) {
+      return request("GET", "/travel/advert-types", options);
+    },
+
+    /** TRAVEL-905 — Création d''un type d''annonce */
+    postTravelAdvertTypes(options = {}) {
+      return request("POST", "/travel/advert-types", options);
+    },
+
+    /** TRAVEL-905 — Suppression d''un type d''annonce */
+    deleteTravelAdvertTypesByTravelAdvertType(options = {}) {
+      return request("DELETE", "/travel/advert-types/{travelAdvertType}", options);
+    },
+
+    /** TRAVEL-907 — Annonces visibles (payées + validées + non expirées) */
+    getTravelAdverts(options = {}) {
+      return request("GET", "/travel/adverts", options);
+    },
+
+    /** TRAVEL-907 — Soumission d''une annonce (prix calculé serveur) */
+    postTravelAdverts(options = {}) {
+      return request("POST", "/travel/adverts", options);
+    },
+
+    /** TRAVEL-907 — Détail d''une annonce */
+    getTravelAdvertsByTravelAdvert(options = {}) {
+      return request("GET", "/travel/adverts/{travelAdvert}", options);
+    },
+
+    /** TRAVEL-907 — Paiement d''une annonce (idempotent) */
+    postTravelAdvertsByTravelAdvertPay(options = {}) {
+      return request("POST", "/travel/adverts/{travelAdvert}/pay", options);
+    },
+
+    /** TRAVEL-907 — Rejet d''une annonce (motif) */
+    postTravelAdvertsByTravelAdvertReject(options = {}) {
+      return request("POST", "/travel/adverts/{travelAdvert}/reject", options);
+    },
+
+    /** TRAVEL-908 — Renouvellement (nouveau paiement, prolongation) */
+    postTravelAdvertsByTravelAdvertRenew(options = {}) {
+      return request("POST", "/travel/adverts/{travelAdvert}/renew", options);
+    },
+
+    /** TRAVEL-907 — Validation d''une annonce (travel.manage) */
+    postTravelAdvertsByTravelAdvertValidate(options = {}) {
+      return request("POST", "/travel/adverts/{travelAdvert}/validate", options);
+    },
+
     /** TRAVEL-901 — Catégories d''articles */
     getTravelArticleCategories(options = {}) {
       return request("GET", "/travel/article-categories", options);
@@ -4513,6 +4593,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977) */
     getTravelPing(options = {}) {
       return request("GET", "/travel/ping", options);
+    },
+
+    /** TRAVEL-904 — Liste des quiz */
+    getTravelQuizzes(options = {}) {
+      return request("GET", "/travel/quizzes", options);
+    },
+
+    /** TRAVEL-904 — Création d''un quiz */
+    postTravelQuizzes(options = {}) {
+      return request("POST", "/travel/quizzes", options);
+    },
+
+    /** TRAVEL-904 — Détail d''un quiz (questions SANS réponses correctes) */
+    getTravelQuizzesByTravelQuiz(options = {}) {
+      return request("GET", "/travel/quizzes/{travelQuiz}", options);
+    },
+
+    /** TRAVEL-904 — Participation (notation serveur) */
+    postTravelQuizzesByTravelQuizParticipate(options = {}) {
+      return request("POST", "/travel/quizzes/{travelQuiz}/participate", options);
+    },
+
+    /** TRAVEL-904 — Ajout d''une question */
+    postTravelQuizzesByTravelQuizQuestions(options = {}) {
+      return request("POST", "/travel/quizzes/{travelQuiz}/questions", options);
+    },
+
+    /** TRAVEL-904 — Résultats (gestion) */
+    getTravelQuizzesByTravelQuizResults(options = {}) {
+      return request("GET", "/travel/quizzes/{travelQuiz}/results", options);
     },
 
     /** Liste des réservations de location (TRAVEL-320/#6050) */
