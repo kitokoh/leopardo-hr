@@ -2,8 +2,8 @@
 
 > ⚠️ **Rapport historique figé (2026-07-18)** — la structure `.github/workflows/` decrite plus bas
 > (`test.yml`, `lint.yml`, `build.yml`) ne reflète plus les noms de fichiers reels du repo (voir
-> `docs/PHASE_8_COMPLETION.md` pour le detail des renommages). Pour l'etat courant, voir
-> `PILOTAGE.md` et `.github/workflows/README.md`.
+> `PHASE_8_COMPLETION.md` dans ce même dossier pour le detail des renommages). Pour l'etat courant, voir
+> `../../../PILOTAGE.md` et `../../../.github/workflows/README.md`.
 
 ## 🎉 Projet Complété avec Succès!
 
