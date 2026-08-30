@@ -51,9 +51,9 @@ tags:
 - name: Health
   description: Groupe d'opérations Health
 - name: Auth
+  description: Groupe d'opérations Auth
 - name: Delivery
   description: Groupe d'opérations Delivery (BC-26 DELIVERY)
-  description: Groupe d'opérations Auth
 - name: Payrolls
   description: Groupe d'opérations Payrolls
 - name: HR Referentials
