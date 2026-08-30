@@ -716,6 +716,1622 @@ paths:
           description: Manager role required
         '404':
           description: Employe introuvable (isolation tenant)
+  /edu-manager/campuses:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les campus (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+          - archived
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    post:
+      tags:
+      - EduManager
+      summary: Creer un campus (direction)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - status
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                address:
+                  type: string
+                  nullable: true
+                timezone:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/campuses/{campus}:
+    get:
+      tags:
+      - EduManager
+      summary: Consulter un campus
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campus
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    put:
+      tags:
+      - EduManager
+      summary: Modifier un campus
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campus
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - status
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+                  nullable: true
+                timezone:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+      responses:
+        '200':
+          description: Ressource mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    delete:
+      tags:
+      - EduManager
+      summary: Supprimer un campus
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campus
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/academic-years:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les annees scolaires (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - closed
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    post:
+      tags:
+      - EduManager
+      summary: Creer une annee scolaire
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - start_date
+              - end_date
+              - status
+              properties:
+                name:
+                  type: string
+                start_date:
+                  type: string
+                end_date:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - closed
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/academic-years/{year}:
+    get:
+      tags:
+      - EduManager
+      summary: Consulter une annee scolaire
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: year
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    put:
+      tags:
+      - EduManager
+      summary: Modifier une annee scolaire
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: year
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - start_date
+              - end_date
+              - status
+              properties:
+                name:
+                  type: string
+                start_date:
+                  type: string
+                end_date:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - closed
+      responses:
+        '200':
+          description: Ressource mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    delete:
+      tags:
+      - EduManager
+      summary: Supprimer une annee scolaire
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: year
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/subjects:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les matieres
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+          - archived
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    post:
+      tags:
+      - EduManager
+      summary: Creer une matiere
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - campus_id
+              - status
+              properties:
+                campus_id:
+                  type: integer
+                  nullable: true
+                code:
+                  type: string
+                name:
+                  type: string
+                default_coefficient:
+                  type: number
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/subjects/{subject}:
+    get:
+      tags:
+      - EduManager
+      summary: Consulter une matiere
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: subject
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    put:
+      tags:
+      - EduManager
+      summary: Modifier une matiere
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: subject
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                default_coefficient:
+                  type: number
+      responses:
+        '200':
+          description: Ressource mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    delete:
+      tags:
+      - EduManager
+      summary: Supprimer une matiere
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: subject
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/students:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les eleves (direction, PII)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+          - archived
+      - name: q
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    post:
+      tags:
+      - EduManager
+      summary: Creer un eleve
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - student_number
+              - display_name
+              - status
+              properties:
+                student_number:
+                  type: string
+                display_name:
+                  type: string
+                birth_date:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/students/{student}:
+    get:
+      tags:
+      - EduManager
+      summary: Consulter un eleve
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: student
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    put:
+      tags:
+      - EduManager
+      summary: Modifier un eleve
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: student
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - display_name
+              properties:
+                display_name:
+                  type: string
+                birth_date:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Ressource mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    delete:
+      tags:
+      - EduManager
+      summary: Archiver un eleve (RGPD)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: student
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/classes:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les classes (perimetre enseignant)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: academic_year_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+          - archived
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    post:
+      tags:
+      - EduManager
+      summary: Creer une classe
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - campus_id
+              - academic_year_id
+              - teacher_id
+              properties:
+                campus_id:
+                  type: integer
+                academic_year_id:
+                  type: integer
+                code:
+                  type: string
+                name:
+                  type: string
+                level:
+                  type: string
+                  nullable: true
+                teacher_id:
+                  type: integer
+                  nullable: true
+                capacity:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/classes/{class}:
+    get:
+      tags:
+      - EduManager
+      summary: Consulter une classe
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    put:
+      tags:
+      - EduManager
+      summary: Modifier une classe
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - teacher_id
+              properties:
+                name:
+                  type: string
+                teacher_id:
+                  type: integer
+                  nullable: true
+                capacity:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Ressource mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    delete:
+      tags:
+      - EduManager
+      summary: Supprimer une classe
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/classes/{class}/teachers:
+    post:
+      tags:
+      - EduManager
+      summary: Affecter un enseignant a une matiere dans la classe
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - subject_id
+              - teacher_id
+              properties:
+                subject_id:
+                  type: integer
+                teacher_id:
+                  type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/teacher-subjects/{assignment}:
+    delete:
+      tags:
+      - EduManager
+      summary: Retirer une affectation enseignant
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: assignment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/admissions:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les dossiers d admission (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: academic_year_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    post:
+      tags:
+      - EduManager
+      summary: Creer un dossier d admission (idempotent)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - campus_id
+              - academic_year_id
+              - applicant_first_name
+              - applicant_last_name
+              - applied_at
+              - status
+              - external_id
+              - consent_contact
+              properties:
+                academic_year_id:
+                  type: integer
+                campus_id:
+                  type: integer
+                  nullable: true
+                applicant_first_name:
+                  type: string
+                applicant_last_name:
+                  type: string
+                applicant_email:
+                  type: string
+                  nullable: true
+                applicant_birth_date:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - new
+                  - document_pending
+                  - review
+                  - accepted
+                  - waitlisted
+                  - rejected
+                  - cancelled
+                  - converted
+                source:
+                  type: string
+                  nullable: true
+                external_id:
+                  type: string
+                  nullable: true
+                consent_contact:
+                  type: boolean
+                applied_at:
+                  type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/admissions/{admission}:
+    get:
+      tags:
+      - EduManager
+      summary: Consulter un dossier d admission
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: admission
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/admissions/{admission}/convert:
+    post:
+      tags:
+      - EduManager
+      summary: Convertir le dossier en eleve (idempotent, consentement requis)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: admission
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/classes/{class}/attendances:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les presences d une classe
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: date
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    post:
+      tags:
+      - EduManager
+      summary: Saisir une presence (idempotente)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - student_id
+              - attendance_date
+              - status
+              properties:
+                student_id:
+                  type: integer
+                attendance_date:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - present
+                  - absent
+                  - late
+                  - excused
+                reason:
+                  type: string
+                  nullable: true
+                justification:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/attendances/{attendance}/correct:
+    post:
+      tags:
+      - EduManager
+      summary: Corriger une presence (versionnee)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: attendance
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - present
+                  - absent
+                  - late
+                  - excused
+                reason:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/course-slots:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les creneaux
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class_id
+        in: query
+        schema:
+          type: integer
+      - name: teacher_id
+        in: query
+        schema:
+          type: integer
+      - name: day_of_week
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    post:
+      tags:
+      - EduManager
+      summary: Creer un creneau (conflits detectes)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - academic_year_id
+              - day_of_week
+              - start_time
+              - end_time
+              - class_id
+              - subject_id
+              - teacher_id
+              properties:
+                class_id:
+                  type: integer
+                subject_id:
+                  type: integer
+                academic_year_id:
+                  type: integer
+                teacher_id:
+                  type: integer
+                  nullable: true
+                day_of_week:
+                  type: integer
+                start_time:
+                  type: string
+                end_time:
+                  type: string
+                room:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/course-slots/{slot}:
+    get:
+      tags:
+      - EduManager
+      summary: Consulter un creneau
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: slot
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    put:
+      tags:
+      - EduManager
+      summary: Modifier un creneau
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: slot
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              - teacher_id
+              properties:
+                teacher_id:
+                  type: integer
+                  nullable: true
+                room:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - cancelled
+      responses:
+        '200':
+          description: Ressource mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    delete:
+      tags:
+      - EduManager
+      summary: Supprimer un creneau
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: slot
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/assessments:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les evaluations
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class_id
+        in: query
+        schema:
+          type: integer
+      - name: subject_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    post:
+      tags:
+      - EduManager
+      summary: Creer une evaluation
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - academic_year_id
+              - title
+              - type
+              - class_id
+              - subject_id
+              properties:
+                class_id:
+                  type: integer
+                subject_id:
+                  type: integer
+                academic_year_id:
+                  type: integer
+                title:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                  - exam
+                  - quiz
+                  - homework
+                  - project
+                coefficient:
+                  type: number
+                max_score:
+                  type: number
+                assessment_date:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/assessments/{assessment}:
+    get:
+      tags:
+      - EduManager
+      summary: Consulter une evaluation
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: assessment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    put:
+      tags:
+      - EduManager
+      summary: Modifier une evaluation
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: assessment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              properties:
+                title:
+                  type: string
+                coefficient:
+                  type: number
+                max_score:
+                  type: number
+      responses:
+        '200':
+          description: Ressource mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+    delete:
+      tags:
+      - EduManager
+      summary: Supprimer une evaluation
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: assessment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/assessments/{assessment}/grades:
+    post:
+      tags:
+      - EduManager
+      summary: Saisir une note (bareme serveur)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: assessment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - student_id
+              - score
+              properties:
+                student_id:
+                  type: integer
+                score:
+                  type: number
+                comment:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/grades/{grade}/publish:
+    post:
+      tags:
+      - EduManager
+      summary: Publier une note
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: grade
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/grades/{grade}/correct:
+    post:
+      tags:
+      - EduManager
+      summary: Corriger une note (versionnee)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: grade
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - score
+              properties:
+                score:
+                  type: number
+                comment:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/report-cards:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les bulletins
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: student_id
+        in: query
+        schema:
+          type: integer
+      - name: period
+        in: query
+        schema:
+          type: string
+          enum:
+          - term1
+          - term2
+          - term3
+          - final
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - draft
+          - validated
+          - published
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/report-cards/generate:
+    post:
+      tags:
+      - EduManager
+      summary: Generer un bulletin (recalculable)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - academic_year_id
+              - student_id
+              - period
+              properties:
+                student_id:
+                  type: integer
+                academic_year_id:
+                  type: integer
+                period:
+                  type: string
+                  enum:
+                  - term1
+                  - term2
+                  - term3
+                  - final
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/report-cards/{card}:
+    get:
+      tags:
+      - EduManager
+      summary: Consulter un bulletin avec lignes
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: card
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/report-cards/{card}/validate:
+    post:
+      tags:
+      - EduManager
+      summary: Valider un bulletin (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: card
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/report-cards/{card}/publish:
+    post:
+      tags:
+      - EduManager
+      summary: Publier un bulletin (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: card
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation ou regle metier
   /demo-users:
     get:
       tags:
