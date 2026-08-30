@@ -6,15 +6,17 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelTouristSite;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelTouristSiteRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * TRAVEL-909 (#6112) — Sites touristiques (annuaire géolocalisé).
+ * TRAVEL-909 (#6112) — Annuaire des sites touristiques.
  *
- * CRUD + recherche par ville (critère d'acceptation). Écritures réservées
- * `travel.manage`, lecture ouverte aux employés du tenant.
+ * CRUD tenant-scoped + recherche par ville (`?city_id=`) et par nom
+ * (`?search=`). La description est redigée (pas de PII inutile).
  */
 class TravelTouristSiteController extends Controller
 {
@@ -23,134 +25,100 @@ class TravelTouristSiteController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $perPage = max(1, min(100, (int) $request->query('per_page', 20)));
-
         $sites = TravelTouristSite::query()
             ->where('company_id', $actor->company_id)
-            ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))
+            ->when($request->has('city_id'), fn ($query) => $query->where('city_id', (int) $request->query('city_id')))
+            ->when($request->has('search'), fn ($query) => $query->where('name', 'ilike', '%'.$request->query('search').'%'))
+            ->when($request->query('status'), fn ($query, $status) => $query->where('status', $status))
             ->orderBy('name')
-            ->paginate($perPage);
+            ->get()
+            ->map(fn (TravelTouristSite $site) => [
+                'id' => $site->id,
+                'name' => $site->name,
+                'city_id' => $site->city_id,
+                'status' => $site->status->value,
+            ]);
 
-        return response()->json([
-            'data' => $sites->map(fn (TravelTouristSite $site): array => $this->payload($site)),
-            'meta' => ['total' => $sites->total()],
-        ]);
+        return response()->json(['data' => $sites]);
     }
 
-    public function search(Request $request): JsonResponse
+    public function show(Request $request, TravelTouristSite $travelTouristSite): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $cityId = (int) $request->query('city_id', 0);
-
-        if ($cityId <= 0) {
-            abort(422, 'city_id requis.');
+        if ($actor->company_id !== $travelTouristSite->company_id) {
+            abort(404);
         }
 
-        $sites = TravelTouristSite::query()
-            ->where('company_id', $actor->company_id)
-            ->where('city_id', $cityId)
-            ->where('status', 'active')
-            ->orderBy('name')
-            ->get();
-
-        return response()->json(['data' => $sites->map(fn (TravelTouristSite $site): array => $this->payload($site))]);
+        return response()->json(['data' => [
+            'id' => $travelTouristSite->id,
+            'name' => $travelTouristSite->name,
+            'description' => $travelTouristSite->description_redacted,
+            'city_id' => $travelTouristSite->city_id,
+            'latitude' => $travelTouristSite->latitude,
+            'longitude' => $travelTouristSite->longitude,
+            'image_asset_id' => $travelTouristSite->image_asset_id,
+            'status' => $travelTouristSite->status->value,
+        ]]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreTravelTouristSiteRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        $this->denyUnlessManager($actor);
 
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:200'],
-            'description' => ['nullable', 'string', 'max:5000'],
-            'city_id' => ['required', 'integer', 'exists:travel_cities,id'],
-            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
-            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
-            'images' => ['nullable', 'array', 'max:10'],
-            'images.*' => ['required', 'string', 'max:500'],
-        ]);
+        if ($actor->cannot('create', TravelTouristSite::class)) {
+            abort(403);
+        }
 
         $site = TravelTouristSite::query()->create([
             'company_id' => $actor->company_id,
-            'name' => $data['name'],
-            'description_redacted' => $data['description'] ?? null,
-            'city_id' => (int) $data['city_id'],
-            'latitude' => $data['latitude'] ?? null,
-            'longitude' => $data['longitude'] ?? null,
-            'images' => $data['images'] ?? [],
-            'status' => 'active',
+            'name' => trim((string) $request->validated('name')),
+            'description_redacted' => $request->validated('description'),
+            'city_id' => $request->validated('city_id'),
+            'latitude' => $request->validated('latitude'),
+            'longitude' => $request->validated('longitude'),
+            'image_asset_id' => $request->validated('image_asset_id'),
+            'status' => $request->validated('status') ?? TravelRecordStatus::ACTIVE->value,
         ]);
 
-        return response()->json(['data' => $this->payload($site)])->setStatusCode(201);
+        return response()->json(['data' => ['id' => $site->id]], 201);
     }
 
-    public function update(Request $request, TravelTouristSite $site): JsonResponse
+    public function update(StoreTravelTouristSiteRequest $request, TravelTouristSite $travelTouristSite): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($site->company_id !== $actor->company_id) {
+        if ($actor->cannot('update', $travelTouristSite)) {
             abort(404);
         }
 
-        $this->denyUnlessManager($actor);
+        $travelTouristSite->forceFill([
+            'name' => trim((string) $request->validated('name')),
+            'description_redacted' => $request->validated('description'),
+            'city_id' => $request->validated('city_id'),
+            'latitude' => $request->validated('latitude'),
+            'longitude' => $request->validated('longitude'),
+            'image_asset_id' => $request->validated('image_asset_id'),
+            'status' => $request->validated('status') ?? $travelTouristSite->status->value,
+        ])->save();
 
-        $site->update($request->validate([
-            'name' => ['sometimes', 'string', 'max:200'],
-            'description' => ['nullable', 'string', 'max:5000'],
-            'city_id' => ['sometimes', 'integer', 'exists:travel_cities,id'],
-            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
-            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
-            'images' => ['nullable', 'array', 'max:10'],
-            'images.*' => ['required', 'string', 'max:500'],
-            'status' => ['sometimes', 'string', 'in:active,hidden'],
-        ]));
-
-        return response()->json(['data' => $this->payload($site->refresh())]);
+        return response()->json(['data' => ['id' => $travelTouristSite->id]]);
     }
 
-    public function destroy(Request $request, TravelTouristSite $site): JsonResponse
+    public function destroy(Request $request, TravelTouristSite $travelTouristSite): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($site->company_id !== $actor->company_id) {
+        if ($actor->cannot('update', $travelTouristSite)) {
             abort(404);
         }
 
-        $this->denyUnlessManager($actor);
+        $travelTouristSite->delete();
 
-        $site->delete();
-
-        return new JsonResponse(null, 204);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function payload(TravelTouristSite $site): array
-    {
-        return [
-            'id' => $site->id,
-            'name' => $site->name,
-            'description' => $site->description_redacted,
-            'city_id' => $site->city_id,
-            'latitude' => $site->latitude,
-            'longitude' => $site->longitude,
-            'images' => $site->images ?? [],
-            'status' => $site->status,
-            'created_at' => $site->created_at?->toIso8601String(),
-        ];
-    }
-
-    private function denyUnlessManager(Employee $actor): void
-    {
-        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
-            abort(403);
-        }
+        return response()->json(null, 204);
     }
 }

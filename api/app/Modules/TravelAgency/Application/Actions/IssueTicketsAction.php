@@ -9,7 +9,6 @@ use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Enums\TicketStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
-use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use Illuminate\Support\Facades\DB;
 
@@ -26,10 +25,7 @@ use Illuminate\Support\Facades\DB;
  */
 final class IssueTicketsAction
 {
-    public function __construct(
-        private readonly TravelOutboxPublisher $outbox,
-        private readonly TravelLoyaltyService $loyalty,
-    ) {}
+    public function __construct(private readonly TravelOutboxPublisher $outbox) {}
 
     /**
      * @return list<TravelTicket>
@@ -63,10 +59,6 @@ final class IssueTicketsAction
                 // Le code en clair (QR) n'est jamais persiste — seul le hash.
                 $ticket->issueValidationCode();
                 $ticket->save();
-
-                // TRAVEL-811 (#6101) — fidélité : crédit unique par billet,
-                // no-op si pas d'opt-in (même transaction que l'émission).
-                $this->loyalty->creditForTicket($ticket);
 
                 $tickets[] = $ticket;
             }

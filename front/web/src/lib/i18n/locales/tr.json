@@ -3631,5 +3631,24 @@
     "loadError": "Mutfak kuyruğu yüklenemedi.",
     "actionError": "İşlem başarısız, tekrar deneyin.",
     "loading": "Mutfak kuyruğu yükleniyor…"
+  },
+  "travel": {
+    "publicContact": {
+      "title": "Seyahat acentesiyle iletişime geçin",
+      "subtitle": "Yolculuklarınız, rezervasyonlarınız veya biletleriniz hakkında bir sorunuz mu var? Bize yazın.",
+      "noLink": "Bu form, acentenin sağladığı iletişim bağlantısını (imzalı bağlantı) gerektirir.",
+      "invalidLink": "Geçersiz veya süresi dolmuş iletişim bağlantısı. Ajansdan yeni bir bağlantı isteyin.",
+      "sendFailed": "Gönderim başarısız oldu. Tekrar deneyin.",
+      "ackTitle": "Talep alındı",
+      "ackBody": "Teşekkürler! Ajans en kısa sürede size dönüş yapacaktır.",
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "message": "Mesaj",
+      "consent": "Talebim hakkında e-posta ile iletişime geçilmesini kabul ediyorum.",
+      "sending": "Gönderiliyor…",
+      "send": "Talebi gönder"
+    }
   }
 }

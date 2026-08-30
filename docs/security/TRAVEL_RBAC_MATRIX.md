@@ -11,7 +11,7 @@
 | `travel.manage` | Administration de la verticale (référentiel, réseau, trajets, réservations, tarifs, locations, hôtels, billets) | `hasManagerRole('principal', 'rh', 'manager')` sur toutes les Policies d'écriture |
 | `travel.agent` | Vente guichet / caisse (lecture + création de réservation) | Lecture ouverte à tout employé du tenant (`viewAny` → true) ; écriture via `travel.manage` |
 | `travel.checkin` | Contrôle embarquement / check-in | `TravelTicketPolicy::checkIn()` — rôle manager |
-| `travel.reports` | Rapports & exports (épic 5xx) | `hasManagerRole('principal', 'rh', 'manager')` (TravelReportPolicy) |
+| `travel.reports` | Rapports & exports (épic 5xx) | À câbler avec l'épic 5xx |
 
 ## Matrice par surface API (qui peut faire quoi)
 
@@ -27,7 +27,6 @@
 | `GET /travel/trips/{id}/manifest` | ✅ lecture (sans PII) | ✅ |
 | `POST /travel/rental-bookings` + cancel | ❌ 403 | ✅ |
 | `POST /travel/hotels` + rooms | ❌ 403 | ✅ |
-| `GET /travel/reports/*` (sales, occupancy, revenue, cancellations, dashboard, export) | ❌ 403 | ✅ (`travel.reports`) |
 
 ## Règles transversales (fail-closed)
 

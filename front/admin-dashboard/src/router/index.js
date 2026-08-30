@@ -4,6 +4,7 @@ import { useLocaleStore } from '@/stores/locale'
 import { translate } from '@/i18n/index.js'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import FuelManagerView from '@/views/fuel/FuelManagerView.vue'
 
 // Configuration NProgress
 NProgress.configure({
@@ -211,6 +212,15 @@ const routes = [
         }
       },
       {
+        path: '/fuel-station',
+        name: 'fuelStation',
+        component: FuelManagerView,
+        meta: {
+          title: 'navigation.fuelStation',
+          icon: 'BoltIcon'
+        }
+      },
+      {
         path: '/chat',
         name: 'chat',
         component: () => import('@/views/chat/ChatView.vue'),
@@ -321,6 +331,15 @@ const routes = [
         component: () => import('../views/travel/TravelReportsView.vue'),
         meta: {
           title: 'travel.reports.title',
+          parent: 'travel'
+        }
+      },
+      {
+        path: '/travel/content',
+        name: 'travel-content',
+        component: () => import('../views/travel/TravelContentView.vue'),
+        meta: {
+          title: 'travel.content.title',
           parent: 'travel'
         }
       },

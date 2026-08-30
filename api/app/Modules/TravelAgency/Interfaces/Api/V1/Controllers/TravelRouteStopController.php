@@ -112,9 +112,11 @@ class TravelRouteStopController extends Controller
             abort(403);
         }
 
-        DB::transaction(function () use ($travelRouteStop, $travelRoute): void {
+        DB::transaction(function () use ($travelRouteStop): void {
             $travelRouteStop->delete();
-            $this->renumberRanks($travelRoute->refresh());
+            $route = $travelRouteStop->route;
+            assert($route instanceof TravelRoute);
+            $this->renumberRanks($route);
         });
 
         return new JsonResponse(null, 204);

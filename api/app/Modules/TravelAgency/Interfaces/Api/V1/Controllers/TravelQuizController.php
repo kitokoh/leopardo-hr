@@ -6,247 +6,275 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\TravelAgency\Application\Actions\ParticipateQuizAction;
+use App\Modules\TravelAgency\Domain\Enums\QuizStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelQuiz;
-use App\Modules\TravelAgency\Domain\Models\TravelQuizParticipation;
 use App\Modules\TravelAgency\Domain\Models\TravelQuizQuestion;
-use App\Modules\TravelAgency\Infrastructure\Services\TravelQuizService;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\ParticipateTravelQuizRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelQuizQuestionRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelQuizRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelQuizQuestionRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelQuizRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
  * TRAVEL-904 (#6107) — Quiz & jeu-concours.
  *
- * CRUD quiz + questions (bonne réponse HACHÉE, jamais en clair au repos),
- * participation unique par (quiz, contact) — score calculé serveur,
- * résultats cohérents (score ≤ total).
+ * Le participant ne reçoit JAMAIS les réponses correctes : `show` expose
+ * les questions sans `correct_option_index` ; la notation est serveur
+ * (`ParticipateQuizAction`). Participation unique par (quiz, email) → 409.
  */
 class TravelQuizController extends Controller
 {
-    // ── Quiz ────────────────────────────────────────────────────────────────
+    public function __construct(private readonly ParticipateQuizAction $participate) {}
 
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
+        if ($actor->cannot('viewAny', TravelQuiz::class)) {
+            abort(403);
+        }
+
         $quizzes = TravelQuiz::query()
             ->where('company_id', $actor->company_id)
-            ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))
-            ->withCount('questions')
-            ->orderByDesc('created_at')
+            ->when($request->query('status'), fn ($query, $status) => $query->where('status', $status))
+            ->orderByDesc('id')
             ->get();
 
-        return response()->json(['data' => $quizzes->map(fn (TravelQuiz $q): array => $this->quizPayload($q))]);
-    }
-
-    public function store(Request $request): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        $this->denyUnlessManager($actor);
-
-        $data = $request->validate([
-            'title' => ['required', 'string', 'max:200'],
-            'description' => ['nullable', 'string', 'max:2000'],
-            'max_participations_per_contact' => ['sometimes', 'integer', 'min:1', 'max:100'],
-            'bonus_points' => ['sometimes', 'integer', 'min:0', 'max:100000'],
-        ]);
-
-        $quiz = TravelQuiz::query()->create([
-            'company_id' => $actor->company_id,
-            'title' => $data['title'],
-            'description_redacted' => $data['description'] ?? null,
-            'status' => 'draft',
-            'max_participations_per_contact' => $data['max_participations_per_contact'] ?? 1,
-            'bonus_points' => $data['bonus_points'] ?? 0,
-            'created_by_user_id' => $actor->id,
-        ]);
-
-        return response()->json(['data' => $this->quizPayload($quiz)])->setStatusCode(201);
-    }
-
-    public function show(Request $request, TravelQuiz $quiz): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if ($quiz->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
-        $quiz->load('questions');
-
-        return response()->json(['data' => $this->quizPayload($quiz, withQuestions: true)]);
-    }
-
-    public function publish(Request $request, TravelQuiz $quiz): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if ($quiz->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
-        $this->denyUnlessManager($actor);
-
-        if ($quiz->questions()->count() === 0) {
-            abort(422, 'Un quiz doit contenir au moins une question pour être publié.');
-        }
-
-        $quiz->forceFill(['status' => 'published'])->save();
-
-        return response()->json(['data' => $this->quizPayload($quiz->refresh())]);
-    }
-
-    // ── Questions ───────────────────────────────────────────────────────────
-
-    public function storeQuestion(Request $request, TravelQuiz $quiz): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if ($quiz->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
-        $this->denyUnlessManager($actor);
-
-        $data = $request->validate([
-            'label' => ['required', 'string', 'max:500'],
-            'choices' => ['required', 'array', 'min:2', 'max:6'],
-            'choices.*' => ['required', 'string', 'max:200'],
-            'correct_answer' => ['required', 'string', 'max:200'],
-            'points' => ['sometimes', 'integer', 'min:1', 'max:1000'],
-        ]);
-
-        $rank = ((int) $quiz->questions()->max('rank')) + 1;
-
-        $question = TravelQuizQuestion::query()->create([
-            'company_id' => $actor->company_id,
-            'quiz_id' => $quiz->id,
-            'rank' => $rank,
-            'label' => $data['label'],
-            'choices' => $data['choices'],
-            'correct_answer_hash' => hash('sha256', $data['correct_answer']),
-            'points' => $data['points'] ?? 1,
-        ]);
-
-        return response()->json(['data' => $this->questionPayload($question)])->setStatusCode(201);
-    }
-
-    public function destroyQuestion(Request $request, TravelQuizQuestion $question): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if ($question->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
-        $this->denyUnlessManager($actor);
-
-        $question->delete();
-
-        return new JsonResponse(null, 204);
-    }
-
-    // ── Participation ───────────────────────────────────────────────────────
-
-    public function participate(Request $request, TravelQuiz $quiz, TravelQuizService $service): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if ($quiz->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
-        $data = $request->validate([
-            'participant_identifier' => ['required', 'string', 'max:255'],
-            'answers' => ['required', 'array', 'min:1'],
-            'answers.*' => ['required', 'string', 'max:200'],
-        ]);
-
-        $participation = $service->participate(
-            $quiz,
-            $data['participant_identifier'],
-            $data['answers'],
-        );
-
-        return response()->json(['data' => [
-            'id' => $participation->id,
-            'quiz_id' => $participation->quiz_id,
-            'score' => $participation->score,
-            'total_points' => $participation->total_points,
-        ]])->setStatusCode(201);
-    }
-
-    public function results(Request $request, TravelQuiz $quiz): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if ($quiz->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
-        $participations = TravelQuizParticipation::query()
-            ->where('company_id', $actor->company_id)
-            ->where('quiz_id', $quiz->id)
-            ->orderByDesc('score')
-            ->get();
-
-        return response()->json(['data' => $participations->map(fn (TravelQuizParticipation $p): array => [
-            'id' => $p->id,
-            'participant_identifier' => $p->participant_identifier,
-            'score' => $p->score,
-            'total_points' => $p->total_points,
-            'completed_at' => $p->completed_at->toIso8601String(),
+        return response()->json(['data' => $quizzes->map(fn (TravelQuiz $q) => [
+            'id' => $q->id,
+            'title' => $q->title,
+            'status' => $q->status->value,
+            'starts_at' => $q->starts_at?->toIso8601String(),
+            'ends_at' => $q->ends_at?->toIso8601String(),
         ])]);
     }
 
     /**
-     * @return array<string, mixed>
+     * Détail pour participation : questions SANS réponse correcte.
      */
-    private function quizPayload(TravelQuiz $quiz, bool $withQuestions = false): array
+    public function show(Request $request, TravelQuiz $travelQuiz): JsonResponse
     {
-        return [
-            'id' => $quiz->id,
-            'title' => $quiz->title,
-            'description' => $quiz->description_redacted,
-            'status' => $quiz->status,
-            'max_participations_per_contact' => $quiz->max_participations_per_contact,
-            'bonus_points' => $quiz->bonus_points,
-            'questions_count' => $quiz->questions_count ?? $quiz->questions()->count(),
-            'questions' => $withQuestions
-                ? $quiz->questions->map(fn (TravelQuizQuestion $q): array => $this->questionPayload($q))
-                : null,
-            'created_at' => $quiz->created_at?->toIso8601String(),
-        ];
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('view', $travelQuiz)) {
+            abort(404);
+        }
+
+        $questions = $travelQuiz->questions()->orderBy('position')->get()->map(fn ($q) => [
+            'id' => $q->id,
+            'question' => $q->question,
+            'options' => $q->options,
+            'points' => $q->points,
+        ]);
+
+        return response()->json([
+            'data' => [
+                'id' => $travelQuiz->id,
+                'title' => $travelQuiz->title,
+                'description' => $travelQuiz->description_redacted,
+                'status' => $travelQuiz->status->value,
+                'questions' => $questions,
+            ],
+        ]);
+    }
+
+    public function store(StoreTravelQuizRequest $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('create', TravelQuiz::class)) {
+            abort(403);
+        }
+
+        $quiz = TravelQuiz::query()->create([
+            'company_id' => $actor->company_id,
+            'title' => trim((string) $request->validated('title')),
+            'description_redacted' => $request->validated('description'),
+            'starts_at' => $request->validated('starts_at'),
+            'ends_at' => $request->validated('ends_at'),
+            'max_participations_per_contact' => (int) ($request->validated('max_participations_per_contact') ?? 1),
+            'status' => $request->validated('status') ?? QuizStatus::DRAFT->value,
+        ]);
+
+        return response()->json(['data' => ['id' => $quiz->id, 'status' => $quiz->status->value]], 201);
+    }
+
+    public function storeQuestion(StoreTravelQuizQuestionRequest $request, TravelQuiz $travelQuiz): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('update', $travelQuiz)) {
+            abort(403);
+        }
+
+        $position = (int) ($request->validated('position') ?? $travelQuiz->questions()->max('position') + 1);
+
+        $question = $travelQuiz->questions()->create([
+            'company_id' => $actor->company_id,
+            'question' => trim((string) $request->validated('question')),
+            'options' => $request->validated('options'),
+            'correct_option_index' => (int) $request->validated('correct_option_index'),
+            'points' => (int) ($request->validated('points') ?? 1),
+            'position' => $position,
+        ]);
+
+        return response()->json(['data' => ['id' => $question->id]], 201);
     }
 
     /**
-     * @return array<string, mixed>
+     * TRAVEL-914 (#6422) — Liste admin des questions d'un quiz AVEC la
+     * bonne réponse (réservée aux rôles gestion via TravelQuizPolicy::update).
+     * L'endpoint public `show` reste la seule surface côté participants
+     * (sans correct_option_index).
      */
-    private function questionPayload(TravelQuizQuestion $question): array
+    public function questionsIndex(Request $request, TravelQuiz $travelQuiz): JsonResponse
     {
-        return [
-            'id' => $question->id,
-            'quiz_id' => $question->quiz_id,
-            'rank' => $question->rank,
-            'label' => $question->label,
-            'choices' => $question->choices,
-            'points' => $question->points,
-            // Jamais la bonne réponse en clair : seule la présence d'un hash.
-            'has_correct_answer' => $question->correct_answer_hash !== '',
-        ];
-    }
+        /** @var Employee $actor */
+        $actor = $request->user();
 
-    private function denyUnlessManager(Employee $actor): void
-    {
-        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+        if ($actor->cannot('update', $travelQuiz)) {
             abort(403);
         }
+
+        $questions = $travelQuiz->questions()->orderBy('position')->get()->map(fn ($q) => [
+            'id' => $q->id,
+            'question' => $q->question,
+            'options' => $q->options,
+            'correct_option_index' => $q->correct_option_index,
+            'points' => $q->points,
+            'position' => $q->position,
+        ]);
+
+        return response()->json(['data' => $questions]);
+    }
+
+    /**
+     * TRAVEL-914 (#6422) — Mise à jour d'un quiz (gestion admin).
+     * La bonne réponse n'est jamais exposée en lecture ; elle n'est
+     * acceptée qu'en écriture (requests dédiées).
+     */
+    public function update(UpdateTravelQuizRequest $request, TravelQuiz $travelQuiz): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('update', $travelQuiz)) {
+            abort(403);
+        }
+
+        $travelQuiz->forceFill([
+            'title' => trim((string) $request->validated('title')),
+            'description_redacted' => $request->validated('description'),
+            'starts_at' => $request->validated('starts_at'),
+            'ends_at' => $request->validated('ends_at'),
+            'max_participations_per_contact' => (int) ($request->validated('max_participations_per_contact') ?? $travelQuiz->max_participations_per_contact),
+            'status' => $request->validated('status') ?? $travelQuiz->status->value,
+        ])->save();
+
+        return response()->json(['data' => ['id' => $travelQuiz->id, 'status' => $travelQuiz->status->value]]);
+    }
+
+    /**
+     * TRAVEL-914 (#6422) — Mise à jour d'une question de quiz (gestion admin).
+     */
+    public function updateQuestion(UpdateTravelQuizQuestionRequest $request, TravelQuiz $travelQuiz, TravelQuizQuestion $travelQuizQuestion): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('update', $travelQuiz)) {
+            abort(403);
+        }
+
+        if ($travelQuizQuestion->quiz_id !== $travelQuiz->id || $travelQuizQuestion->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $travelQuizQuestion->forceFill([
+            'question' => trim((string) $request->validated('question')),
+            'options' => $request->validated('options'),
+            'correct_option_index' => (int) $request->validated('correct_option_index'),
+            'points' => (int) ($request->validated('points') ?? $travelQuizQuestion->points),
+            'position' => (int) ($request->validated('position') ?? $travelQuizQuestion->position),
+        ])->save();
+
+        return response()->json(['data' => ['id' => $travelQuizQuestion->id]]);
+    }
+
+    /**
+     * TRAVEL-914 (#6422) — Suppression d'une question de quiz (gestion admin).
+     */
+    public function destroyQuestion(Request $request, TravelQuiz $travelQuiz, TravelQuizQuestion $travelQuizQuestion): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('update', $travelQuiz)) {
+            abort(403);
+        }
+
+        if ($travelQuizQuestion->quiz_id !== $travelQuiz->id || $travelQuizQuestion->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $travelQuizQuestion->delete();
+
+        return response()->json(null, 204);
+    }
+
+    public function participate(ParticipateTravelQuizRequest $request, TravelQuiz $travelQuiz): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('participate', $travelQuiz)) {
+            abort(404);
+        }
+
+        $result = $this->participate->execute(
+            $travelQuiz,
+            (string) $request->validated('participant_email'),
+            $request->validated('participant_name'),
+            $request->validated('answers'),
+        );
+
+        return response()->json([
+            'data' => [
+                'participation_id' => $result['participation']->id,
+                'score' => $result['score'],
+                'bonus' => $result['bonus'],
+            ],
+        ], 201);
+    }
+
+    public function results(Request $request, TravelQuiz $travelQuiz): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('viewResults', $travelQuiz)) {
+            abort(403);
+        }
+
+        $participations = $travelQuiz->participations()
+            ->orderByDesc('score')
+            ->get()
+            ->map(fn ($p) => [
+                'id' => $p->id,
+                'participant_email' => $p->participant_email,
+                'participant_name' => $p->participant_name,
+                'score' => $p->score,
+                'bonus' => $p->bonus,
+                'submitted_at' => $p->created_at?->toIso8601String(),
+            ]);
+
+        return response()->json(['data' => $participations]);
     }
 }

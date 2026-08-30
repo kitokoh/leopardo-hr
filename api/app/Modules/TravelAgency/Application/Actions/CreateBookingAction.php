@@ -18,7 +18,6 @@ use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 /**
  * TRAVEL-312 (#6042) — Creation d'une reservation guichet (multi-passagers).
@@ -26,15 +25,10 @@ use Illuminate\Support\Str;
  * Invariant stock (spec §4-D4) : la transaction verrouille les sieges
  * choisis avec `SELECT … FOR UPDATE` (jamais de decrement non protege).
  * Si les sieges ne sont pas fournis, ils sont attribues automatiquement
- * (TRAVEL-801/#6092 : regroupement + fenêtre avant). Le montant total est
- * calcule depuis les tarifs du trajet (unite mineures), jamais accepte du
+ * parmi les places libres du trajet. Le montant total est calcule depuis
+ * les tarifs du trajet (unite mineures, adulte/enfant), jamais accepte du
  * client. Idempotence : une `idempotency_key` deja utilisee renvoie la
  * reservation existante (pas de doublon).
- *
- * TRAVEL-802 (#6093) — aller-retour : si `return_trip_id` + `return_passengers`
- * sont fournis, une seconde reservation (leg retour) est creee dans le meme
- * groupe `round_trip_group_id`, liee par `return_booking_id`, avec le tarif
- * combine optionnel (config `travel.pricing.round_trip_discount_percent`).
  *
  * @phpstan-type PassengerInput array{
  *     full_name: string,
@@ -52,24 +46,14 @@ final class CreateBookingAction
 
     /**
      * @param  list<PassengerInput>  $passengers
-     * @param  list<PassengerInput>|null  $returnPassengers
      */
     public function execute(
         TravelTrip $trip,
         array $passengers,
         BookingSource $source,
-        ?Employee $actor,
+        Employee $actor,
         string $idempotencyKey,
         ?int $customerContactId = null,
-        ?string $contactEmail = null,
-        ?string $contactPhone = null,
-        bool $notifyConsent = false,
-        ?int $returnTripId = null,
-        ?array $returnPassengers = null,
-        ?int $corporateAccountId = null,
-        ?int $quoteId = null,
-        bool $billingDeferred = false,
-        ?string $connectionGroupId = null,
     ): TravelBooking {
         $existing = TravelBooking::query()
             ->where('trip_id', $trip->id)
@@ -84,105 +68,7 @@ final class CreateBookingAction
             abort(409, 'Ce trajet n\'est pas ouvert a la reservation.');
         }
 
-        // TRAVEL-809 (#6099) — correspondances : groupe explicite partagé.
-        $group = $connectionGroupId ?? (string) Str::uuid();
-
-        $booking = $this->createSingleBooking(
-            trip: $trip,
-            passengers: $passengers,
-            source: $source,
-            actor: $actor,
-            idempotencyKey: $idempotencyKey,
-            customerContactId: $customerContactId,
-            contactEmail: $contactEmail,
-            contactPhone: $contactPhone,
-            notifyConsent: $notifyConsent,
-            roundTripGroupId: $group,
-            returnBookingId: null,
-            isReturnLeg: false,
-            corporateAccountId: $corporateAccountId,
-            quoteId: $quoteId,
-            billingDeferred: $billingDeferred,
-            connectionGroupId: $connectionGroupId,
-        );
-
-        // TRAVEL-802 — leg retour (tarif combiné optionnel).
-        if ($returnTripId !== null && $returnPassengers !== null && $returnPassengers !== []) {
-            /** @var TravelTrip $returnTrip */
-            $returnTrip = TravelTrip::query()->findOrFail($returnTripId);
-
-            if ($returnTrip->company_id !== $actor->company_id) {
-                abort(404);
-            }
-
-            if ($returnTrip->status->value !== 'published') {
-                abort(409, 'Le trajet retour n\'est pas ouvert a la reservation.');
-            }
-
-            $returnBooking = $this->createSingleBooking(
-                trip: $returnTrip,
-                passengers: $returnPassengers,
-                source: $source,
-                actor: $actor,
-                idempotencyKey: $idempotencyKey.':return',
-                customerContactId: $customerContactId,
-                contactEmail: $contactEmail,
-                contactPhone: $contactPhone,
-                notifyConsent: $notifyConsent,
-                roundTripGroupId: $group,
-                returnBookingId: $booking->id,
-                isReturnLeg: true,
-                corporateAccountId: $corporateAccountId,
-                quoteId: $quoteId,
-                billingDeferred: $billingDeferred,
-                connectionGroupId: $connectionGroupId,
-            );
-
-            $booking->forceFill(['return_booking_id' => $returnBooking->id])->save();
-        }
-
-        return $booking->load('passengers');
-    }
-
-    /**
-     * @param  list<PassengerInput>  $passengers
-     */
-    private function createSingleBooking(
-        TravelTrip $trip,
-        array $passengers,
-        BookingSource $source,
-        ?Employee $actor,
-        string $idempotencyKey,
-        ?int $customerContactId,
-        ?string $contactEmail,
-        ?string $contactPhone,
-        bool $notifyConsent,
-        string $roundTripGroupId,
-        ?int $returnBookingId,
-        bool $isReturnLeg,
-        ?int $corporateAccountId = null,
-        ?int $quoteId = null,
-        bool $billingDeferred = false,
-        ?string $connectionGroupId = null,
-    ): TravelBooking {
-        $booking = DB::transaction(function () use (
-            $trip,
-            $passengers,
-            $source,
-            $actor,
-            $idempotencyKey,
-            $customerContactId,
-            $contactEmail,
-            $contactPhone,
-            $notifyConsent,
-            $roundTripGroupId,
-            $returnBookingId,
-            $isReturnLeg,
-            $corporateAccountId,
-            $quoteId,
-            $billingDeferred,
-            $connectionGroupId,
-        ): TravelBooking {
+        $booking = DB::transaction(function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId): TravelBooking {
             // Verrouille le trajet : empeche deux reservations concurrentes
             // de lire le meme inventaire.
             /** @var TravelTrip $lockedTrip */
@@ -191,15 +77,10 @@ final class CreateBookingAction
                 ->lockForUpdate()
                 ->firstOrFail();
 
+            // Selection des sieges (explicites ou auto-attribues).
             $seats = $this->resolveSeats($lockedTrip, $passengers);
-            $total = $this->computeTotal($lockedTrip, $passengers);
 
-            // Tarif combiné aller-retour (TRAVEL-802) : remise serveur sur
-            // la jambe retour uniquement (config, défaut 0 %).
-            if ($isReturnLeg) {
-                $discount = (int) config('travel.pricing.round_trip_discount_percent', 0);
-                $total = (int) round($total * (100 - max(0, min(100, $discount))) / 100);
-            }
+            $total = $this->computeTotal($lockedTrip, $passengers);
 
             $booking = TravelBooking::query()->create([
                 'trip_id' => $lockedTrip->id,
@@ -209,23 +90,10 @@ final class CreateBookingAction
                 'currency' => $this->resolveCurrency($lockedTrip),
                 'booking_source' => $source,
                 'customer_contact_id' => $customerContactId,
-                'booked_by_user_id' => $actor?->id,
+                'booked_by_user_id' => $actor->id,
                 'payment_status' => PaymentStatus::PENDING,
                 'expires_at' => now()->addMinutes(15),
                 'idempotency_key' => $idempotencyKey,
-                'contact_email' => $contactEmail,
-                'contact_phone' => $contactPhone,
-                'notify_consent' => $notifyConsent,
-                'consent_recorded_at' => $notifyConsent ? now() : null,
-                'round_trip_group_id' => $roundTripGroupId,
-                'return_booking_id' => $returnBookingId,
-                'leg' => $isReturnLeg ? 'return' : 'outbound',
-                // TRAVEL-803 (#6094) — réservation corporate (facturation différée).
-                'corporate_account_id' => $corporateAccountId,
-                'quote_id' => $quoteId,
-                'billing_deferred' => $billingDeferred,
-                // TRAVEL-809 (#6099) — correspondances (groupe de liaison).
-                'connection_group_id' => $connectionGroupId,
             ]);
 
             foreach ($passengers as $index => $passengerData) {
@@ -247,6 +115,7 @@ final class CreateBookingAction
                     $passenger->save();
                 }
 
+                // Reserve le siege : statut reserved + rattachement.
                 $seat->forceFill([
                     'status' => SeatStatus::RESERVED,
                     'booking_id' => $booking->id,
@@ -266,11 +135,9 @@ final class CreateBookingAction
             'currency' => $booking->currency,
             'booking_source' => $source->value,
             'expires_at' => $booking->expires_at?->toIso8601String(),
-            'round_trip_group_id' => $booking->round_trip_group_id,
-            'leg' => $booking->leg,
         ]);
 
-        return $booking;
+        return $booking->load('passengers');
     }
 
     /**
@@ -278,7 +145,7 @@ final class CreateBookingAction
      * premiers libres. Echoue en 409 si un siege demande est indisponible.
      *
      * @param  list<PassengerInput>  $passengers
-     * @return array<int, TravelTripSeat>
+     * @return list<TravelTripSeat>
      */
     private function resolveSeats(TravelTrip $trip, array $passengers): array
     {
@@ -327,57 +194,12 @@ final class CreateBookingAction
             return $selected;
         }
 
-        $auto = $this->autoAssign($available, count($passengers));
-        if (count($auto) < count($passengers)) {
+        $auto = $available->take(count($passengers));
+        if ($auto->count() < count($passengers)) {
             abort(409, 'Plus assez de places libres sur ce trajet.');
         }
 
-        return $auto;
-    }
-
-    /**
-     * TRAVEL-801 (#6092) — Assignation automatique des sièges.
-     *
-     * Algorithme déterministe (fenêtre avant + regroupement) :
-     *  1. parcourt les sièges libres dans l'ordre croissant (`seat_number`) ;
-     *  2. choisit le PREMIER bloc contigu de taille suffisante pour garder
-     *     le groupe ensemble ;
-     *  3. en l'absence de bloc contigu, repli sur les premiers libres.
-     * Le surclassement manuel reste possible : un `seat_number` explicite
-     * dans la requête (agent) est toujours honoré avant cet algorithme.
-     *
-     * @param  Collection<int, TravelTripSeat>  $available  sièges libres triés
-     * @return list<TravelTripSeat>
-     */
-    private function autoAssign(Collection $available, int $count): array
-    {
-        /** @var list<TravelTripSeat> $seats */
-        $seats = array_values($available->all());
-
-        if (count($seats) < $count) {
-            return [];
-        }
-
-        $runStart = 0;
-        $runLength = 1;
-
-        for ($i = 1; $i < count($seats); $i++) {
-            if ($seats[$i]->seat_number === $seats[$i - 1]->seat_number + 1) {
-                $runLength++;
-
-                if ($runLength >= $count) {
-                    return array_slice($seats, $runStart, $count);
-                }
-
-                continue;
-            }
-
-            $runStart = $i;
-            $runLength = 1;
-        }
-
-        // Aucun bloc contigu de taille suffisante : fenêtre avant simple.
-        return array_slice($seats, 0, $count);
+        return array_values($auto->values()->all());
     }
 
     /**

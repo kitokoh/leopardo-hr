@@ -2243,64 +2243,6 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL (verticale TravelAgency, TRAVEL-201/202/203) ──────
-        if (! Schema::hasTable($this->moduleTable('travel_countries'))) {
-            Schema::create($this->moduleTable('travel_countries'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->char('iso2', 2);
-                $table->char('iso3', 3);
-                $table->string('name', 120);
-                $table->unsignedSmallInteger('phone_code')->nullable();
-                $table->string('status', 20)->default('active');
-                $table->timestamps();
-                $table->unique(['company_id', 'iso2'], 'travel_countries_company_iso2_unique');
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('travel_cities'))) {
-            Schema::create($this->moduleTable('travel_cities'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->char('country_iso2', 2);
-                $table->string('name', 120);
-                $table->string('region', 120)->nullable();
-                $table->double('latitude')->nullable();
-                $table->double('longitude')->nullable();
-                $table->string('status', 20)->default('active');
-                $table->timestamps();
-                $table->unique(['company_id', 'country_iso2', 'name'], 'travel_cities_company_country_name_unique');
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('travel_stations'))) {
-            Schema::create($this->moduleTable('travel_stations'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('code', 40);
-                $table->string('name', 120);
-                $table->unsignedBigInteger('city_id');
-                $table->string('address', 255)->nullable();
-                $table->string('contact_phone', 40)->nullable();
-                $table->string('timezone', 50)->default('UTC');
-                $table->boolean('is_terminal')->default(false);
-                $table->string('status', 20)->default('active');
-                $table->timestamps();
-                $table->unique(['company_id', 'code'], 'travel_stations_company_code_unique');
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('travel_offices'))) {
-            Schema::create($this->moduleTable('travel_offices'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('name', 120);
-                $table->unsignedBigInteger('city_id');
-                $table->string('address', 255)->nullable();
-                $table->string('contact_phone', 40)->nullable();
-            });
-        }
-
         // — FuelStation (solution verticale, FUEL-002..008, issues #5795..#5802) :
         // parité fixture ↔ migrations tenant récentes (garde #5443) — mêmes
         // colonnes que les migrations (PK bigint, company_id uuid indexé),
@@ -2365,209 +2307,7 @@ trait CreatesMvpSchema
                 $table->unsignedBigInteger('station_id');
                 $table->string('code', 40);
                 $table->json('product_types')->nullable();
-
                 $table->string('status', 20)->default('active');
-                $table->timestamps();
-            });
-        }
-
-        // ── BC-24 TRAVEL — TRAVEL-204 (issue #6017) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_carriers'))) {
-            Schema::create($this->moduleTable('travel_carriers'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('code', 40);
-                $table->string('name', 120);
-                $table->string('type', 20)->default('bus');
-                $table->string('contact_phone', 40)->nullable();
-                $table->unsignedBigInteger('logo_asset_id')->nullable();
-                $table->string('status', 20)->default('active');
-                $table->timestamps();
-                $table->unique(['company_id', 'code'], 'travel_carriers_company_code_unique');
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('travel_classes'))) {
-            Schema::create($this->moduleTable('travel_classes'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('code', 40);
-                $table->string('label', 120);
-                $table->string('color', 7)->nullable();
-                $table->unsignedSmallInteger('priority')->default(0);
-                $table->string('status', 20)->default('active');
-                $table->timestamps();
-                $table->unique(['company_id', 'code'], 'travel_classes_company_code_unique');
-            });
-        }
-
-        // ── BC-24 TRAVEL — TRAVEL-205 (issue #6018) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_vehicles'))) {
-            Schema::create($this->moduleTable('travel_vehicles'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('code', 40);
-                $table->string('registration_number', 40)->nullable();
-                $table->unsignedInteger('seat_capacity');
-                $table->unsignedBigInteger('carrier_id')->nullable();
-                $table->string('status', 20)->default('active');
-                $table->text('notes')->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'code'], 'travel_vehicles_company_code_unique');
-            });
-        }
-
-        // ── BC-24 TRAVEL — TRAVEL-206 (issue #6019) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_routes'))) {
-            Schema::create($this->moduleTable('travel_routes'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('code', 40);
-                $table->unsignedBigInteger('origin_city_id');
-                $table->unsignedBigInteger('destination_city_id');
-                $table->unsignedInteger('distance_km')->nullable();
-                $table->unsignedInteger('duration_min')->nullable();
-                $table->string('status', 20)->default('active');
-                // TRAVEL-807 (#6086) — route synchronisée par un transporteur.
-                $table->unsignedBigInteger('carrier_id')->nullable();
-                $table->string('external_id', 120)->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'code'], 'travel_routes_company_code_unique');
-                $table->unique(
-                    ['company_id', 'origin_city_id', 'destination_city_id'],
-                    'travel_routes_company_origin_destination_unique'
-                );
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('travel_route_stops'))) {
-            Schema::create($this->moduleTable('travel_route_stops'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('route_id');
-                $table->unsignedBigInteger('city_id');
-                $table->unsignedSmallInteger('rank');
-                $table->boolean('is_stopover')->default(true);
-                $table->unsignedInteger('min_duration_min')->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'route_id', 'rank'], 'travel_route_stops_company_route_rank_unique');
-                $table->unique(['company_id', 'route_id', 'city_id'], 'travel_route_stops_company_route_city_unique');
-            });
-        }
-
-        // ── BC-24 TRAVEL — TRAVEL-207 (issue #6020) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_trips'))) {
-            Schema::create($this->moduleTable('travel_trips'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('code', 40);
-                $table->unsignedBigInteger('route_id');
-                $table->unsignedBigInteger('carrier_id')->nullable();
-                $table->unsignedBigInteger('vehicle_id')->nullable();
-                $table->date('departure_date');
-                $table->time('departure_time');
-                $table->date('arrival_date');
-                $table->time('arrival_time');
-                $table->string('means_of_transport', 20)->default('bus');
-                $table->unsignedInteger('total_seats');
-                $table->string('status', 20)->default('draft');
-                $table->timestamp('published_at')->nullable();
-                $table->unsignedBigInteger('created_by_user_id')->nullable();
-                // TRAVEL-807 (#6086) — clé externe transporteur (upsert idempotent).
-                $table->string('external_id', 120)->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'code'], 'travel_trips_company_code_unique');
-                $table->unique(['company_id', 'carrier_id', 'external_id'], 'travel_trips_company_carrier_external_unique');
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('travel_trip_prices'))) {
-            Schema::create($this->moduleTable('travel_trip_prices'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('trip_id');
-                $table->unsignedBigInteger('class_id');
-                $table->unsignedInteger('adult_price_minor');
-                $table->unsignedInteger('child_price_minor')->nullable();
-                $table->char('currency', 3);
-                $table->timestamps();
-                $table->unique(['company_id', 'trip_id', 'class_id'], 'travel_trip_prices_company_trip_class_unique');
-            });
-        }
-
-        // ── BC-24 TRAVEL — TRAVEL-208 (issue #6021) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_trip_seats'))) {
-            Schema::create($this->moduleTable('travel_trip_seats'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('trip_id');
-                $table->unsignedInteger('seat_number');
-                $table->string('status', 20)->default('free');
-                $table->unsignedBigInteger('booking_id')->nullable();
-                $table->unsignedBigInteger('passenger_id')->nullable();
-                $table->timestamp('reserved_until')->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'trip_id', 'seat_number'], 'travel_trip_seats_company_trip_seat_unique');
-            });
-        }
-
-        // ── BC-24 TRAVEL — TRAVEL-209 (issue #6022) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_bookings'))) {
-            Schema::create($this->moduleTable('travel_bookings'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('reference', 40);
-                $table->unsignedBigInteger('trip_id');
-                $table->string('status', 20)->default('pending');
-                $table->unsignedInteger('passenger_count');
-                $table->unsignedInteger('total_amount_minor');
-                $table->char('currency', 3);
-                $table->string('booking_source', 20)->default('office');
-                $table->unsignedBigInteger('customer_contact_id')->nullable();
-                $table->unsignedBigInteger('booked_by_user_id')->nullable();
-                $table->string('payment_status', 20)->default('pending');
-                $table->timestamp('expires_at')->nullable();
-                $table->string('idempotency_key', 255);
-                $table->unsignedInteger('version')->default(1);
-                // TRAVEL-415 (#6067) — contact voyageur + consentement.
-                $table->string('contact_email', 255)->nullable();
-                $table->string('contact_phone', 40)->nullable();
-                $table->boolean('notify_consent')->default(false);
-                $table->timestamp('consent_recorded_at')->nullable();
-                // TRAVEL-802 (#6093) — aller-retour (groupe + liaison).
-                $table->uuid('round_trip_group_id')->nullable();
-                $table->unsignedBigInteger('return_booking_id')->nullable();
-                $table->string('leg', 10)->nullable();
-                // TRAVEL-803 (#6094) — réservation corporate.
-                $table->unsignedBigInteger('corporate_account_id')->nullable();
-                $table->unsignedBigInteger('quote_id')->nullable();
-                $table->boolean('billing_deferred')->default(false);
-                // TRAVEL-809 (#6099) — correspondances (groupe de liaison).
-                $table->uuid('connection_group_id')->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'reference'], 'travel_bookings_company_reference_unique');
-                $table->unique(['company_id', 'idempotency_key'], 'travel_bookings_company_idempotency_unique');
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('travel_passengers'))) {
-            Schema::create($this->moduleTable('travel_passengers'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('booking_id');
-                $table->string('full_name', 160);
-                $table->date('birth_date')->nullable();
-                $table->string('document_type', 20)->nullable();
-                $table->text('document_number_encrypted')->nullable();
-                $table->string('document_number_hash', 64)->nullable();
-                $table->string('age_category', 20)->default('adult');
-                $table->unsignedBigInteger('class_id');
-                $table->unsignedInteger('seat_number')->nullable();
-                $table->unsignedInteger('unit_price_minor');
-                // TRAVEL-808 (#6098) — remboursements partiels par passager.
-                $table->timestamp('refunded_at')->nullable();
-                $table->unsignedBigInteger('refunded_amount_minor')->nullable();
-                $table->string('refund_reason', 500)->nullable();
                 $table->timestamps();
             });
         }
@@ -2672,7 +2412,299 @@ trait CreatesMvpSchema
                 $table->string('status', 20)->default('scheduled');
                 $table->text('notes')->nullable();
                 $table->unsignedInteger('created_by')->nullable();
+                $table->timestamps();
+            });
+        }
 
+        if (! Schema::hasTable($this->moduleTable('fuel_cash_sessions'))) {
+            Schema::create($this->moduleTable('fuel_cash_sessions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id')->nullable();
+                $table->unsignedInteger('opened_by');
+                $table->timestampTz('opened_at')->useCurrent();
+                $table->unsignedInteger('closed_by')->nullable();
+                $table->timestampTz('closed_at')->nullable();
+                $table->decimal('opening_balance', 14, 2)->default(0);
+                $table->decimal('closing_balance', 14, 2)->nullable();
+                $table->decimal('expected_balance', 14, 2)->nullable();
+                $table->decimal('variance', 14, 2)->nullable();
+                $table->string('status', 20)->default('open');
+                $table->unsignedInteger('approved_by')->nullable();
+                $table->timestampTz('approved_at')->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_cash_session_movements'))) {
+            Schema::create($this->moduleTable('fuel_cash_session_movements'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('session_id');
+                $table->string('type', 10);
+                $table->decimal('amount', 14, 2);
+                $table->string('reason', 255);
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_sales'))) {
+            Schema::create($this->moduleTable('fuel_sales'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id')->nullable();
+                $table->unsignedBigInteger('pump_id')->nullable();
+                $table->unsignedBigInteger('cash_session_id')->nullable();
+                $table->unsignedInteger('employee_id');
+                $table->string('product', 80);
+                $table->decimal('quantity', 14, 3);
+                $table->decimal('unit_price', 14, 2);
+                $table->decimal('amount', 14, 2);
+                $table->timestampTz('sale_time')->useCurrent();
+                $table->string('source', 20)->default('manual');
+                $table->string('external_id', 120)->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'external_id'], 'fuel_sales_external_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL (verticale TravelAgency, TRAVEL-201/202/203) ──────
+        if (! Schema::hasTable($this->moduleTable('travel_countries'))) {
+            Schema::create($this->moduleTable('travel_countries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->char('iso2', 2);
+                $table->char('iso3', 3);
+                $table->string('name', 120);
+                $table->unsignedSmallInteger('phone_code')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->unique(['company_id', 'iso2'], 'travel_countries_company_iso2_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_cities'))) {
+            Schema::create($this->moduleTable('travel_cities'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->char('country_iso2', 2);
+                $table->string('name', 120);
+                $table->string('region', 120)->nullable();
+                $table->double('latitude')->nullable();
+                $table->double('longitude')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->unique(['company_id', 'country_iso2', 'name'], 'travel_cities_company_country_name_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_stations'))) {
+            Schema::create($this->moduleTable('travel_stations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 120);
+                $table->unsignedBigInteger('city_id');
+                $table->string('address', 255)->nullable();
+                $table->string('contact_phone', 40)->nullable();
+                $table->string('timezone', 50)->default('UTC');
+                $table->boolean('is_terminal')->default(false);
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_stations_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_offices'))) {
+            Schema::create($this->moduleTable('travel_offices'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 120);
+                $table->unsignedBigInteger('city_id');
+                $table->string('address', 255)->nullable();
+                $table->string('contact_phone', 40)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-204 (issue #6017) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_carriers'))) {
+            Schema::create($this->moduleTable('travel_carriers'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 120);
+                $table->string('type', 20)->default('bus');
+                $table->string('contact_phone', 40)->nullable();
+                $table->unsignedBigInteger('logo_asset_id')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_carriers_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_classes'))) {
+            Schema::create($this->moduleTable('travel_classes'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('label', 120);
+                $table->string('color', 7)->nullable();
+                $table->unsignedSmallInteger('priority')->default(0);
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_classes_company_code_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-205 (issue #6018) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_vehicles'))) {
+            Schema::create($this->moduleTable('travel_vehicles'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('registration_number', 40)->nullable();
+                $table->unsignedInteger('seat_capacity');
+                $table->unsignedBigInteger('carrier_id')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->text('notes')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_vehicles_company_code_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-206 (issue #6019) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_routes'))) {
+            Schema::create($this->moduleTable('travel_routes'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->unsignedBigInteger('origin_city_id');
+                $table->unsignedBigInteger('destination_city_id');
+                $table->unsignedInteger('distance_km')->nullable();
+                $table->unsignedInteger('duration_min')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_routes_company_code_unique');
+                $table->unique(
+                    ['company_id', 'origin_city_id', 'destination_city_id'],
+                    'travel_routes_company_origin_destination_unique'
+                );
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_route_stops'))) {
+            Schema::create($this->moduleTable('travel_route_stops'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('route_id');
+                $table->unsignedBigInteger('city_id');
+                $table->unsignedSmallInteger('rank');
+                $table->boolean('is_stopover')->default(true);
+                $table->unsignedInteger('min_duration_min')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'route_id', 'rank'], 'travel_route_stops_company_route_rank_unique');
+                $table->unique(['company_id', 'route_id', 'city_id'], 'travel_route_stops_company_route_city_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-207 (issue #6020) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_trips'))) {
+            Schema::create($this->moduleTable('travel_trips'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->unsignedBigInteger('route_id');
+                $table->unsignedBigInteger('carrier_id')->nullable();
+                $table->unsignedBigInteger('vehicle_id')->nullable();
+                $table->date('departure_date');
+                $table->time('departure_time');
+                $table->date('arrival_date');
+                $table->time('arrival_time');
+                $table->string('means_of_transport', 20)->default('bus');
+                $table->unsignedInteger('total_seats');
+                $table->string('status', 20)->default('draft');
+                $table->timestamp('published_at')->nullable();
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_trips_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_trip_prices'))) {
+            Schema::create($this->moduleTable('travel_trip_prices'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('trip_id');
+                $table->unsignedBigInteger('class_id');
+                $table->unsignedInteger('adult_price_minor');
+                $table->unsignedInteger('child_price_minor')->nullable();
+                $table->char('currency', 3);
+                $table->timestamps();
+                $table->unique(['company_id', 'trip_id', 'class_id'], 'travel_trip_prices_company_trip_class_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-208 (issue #6021) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_trip_seats'))) {
+            Schema::create($this->moduleTable('travel_trip_seats'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('trip_id');
+                $table->unsignedInteger('seat_number');
+                $table->string('status', 20)->default('free');
+                $table->unsignedBigInteger('booking_id')->nullable();
+                $table->unsignedBigInteger('passenger_id')->nullable();
+                $table->timestamp('reserved_until')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'trip_id', 'seat_number'], 'travel_trip_seats_company_trip_seat_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-209 (issue #6022) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_bookings'))) {
+            Schema::create($this->moduleTable('travel_bookings'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('reference', 40);
+                $table->unsignedBigInteger('trip_id');
+                $table->string('status', 20)->default('pending');
+                $table->unsignedInteger('passenger_count');
+                $table->unsignedInteger('total_amount_minor');
+                $table->char('currency', 3);
+                $table->string('booking_source', 20)->default('office');
+                $table->unsignedBigInteger('customer_contact_id')->nullable();
+                $table->unsignedBigInteger('booked_by_user_id')->nullable();
+                $table->string('payment_status', 20)->default('pending');
+                $table->timestamp('expires_at')->nullable();
+                $table->string('idempotency_key', 255);
+                $table->unsignedInteger('version')->default(1);
+                $table->timestamps();
+                $table->unique(['company_id', 'reference'], 'travel_bookings_company_reference_unique');
+                $table->unique(['company_id', 'idempotency_key'], 'travel_bookings_company_idempotency_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_passengers'))) {
+            Schema::create($this->moduleTable('travel_passengers'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('booking_id');
+                $table->string('full_name', 160);
+                $table->date('birth_date')->nullable();
+                $table->string('document_type', 20)->nullable();
+                $table->text('document_number_encrypted')->nullable();
+                $table->string('document_number_hash', 64)->nullable();
+                $table->string('age_category', 20)->default('adult');
+                $table->unsignedBigInteger('class_id');
+                $table->unsignedInteger('seat_number')->nullable();
+                $table->unsignedInteger('unit_price_minor');
                 $table->timestamps();
             });
         }
@@ -2711,9 +2743,6 @@ trait CreatesMvpSchema
                 $table->string('provider_reference', 120)->nullable();
                 $table->jsonb('callback_payload_redacted')->nullable();
                 $table->string('idempotency_key', 255);
-                // TRAVEL-805 (#6096) — affichage multi-devise.
-                $table->char('display_currency', 3)->nullable();
-                $table->unsignedBigInteger('display_amount_minor')->nullable();
                 $table->timestamps();
                 $table->unique(['company_id', 'reference'], 'travel_payments_company_reference_unique');
                 $table->unique(['company_id', 'idempotency_key'], 'travel_payments_company_idempotency_unique');
@@ -2734,6 +2763,157 @@ trait CreatesMvpSchema
                 $table->string('idempotency_key', 255);
                 $table->timestamps();
                 $table->unique(['company_id', 'idempotency_key'], 'travel_outbox_company_key_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-415 (issue #6067) ────────────────────────
+        // Contacts voyageurs + registre de consentement par canal : aucun
+        // envoi sans opt-in explicite (spéc §8.5, RGPD).
+        if (! Schema::hasTable($this->moduleTable('travel_customer_contacts'))) {
+            Schema::create($this->moduleTable('travel_customer_contacts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('first_name', 120)->nullable();
+                $table->string('last_name', 120)->nullable();
+                $table->string('email', 190)->nullable();
+                $table->string('phone', 40)->nullable();
+                $table->boolean('email_consent_given')->default(false);
+                $table->timestampTz('email_consent_at')->nullable();
+                $table->boolean('sms_consent_given')->default(false);
+                $table->timestampTz('sms_consent_at')->nullable();
+                $table->boolean('whatsapp_consent_given')->default(false);
+                $table->timestampTz('whatsapp_consent_at')->nullable();
+                $table->string('metadata_json', 2000)->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'email'], 'travel_customer_contacts_company_email_unique');
+                $table->unique(['company_id', 'phone'], 'travel_customer_contacts_company_phone_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-904 (issue #6107) — quiz ────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_quizzes'))) {
+            Schema::create($this->moduleTable('travel_quizzes'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('title', 160);
+                $table->string('description_redacted', 2000)->nullable();
+                $table->timestampTz('starts_at')->nullable();
+                $table->timestampTz('ends_at')->nullable();
+                $table->unsignedInteger('max_participations_per_contact')->default(1);
+                $table->string('status', 20)->default('draft');
+                $table->timestamps();
+                $table->index(['company_id', 'status'], 'travel_quizzes_company_status_idx');
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_quiz_questions'))) {
+            Schema::create($this->moduleTable('travel_quiz_questions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('quiz_id');
+                $table->string('question', 500);
+                $table->jsonb('options');
+                $table->unsignedSmallInteger('correct_option_index');
+                $table->unsignedSmallInteger('points')->default(1);
+                $table->unsignedSmallInteger('position')->default(0);
+                $table->timestamps();
+                $table->unique(['company_id', 'quiz_id', 'position'], 'travel_quiz_questions_company_quiz_position_unique');
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_quiz_participations'))) {
+            Schema::create($this->moduleTable('travel_quiz_participations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('quiz_id');
+                $table->unsignedBigInteger('participant_contact_id')->nullable();
+                $table->string('participant_email', 190)->nullable();
+                $table->string('participant_name', 160)->nullable();
+                $table->jsonb('answers');
+                $table->unsignedSmallInteger('score')->default(0);
+                $table->unsignedSmallInteger('bonus')->default(0);
+                $table->string('status', 20)->default('submitted');
+                $table->timestamps();
+                $table->unique(['company_id', 'quiz_id', 'participant_email'], 'travel_quiz_participations_company_quiz_email_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-905 (issue #6108) — annonces référentiels ─
+        if (! Schema::hasTable($this->moduleTable('travel_advert_types'))) {
+            Schema::create($this->moduleTable('travel_advert_types'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('label', 120);
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_advert_types_company_code_unique');
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_advert_positions'))) {
+            Schema::create($this->moduleTable('travel_advert_positions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('label', 120);
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_advert_positions_company_code_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-906 (issue #6109) — grille tarifaire ─────
+        if (! Schema::hasTable($this->moduleTable('travel_advert_prices'))) {
+            Schema::create($this->moduleTable('travel_advert_prices'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('advert_type_id');
+                $table->unsignedBigInteger('advert_position_id');
+                $table->unsignedInteger('price_per_image_minor');
+                $table->unsignedInteger('price_per_character_minor');
+                $table->char('currency', 3);
+                $table->timestamps();
+                $table->unique(['company_id', 'advert_type_id', 'advert_position_id'], 'travel_advert_prices_company_type_position_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-907/908 (issues #6110/#6111) — annonces ──
+        if (! Schema::hasTable($this->moduleTable('travel_adverts'))) {
+            Schema::create($this->moduleTable('travel_adverts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('advert_type_id');
+                $table->unsignedBigInteger('advert_position_id');
+                $table->string('title', 160);
+                $table->string('content_redacted', 2000);
+                $table->unsignedBigInteger('image_asset_id')->nullable();
+                $table->unsignedInteger('price_minor');
+                $table->char('currency', 3);
+                $table->string('status', 20)->default('draft');
+                $table->string('payment_reference', 60)->nullable();
+                $table->timestampTz('paid_at')->nullable();
+                $table->unsignedBigInteger('validated_by_user_id')->nullable();
+                $table->timestampTz('validated_at')->nullable();
+                $table->string('rejected_reason', 500)->nullable();
+                $table->unsignedInteger('validity_days')->default(30);
+                $table->timestampTz('starts_at')->nullable();
+                $table->timestampTz('expires_at')->nullable();
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+                $table->timestamps();
+                $table->index(['company_id', 'status', 'expires_at'], 'travel_adverts_company_status_expiry_idx');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-909 (issue #6112) — sites touristiques ───
+        if (! Schema::hasTable($this->moduleTable('travel_tourist_sites'))) {
+            Schema::create($this->moduleTable('travel_tourist_sites'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('description_redacted', 2000)->nullable();
+                $table->unsignedBigInteger('city_id')->nullable();
+                $table->decimal('latitude', 10, 7)->nullable();
+                $table->decimal('longitude', 10, 7)->nullable();
+                $table->unsignedBigInteger('image_asset_id')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->index(['company_id', 'city_id'], 'travel_tourist_sites_company_city_idx');
             });
         }
 
@@ -2822,451 +3002,6 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'hotel_id', 'room_number'], 'travel_hotel_rooms_company_hotel_room_unique');
             });
         }
-
-        // TRAVEL-813 (#6103) — politiques d'annulation configurables.
-        if (! Schema::hasTable($this->moduleTable('travel_cancellation_policies'))) {
-            Schema::create($this->moduleTable('travel_cancellation_policies'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('trip_id')->nullable();
-                $table->unsignedBigInteger('class_id')->nullable();
-                $table->unsignedInteger('cancel_before_hours')->nullable();
-                $table->unsignedTinyInteger('penalty_percent')->default(0);
-                $table->boolean('refundable')->default(true);
-                $table->boolean('is_active')->default(true);
-                $table->string('description', 255)->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'trip_id', 'class_id'], 'travel_cancel_policies_company_trip_class_unique');
-            });
-        }
-
-        // TRAVEL-415 (#6067) — notifications voyageur (consentements + journal).
-        if (! Schema::hasTable($this->moduleTable('travel_notification_consents'))) {
-            Schema::create($this->moduleTable('travel_notification_consents'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('contact_identifier', 255);
-                $table->string('channel', 20);
-                $table->string('source', 40)->default('booking');
-                $table->timestamp('granted_at');
-                $table->timestamp('revoked_at')->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'contact_identifier', 'channel'], 'travel_notif_consent_company_contact_channel_unique');
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('travel_notification_logs'))) {
-            Schema::create($this->moduleTable('travel_notification_logs'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('event_id')->nullable();
-                $table->string('event_type', 60);
-                $table->string('contact_identifier', 255);
-                $table->string('channel', 20);
-                $table->string('status', 20);
-                $table->string('reason', 500)->nullable();
-                $table->json('payload_redacted')->nullable();
-                $table->timestamp('created_at')->useCurrent();
-            });
-        }
-
-        // TRAVEL-417 (#6069) — synthèse des ventes pour Accounting.
-        if (! Schema::hasTable($this->moduleTable('travel_sales_settlements'))) {
-            Schema::create($this->moduleTable('travel_sales_settlements'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->date('period_start');
-                $table->date('period_end');
-                $table->char('currency', 3);
-                $table->unsignedInteger('confirmed_payments_count')->default(0);
-                $table->unsignedBigInteger('confirmed_amount_minor')->default(0);
-                $table->unsignedInteger('refunded_count')->default(0);
-                $table->unsignedBigInteger('refunded_amount_minor')->default(0);
-                $table->bigInteger('net_amount_minor')->default(0);
-                $table->string('status', 20)->default('settled');
-                $table->timestamp('settled_at')->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'period_start', 'period_end', 'currency'], 'travel_sales_settlements_company_period_currency_unique');
-            });
-        }
-
-        // TRAVEL-807 (#6086) — jetons d'API entrante transporteurs.
-        if (! Schema::hasTable($this->moduleTable('travel_carrier_tokens'))) {
-            Schema::create($this->moduleTable('travel_carrier_tokens'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('carrier_id');
-                $table->string('name', 80)->nullable();
-                $table->string('token_hash', 64);
-                $table->boolean('active')->default(true);
-                $table->timestamp('last_used_at')->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'carrier_id'], 'travel_carrier_tokens_company_carrier_unique');
-            });
-        }
-
-        // TRAVEL-811 (#6101) — fidélité voyageur.
-        if (! Schema::hasTable($this->moduleTable('travel_loyalty_accounts'))) {
-            Schema::create($this->moduleTable('travel_loyalty_accounts'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('contact_identifier', 255);
-                $table->integer('points_balance')->default(0);
-                $table->boolean('opt_in')->default(false);
-                $table->timestamp('opt_in_at')->nullable();
-                $table->timestamp('opt_out_at')->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'contact_identifier'], 'travel_loyalty_accounts_company_contact_unique');
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('travel_loyalty_entries'))) {
-            Schema::create($this->moduleTable('travel_loyalty_entries'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('account_id');
-                $table->unsignedBigInteger('booking_id')->nullable();
-                $table->unsignedBigInteger('ticket_id')->nullable();
-                $table->integer('points');
-                $table->string('type', 20);
-                $table->string('reason', 255)->nullable();
-                $table->timestamp('created_at')->useCurrent();
-                $table->unique(['company_id', 'ticket_id'], 'travel_loyalty_entries_company_ticket_unique');
-                $table->unique(['company_id', 'booking_id', 'type'], 'travel_loyalty_entries_company_booking_type_unique');
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('travel_loyalty_rewards'))) {
-            Schema::create($this->moduleTable('travel_loyalty_rewards'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('name', 160);
-                $table->string('description', 500)->nullable();
-                $table->unsignedInteger('points_cost');
-                $table->boolean('active')->default(true);
-                $table->timestamps();
-            });
-        }
-
-        // ── BC-24 TRAVEL — lot 2 (contenu communautaire, #6104..#6112) ─────
-        if (! Schema::hasTable($this->moduleTable('travel_article_categories'))) {
-            Schema::create($this->moduleTable('travel_article_categories'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('code', 60);
-                $table->string('name', 160);
-                $table->boolean('is_active')->default(true);
-                $table->timestamps();
-                $table->unique(['company_id', 'code'], 'travel_article_categories_company_code_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_articles'))) {
-            Schema::create($this->moduleTable('travel_articles'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('category_id')->nullable();
-                $table->string('title', 200);
-                $table->text('body_redacted');
-                $table->string('status', 20)->default('draft');
-                $table->unsignedBigInteger('author_user_id')->nullable();
-                $table->timestamp('published_at')->nullable();
-                $table->string('moderation_note', 500)->nullable();
-                $table->timestamps();
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_comments'))) {
-            Schema::create($this->moduleTable('travel_comments'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('article_id');
-                $table->string('author_type', 20)->default('employee');
-                $table->unsignedBigInteger('author_user_id')->nullable();
-                $table->string('author_name', 160)->nullable();
-                $table->string('body', 1000);
-                $table->string('status', 20)->default('pending');
-                $table->timestamp('moderated_at')->nullable();
-                $table->unsignedBigInteger('moderated_by_user_id')->nullable();
-                $table->string('report_reason', 255)->nullable();
-                $table->timestamp('reported_at')->nullable();
-                $table->timestamps();
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_likes'))) {
-            Schema::create($this->moduleTable('travel_likes'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('article_id');
-                $table->string('actor_type', 20)->default('employee');
-                $table->unsignedBigInteger('actor_user_id')->nullable();
-                $table->string('actor_identifier', 255)->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'article_id', 'actor_user_id', 'actor_identifier'], 'travel_likes_company_article_actor_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_shares'))) {
-            Schema::create($this->moduleTable('travel_shares'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('article_id');
-                $table->string('actor_type', 20)->default('employee');
-                $table->unsignedBigInteger('actor_user_id')->nullable();
-                $table->string('actor_identifier', 255)->nullable();
-                $table->string('channel', 40)->nullable();
-                $table->timestamps();
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_ratings'))) {
-            Schema::create($this->moduleTable('travel_ratings'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('article_id');
-                $table->string('actor_type', 20)->default('employee');
-                $table->unsignedBigInteger('actor_user_id')->nullable();
-                $table->string('actor_identifier', 255)->nullable();
-                $table->unsignedTinyInteger('stars');
-                $table->timestamps();
-                $table->unique(['company_id', 'article_id', 'actor_user_id', 'actor_identifier'], 'travel_ratings_company_article_actor_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_quizzes'))) {
-            Schema::create($this->moduleTable('travel_quizzes'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('title', 200);
-                $table->text('description_redacted')->nullable();
-                $table->string('status', 20)->default('draft');
-                $table->unsignedInteger('max_participations_per_contact')->default(1);
-                $table->unsignedInteger('bonus_points')->default(0);
-                $table->unsignedBigInteger('created_by_user_id')->nullable();
-                $table->timestamps();
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_quiz_questions'))) {
-            Schema::create($this->moduleTable('travel_quiz_questions'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('quiz_id');
-                $table->unsignedInteger('rank');
-                $table->string('label', 500);
-                $table->json('choices');
-                $table->string('correct_answer_hash', 64);
-                $table->unsignedInteger('points')->default(1);
-                $table->timestamps();
-                $table->unique(['company_id', 'quiz_id', 'rank'], 'travel_quiz_questions_company_quiz_rank_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_quiz_participations'))) {
-            Schema::create($this->moduleTable('travel_quiz_participations'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('quiz_id');
-                $table->string('participant_identifier', 255);
-                $table->json('answers_redacted');
-                $table->unsignedInteger('score')->default(0);
-                $table->unsignedInteger('total_points')->default(0);
-                $table->timestamp('completed_at')->useCurrent();
-                $table->timestamps();
-                $table->unique(['company_id', 'quiz_id', 'participant_identifier'], 'travel_quiz_participations_company_quiz_contact_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_advert_types'))) {
-            Schema::create($this->moduleTable('travel_advert_types'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('code', 60);
-                $table->string('name', 160);
-                $table->boolean('is_active')->default(true);
-                $table->timestamps();
-                $table->unique(['company_id', 'code'], 'travel_advert_types_company_code_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_advert_positions'))) {
-            Schema::create($this->moduleTable('travel_advert_positions'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('code', 60);
-                $table->string('name', 160);
-                $table->boolean('is_active')->default(true);
-                $table->timestamps();
-                $table->unique(['company_id', 'code'], 'travel_advert_positions_company_code_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_advert_prices'))) {
-            Schema::create($this->moduleTable('travel_advert_prices'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('type_id');
-                $table->unsignedBigInteger('position_id');
-                $table->unsignedBigInteger('price_per_image_minor')->default(0);
-                $table->unsignedBigInteger('price_per_character_minor')->default(0);
-                $table->char('currency', 3);
-                $table->timestamps();
-                $table->unique(['company_id', 'type_id', 'position_id'], 'travel_advert_prices_company_type_pos_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_adverts'))) {
-            Schema::create($this->moduleTable('travel_adverts'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('type_id');
-                $table->unsignedBigInteger('position_id');
-                $table->string('title', 200);
-                $table->text('body_redacted');
-                $table->string('image_path', 500)->nullable();
-                $table->unsignedInteger('character_count')->default(0);
-                $table->unsignedBigInteger('price_minor')->default(0);
-                $table->char('currency', 3);
-                $table->string('status', 20)->default('submitted');
-                $table->timestamp('paid_at')->nullable();
-                $table->unsignedBigInteger('payment_id')->nullable();
-                $table->timestamp('validated_at')->nullable();
-                $table->unsignedBigInteger('validated_by_user_id')->nullable();
-                $table->timestamp('published_at')->nullable();
-                $table->timestamp('valid_until')->nullable();
-                $table->string('moderation_note', 500)->nullable();
-                $table->timestamps();
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_tourist_sites'))) {
-            Schema::create($this->moduleTable('travel_tourist_sites'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('name', 200);
-                $table->text('description_redacted')->nullable();
-                $table->unsignedBigInteger('city_id');
-                $table->decimal('latitude', 10, 7)->nullable();
-                $table->decimal('longitude', 10, 7)->nullable();
-                $table->json('images')->nullable();
-                $table->string('status', 20)->default('active');
-                $table->timestamps();
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_corporate_accounts'))) {
-            Schema::create($this->moduleTable('travel_corporate_accounts'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('name', 160);
-                $table->string('contact_email', 255)->nullable();
-                $table->unsignedBigInteger('credit_limit_minor')->default(0);
-                $table->char('currency', 3);
-                $table->boolean('is_active')->default(true);
-                $table->timestamps();
-                $table->unique(['company_id', 'name'], 'travel_corporate_accounts_company_name_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_quotes'))) {
-            Schema::create($this->moduleTable('travel_quotes'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('corporate_account_id');
-                $table->unsignedBigInteger('trip_id');
-                $table->unsignedBigInteger('class_id');
-                $table->unsignedInteger('passengers_count');
-                $table->unsignedBigInteger('total_amount_minor');
-                $table->char('currency', 3);
-                $table->string('status', 20)->default('draft');
-                $table->timestamp('expires_at')->nullable();
-                $table->unsignedBigInteger('created_by_user_id')->nullable();
-                $table->timestamps();
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_currency_rates'))) {
-            Schema::create($this->moduleTable('travel_currency_rates'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->char('base_currency', 3);
-                $table->char('quote_currency', 3);
-                $table->decimal('rate', 18, 8);
-                $table->date('valid_from');
-                $table->date('valid_until')->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'base_currency', 'quote_currency', 'valid_from'], 'travel_currency_rates_company_pair_period_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_cash_sessions'))) {
-            Schema::create($this->moduleTable('travel_cash_sessions'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('opened_by_user_id');
-                $table->timestamp('opened_at');
-                $table->timestamp('closed_at')->nullable();
-                $table->unsignedBigInteger('opening_balance_minor')->default(0);
-                $table->unsignedBigInteger('expected_balance_minor')->nullable();
-                $table->unsignedBigInteger('actual_balance_minor')->nullable();
-                $table->bigInteger('difference_minor')->nullable();
-                $table->string('status', 20)->default('open');
-                $table->timestamps();
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('travel_public_shop_tokens'))) {
-            Schema::create($this->moduleTable('travel_public_shop_tokens'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->unique();
-                $table->string('token_hash', 64);
-                $table->string('name', 80)->nullable();
-                $table->boolean('active')->default(true);
-                $table->timestamp('last_used_at')->nullable();
-                $table->timestamps();
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('fuel_cash_sessions'))) {
-            Schema::create($this->moduleTable('fuel_cash_sessions'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('station_id')->nullable();
-                $table->unsignedInteger('opened_by');
-                $table->timestampTz('opened_at')->useCurrent();
-                $table->unsignedInteger('closed_by')->nullable();
-                $table->timestampTz('closed_at')->nullable();
-                $table->decimal('opening_balance', 14, 2)->default(0);
-                $table->decimal('closing_balance', 14, 2)->nullable();
-                $table->decimal('expected_balance', 14, 2)->nullable();
-                $table->decimal('variance', 14, 2)->nullable();
-                $table->string('status', 20)->default('open');
-                $table->unsignedInteger('approved_by')->nullable();
-                $table->timestampTz('approved_at')->nullable();
-                $table->text('notes')->nullable();
-                $table->timestamps();
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('fuel_cash_session_movements'))) {
-            Schema::create($this->moduleTable('fuel_cash_session_movements'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('session_id');
-                $table->string('type', 10);
-                $table->decimal('amount', 14, 2);
-                $table->string('reason', 255);
-                $table->unsignedInteger('created_by')->nullable();
-                $table->timestampTz('created_at')->useCurrent();
-                $table->timestampTz('updated_at')->useCurrent();
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('fuel_sales'))) {
-            Schema::create($this->moduleTable('fuel_sales'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('station_id')->nullable();
-                $table->unsignedBigInteger('pump_id')->nullable();
-                $table->unsignedBigInteger('cash_session_id')->nullable();
-                $table->unsignedInteger('employee_id');
-                $table->string('product', 80);
-                $table->decimal('quantity', 14, 3);
-                $table->decimal('unit_price', 14, 2);
-                $table->decimal('amount', 14, 2);
-                $table->timestampTz('sale_time')->useCurrent();
-                $table->string('source', 20)->default('manual');
-                $table->string('external_id', 120)->nullable();
-                $table->text('notes')->nullable();
-                $table->timestamps();
-
-                $table->unique(['company_id', 'external_id'], 'fuel_sales_external_unique');
-            });
-        }
-
-
     }
 
     private function dropMvpTables(): void
@@ -3343,38 +3078,12 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
         // BC-24 TRAVEL (verticale TravelAgency)
         DB::statement('DROP TABLE IF EXISTS "travel_hotel_rooms"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_cancellation_policies"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_notification_logs"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_notification_consents"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_sales_settlements"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_carrier_tokens"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_loyalty_rewards"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_loyalty_entries"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_tourist_sites"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_adverts"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_advert_prices"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_advert_positions"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_advert_types"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_quiz_participations"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_quiz_questions"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_quizzes"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_ratings"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_shares"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_likes"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_comments"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_articles"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_article_categories"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_public_shop_tokens"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_cash_sessions"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_currency_rates"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_quotes"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_corporate_accounts"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_loyalty_accounts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_hotels"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_rental_bookings"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_rental_vehicle_images"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_rental_vehicles"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_outbox_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_customer_contacts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_payments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_tickets"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_passengers"'.$cascade);
@@ -3390,6 +3099,14 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "travel_offices"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_stations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_cities"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_tourist_sites"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_adverts"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_advert_prices"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_advert_positions"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_advert_types"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_quiz_participations"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_quiz_questions"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_quizzes"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_countries"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_correction_requests"'.$cascade);
