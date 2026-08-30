@@ -1,0 +1,81 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Catalogue de traduction de la verticale RestaurantManager (BC-25 RESTAURANT).
+ *
+ * RESTO-906 (#6235) — clés restaurant.* dans les 4 locales (fr/en/ar/tr).
+ * Miroir des clés partagées `shared/i18n/locales/*.json` (namespace
+ * `restaurant`) pour la surface backend PHP — garde #5432 : toujours via
+ * __() / trans(), jamais de chaîne accentuée en dur dans le code.
+ */
+return [
+    "kitchenTitle" => "Mutfak ekranı",
+    "kitchenSubtitle" => "Gerçek zamanlı sipariş kuyruğu — hazırlık ve teslim",
+    "branch" => "Şube",
+    "branchAll" => "Tüm şubeler",
+    "inPreparation" => "Hazırlanıyor",
+    "ready" => "Hazır",
+    "empty" => "Bekleyen sipariş yok. Kuyruk boş.",
+    "start" => "Başlat",
+    "markReady" => "Hazır",
+    "orderRef" => "Sipariş",
+    "table" => "Masa",
+    "covers" => "kişi",
+    "takeaway" => "Paket servis",
+    "delivery" => "Teslimat",
+    "dineIn" => "Salon",
+    "loadError" => "Mutfak kuyruğu yüklenemedi.",
+    "actionError" => "İşlem başarısız, tekrar deneyin.",
+    "loading" => "Mutfak kuyruğu yükleniyor…",
+    "kiosk" => [
+        "title" => "Self-servis sipariş terminali",
+        "tokenInvalid" => "Geçersiz veya eksik mağaza jetonu.",
+        "loading" => "Menü yükleniyor…",
+        "emptyMenu" => "Menü şu anda boş.",
+        "loadError" => "Menü yüklenemedi.",
+        "items" => "ürün",
+        "branch" => "Şube",
+        "cart" => "Sepet",
+        "takeaway" => "Paket servis",
+        "delivery" => "Teslimat",
+        "empty" => "Sepetiniz boş.",
+        "total" => "Toplam",
+        "checkout" => "Siparişi onayla",
+        "add" => "Ekle",
+        "remove" => "Çıkar",
+        "orderPlaced" => "Sipariş mutfağa gönderildi!",
+        "orderReference" => "Referans",
+        "payCash" => "Nakit öde",
+        "payMobileMoney" => "Mobil para ile öde",
+        "paid" => "Ödeme onaylandı. Afiyet olsun!",
+        "pendingPayment" => "Ödeme onay bekliyor…",
+        "startNewOrder" => "Yeni sipariş",
+        "orderError" => "Sipariş verilemedi.",
+        "paymentError" => "Ödeme işlenemedi.",
+    ],
+    "public_shop" => [
+        "captcha_required" => "Bot doğrulaması gerekli (X-Captcha-Token).",
+        "token_missing" => "Mağaza jetonu eksik (X-Restaurant-Shop-Token).",
+        "token_invalid" => "Geçersiz mağaza jetonu.",
+        "tenant_not_found" => "Bu jeton için kiracı bulunamadı.",
+        "product_unavailable" => "Ürün bu kiracı için mevcut değil.",
+        "product_not_served" => "Ürün bu şubede sunulmuyor.",
+        "currency_mismatch" => "Ürün para birimi sipariş para birimiyle eşleşmiyor.",
+        "quantity_invalid" => "Miktar sıfırdan büyük olmalıdır.",
+        "empty_order" => "Sipariş en az bir ürün içermelidir.",
+    ],
+    "marketplace" => [
+        "invalid_payload" => "Geçersiz pazar yeri verisi.",
+        "missing_event_id" => "Pazar yeri olay kimliği eksik.",
+        "unknown_customer" => "Pazar yeri müşterisi",
+        "unknown_provider" => "Bilinmeyen teslimat uygulaması sağlayıcısı.",
+        "invalid_signature" => "Geçersiz pazar yeri imzası.",
+        "product_not_found" => "{code} kodu için ürün bulunamadı.",
+        "product_not_served" => "{code} ürünü hedef şubede sunulmuyor.",
+        "quantity_invalid" => "Pazar yeri siparişinde geçersiz miktar.",
+        "empty_order" => "Pazar yeri siparişi ürün içermiyor.",
+        "no_branch" => "Bu kiracı için aktif şube yok.",
+    ],
+];

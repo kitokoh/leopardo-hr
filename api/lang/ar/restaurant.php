@@ -1,0 +1,81 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Catalogue de traduction de la verticale RestaurantManager (BC-25 RESTAURANT).
+ *
+ * RESTO-906 (#6235) — clés restaurant.* dans les 4 locales (fr/en/ar/tr).
+ * Miroir des clés partagées `shared/i18n/locales/*.json` (namespace
+ * `restaurant`) pour la surface backend PHP — garde #5432 : toujours via
+ * __() / trans(), jamais de chaîne accentuée en dur dans le code.
+ */
+return [
+    "kitchenTitle" => "شاشة المطبخ",
+    "kitchenSubtitle" => "قائمة الطلبات لحظيًا — التحضير والتجهيز",
+    "branch" => "الفرع",
+    "branchAll" => "جميع الفروع",
+    "inPreparation" => "قيد التحضير",
+    "ready" => "جاهز",
+    "empty" => "لا توجد طلبات معلقة. القائمة فارغة.",
+    "start" => "ابدأ",
+    "markReady" => "جاهز",
+    "orderRef" => "طلب",
+    "table" => "طاولة",
+    "covers" => "أشخاص",
+    "takeaway" => "للطلب الخارجي",
+    "delivery" => "توصيل",
+    "dineIn" => "في المكان",
+    "loadError" => "تعذر تحميل قائمة المطبخ.",
+    "actionError" => "تعذر تنفيذ الإجراء، حاول مجددًا.",
+    "loading" => "جارٍ تحميل قائمة المطبخ…",
+    "kiosk" => [
+        "title" => "محطة الطلب الذاتي",
+        "tokenInvalid" => "رمز المتجر غير صالح أو مفقود.",
+        "loading" => "جارٍ تحميل القائمة…",
+        "emptyMenu" => "القائمة فارغة حاليًا.",
+        "loadError" => "تعذر تحميل القائمة.",
+        "items" => "عناصر",
+        "branch" => "الفرع",
+        "cart" => "السلة",
+        "takeaway" => "للطلب الخارجي",
+        "delivery" => "توصيل",
+        "empty" => "سلة التسوق فارغة.",
+        "total" => "الإجمالي",
+        "checkout" => "تأكيد الطلب",
+        "add" => "إضافة",
+        "remove" => "إزالة",
+        "orderPlaced" => "تم إرسال الطلب إلى المطبخ!",
+        "orderReference" => "المرجع",
+        "payCash" => "الدفع نقدًا",
+        "payMobileMoney" => "الدفع عبر المحفظة الإلكترونية",
+        "paid" => "تم تأكيد الدفع. بالهناء والشفاء!",
+        "pendingPayment" => "الدفع قيد التأكيد…",
+        "startNewOrder" => "طلب جديد",
+        "orderError" => "تعذر تقديم الطلب.",
+        "paymentError" => "تعذر معالجة الدفع.",
+    ],
+    "public_shop" => [
+        "captcha_required" => "مطلوب التحقق من روبوت الحماية (X-Captcha-Token).",
+        "token_missing" => "رمز المتجر مفقود (X-Restaurant-Shop-Token).",
+        "token_invalid" => "رمز المتجر غير صالح.",
+        "tenant_not_found" => "لا يوجد مستأجر لهذا الرمز.",
+        "product_unavailable" => "المنتج غير متاح لهذا المستأجر.",
+        "product_not_served" => "المنتج غير متوفر في هذا الفرع.",
+        "currency_mismatch" => "عملة المنتج لا تطابق عملة الطلب.",
+        "quantity_invalid" => "يجب أن تكون الكمية أكبر من صفر.",
+        "empty_order" => "يجب أن يحتوي الطلب على عنصر واحد على الأقل.",
+    ],
+    "marketplace" => [
+        "invalid_payload" => "حمولة السوق غير صالحة.",
+        "missing_event_id" => "معرف حدث السوق مفقود.",
+        "unknown_customer" => "عميل السوق",
+        "unknown_provider" => "مزود تطبيق التوصيل غير معروف.",
+        "invalid_signature" => "توقيع السوق غير صالح.",
+        "product_not_found" => "المنتج غير موجود للرمز {code}.",
+        "product_not_served" => "المنتج {code} غير متوفر في الفرع المستهدف.",
+        "quantity_invalid" => "كمية غير صالحة في طلب السوق.",
+        "empty_order" => "طلب السوق لا يحتوي على أي عنصر.",
+        "no_branch" => "لا يوجد فرع نشط لهذا المستأجر.",
+    ],
+];
