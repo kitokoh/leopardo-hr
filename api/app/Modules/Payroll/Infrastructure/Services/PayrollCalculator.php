@@ -272,7 +272,7 @@ class PayrollCalculator
                     ? ($structures->get($employee->salary_structure_id) ?? $defaultStructure)
                     : $defaultStructure;
 
-                if (!$structure) {
+                if ($structure === null) {
                     continue;
                 }
 
