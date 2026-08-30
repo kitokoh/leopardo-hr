@@ -93,7 +93,9 @@ class TravelBookingTest extends TestCase
             /** @var TravelPassenger $passenger */
             $passenger = TravelPassenger::factory()->make();
             $passenger->setDocumentNumber('AB1234567');
-            $passenger->booking_id = TravelBooking::factory()->create()->id;
+            /** @var int<0, max> $bookingId */
+            $bookingId = TravelBooking::factory()->create()->id;
+            $passenger->booking_id = $bookingId;
             $passenger->save();
 
             $raw = DB::table('travel_passengers')->where('id', $passenger->id)->first();
@@ -111,7 +113,9 @@ class TravelBookingTest extends TestCase
             /** @var TravelPassenger $passenger */
             $passenger = TravelPassenger::factory()->make();
             $passenger->setDocumentNumber('CD9999999');
-            $passenger->booking_id = TravelBooking::factory()->create()->id;
+            /** @var int<0, max> $bookingId */
+            $bookingId = TravelBooking::factory()->create()->id;
+            $passenger->booking_id = $bookingId;
             $passenger->save();
 
             $array = $passenger->refresh()->toArray();
