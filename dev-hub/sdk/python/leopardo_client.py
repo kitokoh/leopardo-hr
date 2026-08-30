@@ -3632,6 +3632,10 @@ class LeopardoClient:
         """TRAVEL-416 — Formulaire de contact → lead CRM (événement outbox)"""
         return self.request("POST", "/travel/contact", **kwargs)
 
+    def get_travel_contacts(self, **kwargs):
+        """Liste des contacts voyageurs (recherche, consentement) (TRAVEL-912/#6417)"""
+        return self.request("GET", "/travel/contacts", **kwargs)
+
     def post_travel_contacts_by_travelcustomercontact_notify(self, **kwargs):
         """TRAVEL-910 — Notification manuelle (canaux plateforme + consentement)"""
         return self.request("POST", "/travel/contacts/{travelCustomerContact}/notify", **kwargs)

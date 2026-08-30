@@ -56,6 +56,7 @@
         {{ t('travel.home.flowBody', 'Référentiel & réseau → programmation des trajets → publication → vente au guichet → billetterie & check-in → rapports.') }}
       </p>
     </div>
+    <TravelContactForm class="mt-6" />
   </div>
 </template>
 
@@ -64,16 +65,20 @@ import { computed, onMounted, ref } from 'vue'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import { useTravelStore } from '@/stores/travel'
+import TravelContactForm from '@/components/travel/TravelContactForm.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
 import {
+  AcademicCapIcon,
   ArrowRightIcon,
   BuildingOfficeIcon,
+  ChartBarIcon,
   ClipboardDocumentListIcon,
+  CurrencyDollarIcon,
   MapIcon,
   NewspaperIcon,
   QrCodeIcon,
   TicketIcon,
-  ChartBarIcon
+  UsersIcon
 } from '@heroicons/vue/24/outline'
 
 const localeStore = useLocaleStore()
@@ -139,6 +144,34 @@ const sections = computed(() => [
     icon: NewspaperIcon,
     title: t('travel.catalog.title', 'Locations & hôtels'),
     description: t('travel.catalog.subtitle', 'Véhicules en location, réservations et catalogue hôtelier.')
+  },
+  {
+    name: 'travel-adverts',
+    path: '/travel/adverts',
+    icon: CurrencyDollarIcon,
+    title: t('travel.adverts.title', 'Annonces payantes'),
+    description: t('travel.adverts.subtitle', 'Types, positions, grille tarifaire et cycle de vie des annonces.')
+  },
+  {
+    name: 'travel-quizzes',
+    path: '/travel/quizzes',
+    icon: AcademicCapIcon,
+    title: t('travel.quiz.title', 'Quiz & jeux-concours'),
+    description: t('travel.quiz.subtitle', 'Questions, participations et résultats.')
+  },
+  {
+    name: 'travel-sites',
+    path: '/travel/sites',
+    icon: MapIcon,
+    title: t('travel.sites.title', 'Sites touristiques'),
+    description: t('travel.sites.subtitle', 'Annuaire des sites, consultable par ville.')
+  },
+  {
+    name: 'travel-contacts',
+    path: '/travel/contacts',
+    icon: UsersIcon,
+    title: t('travel.contacts.title', 'Contacts voyageurs'),
+    description: t('travel.contacts.subtitle', 'Consentements et notifications manuelles.')
   }
 ])
 

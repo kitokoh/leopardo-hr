@@ -4587,6 +4587,28 @@
       "statusDraft": "Brouillon",
       "statusPublished": "Publié",
       "statusArchived": "Archivé"
+    },
+    "contacts": {
+      "title": "Contacts voyageurs",
+      "subtitle": "Registre des contacts, consentements par canal et notifications manuelles.",
+      "searchPlaceholder": "Rechercher (nom, email)…",
+      "consent": "Consentement",
+      "allConsents": "Tous les consentements",
+      "empty": "Aucun contact",
+      "name": "Nom",
+      "email": "Email",
+      "phone": "Téléphone",
+      "consents": "Consentements",
+      "notify": "Notifier",
+      "formTitle": "Nous contacter",
+      "formSubtitle": "Une demande ? Laissez vos coordonnées — consentement requis pour être recontacté.",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "message": "Votre message",
+      "consentLabel": "J’accepte d’être recontacté par email (consentement RGPD).",
+      "success": "Demande envoyée — accusé de réception transmis.",
+      "sending": "Envoi…",
+      "send": "Envoyer"
     }
   }
 }

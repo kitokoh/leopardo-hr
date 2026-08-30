@@ -4587,6 +4587,28 @@
       "statusDraft": "Draft",
       "statusPublished": "Published",
       "statusArchived": "Archived"
+    },
+    "contacts": {
+      "title": "Traveller contacts",
+      "subtitle": "Contact register, per-channel consents and manual notifications.",
+      "searchPlaceholder": "Search (name, email)…",
+      "consent": "Consent",
+      "allConsents": "All consents",
+      "empty": "No contacts",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "consents": "Consents",
+      "notify": "Notify",
+      "formTitle": "Contact us",
+      "formSubtitle": "A request? Leave your details — consent required to be contacted.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "message": "Your message",
+      "consentLabel": "I agree to be contacted by email (GDPR consent).",
+      "success": "Request sent — acknowledgement transmitted.",
+      "sending": "Sending…",
+      "send": "Send"
     }
   }
 }

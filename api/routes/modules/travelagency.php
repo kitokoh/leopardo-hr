@@ -228,6 +228,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'destroy']);
 
         // ── Notifications manuelles legacy → canaux plateforme (TRAVEL-910/#6113)
+        Route::get('/contacts', [TravelCustomerContactController::class, 'index']); // TRAVEL-912/#6417
         Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
 
         // ── Formulaire de contact → lead CRM (TRAVEL-416/#6068) ────────────

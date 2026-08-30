@@ -4580,6 +4580,57 @@ paths:
           description: Contact introuvable
         '422':
           description: Aucun canal configuré avec consentement
+  /travel/contacts:
+    get:
+      tags:
+      - Travel
+      summary: Liste des contacts voyageurs (recherche, consentement) (TRAVEL-912/#6417)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: consent
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [email, sms, whatsapp]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Contacts du tenant (pagines)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelCustomerContact'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      per_page:
+                        type: integer
+                      current_page:
+                        type: integer
+        '401':
+          description: Non authentifie
+        '403':
+          description: Roles gestion requis (principal/rh/manager)
   /travel/tourist-sites:
     get:
       tags:
@@ -29957,6 +30008,44 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    TravelCustomerContact:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        email_consent_given:
+          type: boolean
+        email_consent_at:
+          type: string
+          nullable: true
+        sms_consent_given:
+          type: boolean
+        sms_consent_at:
+          type: string
+          nullable: true
+        whatsapp_consent_given:
+          type: boolean
+        whatsapp_consent_at:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
     TravelClass:
       type: object
       properties:

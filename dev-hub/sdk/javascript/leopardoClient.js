@@ -4515,6 +4515,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/contact", options);
     },
 
+    /** Liste des contacts voyageurs (recherche, consentement) (TRAVEL-912/#6417) */
+    getTravelContacts(options = {}) {
+      return request("GET", "/travel/contacts", options);
+    },
+
     /** TRAVEL-910 — Notification manuelle (canaux plateforme + consentement) */
     postTravelContactsByTravelCustomerContactNotify(options = {}) {
       return request("POST", "/travel/contacts/{travelCustomerContact}/notify", options);
