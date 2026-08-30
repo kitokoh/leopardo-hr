@@ -17,6 +17,10 @@
       "label": "EduManager (verticale)",
       "status": "planned"
     },
+    "restaurantmanager": {
+      "label": "RestaurantManager (verticale BC-25)",
+      "status": "planned"
+    },
     "travelagency": {
       "label": "TravelAgency (verticale)",
       "status": "active"
@@ -24,10 +28,6 @@
     "delivery": {
       "label": "DeliveryAgency (BC-26 DELIVERY)",
       "status": "active"
-    },
-    "restaurantmanager": {
-      "label": "RestaurantManager (verticale BC-25)",
-      "status": "planned"
     },
     "bc23_ai": {
       "label": "BC-23 AI Assistive Services",
