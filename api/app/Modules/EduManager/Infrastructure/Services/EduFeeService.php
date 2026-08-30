@@ -89,7 +89,7 @@ final class EduFeeService
     }
 
     /**
-     * Annulation/remise (idempotente, terminale).
+     * Annulation (idempotente, terminale).
      */
     public function cancel(Employee $actor, EduFee $fee): EduFee
     {
@@ -97,6 +97,39 @@ final class EduFeeService
         abort_if($fee->isTerminal(), 422, 'EDU_FEE_TERMINAL');
 
         $fee->update(['status' => EduFee::STATUS_CANCELLED]);
+
+        AuditLog::create([
+            'company_id' => $actor->company_id,
+            'user_id' => $actor->id,
+            'action' => 'edu.fee.cancelled',
+            'module' => 'edu',
+            'auditable_type' => $fee->getMorphClass(),
+            'auditable_id' => $fee->getAttribute('id'),
+            'new_values' => ['label' => $fee->label],
+        ]);
+
+        return $fee->refresh();
+    }
+
+    /**
+     * Remise (idempotente, terminale) — direction uniquement.
+     */
+    public function waive(Employee $actor, EduFee $fee): EduFee
+    {
+        abort_if($fee->company_id !== $actor->company_id, 404);
+        abort_if($fee->isTerminal(), 422, 'EDU_FEE_TERMINAL');
+
+        $fee->update(['status' => EduFee::STATUS_WAIVED]);
+
+        AuditLog::create([
+            'company_id' => $actor->company_id,
+            'user_id' => $actor->id,
+            'action' => 'edu.fee.waived',
+            'module' => 'edu',
+            'auditable_type' => $fee->getMorphClass(),
+            'auditable_id' => $fee->getAttribute('id'),
+            'new_values' => ['label' => $fee->label, 'amount' => $fee->amount],
+        ]);
 
         return $fee->refresh();
     }

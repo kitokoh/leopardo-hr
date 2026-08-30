@@ -22,7 +22,11 @@ use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAttendanceController
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCampusController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduClassController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCourseSlotController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeeController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduGuardianPortalController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduImportExportController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduMarketingController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduNotificationController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportCardController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduRetentionController;
@@ -118,4 +122,27 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // EDU-019 (#5835) — RGPD : anonymisation + export individuel (direction).
     Route::post('/edu-manager/students/{student}/anonymize', [EduRetentionController::class, 'anonymize'])->whereNumber('student');
     Route::get('/edu-manager/students/{student}/privacy-export', [EduRetentionController::class, 'privacyExport'])->whereNumber('student');
+
+    // EDU-016 (#5832) — frais scolaires (direction ; contrat Accounting read model).
+    Route::get('/edu-manager/fees', [EduFeeController::class, 'index']);
+    Route::post('/edu-manager/fees', [EduFeeController::class, 'store']);
+    Route::get('/edu-manager/fees/{fee}', [EduFeeController::class, 'show'])->whereNumber('fee');
+    Route::post('/edu-manager/fees/{fee}/pay', [EduFeeController::class, 'pay'])->whereNumber('fee');
+    Route::post('/edu-manager/fees/{fee}/cancel', [EduFeeController::class, 'cancel'])->whereNumber('fee');
+    Route::post('/edu-manager/fees/{fee}/waive', [EduFeeController::class, 'waive'])->whereNumber('fee');
+
+    // EDU-015 (#5831) — marketing admissions (segments consentis + opt-out).
+    Route::get('/edu-manager/marketing/eligible-prospects', [EduMarketingController::class, 'eligibleProspects']);
+    Route::post('/edu-manager/admissions/{admission}/opt-out', [EduMarketingController::class, 'optOut'])->whereNumber('admission');
+
+    // EDU-014 (#5830) — notifications EduManager (lecture direction).
+    Route::get('/edu-manager/notifications', [EduNotificationController::class, 'index']);
+
+    // EDU-013 (#5829) — portail guardian (profil, enfants, présence, bulletins, liens expirables).
+    Route::get('/edu-manager/guardians/me', [EduGuardianPortalController::class, 'me']);
+    Route::get('/edu-manager/guardians/me/students', [EduGuardianPortalController::class, 'students']);
+    Route::get('/edu-manager/guardians/me/students/{student}/presences', [EduGuardianPortalController::class, 'presences'])->whereNumber('student');
+    Route::get('/edu-manager/guardians/me/students/{student}/report-cards', [EduGuardianPortalController::class, 'reportCards'])->whereNumber('student');
+    Route::post('/edu-manager/guardians/access-links', [EduGuardianPortalController::class, 'issueLink']);
+    Route::post('/edu-manager/guardians/access-links/redeem', [EduGuardianPortalController::class, 'redeem']);
 });
