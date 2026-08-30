@@ -29,7 +29,7 @@
           </select>
         </div>
         <div
-          v-if="manifest.length > 0"
+          v-if="manifest.length"
           class="rounded-xl bg-slate-50 px-4 py-2 text-sm dark:bg-slate-800/50"
         >
           <span class="font-semibold text-slate-900 dark:text-white">{{ boardedCount }}</span>
@@ -81,13 +81,7 @@ import TravelGate from '@/components/travel/TravelGate.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import { CheckCircleIcon } from '@heroicons/vue/24/outline'
-import {
-  listTravel,
-  getTravel,
-  travelAction,
-  travelList,
-  travelItem
-} from '@/services/travel'
+import { listTravel, getTravel, travelAction, travelList, travelItem } from '@/services/travel'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)

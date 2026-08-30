@@ -260,17 +260,7 @@ import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { PlusIcon, XMarkIcon } from '@heroicons/vue/24/outline'
-import {
-  listTravel,
-  createTravel,
-  updateTravel,
-  deleteTravel,
-  travelAction,
-  createTravelSub,
-  deleteTravelSub,
-  travelList,
-  formatMinor
-} from '@/services/travel'
+import { listTravel, createTravel, updateTravel, deleteTravel, travelAction, createTravelSub, deleteTravelSub, travelList, formatMinor } from '@/services/travel'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
