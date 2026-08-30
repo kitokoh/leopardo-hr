@@ -1576,8 +1576,7 @@
     "notFound": "Page non trouvee",
     "accountingActivation": "Comptabilité — Démarrer",
     "accountingDashboard": "Comptabilité — Tableau de bord",
-    "accountingSettings": "Comptabilité — Paramétrage",
-    "travel": "Agence de voyage"
+    "accountingSettings": "Comptabilité — Paramétrage"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?",
@@ -4234,6 +4233,7 @@
     "loadError": "Impossible de charger la file cuisine.",
     "actionError": "Action impossible, réessayez.",
     "loading": "Chargement de la file cuisine…"
+<<<<<<< HEAD
   },
   "travel": {
     "common": {
@@ -4520,5 +4520,7 @@
       "child": "Enfant",
       "adult": "Adulte"
     }
+=======
+>>>>>>> origin/feat/travel-101-202-foundations
   }
 }

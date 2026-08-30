@@ -1576,8 +1576,7 @@
     "notFound": "Page not found",
     "accountingActivation": "Accounting — Get started",
     "accountingDashboard": "Accounting — Dashboard",
-    "accountingSettings": "Accounting — Settings",
-    "travel": "Travel Agency"
+    "accountingSettings": "Accounting — Settings"
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?",
@@ -4234,6 +4233,7 @@
     "loadError": "Unable to load the kitchen queue.",
     "actionError": "Action failed, please retry.",
     "loading": "Loading kitchen queue…"
+<<<<<<< HEAD
   },
   "travel": {
     "common": {
@@ -4520,5 +4520,7 @@
       "child": "Child",
       "adult": "Adult"
     }
+=======
+>>>>>>> origin/feat/travel-101-202-foundations
   }
 }
