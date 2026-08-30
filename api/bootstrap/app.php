@@ -147,6 +147,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.cameras' => EnsureCameraModuleMiddleware::class,
             // BC-24 TRAVEL — gate feature flag travelagency (TRAVEL-102/#6007).
             'module.travelagency' => EnsureTravelAgencyModuleMiddleware::class,
+            // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé).
+            'travel.public.shop' => \App\Http\Middleware\EnsurePublicShopAccess::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,

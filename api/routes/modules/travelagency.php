@@ -43,6 +43,11 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTouristSiteController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCorporateController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelConnectionController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPdvController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
@@ -171,6 +176,20 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/loyalty/rewards', [TravelLoyaltyController::class, 'rewards']);
         Route::post('/loyalty/rewards', [TravelLoyaltyController::class, 'storeReward']);
 
+        // Boutique publique — gestion du jeton (TRAVEL-1001/#6114, travel.manage).
+        Route::get('/public-shop-token', [TravelPublicShopController::class, 'token']);
+        Route::post('/public-shop-token/rotate', [TravelPublicShopController::class, 'rotateToken']);
+
+        // Point de vente tablette (TRAVEL-810/#6100) — caisse + reçus.
+        Route::post('/pdv/session/open', [TravelPdvController::class, 'open']);
+        Route::get('/pdv/session/current', [TravelPdvController::class, 'current']);
+        Route::post('/pdv/session/close', [TravelPdvController::class, 'close']);
+        Route::get('/pdv/receipts/{booking}', [TravelPdvController::class, 'receipt']);
+
+        // Correspondances multi-trajets (TRAVEL-809/#6099).
+        Route::get('/shop/connections', [TravelConnectionController::class, 'search']);
+        Route::post('/shop/connections/book', [TravelConnectionController::class, 'book']);
+
         // Boutique en ligne (TRAVEL-401..404/#6053..#6056).
         Route::get('/shop/trips', [TravelShopController::class, 'search']);
         Route::get('/shop/trips/{travelTrip}', [TravelShopController::class, 'show']);
@@ -209,6 +228,20 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/hotels/{travelHotel}/rooms', [TravelHotelController::class, 'storeRoom']);
         Route::put('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'updateRoom']);
         Route::delete('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'destroyRoom']);
+        // Multi-devise (TRAVEL-805/#6096) — taux par période + conversion.
+        Route::get('/currency-rates', [TravelCurrencyController::class, 'index']);
+        Route::post('/currency-rates', [TravelCurrencyController::class, 'store']);
+        Route::get('/currency-rates/convert', [TravelCurrencyController::class, 'convert']);
+
+        // Réservations corporate (TRAVEL-803/#6094) — travel.manage.
+        Route::get('/corporate-accounts', [TravelCorporateController::class, 'indexAccounts']);
+        Route::post('/corporate-accounts', [TravelCorporateController::class, 'storeAccount']);
+        Route::put('/corporate-accounts/{account}', [TravelCorporateController::class, 'updateAccount']);
+        Route::get('/corporate-quotes', [TravelCorporateController::class, 'indexQuotes']);
+        Route::post('/corporate-quotes', [TravelCorporateController::class, 'storeQuote']);
+        Route::post('/corporate-quotes/{quote}/accept', [TravelCorporateController::class, 'acceptQuote']);
+        Route::post('/corporate-quotes/{quote}/cancel', [TravelCorporateController::class, 'cancelQuote']);
+
         // Contenu communautaire (TRAVEL-901..909, issues #6104..#6112).
         Route::prefix('community')->group(function (): void {
             // Catégories d'articles (TRAVEL-901/#6104).

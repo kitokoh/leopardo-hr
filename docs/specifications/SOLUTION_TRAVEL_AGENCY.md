@@ -881,6 +881,10 @@ logs sans PII inutile · PR courte fusionnable sur `main` · entrée `CHANGELOG.
 
 ### Épic 8xx — Extensions métier (nouveau, « et même plus »)
 
+> **Statut (lot 3a, 2026-08-30) :** ✅ TRAVEL-803 (réservations corporate),
+> ✅ TRAVEL-805 (multi-devise), ✅ TRAVEL-809 (correspondances), ✅ TRAVEL-810
+> (PDV tablette) — l'épic 8xx est désormais COMPLET (avec 801/802/804/806/807/808/811/812/813).
+
 > **Statut (lot 2026-08-30, PR `feat/travel-batch1-integrations`) :** ✅ TRAVEL-801
 > (assignation auto des sièges), ✅ TRAVEL-802 (aller-retour), ✅ TRAVEL-804
 > (recherche flexible), ✅ TRAVEL-806 (webhooks sortants — lot shop), ✅ TRAVEL-807
@@ -929,6 +933,10 @@ logs sans PII inutile · PR courte fusionnable sur `main` · entrée `CHANGELOG.
 | TRAVEL-910 | Notifications legacy gv-back (file mail/SMS) → canaux plateforme BC-13 | TRAVEL-033 |
 
 ### Épic 10xx — Boutique publique, import legacy, qualité, pilote
+
+> **Statut (lot 3a, 2026-08-30) :** ✅ TRAVEL-1001 (boutique publique, jeton
+> tenant), ✅ TRAVEL-1002 (tunnel d'achat public — recette E2E backend),
+> ✅ TRAVEL-1003 (import legacy CLI), ✅ TRAVEL-1004 (import géo legacy).
 
 | ID | Tâche fine | Parent |
 |---|---|---|

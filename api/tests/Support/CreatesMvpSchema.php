@@ -2470,6 +2470,12 @@ trait CreatesMvpSchema
                 $table->uuid('round_trip_group_id')->nullable();
                 $table->unsignedBigInteger('return_booking_id')->nullable();
                 $table->string('leg', 10)->nullable();
+                // TRAVEL-803 (#6094) — réservation corporate.
+                $table->unsignedBigInteger('corporate_account_id')->nullable();
+                $table->unsignedBigInteger('quote_id')->nullable();
+                $table->boolean('billing_deferred')->default(false);
+                // TRAVEL-809 (#6099) — correspondances (groupe de liaison).
+                $table->uuid('connection_group_id')->nullable();
                 $table->timestamps();
                 $table->unique(['company_id', 'reference'], 'travel_bookings_company_reference_unique');
                 $table->unique(['company_id', 'idempotency_key'], 'travel_bookings_company_idempotency_unique');
@@ -2532,6 +2538,9 @@ trait CreatesMvpSchema
                 $table->string('provider_reference', 120)->nullable();
                 $table->jsonb('callback_payload_redacted')->nullable();
                 $table->string('idempotency_key', 255);
+                // TRAVEL-805 (#6096) — affichage multi-devise.
+                $table->char('display_currency', 3)->nullable();
+                $table->unsignedBigInteger('display_amount_minor')->nullable();
                 $table->timestamps();
                 $table->unique(['company_id', 'reference'], 'travel_payments_company_reference_unique');
                 $table->unique(['company_id', 'idempotency_key'], 'travel_payments_company_idempotency_unique');
@@ -2959,6 +2968,74 @@ trait CreatesMvpSchema
                 $table->timestamps();
             });
         }
+        if (! Schema::hasTable($this->moduleTable('travel_corporate_accounts'))) {
+            Schema::create($this->moduleTable('travel_corporate_accounts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('contact_email', 255)->nullable();
+                $table->unsignedBigInteger('credit_limit_minor')->default(0);
+                $table->char('currency', 3);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+                $table->unique(['company_id', 'name'], 'travel_corporate_accounts_company_name_unique');
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_quotes'))) {
+            Schema::create($this->moduleTable('travel_quotes'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('corporate_account_id');
+                $table->unsignedBigInteger('trip_id');
+                $table->unsignedBigInteger('class_id');
+                $table->unsignedInteger('passengers_count');
+                $table->unsignedBigInteger('total_amount_minor');
+                $table->char('currency', 3);
+                $table->string('status', 20)->default('draft');
+                $table->timestamp('expires_at')->nullable();
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+                $table->timestamps();
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_currency_rates'))) {
+            Schema::create($this->moduleTable('travel_currency_rates'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->char('base_currency', 3);
+                $table->char('quote_currency', 3);
+                $table->decimal('rate', 18, 8);
+                $table->date('valid_from');
+                $table->date('valid_until')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'base_currency', 'quote_currency', 'valid_from'], 'travel_currency_rates_company_pair_period_unique');
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_cash_sessions'))) {
+            Schema::create($this->moduleTable('travel_cash_sessions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('opened_by_user_id');
+                $table->timestamp('opened_at');
+                $table->timestamp('closed_at')->nullable();
+                $table->unsignedBigInteger('opening_balance_minor')->default(0);
+                $table->unsignedBigInteger('expected_balance_minor')->nullable();
+                $table->unsignedBigInteger('actual_balance_minor')->nullable();
+                $table->bigInteger('difference_minor')->nullable();
+                $table->string('status', 20)->default('open');
+                $table->timestamps();
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_public_shop_tokens'))) {
+            Schema::create($this->moduleTable('travel_public_shop_tokens'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->unique();
+                $table->string('token_hash', 64);
+                $table->string('name', 80)->nullable();
+                $table->boolean('active')->default(true);
+                $table->timestamp('last_used_at')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     private function dropMvpTables(): void
@@ -3056,6 +3133,11 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "travel_comments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_articles"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_article_categories"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_public_shop_tokens"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_cash_sessions"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_currency_rates"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_quotes"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_corporate_accounts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_loyalty_accounts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_hotels"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_rental_bookings"'.$cascade);

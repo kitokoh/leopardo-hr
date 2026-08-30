@@ -4765,6 +4765,337 @@ paths:
         '200':
           description: Sites actifs de la ville
 
+  /travel/corporate-accounts:
+    get:
+      tags:
+      - Travel
+      summary: Comptes corporate (TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Comptes corporate
+    post:
+      tags:
+      - Travel
+      summary: Création d'un compte corporate (TRAVEL-803/#6094, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, credit_limit_minor]
+              properties:
+                name: {type: string, maxLength: 160}
+                contact_email: {type: string, format: email, nullable: true}
+                credit_limit_minor: {type: integer, minimum: 0}
+                currency: {type: string, maxLength: 3}
+      responses:
+        '201':
+          description: Compte créé
+  /travel/corporate-quotes:
+    get:
+      tags:
+      - Travel
+      summary: Devis corporate (TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Devis
+    post:
+      tags:
+      - Travel
+      summary: Création d'un devis (prix calculé serveur, TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [corporate_account_id, trip_id, class_id, passengers_count]
+              properties:
+                corporate_account_id: {type: integer}
+                trip_id: {type: integer}
+                class_id: {type: integer}
+                passengers_count: {type: integer, minimum: 1, maximum: 100}
+      responses:
+        '201':
+          description: Devis créé (draft, 14 jours de validité)
+  /travel/corporate-quotes/{quote}/accept:
+    post:
+      tags:
+      - Travel
+      summary: Acceptation d'un devis (TRAVEL-803/#6094, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quote
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Devis accepté (fige le montant)
+        '422':
+          description: Devis expiré ou non brouillon
+  /travel/currency-rates:
+    get:
+      tags:
+      - Travel
+      summary: Taux de conversion (TRAVEL-805/#6096)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Taux par période
+    post:
+      tags:
+      - Travel
+      summary: Création d'un taux (TRAVEL-805/#6096, travel.manage)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [base_currency, quote_currency, rate, valid_from]
+              properties:
+                base_currency: {type: string, maxLength: 3}
+                quote_currency: {type: string, maxLength: 3}
+                rate: {type: number, minimum: 0, exclusiveMinimum: true}
+                valid_from: {type: string, format: date}
+                valid_until: {type: string, format: date, nullable: true}
+      responses:
+        '201':
+          description: Taux créé (unique par paire/période)
+  /travel/currency-rates/convert:
+    get:
+      tags:
+      - Travel
+      summary: Conversion d'affichage (TRAVEL-805/#6096, sans perte d'arrondi)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: amount_minor
+        in: query
+        required: true
+        schema: {type: integer, minimum: 0}
+      - name: from
+        in: query
+        required: true
+        schema: {type: string, maxLength: 3}
+      - name: to
+        in: query
+        required: true
+        schema: {type: string, maxLength: 3}
+      - name: date
+        in: query
+        required: false
+        schema: {type: string, format: date}
+      responses:
+        '200':
+          description: Montant converti (minor units)
+        '422':
+          description: Aucun taux valide à cette date
+  /travel/shop/connections:
+    get:
+      tags:
+      - Travel
+      summary: Correspondances multi-trajets (TRAVEL-809/#6099)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: origin_city_id
+        in: query
+        required: true
+        schema: {type: integer}
+      - name: destination_city_id
+        in: query
+        required: true
+        schema: {type: integer}
+      - name: date
+        in: query
+        required: true
+        schema: {type: string, format: date}
+      - name: min_connection_minutes
+        in: query
+        required: false
+        schema: {type: integer, minimum: 15, maximum: 240, default: 45}
+      responses:
+        '200':
+          description: Paires compatibles (horaires validés)
+  /travel/shop/connections/book:
+    post:
+      tags:
+      - Travel
+      summary: Vente groupée d'une correspondance (TRAVEL-809/#6099)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [leg1_trip_id, leg2_trip_id, idempotency_key, leg1_passengers, leg2_passengers]
+              properties:
+                leg1_trip_id: {type: integer}
+                leg2_trip_id: {type: integer}
+                idempotency_key: {type: string}
+                leg1_passengers: {type: array, minItems: 1, items: {type: object}}
+                leg2_passengers: {type: array, minItems: 1, items: {type: object}}
+      responses:
+        '201':
+          description: Deux réservations liées (connection_group_id)
+  /travel/pdv/session/open:
+    post:
+      tags:
+      - Travel
+      summary: Ouverture de caisse PDV (TRAVEL-810/#6100)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                opening_balance_minor: {type: integer, minimum: 0, default: 0}
+      responses:
+        '201':
+          description: Session ouverte (une seule par tenant)
+        '422':
+          description: Session déjà ouverte
+  /travel/pdv/session/close:
+    post:
+      tags:
+      - Travel
+      summary: Clôture de caisse (TRAVEL-810/#6100, écart calculé serveur)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [actual_balance_minor]
+              properties:
+                actual_balance_minor: {type: integer, minimum: 0}
+      responses:
+        '200':
+          description: Attendu vs réel + écart
+  /travel/public-shop-token:
+    get:
+      tags:
+      - Travel
+      summary: Jeton boutique publique (TRAVEL-1001/#6114)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Jeton (préfixe de hash uniquement)
+  /travel/public-shop-token/rotate:
+    post:
+      tags:
+      - Travel
+      summary: Rotation du jeton (TRAVEL-1001/#6114, travel.manage)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Nouveau jeton (retourné UNE fois)
+  /public/travel/shop/trips:
+    get:
+      tags:
+      - Travel
+      summary: Recherche publique (TRAVEL-1001/#6114, jeton X-Travel-Shop-Token)
+      security:
+      - PublicShopTokenAuth: []
+      responses:
+        '200':
+          description: Trajets publiés du tenant
+        '401':
+          description: Jeton boutique invalide
+  /public/travel/shop/bookings:
+    post:
+      tags:
+      - Travel
+      summary: Réservation en ligne publique (TRAVEL-1001/#6114)
+      security:
+      - PublicShopTokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [trip_id, idempotency_key, passengers]
+              properties:
+                trip_id: {type: integer}
+                idempotency_key: {type: string}
+                contact_email: {type: string, format: email, nullable: true}
+                contact_phone: {type: string, nullable: true}
+                notify_consent: {type: boolean, default: false}
+                passengers: {type: array, minItems: 1, items: {type: object}}
+      responses:
+        '201':
+          description: Réservation créée (source online)
+  /public/travel/payments/initiate:
+    post:
+      tags:
+      - Travel
+      summary: Initiation de paiement en ligne (TRAVEL-1002/#6115)
+      security:
+      - PublicShopTokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [booking_reference, provider_code, idempotency_key]
+              properties:
+                booking_reference: {type: string}
+                provider_code: {type: string, enum: [cash, pvit, momo, card]}
+                idempotency_key: {type: string}
+      responses:
+        '201':
+          description: Paiement initié (pending)
+  /public/travel/tickets/{ticket}/pdf:
+    get:
+      tags:
+      - Travel
+      summary: E-billet public (TRAVEL-1002/#6115, accès par code)
+      security:
+      - PublicShopTokenAuth: []
+      parameters:
+      - name: ticket
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: code
+        in: query
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: URL signée temporaire du PDF
+        '403':
+          description: Code de validation invalide
+        '410':
+          description: Billet révoqué
+
   /travel/shop/trips:
     get:
       tags:
@@ -29585,6 +29916,11 @@ components:
       in: header
       name: X-Carrier-Token
       description: Jeton transporteur (API entrante TRAVEL-807/#6086)
+    PublicShopTokenAuth:
+      type: apiKey
+      in: header
+      name: X-Travel-Shop-Token
+      description: Jeton boutique publique (TRAVEL-1001/#6114)
   parameters:
     ProjectId:
       name: project
