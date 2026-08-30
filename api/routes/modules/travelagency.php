@@ -26,6 +26,9 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeControlle
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
@@ -118,4 +121,31 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
         // Check-in / embarquement (TRAVEL-317/#6047).
         Route::post('/tickets/{travelTicket}/check-in', [TravelTicketController::class, 'checkIn']);
+
+        // Locations : véhicules + images (TRAVEL-319/#6049).
+        Route::get('/rental-vehicles', [TravelRentalVehicleController::class, 'index']);
+        Route::post('/rental-vehicles', [TravelRentalVehicleController::class, 'store']);
+        Route::get('/rental-vehicles/{travelRentalVehicle}', [TravelRentalVehicleController::class, 'show']);
+        Route::put('/rental-vehicles/{travelRentalVehicle}', [TravelRentalVehicleController::class, 'update']);
+        Route::delete('/rental-vehicles/{travelRentalVehicle}', [TravelRentalVehicleController::class, 'destroy']);
+        Route::get('/rental-vehicles/{travelRentalVehicle}/images', [TravelRentalVehicleController::class, 'images']);
+        Route::post('/rental-vehicles/{travelRentalVehicle}/images', [TravelRentalVehicleController::class, 'storeImage']);
+        Route::delete('/rental-vehicles/{travelRentalVehicle}/images/{travelRentalVehicleImage}', [TravelRentalVehicleController::class, 'destroyImage']);
+
+        // Réservations de location (TRAVEL-320/#6050).
+        Route::get('/rental-bookings', [TravelRentalBookingController::class, 'index']);
+        Route::post('/rental-bookings', [TravelRentalBookingController::class, 'store']);
+        Route::get('/rental-bookings/{travelRentalBooking}', [TravelRentalBookingController::class, 'show']);
+        Route::post('/rental-bookings/{travelRentalBooking}/cancel', [TravelRentalBookingController::class, 'cancel']);
+
+        // Hôtels + chambres (TRAVEL-321/#6051).
+        Route::get('/hotels', [TravelHotelController::class, 'index']);
+        Route::post('/hotels', [TravelHotelController::class, 'store']);
+        Route::get('/hotels/{travelHotel}', [TravelHotelController::class, 'show']);
+        Route::put('/hotels/{travelHotel}', [TravelHotelController::class, 'update']);
+        Route::delete('/hotels/{travelHotel}', [TravelHotelController::class, 'destroy']);
+        Route::get('/hotels/{travelHotel}/rooms', [TravelHotelController::class, 'rooms']);
+        Route::post('/hotels/{travelHotel}/rooms', [TravelHotelController::class, 'storeRoom']);
+        Route::put('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'updateRoom']);
+        Route::delete('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'destroyRoom']);
     });
