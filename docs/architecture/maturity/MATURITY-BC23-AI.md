@@ -23,7 +23,7 @@ actions à confirmer), gateway + analytics.
 | D4 | API | 🟢 PRÉSENT | Routes `/api/v1/ai/*` (chat, history, tools, actions confirm/reject, workflows), Requests validées, OpenAPI couvert. |
 | D5 | Autorisation | 🟡 PARTIEL | Gardes employé/manager ; **WriteToolPolicy** (actions d'écriture bornées + confirmation humaine) — solide ; pas de matrice de permission fine par outil AI (recommandation 1). |
 | D6 | Transactions | 🟢 PRÉSENT | **Écriture IA = confirmation humaine obligatoire** (AIWriteActionConfirmationTest) — garde anti-actions non désirées. |
-| D7 | Asynchronisme | 🟡 PARTIEL | Workflows IA synchrones ou par jobs ; pas de DLQ dédié AI. |
+| D7 | Asynchronisme | 🟢 PRÉSENT | Workflows IA synchrones ou par jobs ; **file AI + DLQ dédiée** (issue #6239) : exports asynchrones de conversations (job `ExportAiConversationJob` tenant-scoped, file `ai`, idempotent par `dedup_key`), dead-letter queue `ai_dead_letter_queue` + replay contrôlé `ai:dlq:replay`, corrélation workflow `conversation_export` dans l'audit. |
 | D8 | Sécurité | 🟢 PRÉSENT | **AIAuditLogger** (traçabilité des décisions), prompts bornés, pas de secret provider en clair (clé LLM via env/Pulumi). |
 | D9 | Frontend | 🟢 PRÉSENT | Assistant web + apps mobile (chat, confirmations d'actions). |
 | D10 | Performance | 🟡 PARTIEL | Throttle AI dédié (`ai-sensitive`, `ai-plan`) ; budgets de tokens non versionnés. |

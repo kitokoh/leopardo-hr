@@ -3,6 +3,7 @@
 use App\Http\Controllers\AI\AgentController;
 use App\Http\Controllers\AI\AIAnalyticsController;
 use App\Http\Controllers\AI\AIGatewayController;
+use App\Http\Controllers\AI\ConversationExportController;
 use App\Http\Controllers\AI\VoiceController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\AIWorkflowController;
 use App\Http\Middleware\AI\AIFeatureCheck;
@@ -23,6 +24,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'throttle:ai
     Route::post('/actions/{pendingActionId}/confirm', [AIGatewayController::class, 'confirmAction']);
     Route::post('/actions/{pendingActionId}/reject', [AIGatewayController::class, 'rejectAction']);
     Route::get('/tools', [AIGatewayController::class, 'tools']);
+
+    // BC-23-D07 (issue #6239) — export asynchrone de conversation (idempotent,
+    // file `ai`, DLQ dédiée + replay via `php artisan ai:dlq:replay`).
+    Route::post('/conversations/{conversationId}/export', [ConversationExportController::class, 'export'])->whereNumber('conversationId');
+    Route::get('/exports/{exportId}', [ConversationExportController::class, 'show'])->whereNumber('exportId');
 
     // Phase 3 — Voice IA (Sprint 17-18)
     Route::middleware([AIRateLimiter::class])->group(function () {
