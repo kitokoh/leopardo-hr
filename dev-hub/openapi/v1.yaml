@@ -4967,6 +4967,35 @@ paths:
       responses:
         '201':
           description: Deux réservations liées (connection_group_id)
+  /travel/mobile/sync:
+    post:
+      tags:
+      - Travel
+      summary: Synchronisation offline mobile (TRAVEL-704/#6091, file idempotente)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [operations]
+              properties:
+                operations:
+                  type: array
+                  minItems: 1
+                  maxItems: 50
+                  items:
+                    type: object
+                    required: [type, idempotency_key, payload]
+                    properties:
+                      type: {type: string, enum: [booking.create]}
+                      idempotency_key: {type: string, maxLength: 255}
+                      payload: {type: object}
+      responses:
+        '200':
+          description: Résultats par opération (created | duplicate | error)
   /travel/pdv/session/open:
     post:
       tags:
@@ -5106,6 +5135,570 @@ paths:
           description: Code de validation invalide
         '410':
           description: Billet révoqué
+
+  /travel/community/articles/{article}:
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un article (TRAVEL-901/#6104, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un article (TRAVEL-901/#6104)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'un article (TRAVEL-901/#6104, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/categories/{category}:
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une catégorie (TRAVEL-901/#6104, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'une catégorie (TRAVEL-901/#6104, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/comments/{comment}:
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un commentaire (TRAVEL-902/#6105, auteur ou manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: comment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/quiz-questions/{question}:
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une question de quiz (TRAVEL-904/#6107, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: question
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/tourist-sites/{site}:
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un site touristique (TRAVEL-909/#6112, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: site
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'un site touristique (TRAVEL-909/#6112, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: site
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /public/travel/shop/bookings/{reference}:
+    get:
+      tags:
+      - Travel
+      summary: Suivi public d'une réservation (TRAVEL-1001/#6114)
+      security:
+      - PublicShopTokenAuth: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /public/travel/shop/trips/{travelTrip}:
+    get:
+      tags:
+      - Travel
+      summary: Détail public d'un trajet (TRAVEL-1001/#6114)
+      security:
+      - PublicShopTokenAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/advert-positions:
+    get:
+      tags:
+      - Travel
+      summary: Emplacements publicitaires (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+    post:
+      tags:
+      - Travel
+      summary: Création d'un emplacement (TRAVEL-905/#6108, travel.manage)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/adverts/manage:
+    get:
+      tags:
+      - Travel
+      summary: Gestion des annonces (TRAVEL-907/#6110, travel.manage)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/quizzes/{quiz}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un quiz + questions (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/quizzes/{quiz}/results:
+    get:
+      tags:
+      - Travel
+      summary: Résultats d'un quiz (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/pdv/receipts/{booking}:
+    get:
+      tags:
+      - Travel
+      summary: Reçu d'encaissement (TRAVEL-810/#6100)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: booking
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/pdv/session/current:
+    get:
+      tags:
+      - Travel
+      summary: Session de caisse courante (TRAVEL-810/#6100)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/articles/{article}/moderate:
+    post:
+      tags:
+      - Travel
+      summary: Modération d'un article (TRAVEL-901/#6104, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/articles/{article}/rate:
+    post:
+      tags:
+      - Travel
+      summary: Note d'un article (TRAVEL-903/#6106)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/articles/{article}/share:
+    post:
+      tags:
+      - Travel
+      summary: Partage d'un article (TRAVEL-903/#6106)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/articles/{article}/unlike:
+    post:
+      tags:
+      - Travel
+      summary: Retrait d'un like (TRAVEL-903/#6106)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: article
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/comments/{comment}/reject:
+    post:
+      tags:
+      - Travel
+      summary: Rejet d'un commentaire (TRAVEL-902/#6105, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: comment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/community/quizzes/{quiz}/publish:
+    post:
+      tags:
+      - Travel
+      summary: Publication d'un quiz (TRAVEL-904/#6107, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/corporate-quotes/{quote}/cancel:
+    post:
+      tags:
+      - Travel
+      summary: Annulation d'un devis (TRAVEL-803/#6094, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: quote
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
+
+  /travel/corporate-accounts/{account}:
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'un compte corporate (TRAVEL-803/#6094, travel.manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: account
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise
+        '404':
+          description: Introuvable ou hors tenant
 
   /travel/shop/trips:
     get:
