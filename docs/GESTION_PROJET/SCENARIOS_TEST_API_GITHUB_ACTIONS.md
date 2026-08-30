@@ -1507,3 +1507,19 @@ Note 2026-08-26 (PM hygiene, PR #5597) : retour au vert des checks backend — R
 - Audit partages (#5522) : actions `accounting.share.info` / `accounting.share.download` (préfixe module, convention #5439) → `GET /accounting/documents/shared/{document}/accesses` liste bien les accès (avant : 0 ligne).
 - Payroll : `PayrollPaymentOrder::items()` a une FK explicite `payment_order_id` → l'ordre de virement prépare ses lignes sans QueryException (`column payroll_payment_order_id does not exist`).
 - Couverture : `VatDeclarationTest`, `AccountingMultiCurrencyTest`, `WebhookIdempotenceTest`, `EmailBounceWebhookControllerTest`, `ShareAccessAuditTest`, `PayrollPaymentOrderFlowTest`, `TwoFactorAuthTest`, `AccountingActivationTest` (route `/activation/complete`), `LangCatalogParityTest` (fins de fichier `];` tolérées), `OpenApiDocsTest` (`openapi: "3.0.3"` quoté).
+
+## BC-24 TRAVEL — Verticale TravelAgency (TRAVEL-101..305, 2026-08-30)
+
+Surface API ajoutée par la verticale TravelAgency (module `api/app/Modules/TravelAgency`,
+préfixe `/api/v1/travel/*`, groupe `module.travelagency` — feature flag `travelagency`).
+
+- Fondations : `GET /api/v1/travel/ping` (smoke, feature flag actif).
+- Référentiel (lecture tenant) : `GET /travel/countries`, `GET /travel/cities`.
+- CRUD back-office (policies `travel.manage` — principal/rh/manager ; lecture tout employé du tenant) :
+  `GET|POST /travel/stations`, `GET|PUT|DELETE /travel/stations/{travelStation}`,
+  idem `/travel/offices`, `/travel/carriers`, `/travel/classes`.
+- Scénarios à vérifier : (1) sans auth → 401 ; (2) feature flag inactif → 403 ; (3) création
+  type hors enum (`spaceship`) → 422 ; (4) ressource cross-tenant → 404 (jamais 403 sur la
+  ressource) ; (5) suppression → 204 ; (6) liste paginée `per_page` borné (1..1000).
+- Couverture : `api/tests/Feature/Travel/Travel*CrudTest.php`, `TravelGeoReadEndpointsTest.php`,
+  `TravelFeatureFlagTest.php`, `TravelIsolationTest.php` (harness verticale TRAVEL-108).
