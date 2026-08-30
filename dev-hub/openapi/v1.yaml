@@ -51,8 +51,8 @@ tags:
 - name: Health
   description: Groupe d'opérations Health
 - name: Auth
- - name: Delivery
-   description: Groupe d'opérations Delivery (BC-26 DELIVERY)
+- name: Delivery
+  description: Groupe d'opérations Delivery (BC-26 DELIVERY)
   description: Groupe d'opérations Auth
 - name: Payrolls
   description: Groupe d'opérations Payrolls
@@ -23931,7 +23931,7 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
-    /delivery/ping:
+  /delivery/ping:
     get:
       tags:
       - Delivery
@@ -23959,7 +23959,7 @@ paths:
                   service:
                     type: string
                     example: delivery
-/accounting/dashboard:
+  /accounting/dashboard:
     get:
       tags:
       - Accounting
