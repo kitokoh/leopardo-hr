@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\EduManager\Domain\Models\EduAdmission;
 use App\Modules\EduManager\Infrastructure\Services\EduAdmissionService;
+use App\Modules\EduManager\Interfaces\Api\V1\Requests\ConvertEduAdmissionRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduAdmissionRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
 use Illuminate\Http\JsonResponse;
@@ -23,9 +24,7 @@ class EduAdmissionController extends Controller
 {
     use ChecksEduSolution;
 
-    public function __construct(private readonly EduAdmissionService $admissions)
-    {
-    }
+    public function __construct(private readonly EduAdmissionService $admissions) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -83,7 +82,7 @@ class EduAdmissionController extends Controller
         return response()->json(['data' => $this->payload($admission->load('student:id,student_number,display_name'))]);
     }
 
-    public function convert(Request $request, EduAdmission $admission): JsonResponse
+    public function convert(ConvertEduAdmissionRequest $request, EduAdmission $admission): JsonResponse
     {
         $this->assertSolutionActive();
 
@@ -120,7 +119,7 @@ class EduAdmissionController extends Controller
             'status' => $admission->status,
             'source' => $admission->source,
             'consent_contact' => $admission->consent_contact,
-            'applied_at' => $admission->applied_at?->toDateString(),
+            'applied_at' => $admission->applied_at->toDateString(),
             'converted_at' => $admission->converted_at?->toIso8601String(),
             'student' => $admission->relationLoaded('student') && $admission->student !== null
                 ? [

@@ -100,4 +100,12 @@ class EduAssessment extends Model
     {
         return $this->published_at !== null;
     }
+
+    /**
+     * @return BelongsTo<EduSubject, $this>
+     */
+    public function subject(): BelongsTo
+    {
+        return $this->belongsTo(EduSubject::class, 'subject_id');
+    }
 }

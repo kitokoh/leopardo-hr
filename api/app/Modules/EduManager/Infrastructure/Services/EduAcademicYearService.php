@@ -64,7 +64,7 @@ final class EduAcademicYearService
      */
     public function createClass(Employee $actor, array $data): EduClass
     {
-        if (isset($data['teacher_id']) && $data['teacher_id'] !== null) {
+        if (isset($data['teacher_id'])) {
             $this->assertTeacherSameTenant($actor, (int) $data['teacher_id']);
         }
 
@@ -99,6 +99,6 @@ final class EduAcademicYearService
     {
         $teacher = Employee::query()->find($employeeId);
 
-        abort_if($teacher === null || $teacher->company_id !== $actor->company_id, 422, 'EMPLOYEE_OUTSIDE_TENANT');
+        abort_if(! $teacher instanceof Employee || $teacher->company_id !== $actor->company_id, 422, 'EMPLOYEE_OUTSIDE_TENANT');
     }
 }

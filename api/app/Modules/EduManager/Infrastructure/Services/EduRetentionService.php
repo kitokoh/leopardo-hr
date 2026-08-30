@@ -116,12 +116,12 @@ final class EduRetentionService
                 'created_at' => $student->created_at?->toIso8601String(),
             ],
             'guardians' => $guardians->map(fn ($link): array => [
-                'first_name' => $link->guardian?->first_name,
-                'last_name' => $link->guardian?->last_name,
+                'first_name' => $link->guardian->first_name,
+                'last_name' => $link->guardian->last_name,
                 'relationship_code' => $link->relationship_code,
             ])->all(),
             'attendances' => $attendances->map(fn (EduAttendance $a): array => [
-                'date' => $a->attendance_date?->toDateString(),
+                'date' => $a->attendance_date->toDateString(),
                 'status' => $a->status,
                 'reason' => $a->reason,
             ])->all(),

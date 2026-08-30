@@ -100,7 +100,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/edu-manager/report-cards', [EduReportCardController::class, 'index']);
     Route::post('/edu-manager/report-cards/generate', [EduReportCardController::class, 'generate']);
     Route::get('/edu-manager/report-cards/{card}', [EduReportCardController::class, 'show'])->whereNumber('card');
-    Route::post('/edu-manager/report-cards/{card}/validate', [EduReportCardController::class, 'validate'])->whereNumber('card');
+    Route::post('/edu-manager/report-cards/{card}/validate', [EduReportCardController::class, 'validateCard'])->whereNumber('card');
     Route::post('/edu-manager/report-cards/{card}/publish', [EduReportCardController::class, 'publish'])->whereNumber('card');
 
     // EDU-017 (#5833) — import/export sécurisé (direction).
