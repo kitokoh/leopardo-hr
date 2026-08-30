@@ -8,7 +8,7 @@ class MemoryManager
 {
     /**
      * @param  array<string, mixed>  $context
-     * @return array{id: int, messages: array<int, array{role: string, content: string}>}
+     * @return array{id: int, messages: array<int, array{role: string, content: string}>, token_count: int}
      */
     public function loadOrCreateConversation(int $userId, string $companyId, ?int $conversationId = null, array $context = []): array
     {
@@ -25,7 +25,11 @@ class MemoryManager
                 /** @var array<int, array{role: string, content: string}> $messages */
                 $messages = json_decode($messagesJson, true) ?: [];
 
-                return ['id' => (int) $conversation->id, 'messages' => $messages];
+                return [
+                    'id' => (int) $conversation->id,
+                    'messages' => $messages,
+                    'token_count' => (int) ($conversation->token_count ?? 0),
+                ];
             }
         }
 
@@ -40,10 +44,14 @@ class MemoryManager
             'updated_at' => now(),
         ]);
 
-        return ['id' => (int) $id, 'messages' => []];
+        return ['id' => (int) $id, 'messages' => [], 'token_count' => 0];
     }
 
     /**
+     * BC-23-D10 (issue #6238) : le `token_count` d'une conversation devient un
+     * CUMUL (historique + échanges) — c'est ce cumul que le budget de contexte
+     * (`ai.budgets.max_context_tokens`) borne, fail-closed.
+     *
      * @param  array<int, array{role: string, content: string}>  $messages
      */
     public function saveMessages(int $conversationId, array $messages, int $tokenCount = 0): void
@@ -51,11 +59,15 @@ class MemoryManager
         $maxMessages = (int) config('ai.max_conversation_messages', 50);
         $trimmed = array_slice($messages, -$maxMessages);
 
+        $current = (int) DB::table('ai_conversations')
+            ->where('id', $conversationId)
+            ->value('token_count');
+
         DB::table('ai_conversations')
             ->where('id', $conversationId)
             ->update([
                 'messages' => json_encode($trimmed),
-                'token_count' => $tokenCount,
+                'token_count' => $current + max(0, $tokenCount),
                 'updated_at' => now(),
             ]);
     }

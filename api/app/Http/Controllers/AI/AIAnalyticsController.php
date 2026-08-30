@@ -34,6 +34,12 @@ class AIAnalyticsController extends Controller
                 'total_requests' => $items->count(),
                 'total_tokens' => $items->sum(fn ($row) => (int) $row->input_tokens + (int) $row->output_tokens),
                 'total_cost_cents' => $items->sum(fn ($row) => (int) $row->cost_cents),
+                // BC-23-D10 (issue #6238) : percentiles de tokens par requête
+                // et par workflow (p95) — observabilité des budgets.
+                'p95_tokens_per_request' => $this->p95(
+                    $items->map(fn ($row) => (int) $row->input_tokens + (int) $row->output_tokens)
+                ),
+                'workflows' => $this->workflowBreakdown($items),
             ])
             ->sortByDesc('total_requests')
             ->values();
@@ -166,6 +172,55 @@ class AIAnalyticsController extends Controller
         $companyId = $request->attributes->get('ai_company_id') ?? $request->user()?->company_id;
 
         return DB::table('ai_audit_logs')->where('company_id', $companyId);
+    }
+
+    /**
+     * BC-23-D10 (issue #6238) — percentile 95 d'un ensemble de valeurs.
+     * Retourne 0 sur un ensemble vide (aucune donnée).
+     *
+     * @param  iterable<int|string>  $values
+     */
+    private function p95(iterable $values): int
+    {
+        $sorted = array_values(array_map(
+            static fn (mixed $value): int => max(0, (int) $value),
+            iterator_to_array($values, false),
+        ));
+
+        if ($sorted === []) {
+            return 0;
+        }
+
+        sort($sorted);
+
+        $index = (int) ceil(0.95 * count($sorted)) - 1;
+
+        return $sorted[max(0, $index)];
+    }
+
+    /**
+     * BC-23-D10 (issue #6238) — ventilation par workflow (colonne `workflow`
+     * de ai_audit_logs) : requêtes, tokens totaux et p95 par workflow.
+     *
+     * @param  \Illuminate\Support\Collection<int, object>  $items
+     * @return array<int, array{workflow: string, requests: int, total_tokens: int, p95_tokens: int}>
+     */
+    private function workflowBreakdown($items): array
+    {
+        return $items
+            ->filter(static fn ($row): bool => isset($row->workflow) && $row->workflow !== null && $row->workflow !== '')
+            ->groupBy('workflow')
+            ->map(fn ($workflowItems, $workflow) => [
+                'workflow' => (string) $workflow,
+                'requests' => $workflowItems->count(),
+                'total_tokens' => $workflowItems->sum(fn ($row) => (int) $row->input_tokens + (int) $row->output_tokens),
+                'p95_tokens' => $this->p95(
+                    $workflowItems->map(fn ($row) => (int) $row->input_tokens + (int) $row->output_tokens)
+                ),
+            ])
+            ->sortByDesc('total_tokens')
+            ->values()
+            ->all();
     }
 
     private function periodKey(mixed $createdAt, string $groupBy): string

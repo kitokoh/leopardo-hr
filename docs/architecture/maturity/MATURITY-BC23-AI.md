@@ -26,7 +26,7 @@ actions à confirmer), gateway + analytics.
 | D7 | Asynchronisme | 🟡 PARTIEL | Workflows IA synchrones ou par jobs ; pas de DLQ dédié AI. |
 | D8 | Sécurité | 🟢 PRÉSENT | **AIAuditLogger** (traçabilité des décisions), prompts bornés, pas de secret provider en clair (clé LLM via env/Pulumi). |
 | D9 | Frontend | 🟢 PRÉSENT | Assistant web + apps mobile (chat, confirmations d'actions). |
-| D10 | Performance | 🟡 PARTIEL | Throttle AI dédié (`ai-sensitive`, `ai-plan`) ; budgets de tokens non versionnés. |
+| D10 | Performance | 🟢 PRÉSENT | Throttle AI dédié (`ai-sensitive`, `ai-plan`) ; **budgets de tokens versionnés** (`ai.budgets.*`, issue #6238) : cumul par requête, par contexte de conversation et par exécution d'agent, fail-closed 422 `AI_TOKEN_BUDGET_EXCEEDED` + p95 par requête/workflow dans l'analytics. |
 | D11 | Exploitation | 🟢 PRÉSENT | Analytics IA (AIGatewayAndAnalyticsTest), logs structurés, audit trail complet. |
 | D12 | Produit | 🟡 PARTIEL | Parcours chat → intent → action → confirmation testé (17 tests locaux verts) ; pas de golden journey IA end-to-end ni seed pilote dédié. |
 
@@ -42,8 +42,13 @@ php artisan test --filter="AIWriteActionConfirmationTest|AIWorkflowTest|AIGatewa
 1. **Matrice de permissions par outil** (D5) : versionner la liste des
    write-tools autorisés par rôle (WriteToolPolicy) avec tests négatifs par
    rôle.
-2. **Budgets de tokens** (D10) : verrouiller les limites par requête/workflow
-   (p95) une fois le référentiel MAT-014 mergé.
+2. ~~**Budgets de tokens** (D10)~~ **LIVRÉ (BC-23-D10, issue #6238)** :
+   `config/ai.php` → `ai.budgets.{max_tokens_per_request,max_context_tokens,
+   max_tokens_per_workflow}` (env override), `TokenBudgetGuard` (fail-closed
+   422 `AI_TOKEN_BUDGET_EXCEEDED`, tracé dans `ai_audit_logs.error`), cumul
+   de contexte par conversation, budget workflow sur `agent_run`, colonne
+   `ai_audit_logs.workflow` + p95 par requête/workflow dans
+   `/ai/analytics/usage`. 9 tests (`TokenBudgetTest`).
 3. **Golden journey** (D12) : seed pilote IA (intents + outils simulés,
    aucune donnée réelle) + test end-to-end chat → action → confirmation →
    audit.

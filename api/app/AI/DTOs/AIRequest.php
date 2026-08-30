@@ -15,5 +15,8 @@ class AIRequest
         public readonly ?int $conversationId = null,
         public readonly array $messages = [],
         public readonly array $tools = [],
+        // BC-23-D10 (issue #6238) : nom du workflow d'origine (agent_run, …)
+        // pour le suivi des budgets et l'analytics p95 par workflow.
+        public readonly ?string $workflow = null,
     ) {}
 }

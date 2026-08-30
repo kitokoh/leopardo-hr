@@ -1218,6 +1218,8 @@ trait CreatesMvpSchema
                 $table->unsignedInteger('cost_cents')->default(0);
                 $table->unsignedInteger('duration_ms')->default(0);
                 $table->text('error')->nullable();
+                // BC-23-D10 (#6238) : workflow d'origine (null = chat direct).
+                $table->string('workflow', 100)->nullable()->index();
                 $table->timestampTz('created_at')->useCurrent();
             });
         }
