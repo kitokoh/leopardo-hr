@@ -23,15 +23,15 @@ final class OrderStateMachine
      * @var array<string, list<string>>
      */
     private const TRANSITIONS = [
-        OrderStatus::DRAFT->value => [OrderStatus::OPEN->value, OrderStatus::CANCELLED->value],
-        OrderStatus::OPEN->value => [OrderStatus::IN_PREPARATION->value, OrderStatus::CANCELLED->value, OrderStatus::PAID->value],
-        OrderStatus::IN_PREPARATION->value => [OrderStatus::READY->value, OrderStatus::PAID->value],
-        OrderStatus::READY->value => [OrderStatus::SERVED->value, OrderStatus::PAID->value],
-        OrderStatus::SERVED->value => [OrderStatus::PAID->value],
-        OrderStatus::PAID->value => [OrderStatus::CLOSED->value, OrderStatus::REFUNDED->value],
-        OrderStatus::CANCELLED->value => [],
-        OrderStatus::REFUNDED->value => [],
-        OrderStatus::CLOSED->value => [],
+        'draft' => ['open', 'cancelled'],
+        'open' => ['in_preparation', 'cancelled', 'paid'],
+        'in_preparation' => ['ready', 'paid'],
+        'ready' => ['served', 'paid'],
+        'served' => ['paid'],
+        'paid' => ['closed', 'refunded'],
+        'cancelled' => [],
+        'refunded' => [],
+        'closed' => [],
     ];
 
     public function canTransition(OrderStatus $from, OrderStatus $to): bool
