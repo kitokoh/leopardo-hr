@@ -154,6 +154,10 @@ return Application::configure(basePath: dirname(__DIR__))
             // BC-24 TRAVEL — API entrante transporteurs (TRAVEL-807/#6086).
             'travel.partner' => TravelPartnerAuthMiddleware::class,
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,
+            // BC-26-D05 (#6294) : garde RBAC du module Delivery
+            // (delivery.admin/dispatcher/manager/rider/reports) — deny-by-default,
+            // matrice docs/architecture/DELIVERY_RBAC.md.
+            'delivery.role' => EnsureDeliveryRoleMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
