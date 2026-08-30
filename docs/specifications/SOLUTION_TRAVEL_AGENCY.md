@@ -934,9 +934,16 @@ logs sans PII inutile · PR courte fusionnable sur `main` · entrée `CHANGELOG.
 
 ### Épic 10xx — Boutique publique, import legacy, qualité, pilote
 
-> **Statut (lot 3a, 2026-08-30) :** ✅ TRAVEL-1001 (boutique publique, jeton
+> **Statut (lots 3a/3b, 2026-08-30) :** ✅ TRAVEL-1001 (boutique publique, jeton
 > tenant), ✅ TRAVEL-1002 (tunnel d'achat public — recette E2E backend),
-> ✅ TRAVEL-1003 (import legacy CLI), ✅ TRAVEL-1004 (import géo legacy).
+> ✅ TRAVEL-1003 (import legacy CLI), ✅ TRAVEL-1004 (import géo legacy),
+> ✅ TRAVEL-1005 (OpenAPI complet + coverage CI 0 drift), ✅ TRAVEL-1006
+> (collection Postman + guide partenaires), ✅ TRAVEL-1007 (golden journey
+> GJ-TRAVEL-01 automatisé), ✅ TRAVEL-1008 (specs Playwright admin — à activer
+> avec l'UI 601..609), ✅ TRAVEL-1009 (templates notifications fr/en + doc RTL),
+> ✅ TRAVEL-1010 (runbook pilote + recette UAT), ✅ TRAVEL-1011 (pilot gates
+> MAT-018 enregistrés), ✅ TRAVEL-1012 (tenant pilote + `pilot-check`),
+> ✅ TRAVEL-1013 (audit sécurité & RGPD).
 
 | ID | Tâche fine | Parent |
 |---|---|---|
