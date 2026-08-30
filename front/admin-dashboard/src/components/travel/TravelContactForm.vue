@@ -60,10 +60,12 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale.js'
 import { createTravel } from '@/services/travel'
 
-const { t } = useI18n()
+const localeStore = useLocaleStore()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const form = reactive({ first_name: '', last_name: '', email: '', phone: '', message: '', consent: false })
 const busy = ref(false)

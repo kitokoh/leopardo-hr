@@ -153,17 +153,19 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-import DataTable from '@/components/ui/DataTable.vue'
-import StatusBadge from '@/components/ui/StatusBadge.vue'
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale.js'
+import DataTable from '@/components/common/DataTable.vue'
+import StatusBadge from '@/components/common/StatusBadge.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
 import {
-  createTravel, deleteTravel, getTravel, listTravel, updateTravel, travelList,
+  createTravel, deleteTravel, getTravel, listTravel, updateTravel, travelItem, travelList,
   createQuizQuestion, updateQuizQuestion, deleteQuizQuestion, quizParticipations,
 } from '@/services/travel'
 
-const { t } = useI18n()
+const localeStore = useLocaleStore()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const gateMode = ref('')
 const loadError = ref('')
@@ -227,7 +229,7 @@ async function loadQuestions() {
   questionsError.value = ''
   try {
     const res = await getTravel('quizzes', selectedQuiz.value.id)
-    questions.value = travelList(res)?.questions ?? []
+    questions.value = travelItem(res)?.questions ?? []
   } catch (err) {
     questionsError.value = err?.response?.data?.message || String(err)
   } finally {
