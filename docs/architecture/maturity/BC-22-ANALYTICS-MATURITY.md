@@ -46,7 +46,7 @@ jamais les transactions et ne lit aucune table tenant sans scope
 | D9 | Frontends | 🟢 PRÉSENT | Dashboards admin/manager, états UI, permissions UI non autoritaires. |
 | D10 | Performance | 🟡 PARTIEL → 🟢 CORRIGÉ | Pagination/borne (`limit 100` impayés) ; **budgets p95 verrouillés** pour les endpoints reporting (`performance-budgets.json` : dashboard 300 ms, export CSV 700 ms, FEC 800 ms) ; read models en agrégations simples scopées (pas de jointures profondes transactionnelles), déterminisme testé. |
 | D11 | Exploitation | 🟡 PARTIEL → 🟢 CORRIGÉ | **Runbook** `RUNBOOK_REPORTING_ANALYTICS.md` (symptômes → diagnostic → action → rollback + alertes) ; `PilotReportCommand`/`PilotKpiReportCommand` ; observabilité (logs corrélés, `QueueObservabilityController`). |
-| D12 | Produit | 🟡 PARTIEL | KPIs pilotes documentés ; recette reporting en cours — golden journey UI end-to-end à formaliser (recommandation 3). |
+| D12 | Produit | 🟡 PARTIEL | KPIs pilotes documentés ; **invariant data quality verrouillé** (impayés = `total_ttc > paid_amount`, `paid_amount` dénormalisé maintenu par `DocumentWorkflowService`) ; recette reporting en cours — golden journey UI end-to-end à formaliser (recommandation 3). |
 
 ## Corrections livrées dans cette PR
 
@@ -58,7 +58,10 @@ jamais les transactions et ne lit aucune table tenant sans scope
    - deux appels successifs de `AccountingDashboardService::summary()` →
      résultats **identiques** ;
    - l'ajout de données chez un AUTRE tenant ne modifie jamais le read model
-     du tenant courant (isolation + déterminisme).
+     du tenant courant (isolation + déterminisme) ;
+   - **invariant data quality** : les encaissements maintiennent `paid_amount`
+     sur le document (contrat `DocumentWorkflowService`) — le read model des
+     impayés lit `total_ttc > paid_amount` (documenté dans le lineage).
    Le read model n'utilise que des agrégations simples scopées (count/sum)
    sur les modèles tenant — pas de jointures profondes transactionnelles.
 2. **Lineage des read models (D1/D11)** — `docs/architecture/ANALYTICS_READ_MODEL_LINEAGE.md` :
