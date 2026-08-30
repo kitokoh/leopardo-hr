@@ -4519,6 +4519,75 @@
       "infant": "Bébé",
       "child": "Enfant",
       "adult": "Adulte"
+    },
+    "content": {
+      "title": "Contenu & annonces",
+      "subtitle": "Quiz, annonces payantes et sites touristiques.",
+      "tabs": {
+        "quiz": "Quiz",
+        "adverts": "Annonces",
+        "sites": "Sites touristiques"
+      }
+    },
+    "quiz": {
+      "title": "Quiz & jeux-concours",
+      "create": "Créer un quiz",
+      "questions": "Questions",
+      "results": "Résultats",
+      "addQuestion": "Ajouter une question",
+      "question": "Question",
+      "options": "Options",
+      "optionsInput": "Options (séparées par des virgules)",
+      "correctIndex": "Index de la bonne réponse",
+      "points": "Points",
+      "participant": "Participant",
+      "score": "Score",
+      "bonus": "Bonus",
+      "endsAt": "Fin",
+      "status": {
+        "draft": "Brouillon",
+        "active": "Actif",
+        "closed": "Clôturé"
+      }
+    },
+    "adverts": {
+      "title": "Annonces",
+      "types": "Types",
+      "positions": "Positions",
+      "prices": "Tarifs",
+      "label": "Libellé",
+      "code": "Code",
+      "type": "Type",
+      "position": "Position",
+      "priceImage": "Prix image (minor)",
+      "priceChar": "Prix caractère (minor)",
+      "currency": "Devise",
+      "create": "Soumettre une annonce",
+      "content": "Contenu",
+      "validityDays": "Durée (jours)",
+      "pay": "Payer",
+      "validate": "Valider",
+      "reject": "Rejeter",
+      "renew": "Renouveler",
+      "rejectReason": "Motif du rejet",
+      "price": "Prix",
+      "expiresAt": "Expiration",
+      "allStatuses": "Tous les statuts",
+      "status": {
+        "draft": "Brouillon",
+        "submitted": "Soumise",
+        "paid": "Payée",
+        "validated": "Validée",
+        "rejected": "Rejetée",
+        "expired": "Expirée"
+      }
+    },
+    "sites": {
+      "title": "Sites touristiques",
+      "name": "Nom",
+      "description": "Description",
+      "latitude": "Latitude",
+      "longitude": "Longitude"
     }
   }
 }
