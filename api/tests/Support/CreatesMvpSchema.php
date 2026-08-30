@@ -2710,6 +2710,20 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('travel_advert_prices'))) {
+            Schema::create($this->moduleTable('travel_advert_prices'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('advert_type_id');
+                $table->unsignedBigInteger('advert_position_id');
+                $table->unsignedBigInteger('price_image_minor')->default(0);
+                $table->unsignedBigInteger('price_character_minor')->default(0);
+                $table->char('currency', 3);
+                $table->timestamps();
+                $table->unique(['company_id', 'advert_type_id', 'advert_position_id', 'currency'], 'travel_advert_prices_unique');
+            });
+        }
+
         // ── BC-24 TRAVEL — TRAVEL-905 (issue #6108) — annonces (référentiels) ──
         if (! Schema::hasTable($this->moduleTable('travel_advert_types'))) {
             Schema::create($this->moduleTable('travel_advert_types'), function (Blueprint $table): void {
