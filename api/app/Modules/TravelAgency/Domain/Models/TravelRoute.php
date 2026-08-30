@@ -62,6 +62,6 @@ class TravelRoute extends Model
      */
     public function stops(): HasMany
     {
-        return $this->hasMany(TravelRouteStop::class)->orderBy('rank');
+        return $this->hasMany(TravelRouteStop::class, 'route_id')->orderBy('rank');
     }
 }

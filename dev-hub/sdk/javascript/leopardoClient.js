@@ -4205,6 +4205,51 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/travel/ping", options);
     },
 
+    /** Liste des routes (TRAVEL-307/#6037) */
+    getTravelRoutes(options = {}) {
+      return request("GET", "/travel/routes", options);
+    },
+
+    /** Création d'une route (TRAVEL-307/#6037) */
+    postTravelRoutes(options = {}) {
+      return request("POST", "/travel/routes", options);
+    },
+
+    /** Suppression d'une route (TRAVEL-307/#6037) */
+    deleteTravelRoutesByTravelRoute(options = {}) {
+      return request("DELETE", "/travel/routes/{travelRoute}", options);
+    },
+
+    /** Détail d'une route (TRAVEL-307/#6037) */
+    getTravelRoutesByTravelRoute(options = {}) {
+      return request("GET", "/travel/routes/{travelRoute}", options);
+    },
+
+    /** Mise à jour d'une route (TRAVEL-307/#6037) */
+    putTravelRoutesByTravelRoute(options = {}) {
+      return request("PUT", "/travel/routes/{travelRoute}", options);
+    },
+
+    /** Étapes d'une route, triées par rang (TRAVEL-307/#6037) */
+    getTravelRoutesByTravelRouteStops(options = {}) {
+      return request("GET", "/travel/routes/{travelRoute}/stops", options);
+    },
+
+    /** Ajout d'une étape à une route (TRAVEL-307/#6037) */
+    postTravelRoutesByTravelRouteStops(options = {}) {
+      return request("POST", "/travel/routes/{travelRoute}/stops", options);
+    },
+
+    /** Suppression d'une étape (TRAVEL-307/#6037) */
+    deleteTravelRoutesByTravelRouteStopsByTravelRouteStop(options = {}) {
+      return request("DELETE", "/travel/routes/{travelRoute}/stops/{travelRouteStop}", options);
+    },
+
+    /** Mise à jour d'une étape (TRAVEL-307/#6037) */
+    putTravelRoutesByTravelRouteStopsByTravelRouteStop(options = {}) {
+      return request("PUT", "/travel/routes/{travelRoute}/stops/{travelRouteStop}", options);
+    },
+
     /** Liste des gares/terminaux (TRAVEL-302/#6032) */
     getTravelStations(options = {}) {
       return request("GET", "/travel/stations", options);
@@ -4228,6 +4273,96 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modification d'une gare/terminal (TRAVEL-302/#6032) */
     putTravelStationsByTravelStation(options = {}) {
       return request("PUT", "/travel/stations/{travelStation}", options);
+    },
+
+    /** Liste des trajets (TRAVEL-308/#6038) */
+    getTravelTrips(options = {}) {
+      return request("GET", "/travel/trips", options);
+    },
+
+    /** Création d'un trajet (TRAVEL-308/#6038, génère les sièges) */
+    postTravelTrips(options = {}) {
+      return request("POST", "/travel/trips", options);
+    },
+
+    /** Suppression d'un trajet (TRAVEL-308/#6038) */
+    deleteTravelTripsByTravelTrip(options = {}) {
+      return request("DELETE", "/travel/trips/{travelTrip}", options);
+    },
+
+    /** Détail d'un trajet (TRAVEL-308/#6038) */
+    getTravelTripsByTravelTrip(options = {}) {
+      return request("GET", "/travel/trips/{travelTrip}", options);
+    },
+
+    /** Mise à jour d'un trajet (TRAVEL-308/#6038) */
+    putTravelTripsByTravelTrip(options = {}) {
+      return request("PUT", "/travel/trips/{travelTrip}", options);
+    },
+
+    /** Annulation d'un trajet (TRAVEL-310/#6040) */
+    postTravelTripsByTravelTripCancel(options = {}) {
+      return request("POST", "/travel/trips/{travelTrip}/cancel", options);
+    },
+
+    /** Tarifs d'un trajet par classe (TRAVEL-309/#6039) */
+    getTravelTripsByTravelTripPrices(options = {}) {
+      return request("GET", "/travel/trips/{travelTrip}/prices", options);
+    },
+
+    /** Création d'un tarif (TRAVEL-309/#6039) */
+    postTravelTripsByTravelTripPrices(options = {}) {
+      return request("POST", "/travel/trips/{travelTrip}/prices", options);
+    },
+
+    /** Suppression d'un tarif (TRAVEL-309/#6039) */
+    deleteTravelTripsByTravelTripPricesByTravelTripPrice(options = {}) {
+      return request("DELETE", "/travel/trips/{travelTrip}/prices/{travelTripPrice}", options);
+    },
+
+    /** Détail d'un tarif (TRAVEL-309/#6039) */
+    getTravelTripsByTravelTripPricesByTravelTripPrice(options = {}) {
+      return request("GET", "/travel/trips/{travelTrip}/prices/{travelTripPrice}", options);
+    },
+
+    /** Mise à jour d'un tarif (TRAVEL-309/#6039) */
+    putTravelTripsByTravelTripPricesByTravelTripPrice(options = {}) {
+      return request("PUT", "/travel/trips/{travelTrip}/prices/{travelTripPrice}", options);
+    },
+
+    /** Publication d'un trajet (TRAVEL-310/#6040) */
+    postTravelTripsByTravelTripPublish(options = {}) {
+      return request("POST", "/travel/trips/{travelTrip}/publish", options);
+    },
+
+    /** Recherche interne de trajets (TRAVEL-311/#6041) */
+    getTravelTripsSearch(options = {}) {
+      return request("GET", "/travel/trips/search", options);
+    },
+
+    /** Liste des véhicules de la flotte (TRAVEL-306/#6036) */
+    getTravelVehicles(options = {}) {
+      return request("GET", "/travel/vehicles", options);
+    },
+
+    /** Création d'un véhicule de flotte (TRAVEL-306/#6036) */
+    postTravelVehicles(options = {}) {
+      return request("POST", "/travel/vehicles", options);
+    },
+
+    /** Suppression d'un véhicule (TRAVEL-306/#6036) */
+    deleteTravelVehiclesByTravelVehicle(options = {}) {
+      return request("DELETE", "/travel/vehicles/{travelVehicle}", options);
+    },
+
+    /** Détail d'un véhicule (TRAVEL-306/#6036) */
+    getTravelVehiclesByTravelVehicle(options = {}) {
+      return request("GET", "/travel/vehicles/{travelVehicle}", options);
+    },
+
+    /** Mise à jour d'un véhicule (TRAVEL-306/#6036) */
+    putTravelVehiclesByTravelVehicle(options = {}) {
+      return request("PUT", "/travel/vehicles/{travelVehicle}", options);
     },
 
     /** Demande d'essai guidé / auto-service (onboarding) */
