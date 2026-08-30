@@ -92,18 +92,19 @@
           :key="field.key"
           :id="`travel-${config.resource}-${field.key}`"
           :label="fieldLabel(field)"
-          :error="formErrors[field.key]"
+          :error="fieldError(field)"
           :required="field.required"
           :hint="field.hint"
         >
           <template #default="{ ariaInvalid, describedBy }">
             <select
               v-if="field.type === 'select'"
-              v-model="form[field.key]"
+              :value="formValue(field)"
               class="form-input"
               :aria-invalid="ariaInvalid"
               :aria-describedby="describedBy"
               :required="field.required"
+              @change="setFormField(field, $event)"
             >
               <option value="">{{ $t('travel.form.selectPlaceholder', '— Sélectionner —') }}</option>
               <option v-for="opt in fieldOptions(field)" :key="opt.value" :value="opt.value">
@@ -112,24 +113,27 @@
             </select>
             <textarea
               v-else-if="field.type === 'textarea'"
-              v-model="form[field.key]"
+              :value="formValue(field)"
               class="form-input"
               rows="3"
               :aria-invalid="ariaInvalid"
               :aria-describedby="describedBy"
+              @input="setFormField(field, $event)"
             ></textarea>
             <input
               v-else
               :type="field.type === 'money' ? 'number' : field.type"
-              v-model="form[field.key]"
+              :value="formValue(field)"
               :min="field.min"
               :max="field.max"
               :step="field.type === 'money' ? '0.01' : field.step"
               :placeholder="field.placeholder"
+              :checked="field.type === 'checkbox' ? formValue(field) : undefined"
               class="form-input"
               :aria-invalid="ariaInvalid"
               :aria-describedby="describedBy"
               :required="field.required"
+              @input="setFormField(field, $event)"
             />
           </template>
         </FormField>
@@ -195,7 +199,7 @@
                 </td>
               </tr>
               <tr v-if="nestedRows.length === 0 && !nestedLoading">
-                <td :colspan="nestedColumns.length + 1" class="px-4 py-4 text-center text-xs text-slate-400">
+                <td :colspan="nestedColspan" class="px-4 py-4 text-center text-xs text-slate-400">
                   {{ $t('travel.table.emptyNested', 'Aucun élément.') }}
                 </td>
               </tr>
@@ -221,17 +225,18 @@
           :key="field.key"
           :id="`travel-nested-${field.key}`"
           :label="fieldLabel(field)"
-          :error="nestedFormErrors[field.key]"
+          :error="nestedFieldError(field)"
           :required="field.required"
         >
           <template #default="{ ariaInvalid, describedBy }">
             <select
               v-if="field.type === 'select'"
-              v-model="nestedForm[field.key]"
+              :value="nestedFormValue(field)"
               class="form-input"
               :aria-invalid="ariaInvalid"
               :aria-describedby="describedBy"
               :required="field.required"
+              @change="setNestedFormField(field, $event)"
             >
               <option value="">{{ $t('travel.form.selectPlaceholder', '— Sélectionner —') }}</option>
               <option v-for="opt in fieldOptions(field)" :key="opt.value" :value="opt.value">
@@ -241,13 +246,15 @@
             <input
               v-else
               :type="field.type === 'money' ? 'number' : field.type"
-              v-model="nestedForm[field.key]"
+              :value="nestedFormValue(field)"
               :min="field.min"
               :step="field.type === 'money' ? '0.01' : field.step"
+              :checked="field.type === 'checkbox' ? nestedFormValue(field) : undefined"
               class="form-input"
               :aria-invalid="ariaInvalid"
               :aria-describedby="describedBy"
               :required="field.required"
+              @input="setNestedFormField(field, $event)"
             />
           </template>
         </FormField>
@@ -387,6 +394,42 @@ function fieldOptions(field) {
   }
   return []
 }
+
+function fieldError(field) {
+  return formErrors.value[field.key]
+}
+
+function formValue(field) {
+  return form.value[field.key]
+}
+
+function setFormField(field, event) {
+  const el = event.target
+  if (el.type === 'checkbox') {
+    form.value[field.key] = el.checked
+  } else {
+    form.value[field.key] = el.value
+  }
+}
+
+function nestedFieldError(field) {
+  return nestedFormErrors.value[field.key]
+}
+
+function nestedFormValue(field) {
+  return nestedForm.value[field.key]
+}
+
+function setNestedFormField(field, event) {
+  const el = event.target
+  if (el.type === 'checkbox') {
+    nestedForm.value[field.key] = el.checked
+  } else {
+    nestedForm.value[field.key] = el.value
+  }
+}
+
+const nestedColspan = computed(() => nestedColumns.value.length + 1)
 
 function toMinor(value) {
   if (value === '' || value === null || value === undefined) return null
