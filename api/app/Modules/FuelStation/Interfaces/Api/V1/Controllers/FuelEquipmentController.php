@@ -210,10 +210,9 @@ class FuelEquipmentController extends Controller
 
     /**
      * @param  list<mixed>  $items
-     * @param  \Illuminate\Pagination\LengthAwarePaginator<mixed>  $paginator
      * @param  callable(mixed): array<string, mixed>  $mapper
      */
-    private function paginated(array $items, $paginator, callable $mapper): JsonResponse
+    private function paginated(array $items, \Illuminate\Pagination\LengthAwarePaginator $paginator, callable $mapper): JsonResponse
     {
         return response()->json([
             'data' => collect($items)->map($mapper),

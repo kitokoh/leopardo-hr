@@ -127,7 +127,7 @@ final class FuelAlertService
             ->where('company_id', $companyId)
             ->where('event_type', $eventType)
             ->where('channel', $channel)
-            ->where(function ($query) use ($stationId): void {
+            ->where(function (Builder $query) use ($stationId): void {
                 $query->where('station_id', $stationId)->orWhereNull('station_id');
             })
             ->orderByDesc('station_id')

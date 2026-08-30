@@ -39,7 +39,9 @@ class FuelStationServiceProvider extends ServiceProvider
         Event::listen(function (FuelStockVarianceDetected $event): void {
             $reconciliation = $event->reconciliation;
 
-            resolve(FuelAlertService::class)->createAlert(
+            /** @var FuelAlertService $alerts */
+            $alerts = resolve(FuelAlertService::class);
+            $alerts->createAlert(
                 companyId: $reconciliation->company_id,
                 stationId: $reconciliation->station_id,
                 eventType: FuelNotificationPreference::EVENT_STOCK_VARIANCE,
@@ -61,7 +63,9 @@ class FuelStationServiceProvider extends ServiceProvider
 
             $critical = in_array($incident->severity, ['high', 'critical'], true);
 
-            resolve(FuelAlertService::class)->createAlert(
+            /** @var FuelAlertService $alerts */
+            $alerts = resolve(FuelAlertService::class);
+            $alerts->createAlert(
                 companyId: $incident->company_id,
                 stationId: $incident->station_id,
                 eventType: FuelNotificationPreference::EVENT_INCIDENT,

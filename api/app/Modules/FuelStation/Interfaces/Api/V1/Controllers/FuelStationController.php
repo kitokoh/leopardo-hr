@@ -39,9 +39,11 @@ class FuelStationController extends Controller
 
         $search = $request->input('search');
         if (is_string($search) && $search !== '') {
-            $query->where(fn ($q): object => $q
-                ->where('name', 'ilike', "%{$search}%")
-                ->orWhere('code', 'ilike', "%{$search}%"));
+            $query->where(function (\Illuminate\Database\Eloquent\Builder $q) use ($search): \Illuminate\Database\Eloquent\Builder {
+                return $q
+                    ->where('name', 'ilike', "%{$search}%")
+                    ->orWhere('code', 'ilike', "%{$search}%");
+            });
         }
 
         $sort = $request->input('sort', 'name');

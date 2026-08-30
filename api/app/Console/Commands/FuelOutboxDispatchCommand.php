@@ -10,6 +10,7 @@ use App\Modules\FuelStation\Domain\Exceptions\PermanentFuelOutboxException;
 use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
 use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;
 use Illuminate\Console\Command;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -76,10 +77,10 @@ class FuelOutboxDispatchCommand extends Command
     private function claimBatch(int $limit): array
     {
         $ids = DB::table('fuel_outbox_events')
-            ->where(function ($query): void {
+            ->where(function (Builder $query): void {
                 $query->where('status', FuelOutboxEvent::STATUS_PENDING)
                     ->where('available_at', '<=', now())
-                    ->orWhere(function ($query): void {
+                    ->orWhere(function (Builder $query): void {
                         $query->where('status', FuelOutboxEvent::STATUS_PROCESSING)
                             ->where('updated_at', '<', now()->subMinutes(self::PROCESSING_LEASE_MINUTES));
                     });

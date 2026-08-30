@@ -194,11 +194,11 @@ final class FuelReportingService
             ->orderBy('product')
             ->get();
 
-        return $rows->map(fn ($row): array => [
-            'product' => (string) $row->product,
-            'count' => (int) $row->count,
-            'quantity' => (float) $row->quantity,
-            'amount' => (float) $row->amount,
+        return $rows->map(fn (FuelSale $row): array => [
+            'product' => (string) $row->getAttribute('product'),
+            'count' => (int) $row->getAttribute('count'),
+            'quantity' => (float) $row->getAttribute('quantity'),
+            'amount' => (float) $row->getAttribute('amount'),
         ])->all();
     }
 
@@ -213,9 +213,9 @@ final class FuelReportingService
             ->first();
 
         return [
-            'count' => (int) ($row?->count ?? 0),
-            'quantity' => (float) ($row?->quantity ?? 0),
-            'amount' => (float) ($row?->amount ?? 0),
+            'count' => (int) ($row?->getAttribute('count') ?? 0),
+            'quantity' => (float) ($row?->getAttribute('quantity') ?? 0),
+            'amount' => (float) ($row?->getAttribute('amount') ?? 0),
         ];
     }
 
