@@ -4088,6 +4088,145 @@ paths:
           description: Référence ou paiement inconnu
         '422':
           description: Montant incohérent avec la réservation
+  /travel/payments/{travelPayment}/verify:
+    post:
+      tags:
+      - Travel
+      summary: Re-conciliation d'un paiement (TRAVEL-410/#6062)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelPayment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Paiement re-concilié (statut mis à jour si confirmé)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      reference:
+                        type: string
+                      status:
+                        type: string
+                        enum: [pending, confirmed, failed, refunded]
+        '404':
+          description: Paiement introuvable ou hors tenant
+  /travel/payments/{travelPayment}/refund:
+    post:
+      tags:
+      - Travel
+      summary: Remboursement d'un paiement (TRAVEL-411/#6063)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelPayment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+      responses:
+        '200':
+          description: Paiement remboursé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      reference:
+                        type: string
+                      status:
+                        type: string
+                        enum: [pending, confirmed, failed, refunded]
+        '404':
+          description: Paiement introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '422':
+          description: Seul un paiement confirmé est remboursable
+  /travel/tickets/{travelTicket}/pdf:
+    get:
+      tags:
+      - Travel
+      summary: URL signée du billet PDF (TRAVEL-412/413/#6064/#6065)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTicket
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: URL signée temporaire (30 min) du PDF généré localement
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      ticket_number:
+                        type: string
+                      pdf_url:
+                        type: string
+                      expires_in_minutes:
+                        type: integer
+        '404':
+          description: Billet introuvable ou hors tenant
+        '410':
+          description: Billet révoqué
+  /travel/tickets/{travelTicket}/revoke:
+    post:
+      tags:
+      - Travel
+      summary: Révocation d'un billet (TRAVEL-413/#6065)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTicket
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Billet révoqué (void, PDF supprimé)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTicket'
+        '404':
+          description: Billet introuvable ou hors tenant
+        '403':
+          description: Permission de check-in requise
+        '422':
+          description: Billet déjà enregistré (check-in)
   /health:
     get:
       tags:

@@ -6,6 +6,8 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\TravelAgency\Application\Actions\RefundPaymentAction;
+use App\Modules\TravelAgency\Application\Actions\VerifyPaymentAction;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelPayment;
@@ -188,6 +190,56 @@ class TravelPaymentController extends Controller
                 'currency' => $travelPayment->currency,
                 'status' => $travelPayment->status->value,
                 'created_at' => $travelPayment->created_at,
+            ],
+        ]);
+    }
+
+    /**
+     * TRAVEL-410 (#6062) — Re-conciliation active d'un paiement (verify).
+     */
+    public function verify(Request $request, TravelPayment $travelPayment): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelPayment->company_id) {
+            abort(404);
+        }
+
+        $payment = app(VerifyPaymentAction::class)->execute($travelPayment);
+
+        return response()->json([
+            'data' => [
+                'reference' => $payment->reference,
+                'status' => $payment->status->value,
+            ],
+        ]);
+    }
+
+    /**
+     * TRAVEL-411 (#6063) — Remboursement d'un paiement confirmé.
+     */
+    public function refund(Request $request, TravelPayment $travelPayment): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelPayment->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('update', $travelPayment)) {
+            abort(403);
+        }
+
+        $reason = (string) $request->validate(['reason' => ['required', 'string', 'min:3', 'max:500']])['reason'];
+
+        $payment = app(RefundPaymentAction::class)->execute($travelPayment, (int) $actor->id, $reason);
+
+        return response()->json([
+            'data' => [
+                'reference' => $payment->reference,
+                'status' => $payment->status->value,
             ],
         ]);
     }

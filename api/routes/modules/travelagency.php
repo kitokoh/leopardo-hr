@@ -124,15 +124,21 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // Check-in / embarquement (TRAVEL-317/#6047).
         Route::post('/tickets/{travelTicket}/check-in', [TravelTicketController::class, 'checkIn']);
 
+        // Billets PDF (TRAVEL-412/413/#6064/#6065).
+        Route::get('/tickets/{travelTicket}/pdf', [TravelTicketController::class, 'pdf']);
+        Route::post('/tickets/{travelTicket}/revoke', [TravelTicketController::class, 'revoke']);
+
         // Boutique en ligne (TRAVEL-401..404/#6053..#6056).
         Route::get('/shop/trips', [TravelShopController::class, 'search']);
         Route::get('/shop/trips/{travelTrip}', [TravelShopController::class, 'show']);
         Route::post('/shop/bookings', [TravelShopController::class, 'storeBooking']);
         Route::get('/shop/bookings/{reference}', [TravelShopController::class, 'track']);
 
-        // Paiements (TRAVEL-408/#6060, TRAVEL-409/#6061).
+        // Paiements (TRAVEL-408..411/#6060..#6063).
         Route::post('/payments/initiate', [TravelPaymentController::class, 'initiate']);
         Route::get('/payments/{travelPayment}', [TravelPaymentController::class, 'show']);
+        Route::post('/payments/{travelPayment}/verify', [TravelPaymentController::class, 'verify']);
+        Route::post('/payments/{travelPayment}/refund', [TravelPaymentController::class, 'refund']);
 
         // Locations : véhicules + images (TRAVEL-319/#6049).
         Route::get('/rental-vehicles', [TravelRentalVehicleController::class, 'index']);

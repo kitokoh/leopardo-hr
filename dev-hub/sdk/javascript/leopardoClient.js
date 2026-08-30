@@ -4285,6 +4285,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/travel/payments/{travelPayment}", options);
     },
 
+    /** Remboursement d'un paiement (TRAVEL-411/#6063) */
+    postTravelPaymentsByTravelPaymentRefund(options = {}) {
+      return request("POST", "/travel/payments/{travelPayment}/refund", options);
+    },
+
+    /** Re-conciliation d'un paiement (TRAVEL-410/#6062) */
+    postTravelPaymentsByTravelPaymentVerify(options = {}) {
+      return request("POST", "/travel/payments/{travelPayment}/verify", options);
+    },
+
     /** Callback provider (signé HMAC, idempotent — TRAVEL-409/#6061) */
     postTravelPaymentsCallback(options = {}) {
       return request("POST", "/travel/payments/callback", options);
@@ -4453,6 +4463,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Check-in / embarquement (TRAVEL-317/#6047) */
     postTravelTicketsByTravelTicketCheckIn(options = {}) {
       return request("POST", "/travel/tickets/{travelTicket}/check-in", options);
+    },
+
+    /** URL signée du billet PDF (TRAVEL-412/413/#6064/#6065) */
+    getTravelTicketsByTravelTicketPdf(options = {}) {
+      return request("GET", "/travel/tickets/{travelTicket}/pdf", options);
+    },
+
+    /** Révocation d'un billet (TRAVEL-413/#6065) */
+    postTravelTicketsByTravelTicketRevoke(options = {}) {
+      return request("POST", "/travel/tickets/{travelTicket}/revoke", options);
     },
 
     /** Liste des trajets (TRAVEL-308/#6038) */

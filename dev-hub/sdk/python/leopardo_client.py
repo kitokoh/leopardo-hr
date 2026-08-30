@@ -3448,6 +3448,14 @@ class LeopardoClient:
         """Statut d'un paiement (TRAVEL-408/#6060)"""
         return self.request("GET", "/travel/payments/{travelPayment}", **kwargs)
 
+    def post_travel_payments_by_travelpayment_refund(self, **kwargs):
+        """Remboursement d'un paiement (TRAVEL-411/#6063)"""
+        return self.request("POST", "/travel/payments/{travelPayment}/refund", **kwargs)
+
+    def post_travel_payments_by_travelpayment_verify(self, **kwargs):
+        """Re-conciliation d'un paiement (TRAVEL-410/#6062)"""
+        return self.request("POST", "/travel/payments/{travelPayment}/verify", **kwargs)
+
     def post_travel_payments_callback(self, **kwargs):
         """Callback provider (signé HMAC, idempotent — TRAVEL-409/#6061)"""
         return self.request("POST", "/travel/payments/callback", **kwargs)
@@ -3583,6 +3591,14 @@ class LeopardoClient:
     def post_travel_tickets_by_travelticket_check_in(self, **kwargs):
         """Check-in / embarquement (TRAVEL-317/#6047)"""
         return self.request("POST", "/travel/tickets/{travelTicket}/check-in", **kwargs)
+
+    def get_travel_tickets_by_travelticket_pdf(self, **kwargs):
+        """URL signée du billet PDF (TRAVEL-412/413/#6064/#6065)"""
+        return self.request("GET", "/travel/tickets/{travelTicket}/pdf", **kwargs)
+
+    def post_travel_tickets_by_travelticket_revoke(self, **kwargs):
+        """Révocation d'un billet (TRAVEL-413/#6065)"""
+        return self.request("POST", "/travel/tickets/{travelTicket}/revoke", **kwargs)
 
     def get_travel_trips(self, **kwargs):
         """Liste des trajets (TRAVEL-308/#6038)"""
