@@ -2782,6 +2782,29 @@ trait CreatesMvpSchema
         }
 
         // ── BC-24 TRAVEL — TRAVEL-802 (issue #6093) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_quotes'))) {
+            Schema::create($this->moduleTable('travel_quotes'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('reference', 40);
+                $table->unsignedBigInteger('trip_id');
+                $table->string('status', 20)->default('draft');
+                $table->unsignedBigInteger('customer_contact_id')->nullable();
+                $table->unsignedInteger('passenger_count');
+                $table->jsonb('passengers_json')->nullable();
+                $table->unsignedInteger('total_amount_minor');
+                $table->char('currency', 3);
+                $table->timestamp('expires_at')->nullable();
+                $table->unsignedBigInteger('booking_id')->nullable();
+                $table->string('idempotency_key', 255);
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'reference'], 'travel_quotes_company_reference_unique');
+                $table->unique(['company_id', 'idempotency_key'], 'travel_quotes_company_idempotency_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-803 (issue #6094) ────────────────────────
         if (! Schema::hasTable($this->moduleTable('travel_hotels'))) {
             Schema::create($this->moduleTable('travel_hotels'), function (Blueprint $table): void {
                 $table->id();
@@ -2946,6 +2969,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
         // BC-24 TRAVEL (verticale TravelAgency)
         DB::statement('DROP TABLE IF EXISTS "travel_hotel_rooms"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_quotes"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_round_trips"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_hotels"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_rental_bookings"'.$cascade);

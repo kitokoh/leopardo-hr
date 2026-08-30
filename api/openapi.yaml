@@ -2883,6 +2883,141 @@ paths:
           description: Permission travel.manage requise
         '422':
           description: Seule une réservation confirmée peut émettre des billets
+  /travel/quotes:
+    get:
+      tags:
+      - Travel
+      summary: Liste des devis de groupe (TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [draft, confirmed, booked, cancelled, expired]
+      responses:
+        '200':
+          description: Liste paginée des devis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelQuote'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'un devis de groupe (≥ 5 passagers, TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - trip_id
+              - idempotency_key
+              - passengers
+              properties:
+                trip_id:
+                  type: integer
+                customer_contact_id:
+                  type: integer
+                  nullable: true
+                idempotency_key:
+                  type: string
+                  maxLength: 255
+                passengers:
+                  type: array
+                  minItems: 5
+                  maxItems: 50
+                  items:
+                    $ref: '#/components/schemas/TravelPassengerInput'
+      responses:
+        '201':
+          description: Devis créé (total figé serveur)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelQuote'
+        '422':
+          description: Groupe insuffisant ou tarif manquant
+  /travel/quotes/{travelQuote}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un devis (TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuote
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Devis avec passagers nominatifs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelQuote'
+        '404':
+          description: Devis introuvable ou hors tenant
+  /travel/quotes/{travelQuote}/book:
+    post:
+      tags:
+      - Travel
+      summary: Réservation groupée depuis un devis (TRAVEL-803/#6094)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuote
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Réservation créée (plafond du devis respecté)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelBooking'
+        '404':
+          description: Devis introuvable ou hors tenant
+        '409':
+          description: Tarifs modifiés — le devis doit être régénéré
+        '410':
+          description: Devis expiré
+
   /travel/round-trips:
     post:
       tags:
@@ -28973,6 +29108,43 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TravelTicket'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelQuote:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+        trip_id:
+          type: integer
+        status:
+          type: string
+          enum: [draft, confirmed, booked, cancelled, expired]
+        customer_contact_id:
+          type: integer
+          nullable: true
+        passenger_count:
+          type: integer
+        total_amount_minor:
+          type: integer
+        currency:
+          type: string
+        expires_at:
+          type: string
+          nullable: true
+        booking_id:
+          type: integer
+          nullable: true
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelPassengerInput'
         created_at:
           type: string
           nullable: true
