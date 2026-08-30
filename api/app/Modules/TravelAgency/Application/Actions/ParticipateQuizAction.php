@@ -7,7 +7,6 @@ namespace App\Modules\TravelAgency\Application\Actions;
 use App\Modules\TravelAgency\Domain\Enums\QuizStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelQuiz;
 use App\Modules\TravelAgency\Domain\Models\TravelQuizParticipation;
-use App\Modules\TravelAgency\Domain\Models\TravelQuizQuestion;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 
