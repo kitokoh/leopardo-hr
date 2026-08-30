@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
 use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
 use App\Modules\Billing\Domain\Services\EntitlementGuard;
 use Illuminate\Http\JsonResponse;
@@ -35,10 +35,12 @@ class FeatureFlagController extends Controller
 
         // DEP-BC21 #6247 : la lecture d'entitlement est centralisée dans
         // EntitlementGuard (plan actif × matrice, fail-closed) — aucune
-        // logique d'entitlement dupliquée dans les contrôleurs.
-        $plan = $this->entitlementGuard->planForCompany($user->company_id);
-        $enabled = $this->entitlementGuard->isFeatureEnabled($user->company_id, $featureKey);
-        $limit = $this->entitlementGuard->featureLimit($user->company_id, $featureKey);
+        // logique d'entitlement dupliquée dans les contrôleurs. `company_id`
+        // est garanti par le middleware tenant (fail-closed si absent).
+        $companyId = (string) $user->company_id;
+        $plan = $this->entitlementGuard->planForCompany($companyId);
+        $enabled = $this->entitlementGuard->isFeatureEnabled($companyId, $featureKey);
+        $limit = $this->entitlementGuard->featureLimit($companyId, $featureKey);
 
         return response()->json([
             'data' => [
@@ -50,4 +52,3 @@ class FeatureFlagController extends Controller
         ]);
     }
 }
-

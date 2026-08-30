@@ -138,6 +138,7 @@ class BillingEntitlementGuardTest extends TestCase
         $company = $this->company();
         $this->subscription($company, PlanCode::Pilot->value);
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        self::assertInstanceOf(Employee::class, $manager);
         Sanctum::actingAs($manager);
 
         $this->getJson('/api/v1/feature-flags/check/ai_assistant')
