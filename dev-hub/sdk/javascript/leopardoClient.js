@@ -3755,6 +3755,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/restaurant/ingredients/{restaurantIngredient}", options);
     },
 
+    /** RESTO-410 — File cuisine (commandes in_preparation/ready de la branche, branch_id obligatoire) */
+    getRestaurantKitchenOrders(options = {}) {
+      return request("GET", "/restaurant/kitchen/orders", options);
+    },
+
+    /** RESTO-410 — Plat prêt (in_preparation → ready) */
+    postRestaurantKitchenOrdersByRestaurantOrderReady(options = {}) {
+      return request("POST", "/restaurant/kitchen/orders/{restaurantOrder}/ready", options);
+    },
+
+    /** RESTO-410 — Prise en cuisine (open → in_preparation) */
+    postRestaurantKitchenOrdersByRestaurantOrderStart(options = {}) {
+      return request("POST", "/restaurant/kitchen/orders/{restaurantOrder}/start", options);
+    },
+
     /** Liste des menu (référentiel BC-25) */
     getRestaurantMenus(options = {}) {
       return request("GET", "/restaurant/menus", options);
@@ -3800,9 +3815,94 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/restaurant/menus/{restaurantMenu}/items/{restaurantMenuItem}", options);
     },
 
+    /** RESTO-402 — Liste des commandes (filtres branche/statut, paginée) */
+    getRestaurantOrders(options = {}) {
+      return request("GET", "/restaurant/orders", options);
+    },
+
+    /** RESTO-402 — Création de commande (idempotente, types salle/emporter/livraison) */
+    postRestaurantOrders(options = {}) {
+      return request("POST", "/restaurant/orders", options);
+    },
+
+    /** RESTO-402 — Détail d''une commande (articles + paiements) */
+    getRestaurantOrdersByRestaurantOrder(options = {}) {
+      return request("GET", "/restaurant/orders/{restaurantOrder}", options);
+    },
+
+    /** RESTO-405 — Addition (totaux recalculés serveur — sous-total, TVA, remise promo, total) */
+    getRestaurantOrdersByRestaurantOrderBill(options = {}) {
+      return request("GET", "/restaurant/orders/{restaurantOrder}/bill", options);
+    },
+
+    /** RESTO-404 — Annulation de commande (draft|open → cancelled) */
+    postRestaurantOrdersByRestaurantOrderCancel(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/cancel", options);
+    },
+
+    /** RESTO-404 — Confirmation de commande (open → in_preparation) */
+    postRestaurantOrdersByRestaurantOrderConfirm(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/confirm", options);
+    },
+
+    /** RESTO-403 — Ajout d''un article (prix/TVA serveur, totaux recalculés) */
+    postRestaurantOrdersByRestaurantOrderItems(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/items", options);
+    },
+
+    /** RESTO-403 — Annulation d''une ligne d''article (totaux recalculés) */
+    postRestaurantOrdersByRestaurantOrderItemsByRestaurantOrderItemCancel(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/items/{restaurantOrderItem}/cancel", options);
+    },
+
+    /** RESTO-407 — Encaissement (montant vérifié serveur, idempotent, callback signé pour mobile money) */
+    postRestaurantOrdersByRestaurantOrderPay(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/pay", options);
+    },
+
+    /** RESTO-408 — Remboursement (réservé restaurant.manage, motif, idempotent) */
+    postRestaurantOrdersByRestaurantOrderRefund(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/refund", options);
+    },
+
+    /** RESTO-404 — Service en salle (ready → served) */
+    postRestaurantOrdersByRestaurantOrderServe(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/serve", options);
+    },
+
+    /** RESTO-404 — Soumission de commande (draft → open, événement order.created.v1) */
+    postRestaurantOrdersByRestaurantOrderSubmit(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/submit", options);
+    },
+
+    /** RESTO-407 — Callback signé de confirmation mobile money (public, HMAC fail-closed, idempotent) */
+    postRestaurantPaymentsByPaymentCallback(options = {}) {
+      return request("POST", "/restaurant/payments/{payment}/callback", options);
+    },
+
     /** Smoke test de la verticale RestaurantManager (BC-25 RESTAURANT, RESTO-101/#6158) */
     getRestaurantPing(options = {}) {
       return request("GET", "/restaurant/ping", options);
+    },
+
+    /** RESTO-401 — Ouverture d''une session de caisse POS (une seule session ouverte par branche) */
+    postRestaurantPosSessions(options = {}) {
+      return request("POST", "/restaurant/pos-sessions", options);
+    },
+
+    /** RESTO-401 — Détail d''une session de caisse */
+    getRestaurantPosSessionsByRestaurantPosSession(options = {}) {
+      return request("GET", "/restaurant/pos-sessions/{restaurantPosSession}", options);
+    },
+
+    /** RESTO-401 — Clôture d''une session de caisse (totaux recalculés serveur, écart + motif, immuable) */
+    postRestaurantPosSessionsByRestaurantPosSessionClose(options = {}) {
+      return request("POST", "/restaurant/pos-sessions/{restaurantPosSession}/close", options);
+    },
+
+    /** RESTO-401 — Session de caisse en cours (par branche, sinon première branche du tenant) */
+    getRestaurantPosSessionsCurrent(options = {}) {
+      return request("GET", "/restaurant/pos-sessions/current", options);
     },
 
     /** Liste des product (référentiel BC-25) */
@@ -3893,6 +3993,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Mise à jour d'un table */
     putRestaurantTablesByRestaurantTable(options = {}) {
       return request("PUT", "/restaurant/tables/{restaurantTable}", options);
+    },
+
+    /** RESTO-409 — Clôture de la session d''occupation (immuable, événement table.closed.v1) */
+    postRestaurantTablesByRestaurantTableClose(options = {}) {
+      return request("POST", "/restaurant/tables/{restaurantTable}/close", options);
+    },
+
+    /** RESTO-409 — Ouverture d''une session d''occupation de table (table occupée → 409) */
+    postRestaurantTablesByRestaurantTableOpen(options = {}) {
+      return request("POST", "/restaurant/tables/{restaurantTable}/open", options);
     },
 
     /** Liste des taxrate (référentiel BC-25) */

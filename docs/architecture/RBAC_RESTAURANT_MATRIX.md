@@ -106,3 +106,21 @@ Notes :
 - Constantes : `App\Modules\RestaurantManager\Domain\Permissions\RestaurantPermissions` (RESTO-306, #6187).
 - Test : `api/tests/Feature/Restaurant/RestaurantRbacMatrixTest.php` (instanciation directe des policies).
 - Contexte RBAC plateforme : `docs/architecture/RBAC_AUDIT_REPORT.md`.
+
+## 5. Surfaces POS, commandes & paiements (lot RESTO-401..410)
+
+| Endpoint | Méthode | Permission / rôles requis |
+|---|---|---|
+| `/restaurant/pos-sessions` | POST | ouverture : `restaurant.server` (principal/rh/manager/server) |
+| `/restaurant/pos-sessions/{session}/close` | POST | clôture : `restaurant.manage`/`restaurant.manager` (principal/rh/manager) |
+| `/restaurant/pos-sessions/current` · `/{session}` | GET | tout employé du tenant (lecture) |
+| `/restaurant/orders` | POST | création : `restaurant.server` |
+| `/restaurant/orders/{order}/items` · `/items/{item}/cancel` | POST | serveur+ (écriture commande) |
+| `/restaurant/orders/{order}/submit` · `/confirm` · `/serve` · `/cancel` | POST | serveur+ (transitions validées par la machine à états) |
+| `/restaurant/orders/{order}/bill` | GET | tout employé du tenant (lecture) |
+| `/restaurant/orders/{order}/pay` | POST | encaissement : `restaurant.server` |
+| `/restaurant/payments/{payment}/callback` | POST | PUBLIC — signature HMAC (secret par tenant), fail-closed |
+| `/restaurant/orders/{order}/refund` | POST | remboursement : `restaurant.manage` (principal/rh uniquement) |
+| `/restaurant/tables/{table}/open` · `/close` | POST | serveur+ |
+| `/restaurant/kitchen/orders` | GET | `restaurant.kitchen`/`restaurant.manager` — `branch_id` obligatoire (le cuisinier ne voit que sa branche) |
+| `/restaurant/kitchen/orders/{order}/start` · `/ready` | POST | `restaurant.kitchen`/`restaurant.manager` |

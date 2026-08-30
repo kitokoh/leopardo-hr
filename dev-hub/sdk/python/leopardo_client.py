@@ -3024,6 +3024,18 @@ class LeopardoClient:
         """Mise à jour d'un ingredient"""
         return self.request("PUT", "/restaurant/ingredients/{restaurantIngredient}", **kwargs)
 
+    def get_restaurant_kitchen_orders(self, **kwargs):
+        """RESTO-410 — File cuisine (commandes in_preparation/ready de la branche, branch_id obligatoire)"""
+        return self.request("GET", "/restaurant/kitchen/orders", **kwargs)
+
+    def post_restaurant_kitchen_orders_by_restaurantorder_ready(self, **kwargs):
+        """RESTO-410 — Plat prêt (in_preparation → ready)"""
+        return self.request("POST", "/restaurant/kitchen/orders/{restaurantOrder}/ready", **kwargs)
+
+    def post_restaurant_kitchen_orders_by_restaurantorder_start(self, **kwargs):
+        """RESTO-410 — Prise en cuisine (open → in_preparation)"""
+        return self.request("POST", "/restaurant/kitchen/orders/{restaurantOrder}/start", **kwargs)
+
     def get_restaurant_menus(self, **kwargs):
         """Liste des menu (référentiel BC-25)"""
         return self.request("GET", "/restaurant/menus", **kwargs)
@@ -3060,9 +3072,77 @@ class LeopardoClient:
         """Mise à jour d'un menuitem"""
         return self.request("PUT", "/restaurant/menus/{restaurantMenu}/items/{restaurantMenuItem}", **kwargs)
 
+    def get_restaurant_orders(self, **kwargs):
+        """RESTO-402 — Liste des commandes (filtres branche/statut, paginée)"""
+        return self.request("GET", "/restaurant/orders", **kwargs)
+
+    def post_restaurant_orders(self, **kwargs):
+        """RESTO-402 — Création de commande (idempotente, types salle/emporter/livraison)"""
+        return self.request("POST", "/restaurant/orders", **kwargs)
+
+    def get_restaurant_orders_by_restaurantorder(self, **kwargs):
+        """RESTO-402 — Détail d''une commande (articles + paiements)"""
+        return self.request("GET", "/restaurant/orders/{restaurantOrder}", **kwargs)
+
+    def get_restaurant_orders_by_restaurantorder_bill(self, **kwargs):
+        """RESTO-405 — Addition (totaux recalculés serveur — sous-total, TVA, remise promo, total)"""
+        return self.request("GET", "/restaurant/orders/{restaurantOrder}/bill", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_cancel(self, **kwargs):
+        """RESTO-404 — Annulation de commande (draft|open → cancelled)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/cancel", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_confirm(self, **kwargs):
+        """RESTO-404 — Confirmation de commande (open → in_preparation)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/confirm", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_items(self, **kwargs):
+        """RESTO-403 — Ajout d''un article (prix/TVA serveur, totaux recalculés)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/items", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_items_by_restaurantorderitem_cancel(self, **kwargs):
+        """RESTO-403 — Annulation d''une ligne d''article (totaux recalculés)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/items/{restaurantOrderItem}/cancel", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_pay(self, **kwargs):
+        """RESTO-407 — Encaissement (montant vérifié serveur, idempotent, callback signé pour mobile money)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/pay", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_refund(self, **kwargs):
+        """RESTO-408 — Remboursement (réservé restaurant.manage, motif, idempotent)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/refund", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_serve(self, **kwargs):
+        """RESTO-404 — Service en salle (ready → served)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/serve", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_submit(self, **kwargs):
+        """RESTO-404 — Soumission de commande (draft → open, événement order.created.v1)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/submit", **kwargs)
+
+    def post_restaurant_payments_by_payment_callback(self, **kwargs):
+        """RESTO-407 — Callback signé de confirmation mobile money (public, HMAC fail-closed, idempotent)"""
+        return self.request("POST", "/restaurant/payments/{payment}/callback", **kwargs)
+
     def get_restaurant_ping(self, **kwargs):
         """Smoke test de la verticale RestaurantManager (BC-25 RESTAURANT, RESTO-101/#6158)"""
         return self.request("GET", "/restaurant/ping", **kwargs)
+
+    def post_restaurant_pos_sessions(self, **kwargs):
+        """RESTO-401 — Ouverture d''une session de caisse POS (une seule session ouverte par branche)"""
+        return self.request("POST", "/restaurant/pos-sessions", **kwargs)
+
+    def get_restaurant_pos_sessions_by_restaurantpossession(self, **kwargs):
+        """RESTO-401 — Détail d''une session de caisse"""
+        return self.request("GET", "/restaurant/pos-sessions/{restaurantPosSession}", **kwargs)
+
+    def post_restaurant_pos_sessions_by_restaurantpossession_close(self, **kwargs):
+        """RESTO-401 — Clôture d''une session de caisse (totaux recalculés serveur, écart + motif, immuable)"""
+        return self.request("POST", "/restaurant/pos-sessions/{restaurantPosSession}/close", **kwargs)
+
+    def get_restaurant_pos_sessions_current(self, **kwargs):
+        """RESTO-401 — Session de caisse en cours (par branche, sinon première branche du tenant)"""
+        return self.request("GET", "/restaurant/pos-sessions/current", **kwargs)
 
     def get_restaurant_products(self, **kwargs):
         """Liste des product (référentiel BC-25)"""
@@ -3135,6 +3215,14 @@ class LeopardoClient:
     def put_restaurant_tables_by_restauranttable(self, **kwargs):
         """Mise à jour d'un table"""
         return self.request("PUT", "/restaurant/tables/{restaurantTable}", **kwargs)
+
+    def post_restaurant_tables_by_restauranttable_close(self, **kwargs):
+        """RESTO-409 — Clôture de la session d''occupation (immuable, événement table.closed.v1)"""
+        return self.request("POST", "/restaurant/tables/{restaurantTable}/close", **kwargs)
+
+    def post_restaurant_tables_by_restauranttable_open(self, **kwargs):
+        """RESTO-409 — Ouverture d''une session d''occupation de table (table occupée → 409)"""
+        return self.request("POST", "/restaurant/tables/{restaurantTable}/open", **kwargs)
 
     def get_restaurant_tax_rates(self, **kwargs):
         """Liste des taxrate (référentiel BC-25)"""

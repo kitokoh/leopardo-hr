@@ -17,17 +17,26 @@
  * Référence : docs/specifications/SOLUTION_RESTAURANT_MANAGER.md (§5 API v1).
  */
 
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantBillController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantBranchController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCategoryController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantHealthController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantHourController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantIngredientController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKitchenController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuItemController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderItemController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderTransitionController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPosSessionController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductIngredientController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantRefundController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantSupplierController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableSessionController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTaxRateController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantUnitController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantZoneController;
@@ -117,4 +126,38 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/suppliers/{restaurantSupplier}', [RestaurantSupplierController::class, 'show']);
         Route::put('/suppliers/{restaurantSupplier}', [RestaurantSupplierController::class, 'update']);
         Route::delete('/suppliers/{restaurantSupplier}', [RestaurantSupplierController::class, 'destroy']);
+
+        // ── POS & caisse (RESTO-401/#6188) ──────────────────────────────────
+        // Ouverture / consultation / clôture d'une session de caisse.
+        // `current` est déclaré AVANT `{restaurantPosSession}` (routage
+        // littéral prioritaire).
+        Route::post('/pos-sessions', [RestaurantPosSessionController::class, 'store']);
+        Route::get('/pos-sessions/current', [RestaurantPosSessionController::class, 'current']);
+        Route::get('/pos-sessions/{restaurantPosSession}', [RestaurantPosSessionController::class, 'show']);
+        Route::post('/pos-sessions/{restaurantPosSession}/close', [RestaurantPosSessionController::class, 'close']);
+
+        // ── Commandes (RESTO-402/403/404/405, #6189/#6190/#6191/#6192) ──────
+        Route::get('/orders', [RestaurantOrderController::class, 'index']);
+        Route::post('/orders', [RestaurantOrderController::class, 'store']);
+        Route::get('/orders/{restaurantOrder}', [RestaurantOrderController::class, 'show']);
+        Route::post('/orders/{restaurantOrder}/items', [RestaurantOrderItemController::class, 'store']);
+        Route::post('/orders/{restaurantOrder}/items/{restaurantOrderItem}/cancel', [RestaurantOrderItemController::class, 'cancel']);
+        Route::post('/orders/{restaurantOrder}/submit', [RestaurantOrderTransitionController::class, 'submit']);
+        Route::post('/orders/{restaurantOrder}/confirm', [RestaurantOrderTransitionController::class, 'confirm']);
+        Route::post('/orders/{restaurantOrder}/serve', [RestaurantOrderTransitionController::class, 'serve']);
+        Route::post('/orders/{restaurantOrder}/cancel', [RestaurantOrderTransitionController::class, 'cancel']);
+        Route::get('/orders/{restaurantOrder}/bill', [RestaurantBillController::class, 'show']);
+
+        // ── Paiements & remboursements (RESTO-407/408, #6194/#6195) ─────────
+        Route::post('/orders/{restaurantOrder}/pay', [RestaurantPaymentController::class, 'pay']);
+        Route::post('/orders/{restaurantOrder}/refund', [RestaurantRefundController::class, 'store']);
+
+        // ── Occupation des tables (RESTO-409/#6196) ─────────────────────────
+        Route::post('/tables/{restaurantTable}/open', [RestaurantTableSessionController::class, 'open']);
+        Route::post('/tables/{restaurantTable}/close', [RestaurantTableSessionController::class, 'close']);
+
+        // ── File cuisine (RESTO-410/#6197) ──────────────────────────────────
+        Route::get('/kitchen/orders', [RestaurantKitchenController::class, 'index']);
+        Route::post('/kitchen/orders/{restaurantOrder}/start', [RestaurantKitchenController::class, 'start']);
+        Route::post('/kitchen/orders/{restaurantOrder}/ready', [RestaurantKitchenController::class, 'ready']);
     });
