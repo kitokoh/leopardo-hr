@@ -16,26 +16,19 @@ use Illuminate\Http\Request;
 /**
  * TRAVEL-910 (#6113) — Notifications manuelles (legacy gv-back) via les
  * canaux de la plateforme + consentement. Aucune table maison.
-<<<<<<< HEAD
  *
  * TRAVEL-913 (#6421) — Lecture et gestion des consentements pour l'écran
  * admin contacts (liste + opt-in/opt-out horodaté par canal).
-=======
->>>>>>> origin/feat/travel-101-202-foundations
  */
 class TravelCustomerContactController extends Controller
 {
     public function __construct(private readonly TravelManualNotificationAction $notify) {}
 
     /**
-<<<<<<< HEAD
      * TRAVEL-913 (#6421) — Liste admin des contacts voyageurs (tenant-scoped).
      * Réservé aux rôles gestion (principal/rh/manager) — cohérent avec notify().
-=======
-     * Liste des contacts voyageurs (gestion : rôles principal/rh/manager).
-     * Expose les consentements par canal — nécessaire à l'UI admin
-     * (TRAVEL-912/#6417).
->>>>>>> origin/feat/travel-101-202-foundations
+     * Recherche `?search=` sur nom/email/téléphone ; consentements par canal
+     * exposés avec leurs horodatages (nécessaire à l'UI admin, TRAVEL-912/#6417).
      */
     public function index(Request $request): JsonResponse
     {
@@ -48,7 +41,6 @@ class TravelCustomerContactController extends Controller
 
         $contacts = TravelCustomerContact::query()
             ->where('company_id', $actor->company_id)
-<<<<<<< HEAD
             ->when($request->query('search'), function ($query, $search): void {
                 $query->where(function ($sub) use ($search): void {
                     $sub->where('email', 'ilike', '%'.$search.'%')
@@ -79,38 +71,16 @@ class TravelCustomerContactController extends Controller
 
     /**
      * TRAVEL-913 (#6421) — Opt-in/opt-out horodaté par canal.
-     * Chaque canal fourni est mis à jour ; `consent_at` reflète le dernier
-     * changement (traçabilité RGPD dans les deux sens).
-=======
-            ->when($request->has('search'), fn ($query) => $query->where('email', 'ilike', '%'.$request->query('search').'%'))
-            ->orderByDesc('id')
-            ->get()
-            ->map(fn (TravelCustomerContact $c) => [
-                'id' => $c->id,
-                'first_name' => $c->first_name,
-                'last_name' => $c->last_name,
-                'email' => $c->email,
-                'phone' => $c->phone,
-                'email_consent_given' => $c->email_consent_given,
-                'sms_consent_given' => $c->sms_consent_given,
-                'whatsapp_consent_given' => $c->whatsapp_consent_given,
-                'created_at' => $c->created_at?->toIso8601String(),
-            ]);
-
-        return response()->json(['data' => $contacts]);
-    }
-
-    /**
-     * Mise à jour des consentements par canal (gestion). Horodatage
-     * conservé à l'opt-in ; un opt-out n'efface pas l'historique (RGPD).
->>>>>>> origin/feat/travel-101-202-foundations
+     * Contrat frontend (TRAVEL-914/#6427) : `POST /contacts/{id}/consent`
+     * avec un booléen par canal (`{email,sms,whatsapp}_consent`).
+     * Horodatage : `consent_at` = première capture de consentement (un
+     * opt-out ne l'efface pas — historique conservé, traçabilité RGPD).
      */
     public function updateConsent(UpdateTravelContactConsentRequest $request, TravelCustomerContact $travelCustomerContact): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-<<<<<<< HEAD
         if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
             abort(403);
         }
@@ -119,25 +89,25 @@ class TravelCustomerContactController extends Controller
             abort(404);
         }
 
-        $changes = [
-            'email_consent_given' => $request->validated('email_consent_given'),
-            'sms_consent_given' => $request->validated('sms_consent_given'),
-            'whatsapp_consent_given' => $request->validated('whatsapp_consent_given'),
-        ];
+        $now = now();
 
-        $fill = [];
-        foreach ($changes as $channel => $value) {
-            if ($value === null) {
+        foreach (['email', 'sms', 'whatsapp'] as $channel) {
+            if (! $request->has($channel.'_consent')) {
                 continue;
             }
 
-            $fill[$channel] = (bool) $value;
-            $fill[str_replace('_given', '_at', (string) $channel)] = now();
+            $given = (bool) $request->validated($channel.'_consent');
+            $givenField = $channel.'_consent_given';
+            $atField = $channel.'_consent_at';
+
+            $travelCustomerContact->forceFill([$givenField => $given]);
+
+            if ($given && $travelCustomerContact->{$atField} === null) {
+                $travelCustomerContact->forceFill([$atField => $now]);
+            }
         }
 
-        if ($fill !== []) {
-            $travelCustomerContact->forceFill($fill)->save();
-        }
+        $travelCustomerContact->save();
 
         return response()->json(['data' => [
             'id' => $travelCustomerContact->id,
@@ -148,28 +118,6 @@ class TravelCustomerContactController extends Controller
             'whatsapp_consent_given' => $travelCustomerContact->whatsapp_consent_given,
             'whatsapp_consent_at' => $travelCustomerContact->whatsapp_consent_at?->toIso8601String(),
         ]]);
-=======
-        if ($travelCustomerContact->company_id !== $actor->company_id || ! $actor->hasManagerRole('principal', 'rh', 'manager')) {
-            abort(404);
-        }
-
-        $now = now();
-
-        foreach (['email', 'sms', 'whatsapp'] as $channel) {
-            if (! $request->has($channel.'_consent')) {
-                continue;
-            }
-            $given = (bool) $request->validated($channel.'_consent');
-            $travelCustomerContact->forceFill([$channel.'_consent_given' => $given]);
-            if ($given) {
-                $travelCustomerContact->forceFill([$channel.'_consent_at' => $travelCustomerContact->{$channel.'_consent_at'} ?? $now]);
-            }
-        }
-
-        $travelCustomerContact->save();
-
-        return response()->json(['data' => ['id' => $travelCustomerContact->id]]);
->>>>>>> origin/feat/travel-101-202-foundations
     }
 
     public function notify(NotifyTravelContactRequest $request, TravelCustomerContact $travelCustomerContact): JsonResponse

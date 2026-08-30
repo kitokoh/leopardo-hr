@@ -3432,6 +3432,10 @@ class LeopardoClient:
         """TRAVEL-905 — Suppression d''une position"""
         return self.request("DELETE", "/travel/advert-positions/{travelAdvertPosition}", **kwargs)
 
+    def put_travel_advert_positions_by_traveladvertposition(self, **kwargs):
+        """TRAVEL-914 — Mise à jour d''une position"""
+        return self.request("PUT", "/travel/advert-positions/{travelAdvertPosition}", **kwargs)
+
     def get_travel_advert_prices(self, **kwargs):
         """TRAVEL-906 — Grille tarifaire des annonces"""
         return self.request("GET", "/travel/advert-prices", **kwargs)
@@ -3444,6 +3448,10 @@ class LeopardoClient:
         """TRAVEL-906 — Suppression d''une grille tarifaire"""
         return self.request("DELETE", "/travel/advert-prices/{travelAdvertPrice}", **kwargs)
 
+    def put_travel_advert_prices_by_traveladvertprice(self, **kwargs):
+        """TRAVEL-914 — Mise à jour d''une grille tarifaire"""
+        return self.request("PUT", "/travel/advert-prices/{travelAdvertPrice}", **kwargs)
+
     def get_travel_advert_types(self, **kwargs):
         """TRAVEL-905 — Types d''annonces"""
         return self.request("GET", "/travel/advert-types", **kwargs)
@@ -3455,6 +3463,10 @@ class LeopardoClient:
     def delete_travel_advert_types_by_traveladverttype(self, **kwargs):
         """TRAVEL-905 — Suppression d''un type d''annonce"""
         return self.request("DELETE", "/travel/advert-types/{travelAdvertType}", **kwargs)
+
+    def put_travel_advert_types_by_traveladverttype(self, **kwargs):
+        """TRAVEL-914 — Mise à jour d''un type d''annonce"""
+        return self.request("PUT", "/travel/advert-types/{travelAdvertType}", **kwargs)
 
     def get_travel_adverts(self, **kwargs):
         """TRAVEL-907 — Annonces visibles (payées + validées + non expirées)"""
@@ -3632,8 +3644,6 @@ class LeopardoClient:
         """TRAVEL-416 — Formulaire de contact → lead CRM (événement outbox)"""
         return self.request("POST", "/travel/contact", **kwargs)
 
-<<<<<<< HEAD
-=======
     def get_travel_contacts(self, **kwargs):
         """TRAVEL-912 — Contacts voyageurs (gestion, consentements)"""
         return self.request("GET", "/travel/contacts", **kwargs)
@@ -3642,7 +3652,6 @@ class LeopardoClient:
         """TRAVEL-912 — Mise à jour des consentements par canal"""
         return self.request("POST", "/travel/contacts/{travelCustomerContact}/consent", **kwargs)
 
->>>>>>> origin/feat/travel-101-202-foundations
     def post_travel_contacts_by_travelcustomercontact_notify(self, **kwargs):
         """TRAVEL-910 — Notification manuelle (canaux plateforme + consentement)"""
         return self.request("POST", "/travel/contacts/{travelCustomerContact}/notify", **kwargs)
@@ -3723,13 +3732,29 @@ class LeopardoClient:
         """TRAVEL-904 — Détail d''un quiz (questions SANS réponses correctes)"""
         return self.request("GET", "/travel/quizzes/{travelQuiz}", **kwargs)
 
+    def put_travel_quizzes_by_travelquiz(self, **kwargs):
+        """TRAVEL-914 — Mise à jour d''un quiz (gestion)"""
+        return self.request("PUT", "/travel/quizzes/{travelQuiz}", **kwargs)
+
     def post_travel_quizzes_by_travelquiz_participate(self, **kwargs):
         """TRAVEL-904 — Participation (notation serveur)"""
         return self.request("POST", "/travel/quizzes/{travelQuiz}/participate", **kwargs)
 
+    def get_travel_quizzes_by_travelquiz_questions(self, **kwargs):
+        """TRAVEL-914 — Questions d''un quiz (gestion, avec bonne réponse — réservé rôles gestion)"""
+        return self.request("GET", "/travel/quizzes/{travelQuiz}/questions", **kwargs)
+
     def post_travel_quizzes_by_travelquiz_questions(self, **kwargs):
         """TRAVEL-904 — Ajout d''une question"""
         return self.request("POST", "/travel/quizzes/{travelQuiz}/questions", **kwargs)
+
+    def delete_travel_quizzes_by_travelquiz_questions_by_travelquizquestion(self, **kwargs):
+        """TRAVEL-914 — Suppression d''une question (gestion)"""
+        return self.request("DELETE", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", **kwargs)
+
+    def put_travel_quizzes_by_travelquiz_questions_by_travelquizquestion(self, **kwargs):
+        """TRAVEL-914 — Mise à jour d''une question (gestion)"""
+        return self.request("PUT", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", **kwargs)
 
     def get_travel_quizzes_by_travelquiz_results(self, **kwargs):
         """TRAVEL-904 — Résultats (gestion)"""

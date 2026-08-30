@@ -4072,6 +4072,41 @@ paths:
         '422':
           description: Validation échouée (devise tenant, bornes)
   /travel/advert-prices/{travelAdvertPrice}:
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour d''une grille tarifaire'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPrice
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+      responses:
+        '200':
+          description: Mis à jour
+        '403':
+          description: Rôle insuffisant
+        '404':
+          description: Introuvable
     delete:
       tags:
       - Travel
@@ -4131,6 +4166,41 @@ paths:
         '422':
           description: Code invalide ou déjà pris
   /travel/advert-types/{travelAdvertType}:
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour d''un type d''annonce'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertType
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+      responses:
+        '200':
+          description: Mis à jour
+        '403':
+          description: Rôle insuffisant
+        '404':
+          description: Introuvable
     delete:
       tags:
       - Travel
@@ -4190,6 +4260,41 @@ paths:
         '422':
           description: Code invalide ou déjà pris
   /travel/advert-positions/{travelAdvertPosition}:
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour d''une position'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPosition
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+      responses:
+        '200':
+          description: Mis à jour
+        '403':
+          description: Rôle insuffisant
+        '404':
+          description: Introuvable
     delete:
       tags:
       - Travel
@@ -4438,6 +4543,55 @@ paths:
           description: Quiz + questions
         '404':
           description: Introuvable
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour d''un quiz (gestion)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              properties:
+                title:
+                  type: string
+                  maxLength: 160
+                description:
+                  type: string
+                  maxLength: 2000
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+                max_participations_per_contact:
+                  type: integer
+                  default: 1
+                status:
+                  type: string
+                  enum:
+                  - draft
+                  - active
+                  - closed
+      responses:
+        '200':
+          description: Quiz mis à jour
+        '403':
+          description: Rôle insuffisant
+        '404':
+          description: Introuvable
   /travel/quizzes/{travelQuiz}/questions:
     post:
       tags:
@@ -4486,6 +4640,101 @@ paths:
           description: Rôle insuffisant
         '422':
           description: Index hors bornes
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Questions d''un quiz (gestion, avec bonne réponse — réservé rôles gestion)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Questions + correct_option_index
+        '403':
+          description: Rôle insuffisant
+  /travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}:
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour d''une question (gestion)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelQuizQuestion
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - question
+              - options
+              - correct_option_index
+              properties:
+                question:
+                  type: string
+                  maxLength: 500
+                options:
+                  type: array
+                  minItems: 2
+                  maxItems: 10
+                  items:
+                    type: string
+                correct_option_index:
+                  type: integer
+                  minimum: 0
+                points:
+                  type: integer
+                  default: 1
+                position:
+                  type: integer
+      responses:
+        '200':
+          description: Question mise à jour
+        '403':
+          description: Rôle insuffisant
+        '404':
+          description: Introuvable
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Suppression d''une question (gestion)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelQuizQuestion
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Question supprimée
+        '403':
+          description: Rôle insuffisant
+        '404':
+          description: Introuvable
+
   /travel/quizzes/{travelQuiz}/participate:
     post:
       tags:
@@ -4551,8 +4800,6 @@ paths:
           description: Résultats triés par score
         '403':
           description: Rôle insuffisant
-<<<<<<< HEAD
-=======
   /travel/contacts:
     get:
       tags:
@@ -4602,7 +4849,6 @@ paths:
           description: Consentements mis à jour
         '404':
           description: Contact introuvable
->>>>>>> origin/feat/travel-101-202-foundations
   /travel/contacts/{travelCustomerContact}/notify:
     post:
       tags:
@@ -29959,22 +30205,6 @@ components:
       required: true
       schema:
         type: string
-    TravelReportPeriod:
-      name: period_from
-      in: query
-      description: Début de période (YYYY-MM-DD) — agrégation des rapports TRAVEL-501..504.
-      required: false
-      schema:
-        type: string
-        format: date
-    TravelReportPeriodTo:
-      name: period_to
-      in: query
-      description: Fin de période (YYYY-MM-DD) — agrégation des rapports TRAVEL-501..504.
-      required: false
-      schema:
-        type: string
-        format: date
   headers:
     XRequestId:
       description: Identifiant de correlation a fournir au support en cas d'incident.

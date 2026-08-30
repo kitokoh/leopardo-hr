@@ -8,10 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelAdvertTypeRequest;
-<<<<<<< HEAD
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelAdvertTypeRequest;
-=======
->>>>>>> origin/feat/travel-101-202-foundations
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -45,7 +42,6 @@ class TravelAdvertTypeController extends Controller
         return response()->json(['data' => ['id' => $type->id]], 201);
     }
 
-<<<<<<< HEAD
     /**
      * TRAVEL-914 (#6422) — Mise à jour d'un type d'annonce (code unique
      * par tenant, l'enregistrement courant exclu).
@@ -71,8 +67,6 @@ class TravelAdvertTypeController extends Controller
         return response()->json(['data' => ['id' => $travelAdvertType->id]]);
     }
 
-=======
->>>>>>> origin/feat/travel-101-202-foundations
     public function destroy(Request $request, TravelAdvertType $travelAdvertType): JsonResponse
     {
         /** @var Employee $actor */

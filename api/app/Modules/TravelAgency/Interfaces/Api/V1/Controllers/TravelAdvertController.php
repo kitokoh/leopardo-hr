@@ -34,81 +34,26 @@ class TravelAdvertController extends Controller
     ) {}
 
     /**
-<<<<<<< HEAD
-     * Liste publique tenant : annonces VISIBLES uniquement.
-=======
+     * Mode public (défaut) : annonces VISIBLES uniquement (payée + validée
+     * + non expirée). Mode gestion (TravelAdvertPolicy::moderate) : toutes
+     * les annonces du tenant, filtrables par `?status=` — nécessaire à
+     * l'UI admin pour modérer soumissions/paiements (TRAVEL-911/#6416,
+     * TRAVEL-914/#6422).
+     */
+    /**
      * Liste des annonces.
      *
      * Mode public (défaut) : annonces VISIBLES uniquement (payée + validée
-     * + non expirée). Mode gestion (`travel.manage`) : toutes les annonces
-     * du tenant, filtrables par `?status=` (nécessaire à l'UI admin pour
-     * modérer les soumissions/paiements — TRAVEL-911/#6416).
->>>>>>> origin/feat/travel-101-202-foundations
+     * + non expirée). Mode gestion (TravelAdvertPolicy::moderate) : toutes
+     * les annonces du tenant, filtrables par `?status=` — nécessaire à
+     * l'UI admin pour modérer soumissions/paiements (TRAVEL-911/#6416,
+     * TRAVEL-914/#6422).
      */
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-<<<<<<< HEAD
-        $adverts = TravelAdvert::query()
-            ->where('company_id', $actor->company_id)
-            ->get()
-            ->filter(fn (TravelAdvert $a) => $a->isVisible())
-            ->values()
-            ->map(fn (TravelAdvert $a) => [
-                'id' => $a->id,
-                'title' => $a->title,
-                'content' => $a->content_redacted,
-                'price_minor' => $a->price_minor,
-                'currency' => $a->currency,
-                'expires_at' => $a->expires_at?->toIso8601String(),
-            ]);
-
-        return response()->json(['data' => $adverts]);
-    }
-
-    /**
-     * TRAVEL-914 (#6422) — Liste admin des annonces (toutes, quel que soit
-     * le statut) pour l'écran de modération. Réservé aux rôles gestion
-     * (TravelAdvertPolicy::moderate) — l'index public reste limité aux
-     * annonces visibles. Filtre optionnel `?status=` (draft|submitted|paid|
-     * validated|rejected|expired|archived).
-     */
-    public function manageIndex(Request $request): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
-            abort(403);
-        }
-
-        $adverts = TravelAdvert::query()
-            ->where('company_id', $actor->company_id)
-            ->when($request->query('status'), fn ($query, $status) => $query->where('status', $status))
-            ->orderByDesc('id')
-            ->get()
-            ->map(fn (TravelAdvert $a) => [
-                'id' => $a->id,
-                'advert_type_id' => $a->advert_type_id,
-                'advert_position_id' => $a->advert_position_id,
-                'title' => $a->title,
-                'content' => $a->content_redacted,
-                'status' => $a->status->value,
-                'price_minor' => $a->price_minor,
-                'currency' => $a->currency,
-                'payment_reference' => $a->payment_reference,
-                'paid_at' => $a->paid_at?->toIso8601String(),
-                'validated_at' => $a->validated_at?->toIso8601String(),
-                'rejected_reason' => $a->rejected_reason,
-                'validity_days' => $a->validity_days,
-                'expires_at' => $a->expires_at?->toIso8601String(),
-                'visible' => $a->isVisible(),
-            ]);
-
-        return response()->json(['data' => $adverts]);
-=======
         $query = TravelAdvert::query()->where('company_id', $actor->company_id);
 
         $manage = $actor->can('moderate', TravelAdvert::class);
@@ -122,18 +67,23 @@ class TravelAdvertController extends Controller
 
         $data = $adverts->map(fn (TravelAdvert $a) => [
             'id' => $a->id,
+            'advert_type_id' => $a->advert_type_id,
+            'advert_position_id' => $a->advert_position_id,
             'title' => $a->title,
             'content' => $a->content_redacted,
             'status' => $a->status->value,
             'price_minor' => $a->price_minor,
             'currency' => $a->currency,
+            'payment_reference' => $a->payment_reference,
             'paid_at' => $a->paid_at?->toIso8601String(),
             'validated_at' => $a->validated_at?->toIso8601String(),
+            'rejected_reason' => $a->rejected_reason,
+            'validity_days' => $a->validity_days,
             'expires_at' => $a->expires_at?->toIso8601String(),
+            'visible' => $a->isVisible(),
         ]);
 
         return response()->json(['data' => $data]);
->>>>>>> origin/feat/travel-101-202-foundations
     }
 
     public function show(Request $request, TravelAdvert $travelAdvert): JsonResponse

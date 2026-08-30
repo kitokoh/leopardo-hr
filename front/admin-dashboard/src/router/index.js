@@ -335,8 +335,6 @@ const routes = [
         }
       },
       {
-<<<<<<< HEAD
-=======
         path: '/travel/content',
         name: 'travel-content',
         component: () => import('../views/travel/TravelContentView.vue'),

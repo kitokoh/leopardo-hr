@@ -4265,6 +4265,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/travel/advert-positions/{travelAdvertPosition}", options);
     },
 
+    /** TRAVEL-914 — Mise à jour d''une position */
+    putTravelAdvertPositionsByTravelAdvertPosition(options = {}) {
+      return request("PUT", "/travel/advert-positions/{travelAdvertPosition}", options);
+    },
+
     /** TRAVEL-906 — Grille tarifaire des annonces */
     getTravelAdvertPrices(options = {}) {
       return request("GET", "/travel/advert-prices", options);
@@ -4280,6 +4285,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/travel/advert-prices/{travelAdvertPrice}", options);
     },
 
+    /** TRAVEL-914 — Mise à jour d''une grille tarifaire */
+    putTravelAdvertPricesByTravelAdvertPrice(options = {}) {
+      return request("PUT", "/travel/advert-prices/{travelAdvertPrice}", options);
+    },
+
     /** TRAVEL-905 — Types d''annonces */
     getTravelAdvertTypes(options = {}) {
       return request("GET", "/travel/advert-types", options);
@@ -4293,6 +4303,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** TRAVEL-905 — Suppression d''un type d''annonce */
     deleteTravelAdvertTypesByTravelAdvertType(options = {}) {
       return request("DELETE", "/travel/advert-types/{travelAdvertType}", options);
+    },
+
+    /** TRAVEL-914 — Mise à jour d''un type d''annonce */
+    putTravelAdvertTypesByTravelAdvertType(options = {}) {
+      return request("PUT", "/travel/advert-types/{travelAdvertType}", options);
     },
 
     /** TRAVEL-907 — Annonces visibles (payées + validées + non expirées) */
@@ -4515,8 +4530,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/contact", options);
     },
 
-<<<<<<< HEAD
-=======
     /** TRAVEL-912 — Contacts voyageurs (gestion, consentements) */
     getTravelContacts(options = {}) {
       return request("GET", "/travel/contacts", options);
@@ -4527,7 +4540,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/contacts/{travelCustomerContact}/consent", options);
     },
 
->>>>>>> origin/feat/travel-101-202-foundations
     /** TRAVEL-910 — Notification manuelle (canaux plateforme + consentement) */
     postTravelContactsByTravelCustomerContactNotify(options = {}) {
       return request("POST", "/travel/contacts/{travelCustomerContact}/notify", options);
@@ -4628,14 +4640,34 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/travel/quizzes/{travelQuiz}", options);
     },
 
+    /** TRAVEL-914 — Mise à jour d''un quiz (gestion) */
+    putTravelQuizzesByTravelQuiz(options = {}) {
+      return request("PUT", "/travel/quizzes/{travelQuiz}", options);
+    },
+
     /** TRAVEL-904 — Participation (notation serveur) */
     postTravelQuizzesByTravelQuizParticipate(options = {}) {
       return request("POST", "/travel/quizzes/{travelQuiz}/participate", options);
     },
 
+    /** TRAVEL-914 — Questions d''un quiz (gestion, avec bonne réponse — réservé rôles gestion) */
+    getTravelQuizzesByTravelQuizQuestions(options = {}) {
+      return request("GET", "/travel/quizzes/{travelQuiz}/questions", options);
+    },
+
     /** TRAVEL-904 — Ajout d''une question */
     postTravelQuizzesByTravelQuizQuestions(options = {}) {
       return request("POST", "/travel/quizzes/{travelQuiz}/questions", options);
+    },
+
+    /** TRAVEL-914 — Suppression d''une question (gestion) */
+    deleteTravelQuizzesByTravelQuizQuestionsByTravelQuizQuestion(options = {}) {
+      return request("DELETE", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", options);
+    },
+
+    /** TRAVEL-914 — Mise à jour d''une question (gestion) */
+    putTravelQuizzesByTravelQuizQuestionsByTravelQuizQuestion(options = {}) {
+      return request("PUT", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", options);
     },
 
     /** TRAVEL-904 — Résultats (gestion) */

@@ -8,10 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
-<<<<<<< HEAD
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
-=======
->>>>>>> origin/feat/travel-101-202-foundations
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -162,8 +159,6 @@ class TravelAdvertReferenceApiTest extends TestCase
             'currency' => 'XAF',
         ])->assertStatus(422);
     }
-<<<<<<< HEAD
-
     /* ── TRAVEL-914 (#6422) — PUT des référentiels (complétion CRUD) ── */
 
     public function test_advert_type_can_be_updated(): void
@@ -259,6 +254,4 @@ class TravelAdvertReferenceApiTest extends TestCase
             'label' => 'Intrusion',
         ])->assertStatus(404);
     }
-=======
->>>>>>> origin/feat/travel-101-202-foundations
 }

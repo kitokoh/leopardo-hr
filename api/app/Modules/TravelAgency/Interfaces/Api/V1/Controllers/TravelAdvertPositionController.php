@@ -8,10 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelAdvertPositionRequest;
-<<<<<<< HEAD
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelAdvertPositionRequest;
-=======
->>>>>>> origin/feat/travel-101-202-foundations
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -45,7 +42,6 @@ class TravelAdvertPositionController extends Controller
         return response()->json(['data' => ['id' => $position->id]], 201);
     }
 
-<<<<<<< HEAD
     /**
      * TRAVEL-914 (#6422) — Mise à jour d'une position d'annonce (code
      * unique par tenant, l'enregistrement courant exclu).
@@ -71,8 +67,6 @@ class TravelAdvertPositionController extends Controller
         return response()->json(['data' => ['id' => $travelAdvertPosition->id]]);
     }
 
-=======
->>>>>>> origin/feat/travel-101-202-foundations
     public function destroy(Request $request, TravelAdvertPosition $travelAdvertPosition): JsonResponse
     {
         /** @var Employee $actor */
