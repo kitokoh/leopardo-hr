@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-25T00:00:00Z",
+  "_updated_at": "2026-08-30T15:05:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -171,7 +171,8 @@
     "payroll": "Paie",
     "cabinet": "Coffre documentaire",
     "notifications": "Notifications",
-    "evaluations": "Evaluations"
+    "evaluations": "Evaluations",
+    "restaurant": "Point de vente (POS)"
   },
   "emails": {
     "invitation": {
@@ -4212,5 +4213,53 @@
   "settingsQrRejected": "QR rejeté : {error}",
   "settingsBiometricSubmitFailed": "Échec de l'envoi : {error}",
   "settingsNotificationsSaveFailed": "Échec de l’enregistrement des préférences : {error}",
-  "companydetailPlanWithPrice": "{planName} — {price}"
+  "companydetailPlanWithPrice": "{planName} — {price}",
+  "restaurant": {
+    "title": "Point de vente (POS)",
+    "subtitle": "Prise de commande et encaissement",
+    "products": "Catalogue",
+    "cart": "Commande en cours",
+    "noProducts": "Aucun produit disponible.",
+    "noSession": "Aucune caisse ouverte pour cette branche.",
+    "openSession": "Ouvrir la caisse",
+    "noOrder": "Aucune commande en cours.",
+    "newOrder": "Nouvelle commande",
+    "submit": "Soumettre",
+    "confirm": "Confirmer (cuisine)",
+    "bill": "Addition",
+    "payCash": "Encaisser espèces",
+    "paid": "Commande payée",
+    "subtotal": "Sous-total",
+    "tax": "TVA",
+    "total": "Total",
+    "removeItem": "Retirer",
+    "uncategorized": "Sans catégorie",
+    "loadError": "Impossible de charger le point de vente.",
+    "loading": "Chargement du point de vente…",
+    "actionError": "Action impossible, réessayez.",
+    "pos": {
+      "title": "Point de vente (POS)",
+      "subtitle": "Prise de commande et encaissement",
+      "products": "Catalogue",
+      "cart": "Commande en cours",
+      "noProducts": "Aucun produit disponible.",
+      "noSession": "Aucune caisse ouverte pour cette branche.",
+      "openSession": "Ouvrir la caisse",
+      "noOrder": "Aucune commande en cours.",
+      "newOrder": "Nouvelle commande",
+      "submit": "Soumettre",
+      "confirm": "Confirmer (cuisine)",
+      "bill": "Addition",
+      "payCash": "Encaisser espèces",
+      "paid": "Commande payée",
+      "subtotal": "Sous-total",
+      "tax": "TVA",
+      "total": "Total",
+      "removeItem": "Retirer",
+      "uncategorized": "Sans catégorie",
+      "loadError": "Impossible de charger le point de vente.",
+      "loading": "Chargement du point de vente…",
+      "actionError": "Action impossible, réessayez."
+    }
+  }
 }

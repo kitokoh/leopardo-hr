@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-25T00:00:00Z",
+  "_updated_at": "2026-08-30T15:05:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -171,7 +171,8 @@
     "payroll": "Payroll",
     "cabinet": "Document vault",
     "notifications": "Notifications",
-    "evaluations": "Evaluations"
+    "evaluations": "Evaluations",
+    "restaurant": "Point of sale (POS)"
   },
   "emails": {
     "invitation": {
@@ -4212,5 +4213,53 @@
   "settingsQrRejected": "QR rejected: {error}",
   "settingsBiometricSubmitFailed": "Submission failed: {error}",
   "settingsNotificationsSaveFailed": "Failed to save notification preferences: {error}",
-  "companydetailPlanWithPrice": "{planName} — {price}"
+  "companydetailPlanWithPrice": "{planName} — {price}",
+  "restaurant": {
+    "title": "Point of sale (POS)",
+    "subtitle": "Order taking and payment",
+    "products": "Catalog",
+    "cart": "Current order",
+    "noProducts": "No products available.",
+    "noSession": "No open cash session for this branch.",
+    "openSession": "Open cash session",
+    "noOrder": "No current order.",
+    "newOrder": "New order",
+    "submit": "Submit",
+    "confirm": "Confirm (kitchen)",
+    "bill": "Bill",
+    "payCash": "Pay cash",
+    "paid": "Order paid",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "total": "Total",
+    "removeItem": "Remove",
+    "uncategorized": "Uncategorized",
+    "loadError": "Unable to load the point of sale.",
+    "loading": "Loading point of sale…",
+    "actionError": "Action failed, please retry.",
+    "pos": {
+      "title": "Point of sale (POS)",
+      "subtitle": "Order taking and payment",
+      "products": "Catalog",
+      "cart": "Current order",
+      "noProducts": "No products available.",
+      "noSession": "No open cash session for this branch.",
+      "openSession": "Open cash session",
+      "noOrder": "No current order.",
+      "newOrder": "New order",
+      "submit": "Submit",
+      "confirm": "Confirm (kitchen)",
+      "bill": "Bill",
+      "payCash": "Pay cash",
+      "paid": "Order paid",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "total": "Total",
+      "removeItem": "Remove",
+      "uncategorized": "Uncategorized",
+      "loadError": "Unable to load the point of sale.",
+      "loading": "Loading point of sale…",
+      "actionError": "Action failed, please retry."
+    }
+  }
 }
