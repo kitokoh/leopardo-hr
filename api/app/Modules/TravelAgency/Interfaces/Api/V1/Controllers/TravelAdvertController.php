@@ -53,20 +53,29 @@ class TravelAdvertController extends Controller
         if (! $manage) {
             $adverts = $query->get()->filter(fn (TravelAdvert $a) => $a->isVisible())->values();
         } else {
+            // Mode gestion (TRAVEL-915/#6428) : toutes les annonces du tenant
+            // avec statut + références (type/position libellés, référence de
+            // paiement, motif de rejet) pour piloter le cycle de vie complet.
+            $query->with(['advertType:id,code,label', 'advertPosition:id,code,label']);
             $query->when($request->query('status'), fn ($q, $status) => $q->where('status', $status));
             $adverts = $query->orderByDesc('id')->get();
         }
 
-        $data = $adverts->map(fn (TravelAdvert $a) => [
+        $data = $adverts->map(fn (TravelAdvert $a): array => [
             'id' => $a->id,
             'title' => $a->title,
             'content' => $a->content_redacted,
             'status' => $a->status->value,
+            'advert_type' => $a->advertType?->label ?? $a->advertType?->code,
+            'advert_position' => $a->advertPosition?->label ?? $a->advertPosition?->code,
             'price_minor' => $a->price_minor,
             'currency' => $a->currency,
+            'payment_reference' => $a->payment_reference,
+            'rejected_reason' => $a->rejected_reason,
             'paid_at' => $a->paid_at?->toIso8601String(),
             'validated_at' => $a->validated_at?->toIso8601String(),
             'expires_at' => $a->expires_at?->toIso8601String(),
+            'visible' => $a->isVisible(),
         ]);
 
         return response()->json(['data' => $data]);
