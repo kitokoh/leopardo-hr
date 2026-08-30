@@ -20,6 +20,7 @@
  * Référence : docs/specifications/SOLUTION_DELIVERY.md (§4 API v1).
  */
 
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryEventController;
@@ -60,9 +61,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
             Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
 
-            // Rapports & KPIs (DELIVERY-207/#6291).
-            Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
-            Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
+            // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
+            // pending→collected→settled→reconciled, idempotent. settle/reconcile
+            // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
+            // (delivery.role) est portée par BC-26-D05/#6312.
+            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])->whereNumber('route');
+            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])->whereNumber('settlement');
+            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])->whereNumber('settlement');
+            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
+            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
+            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
         });
     });
 
