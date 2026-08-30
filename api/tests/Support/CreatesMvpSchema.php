@@ -2423,6 +2423,8 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
                 $table->string('code', 40);
+                $table->string('external_ref', 100)->nullable();
+                $table->string('external_carrier_code', 60)->nullable();
                 $table->unsignedBigInteger('origin_city_id');
                 $table->unsignedBigInteger('destination_city_id');
                 $table->unsignedInteger('distance_km')->nullable();
@@ -2458,6 +2460,8 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
                 $table->string('code', 40);
+                $table->string('external_ref', 100)->nullable();
+                $table->string('external_carrier_code', 60)->nullable();
                 $table->unsignedBigInteger('route_id');
                 $table->unsignedBigInteger('carrier_id')->nullable();
                 $table->unsignedBigInteger('vehicle_id')->nullable();
@@ -2823,6 +2827,22 @@ trait CreatesMvpSchema
         }
 
         // ── BC-24 TRAVEL — TRAVEL-805 (issue #6096) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_carrier_api_keys'))) {
+            Schema::create($this->moduleTable('travel_carrier_api_keys'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('carrier_id');
+                $table->string('api_key_hash', 64);
+                $table->string('label', 120)->nullable();
+                $table->boolean('enabled')->default(true);
+                $table->timestamp('last_used_at')->nullable();
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'api_key_hash'], 'travel_carrier_api_keys_company_hash_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-807 (issue #6086) ────────────────────────
         if (! Schema::hasTable($this->moduleTable('travel_hotels'))) {
             Schema::create($this->moduleTable('travel_hotels'), function (Blueprint $table): void {
                 $table->id();
@@ -2987,6 +3007,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
         // BC-24 TRAVEL (verticale TravelAgency)
         DB::statement('DROP TABLE IF EXISTS "travel_hotel_rooms"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_carrier_api_keys"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_currency_rates"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_quotes"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_round_trips"'.$cascade);

@@ -2892,6 +2892,211 @@ paths:
           description: Permission travel.manage requise
         '422':
           description: Seule une réservation confirmée peut émettre des billets
+  /travel/partner-keys:
+    post:
+      tags:
+      - Travel
+      summary: Émission d'une clé API transporteur (TRAVEL-807/#6086)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - carrier_id
+              properties:
+                carrier_id:
+                  type: integer
+                label:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Clé créée — api_key affiché une seule fois
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      carrier_id:
+                        type: integer
+                      label:
+                        type: string
+                        nullable: true
+                      api_key:
+                        type: string
+                      created_at:
+                        type: string
+                        nullable: true
+        '403':
+          description: Permission travel.manage requise
+  /travel/partner-keys/{travelCarrierApiKey}:
+    delete:
+      tags:
+      - Travel
+      summary: Révocation d'une clé API transporteur (TRAVEL-807/#6086)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCarrierApiKey
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Clé révoquée
+        '404':
+          description: Clé introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+  /travel/partner/sync:
+    post:
+      tags:
+      - Travel
+      summary: Synchronisation entrante des trajets transporteurs (TRAVEL-807/#6086)
+      security: []
+      parameters:
+      - name: X-Partner-Key
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Clé API du transporteur (émise via POST /travel/partner-keys)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - routes
+              - trips
+              properties:
+                routes:
+                  type: array
+                  maxItems: 200
+                  items:
+                    type: object
+                    required:
+                    - external_ref
+                    properties:
+                      external_ref:
+                        type: string
+                        maxLength: 100
+                      code:
+                        type: string
+                        nullable: true
+                      origin_city_id:
+                        type: integer
+                        nullable: true
+                      destination_city_id:
+                        type: integer
+                        nullable: true
+                      distance_km:
+                        type: integer
+                        nullable: true
+                      duration_min:
+                        type: integer
+                        nullable: true
+                      status:
+                        type: string
+                        nullable: true
+                trips:
+                  type: array
+                  maxItems: 200
+                  items:
+                    type: object
+                    required:
+                    - external_ref
+                    - route_external_ref
+                    - departure_date
+                    - departure_time
+                    - arrival_date
+                    - arrival_time
+                    properties:
+                      external_ref:
+                        type: string
+                        maxLength: 100
+                      route_external_ref:
+                        type: string
+                        maxLength: 100
+                      code:
+                        type: string
+                        nullable: true
+                      departure_date:
+                        type: string
+                        format: date
+                      departure_time:
+                        type: string
+                      arrival_date:
+                        type: string
+                        format: date
+                      arrival_time:
+                        type: string
+                      means_of_transport:
+                        type: string
+                        nullable: true
+                      total_seats:
+                        type: integer
+                        nullable: true
+                      status:
+                        type: string
+                        nullable: true
+                      prices:
+                        type: array
+                        items:
+                          type: object
+                          required:
+                          - class_code
+                          - adult_price_minor
+                          - currency
+                          properties:
+                            class_code:
+                              type: string
+                            adult_price_minor:
+                              type: integer
+                            child_price_minor:
+                              type: integer
+                              nullable: true
+                            currency:
+                              type: string
+      responses:
+        '200':
+          description: Synchro effectuée (upsert idempotent par clé externe)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      routes_created:
+                        type: integer
+                      routes_updated:
+                        type: integer
+                      trips_created:
+                        type: integer
+                      trips_updated:
+                        type: integer
+                      errors:
+                        type: array
+                        items:
+                          type: string
+        '401':
+          description: Clé partenaire manquante ou invalide
+        '422':
+          description: Lot trop grand ou payload invalide
+
   /travel/currency-rates:
     get:
       tags:

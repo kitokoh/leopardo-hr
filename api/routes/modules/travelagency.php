@@ -22,15 +22,16 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierControll
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyRateController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPartnerController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuoteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyRateController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuoteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRoundTripController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
@@ -141,6 +142,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/rental-bookings/{travelRentalBooking}', [TravelRentalBookingController::class, 'show']);
         Route::post('/rental-bookings/{travelRentalBooking}/cancel', [TravelRentalBookingController::class, 'cancel']);
 
+        // Clés API transporteurs (TRAVEL-807/#6086).
+        Route::post('/partner-keys', [TravelPartnerController::class, 'storePartnerKey']);
+        Route::delete('/partner-keys/{travelCarrierApiKey}', [TravelPartnerController::class, 'revokePartnerKey']);
+
         // Taux de conversion multi-devise (TRAVEL-805/#6096).
         Route::get('/currency-rates', [TravelCurrencyRateController::class, 'index']);
         Route::post('/currency-rates', [TravelCurrencyRateController::class, 'store']);
@@ -168,4 +173,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/hotels/{travelHotel}/rooms', [TravelHotelController::class, 'storeRoom']);
         Route::put('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'updateRoom']);
         Route::delete('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'destroyRoom']);
+
+    });
+
+// ── API entrante transporteurs (TRAVEL-807/#6086) — hors auth:sanctum : le
+// transporteur s'authentifie par sa clé API (header X-Partner-Key), le
+// middleware travel.partner pose le contexte tenant. Idempotence par clé
+// externe (external_ref), lot borné (200/200).
+Route::middleware(['throttle:api', 'travel.partner'])
+    ->prefix('travel/partner')
+    ->group(function (): void {
+        Route::post('/sync', [TravelPartnerController::class, 'sync']);
     });
