@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [
   {
     "code": "BC-01",
@@ -30,6 +31,14 @@
       "App\\Modules\\Onboarding\\Domain\\Events"
     ],
     "dependencies": []
+=======
+{
+  "_meta": {
+    "title": "Bounded Context Registry — Leopardo HR",
+    "description": "Registre canonique machine-readable des bounded contexts (MAT-001, issue #5859). Référence humaine : docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (plan de gouvernance, PR agent-readiness).",
+    "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
+    "updated": "2026-08-30"
+>>>>>>> 5c68931d1 (feat(restaurant): registre BC-25 actif + CODEOWNERS (RESTO-103, #6160))
   },
 <<<<<<< HEAD
   "_shared_exceptions": [
@@ -844,6 +853,7 @@
       ]
     }
   ]
+<<<<<<< HEAD
 }
 =======
   {
@@ -1596,3 +1606,6 @@
   }
 ]
 >>>>>>> d65fe04a7 (docs(restaurant): conception verticale RestaurantManager (BC-25 RESTAURANT) — spec + maturité + registre)
+=======
+}
+>>>>>>> 5c68931d1 (feat(restaurant): registre BC-25 actif + CODEOWNERS (RESTO-103, #6160))
