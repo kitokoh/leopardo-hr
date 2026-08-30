@@ -23710,6 +23710,64 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/DeliveryCodSettlement'
+  /delivery/deliveries/notifications/opt-out:
+    post:
+      tags:
+      - Delivery
+      summary: Opt-out destinataire (DELIVERY-206/#6290)
+      description: |
+        Arrête les notifications planifiées vers ce numéro (jamais les déjà
+        envoyées). RGPD : la réponse ne renvoie que le numéro tronqué.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - phone
+              properties:
+                phone:
+                  type: string
+      responses:
+        '201':
+          description: Opt-out enregistré
+        '422':
+          description: INVALID_PHONE
+  /delivery/deliveries/notifications:
+    get:
+      tags:
+      - Delivery
+      summary: Liste des notifications (outbox) (DELIVERY-206/#6290)
+      description: |
+        Paginée, filtre statut. RGPD : numéros masqués hors admin.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryNotification'
+                  meta:
+                    type: object
+                    properties:
+                      phone_masked:
+                        type: boolean
+
   /delivery/deliveries/cod-settlements/report:
     get:
       tags:
@@ -25733,6 +25791,31 @@ components:
           type: string
         payload:
           type: object
+          nullable: true
+
+    DeliveryNotification:
+      type: object
+      properties:
+        id:
+          type: integer
+        delivery_id:
+          type: integer
+        event_type:
+          type: string
+        channel:
+          type: string
+        recipient_phone:
+          type: string
+        template_key:
+          type: string
+        status:
+          type: string
+          enum: [pending, sent, failed, skipped]
+        attempts:
+          type: integer
+        sent_at:
+          type: string
+          format: date-time
           nullable: true
 
     DeliveryCodSettlement:
