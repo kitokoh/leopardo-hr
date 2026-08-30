@@ -22,7 +22,10 @@ use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAttendanceController
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCampusController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduClassController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCourseSlotController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduImportExportController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportCardController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduRetentionController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduStudentController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduSubjectController;
 use Illuminate\Support\Facades\Route;
@@ -99,4 +102,20 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/edu-manager/report-cards/{card}', [EduReportCardController::class, 'show'])->whereNumber('card');
     Route::post('/edu-manager/report-cards/{card}/validate', [EduReportCardController::class, 'validate'])->whereNumber('card');
     Route::post('/edu-manager/report-cards/{card}/publish', [EduReportCardController::class, 'publish'])->whereNumber('card');
+
+    // EDU-017 (#5833) — import/export sécurisé (direction).
+    Route::post('/edu-manager/imports/preview', [EduImportExportController::class, 'preview']);
+    Route::post('/edu-manager/imports/{import}/commit', [EduImportExportController::class, 'commit'])->whereNumber('import');
+    Route::post('/edu-manager/imports/{import}/cancel', [EduImportExportController::class, 'cancel'])->whereNumber('import');
+    Route::get('/edu-manager/exports/{kind}', [EduImportExportController::class, 'export']);
+
+    // EDU-018 (#5834) — rapports agrégés (direction, aucun détail nominatif).
+    Route::get('/edu-manager/reports/presence', [EduReportController::class, 'presence']);
+    Route::get('/edu-manager/reports/enrollment', [EduReportController::class, 'enrollment']);
+    Route::get('/edu-manager/reports/results', [EduReportController::class, 'results']);
+    Route::get('/edu-manager/reports/capacity', [EduReportController::class, 'capacity']);
+
+    // EDU-019 (#5835) — RGPD : anonymisation + export individuel (direction).
+    Route::post('/edu-manager/students/{student}/anonymize', [EduRetentionController::class, 'anonymize'])->whereNumber('student');
+    Route::get('/edu-manager/students/{student}/privacy-export', [EduRetentionController::class, 'privacyExport'])->whereNumber('student');
 });
