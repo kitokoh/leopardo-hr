@@ -35,6 +35,10 @@ use Illuminate\Support\Carbon;
  */
 final class FuelStockService
 {
+    public function __construct(
+        private readonly FuelAccountingContractPublisher $contract,
+    ) {}
+
     private const DEFAULT_PRECISION_SCALE = 2;
 
     /**
@@ -105,6 +109,7 @@ final class FuelStockService
         ]);
 
         FuelDeliveryReceived::dispatch($delivery);
+        $this->contract->deliveryReceived($delivery);
 
         return [
             'delivery' => $delivery,
@@ -243,6 +248,7 @@ final class FuelStockService
         ]);
 
         FuelStockReconciliationCompleted::dispatch($reconciliation);
+        $this->contract->stockReconciled($reconciliation);
 
         if ($status === FuelStockReconciliation::STATUS_EXCEPTION) {
             FuelStockVarianceDetected::dispatch($reconciliation);
