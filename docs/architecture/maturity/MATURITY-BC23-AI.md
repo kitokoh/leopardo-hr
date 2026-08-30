@@ -27,8 +27,8 @@ actions à confirmer), gateway + analytics.
 | D8 | Sécurité | 🟢 PRÉSENT | **AIAuditLogger** (traçabilité des décisions), prompts bornés, pas de secret provider en clair (clé LLM via env/Pulumi). |
 | D9 | Frontend | 🟢 PRÉSENT | Assistant web + apps mobile (chat, confirmations d'actions). |
 | D10 | Performance | 🟢 PRÉSENT | Throttle AI dédié (`ai-sensitive`, `ai-plan`) ; **budgets de tokens versionnés** (`ai.budgets.*`, issue #6238) : cumul par requête, par contexte de conversation et par exécution d'agent, fail-closed 422 `AI_TOKEN_BUDGET_EXCEEDED` + p95 par requête/workflow dans l'analytics. |
-| | Exploitation | 🟢 PRÉSENT | Analytics IA (AIGatewayAndAnalyticsTest), logs structurés, audit trail complet ; **runbook d'exploitation dédié** `docs/ops/RUNBOOK_AI.md` (issue #6240 : supervision, incidents provider/budget, file AI + DLQ + replay, purge RGPD, kill switch, backup/rollback) enregistré dans `runbook-registry.json` (MAT-015) + preuve d'exercice datée. |
-| D12 | Produit | 🟡 PARTIEL | Parcours chat → intent → action → confirmation testé (17 tests locaux verts) ; pas de golden journey IA end-to-end ni seed pilote dédié. |
+| D11 | Exploitation | 🟢 PRÉSENT | Analytics IA (AIGatewayAndAnalyticsTest), logs structurés, audit trail complet ; **runbook d'exploitation dédié** `docs/ops/RUNBOOK_AI.md` (issue #6240 : supervision, incidents provider/budget, file AI + DLQ + replay, purge RGPD, kill switch, backup/rollback) enregistré dans `runbook-registry.json` (MAT-015) + preuve d'exercice datée. |
+| D12 | Produit | 🟢 PRÉSENT | Parcours chat → intent → action → confirmation testé (17 tests) ; **golden journey IA end-to-end + seed pilote dédié** (issue #6241) : seed `AiPilotSeeder` 100 % synthétique (tenant `ai-pilot-001`, conversation + audit démo, outils registre), test E2E chat → confirmation → effet métier → audit vérifié, entrée GJ-08 dans `golden-journeys.json` (MAT-013, garde verte). |
 
 ## Vérification locale (preuve)
 
