@@ -33,6 +33,18 @@
         { "id": "recette", "label": "Recette métier signée (EDU-022)", "status": "pending" }
       ]
     }
+  ,
+  { "id": "restaurantmanager", "label": "RestaurantManager (verticale restauration, BC-25)", "go_decision": "pending", "gates": [
+    { "id": "manifest", "label": "Manifest + activation tenant (RESTO-105/106)", "status": "validated" },
+    { "id": "core_flow", "label": "Flux roi service en salle (GJ-RESTO-01) — dépend de la série POS 4xx", "status": "pending" },
+    { "id": "api_security", "label": "Matrice permissions restaurant.* + Policies RBAC (RESTO-306)", "status": "validated" },
+    { "id": "runbook", "label": "Runbook pilote + recette UAT (RESTO-903)", "status": "validated" },
+    { "id": "security_review", "label": "Audit sécurité & RGPD avant pilote (RESTO-904)", "status": "validated" },
+    { "id": "performance", "label": "Benchmarks POS/réservations (volumes attendus)", "status": "pending" },
+    { "id": "observability", "label": "Outbox + jobs surveillés (logs, dead-letter)", "status": "pending" },
+    { "id": "golden_journey", "label": "GJ-RESTO-01 passe en CI (MAT-013) — dépend de la série POS 4xx", "status": "pending" },
+    { "id": "recette", "label": "Recette UAT signée par le chef de projet", "status": "pending" }
+  ] }
   ],
   "decision_rules": {
     "go": "Tous les gates validés + recette métier signée + fenêtre de pilote planifiée.",
