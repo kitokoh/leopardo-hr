@@ -23,6 +23,7 @@
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryNotificationController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryEventController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRouteController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryReportController;
@@ -85,6 +86,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index'])
                 ->middleware('delivery.permission:admin|manager');
             Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report'])
+                ->middleware('delivery.permission:admin|manager');
+
+            // Notifications destinataire (DELIVERY-206/#6290) — opt-out
+            // effectif + outbox (numéros masqués RGPD hors admin).
+            Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut'])
+                ->middleware('delivery.permission:admin|manager');
+            Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index'])
                 ->middleware('delivery.permission:admin|manager');
         });
     });

@@ -8,8 +8,13 @@ use App\Modules\Delivery\Domain\Contracts\DeliveryAccountingContract;
 use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
 use App\Modules\Delivery\Domain\Contracts\SolutionManifest;
 use App\Modules\Delivery\Domain\Manifests\DeliveryManifest;
+use App\Modules\Delivery\Domain\Contracts\RecipientMessageContract;
+use App\Modules\Delivery\Domain\Models\DeliveryEvent;
 use App\Modules\Delivery\Infrastructure\Repositories\DeliveryRepository;
 use App\Modules\Delivery\Infrastructure\Services\LoggingDeliveryAccountingAdapter;
+use App\Modules\Delivery\Infrastructure\Services\LoggingRecipientMessageAdapter;
+use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -46,11 +51,21 @@ class DeliveryServiceProvider extends ServiceProvider
         // encaissements COD — seam journalisé tant que les écritures
         // source-référencées ne sont pas branchées.
         $this->app->singleton(DeliveryAccountingContract::class, LoggingDeliveryAccountingAdapter::class);
+
+        // Contrat BC-13 COMMS (DELIVERY-206/#6290) : envoi destinataire externe
+        // — seam journalisé (PII hachée) tant que les providers ne sont pas
+        // branchés sur les destinataires externes.
+        $this->app->singleton(RecipientMessageContract::class, LoggingRecipientMessageAdapter::class);
     }
 
     public function boot(): void
     {
-        // Policies enregistrées ici dès que les modèles des épics 2xx/3xx
-        // existent (Gate::policy(Delivery::class, DeliveryPolicy::class)).
+        // Notifications destinataire (DELIVERY-206/#6290) : chaque événement de
+        // tracking inséré planifie la notification (outbox tenant-scoped) — le
+        // listener ne tire QUE sur les inserts (l'idempotence des événements
+        // garantit l'absence de doublons de notification).
+        Event::listen('eloquent.created: '.DeliveryEvent::class, function (DeliveryEvent $event): void {
+            app(DeliveryNotificationService::class)->scheduleForEvent($event);
+        });
     }
 }
