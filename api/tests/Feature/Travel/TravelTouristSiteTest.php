@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\TravelAgency\Domain\Models\TravelCity;
 use App\Modules\TravelAgency\Domain\Models\TravelCountry;
 use App\Modules\TravelAgency\Domain\Models\TravelTouristSite;
+use App\Core\Tenant\TenantManager;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -44,17 +45,19 @@ class TravelTouristSiteTest extends TestCase
 
     private function makeCity(Company $company, string $name = 'Yaoundé'): TravelCity
     {
-        $country = TravelCountry::query()->create([
-            'company_id' => $company->id,
-            'iso2' => 'CM',
-            'name' => 'Cameroun',
-        ]);
+        return app(TenantManager::class)->withinTenant($company, function () use ($name): TravelCity {
+            TravelCountry::query()->create([
+                'company_id' => $company->id,
+                'iso2' => 'CM',
+                'name' => 'Cameroun',
+            ]);
 
-        return TravelCity::query()->create([
-            'company_id' => $company->id,
-            'country_iso2' => 'CM',
-            'name' => $name,
-        ]);
+            return TravelCity::query()->create([
+                'company_id' => $company->id,
+                'country_iso2' => 'CM',
+                'name' => $name,
+            ]);
+        });
     }
 
     public function test_site_crud_and_search_by_city(): void
@@ -125,11 +128,11 @@ class TravelTouristSiteTest extends TestCase
         $this->activateTravel($companyB);
 
         $this->login($companyA);
-        $site = TravelTouristSite::query()->create([
+        $site = app(TenantManager::class)->withinTenant($companyA, fn () => TravelTouristSite::query()->create([
             'company_id' => $companyA->id,
             'name' => 'Mont Cameroun',
             'status' => 'published',
-        ]);
+        ]));
 
         $this->login($companyB);
         $this->getJson("/api/v1/travel/tourist-sites/{$site->id}")->assertStatus(404);

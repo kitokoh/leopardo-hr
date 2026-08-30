@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\TravelAgency\Domain\Models\TravelQuiz;
 use App\Modules\TravelAgency\Domain\Models\TravelQuizParticipation;
+use App\Core\Tenant\TenantManager;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -43,13 +44,13 @@ class TravelQuizTest extends TestCase
 
     private function makePublishedQuiz(Company $company, int $maxAttempts = 1): TravelQuiz
     {
-        $quiz = TravelQuiz::query()->create([
+        $quiz = app(TenantManager::class)->withinTenant($company, fn (): TravelQuiz => TravelQuiz::query()->create([
             'company_id' => $company->id,
             'title' => 'Quiz Cameroun',
             'status' => TravelQuiz::STATUS_PUBLISHED,
             'max_attempts' => $maxAttempts,
             'published_at' => now(),
-        ]);
+        ]));
 
         $this->postJson('/api/v1/travel/quizzes/'.$quiz->id.'/questions', [
             'question' => 'Capitale du Cameroun ?',
@@ -135,12 +136,12 @@ class TravelQuizTest extends TestCase
         $this->activateTravel($company);
         $this->login($company);
 
-        $draft = TravelQuiz::query()->create([
+        $draft = app(TenantManager::class)->withinTenant($company, fn () => TravelQuiz::query()->create([
             'company_id' => $company->id,
             'title' => 'Brouillon',
             'status' => TravelQuiz::STATUS_DRAFT,
             'max_attempts' => 1,
-        ]);
+        ]));
 
         $this->postJson("/api/v1/travel/quizzes/{$draft->id}/participate", ['answers' => [0]])
             ->assertStatus(422);

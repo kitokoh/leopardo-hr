@@ -6,6 +6,7 @@ namespace Tests\Feature\Travel;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use Laravel\Sanctum\Sanctum;
@@ -98,11 +99,11 @@ class TravelAdvertCatalogTest extends TestCase
         $this->activateTravel($companyA);
         $this->activateTravel($companyB);
 
-        TravelAdvertType::query()->create([
+        app(TenantManager::class)->withinTenant($companyA, fn () => TravelAdvertType::query()->create([
             'company_id' => $companyA->id,
             'code' => 'only_a',
             'name' => 'Réservé A',
-        ]);
+        ]));
 
         // L'utilisateur B ne voit pas les types de A et ne peut pas les modifier.
         $this->principal($companyB);
@@ -110,7 +111,7 @@ class TravelAdvertCatalogTest extends TestCase
             ->assertOk()
             ->assertJsonCount(0, 'data');
 
-        $typeA = TravelAdvertType::query()->where('company_id', $companyA->id)->firstOrFail();
+        $typeA = app(TenantManager::class)->withinTenant($companyA, fn () => TravelAdvertType::query()->where('company_id', $companyA->id)->firstOrFail());
         $this->putJson("/api/v1/travel/advert-types/{$typeA->id}", ['name' => 'piratage'])
             ->assertStatus(404);
     }
