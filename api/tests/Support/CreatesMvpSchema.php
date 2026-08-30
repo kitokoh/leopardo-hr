@@ -2354,6 +2354,19 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'route_id'], 'delivery_cod_settlements_company_route_unique');
             });
         }
+
+        // ── BC-26 DELIVERY (delivery_tracking_shares) ─────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('delivery_tracking_shares'))) {
+            Schema::create($this->moduleTable('delivery_tracking_shares'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('delivery_id');
+                $table->string('share_token', 64)->unique();
+                $table->timestamp('expires_at')->nullable();
+                $table->timestamps();
+                $table->index(['company_id', 'delivery_id'], 'delivery_tracking_shares_company_delivery_idx');
+            });
+        }
     }
 
     private function dropMvpTables(): void
