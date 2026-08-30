@@ -32,10 +32,6 @@ class RestaurantHour extends Model
         'is_closed',
     ];
 
-    protected $attributes = [
-        'is_closed' => false,
-    ];
-
     protected $casts = [
         'day_of_week' => 'integer',
         'is_closed' => 'boolean',

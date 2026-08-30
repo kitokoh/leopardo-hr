@@ -39,11 +39,6 @@ class RestaurantOrderItem extends Model
         'line_index',
     ];
 
-    protected $attributes = [
-        'status' => 'active',
-        'line_index' => 0,
-    ];
-
     protected $casts = [
         'quantity' => 'decimal:3',
         'unit_price_minor' => 'integer',

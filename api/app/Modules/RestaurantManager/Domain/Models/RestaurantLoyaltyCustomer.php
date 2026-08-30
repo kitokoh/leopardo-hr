@@ -30,10 +30,6 @@ class RestaurantLoyaltyCustomer extends Model
         'tier_code',
     ];
 
-    protected $attributes = [
-        'points' => 0,
-    ];
-
     protected $casts = [
         'points' => 'integer',
     ];

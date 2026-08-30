@@ -54,18 +54,6 @@ class RestaurantOrder extends Model
         'version',
     ];
 
-    protected $attributes = [
-        'status' => 'draft',
-        'order_type' => 'dine_in',
-        'source' => 'pos',
-        'currency' => 'DZD',
-        'subtotal_minor' => 0,
-        'tax_minor' => 0,
-        'discount_minor' => 0,
-        'total_minor' => 0,
-        'version' => 1,
-    ];
-
     protected $casts = [
         'order_type' => OrderType::class,
         'covers' => 'integer',

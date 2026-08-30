@@ -59,11 +59,6 @@ class RestaurantOutboxEvent extends Model
         'idempotency_key',
     ];
 
-    protected $attributes = [
-        'status' => 'pending',
-        'attempts' => 0,
-    ];
-
     protected $casts = [
         'payload_redacted' => 'array',
         'attempts' => 'integer',
