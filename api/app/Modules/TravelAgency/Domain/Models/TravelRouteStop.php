@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
+use Database\Factories\TravelRouteStopFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,7 +21,7 @@ class TravelRouteStop extends Model
 {
     use BelongsToCompany;
 
-    /** @use HasFactory<Database\Factories\TravelRouteStopFactory> */
+    /** @use HasFactory<TravelRouteStopFactory> */
     use HasFactory;
 
     protected $fillable = [

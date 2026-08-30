@@ -29,7 +29,7 @@ class TravelCountryResource extends JsonResource
             'iso3' => $this->iso3,
             'name' => $this->name,
             'phone_code' => $this->phone_code,
-            'status' => $this->status?->value,
+            'status' => $this->status->value,
         ];
     }
 }
