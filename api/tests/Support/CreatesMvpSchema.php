@@ -2843,6 +2843,38 @@ trait CreatesMvpSchema
         }
 
         // ── BC-24 TRAVEL — TRAVEL-807 (issue #6086) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_refunds'))) {
+            Schema::create($this->moduleTable('travel_refunds'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('booking_id');
+                $table->unsignedBigInteger('passenger_id')->nullable();
+                $table->unsignedInteger('amount_minor');
+                $table->unsignedInteger('penalty_minor')->default(0);
+                $table->char('currency', 3);
+                $table->string('reason', 500);
+                $table->string('refund_key', 255);
+                $table->unsignedBigInteger('refunded_by_user_id')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'refund_key'], 'travel_refunds_company_key_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_cancellation_policies'))) {
+            Schema::create($this->moduleTable('travel_cancellation_policies'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('trip_id')->nullable();
+                $table->unsignedBigInteger('class_id')->nullable();
+                $table->unsignedInteger('hours_before_departure')->default(0);
+                $table->unsignedTinyInteger('penalty_percent')->default(0);
+                $table->boolean('refundable')->default(true);
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-808/813 (issues #6098/#6103) ─────────────
         if (! Schema::hasTable($this->moduleTable('travel_hotels'))) {
             Schema::create($this->moduleTable('travel_hotels'), function (Blueprint $table): void {
                 $table->id();
@@ -3007,6 +3039,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
         // BC-24 TRAVEL (verticale TravelAgency)
         DB::statement('DROP TABLE IF EXISTS "travel_hotel_rooms"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_cancellation_policies"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_refunds"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_carrier_api_keys"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_currency_rates"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_quotes"'.$cascade);

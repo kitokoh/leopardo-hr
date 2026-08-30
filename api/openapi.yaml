@@ -3519,6 +3519,183 @@ paths:
         '404':
           description: Aller-retour introuvable ou hors tenant
 
+  /travel/bookings/{travelBooking}/refund-passenger:
+    post:
+      tags:
+      - Travel
+      summary: Remboursement partiel d'un passager (TRAVEL-808/#6098)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelBooking
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - passenger_id
+              - reason
+              - refund_key
+              properties:
+                passenger_id:
+                  type: integer
+                reason:
+                  type: string
+                  minLength: 3
+                  maxLength: 500
+                refund_key:
+                  type: string
+                  maxLength: 255
+      responses:
+        '201':
+          description: Remboursement enregistré (pénalité calculée serveur)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelRefund'
+        '404':
+          description: Réservation ou passager introuvable / hors tenant
+        '422':
+          description: Réservation non confirmée ou rejeu sans double remboursement
+  /travel/cancellation-policies:
+    get:
+      tags:
+      - Travel
+      summary: Liste des politiques d'annulation (TRAVEL-813/#6103)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste paginée des politiques
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelCancellationPolicy'
+    post:
+      tags:
+      - Travel
+      summary: Création d'une politique d'annulation (TRAVEL-813/#6103)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - hours_before_departure
+              - penalty_percent
+              properties:
+                trip_id:
+                  type: integer
+                  nullable: true
+                class_id:
+                  type: integer
+                  nullable: true
+                hours_before_departure:
+                  type: integer
+                  minimum: 0
+                penalty_percent:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                refundable:
+                  type: boolean
+                  default: true
+      responses:
+        '201':
+          description: Politique créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelCancellationPolicy'
+  /travel/cancellation-policies/{travelCancellationPolicy}:
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'une politique (TRAVEL-813/#6103)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCancellationPolicy
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - hours_before_departure
+              - penalty_percent
+              properties:
+                trip_id:
+                  type: integer
+                  nullable: true
+                class_id:
+                  type: integer
+                  nullable: true
+                hours_before_departure:
+                  type: integer
+                  minimum: 0
+                penalty_percent:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                refundable:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: Politique mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelCancellationPolicy'
+        '404':
+          description: Politique introuvable ou hors tenant
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une politique (TRAVEL-813/#6103)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCancellationPolicy
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Politique supprimée
+        '404':
+          description: Politique introuvable ou hors tenant
+
   /travel/tickets/{travelTicket}/check-in:
     post:
       tags:
@@ -29531,6 +29708,55 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TravelTicket'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelRefund:
+      type: object
+      properties:
+        id:
+          type: integer
+        booking_id:
+          type: integer
+        passenger_id:
+          type: integer
+          nullable: true
+        amount_minor:
+          type: integer
+        penalty_minor:
+          type: integer
+        currency:
+          type: string
+        reason:
+          type: string
+        refund_key:
+          type: string
+        created_at:
+          type: string
+          nullable: true
+    TravelCancellationPolicy:
+      type: object
+      properties:
+        id:
+          type: integer
+        trip_id:
+          type: integer
+          nullable: true
+        class_id:
+          type: integer
+          nullable: true
+        hours_before_departure:
+          type: integer
+        penalty_percent:
+          type: integer
+        refundable:
+          type: boolean
+        created_by_user_id:
+          type: integer
+          nullable: true
         created_at:
           type: string
           nullable: true
