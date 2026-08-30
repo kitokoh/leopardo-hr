@@ -103,7 +103,7 @@ const tripStatusMap = {
 }
 
 const tripStatusField = {
-  key: 'status', label: 'travel.field.status', labelFallback: 'Statut', type: 'select',
+  key: 'status', label: 'travel.field.status', type: 'select',
   options: [
     { value: 'draft', label: t('travel.tripStatus.draft', 'Brouillon') },
     { value: 'published', label: t('travel.tripStatus.published', 'Publié') },
@@ -122,7 +122,6 @@ const meansOptions = [
 const routeConfig = computed(() => ({
   resource: 'routes',
   titleKey: 'travel.routes.title',
-  titleFallback: 'Lignes & itinéraires',
   subtitleKey: 'travel.routes.subtitle',
   searchPlaceholderKey: 'travel.search.route',
   searchKeys: ['code', 'origin_city_id', 'destination_city_id'],
@@ -130,20 +129,20 @@ const routeConfig = computed(() => ({
   statusField: 'status',
   statusMap: routeStatusMap,
   columns: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', sortable: true },
-    { key: 'origin_city_id', label: 'travel.field.origin', labelFallback: 'Départ', sortable: true },
-    { key: 'destination_city_id', label: 'travel.field.destination', labelFallback: 'Arrivée', sortable: true },
-    { key: 'distance_km', label: 'travel.field.distanceKm', labelFallback: 'Distance (km)', sortable: true },
-    { key: 'duration_min', label: 'travel.field.durationMin', labelFallback: 'Durée (min)', sortable: true },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', sortable: true }
+    { key: 'code', label: 'travel.field.code', sortable: true },
+    { key: 'origin_city_id', label: 'travel.field.origin', sortable: true },
+    { key: 'destination_city_id', label: 'travel.field.destination', sortable: true },
+    { key: 'distance_km', label: 'travel.field.distanceKm', sortable: true },
+    { key: 'duration_min', label: 'travel.field.durationMin', sortable: true },
+    { key: 'status', label: 'travel.field.status', sortable: true }
   ],
   fields: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', type: 'text', required: true, max: 40 },
-    { key: 'origin_city_id', label: 'travel.field.origin', labelFallback: 'Ville de départ', type: 'select', source: 'cities', required: true },
+    { key: 'code', label: 'travel.field.code', type: 'text', required: true, max: 40 },
+    { key: 'origin_city_id', label: 'travel.field.origin', type: 'select', source: 'cities', required: true },
     { key: 'destination_city_id', label: 'travel.field.destination', labelFallback: "Ville d'arrivée", type: 'select', source: 'cities', required: true },
-    { key: 'distance_km', label: 'travel.field.distanceKm', labelFallback: 'Distance (km)', type: 'number', min: 0 },
-    { key: 'duration_min', label: 'travel.field.durationMin', labelFallback: 'Durée (minutes)', type: 'number', min: 0 },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', type: 'select', options: [
+    { key: 'distance_km', label: 'travel.field.distanceKm', type: 'number', min: 0 },
+    { key: 'duration_min', label: 'travel.field.durationMin', type: 'number', min: 0 },
+    { key: 'status', label: 'travel.field.status', type: 'select', options: [
       { value: 'active', label: t('travel.status.active', 'Actif') },
       { value: 'inactive', label: t('travel.status.inactive', 'Inactif') }
     ] }
@@ -153,16 +152,16 @@ const routeConfig = computed(() => ({
     titleKey: 'travel.routes.stopsTitle',
     resource: 'routes/{id}/stops',
     columns: [
-      { key: 'rank', label: 'travel.field.rank', labelFallback: 'Rang', type: 'number' },
-      { key: 'city_id', label: 'travel.field.city', labelFallback: 'Ville' },
-      { key: 'is_stopover', label: 'travel.field.isStopover', labelFallback: 'Escale' },
-      { key: 'min_duration_min', label: 'travel.field.minDurationMin', labelFallback: 'Min (min)' }
+      { key: 'rank', label: 'travel.field.rank', type: 'number' },
+      { key: 'city_id', label: 'travel.field.city' },
+      { key: 'is_stopover', label: 'travel.field.isStopover' },
+      { key: 'min_duration_min', label: 'travel.field.minDurationMin' }
     ],
     fields: [
-      { key: 'city_id', label: 'travel.field.city', labelFallback: 'Ville', type: 'select', source: 'cities', required: true },
-      { key: 'rank', label: 'travel.field.rank', labelFallback: 'Rang', type: 'number', required: true, min: 0 },
-      { key: 'is_stopover', label: 'travel.field.isStopover', labelFallback: 'Escale (pas un arrêt principal)', type: 'checkbox' },
-      { key: 'min_duration_min', label: 'travel.field.minDurationMin', labelFallback: 'Durée minimale (min)', type: 'number', min: 0 }
+      { key: 'city_id', label: 'travel.field.city', type: 'select', source: 'cities', required: true },
+      { key: 'rank', label: 'travel.field.rank', type: 'number', required: true, min: 0 },
+      { key: 'is_stopover', label: 'travel.field.isStopover', type: 'checkbox' },
+      { key: 'min_duration_min', label: 'travel.field.minDurationMin', type: 'number', min: 0 }
     ],
     defaults: { is_stopover: true }
   }
@@ -172,7 +171,6 @@ const routeConfig = computed(() => ({
 const tripConfig = computed(() => ({
   resource: 'trips',
   titleKey: 'travel.trips.title',
-  titleFallback: 'Trajets datés',
   subtitleKey: 'travel.trips.subtitle',
   searchPlaceholderKey: 'travel.search.trip',
   searchKeys: ['code', 'route_id', 'departure_date'],
@@ -184,36 +182,34 @@ const tripConfig = computed(() => ({
     {
       key: 'publish',
       label: 'travel.action.publish',
-      labelFallback: 'Publier',
       condition: (row) => row.status === 'draft'
     },
     {
       key: 'cancel',
       label: 'travel.action.cancelTrip',
-      labelFallback: 'Annuler le trajet',
       condition: (row) => row.status !== 'cancelled'
     }
   ],
   columns: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', sortable: true },
-    { key: 'route_id', label: 'travel.field.route', labelFallback: 'Ligne', sortable: true },
-    { key: 'departure_date', label: 'travel.field.departureDate', labelFallback: 'Départ', sortable: true },
-    { key: 'departure_time', label: 'travel.field.departureTime', labelFallback: 'Heure', sortable: true },
-    { key: 'means_of_transport', label: 'travel.field.means', labelFallback: 'Moyen', sortable: true },
-    { key: 'total_seats', label: 'travel.field.totalSeats', labelFallback: 'Places', sortable: true },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', sortable: true }
+    { key: 'code', label: 'travel.field.code', sortable: true },
+    { key: 'route_id', label: 'travel.field.route', sortable: true },
+    { key: 'departure_date', label: 'travel.field.departureDate', sortable: true },
+    { key: 'departure_time', label: 'travel.field.departureTime', sortable: true },
+    { key: 'means_of_transport', label: 'travel.field.means', sortable: true },
+    { key: 'total_seats', label: 'travel.field.totalSeats', sortable: true },
+    { key: 'status', label: 'travel.field.status', sortable: true }
   ],
   fields: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', type: 'text', required: true, max: 40 },
-    { key: 'route_id', label: 'travel.field.route', labelFallback: 'Ligne', type: 'select', source: 'routes', required: true },
-    { key: 'carrier_id', label: 'travel.field.carrier', labelFallback: 'Compagnie', type: 'select', source: 'carriers' },
-    { key: 'vehicle_id', label: 'travel.field.vehicle', labelFallback: 'Véhicule', type: 'select', source: 'vehicles' },
-    { key: 'departure_date', label: 'travel.field.departureDate', labelFallback: 'Date de départ', type: 'date', required: true },
-    { key: 'departure_time', label: 'travel.field.departureTime', labelFallback: 'Heure de départ', type: 'time', required: true },
+    { key: 'code', label: 'travel.field.code', type: 'text', required: true, max: 40 },
+    { key: 'route_id', label: 'travel.field.route', type: 'select', source: 'routes', required: true },
+    { key: 'carrier_id', label: 'travel.field.carrier', type: 'select', source: 'carriers' },
+    { key: 'vehicle_id', label: 'travel.field.vehicle', type: 'select', source: 'vehicles' },
+    { key: 'departure_date', label: 'travel.field.departureDate', type: 'date', required: true },
+    { key: 'departure_time', label: 'travel.field.departureTime', type: 'time', required: true },
     { key: 'arrival_date', label: 'travel.field.arrivalDate', labelFallback: "Date d'arrivée", type: 'date', required: true },
     { key: 'arrival_time', label: 'travel.field.arrivalTime', labelFallback: "Heure d'arrivée", type: 'time', required: true },
-    { key: 'means_of_transport', label: 'travel.field.means', labelFallback: 'Moyen de transport', type: 'select', required: true, options: meansOptions },
-    { key: 'total_seats', label: 'travel.field.totalSeats', labelFallback: 'Capacité (places)', type: 'number', required: true, min: 1 },
+    { key: 'means_of_transport', label: 'travel.field.means', type: 'select', required: true, options: meansOptions },
+    { key: 'total_seats', label: 'travel.field.totalSeats', type: 'number', required: true, min: 1 },
     tripStatusField
   ],
   defaults: { means_of_transport: 'bus', status: 'draft', total_seats: 45 },
@@ -221,16 +217,16 @@ const tripConfig = computed(() => ({
     titleKey: 'travel.trips.pricesTitle',
     resource: 'trips/{id}/prices',
     columns: [
-      { key: 'class_id', label: 'travel.field.class', labelFallback: 'Classe' },
-      { key: 'adult_price_minor', label: 'travel.field.adultPrice', labelFallback: 'Adulte', type: 'money' },
-      { key: 'child_price_minor', label: 'travel.field.childPrice', labelFallback: 'Enfant', type: 'money' },
-      { key: 'currency', label: 'travel.field.currency', labelFallback: 'Devise' }
+      { key: 'class_id', label: 'travel.field.class' },
+      { key: 'adult_price_minor', label: 'travel.field.adultPrice', type: 'money' },
+      { key: 'child_price_minor', label: 'travel.field.childPrice', type: 'money' },
+      { key: 'currency', label: 'travel.field.currency' }
     ],
     fields: [
-      { key: 'class_id', label: 'travel.field.class', labelFallback: 'Classe', type: 'select', source: 'classes', required: true },
-      { key: 'adult_price_minor', label: 'travel.field.adultPrice', labelFallback: 'Prix adulte', type: 'money', required: true, min: 0 },
-      { key: 'child_price_minor', label: 'travel.field.childPrice', labelFallback: 'Prix enfant', type: 'money', min: 0 },
-      { key: 'currency', label: 'travel.field.currency', labelFallback: 'Devise', type: 'text', required: true, max: 3 }
+      { key: 'class_id', label: 'travel.field.class', type: 'select', source: 'classes', required: true },
+      { key: 'adult_price_minor', label: 'travel.field.adultPrice', type: 'money', required: true, min: 0 },
+      { key: 'child_price_minor', label: 'travel.field.childPrice', type: 'money', min: 0 },
+      { key: 'currency', label: 'travel.field.currency', type: 'text', required: true, max: 3 }
     ],
     defaults: { currency: 'XAF' }
   }

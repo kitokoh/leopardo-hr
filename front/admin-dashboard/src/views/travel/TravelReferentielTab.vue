@@ -13,7 +13,7 @@
             ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
             : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
         ]"
-        @click="activeSub = sub.key"
+        @click="selectSub(sub)"
       >
         {{ sub.label }}
       </button>
@@ -90,6 +90,10 @@ const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const activeSub = ref('geo')
 
+function selectSub(sub) {
+  activeSub.value = sub.key
+}
+
 const subTabs = computed(() => [
   { key: 'geo', label: t('travel.referentiel.tabGeo', 'Pays & Villes') },
   { key: 'stations', label: t('travel.referentiel.tabStations', 'Stations') },
@@ -162,7 +166,7 @@ const statusMap = {
   archived: { labelKey: 'travel.status.archived', color: 'gray' }
 }
 
-const statusField = { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', type: 'select', options: [
+const statusField = { key: 'status', label: 'travel.field.status', type: 'select', options: [
   { value: 'active', label: t('travel.status.active', 'Actif') },
   { value: 'inactive', label: t('travel.status.inactive', 'Inactif') },
   { value: 'archived', label: t('travel.status.archived', 'Archivé') }
@@ -172,28 +176,27 @@ const statusField = { key: 'status', label: 'travel.field.status', labelFallback
 const stationConfig = computed(() => ({
   resource: 'stations',
   titleKey: 'travel.referentiel.stations',
-  titleFallback: 'Stations / terminaux',
   searchPlaceholderKey: 'travel.search.station',
   searchKeys: ['code', 'name', 'city_id', 'timezone'],
   defaultSort: 'name',
   statusField: 'status',
   statusMap,
   columns: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', sortable: true },
-    { key: 'name', label: 'travel.field.name', labelFallback: 'Nom', sortable: true },
-    { key: 'city_id', label: 'travel.field.city', labelFallback: 'Ville', sortable: true },
-    { key: 'timezone', label: 'travel.field.timezone', labelFallback: 'Fuseau', sortable: true },
-    { key: 'is_terminal', label: 'travel.field.isTerminal', labelFallback: 'Terminal', sortable: true },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', sortable: true }
+    { key: 'code', label: 'travel.field.code', sortable: true },
+    { key: 'name', label: 'travel.field.name', sortable: true },
+    { key: 'city_id', label: 'travel.field.city', sortable: true },
+    { key: 'timezone', label: 'travel.field.timezone', sortable: true },
+    { key: 'is_terminal', label: 'travel.field.isTerminal', sortable: true },
+    { key: 'status', label: 'travel.field.status', sortable: true }
   ],
   fields: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', type: 'text', required: true, max: 40 },
-    { key: 'name', label: 'travel.field.name', labelFallback: 'Nom', type: 'text', required: true, max: 120 },
-    { key: 'city_id', label: 'travel.field.city', labelFallback: 'Ville', type: 'select', source: 'cities', required: true },
-    { key: 'address', label: 'travel.field.address', labelFallback: 'Adresse', type: 'text' },
-    { key: 'contact_phone', label: 'travel.field.contactPhone', labelFallback: 'Téléphone', type: 'text' },
-    { key: 'timezone', label: 'travel.field.timezone', labelFallback: 'Fuseau', type: 'text' },
-    { key: 'is_terminal', label: 'travel.field.isTerminal', labelFallback: 'Terminal (grande gare)', type: 'checkbox' },
+    { key: 'code', label: 'travel.field.code', type: 'text', required: true, max: 40 },
+    { key: 'name', label: 'travel.field.name', type: 'text', required: true, max: 120 },
+    { key: 'city_id', label: 'travel.field.city', type: 'select', source: 'cities', required: true },
+    { key: 'address', label: 'travel.field.address', type: 'text' },
+    { key: 'contact_phone', label: 'travel.field.contactPhone', type: 'text' },
+    { key: 'timezone', label: 'travel.field.timezone', type: 'text' },
+    { key: 'is_terminal', label: 'travel.field.isTerminal', type: 'checkbox' },
     statusField
   ],
   defaults: { timezone: 'UTC', is_terminal: false, status: 'active' }
@@ -203,23 +206,22 @@ const stationConfig = computed(() => ({
 const officeConfig = computed(() => ({
   resource: 'offices',
   titleKey: 'travel.referentiel.offices',
-  titleFallback: 'Bureaux de vente',
   searchPlaceholderKey: 'travel.search.office',
   searchKeys: ['name', 'city_id'],
   defaultSort: 'name',
   statusField: 'status',
   statusMap,
   columns: [
-    { key: 'name', label: 'travel.field.name', labelFallback: 'Nom', sortable: true },
-    { key: 'city_id', label: 'travel.field.city', labelFallback: 'Ville', sortable: true },
-    { key: 'contact_phone', label: 'travel.field.contactPhone', labelFallback: 'Téléphone', sortable: true },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', sortable: true }
+    { key: 'name', label: 'travel.field.name', sortable: true },
+    { key: 'city_id', label: 'travel.field.city', sortable: true },
+    { key: 'contact_phone', label: 'travel.field.contactPhone', sortable: true },
+    { key: 'status', label: 'travel.field.status', sortable: true }
   ],
   fields: [
-    { key: 'name', label: 'travel.field.name', labelFallback: 'Nom', type: 'text', required: true, max: 120 },
-    { key: 'city_id', label: 'travel.field.city', labelFallback: 'Ville', type: 'select', source: 'cities', required: true },
-    { key: 'address', label: 'travel.field.address', labelFallback: 'Adresse', type: 'text' },
-    { key: 'contact_phone', label: 'travel.field.contactPhone', labelFallback: 'Téléphone', type: 'text' },
+    { key: 'name', label: 'travel.field.name', type: 'text', required: true, max: 120 },
+    { key: 'city_id', label: 'travel.field.city', type: 'select', source: 'cities', required: true },
+    { key: 'address', label: 'travel.field.address', type: 'text' },
+    { key: 'contact_phone', label: 'travel.field.contactPhone', type: 'text' },
     statusField
   ],
   defaults: { status: 'active' }
@@ -229,24 +231,23 @@ const officeConfig = computed(() => ({
 const carrierConfig = computed(() => ({
   resource: 'carriers',
   titleKey: 'travel.referentiel.carriers',
-  titleFallback: 'Compagnies de transport',
   searchPlaceholderKey: 'travel.search.carrier',
   searchKeys: ['code', 'name', 'type'],
   defaultSort: 'name',
   statusField: 'status',
   statusMap,
   columns: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', sortable: true },
-    { key: 'name', label: 'travel.field.name', labelFallback: 'Nom', sortable: true },
-    { key: 'type', label: 'travel.field.carrierType', labelFallback: 'Type', sortable: true },
-    { key: 'contact_phone', label: 'travel.field.contactPhone', labelFallback: 'Téléphone', sortable: true },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', sortable: true }
+    { key: 'code', label: 'travel.field.code', sortable: true },
+    { key: 'name', label: 'travel.field.name', sortable: true },
+    { key: 'type', label: 'travel.field.carrierType', sortable: true },
+    { key: 'contact_phone', label: 'travel.field.contactPhone', sortable: true },
+    { key: 'status', label: 'travel.field.status', sortable: true }
   ],
   fields: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', type: 'text', required: true, max: 40 },
-    { key: 'name', label: 'travel.field.name', labelFallback: 'Nom', type: 'text', required: true, max: 120 },
+    { key: 'code', label: 'travel.field.code', type: 'text', required: true, max: 40 },
+    { key: 'name', label: 'travel.field.name', type: 'text', required: true, max: 120 },
     {
-      key: 'type', label: 'travel.field.carrierType', labelFallback: 'Type', type: 'select', required: true,
+      key: 'type', label: 'travel.field.carrierType', type: 'select', required: true,
       options: [
         { value: 'bus', label: t('travel.carrierType.bus', 'Bus / autocar') },
         { value: 'train', label: t('travel.carrierType.train', 'Train') },
@@ -254,7 +255,7 @@ const carrierConfig = computed(() => ({
         { value: 'plane', label: t('travel.carrierType.plane', 'Avion') }
       ]
     },
-    { key: 'contact_phone', label: 'travel.field.contactPhone', labelFallback: 'Téléphone', type: 'text' },
+    { key: 'contact_phone', label: 'travel.field.contactPhone', type: 'text' },
     statusField
   ],
   defaults: { type: 'bus', status: 'active' }
@@ -264,23 +265,22 @@ const carrierConfig = computed(() => ({
 const classConfig = computed(() => ({
   resource: 'classes',
   titleKey: 'travel.referentiel.classes',
-  titleFallback: 'Classes de service',
   searchPlaceholderKey: 'travel.search.class',
   searchKeys: ['code', 'label'],
   defaultSort: 'priority',
   statusField: 'status',
   statusMap,
   columns: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', sortable: true },
-    { key: 'label', label: 'travel.field.label', labelFallback: 'Libellé', sortable: true },
-    { key: 'priority', label: 'travel.field.priority', labelFallback: 'Priorité', sortable: true },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', sortable: true }
+    { key: 'code', label: 'travel.field.code', sortable: true },
+    { key: 'label', label: 'travel.field.label', sortable: true },
+    { key: 'priority', label: 'travel.field.priority', sortable: true },
+    { key: 'status', label: 'travel.field.status', sortable: true }
   ],
   fields: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', type: 'text', required: true, max: 40 },
-    { key: 'label', label: 'travel.field.label', labelFallback: 'Libellé', type: 'text', required: true, max: 120 },
-    { key: 'priority', label: 'travel.field.priority', labelFallback: 'Priorité', type: 'number', min: 0 },
-    { key: 'color', label: 'travel.field.color', labelFallback: 'Couleur', type: 'color' },
+    { key: 'code', label: 'travel.field.code', type: 'text', required: true, max: 40 },
+    { key: 'label', label: 'travel.field.label', type: 'text', required: true, max: 120 },
+    { key: 'priority', label: 'travel.field.priority', type: 'number', min: 0 },
+    { key: 'color', label: 'travel.field.color', type: 'color' },
     statusField
   ],
   defaults: { priority: 0, status: 'active' }
@@ -290,25 +290,24 @@ const classConfig = computed(() => ({
 const vehicleConfig = computed(() => ({
   resource: 'vehicles',
   titleKey: 'travel.referentiel.vehicles',
-  titleFallback: 'Flotte de véhicules',
   searchPlaceholderKey: 'travel.search.vehicle',
   searchKeys: ['code', 'registration_number', 'carrier_id'],
   defaultSort: 'code',
   statusField: 'status',
   statusMap,
   columns: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', sortable: true },
-    { key: 'registration_number', label: 'travel.field.registration', labelFallback: 'Immatriculation', sortable: true },
-    { key: 'seat_capacity', label: 'travel.field.seatCapacity', labelFallback: 'Places', sortable: true },
-    { key: 'carrier_id', label: 'travel.field.carrier', labelFallback: 'Compagnie', sortable: true },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', sortable: true }
+    { key: 'code', label: 'travel.field.code', sortable: true },
+    { key: 'registration_number', label: 'travel.field.registration', sortable: true },
+    { key: 'seat_capacity', label: 'travel.field.seatCapacity', sortable: true },
+    { key: 'carrier_id', label: 'travel.field.carrier', sortable: true },
+    { key: 'status', label: 'travel.field.status', sortable: true }
   ],
   fields: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', type: 'text', required: true, max: 40 },
-    { key: 'registration_number', label: 'travel.field.registration', labelFallback: 'Immatriculation', type: 'text' },
-    { key: 'seat_capacity', label: 'travel.field.seatCapacity', labelFallback: 'Capacité (places)', type: 'number', required: true, min: 1 },
-    { key: 'carrier_id', label: 'travel.field.carrier', labelFallback: 'Compagnie', type: 'select', source: 'carriers' },
-    { key: 'notes', label: 'travel.field.notes', labelFallback: 'Notes', type: 'textarea' },
+    { key: 'code', label: 'travel.field.code', type: 'text', required: true, max: 40 },
+    { key: 'registration_number', label: 'travel.field.registration', type: 'text' },
+    { key: 'seat_capacity', label: 'travel.field.seatCapacity', type: 'number', required: true, min: 1 },
+    { key: 'carrier_id', label: 'travel.field.carrier', type: 'select', source: 'carriers' },
+    { key: 'notes', label: 'travel.field.notes', type: 'textarea' },
     statusField
   ],
   defaults: { seat_capacity: 45, status: 'active' }

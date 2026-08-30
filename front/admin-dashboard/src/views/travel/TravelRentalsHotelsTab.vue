@@ -27,7 +27,7 @@
     </div>
 
     <!-- Gestion des images d'un véhicule de location -->
-    <TravelModal :open="imagesOpen" :title="imagesTitle" @close="imagesOpen = false">
+    <TravelModal :open="imagesOpen" :title="imagesTitle" @close="closeimagesOpen">
       <div v-if="imagesError" class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700" role="alert">
         {{ imagesError }}
       </div>
@@ -56,7 +56,7 @@
           <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400" for="vehicle-image">
             {{ $t('travel.rentals.addImage', 'Ajouter une image') }}
           </label>
-          <input id="vehicle-image" type="file" accept="image/*" class="form-input mt-1" @change="onFileChange" />
+          <input id="vehicle-image" type="file" accept="image/jpeg,image/png,image/webp" class="form-input mt-1" @change="onFileChange" />
         </div>
         <button class="btn-primary" type="submit" :disabled="!selectedFile || uploadingImage">
           {{ uploadingImage ? $t('common.busy', 'En cours…') : $t('travel.action.add', 'Ajouter') }}
@@ -148,33 +148,32 @@ const paymentStatusOptions = [
 const vehicleConfig = computed(() => ({
   resource: 'rental-vehicles',
   titleKey: 'travel.rentals.vehicles',
-  titleFallback: 'Véhicules de location',
   searchPlaceholderKey: 'travel.search.rentalVehicle',
   searchKeys: ['code', 'title', 'city_id'],
   defaultSort: 'title',
   statusField: 'status',
   statusMap,
   rowActions: [
-    { key: 'images', label: 'travel.rentals.images', labelFallback: 'Images' }
+    { key: 'images', label: 'travel.rentals.images' }
   ],
   columns: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', sortable: true },
-    { key: 'title', label: 'travel.field.title', labelFallback: 'Intitulé', sortable: true },
-    { key: 'city_id', label: 'travel.field.city', labelFallback: 'Ville', sortable: true },
-    { key: 'price_per_day_minor', label: 'travel.field.pricePerDay', labelFallback: 'Prix / jour', sortable: true, type: 'money' },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', sortable: true }
+    { key: 'code', label: 'travel.field.code', sortable: true },
+    { key: 'title', label: 'travel.field.title', sortable: true },
+    { key: 'city_id', label: 'travel.field.city', sortable: true },
+    { key: 'price_per_day_minor', label: 'travel.field.pricePerDay', sortable: true, type: 'money' },
+    { key: 'status', label: 'travel.field.status', sortable: true }
   ],
   fields: [
-    { key: 'code', label: 'travel.field.code', labelFallback: 'Code', type: 'text', required: true, max: 40 },
-    { key: 'title', label: 'travel.field.title', labelFallback: 'Intitulé', type: 'text', required: true, max: 160 },
-    { key: 'city_id', label: 'travel.field.city', labelFallback: 'Ville', type: 'select', source: 'cities', required: true },
-    { key: 'price_per_day_minor', label: 'travel.field.pricePerDay', labelFallback: 'Prix par jour', type: 'money', required: true, min: 0 },
-    { key: 'currency', label: 'travel.field.currency', labelFallback: 'Devise', type: 'text', required: true, max: 3 },
-    { key: 'available_from', label: 'travel.field.availableFrom', labelFallback: 'Disponible du', type: 'date' },
-    { key: 'available_until', label: 'travel.field.availableUntil', labelFallback: 'Disponible au', type: 'date' },
-    { key: 'owner_carrier_id', label: 'travel.field.ownerCarrier', labelFallback: 'Compagnie propriétaire', type: 'select', source: 'carriers' },
-    { key: 'notes', label: 'travel.field.notes', labelFallback: 'Notes', type: 'textarea' },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', type: 'select', options: [
+    { key: 'code', label: 'travel.field.code', type: 'text', required: true, max: 40 },
+    { key: 'title', label: 'travel.field.title', type: 'text', required: true, max: 160 },
+    { key: 'city_id', label: 'travel.field.city', type: 'select', source: 'cities', required: true },
+    { key: 'price_per_day_minor', label: 'travel.field.pricePerDay', type: 'money', required: true, min: 0 },
+    { key: 'currency', label: 'travel.field.currency', type: 'text', required: true, max: 3 },
+    { key: 'available_from', label: 'travel.field.availableFrom', type: 'date' },
+    { key: 'available_until', label: 'travel.field.availableUntil', type: 'date' },
+    { key: 'owner_carrier_id', label: 'travel.field.ownerCarrier', type: 'select', source: 'carriers' },
+    { key: 'notes', label: 'travel.field.notes', type: 'textarea' },
+    { key: 'status', label: 'travel.field.status', type: 'select', options: [
       { value: 'active', label: t('travel.status.active', 'Actif') },
       { value: 'inactive', label: t('travel.status.inactive', 'Inactif') },
       { value: 'archived', label: t('travel.status.archived', 'Archivé') }
@@ -187,7 +186,6 @@ const vehicleConfig = computed(() => ({
 const rentalBookingConfig = computed(() => ({
   resource: 'rental-bookings',
   titleKey: 'travel.rentals.bookings',
-  titleFallback: 'Réservations de location',
   searchPlaceholderKey: 'travel.search.rentalBooking',
   searchKeys: ['reference', 'vehicle_id', 'status'],
   defaultSort: 'start_date',
@@ -198,27 +196,26 @@ const rentalBookingConfig = computed(() => ({
     {
       key: 'cancel',
       label: 'travel.action.cancel',
-      labelFallback: 'Annuler',
       condition: (row) => !['cancelled', 'completed'].includes(row.status)
     }
   ],
   columns: [
-    { key: 'reference', label: 'travel.field.reference', labelFallback: 'Référence', sortable: true },
-    { key: 'vehicle_id', label: 'travel.field.vehicle', labelFallback: 'Véhicule', sortable: true },
-    { key: 'start_date', label: 'travel.field.startDate', labelFallback: 'Début', sortable: true },
-    { key: 'end_date', label: 'travel.field.endDate', labelFallback: 'Fin', sortable: true },
-    { key: 'total_amount_minor', label: 'travel.field.totalAmount', labelFallback: 'Montant', sortable: true, type: 'money' },
-    { key: 'payment_status', label: 'travel.field.paymentStatus', labelFallback: 'Paiement', sortable: true },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', sortable: true }
+    { key: 'reference', label: 'travel.field.reference', sortable: true },
+    { key: 'vehicle_id', label: 'travel.field.vehicle', sortable: true },
+    { key: 'start_date', label: 'travel.field.startDate', sortable: true },
+    { key: 'end_date', label: 'travel.field.endDate', sortable: true },
+    { key: 'total_amount_minor', label: 'travel.field.totalAmount', sortable: true, type: 'money' },
+    { key: 'payment_status', label: 'travel.field.paymentStatus', sortable: true },
+    { key: 'status', label: 'travel.field.status', sortable: true }
   ],
   fields: [
-    { key: 'vehicle_id', label: 'travel.field.vehicle', labelFallback: 'Véhicule', type: 'select', source: 'vehicles', required: true },
-    { key: 'start_date', label: 'travel.field.startDate', labelFallback: 'Date de début', type: 'date', required: true },
-    { key: 'end_date', label: 'travel.field.endDate', labelFallback: 'Date de fin', type: 'date', required: true },
-    { key: 'deposit_amount_minor', label: 'travel.field.deposit', labelFallback: 'Caution', type: 'money', min: 0 },
-    { key: 'currency', label: 'travel.field.currency', labelFallback: 'Devise', type: 'text', required: true, max: 3 },
-    { key: 'payment_status', label: 'travel.field.paymentStatus', labelFallback: 'Statut de paiement', type: 'select', options: paymentStatusOptions },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', type: 'select', options: [
+    { key: 'vehicle_id', label: 'travel.field.vehicle', type: 'select', source: 'vehicles', required: true },
+    { key: 'start_date', label: 'travel.field.startDate', type: 'date', required: true },
+    { key: 'end_date', label: 'travel.field.endDate', type: 'date', required: true },
+    { key: 'deposit_amount_minor', label: 'travel.field.deposit', type: 'money', min: 0 },
+    { key: 'currency', label: 'travel.field.currency', type: 'text', required: true, max: 3 },
+    { key: 'payment_status', label: 'travel.field.paymentStatus', type: 'select', options: paymentStatusOptions },
+    { key: 'status', label: 'travel.field.status', type: 'select', options: [
       { value: 'pending', label: t('travel.bookingStatus.pending', 'En attente') },
       { value: 'confirmed', label: t('travel.bookingStatus.confirmed', 'Confirmée') },
       { value: 'cancelled', label: t('travel.bookingStatus.cancelled', 'Annulée') }
@@ -231,27 +228,26 @@ const rentalBookingConfig = computed(() => ({
 const hotelConfig = computed(() => ({
   resource: 'hotels',
   titleKey: 'travel.rentals.hotels',
-  titleFallback: 'Hôtels',
   searchPlaceholderKey: 'travel.search.hotel',
   searchKeys: ['name', 'city_id'],
   defaultSort: 'name',
   statusField: 'status',
   statusMap,
   columns: [
-    { key: 'name', label: 'travel.field.name', labelFallback: 'Nom', sortable: true },
-    { key: 'city_id', label: 'travel.field.city', labelFallback: 'Ville', sortable: true },
-    { key: 'classification', label: 'travel.field.classification', labelFallback: 'Classement', sortable: true },
-    { key: 'contact_phone', label: 'travel.field.contactPhone', labelFallback: 'Téléphone', sortable: true },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', sortable: true }
+    { key: 'name', label: 'travel.field.name', sortable: true },
+    { key: 'city_id', label: 'travel.field.city', sortable: true },
+    { key: 'classification', label: 'travel.field.classification', sortable: true },
+    { key: 'contact_phone', label: 'travel.field.contactPhone', sortable: true },
+    { key: 'status', label: 'travel.field.status', sortable: true }
   ],
   fields: [
-    { key: 'name', label: 'travel.field.name', labelFallback: 'Nom', type: 'text', required: true, max: 160 },
-    { key: 'city_id', label: 'travel.field.city', labelFallback: 'Ville', type: 'select', source: 'cities', required: true },
-    { key: 'classification', label: 'travel.field.classification', labelFallback: 'Classement (1-5 étoiles)', type: 'number', min: 1, max: 5 },
-    { key: 'address', label: 'travel.field.address', labelFallback: 'Adresse', type: 'text' },
-    { key: 'contact_phone', label: 'travel.field.contactPhone', labelFallback: 'Téléphone', type: 'text' },
-    { key: 'description_redacted', label: 'travel.field.description', labelFallback: 'Description', type: 'textarea' },
-    { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', type: 'select', options: [
+    { key: 'name', label: 'travel.field.name', type: 'text', required: true, max: 160 },
+    { key: 'city_id', label: 'travel.field.city', type: 'select', source: 'cities', required: true },
+    { key: 'classification', label: 'travel.field.classification', type: 'number', min: 1, max: 5 },
+    { key: 'address', label: 'travel.field.address', type: 'text' },
+    { key: 'contact_phone', label: 'travel.field.contactPhone', type: 'text' },
+    { key: 'description_redacted', label: 'travel.field.description', type: 'textarea' },
+    { key: 'status', label: 'travel.field.status', type: 'select', options: [
       { value: 'active', label: t('travel.status.active', 'Actif') },
       { value: 'inactive', label: t('travel.status.inactive', 'Inactif') }
     ] }
@@ -261,19 +257,19 @@ const hotelConfig = computed(() => ({
     titleKey: 'travel.rentals.roomsTitle',
     resource: 'hotels/{id}/rooms',
     columns: [
-      { key: 'room_number', label: 'travel.field.roomNumber', labelFallback: 'N° chambre' },
-      { key: 'type_code', label: 'travel.field.roomType', labelFallback: 'Type' },
-      { key: 'capacity', label: 'travel.field.capacity', labelFallback: 'Capacité' },
-      { key: 'price_per_night_minor', label: 'travel.field.pricePerNight', labelFallback: 'Prix / nuit', type: 'money' },
-      { key: 'status', label: 'travel.field.status', labelFallback: 'Statut' }
+      { key: 'room_number', label: 'travel.field.roomNumber' },
+      { key: 'type_code', label: 'travel.field.roomType' },
+      { key: 'capacity', label: 'travel.field.capacity' },
+      { key: 'price_per_night_minor', label: 'travel.field.pricePerNight', type: 'money' },
+      { key: 'status', label: 'travel.field.status' }
     ],
     fields: [
-      { key: 'room_number', label: 'travel.field.roomNumber', labelFallback: 'N° de chambre', type: 'text', required: true, max: 20 },
-      { key: 'type_code', label: 'travel.field.roomType', labelFallback: 'Type (simple, double…)', type: 'text', required: true, max: 40 },
-      { key: 'capacity', label: 'travel.field.capacity', labelFallback: 'Capacité (personnes)', type: 'number', required: true, min: 1 },
-      { key: 'price_per_night_minor', label: 'travel.field.pricePerNight', labelFallback: 'Prix par nuit', type: 'money', required: true, min: 0 },
-      { key: 'currency', label: 'travel.field.currency', labelFallback: 'Devise', type: 'text', required: true, max: 3 },
-      { key: 'status', label: 'travel.field.status', labelFallback: 'Statut', type: 'select', options: [
+      { key: 'room_number', label: 'travel.field.roomNumber', type: 'text', required: true, max: 20 },
+      { key: 'type_code', label: 'travel.field.roomType', type: 'text', required: true, max: 40 },
+      { key: 'capacity', label: 'travel.field.capacity', type: 'number', required: true, min: 1 },
+      { key: 'price_per_night_minor', label: 'travel.field.pricePerNight', type: 'money', required: true, min: 0 },
+      { key: 'currency', label: 'travel.field.currency', type: 'text', required: true, max: 3 },
+      { key: 'status', label: 'travel.field.status', type: 'select', options: [
         { value: 'active', label: t('travel.status.active', 'Actif') },
         { value: 'inactive', label: t('travel.status.inactive', 'Inactif') }
       ] }
@@ -295,6 +291,10 @@ const imagesTitle = computed(() =>
     ? `${t('travel.rentals.images', 'Images')} — ${imagesVehicle.value.title || imagesVehicle.value.code}`
     : t('travel.rentals.images', 'Images')
 )
+
+function closeImages() {
+  imagesOpen.value = false
+}
 
 async function onVehicleAction({ key, row }) {
   if (key !== 'images') return

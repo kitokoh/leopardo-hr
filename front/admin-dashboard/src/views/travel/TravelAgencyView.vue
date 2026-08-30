@@ -64,7 +64,7 @@
               ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/25'
               : 'glass-card text-slate-600 ring-1 ring-slate-300 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-800 hover:bg-slate-50'
           ]"
-          @click="activeTab = tab.key"
+          @click="selectTab(tab)"
         >
           {{ tab.label }}
         </button>
@@ -111,6 +111,10 @@ const tabs = [
 ]
 
 const activeComponent = computed(() => tabs.find((tab) => tab.key === activeTab.value)?.component)
+
+function selectTab(tab) {
+  activeTab.value = tab.key
+}
 
 /**
  * TRAVEL-601 (#6078) : gate du module par feature flag.

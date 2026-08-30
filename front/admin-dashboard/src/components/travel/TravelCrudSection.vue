@@ -213,7 +213,7 @@
     <TravelModal
       :open="nestedFormOpen"
       :title="nestedEditing ? $t('travel.action.editTitle', 'Modifier') : $t('travel.action.addNested', 'Ajouter')"
-      @close="nestedFormOpen = false"
+      @close="closenestedFormOpen"
     >
       <form class="grid grid-cols-1 gap-3 sm:grid-cols-2" @submit.prevent="saveNested">
         <FormField
@@ -268,7 +268,7 @@
       :message="deleteMessage"
       :busy="deleting"
       @confirm="confirmDelete"
-      @cancel="deleteOpen = false"
+      @cancel="closedeleteOpen"
     />
   </section>
 </template>
@@ -618,6 +618,14 @@ function formatMoney(minor, currency) {
 
 function closeForm() {
   formOpen.value = false
+}
+
+function closeNestedForm() {
+  nestedFormOpen.value = false
+}
+
+function closeDelete() {
+  deleteOpen.value = false
 }
 
 defineExpose({ load })

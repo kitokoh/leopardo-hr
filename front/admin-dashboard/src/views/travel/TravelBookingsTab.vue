@@ -74,7 +74,7 @@
             {{ $t('travel.action.confirm', 'Confirmer') }}
           </button>
           <button
-            v-if="['pending', 'confirmed'].includes(row.status)"
+            v-if="canCancelBooking(row)"
             class="rounded-md px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800"
             type="button"
             @click="askReason(row, 'cancel')"
@@ -82,7 +82,7 @@
             {{ $t('travel.action.cancel', 'Annuler') }}
           </button>
           <button
-            v-if="['confirmed'].includes(row.status)"
+            v-if="canRefundBooking(row)"
             class="rounded-md px-2 py-1 text-xs font-medium text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/30"
             type="button"
             @click="askReason(row, 'refund')"
@@ -90,7 +90,7 @@
             {{ $t('travel.action.refund', 'Rembourser') }}
           </button>
           <button
-            v-if="['confirmed'].includes(row.status)"
+            v-if="canIssueTicket(row)"
             class="rounded-md px-2 py-1 text-xs font-medium text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30"
             type="button"
             @click="issueTickets(row)"
@@ -102,7 +102,7 @@
     </DataTable>
 
     <!-- Détail réservation -->
-    <TravelModal :open="detailOpen" :title="detailTitle" wide @close="detailOpen = false">
+    <TravelModal :open="detailOpen" :title="detailTitle" wide @close="closedetailOpen">
       <div v-if="detailLoading" class="py-10 text-center text-sm text-slate-500">
         {{ $t('travel.loading', 'Chargement…') }}
       </div>
@@ -217,7 +217,7 @@
     <TravelModal
       :open="reasonOpen"
       :title="reasonAction === 'cancel' ? $t('travel.bookings.cancelReasonTitle', 'Motif d\u2019annulation') : $t('travel.bookings.refundReasonTitle', 'Motif de remboursement')"
-      @close="reasonOpen = false"
+      @close="closereasonOpen"
     >
       <form @submit.prevent="submitReason">
         <FormField
@@ -404,6 +404,26 @@ async function openDetail(row) {
 }
 
 /* ── actions ────────────────────────────────────────────────── */
+function canCancelBooking(row) {
+  return ['pending', 'confirmed'].includes(row.status)
+}
+
+function canRefundBooking(row) {
+  return row.status === 'confirmed'
+}
+
+function canIssueTicket(row) {
+  return row.status === 'confirmed'
+}
+
+function closeDetail() {
+  detailOpen.value = false
+}
+
+function closeReason() {
+  reasonOpen.value = false
+}
+
 async function confirmBooking(row) {
   try {
     await api.post(`/travel/bookings/${row.id}/confirm`, {}, { _skipAuthRedirect: true })

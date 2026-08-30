@@ -45,7 +45,7 @@
       :open="ticketsOpen"
       :title="ticketsTitle"
       wide
-      @close="ticketsOpen = false"
+      @close="closeticketsOpen"
     >
       <div v-if="ticketsLoading" class="py-10 text-center text-sm text-slate-500">
         {{ $t('travel.loading', 'Chargement…') }}
@@ -102,7 +102,7 @@
     <TravelModal
       :open="revokeOpen"
       :title="$t('travel.tickets.revokeTitle', 'Motif de révocation')"
-      @close="revokeOpen = false"
+      @close="closerevokeOpen"
     >
       <form @submit.prevent="submitRevoke">
         <FormField id="ticket-revoke-reason" :label="$t('travel.bookings.reason', 'Motif')" :error="revokeError" required>
@@ -226,6 +226,14 @@ async function loadBookings() {
 function resetFilters() {
   filters.value = { trip_id: '' }
   loadBookings()
+}
+
+function closeTickets() {
+  ticketsOpen.value = false
+}
+
+function closeRevoke() {
+  revokeOpen.value = false
 }
 
 async function openTickets(row) {
