@@ -8,6 +8,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ApiVersionMiddleware;
 use App\Http\Middleware\AuthenticateZktecoDevice;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
+use App\Http\Middleware\Delivery\EnsureDeliveryModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
 use App\Http\Middleware\EnsureAppContextMiddleware;
@@ -152,6 +153,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.travelagency' => EnsureTravelAgencyModuleMiddleware::class,
             // BC-24 TRAVEL — API entrante transporteurs (TRAVEL-807/#6086).
             'travel.partner' => TravelPartnerAuthMiddleware::class,
+            'module.delivery' => EnsureDeliveryModuleMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
