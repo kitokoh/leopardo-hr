@@ -22,6 +22,7 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelIncidentController
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReferenceController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReportController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
@@ -114,6 +115,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/fuel-station/maintenance-tasks', [FuelIncidentController::class, 'storeTask']);
         Route::post('/fuel-station/maintenance-tasks/{task}/transition', [FuelIncidentController::class, 'transitionTask'])
             ->whereNumber('task');
+
+        // FUEL-017 (#5811) : reporting opérationnel (manager).
+        Route::get('/fuel-station/reports/{type}', [FuelReportController::class, 'show'])
+            ->whereIn('type', ['pump_volumes', 'sales', 'shifts', 'variances', 'stock', 'station_performance']);
 
         // FUEL-016 (#5810) : comptes professionnels & visites (manager).
         Route::get('/fuel-station/accounts', [FuelCrmController::class, 'index']);

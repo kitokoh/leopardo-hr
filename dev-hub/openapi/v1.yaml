@@ -7522,6 +7522,66 @@ paths:
         '422':
           description: Transition interdite ou validation
 
+  /fuel-station/reports/{type}:
+    get:
+      tags:
+      - FuelStation
+      summary: Snapshot de reporting opérationnel (manager, FUEL-017 #5811)
+      description: "Read model pré-agrégé par (station, type, période) : pump_volumes, sales, shifts, variances, stock, station_performance. Recalcul idempotent (même clé → même snapshot). p95 documenté : périmètre borné par station/période."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [pump_volumes, sales, shifts, variances, stock, station_performance]
+      - name: station_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: period_start
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: period_end
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Snapshot du rapport
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id: {type: integer}
+                      station_id: {type: integer}
+                      snapshot_type: {type: string}
+                      period_start: {type: string, format: date}
+                      period_end: {type: string, format: date}
+                      payload:
+                        type: object
+                      generated_at: {type: string, format: date-time}
+                  meta:
+                    type: object
+                    properties:
+                      recomputed: {type: boolean}
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station introuvable, autre tenant ou type inconnu
+
   /fuel-station/accounts:
     get:
       tags:

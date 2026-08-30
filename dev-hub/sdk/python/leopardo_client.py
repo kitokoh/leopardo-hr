@@ -1936,6 +1936,10 @@ class LeopardoClient:
         """Détail d'une passe de rapprochement (manager, FUEL-009 #5803)"""
         return self.request("GET", "/fuel-station/reconciliations/{run}", **kwargs)
 
+    def get_fuel_station_reports_by_type(self, **kwargs):
+        """Snapshot de reporting opérationnel (manager, FUEL-017 #5811)"""
+        return self.request("GET", "/fuel-station/reports/{type}", **kwargs)
+
     def get_fuel_station_sales(self, **kwargs):
         """Lister les ventes (manager, pagine)"""
         return self.request("GET", "/fuel-station/sales", **kwargs)

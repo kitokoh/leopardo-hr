@@ -2395,6 +2395,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/fuel-station/reconciliations/{run}", options);
     },
 
+    /** Snapshot de reporting opérationnel (manager, FUEL-017 #5811) */
+    getFuelStationReportsByType(options = {}) {
+      return request("GET", "/fuel-station/reports/{type}", options);
+    },
+
     /** Lister les ventes (manager, pagine) */
     getFuelStationSales(options = {}) {
       return request("GET", "/fuel-station/sales", options);

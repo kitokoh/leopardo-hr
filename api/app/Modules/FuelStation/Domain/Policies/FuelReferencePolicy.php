@@ -41,4 +41,9 @@ class FuelReferencePolicy
     {
         return $actor->isManager();
     }
+
+    public function viewReports(Employee $actor): bool
+    {
+        return $actor->isManager();
+    }
 }

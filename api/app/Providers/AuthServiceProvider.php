@@ -24,6 +24,7 @@ use App\Modules\FuelStation\Domain\Models\FuelProduct;
 use App\Modules\FuelStation\Domain\Models\FuelProfessionalAccount;
 use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
+use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
 use App\Modules\FuelStation\Domain\Models\FuelShift;
 use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment;
@@ -129,6 +130,8 @@ class AuthServiceProvider extends ServiceProvider
         // — FuelStation intégration CRM (FUEL-016 #5810)
         Gate::policy(FuelProfessionalAccount::class, FuelCrmPolicy::class);
         Gate::policy(FuelAccountVisit::class, FuelCrmPolicy::class);
+        // — FuelStation reporting (FUEL-017 #5811)
+        Gate::policy(FuelReportSnapshot::class, FuelReferencePolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);
