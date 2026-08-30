@@ -2875,6 +2875,35 @@ trait CreatesMvpSchema
         }
 
         // ── BC-24 TRAVEL — TRAVEL-808/813 (issues #6098/#6103) ─────────────
+        if (! Schema::hasTable($this->moduleTable('travel_loyalty_accounts'))) {
+            Schema::create($this->moduleTable('travel_loyalty_accounts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('contact_id');
+                $table->unsignedInteger('points_balance')->default(0);
+                $table->timestamp('opt_in_at')->nullable();
+                $table->timestamp('opt_out_at')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'contact_id'], 'travel_loyalty_accounts_company_contact_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_loyalty_transactions'))) {
+            Schema::create($this->moduleTable('travel_loyalty_transactions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('account_id');
+                $table->integer('points');
+                $table->string('type', 10);
+                $table->string('reason', 500)->nullable();
+                $table->unsignedBigInteger('ticket_id')->nullable();
+                $table->unsignedBigInteger('booking_id')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'ticket_id'], 'travel_loyalty_transactions_company_ticket_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-811 (issue #6101) ────────────────────────
         if (! Schema::hasTable($this->moduleTable('travel_hotels'))) {
             Schema::create($this->moduleTable('travel_hotels'), function (Blueprint $table): void {
                 $table->id();
@@ -3039,6 +3068,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
         // BC-24 TRAVEL (verticale TravelAgency)
         DB::statement('DROP TABLE IF EXISTS "travel_hotel_rooms"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_loyalty_transactions"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_loyalty_accounts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_cancellation_policies"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_refunds"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_carrier_api_keys"'.$cascade);

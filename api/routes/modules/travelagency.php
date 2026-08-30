@@ -26,6 +26,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryControll
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyRateController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelLoyaltyController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPartnerController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuoteController;
@@ -144,6 +145,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/rental-bookings', [TravelRentalBookingController::class, 'store']);
         Route::get('/rental-bookings/{travelRentalBooking}', [TravelRentalBookingController::class, 'show']);
         Route::post('/rental-bookings/{travelRentalBooking}/cancel', [TravelRentalBookingController::class, 'cancel']);
+
+        // Fidélité voyageur (TRAVEL-811/#6101).
+        Route::get('/loyalty/{contact}', [TravelLoyaltyController::class, 'balance']);
+        Route::post('/loyalty/opt-in', [TravelLoyaltyController::class, 'optIn']);
+        Route::post('/loyalty/opt-out', [TravelLoyaltyController::class, 'optOut']);
+        Route::post('/loyalty/{contact}/redeem', [TravelLoyaltyController::class, 'redeem']);
 
         // Politiques d'annulation configurables (TRAVEL-813/#6103).
         Route::get('/cancellation-policies', [TravelCancellationPolicyController::class, 'index']);

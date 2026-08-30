@@ -13,6 +13,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelCarrierApiKey;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelCurrencyRate;
 use App\Modules\TravelAgency\Domain\Models\TravelHotel;
+use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyAccount;
 use App\Modules\TravelAgency\Domain\Models\TravelOffice;
 use App\Modules\TravelAgency\Domain\Models\TravelQuote;
 use App\Modules\TravelAgency\Domain\Models\TravelRentalBooking;
@@ -30,6 +31,7 @@ use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
 use App\Modules\TravelAgency\Policies\TravelClassPolicy;
 use App\Modules\TravelAgency\Policies\TravelCurrencyRatePolicy;
 use App\Modules\TravelAgency\Policies\TravelHotelPolicy;
+use App\Modules\TravelAgency\Policies\TravelLoyaltyPolicy;
 use App\Modules\TravelAgency\Policies\TravelOfficePolicy;
 use App\Modules\TravelAgency\Policies\TravelQuotePolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalBookingPolicy;
@@ -84,5 +86,6 @@ class TravelAgencyServiceProvider extends ServiceProvider
         Gate::policy(TravelCurrencyRate::class, TravelCurrencyRatePolicy::class);
         Gate::policy(TravelCarrierApiKey::class, TravelCarrierApiKeyPolicy::class);
         Gate::policy(TravelCancellationPolicy::class, TravelCancellationPolicyPolicy::class);
+        Gate::policy(TravelLoyaltyAccount::class, TravelLoyaltyPolicy::class);
     }
 }

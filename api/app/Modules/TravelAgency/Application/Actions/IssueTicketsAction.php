@@ -9,6 +9,7 @@ use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Enums\TicketStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
+use App\Modules\TravelAgency\Infrastructure\Services\LoyaltyPointsService;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use Illuminate\Support\Facades\DB;
 
@@ -25,7 +26,10 @@ use Illuminate\Support\Facades\DB;
  */
 final class IssueTicketsAction
 {
-    public function __construct(private readonly TravelOutboxPublisher $outbox) {}
+    public function __construct(
+        private readonly TravelOutboxPublisher $outbox,
+        private readonly LoyaltyPointsService $loyalty,
+    ) {}
 
     /**
      * @return list<TravelTicket>
@@ -67,6 +71,13 @@ final class IssueTicketsAction
         });
 
         foreach ($tickets as $ticket) {
+            // TRAVEL-811 (#6101) : crédit fidélité une seule fois par billet
+            // (opt-in requis, géré par LoyaltyPointsService).
+            $priceMinor = $ticket->passenger?->unit_price_minor;
+            if ($priceMinor !== null) {
+                $this->loyalty->earnForTicket($ticket, (int) $priceMinor);
+            }
+
             $this->outbox->publish($booking->company_id, 'travel.ticket.issued.v1', [
                 'ticket_number' => $ticket->ticket_number,
                 'booking_reference' => $booking->reference,

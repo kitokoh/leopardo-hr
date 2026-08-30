@@ -3615,6 +3615,126 @@ paths:
           description: Réservation ou passager introuvable / hors tenant
         '422':
           description: Réservation non confirmée ou rejeu sans double remboursement
+  /travel/loyalty/{contact}:
+    get:
+      tags:
+      - Travel
+      summary: Solde fidélité d'un contact (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: contact
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Solde + statut opt-in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      points_balance:
+                        type: integer
+                      opted_in:
+                        type: boolean
+  /travel/loyalty/opt-in:
+    post:
+      tags:
+      - Travel
+      summary: Opt-in RGPD fidélité (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - contact_id
+              properties:
+                contact_id:
+                  type: integer
+      responses:
+        '201':
+          description: Compte créé ou opt-in activé
+  /travel/loyalty/opt-out:
+    post:
+      tags:
+      - Travel
+      summary: Opt-out fidélité (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - contact_id
+              properties:
+                contact_id:
+                  type: integer
+      responses:
+        '200':
+          description: Crédits gelés (solde conservé)
+  /travel/loyalty/{contact}/redeem:
+    post:
+      tags:
+      - Travel
+      summary: Récompense — conversion points en avoir (TRAVEL-811/#6101)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: contact
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - points
+              properties:
+                points:
+                  type: integer
+                  minimum: 1
+                booking_id:
+                  type: integer
+                  nullable: true
+                reason:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+      responses:
+        '200':
+          description: Points brûlés, avoir généré (1 point = 10 unités mineures)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      discount_minor:
+                        type: integer
+                      points_burned:
+                        type: integer
+        '422':
+          description: Solde insuffisant ou points invalides
+
   /travel/cancellation-policies:
     get:
       tags:
