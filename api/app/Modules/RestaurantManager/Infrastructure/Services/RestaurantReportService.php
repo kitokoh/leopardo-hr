@@ -12,7 +12,6 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTableSession;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 
 /**
  * RESTO-701 (#6214) — Rapports agrégés (ventes, occupation, produits, COGS,

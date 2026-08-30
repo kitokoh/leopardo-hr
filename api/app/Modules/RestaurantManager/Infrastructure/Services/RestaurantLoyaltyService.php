@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Infrastructure\Services;
 
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Enums\LoyaltyPointsReason;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyCustomer;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyPointsMovement;
