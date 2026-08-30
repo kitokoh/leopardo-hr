@@ -267,7 +267,6 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/fuel_station.php';
 
     require __DIR__.'/modules/restaurantmanager.php';
- (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
 
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';

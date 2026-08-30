@@ -29,6 +29,7 @@
 /api/app/Modules/Marketing/ @kitokoh
 /api/app/Modules/Growth/    @kitokoh
 /api/app/Modules/Notification/ @kitokoh
+/api/app/Modules/RestaurantManager/ @kitokoh
 /api/app/Contracts/Communication/ @kitokoh
 /api/app/Jobs/              @kitokoh
 /api/app/Contracts/Queue/   @kitokoh
