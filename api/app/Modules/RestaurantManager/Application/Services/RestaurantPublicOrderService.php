@@ -93,7 +93,7 @@ final class RestaurantPublicOrderService
 
                 $quantity = (float) $entry['quantity'];
                 if ($quantity <= 0) {
-                    abort(422, 'Quantité strictement positive requise.');
+                    abort(422, __('restaurant.order.quantity_positive'));
                 }
 
                 $lineTotal = (int) round($product->price_minor * $quantity);
