@@ -58,7 +58,7 @@ class RestaurantOutboxDispatchCommand extends Command
                 break;
             }
 
-            $processed += $this->tenants->withinTenant(
+            $processed += (int) $this->tenants->withinTenant(
                 $company,
                 fn (): int => $this->processTenant($limit - $processed),
             );

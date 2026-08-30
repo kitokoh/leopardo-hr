@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Requests;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -29,7 +30,11 @@ class UpdateRestaurantPromotionRequest extends FormRequest
     public function rules(): array
     {
         $companyId = $this->companyId();
-        $discountType = $this->input('discount_type', $this->route('restaurantPromotion')?->discount_type?->value ?? 'percent');
+
+        $routePromotion = $this->route('restaurantPromotion');
+        $discountType = $routePromotion instanceof RestaurantPromotion
+            ? $routePromotion->discount_type->value
+            : (string) $this->input('discount_type', 'percent');
 
         $rules = [
             'branch_id' => ['nullable', 'integer', Rule::exists((new RestaurantBranch)->getTable(), 'id')->where(fn (Builder $query) => $query->where('company_id', $companyId))],
