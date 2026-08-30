@@ -28,6 +28,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `EdgeSync` | Synchronisation offline/mobile (structure spécialisée, hors squelette DDD standard) |
 | `Expense` | Notes de frais employés |
 | `Fleet` | Véhicules, trajets, affectations |
+| `FuelStation` | Verticale station-service — stations, pompes, cuves, compteurs, shifts, caisse, ventes (FUEL-001..008) |
 | `Growth` | Programme partenaires, référencement, payout |
 | `HR` | Employés, départements, contrats, évaluations, formations |
 | `Marketing` | Vitrine, leads, campagnes |
