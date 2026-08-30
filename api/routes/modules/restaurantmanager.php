@@ -28,6 +28,10 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantInvent
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKitchenController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuItemController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileManagerController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileRiderController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileServerController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileSyncController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderItemController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderTransitionController;
@@ -35,6 +39,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymen
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPosSessionController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductIngredientController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderItemController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReceivingController;
