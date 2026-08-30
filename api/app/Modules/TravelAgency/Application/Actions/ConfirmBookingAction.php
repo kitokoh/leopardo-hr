@@ -14,12 +14,12 @@ use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use Illuminate\Support\Facades\DB;
 
 /**
- * TRAVEL-313 (#6043) — Confirmation d'une réservation (comptant guichet).
+ * TRAVEL-313 (#6043) — Confirmation d'une reservation (comptant guichet).
  *
- * pending → confirmed : les sièges réservés passent `sold` (plus jamais
- * libérés par l'expiration), le paiement passe `confirmed` (cash),
- * événement outbox `travel.booking.confirmed.v1` après commit. Une
- * réservation déjà confirmée est idempotente.
+ * pending → confirmed : les sieges reserves passent `sold` (plus jamais
+ * liberes par l'expiration), le paiement passe `confirmed` (cash),
+ * evenement outbox `travel.booking.confirmed.v1` apres commit. Une
+ * reservation deja confirmee est idempotente.
  */
 final class ConfirmBookingAction
 {
@@ -32,7 +32,7 @@ final class ConfirmBookingAction
         }
 
         if ($booking->status !== BookingStatus::PENDING) {
-            abort(422, 'Seule une réservation en attente peut être confirmée.');
+            abort(422, 'Seule une reservation en attente peut etre confirmee.');
         }
 
         DB::transaction(function () use ($booking): void {

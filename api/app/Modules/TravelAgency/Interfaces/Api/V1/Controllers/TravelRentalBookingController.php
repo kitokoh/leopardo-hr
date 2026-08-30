@@ -60,11 +60,14 @@ class TravelRentalBookingController extends Controller
             abort(404);
         }
 
+        /** @var array{start_date: string, end_date: string, deposit_amount_minor?: int|null, customer_contact_id?: int|null, notes?: string|null} $data */
+        $data = $request->validated();
+
         $booking = app(CreateRentalBookingAction::class)->execute(
             vehicle: $vehicle,
             actor: $actor,
             idempotencyKey: $request->validated('idempotency_key'),
-            data: $request->validated(),
+            data: $data,
         );
 
         return (new TravelRentalBookingResource($booking))->response()->setStatusCode(201);
