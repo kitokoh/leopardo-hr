@@ -206,6 +206,60 @@
         </div>
       </section>
 
+
+      <!-- ══════════ FORMULAIRE DE CONTACT ══════════ -->
+      <section v-if="activeTab === 'form'" class="mx-auto max-w-2xl">
+        <div class="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+          <h2 class="text-lg font-medium text-slate-800 dark:text-slate-100">
+            {{ t('travel.contacts.form.title', 'Formulaire de contact') }}
+          </h2>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            {{ t('travel.contacts.form.subtitle', 'Une demande transmise à l\u2019agence via l\u2019API réelle (consentement obligatoire).') }}
+          </p>
+
+          <form v-if="!contactFormSent" class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2" @submit.prevent="submitContactForm">
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{{ t('travel.contacts.firstName', 'Prénom') }}</label>
+              <input v-model="contactForm.first_name" type="text" maxlength="120" class="input w-full" />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{{ t('travel.contacts.lastName', 'Nom') }}</label>
+              <input v-model="contactForm.last_name" type="text" maxlength="120" class="input w-full" />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{{ t('travel.contacts.email', 'Email') }} *</label>
+              <input v-model="contactForm.email" type="email" required maxlength="190" class="input w-full" />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{{ t('travel.contacts.phone', 'Téléphone') }}</label>
+              <input v-model="contactForm.phone" type="text" maxlength="40" class="input w-full" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{{ t('travel.contacts.message', 'Message') }} *</label>
+              <textarea v-model="contactForm.message" required maxlength="2000" rows="4" class="input w-full"></textarea>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+                <input v-model="contactForm.consent_email" type="checkbox" class="mt-0.5 h-4 w-4 rounded" />
+                <span>{{ t('travel.contacts.form.consentLabel', 'J\u2019accepte d\u2019être recontacté(e) par email au sujet de ma demande.') }}</span>
+              </label>
+            </div>
+            <p v-if="contactFormError" class="sm:col-span-2 text-sm text-red-600" role="alert">{{ contactFormError }}</p>
+            <div class="sm:col-span-2 flex justify-end">
+              <button type="submit" class="btn-primary" :disabled="contactFormSending">
+                {{ contactFormSending ? t('travel.common.saving', 'Envoi…') : t('travel.contacts.form.send', 'Envoyer la demande') }}
+              </button>
+            </div>
+          </form>
+
+          <div v-else class="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-6 text-center dark:border-emerald-800 dark:bg-emerald-900/20" role="status">
+            <h3 class="text-base font-semibold text-slate-900 dark:text-white">{{ t('travel.contacts.form.receivedTitle', 'Demande reçue') }}</h3>
+            <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">{{ t('travel.contacts.form.receivedBody', 'Merci, votre demande a bien été transmise à l\u2019agence.') }}</p>
+            <button type="button" class="btn-secondary mt-4" @click="resetContactForm">{{ t('travel.contacts.form.newRequest', 'Nouvelle demande') }}</button>
+          </div>
+        </div>
+      </section>
+
       <!-- ══════════ SITES TOURISTIQUES ══════════ -->
       <section v-if="activeTab === 'sites'">
         <div class="mb-3 flex items-center justify-between">
@@ -327,6 +381,7 @@ import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import { listTravel, createTravel, updateTravel, deleteTravel, travelList, travelItem } from '@/services/travel'
+import api from '@/services/api'
 import { travelAction } from '@/services/travel'
 
 const localeStore = useLocaleStore()
@@ -348,6 +403,7 @@ const tabs = computed(() => [
   { key: 'adverts', label: t('travel.content.tabs.adverts', 'Annonces') },
   { key: 'sites', label: t('travel.content.tabs.sites', 'Sites touristiques') },
   { key: 'contacts', label: t('travel.content.tabs.contacts', 'Contacts') },
+  { key: 'form', label: t('travel.content.tabs.form', 'Formulaire de contact') },
 ])
 
 const advertTabs = computed(() => [
@@ -710,6 +766,56 @@ async function saveNotify(payload) {
     notifyOpen.value = false
   } catch {
     notifyOpen.value = false
+  }
+}
+
+
+/* ── formulaire de contact (TRAVEL-912/#6417) ─────────────────── */
+const contactForm = reactive({ first_name: '', last_name: '', email: '', phone: '', message: '', consent_email: false })
+const contactFormError = ref('')
+const contactFormSending = ref(false)
+const contactFormSent = ref(false)
+
+function resetContactForm() {
+  contactForm.first_name = ''
+  contactForm.last_name = ''
+  contactForm.email = ''
+  contactForm.phone = ''
+  contactForm.message = ''
+  contactForm.consent_email = false
+  contactFormError.value = ''
+  contactFormSent.value = false
+}
+
+async function submitContactForm() {
+  contactFormSending.value = true
+  contactFormError.value = ''
+  try {
+    if (!contactForm.consent_email) {
+      contactFormError.value = t('travel.contacts.form.consentRequired', 'Le consentement de contact est obligatoire.')
+      return
+    }
+    if (!contactForm.email || !String(contactForm.email).includes('@')) {
+      contactFormError.value = t('travel.contacts.form.emailInvalid', 'Adresse email invalide.')
+      return
+    }
+    if (!contactForm.message || String(contactForm.message).trim() === '') {
+      contactFormError.value = t('travel.contacts.form.messageRequired', 'Le message est requis.')
+      return
+    }
+    await api.post('/travel/contact', {
+      first_name: contactForm.first_name || null,
+      last_name: contactForm.last_name || null,
+      email: String(contactForm.email).trim(),
+      phone: contactForm.phone || null,
+      message: String(contactForm.message).trim(),
+      consent_email: true,
+    })
+    contactFormSent.value = true
+  } catch (error) {
+    contactFormError.value = error?.response?.data?.message || error?.message || t('travel.common.loadErrorBody', 'Une erreur est survenue.')
+  } finally {
+    contactFormSending.value = false
   }
 }
 
