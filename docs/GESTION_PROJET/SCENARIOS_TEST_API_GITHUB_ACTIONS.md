@@ -2,6 +2,8 @@
   
 ## Objectif   
 
+Note 2026-08-30 (BC-25 RESTAURANT, RESTO-301..306) : nouvelle surface API du module RestaurantManager (référentiel restaurant) — branches, tables/zones, catégories, produits/ingrédients/unités, taux de taxe, menus/items, horaires, fournisseurs, stock/inventaire, commandes d'achat, réceptions, ventes/POS sessions, paiements/remboursements, réservations, livraisons/zones/livreurs, fidélité/promotions, outbox événementielle ; activation tenant idempotente `leopardo:restaurant:activate` + seed démo. Contrat complet dans `api/openapi.yaml` (miroir `dev-hub/openapi/v1.yaml` régénéré, SDK JS/Python synchronisés).
+
 Note 2026-08-26 (issue #5588, lot durcissements) : la surface API kiosque et recrutement public a change —
 - `POST /api/v1/kiosks` (register) : le `device_code` n'est plus stocke en clair (sha256 deterministe au repos, migration tenant `2026_08_26_000001_5588`) ; le code en clair n'est retourne qu'a la creation (provisioning), les lookups API/web hach entree (`AttendanceKiosk::hashDeviceCode`).
 - `GET/POST /api/v1/kiosks/{deviceCode}/roster|punch|announcements` : resolution par hash de l'entree (URL en clair inchangee pour les kiosques) ; les lignes legacy non backfillees sont hors contrat (404).

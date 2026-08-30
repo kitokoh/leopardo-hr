@@ -71,8 +71,9 @@ class RestaurantActivationTest extends TestCase
             'currency' => 'XAF',
         ]);
 
-        $this->artisan('leopardo:restaurant:activate', ['company' => 'resto-activation-test'])
-            ->assertSuccessful();
+        $cmd = $this->artisan('leopardo:restaurant:activate', ['company' => 'resto-activation-test']);
+        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
+        $cmd->assertExitCode(0);
 
         $company->refresh();
         $this->assertTrue($company->hasFeature('restaurantmanager'));

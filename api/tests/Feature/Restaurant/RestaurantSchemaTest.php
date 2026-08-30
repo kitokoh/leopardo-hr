@@ -76,7 +76,7 @@ class RestaurantSchemaTest extends TestCase
             $missing = [];
 
             foreach (self::restaurantTables() as $table) {
-                if (! Schema::hasTable($table)) {
+                if (!Schema::hasTable($table)) {
                     $missing[] = $table;
                 }
             }
@@ -98,7 +98,7 @@ class RestaurantSchemaTest extends TestCase
             foreach (self::restaurantTables() as $table) {
                 $columns = Schema::getColumnListing($table);
 
-                if (! in_array('company_id', $columns, true)) {
+                if (!in_array('company_id', $columns, true)) {
                     $unscoped[] = $table;
                 }
             }

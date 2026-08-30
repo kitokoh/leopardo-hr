@@ -486,7 +486,7 @@ trait CreatesMvpSchema
 
         // #5439 — colonnes additives (mêmes guards que les migrations tenant).
         foreach (['module' => 'string', 'request_id' => 'string'] as $auditColumn => $auditType) {
-            if (! Schema::hasColumn($this->tenantTable('audit_logs'), $auditColumn)) {
+            if (!Schema::hasColumn($this->tenantTable('audit_logs'), $auditColumn)) {
                 Schema::table($this->tenantTable('audit_logs'), function (Blueprint $table) use ($auditColumn, $auditType): void {
                     $table->{$auditType}($auditColumn, $auditColumn === 'module' ? 100 : 64)->nullable()->index();
                 });
@@ -1136,7 +1136,7 @@ trait CreatesMvpSchema
             $this->setPostgresSearchPath('shared_tenants,public');
         }
 
-        if (! Schema::hasTable($this->moduleTable('subscriptions'))) {
+        if (!Schema::hasTable($this->moduleTable('subscriptions'))) {
             Schema::create($this->moduleTable('subscriptions'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->index();
@@ -1154,7 +1154,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('invoices'))) {
+        if (!Schema::hasTable($this->moduleTable('invoices'))) {
             Schema::create($this->moduleTable('invoices'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->index();
@@ -1174,7 +1174,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('payments'))) {
+        if (!Schema::hasTable($this->moduleTable('payments'))) {
             Schema::create($this->moduleTable('payments'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->unsignedBigInteger('invoice_id');
@@ -1189,7 +1189,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('ai_conversations'))) {
+        if (!Schema::hasTable($this->moduleTable('ai_conversations'))) {
             Schema::create($this->moduleTable('ai_conversations'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -1202,7 +1202,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('ai_audit_logs'))) {
+        if (!Schema::hasTable($this->moduleTable('ai_audit_logs'))) {
             Schema::create($this->moduleTable('ai_audit_logs'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -1222,7 +1222,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('employee_documents'))) {
+        if (!Schema::hasTable($this->moduleTable('employee_documents'))) {
             Schema::create($this->moduleTable('employee_documents'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->index();
@@ -1240,7 +1240,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('ai_tool_registry'))) {
+        if (!Schema::hasTable($this->moduleTable('ai_tool_registry'))) {
             Schema::create($this->moduleTable('ai_tool_registry'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->string('name', 100)->unique();
@@ -1254,7 +1254,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('client_events'))) {
+        if (!Schema::hasTable($this->moduleTable('client_events'))) {
             Schema::create($this->moduleTable('client_events'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->index();
@@ -1272,7 +1272,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->tenantTable('crm_imports'))) {
+        if (!Schema::hasTable($this->tenantTable('crm_imports'))) {
             Schema::create($this->tenantTable('crm_imports'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->index();
@@ -1294,7 +1294,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->tenantTable('crm_outbox_events'))) {
+        if (!Schema::hasTable($this->tenantTable('crm_outbox_events'))) {
             Schema::create($this->tenantTable('crm_outbox_events'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1315,7 +1315,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('notification_preferences'))) {
+        if (!Schema::hasTable($this->moduleTable('notification_preferences'))) {
             Schema::create($this->moduleTable('notification_preferences'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1335,7 +1335,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('communication_events'))) {
+        if (!Schema::hasTable($this->moduleTable('communication_events'))) {
             Schema::create($this->moduleTable('communication_events'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1353,7 +1353,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('export_history'))) {
+        if (!Schema::hasTable($this->moduleTable('export_history'))) {
             Schema::create($this->moduleTable('export_history'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1369,7 +1369,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('company_announcements'))) {
+        if (!Schema::hasTable($this->moduleTable('company_announcements'))) {
             Schema::create($this->moduleTable('company_announcements'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1396,7 +1396,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('conversation_threads'))) {
+        if (!Schema::hasTable($this->moduleTable('conversation_threads'))) {
             Schema::create($this->moduleTable('conversation_threads'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1418,7 +1418,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('conversation_messages'))) {
+        if (!Schema::hasTable($this->moduleTable('conversation_messages'))) {
             Schema::create($this->moduleTable('conversation_messages'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1435,7 +1435,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('webhook_endpoints'))) {
+        if (!Schema::hasTable($this->moduleTable('webhook_endpoints'))) {
             Schema::create($this->moduleTable('webhook_endpoints'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1449,7 +1449,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('webhook_deliveries'))) {
+        if (!Schema::hasTable($this->moduleTable('webhook_deliveries'))) {
             Schema::create($this->moduleTable('webhook_deliveries'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('webhook_endpoint_id');
@@ -1465,7 +1465,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('payroll_runs'))) {
+        if (!Schema::hasTable($this->moduleTable('payroll_runs'))) {
             Schema::create($this->moduleTable('payroll_runs'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1493,7 +1493,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('salary_structures'))) {
+        if (!Schema::hasTable($this->moduleTable('salary_structures'))) {
             Schema::create($this->moduleTable('salary_structures'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1504,13 +1504,13 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasColumn($this->moduleTable('employees'), 'salary_structure_id')) {
+        if (!Schema::hasColumn($this->moduleTable('employees'), 'salary_structure_id')) {
             Schema::table($this->moduleTable('employees'), function (Blueprint $table): void {
                 $table->unsignedBigInteger('salary_structure_id')->nullable();
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('contracts'))) {
+        if (!Schema::hasTable($this->moduleTable('contracts'))) {
             Schema::create($this->moduleTable('contracts'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1540,7 +1540,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('contract_amendments'))) {
+        if (!Schema::hasTable($this->moduleTable('contract_amendments'))) {
             Schema::create($this->moduleTable('contract_amendments'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('contract_id')->index();
@@ -1555,7 +1555,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('privacy_requests'))) {
+        if (!Schema::hasTable($this->moduleTable('privacy_requests'))) {
             Schema::create($this->moduleTable('privacy_requests'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1571,7 +1571,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('pay_slips'))) {
+        if (!Schema::hasTable($this->moduleTable('pay_slips'))) {
             Schema::create($this->moduleTable('pay_slips'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('payroll_run_id');
@@ -1595,7 +1595,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('payment_documents'))) {
+        if (!Schema::hasTable($this->moduleTable('payment_documents'))) {
             Schema::create($this->moduleTable('payment_documents'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1626,7 +1626,7 @@ trait CreatesMvpSchema
         // only generated/sent/confirmed), file_path is nullable while no
         // file has been produced yet, and error_message records job
         // failures (see 2026_07_25_000002_make_bank_exports_generation_async.php).
-        if (! Schema::hasTable($this->moduleTable('bank_exports'))) {
+        if (!Schema::hasTable($this->moduleTable('bank_exports'))) {
             Schema::create($this->moduleTable('bank_exports'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('payroll_run_id');
@@ -1643,7 +1643,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('payment_batches'))) {
+        if (!Schema::hasTable($this->moduleTable('payment_batches'))) {
             Schema::create($this->moduleTable('payment_batches'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1663,7 +1663,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('payment_items'))) {
+        if (!Schema::hasTable($this->moduleTable('payment_items'))) {
             Schema::create($this->moduleTable('payment_items'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1681,7 +1681,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('ledger_entries'))) {
+        if (!Schema::hasTable($this->moduleTable('ledger_entries'))) {
             Schema::create($this->moduleTable('ledger_entries'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1703,7 +1703,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('payment_confirmations'))) {
+        if (!Schema::hasTable($this->moduleTable('payment_confirmations'))) {
             Schema::create($this->moduleTable('payment_confirmations'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1722,7 +1722,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('pay_slip_lines'))) {
+        if (!Schema::hasTable($this->moduleTable('pay_slip_lines'))) {
             Schema::create($this->moduleTable('pay_slip_lines'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('pay_slip_id');
@@ -1737,7 +1737,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('job_postings'))) {
+        if (!Schema::hasTable($this->moduleTable('job_postings'))) {
             Schema::create($this->moduleTable('job_postings'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1760,7 +1760,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('applicants'))) {
+        if (!Schema::hasTable($this->moduleTable('applicants'))) {
             Schema::create($this->moduleTable('applicants'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1780,7 +1780,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('interviews'))) {
+        if (!Schema::hasTable($this->moduleTable('interviews'))) {
             Schema::create($this->moduleTable('interviews'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1796,7 +1796,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('training_courses'))) {
+        if (!Schema::hasTable($this->moduleTable('training_courses'))) {
             Schema::create($this->moduleTable('training_courses'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1815,7 +1815,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('training_sessions'))) {
+        if (!Schema::hasTable($this->moduleTable('training_sessions'))) {
             Schema::create($this->moduleTable('training_sessions'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('training_course_id');
@@ -1831,7 +1831,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('training_enrollments'))) {
+        if (!Schema::hasTable($this->moduleTable('training_enrollments'))) {
             Schema::create($this->moduleTable('training_enrollments'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('training_session_id');
@@ -1846,7 +1846,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('employee_loans'))) {
+        if (!Schema::hasTable($this->moduleTable('employee_loans'))) {
             Schema::create($this->moduleTable('employee_loans'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1866,7 +1866,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('loan_repayments'))) {
+        if (!Schema::hasTable($this->moduleTable('loan_repayments'))) {
             Schema::create($this->moduleTable('loan_repayments'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('employee_loan_id');
@@ -1882,7 +1882,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('expense_claims'))) {
+        if (!Schema::hasTable($this->moduleTable('expense_claims'))) {
             Schema::create($this->moduleTable('expense_claims'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1902,7 +1902,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('expense_items'))) {
+        if (!Schema::hasTable($this->moduleTable('expense_items'))) {
             Schema::create($this->moduleTable('expense_items'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('expense_claim_id');
@@ -1916,7 +1916,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('vehicles'))) {
+        if (!Schema::hasTable($this->moduleTable('vehicles'))) {
             Schema::create($this->moduleTable('vehicles'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -1940,7 +1940,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('vehicle_assignments'))) {
+        if (!Schema::hasTable($this->moduleTable('vehicle_assignments'))) {
             Schema::create($this->moduleTable('vehicle_assignments'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('vehicle_id');
@@ -1954,7 +1954,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('vehicle_trips'))) {
+        if (!Schema::hasTable($this->moduleTable('vehicle_trips'))) {
             Schema::create($this->moduleTable('vehicle_trips'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('vehicle_id');
@@ -1978,7 +1978,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('vehicle_alerts'))) {
+        if (!Schema::hasTable($this->moduleTable('vehicle_alerts'))) {
             Schema::create($this->moduleTable('vehicle_alerts'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('vehicle_id');
@@ -1995,7 +1995,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('vehicle_maintenances'))) {
+        if (!Schema::hasTable($this->moduleTable('vehicle_maintenances'))) {
             Schema::create($this->moduleTable('vehicle_maintenances'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('vehicle_id');
@@ -2014,7 +2014,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable('company_sso_configs')) {
+        if (!Schema::hasTable('company_sso_configs')) {
             Schema::create('company_sso_configs', function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2026,7 +2026,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('device_tokens'))) {
+        if (!Schema::hasTable($this->moduleTable('device_tokens'))) {
             Schema::create($this->moduleTable('device_tokens'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('employee_id');
@@ -2041,7 +2041,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('calendar_connections'))) {
+        if (!Schema::hasTable($this->moduleTable('calendar_connections'))) {
             Schema::create($this->moduleTable('calendar_connections'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('employee_id');
@@ -2059,7 +2059,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('calendar_events'))) {
+        if (!Schema::hasTable($this->moduleTable('calendar_events'))) {
             Schema::create($this->moduleTable('calendar_events'), function (Blueprint $table): void {
                 $table->id();
                 // Audit expert 2026-08-15 (issue #2623) : company_id NOT NULL.
@@ -2081,7 +2081,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('zkteco_devices'))) {
+        if (!Schema::hasTable($this->moduleTable('zkteco_devices'))) {
             Schema::create($this->moduleTable('zkteco_devices'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -2141,14 +2141,14 @@ trait CreatesMvpSchema
             }],
         ];
         foreach ($zktecoAdditive as [$column, $columnDef]) {
-            if (! Schema::hasColumn($this->moduleTable('zkteco_devices'), $column)) {
+            if (!Schema::hasColumn($this->moduleTable('zkteco_devices'), $column)) {
                 Schema::table($this->moduleTable('zkteco_devices'), fn (Blueprint $table) => $columnDef($table));
             }
         }
 
         // ── EdgeSync module tables ──────────────────────────────────
 
-        if (! Schema::hasTable($this->moduleTable('company_settings'))) {
+        if (!Schema::hasTable($this->moduleTable('company_settings'))) {
             Schema::create($this->moduleTable('company_settings'), function (Blueprint $table): void {
                 $table->string('key', 100)->primary();
                 $table->text('value');
@@ -2157,7 +2157,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable('edge_nodes')) {
+        if (!Schema::hasTable('edge_nodes')) {
             Schema::create('edge_nodes', function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('company_id')->index();
@@ -2179,7 +2179,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable('sync_logs')) {
+        if (!Schema::hasTable('sync_logs')) {
             Schema::create('sync_logs', function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('edge_node_id')->index();
@@ -2201,7 +2201,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable('sync_queue')) {
+        if (!Schema::hasTable('sync_queue')) {
             Schema::create('sync_queue', function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('edge_node_id')->index();
@@ -2222,7 +2222,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable('edge_licenses')) {
+        if (!Schema::hasTable('edge_licenses')) {
             Schema::create('edge_licenses', function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('company_id')->index();
@@ -2244,7 +2244,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_branches) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_branches'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_branches'))) {
             Schema::create($this->moduleTable('restaurant_branches'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2266,7 +2266,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_zones) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_zones'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_zones'))) {
             Schema::create($this->moduleTable('restaurant_zones'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2286,7 +2286,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_tables) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_tables'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_tables'))) {
             Schema::create($this->moduleTable('restaurant_tables'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2308,7 +2308,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_categories) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_categories'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_categories'))) {
             Schema::create($this->moduleTable('restaurant_categories'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2327,7 +2327,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_products) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_products'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_products'))) {
             Schema::create($this->moduleTable('restaurant_products'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2354,7 +2354,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_product_ingredients) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_product_ingredients'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_product_ingredients'))) {
             Schema::create($this->moduleTable('restaurant_product_ingredients'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2373,7 +2373,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_ingredients) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_ingredients'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_ingredients'))) {
             Schema::create($this->moduleTable('restaurant_ingredients'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2393,7 +2393,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_units) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_units'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_units'))) {
             Schema::create($this->moduleTable('restaurant_units'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2410,7 +2410,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_tax_rates) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_tax_rates'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_tax_rates'))) {
             Schema::create($this->moduleTable('restaurant_tax_rates'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2429,7 +2429,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_menus) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_menus'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_menus'))) {
             Schema::create($this->moduleTable('restaurant_menus'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2451,7 +2451,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_menu_items) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_menu_items'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_menu_items'))) {
             Schema::create($this->moduleTable('restaurant_menu_items'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2470,7 +2470,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_hours) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_hours'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_hours'))) {
             Schema::create($this->moduleTable('restaurant_hours'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2489,7 +2489,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_suppliers) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_suppliers'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_suppliers'))) {
             Schema::create($this->moduleTable('restaurant_suppliers'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2508,7 +2508,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_stock_levels) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_stock_levels'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_stock_levels'))) {
             Schema::create($this->moduleTable('restaurant_stock_levels'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2528,7 +2528,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_inventory_movements) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_movements'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_inventory_movements'))) {
             Schema::create($this->moduleTable('restaurant_inventory_movements'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2552,7 +2552,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_purchase_orders) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_purchase_orders'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_purchase_orders'))) {
             Schema::create($this->moduleTable('restaurant_purchase_orders'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2575,7 +2575,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_purchase_order_items) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_purchase_order_items'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_purchase_order_items'))) {
             Schema::create($this->moduleTable('restaurant_purchase_order_items'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2594,7 +2594,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_receivings) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_receivings'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_receivings'))) {
             Schema::create($this->moduleTable('restaurant_receivings'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2614,7 +2614,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_inventory_counts) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_counts'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_inventory_counts'))) {
             Schema::create($this->moduleTable('restaurant_inventory_counts'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2634,7 +2634,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_inventory_count_items) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_count_items'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_inventory_count_items'))) {
             Schema::create($this->moduleTable('restaurant_inventory_count_items'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2655,7 +2655,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_pos_sessions) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_pos_sessions'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_pos_sessions'))) {
             Schema::create($this->moduleTable('restaurant_pos_sessions'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2682,7 +2682,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_orders) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_orders'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_orders'))) {
             Schema::create($this->moduleTable('restaurant_orders'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2718,7 +2718,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_order_items) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_order_items'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_order_items'))) {
             Schema::create($this->moduleTable('restaurant_order_items'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2743,7 +2743,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_order_payments) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_order_payments'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_order_payments'))) {
             Schema::create($this->moduleTable('restaurant_order_payments'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2769,7 +2769,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_refunds) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_refunds'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_refunds'))) {
             Schema::create($this->moduleTable('restaurant_refunds'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2792,7 +2792,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_table_sessions) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_table_sessions'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_table_sessions'))) {
             Schema::create($this->moduleTable('restaurant_table_sessions'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2814,7 +2814,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_reservations) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_reservations'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_reservations'))) {
             Schema::create($this->moduleTable('restaurant_reservations'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2843,7 +2843,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_delivery_zones) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_delivery_zones'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_delivery_zones'))) {
             Schema::create($this->moduleTable('restaurant_delivery_zones'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2862,7 +2862,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_delivery_riders) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_delivery_riders'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_delivery_riders'))) {
             Schema::create($this->moduleTable('restaurant_delivery_riders'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2882,7 +2882,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_deliveries) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_deliveries'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_deliveries'))) {
             Schema::create($this->moduleTable('restaurant_deliveries'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2904,7 +2904,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_loyalty_programs) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_programs'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_loyalty_programs'))) {
             Schema::create($this->moduleTable('restaurant_loyalty_programs'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2919,7 +2919,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_loyalty_customers) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_customers'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_loyalty_customers'))) {
             Schema::create($this->moduleTable('restaurant_loyalty_customers'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2936,7 +2936,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_loyalty_points_movements) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_points_movements'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_loyalty_points_movements'))) {
             Schema::create($this->moduleTable('restaurant_loyalty_points_movements'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2955,7 +2955,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_promotions) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_promotions'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_promotions'))) {
             Schema::create($this->moduleTable('restaurant_promotions'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -2980,7 +2980,7 @@ trait CreatesMvpSchema
         }
 
         // ── BC-25 RESTAURANT (restaurant_outbox_events) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_outbox_events'))) {
+        if (!Schema::hasTable($this->moduleTable('restaurant_outbox_events'))) {
             Schema::create($this->moduleTable('restaurant_outbox_events'), function (Blueprint $table): void {
                 
                 $table->id();
@@ -3129,7 +3129,7 @@ trait CreatesMvpSchema
         DB::reconnect($connection);
         DB::statement("SET search_path TO {$path}");
 
-        if (! Schema::hasTable($this->tenantTable('accounting_chart_accounts'))) {
+        if (!Schema::hasTable($this->tenantTable('accounting_chart_accounts'))) {
             Schema::create($this->tenantTable('accounting_chart_accounts'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3152,7 +3152,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->tenantTable('accounting_closed_periods'))) {
+        if (!Schema::hasTable($this->tenantTable('accounting_closed_periods'))) {
             Schema::create($this->tenantTable('accounting_closed_periods'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3165,7 +3165,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->tenantTable('accounting_fiscal_years'))) {
+        if (!Schema::hasTable($this->tenantTable('accounting_fiscal_years'))) {
             Schema::create($this->tenantTable('accounting_fiscal_years'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3180,7 +3180,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->tenantTable('accounting_journal_entries'))) {
+        if (!Schema::hasTable($this->tenantTable('accounting_journal_entries'))) {
             Schema::create($this->tenantTable('accounting_journal_entries'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3208,7 +3208,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->tenantTable('bank_statement_lines'))) {
+        if (!Schema::hasTable($this->tenantTable('bank_statement_lines'))) {
             Schema::create($this->tenantTable('bank_statement_lines'), function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('statement_id')->index();
@@ -3231,7 +3231,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->tenantTable('bank_statements'))) {
+        if (!Schema::hasTable($this->tenantTable('bank_statements'))) {
             Schema::create($this->tenantTable('bank_statements'), function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('company_id')->index();
@@ -3248,7 +3248,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->tenantTable('payroll_payment_order_items'))) {
+        if (!Schema::hasTable($this->tenantTable('payroll_payment_order_items'))) {
             Schema::create($this->tenantTable('payroll_payment_order_items'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('payment_order_id')->index();
@@ -3259,7 +3259,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->tenantTable('payroll_payment_orders'))) {
+        if (!Schema::hasTable($this->tenantTable('payroll_payment_orders'))) {
             Schema::create($this->tenantTable('payroll_payment_orders'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3281,7 +3281,7 @@ trait CreatesMvpSchema
         // F-13 #1543 — tables tenant récentes sans couverture RefreshTenantDatabase :
         // ajoutées à la fixture (schémas alignés sur les migrations réelles) pour
         // vider l'allowlist de check-mvp-schema-parity.sh (#5511).
-        if (! Schema::hasTable($this->tenantTable('accounting_payment_reminders'))) {
+        if (!Schema::hasTable($this->tenantTable('accounting_payment_reminders'))) {
             Schema::create($this->tenantTable('accounting_payment_reminders'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3295,7 +3295,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->tenantTable('employee_attendance_preferences'))) {
+        if (!Schema::hasTable($this->tenantTable('employee_attendance_preferences'))) {
             Schema::create($this->tenantTable('employee_attendance_preferences'), function (Blueprint $table): void {
                 $table->increments('id');
                 $table->unsignedInteger('employee_id');
