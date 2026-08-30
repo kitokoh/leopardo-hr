@@ -2361,15 +2361,15 @@ paths:
               - file
               properties:
                 entity_type:
-                type: string
-                enum:
-                - students
-                - guardians
-                - classes
-                - subjects
-                - grades
+                  type: string
+                  enum:
+                  - students
+                  - guardians
+                  - classes
+                  - subjects
+                  - grades
                 file:
-                type: string
+                  type: string
       responses:
         '201':
           description: Ressource creee
