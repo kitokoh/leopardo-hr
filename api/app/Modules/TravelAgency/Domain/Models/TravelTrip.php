@@ -41,6 +41,7 @@ class TravelTrip extends Model
         'status',
         'published_at',
         'created_by_user_id',
+        'external_id',
     ];
 
     protected $casts = [

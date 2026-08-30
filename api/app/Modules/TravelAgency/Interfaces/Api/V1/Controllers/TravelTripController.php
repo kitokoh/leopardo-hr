@@ -6,7 +6,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\TravelAgency\Application\Actions\CancelTripAction;
+use App\Modules\TravelAgency\Application\Actions\CancelTripWithRefundsAction;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Application\Actions\PublishTripAction;
 use App\Modules\TravelAgency\Domain\Enums\TripStatus;
@@ -175,7 +175,7 @@ class TravelTripController extends Controller
             abort(403);
         }
 
-        app(CancelTripAction::class)->execute($travelTrip, $actor, $request->validated('reason'));
+        app(CancelTripWithRefundsAction::class)->execute($travelTrip, $actor, $request->validated('reason'));
 
         return (new TravelTripResource($travelTrip->refresh()->load('prices')))->response();
     }

@@ -10,10 +10,10 @@ use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
  * TRAVEL-414 (#6066) — Registre des consommateurs d'événements d'outbox
  * TravelAgency.
  *
- * Chaque événement est routé vers UN consommateur (le premier dont
- * `supports()` répond true). Les consommateurs concrets arrivent avec les
- * lots suivants (notifications TRAVEL-415, CRM TRAVEL-416, Accounting
- * TRAVEL-417) ; le registre est prêt à les accueillir.
+ * Chaque événement est routé vers TOUS les consommateurs dont `supports()`
+ * répond true (multi-consommation : webhooks TRAVEL-806, notifications
+ * TRAVEL-415, Accounting TRAVEL-417…). Chaque consommateur applique son
+ * effet de façon idempotente (rejeu sûr).
  */
 final class TravelOutboxConsumerRegistry
 {
@@ -27,12 +27,25 @@ final class TravelOutboxConsumerRegistry
 
     public function consumerFor(string $eventType): ?TravelOutboxConsumer
     {
+        return $this->consumersFor($eventType)[0] ?? null;
+    }
+
+    /**
+     * Tous les consommateurs enregistrés qui supportent l'événement
+     * (multi-consommation : webhooks + notifications + Accounting…).
+     *
+     * @return list<TravelOutboxConsumer>
+     */
+    public function consumersFor(string $eventType): array
+    {
+        $matched = [];
+
         foreach ($this->consumers as $consumer) {
             if ($consumer->supports($eventType)) {
-                return $consumer;
+                $matched[] = $consumer;
             }
         }
 
-        return null;
+        return $matched;
     }
 }

@@ -17,28 +17,30 @@
  * Référence : docs/specifications/SOLUTION_TRAVEL_AGENCY.md (§7 API v1).
  */
 
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCancellationPolicyController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelShopController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelLoyaltyController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelReportController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelWebhookSubscriptionController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelShopController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelWebhookSubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.travelagency'])
@@ -146,6 +148,22 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'index']);
         Route::post('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'store']);
         Route::delete('/webhook-subscriptions/{subscription}', [TravelWebhookSubscriptionController::class, 'destroy']);
+
+        // Politiques d'annulation configurables (TRAVEL-813/#6103) — travel.manage.
+        Route::get('/cancellation-policies', [TravelCancellationPolicyController::class, 'index']);
+        Route::post('/cancellation-policies', [TravelCancellationPolicyController::class, 'store']);
+        Route::get('/cancellation-policies/{travelCancellationPolicy}', [TravelCancellationPolicyController::class, 'show']);
+        Route::put('/cancellation-policies/{travelCancellationPolicy}', [TravelCancellationPolicyController::class, 'update']);
+        Route::delete('/cancellation-policies/{travelCancellationPolicy}', [TravelCancellationPolicyController::class, 'destroy']);
+
+        // Fidélité voyageur (TRAVEL-811/#6101) — opt-in RGPD, solde, récompenses.
+        Route::get('/loyalty/account', [TravelLoyaltyController::class, 'account']);
+        Route::get('/loyalty/entries', [TravelLoyaltyController::class, 'entries']);
+        Route::post('/loyalty/opt-in', [TravelLoyaltyController::class, 'optIn']);
+        Route::post('/loyalty/opt-out', [TravelLoyaltyController::class, 'optOut']);
+        Route::post('/loyalty/redeem', [TravelLoyaltyController::class, 'redeem']);
+        Route::get('/loyalty/rewards', [TravelLoyaltyController::class, 'rewards']);
+        Route::post('/loyalty/rewards', [TravelLoyaltyController::class, 'storeReward']);
 
         // Boutique en ligne (TRAVEL-401..404/#6053..#6056).
         Route::get('/shop/trips', [TravelShopController::class, 'search']);
