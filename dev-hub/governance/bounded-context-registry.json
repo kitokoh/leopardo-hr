@@ -763,6 +763,7 @@
       "code": "BC-25",
       "name": "RESTAURANT",
       "context": "RestaurantManager",
+<<<<<<< HEAD
       "responsibility": "Branches, zones, tables, catégories, produits, recettes, ingrédients, unités, taxes, menus, fournisseurs, stock, achats, POS, commandes, paiements, réservations, livraison, fidélité, promotions, rapports, kiosque.",
       "owner": "Agent 25 — BC-RESTAURANT",
       "priority": "P1",
@@ -798,6 +799,15 @@
       "paths": [
         {
           "path": "api/app/Modules/Delivery",
+=======
+      "responsibility": "Établissements, plan de salle, catalogue & recettes, POS/caisse, commandes, réservations, stock & achats (COGS), livraison, fidélité, promotions, rapports.",
+      "owner": "Agent 25 — BC-RESTAURANT",
+      "priority": "P1",
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Modules/RestaurantManager",
+>>>>>>> 0d7ac8c95 (docs(restaurant): conception verticale RestaurantManager (BC-25 RESTAURANT) — spec + maturité + registre)
           "status": "planned"
         }
       ],
@@ -806,12 +816,17 @@
         "api/database/migrations/tenant"
       ],
       "events": [
+<<<<<<< HEAD
         "App\\Modules\\DeliveryAgency\\Domain\\Events"
+=======
+        "App\\Modules\\RestaurantManager\\Domain\\Events"
+>>>>>>> 0d7ac8c95 (docs(restaurant): conception verticale RestaurantManager (BC-25 RESTAURANT) — spec + maturité + registre)
       ],
       "dependencies": [
         "BC-02",
         "BC-03",
         "BC-04",
+<<<<<<< HEAD
         "BC-05",
         "BC-08",
         "BC-11",
@@ -821,6 +836,11 @@
         "BC-18",
         "BC-20",
         "BC-22"
+=======
+        "BC-11",
+        "BC-13",
+        "BC-20"
+>>>>>>> 0d7ac8c95 (docs(restaurant): conception verticale RestaurantManager (BC-25 RESTAURANT) — spec + maturité + registre)
       ]
     }
   ]
