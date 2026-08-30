@@ -16,6 +16,10 @@
     "edumanager": {
       "label": "EduManager (verticale)",
       "status": "planned"
+    },
+    "restaurantmanager": {
+      "label": "RestaurantManager (verticale)",
+      "status": "active"
     }
   },
   "journeys": [
@@ -282,6 +286,84 @@
           "method": "POST",
           "route": "/api/v1/edu/attendance",
           "role": "teacher"
+        }
+      ]
+    },
+    {
+      "id": "GJ-RESTO-01",
+      "name": "Service en salle — caisse → commande → paiement → clôture",
+      "solution": "restaurantmanager",
+      "acceptance": "Une commande est créée, servie, payée et la caisse clôturée avec écart calculé serveur — le flux roi de la verticale (RESTO-901/#6230).",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Ouvrir une session de caisse",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions",
+          "role": "manager:server"
+        },
+        {
+          "order": 2,
+          "action": "Créer une commande",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders",
+          "role": "manager:server"
+        },
+        {
+          "order": 3,
+          "action": "Ajouter un article",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/items",
+          "role": "manager:server"
+        },
+        {
+          "order": 4,
+          "action": "Soumettre la commande",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/submit",
+          "role": "manager:server"
+        },
+        {
+          "order": 5,
+          "action": "Démarrer en cuisine",
+          "method": "POST",
+          "route": "/api/v1/restaurant/kitchen/orders/{restaurantOrder}/start",
+          "role": "manager:kitchen"
+        },
+        {
+          "order": 6,
+          "action": "Marquer prête",
+          "method": "POST",
+          "route": "/api/v1/restaurant/kitchen/orders/{restaurantOrder}/ready",
+          "role": "manager:kitchen"
+        },
+        {
+          "order": 7,
+          "action": "Servir la commande",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/serve",
+          "role": "manager:server"
+        },
+        {
+          "order": 8,
+          "action": "Consulter l’addition",
+          "method": "GET",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/bill",
+          "role": "manager:server"
+        },
+        {
+          "order": 9,
+          "action": "Encaisser (espèces)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/pay",
+          "role": "manager:server"
+        },
+        {
+          "order": 10,
+          "action": "Clôturer la caisse",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions/{restaurantPosSession}/close",
+          "role": "manager:principal"
         }
       ]
     }
