@@ -40,6 +40,8 @@ tags:
 - name: Health
   description: Groupe d'opérations Health
 - name: Auth
+- name: Delivery
+  description: Groupe d'opérations Delivery (BC-26 DELIVERY)
   description: Groupe d'opérations Auth
 - name: Payrolls
   description: Groupe d'opérations Payrolls
@@ -23070,6 +23072,34 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
+  /delivery/ping:
+    get:
+      tags:
+      - Delivery
+      summary: Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282)
+      description: |
+        Route de contrôle : prouve que le module est chargé, que le feature flag
+        `delivery` est actif pour le tenant courant et que le pipeline
+        middleware (auth → tenant → module) est opérationnel. Lecture pure.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Module actif
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - status
+                - service
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    example: delivery
   /accounting/dashboard:
     get:
       tags:

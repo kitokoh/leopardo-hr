@@ -733,19 +733,21 @@
       "responsibility": "Module de livraison dernier-kilomètre générique : livraisons/colis (sources manual/restaurant/retail/ecommerce/crm/field), tournées, livreurs, preuves (POD), suivi temps réel, règlement COD et rapports — activable par tout tenant (agence, restaurant, retail, e-commerce, pharmacie).",
       "owner": "Agent 26 — BC-DELIVERY",
       "priority": "P1",
-      "status": "planned",
+      "status": "active",
       "paths": [
         {
           "path": "api/app/Modules/Delivery",
-          "status": "planned"
+          "status": "active"
         }
       ],
-      "routes": [],
+      "routes": [
+        "api/routes/modules/delivery.php"
+      ],
       "migrations": [
         "api/database/migrations/tenant"
       ],
       "events": [
-        "App\\Modules\\DeliveryAgency\\Domain\\Events"
+        "App\\Modules\\Delivery\\Domain\\Events"
       ],
       "dependencies": [
         "BC-02",

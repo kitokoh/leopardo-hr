@@ -7,6 +7,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ApiVersionMiddleware;
 use App\Http\Middleware\AuthenticateZktecoDevice;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
+use App\Http\Middleware\Delivery\EnsureDeliveryModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
 use App\Http\Middleware\EnsureAppContextMiddleware;
@@ -140,6 +141,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'manager_role' => EnsureManagerRoleMiddleware::class,
             'employee' => EnsureEmployeeMiddleware::class,
             'module.cameras' => EnsureCameraModuleMiddleware::class,
+            'module.delivery' => EnsureDeliveryModuleMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
