@@ -15,7 +15,6 @@ use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
 use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
