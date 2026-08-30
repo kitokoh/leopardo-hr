@@ -13,6 +13,7 @@ use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryEventResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -33,6 +34,12 @@ final class DeliveryEventController
     {
         $validated = $request->validated();
         $companyId = $this->companyId($request);
+
+        // BC-26-D05 (#6294) : le rider ne trace que les livraisons d'une de
+        // SES tournées (DeliveryPolicy::store) — deny-by-default, les
+        // dispatcher/admin passent, le manager est refusé.
+        $delivery = $this->findDelivery((int) $validated['delivery_id'], $companyId);
+        Gate::authorize('store', $delivery);
 
         $event = $this->events->record(
             companyId: $companyId,
@@ -77,6 +84,10 @@ final class DeliveryEventController
     public function timeline(Request $request, int $delivery): AnonymousResourceCollection
     {
         $found = $this->findDelivery($delivery, $this->companyId($request));
+
+        // BC-26-D05 (#6294) : accès borné au rôle et à la propriété
+        // (DeliveryPolicy::timeline — rider = ses tournées uniquement).
+        Gate::authorize('timeline', $found);
 
         return DeliveryEventResource::collection(
             $found->events()->orderByDesc('event_at')->get(),
