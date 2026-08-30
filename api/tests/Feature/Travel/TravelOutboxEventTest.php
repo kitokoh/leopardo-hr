@@ -92,8 +92,7 @@ class TravelOutboxEventTest extends TestCase
                 'payload_redacted' => ['booking_reference' => 'GV-TEST0001'],
             ]);
 
-            $this->assertIsArray($event->refresh()->payload_redacted);
-            $this->assertSame('GV-TEST0001', $event->payload_redacted['booking_reference']);
+            $this->assertSame('GV-TEST0001', $event->refresh()->payload_redacted['booking_reference']);
         });
     }
 }

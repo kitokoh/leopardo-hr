@@ -22,12 +22,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /**
- * TRAVEL-308 (#6038) — CRUD des trajets datés (+ génération des sièges).
- * TRAVEL-310 (#6040) — Publication / annulation (transitions validées + outbox).
+ * TRAVEL-308 (#6038) — CRUD des trajets dates (+ generation des sieges).
+ * TRAVEL-310 (#6040) — Publication / annulation (transitions validees + outbox).
  * TRAVEL-311 (#6041) — Recherche interne multi-filtres.
  *
- * Même schéma cross-tenant que les autres contrôleurs du module : 404 sûr,
- * jamais 403 sur la ressource elle-même.
+ * Meme schema cross-tenant que les autres controleurs du module : 404 sur,
+ * jamais 403 sur la ressource elle-meme.
  */
 class TravelTripController extends Controller
 {
@@ -46,7 +46,7 @@ class TravelTripController extends Controller
             ->with(['prices', 'route.stops'])
             ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))
             ->when($request->query('route_id'), fn ($q, $routeId) => $q->where('route_id', $routeId))
-            ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', $date))
+            ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', (string) $date))
             ->orderByDesc('departure_date')
             ->orderBy('departure_time')
             ->paginate($perPage);
@@ -69,7 +69,7 @@ class TravelTripController extends Controller
                 'created_by_user_id' => $actor->id,
             ]);
 
-            // TRAVEL-208 (#6021) : inventaire transactionnel des sièges.
+            // TRAVEL-208 (#6021) : inventaire transactionnel des sieges.
             app(GenerateTripSeatsAction::class)->execute($trip);
 
             return $trip->refresh();
@@ -105,10 +105,10 @@ class TravelTripController extends Controller
             abort(403);
         }
 
-        // Un trajet publié est verrouillé : toute modification repasse par le
-        // workflow (cancel → mise à jour → republish). Invariant TRAVEL-310.
+        // Un trajet publie est verrouille : toute modification repasse par le
+        // workflow (cancel → mise a jour → republish). Invariant TRAVEL-310.
         if ($travelTrip->status === TripStatus::PUBLISHED) {
-            abort(422, 'Un trajet publié ne peut pas être modifié directement. Annulez-le puis republiez-le.');
+            abort(422, 'Un trajet publie ne peut pas etre modifie directement. Annulez-le puis republiez-le.');
         }
 
         $travelTrip->update($request->validated());
@@ -181,7 +181,7 @@ class TravelTripController extends Controller
      *
      * Filtres : origin_city_id / destination_city_id (via la route),
      * departure_date ou plage [date_from, date_to], means_of_transport,
-     * status, prix min/max (présence d'un tarif dans la fourchette).
+     * status, prix min/max (presence d'un tarif dans la fourchette).
      */
     public function search(Request $request): JsonResponse
     {
@@ -202,9 +202,9 @@ class TravelTripController extends Controller
             ->when($request->query('destination_city_id'), function ($q, $cityId) {
                 $q->whereHas('route', fn ($route) => $route->where('destination_city_id', $cityId));
             })
-            ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', $date))
-            ->when($request->query('date_from'), fn ($q, $date) => $q->whereDate('departure_date', '>=', $date))
-            ->when($request->query('date_to'), fn ($q, $date) => $q->whereDate('departure_date', '<=', $date))
+            ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', (string) $date))
+            ->when($request->query('date_from'), fn ($q, $date) => $q->whereDate('departure_date', '>=', (string) $date))
+            ->when($request->query('date_to'), fn ($q, $date) => $q->whereDate('departure_date', '<=', (string) $date))
             ->when($request->query('means_of_transport'), fn ($q, $means) => $q->where('means_of_transport', $means))
             ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))
             ->when($request->query('price_min'), function ($q, $min) {
@@ -223,8 +223,8 @@ class TravelTripController extends Controller
     /**
      * TRAVEL-318 (#6048) — Manifeste des passagers d'un trajet.
      *
-     * Passagers des réservations confirmées (ou au-delà), triés par siège.
-     * PII restreinte : jamais de n° de pièce d'identité (TravelPassengerResource).
+     * Passagers des reservations confirmees (ou au-dela), tries par siege.
+     * PII restreinte : jamais de n° de piece d'identite (TravelPassengerResource).
      */
     public function manifest(Request $request, TravelTrip $travelTrip): JsonResponse
     {

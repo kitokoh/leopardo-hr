@@ -59,7 +59,9 @@ class TravelVehicleTest extends TestCase
             $carrier = TravelCarrier::factory()->create();
             $vehicle = TravelVehicle::factory()->create(['carrier_id' => $carrier->id]);
 
-            $this->assertSame($carrier->id, $vehicle->refresh()->carrier->id);
+            $carrierRelation = $vehicle->refresh()->carrier;
+            $this->assertNotNull($carrierRelation);
+            $this->assertSame($carrier->id, $carrierRelation->id);
         });
     }
 

@@ -13,13 +13,13 @@ use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use Illuminate\Support\Facades\DB;
 
 /**
- * TRAVEL-316 (#6046) — Émission des billets d'une réservation confirmée.
+ * TRAVEL-316 (#6046) — Emission des billets d'une reservation confirmee.
  *
- * Crée un billet nominatif par passager (numéro #GV-…, code de validation
- * haché, validité = trajet du jour). Le code de validation EN CLAIR n'est
- * retourné qu'ici (QR) et n'est jamais persisté. La génération PDF est
- * traitée séparément (TRAVEL-412) via le contrat documents. Idempotent :
- * les passagers déjà pourvus d'un billet ne sont pas ré-émis.
+ * Cree un billet nominatif par passager (numero #GV-…, code de validation
+ * hache, validite = trajet du jour). Le code de validation EN CLAIR n'est
+ * retourne qu'ici (QR) et n'est jamais persiste. La generation PDF est
+ * traitee separement (TRAVEL-412) via le contrat documents. Idempotent :
+ * les passagers deja pourvus d'un billet ne sont pas re-emis.
  *
  * @return list<TravelTicket>
  */
@@ -33,7 +33,7 @@ final class IssueTicketsAction
     public function execute(TravelBooking $booking, Employee $actor): array
     {
         if ($booking->status !== BookingStatus::CONFIRMED) {
-            abort(422, 'Seule une réservation confirmée peut émettre des billets.');
+            abort(422, 'Seule une reservation confirmee peut emettre des billets.');
         }
 
         $booking->load('passengers', 'trip');
@@ -42,7 +42,7 @@ final class IssueTicketsAction
             $tickets = [];
 
             foreach ($booking->passengers as $passenger) {
-                // Déjà émis (rejeu) : on ne ré-émet jamais un passager.
+                // Deja emis (rejeu) : on ne re-emet jamais un passager.
                 if (TravelTicket::query()->where('passenger_id', $passenger->id)->exists()) {
                     continue;
                 }
@@ -56,7 +56,7 @@ final class IssueTicketsAction
                     'valid_until' => $booking->trip?->departure_date?->endOfDay(),
                 ]);
 
-                // Le code en clair (QR) n'est jamais persisté — seul le hash.
+                // Le code en clair (QR) n'est jamais persiste — seul le hash.
                 $ticket->issueValidationCode();
                 $ticket->save();
 
