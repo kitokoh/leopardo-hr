@@ -2765,6 +2765,200 @@ trait CreatesMvpSchema
                 $table->timestamps();
             });
         }
+
+        // ── BC-24 TRAVEL — lot 2 (contenu communautaire, #6104..#6112) ─────
+        if (! Schema::hasTable($this->moduleTable('travel_article_categories'))) {
+            Schema::create($this->moduleTable('travel_article_categories'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 60);
+                $table->string('name', 160);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_article_categories_company_code_unique');
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_articles'))) {
+            Schema::create($this->moduleTable('travel_articles'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('category_id')->nullable();
+                $table->string('title', 200);
+                $table->text('body_redacted');
+                $table->string('status', 20)->default('draft');
+                $table->unsignedBigInteger('author_user_id')->nullable();
+                $table->timestamp('published_at')->nullable();
+                $table->string('moderation_note', 500)->nullable();
+                $table->timestamps();
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_comments'))) {
+            Schema::create($this->moduleTable('travel_comments'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('article_id');
+                $table->string('author_type', 20)->default('employee');
+                $table->unsignedBigInteger('author_user_id')->nullable();
+                $table->string('author_name', 160)->nullable();
+                $table->string('body', 1000);
+                $table->string('status', 20)->default('pending');
+                $table->timestamp('moderated_at')->nullable();
+                $table->unsignedBigInteger('moderated_by_user_id')->nullable();
+                $table->string('report_reason', 255)->nullable();
+                $table->timestamp('reported_at')->nullable();
+                $table->timestamps();
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_likes'))) {
+            Schema::create($this->moduleTable('travel_likes'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('article_id');
+                $table->string('actor_type', 20)->default('employee');
+                $table->unsignedBigInteger('actor_user_id')->nullable();
+                $table->string('actor_identifier', 255)->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'article_id', 'actor_user_id', 'actor_identifier'], 'travel_likes_company_article_actor_unique');
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_shares'))) {
+            Schema::create($this->moduleTable('travel_shares'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('article_id');
+                $table->string('actor_type', 20)->default('employee');
+                $table->unsignedBigInteger('actor_user_id')->nullable();
+                $table->string('actor_identifier', 255)->nullable();
+                $table->string('channel', 40)->nullable();
+                $table->timestamps();
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_ratings'))) {
+            Schema::create($this->moduleTable('travel_ratings'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('article_id');
+                $table->string('actor_type', 20)->default('employee');
+                $table->unsignedBigInteger('actor_user_id')->nullable();
+                $table->string('actor_identifier', 255)->nullable();
+                $table->unsignedTinyInteger('stars');
+                $table->timestamps();
+                $table->unique(['company_id', 'article_id', 'actor_user_id', 'actor_identifier'], 'travel_ratings_company_article_actor_unique');
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_quizzes'))) {
+            Schema::create($this->moduleTable('travel_quizzes'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('title', 200);
+                $table->text('description_redacted')->nullable();
+                $table->string('status', 20)->default('draft');
+                $table->unsignedInteger('max_participations_per_contact')->default(1);
+                $table->unsignedInteger('bonus_points')->default(0);
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+                $table->timestamps();
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_quiz_questions'))) {
+            Schema::create($this->moduleTable('travel_quiz_questions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('quiz_id');
+                $table->unsignedInteger('rank');
+                $table->string('label', 500);
+                $table->json('choices');
+                $table->string('correct_answer_hash', 64);
+                $table->unsignedInteger('points')->default(1);
+                $table->timestamps();
+                $table->unique(['company_id', 'quiz_id', 'rank'], 'travel_quiz_questions_company_quiz_rank_unique');
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_quiz_participations'))) {
+            Schema::create($this->moduleTable('travel_quiz_participations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('quiz_id');
+                $table->string('participant_identifier', 255);
+                $table->json('answers_redacted');
+                $table->unsignedInteger('score')->default(0);
+                $table->unsignedInteger('total_points')->default(0);
+                $table->timestamp('completed_at')->useCurrent();
+                $table->timestamps();
+                $table->unique(['company_id', 'quiz_id', 'participant_identifier'], 'travel_quiz_participations_company_quiz_contact_unique');
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_advert_types'))) {
+            Schema::create($this->moduleTable('travel_advert_types'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 60);
+                $table->string('name', 160);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_advert_types_company_code_unique');
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_advert_positions'))) {
+            Schema::create($this->moduleTable('travel_advert_positions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 60);
+                $table->string('name', 160);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_advert_positions_company_code_unique');
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_advert_prices'))) {
+            Schema::create($this->moduleTable('travel_advert_prices'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('type_id');
+                $table->unsignedBigInteger('position_id');
+                $table->unsignedBigInteger('price_per_image_minor')->default(0);
+                $table->unsignedBigInteger('price_per_character_minor')->default(0);
+                $table->char('currency', 3);
+                $table->timestamps();
+                $table->unique(['company_id', 'type_id', 'position_id'], 'travel_advert_prices_company_type_pos_unique');
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_adverts'))) {
+            Schema::create($this->moduleTable('travel_adverts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('type_id');
+                $table->unsignedBigInteger('position_id');
+                $table->string('title', 200);
+                $table->text('body_redacted');
+                $table->string('image_path', 500)->nullable();
+                $table->unsignedInteger('character_count')->default(0);
+                $table->unsignedBigInteger('price_minor')->default(0);
+                $table->char('currency', 3);
+                $table->string('status', 20)->default('submitted');
+                $table->timestamp('paid_at')->nullable();
+                $table->unsignedBigInteger('payment_id')->nullable();
+                $table->timestamp('validated_at')->nullable();
+                $table->unsignedBigInteger('validated_by_user_id')->nullable();
+                $table->timestamp('published_at')->nullable();
+                $table->timestamp('valid_until')->nullable();
+                $table->string('moderation_note', 500)->nullable();
+                $table->timestamps();
+            });
+        }
+        if (! Schema::hasTable($this->moduleTable('travel_tourist_sites'))) {
+            Schema::create($this->moduleTable('travel_tourist_sites'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 200);
+                $table->text('description_redacted')->nullable();
+                $table->unsignedBigInteger('city_id');
+                $table->decimal('latitude', 10, 7)->nullable();
+                $table->decimal('longitude', 10, 7)->nullable();
+                $table->json('images')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+            });
+        }
     }
 
     private function dropMvpTables(): void
@@ -2848,6 +3042,20 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "travel_carrier_tokens"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_loyalty_rewards"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_loyalty_entries"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_tourist_sites"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_adverts"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_advert_prices"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_advert_positions"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_advert_types"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_quiz_participations"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_quiz_questions"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_quizzes"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_ratings"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_shares"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_likes"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_comments"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_articles"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_article_categories"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_loyalty_accounts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_hotels"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_rental_bookings"'.$cascade);
