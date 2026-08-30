@@ -489,7 +489,9 @@
           "status": "active"
         }
       ],
-      "routes": [],
+      "routes": [
+        "api/routes/modules/edu_manager.php"
+      ],
       "migrations": [
         "api/database/migrations/tenant"
       ],

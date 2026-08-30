@@ -79,3 +79,4 @@
 #      (ex. @second-maintainer) ET activer `require_code_owner_reviews` pour
 #      répartir les révisions obligatoires.
 /api/app/Modules/FuelStation/ @kitokoh
+/api/app/Modules/EduManager/ @kitokoh
