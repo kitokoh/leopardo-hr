@@ -314,6 +314,17 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - Les acces aux fiches employees et exports privacy creent une entree `audit_logs` avec `category=hr_data_access`, acteur, tenant et cible quand elle existe
 - Les endpoints privacy retournent `429` apres depassement du limiter `privacy-sensitive`
 
+### 17. IA — assistants bornes, budgets de tokens, exports asynchrones et DLQ (BC-23)
+
+- `POST /api/v1/ai/conversations/{conversation}/export` cree une exportation asynchrone idempotente (une seule par tenant+conversation+format via `dedup_key`) puis dispatche `ExportAiConversationJob` sur la file `ai` ; un echec passe l'exportation `failed` et consigne l'entree en dead-letter queue AI (`ai_dead_letter_queue`, une seule fois par `dedup_key`, `attempts` incrementees)
+- `GET /api/v1/ai/exports/{export}` est scope au proprietaire de la conversation et au tenant courant (404 cross-tenant/cross-user) ; le cycle d'etat est `pending → processing → done | failed`
+- `php artisan ai:dlq:replay` rejoue les entrees DLQ `open` (reset `pending` + re-dispatch), filtre par `--company-id`/`--id`/`--limit`, et resout l'entree en `resolved` quand le job aboutit
+- Budgets de tokens versionnes dans `config/ai.php` (`max_tokens_per_request`, `max_context_tokens`, `max_tokens_per_workflow`, env override `AI_BUDGET_*`) : rejet explicite 422 `AI_TOKEN_BUDGET_EXCEEDED` au depassement, cumul par conversation respecte
+- L'analytics AI expose les percentiles (p95) des tokens par requete/workflow (`/ai/analytics/usage`)
+- Matrice de permissions par outil AI versionnee (`ToolPermissionPolicy`) avec tests negatifs par role
+- Golden journey IA : seed pilote 100 % synthetique (`AiPilotSeeder`) + parcours E2E chat → action → confirmation humaine → audit (`ai_audit_logs`) couvert par `AiGoldenJourneyTest` et enregistre dans `dev-hub/tools/golden-journeys.json`
+- Suites associees : `TokenBudgetTest`, `ConversationExportTest`, `AiGoldenJourneyTest`, `ToolPermissionMatrixTest`, `AIGatewayAndAnalyticsTest` (workflow `Tests - Leopardo RH`)
+
 ## Mapping attendu vers les suites GitHub Actions
 
 ### Suite `Unit`
