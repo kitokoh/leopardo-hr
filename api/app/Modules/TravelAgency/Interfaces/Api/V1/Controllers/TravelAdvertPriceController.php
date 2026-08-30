@@ -8,10 +8,8 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelAdvertPriceRequest;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * TRAVEL-906 (#6109) — Grille tarifaire des annonces (CRUD tenant-scoped).
