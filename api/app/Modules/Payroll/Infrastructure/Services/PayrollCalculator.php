@@ -39,7 +39,7 @@ class PayrollCalculator
     private PaySlipValueCalculator $slipValues;
 
     /** #5591 (slice 3) — calcul d'un run de régularisation (service extrait du god-object). */
-    private PayrollRegularizationService $regularization;
+    private PayrollRegularizationCalculator $regularization;
 
     /**
      * @param  iterable<CountryRulesInterface>  $countryRules  règles custom (tests) ; vide → résolveur par défaut
@@ -67,7 +67,7 @@ class PayrollCalculator
         $this->slipValues = new PaySlipValueCalculator($rules, $publicHolidayService, $this->workInputAggregator);
         // #5591 (slice 3) : régularisation déléguée au service dédié — le
         // calcul des valeurs (PaySlipValueCalculator) est partagé.
-        $this->regularization = new PayrollRegularizationService($this->slipValues);
+        $this->regularization = new PayrollRegularizationCalculator($this->slipValues);
     }
 
     /**
