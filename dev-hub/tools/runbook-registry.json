@@ -165,8 +165,10 @@
   {
    "code": "BC-23",
    "name": "AI",
-   "runbooks": [],
-   "notes": "Services IA assistifs couverts par backup/restore plateforme + incident P1."
+   "runbooks": [
+    "docs/ops/RUNBOOK_AI.md"
+   ],
+   "notes": "Services IA assistifs : runbook dédié (supervision, incidents provider/budget, file AI + DLQ + replay, purge RGPD, kill switch) + couverture backup/restore plateforme."
   },
   {
    "code": "BC-25",
