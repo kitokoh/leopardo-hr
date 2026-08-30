@@ -38095,26 +38095,674 @@ components:
           format: date-time
           nullable: true
     RestaurantDeliveryZoneInput:
+      type: object
+      required:
+      - branch_id
+      - name
+      - fee_minor
+      properties:
+        branch_id:
+          type: integer
+        name:
+          type: string
+          maxLength: 160
+        fee_minor:
+          type: integer
+          minimum: 0
+        min_order_minor:
+          type: integer
+          minimum: 0
+          nullable: true
+        status:
+          type: string
+          nullable: true
     RestaurantBill:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+        status:
+          type: string
+        currency:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestaurantOrderItem'
+        bill:
+          type: object
+          properties:
+            subtotal_minor:
+              type: integer
+            tax_minor:
+              type: integer
+            discount_minor:
+              type: integer
+            total_minor:
+              type: integer
+            currency:
+              type: string
+            promotion_code:
+              type: string
+              nullable: true
     RestaurantBranch:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        timezone:
+          type: string
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+        branch_id:
+          type: integer
+        name:
+          type: string
+        color:
+          type: string
+          nullable: true
+        sort_order:
+          type: integer
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantHour:
+      type: object
+      properties:
+        id:
+          type: integer
+        branch_id:
+          type: integer
+        day_of_week:
+          type: integer
+        opens_at:
+          type: string
+          nullable: true
+        closes_at:
+          type: string
+          nullable: true
+        is_closed:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantIngredient:
+      type: object
+      properties:
+        id:
+          type: integer
+        branch_id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        unit_code:
+          type: string
+          nullable: true
+        avg_cost_minor:
+          type: integer
+          nullable: true
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantKitchenOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+        branch_id:
+          type: integer
+        table_id:
+          type: integer
+          nullable: true
+        order_type:
+          type: string
+        status:
+          type: string
+        covers:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              product_id:
+                type: integer
+                nullable: true
+              name:
+                type: string
+                nullable: true
+              quantity:
+                type: number
+              line_index:
+                type: integer
+              status:
+                type: string
     RestaurantMenu:
+      type: object
+      properties:
+        id:
+          type: integer
+        branch_id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        price_minor:
+          type: integer
+        currency:
+          type: string
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantMenuItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        menu_id:
+          type: integer
+        product_id:
+          type: integer
+        position:
+          type: integer
+        is_optional:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+        branch_id:
+          type: integer
+        pos_session_id:
+          type: integer
+          nullable: true
+        order_type:
+          type: string
+        table_id:
+          type: integer
+          nullable: true
+        zone_id:
+          type: integer
+          nullable: true
+        covers:
+          type: integer
+          nullable: true
+        customer_contact_id:
+          type: integer
+          nullable: true
+        rider_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+        subtotal_minor:
+          type: integer
+        tax_minor:
+          type: integer
+        discount_minor:
+          type: integer
+        total_minor:
+          type: integer
+        currency:
+          type: string
+        source:
+          type: string
+        note_redacted:
+          type: string
+          nullable: true
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestaurantOrderItem'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestaurantOrderPayment'
     RestaurantOrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        order_id:
+          type: integer
+        product_id:
+          type: integer
+          nullable: true
+        menu_id:
+          type: integer
+          nullable: true
+        quantity:
+          type: number
+        unit_price_minor:
+          type: integer
+        line_total_minor:
+          type: integer
+        tax_rate_id:
+          type: integer
+          nullable: true
+        tax_minor:
+          type: integer
+        status:
+          type: string
+        line_index:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantOrderPayment:
+      type: object
+      properties:
+        id:
+          type: integer
+        order_id:
+          type: integer
+        pos_session_id:
+          type: integer
+          nullable: true
+        provider_code:
+          type: string
+        amount_minor:
+          type: integer
+        currency:
+          type: string
+        status:
+          type: string
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        provider_reference:
+          type: string
+          nullable: true
+        tip_minor:
+          type: integer
+          nullable: true
+        idempotency_key:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantPosSession:
+      type: object
+      properties:
+        id:
+          type: integer
+        branch_id:
+          type: integer
+        opened_at:
+          type: string
+          format: date-time
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        opened_by_user_id:
+          type: integer
+          nullable: true
+        closed_by_user_id:
+          type: integer
+          nullable: true
+        opening_cash_minor:
+          type: integer
+        expected_cash_minor:
+          type: integer
+          nullable: true
+        counted_cash_minor:
+          type: integer
+          nullable: true
+        variance_minor:
+          type: integer
+          nullable: true
+        variance_reason:
+          type: string
+          nullable: true
+        status:
+          type: string
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+        branch_id:
+          type: integer
+        category_id:
+          type: integer
+          nullable: true
+        code:
+          type: string
+        name:
+          type: string
+        description_redacted:
+          type: string
+          nullable: true
+        price_minor:
+          type: integer
+        currency:
+          type: string
+        cost_minor:
+          type: integer
+          nullable: true
+        tax_rate_id:
+          type: integer
+          nullable: true
+        is_available:
+          type: boolean
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantProductIngredient:
+      type: object
+      properties:
+        id:
+          type: integer
+        product_id:
+          type: integer
+        ingredient_id:
+          type: integer
+        quantity:
+          type: number
+        unit_code:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantRefund:
+      type: object
+      properties:
+        id:
+          type: integer
+        order_id:
+          type: integer
+        payment_id:
+          type: integer
+          nullable: true
+        amount_minor:
+          type: integer
+        reason_code:
+          type: string
+        reason_text:
+          type: string
+          nullable: true
+        refunded_by_user_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+        idempotency_key:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantSupplier:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        contact_phone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantTable:
+      type: object
+      properties:
+        id:
+          type: integer
+        branch_id:
+          type: integer
+        zone_id:
+          type: integer
+          nullable: true
+        label:
+          type: string
+        capacity:
+          type: integer
+        min_covers:
+          type: integer
+          nullable: true
+        is_mergeable:
+          type: boolean
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantTableSession:
+      type: object
+      properties:
+        id:
+          type: integer
+        branch_id:
+          type: integer
+        table_id:
+          type: integer
+        order_id:
+          type: integer
+          nullable: true
+        opened_at:
+          type: string
+          format: date-time
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        covers:
+          type: integer
+          nullable: true
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantTaxRate:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        label:
+          type: string
+        rate_bps:
+          type: integer
+        is_default:
+          type: boolean
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantUnit:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        label:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     RestaurantZone:
       type: object
       required:
@@ -38136,3 +38784,4 @@ components:
         status:
           type: string
           nullable: true
+
