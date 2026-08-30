@@ -79,6 +79,8 @@
     }
   ,
     { "id": "restaurant_pos", "label": "POS & paiements RestaurantManager (BC-25) — caisse, encaissements, callbacks signés, exports", "doc": "docs/security/AUDIT_SECURITE_RGPD_RESTAURANT_2026-08-30.md", "controls": ["secrets", "signatures", "replay", "permissions", "audit"], "notes": "RESTO-904/#6233 — callback HMAC idempotent, montants serveur minor units, clôture de caisse immuable (version), exports via URL signée éphémère, payloads outbox redigés." }
+  ,
+    { "id": "travel_payments", "label": "Paiements & billets TravelAgency (BC-24) — mobile money, callbacks signés, PDF nominatifs", "doc": "docs/security/AUDIT_SECURITE_RGPD_TRAVEL_2026-08-30.md", "controls": ["secrets", "signatures", "replay", "permissions", "audit"], "notes": "TRAVEL-1013/#6126 — callbacks HMAC idempotents, montants serveur minor units, billets nominatifs + URLs PDF signées éphémères, révocation, payloads outbox redigés." }
   ],
   "control_catalog": {
     "type_taille_mime": "Validation du type MIME, de la taille et de l'extension avant traitement (Requests Laravel mimes/max, liste blanche).",
