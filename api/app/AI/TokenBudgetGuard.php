@@ -22,17 +22,24 @@ class TokenBudgetGuard
 {
     public function maxTokensPerRequest(): int
     {
-        return max(1, (int) config('ai.budgets.max_tokens_per_request', 4096));
+        return max(1, $this->intConfig('max_tokens_per_request', 4096));
     }
 
     public function maxContextTokens(): int
     {
-        return max(1, (int) config('ai.budgets.max_context_tokens', 32768));
+        return max(1, $this->intConfig('max_context_tokens', 32768));
     }
 
     public function maxTokensPerWorkflow(): int
     {
-        return max(1, (int) config('ai.budgets.max_tokens_per_workflow', 16384));
+        return max(1, $this->intConfig('max_tokens_per_workflow', 16384));
+    }
+
+    private function intConfig(string $key, int $default): int
+    {
+        $value = config('ai.budgets.'.$key, $default);
+
+        return is_numeric($value) ? (int) $value : $default;
     }
 
     /**

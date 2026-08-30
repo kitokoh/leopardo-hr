@@ -13,6 +13,7 @@ class MemoryManager
     public function loadOrCreateConversation(int $userId, string $companyId, ?int $conversationId = null, array $context = []): array
     {
         if ($conversationId !== null) {
+            /** @var object{id: int, user_id: int, company_id: string, title: string, messages: string, token_count: int, updated_at: mixed, created_at: mixed}|null $conversation */
             $conversation = DB::table('ai_conversations')
                 ->where('id', $conversationId)
                 ->where('user_id', $userId)
@@ -26,9 +27,9 @@ class MemoryManager
                 $messages = json_decode($messagesJson, true) ?: [];
 
                 return [
-                    'id' => (int) $conversation->id,
+                    'id' => $conversation->id,
                     'messages' => $messages,
-                    'token_count' => (int) ($conversation->token_count ?? 0),
+                    'token_count' => $conversation->token_count,
                 ];
             }
         }
@@ -56,12 +57,15 @@ class MemoryManager
      */
     public function saveMessages(int $conversationId, array $messages, int $tokenCount = 0): void
     {
-        $maxMessages = (int) config('ai.max_conversation_messages', 50);
+        $configuredMax = config('ai.max_conversation_messages', 50);
+        $maxMessages = is_numeric($configuredMax) ? (int) $configuredMax : 50;
         $trimmed = array_slice($messages, -$maxMessages);
 
-        $current = (int) DB::table('ai_conversations')
+        /** @var mixed $currentValue */
+        $currentValue = DB::table('ai_conversations')
             ->where('id', $conversationId)
             ->value('token_count');
+        $current = is_numeric($currentValue) ? (int) $currentValue : 0;
 
         DB::table('ai_conversations')
             ->where('id', $conversationId)

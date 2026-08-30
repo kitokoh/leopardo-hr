@@ -49,7 +49,7 @@ class AgentRunner
             $currentConversationId = (string) $response['conversation_id'];
             $toolsUsed = $response['tools_used'];
 
-            $cumulativeTokens += ($response['tokens']['input'] ?? 0) + ($response['tokens']['output'] ?? 0);
+            $cumulativeTokens += $response['tokens']['input'] + $response['tokens']['output'];
             $this->tokenBudgetGuard->assertWorkflowWithinBudget($cumulativeTokens);
 
             $step = [

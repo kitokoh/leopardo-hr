@@ -74,7 +74,8 @@ class Orchestrator
             $tools = array_values(
                 array_filter(
                     $tools,
-                    static fn (array $t): bool => in_array($t['function']['name'] ?? '', $implementedToolNames, true),
+                    static fn (array $t): bool => is_array($t['function'] ?? null)
+                        && in_array($t['function']['name'] ?? '', $implementedToolNames, true),
                 ),
             );
 

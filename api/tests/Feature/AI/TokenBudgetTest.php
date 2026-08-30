@@ -55,7 +55,7 @@ class TokenBudgetTest extends TestCase
 
         app(TokenBudgetGuard::class)->assertRequestWithinBudget(60, 39);
 
-        $this->assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     public function test_guard_detects_context_budget_exceeded(): void
@@ -92,12 +92,14 @@ class TokenBudgetTest extends TestCase
             'company_id' => $company->id,
             'user_id' => $employee->id,
         ]);
-        $logged = DB::table('ai_audit_logs')
+        /** @var array<string, mixed> $logged */
+        $logged = (array) DB::table('ai_audit_logs')
             ->where('company_id', $company->id)
             ->where('user_id', $employee->id)
             ->first();
-        $this->assertNotNull($logged->error);
-        $this->assertStringContainsString('budget', (string) $logged->error);
+        $error = $logged['error'] ?? null;
+        $this->assertIsString($error);
+        $this->assertStringContainsString('budget', $error);
     }
 
     public function test_chat_accepts_request_within_budget(): void
@@ -187,6 +189,7 @@ class TokenBudgetTest extends TestCase
         $this->postJson('/api/v1/ai/chat', ['message' => 'Premier message'])->assertOk();
 
         $conversation = AIConversation::first();
+        $this->assertNotNull($conversation);
         $this->assertSame(120, (int) $conversation->token_count);
 
         $this->postJson('/api/v1/ai/chat', [
@@ -202,7 +205,9 @@ class TokenBudgetTest extends TestCase
      */
     private function aiFixture(): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         return [$company, $employee];
