@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Providers;
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
+use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrierApiKey;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
@@ -23,6 +24,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
+use App\Modules\TravelAgency\Policies\TravelCancellationPolicyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierApiKeyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
 use App\Modules\TravelAgency\Policies\TravelClassPolicy;
@@ -81,5 +83,6 @@ class TravelAgencyServiceProvider extends ServiceProvider
         Gate::policy(TravelQuote::class, TravelQuotePolicy::class);
         Gate::policy(TravelCurrencyRate::class, TravelCurrencyRatePolicy::class);
         Gate::policy(TravelCarrierApiKey::class, TravelCarrierApiKeyPolicy::class);
+        Gate::policy(TravelCancellationPolicy::class, TravelCancellationPolicyPolicy::class);
     }
 }
