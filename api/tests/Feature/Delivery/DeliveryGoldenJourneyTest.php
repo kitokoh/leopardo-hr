@@ -213,4 +213,109 @@ class DeliveryGoldenJourneyTest extends TestCase
         self::assertSame(5000, $summary['cod_expected_minor']);
         self::assertSame(5000, $summary['cod_collected_minor']);
     }
+
+    /**
+     * Compléments BC-26-D12 (PR #6326) : invariants non couverts par le
+     * parcours principal — POD obligatoire (409 PROOF_REQUIRED), rejeu
+     * mobile idempotent (même idempotency_key → même événement, zéro
+     * doublon) et déterminisme de la clôture (2e exécution → mêmes totaux).
+     */
+    public function test_pod_required_replay_idempotent_and_deterministic_close(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        $created = [];
+        foreach (['Alpha', 'Beta'] as $i => $contact) {
+            $created[] = $this->postJson('/api/v1/delivery/deliveries', [
+                'source' => 'manual',
+                'type' => 'parcel',
+                'cod_amount_minor' => $i === 0 ? 12000 : 0,
+                'dropoff_contact' => 'Client '.$contact,
+                'dropoff_address' => 'Alger, Rue '.$contact,
+            ])->assertStatus(201)->json('data');
+        }
+
+        $route = $this->postJson('/api/v1/delivery/deliveries/routes', [
+            'route_date' => now()->toDateString(),
+            'delivery_ids' => array_column($created, 'id'),
+        ])->assertStatus(201)->json('data');
+
+        Delivery::query()->whereIn('id', array_column($created, 'id'))
+            ->update(['status' => 'assigned']);
+
+        // POD obligatoire : delivered sans proof → 409 PROOF_REQUIRED.
+        $this->postJson('/api/v1/delivery/deliveries/events', [
+            'delivery_id' => $created[0]['id'],
+            'type' => 'picked_up',
+            'origin' => 'mobile',
+        ])->assertStatus(201);
+        $this->postJson('/api/v1/delivery/deliveries/events', [
+            'delivery_id' => $created[0]['id'],
+            'type' => 'out_for_delivery',
+            'origin' => 'mobile',
+        ])->assertStatus(201);
+        $this->postJson('/api/v1/delivery/deliveries/events', [
+            'delivery_id' => $created[0]['id'],
+            'type' => 'arrived',
+            'origin' => 'mobile',
+        ])->assertStatus(201);
+        $this->postJson('/api/v1/delivery/deliveries/events', [
+            'delivery_id' => $created[0]['id'],
+            'type' => 'delivered',
+            'origin' => 'mobile',
+        ])->assertStatus(409);
+
+        // Avec POD → 201 ; rejeu offline (même idempotency_key) → même id.
+        $first = $this->postJson('/api/v1/delivery/deliveries/events', [
+            'delivery_id' => $created[0]['id'],
+            'type' => 'delivered',
+            'origin' => 'mobile',
+            'proof_document_id' => 777001,
+            'idempotency_key' => 'offline-replay-1',
+        ])->assertStatus(201)->json('data');
+
+        $replay = $this->postJson('/api/v1/delivery/deliveries/events', [
+            'delivery_id' => $created[0]['id'],
+            'type' => 'delivered',
+            'origin' => 'mobile',
+            'proof_document_id' => 777001,
+            'idempotency_key' => 'offline-replay-1',
+        ])->assertStatus(201)->json('data');
+
+        self::assertSame($first['id'], $replay['id']);
+        self::assertSame(
+            1,
+            Delivery::query()->find($created[0]['id'])->events()->where('type', 'delivered')->count(),
+        );
+
+        // Le 2e colis échoue (picked_up → failed légal depuis picked_up).
+        $this->postJson('/api/v1/delivery/deliveries/events', [
+            'delivery_id' => $created[1]['id'],
+            'type' => 'picked_up',
+            'origin' => 'mobile',
+        ])->assertStatus(201);
+        $this->postJson('/api/v1/delivery/deliveries/events', [
+            'delivery_id' => $created[1]['id'],
+            'type' => 'failed',
+            'origin' => 'mobile',
+        ])->assertStatus(201);
+
+        // Clôture déterministe : 2e exécution → mêmes totaux.
+        $closed = $this->postJson(sprintf('/api/v1/delivery/deliveries/routes/%d/close', $route['id']))
+            ->assertOk()
+            ->assertJsonPath('data.status', 'completed')
+            ->json('data');
+        self::assertSame(2, $closed['deliveries_count']);
+        self::assertSame(1, $closed['delivered_count']);
+        self::assertSame(1, $closed['failed_count']);
+        self::assertSame(12000, $closed['cod_collected_minor']);
+
+        $closedAgain = $this->postJson(sprintf('/api/v1/delivery/deliveries/routes/%d/close', $route['id']))
+            ->assertOk()
+            ->json('data');
+
+        self::assertSame($closed['deliveries_count'], $closedAgain['deliveries_count']);
+        self::assertSame($closed['delivered_count'], $closedAgain['delivered_count']);
+        self::assertSame($closed['cod_collected_minor'], $closedAgain['cod_collected_minor']);
+    }
 }
