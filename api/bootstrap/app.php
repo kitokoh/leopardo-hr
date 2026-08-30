@@ -46,6 +46,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('contracts:alert-expiring')->daily();
         $schedule->command('billing:check-trials')->daily();
         $schedule->command('billing:check-overdue')->daily();
+        // DEP-BC21 #6251 : politique de recouvrement explicite — un tenant en
+        // défaut ne doit jamais rester `active` sans run (idempotent).
+        $schedule->command('billing:enforce-delinquency')->dailyAt('06:30');
         $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00');
         $schedule->command('monitor:slow-queries --threshold=500')->everyFifteenMinutes();
         // Issue #4948 : trial provisionings bloqués (worker de queue jamais
