@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * #6024 (TRAVEL-211) — Événement d'outbox TravelAgency (tenant-scoped).
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property array<mixed> $payload_redacted
  * @property string $status
  * @property int $attempts
- * @property \Illuminate\Support\Carbon|null $available_at
+ * @property Carbon|null $available_at
  * @property string|null $last_error
  * @property string $idempotency_key
  *
