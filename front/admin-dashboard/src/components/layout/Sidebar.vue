@@ -159,11 +159,14 @@ import {
   LifebuoyIcon,
   ServerIcon,
   ArrowTrendingUpIcon,
-  MegaphoneIcon
+  MegaphoneIcon,
+  PaperAirplaneIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'
+import { useTravelStore } from '@/stores/travel'
+import { onMounted } from 'vue'
 
 defineProps({
   isOpen: {
@@ -180,6 +183,15 @@ const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
+const travelStore = useTravelStore()
+
+// TRAVEL-601 (#6078) : sonde le flag `travelagency` du tenant connecté dès
+// le montage de la navigation — le menu n'apparaît que si le backend répond
+// (GET /travel/ping, middleware module.travelagency). Aucun état inventé
+// côté client : flag absent → menu masqué, 401 → menu masqué.
+onMounted(() => {
+  travelStore.checkFlag()
+})
 
 /**
  * Comptabilité — RBAC backend (api.manager:comptable,principal) : le menu
@@ -321,6 +333,16 @@ const navigation = computed(() => [
     path: '/edge',
     icon: ServerIcon
   },
+  ...(travelStore.flagActive
+    ? [
+        {
+          name: 'travel',
+          title: t('navigation.travel', 'Agence de voyage'),
+          path: '/travel',
+          icon: PaperAirplaneIcon
+        }
+      ]
+    : []),
   {
     name: 'system',
     title: t('navigation.system', 'Système'),
