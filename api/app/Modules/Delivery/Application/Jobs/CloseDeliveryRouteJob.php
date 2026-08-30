@@ -102,7 +102,8 @@ final class CloseDeliveryRouteJob implements ShouldQueue, TenantScopedJob
             'payload' => ['route_id' => $this->routeId, 'company_id' => $this->companyId],
             'queue' => $this->queue ?? 'delivery',
             'error' => $exception->getMessage(),
-            'attempts' => $this->attempts(),
+            // attempts() n'est sûr qu'une fois le job pické (job non null).
+            'attempts' => $this->job?->attempts() ?? 0,
             'status' => 'new',
         ]);
     }
