@@ -7,26 +7,26 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Domain\Enums\StockMovementReason;
+use App\Modules\RestaurantManager\Domain\Exceptions\RestaurantStockException;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
-use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantStockMovementService;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantInventoryMovementRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantInventoryMovementResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * RESTO-501 (#6200) — Mouvements de stock (journal + ajustements manuels).
+ * RESTO-501 (#6200) — Journal des mouvements de stock.
  *
- * `POST /restaurant/inventory-movements` enregistre un mouvement
- * (adjustment|waste|transfer) : le niveau de stock est mis à jour de façon
- * atomique (verrou ligne, jamais négatif) et le journal est tracé avec sa
- * raison. Les raisons `sale`/`receiving`/`count` sont générées par les flux
- * métier (ventes, réceptions, inventaires) — non acceptées ici.
+ * La création d'un mouvement passe par `RestaurantStockMovementService`
+ * (verrou transactionnel, jamais de stock négatif, traçabilité complète).
+ * Lecture filtrée par (branche, ingrédient, raison, référence).
  */
 class RestaurantInventoryMovementController extends Controller
 {
-    public function __construct(private readonly StockMovementService $movements)
-    {
+    public function __construct(
+        private readonly RestaurantStockMovementService $stockMovements,
+    ) {
     }
 
     public function index(Request $request): JsonResponse
@@ -41,10 +41,12 @@ class RestaurantInventoryMovementController extends Controller
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
         $movements = RestaurantInventoryMovement::query()
-            ->with(['ingredient', 'branch'])
-            ->when($request->has('branch_id'), fn ($query) => $query->where('branch_id', (int) $request->query('branch_id')))
-            ->when($request->has('reason_code'), fn ($query) => $query->where('reason_code', (string) $request->query('reason_code')))
-            ->orderByDesc('created_at')
+            ->when($request->query('branch_id'), fn ($q, $v) => $q->where('branch_id', (int) $v))
+            ->when($request->query('ingredient_id'), fn ($q, $v) => $q->where('ingredient_id', (int) $v))
+            ->when($request->query('reason_code'), fn ($q, $v) => $q->where('reason_code', (string) $v))
+            ->when($request->query('reference_type'), fn ($q, $v) => $q->where('reference_type', (string) $v))
+            ->when($request->query('reference_id'), fn ($q, $v) => $q->where('reference_id', (int) $v))
+            ->orderByDesc('id')
             ->paginate($perPage);
 
         return RestaurantInventoryMovementResource::collection($movements)->response();
@@ -59,24 +61,34 @@ class RestaurantInventoryMovementController extends Controller
             abort(403);
         }
 
-        $data = $request->validated();
+        try {
+            $movement = $this->stockMovements->apply(
+                companyId: $actor->company_id,
+                branchId: (int) $request->validated('branch_id'),
+                ingredientId: (int) $request->validated('ingredient_id'),
+                quantityDelta: (string) $request->validated('quantity_delta'),
+                reason: StockMovementReason::from((string) $request->validated('reason_code')),
+                referenceType: $request->validated('reference_type'),
+                referenceId: $request->validated('reference_id') !== null ? (int) $request->validated('reference_id') : null,
+                noteRedacted: $request->validated('note_redacted'),
+                userId: (int) $actor->id,
+            );
+        } catch (RestaurantStockException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
 
-        $level = $this->movements->apply(
-            companyId: $actor->company_id,
-            branchId: (int) $data['branch_id'],
-            ingredientId: (int) $data['ingredient_id'],
-            quantityDelta: (float) $data['quantity_delta'],
-            reason: StockMovementReason::from($data['reason_code']),
-            note: $data['note_redacted'] ?? null,
-            userId: $actor->id,
-        );
+        return (new RestaurantInventoryMovementResource($movement))->response()->setStatusCode(201);
+    }
 
-        /** @var RestaurantInventoryMovement $movement */
-        $movement = RestaurantInventoryMovement::query()
-            ->where('stock_level_id', $level->id)
-            ->orderByDesc('id')
-            ->first();
+    public function show(Request $request, RestaurantInventoryMovement $restaurantInventoryMovement): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
 
-        return (new RestaurantInventoryMovementResource($movement->load(['ingredient', 'branch'])))->response()->setStatusCode(201);
+        if ($actor->company_id !== $restaurantInventoryMovement->company_id) {
+            abort(404);
+        }
+
+        return (new RestaurantInventoryMovementResource($restaurantInventoryMovement))->response();
     }
 }
