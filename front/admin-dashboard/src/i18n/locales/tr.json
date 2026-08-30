@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-30T12:00:00Z",
+  "_updated_at": "2026-08-30T15:05:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -172,7 +172,7 @@
     "cabinet": "Belge kasasi",
     "notifications": "Bildirimler",
     "evaluations": "Degerlendirmeler",
-    "restaurant": "Mutfak ekranı"
+    "restaurant": "Satış noktası (POS)"
   },
   "emails": {
     "invitation": {
@@ -4232,6 +4232,30 @@
     "dineIn": "Salon",
     "loadError": "Mutfak kuyruğu yüklenemedi.",
     "actionError": "İşlem başarısız, tekrar deneyin.",
-    "loading": "Mutfak kuyruğu yükleniyor…"
+    "loading": "Mutfak kuyruğu yükleniyor…",
+    "pos": {
+      "title": "Satış noktası (POS)",
+      "subtitle": "Sipariş alma ve tahsilat",
+      "products": "Katalog",
+      "cart": "Güncel sipariş",
+      "noProducts": "Uygun ürün yok.",
+      "noSession": "Bu şube için açık kasa oturumu yok.",
+      "openSession": "Kasa oturumu aç",
+      "noOrder": "Güncel sipariş yok.",
+      "newOrder": "Yeni sipariş",
+      "submit": "Gönder",
+      "confirm": "Onayla (mutfak)",
+      "bill": "Hesap",
+      "payCash": "Nakit tahsil",
+      "paid": "Sipariş ödendi",
+      "subtotal": "Ara toplam",
+      "tax": "Vergi",
+      "total": "Toplam",
+      "removeItem": "Kaldır",
+      "uncategorized": "Kategorisiz",
+      "loadError": "Satış noktası yüklenemedi.",
+      "loading": "Satış noktası yükleniyor…",
+      "actionError": "İşlem başarısız, tekrar deneyin."
+    }
   }
 }
