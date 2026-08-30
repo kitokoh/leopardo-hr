@@ -4529,7 +4529,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut)'
+      summary: 'TRAVEL-914 — Mise à jour d''un quiz (titre, période, statut)'
       security:
       - BearerAuth: []
       parameters:
@@ -4631,7 +4631,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Questions d'un quiz (admin, bonne réponse exposée)'
+      summary: 'TRAVEL-914 — Questions d''un quiz (admin, bonne réponse exposée)'
       security:
       - BearerAuth: []
       parameters:
@@ -4649,7 +4649,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour d'une question'
+      summary: 'TRAVEL-914 — Mise à jour d''une question'
       security:
       - BearerAuth: []
       parameters:
@@ -4694,7 +4694,7 @@ paths:
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Suppression d'une question'
+      summary: 'TRAVEL-914 — Suppression d''une question'
       security:
       - BearerAuth: []
       parameters:

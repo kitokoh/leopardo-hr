@@ -4640,6 +4640,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/travel/ping", options);
     },
 
+    /** TRAVEL-913 — Génération du lien public signé du formulaire de contact */
+    postTravelPublicContactLink(options = {}) {
+      return request("POST", "/travel/public-contact-link", options);
+    },
+
     /** TRAVEL-913 — Formulaire de contact public (URL signée + throttle, consentement obligatoire) */
     postTravelPublicContact(options = {}) {
       return request("POST", "/travel/public/contact", options);
@@ -4660,7 +4665,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/travel/quizzes/{travelQuiz}", options);
     },
 
-    /** TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut) */
+    /** TRAVEL-914 — Mise à jour d''un quiz (titre, période, statut) */
     putTravelQuizzesByTravelQuiz(options = {}) {
       return request("PUT", "/travel/quizzes/{travelQuiz}", options);
     },
@@ -4670,7 +4675,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/quizzes/{travelQuiz}/participate", options);
     },
 
-    /** TRAVEL-914 — Questions d'un quiz (admin, bonne réponse exposée) */
+    /** TRAVEL-914 — Questions d''un quiz (admin, bonne réponse exposée) */
     getTravelQuizzesByTravelQuizQuestions(options = {}) {
       return request("GET", "/travel/quizzes/{travelQuiz}/questions", options);
     },
@@ -4680,12 +4685,12 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/quizzes/{travelQuiz}/questions", options);
     },
 
-    /** TRAVEL-914 — Suppression d'une question */
+    /** TRAVEL-914 — Suppression d''une question */
     deleteTravelQuizzesByTravelQuizQuestionsByTravelQuizQuestion(options = {}) {
       return request("DELETE", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", options);
     },
 
-    /** TRAVEL-914 — Mise à jour d'une question */
+    /** TRAVEL-914 — Mise à jour d''une question */
     putTravelQuizzesByTravelQuizQuestionsByTravelQuizQuestion(options = {}) {
       return request("PUT", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", options);
     },

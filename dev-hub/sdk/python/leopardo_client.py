@@ -3732,6 +3732,10 @@ class LeopardoClient:
         """Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977)"""
         return self.request("GET", "/travel/ping", **kwargs)
 
+    def post_travel_public_contact_link(self, **kwargs):
+        """TRAVEL-913 — Génération du lien public signé du formulaire de contact"""
+        return self.request("POST", "/travel/public-contact-link", **kwargs)
+
     def post_travel_public_contact(self, **kwargs):
         """TRAVEL-913 — Formulaire de contact public (URL signée + throttle, consentement obligatoire)"""
         return self.request("POST", "/travel/public/contact", **kwargs)
@@ -3749,7 +3753,7 @@ class LeopardoClient:
         return self.request("GET", "/travel/quizzes/{travelQuiz}", **kwargs)
 
     def put_travel_quizzes_by_travelquiz(self, **kwargs):
-        """TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut)"""
+        """TRAVEL-914 — Mise à jour d''un quiz (titre, période, statut)"""
         return self.request("PUT", "/travel/quizzes/{travelQuiz}", **kwargs)
 
     def post_travel_quizzes_by_travelquiz_participate(self, **kwargs):
@@ -3757,7 +3761,7 @@ class LeopardoClient:
         return self.request("POST", "/travel/quizzes/{travelQuiz}/participate", **kwargs)
 
     def get_travel_quizzes_by_travelquiz_questions(self, **kwargs):
-        """TRAVEL-914 — Questions d'un quiz (admin, bonne réponse exposée)"""
+        """TRAVEL-914 — Questions d''un quiz (admin, bonne réponse exposée)"""
         return self.request("GET", "/travel/quizzes/{travelQuiz}/questions", **kwargs)
 
     def post_travel_quizzes_by_travelquiz_questions(self, **kwargs):
@@ -3765,11 +3769,11 @@ class LeopardoClient:
         return self.request("POST", "/travel/quizzes/{travelQuiz}/questions", **kwargs)
 
     def delete_travel_quizzes_by_travelquiz_questions_by_travelquizquestion(self, **kwargs):
-        """TRAVEL-914 — Suppression d'une question"""
+        """TRAVEL-914 — Suppression d''une question"""
         return self.request("DELETE", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", **kwargs)
 
     def put_travel_quizzes_by_travelquiz_questions_by_travelquizquestion(self, **kwargs):
-        """TRAVEL-914 — Mise à jour d'une question"""
+        """TRAVEL-914 — Mise à jour d''une question"""
         return self.request("PUT", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", **kwargs)
 
     def get_travel_quizzes_by_travelquiz_results(self, **kwargs):

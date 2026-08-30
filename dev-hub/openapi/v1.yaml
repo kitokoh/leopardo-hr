@@ -4540,7 +4540,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut)'
+      summary: 'TRAVEL-914 — Mise à jour d''un quiz (titre, période, statut)'
       security:
       - BearerAuth: []
       parameters:
@@ -4642,7 +4642,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Questions d'un quiz (admin, bonne réponse exposée)'
+      summary: 'TRAVEL-914 — Questions d''un quiz (admin, bonne réponse exposée)'
       security:
       - BearerAuth: []
       parameters:
@@ -4660,7 +4660,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour d'une question'
+      summary: 'TRAVEL-914 — Mise à jour d''une question'
       security:
       - BearerAuth: []
       parameters:
@@ -4705,7 +4705,7 @@ paths:
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Suppression d'une question'
+      summary: 'TRAVEL-914 — Suppression d''une question'
       security:
       - BearerAuth: []
       parameters:
@@ -5171,6 +5171,30 @@ paths:
           description: Tenant introuvable
         '422':
           description: Validation échouée (consentement manquant, bornes)
+  /travel/public-contact-link:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-913 — Génération du lien public signé du formulaire de contact'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expires_in_hours:
+                  type: integer
+                  minimum: 1
+                  maximum: 168
+                  default: 24
+      responses:
+        '201':
+          description: Lien signé généré (contact_url + expires_at)
+        '403':
+          description: Rôle insuffisant (manager requis)
   /travel/contact:
     post:
       tags:
