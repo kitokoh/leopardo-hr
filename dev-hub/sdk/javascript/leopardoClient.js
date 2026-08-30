@@ -3750,6 +3750,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/restaurant/loyalty-programs/{restaurantLoyaltyProgram}", options);
     },
 
+    /** Callback signé idempotent d'un paiement (RESTO-407, lot 4xx) */
+    postRestaurantPaymentsByPaymentCallback(options = {}) {
+      return request("POST", "/restaurant/payments/{payment}/callback", options);
+    },
+
     /** Smoke test de la verticale RestaurantManager (BC-25 RESTAURANT, RESTO-101/#6158) */
     getRestaurantPing(options = {}) {
       return request("GET", "/restaurant/ping", options);

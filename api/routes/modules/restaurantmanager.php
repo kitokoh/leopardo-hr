@@ -75,6 +75,50 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
         // Export CSV idempotent + URL signée (RESTO-702/#6215) — génération auth.
         Route::post('/reports/export', [RestaurantReportExportController::class, 'export']);
+
+        // Livraison — livreurs & cycle de livraison (RESTO-605/#6210).
+        Route::get('/delivery-riders', [RestaurantDeliveryRiderController::class, 'index']);
+        Route::post('/delivery-riders', [RestaurantDeliveryRiderController::class, 'store']);
+        Route::get('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'show']);
+        Route::put('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'update']);
+        Route::delete('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'destroy']);
+
+        Route::get('/deliveries', [RestaurantDeliveryController::class, 'index']);
+        Route::post('/deliveries', [RestaurantDeliveryController::class, 'store']);
+        Route::get('/deliveries/{restaurantDelivery}', [RestaurantDeliveryController::class, 'show']);
+        Route::post('/deliveries/{restaurantDelivery}/assign', [RestaurantDeliveryController::class, 'assign']);
+        Route::post('/deliveries/{restaurantDelivery}/out-for-delivery', [RestaurantDeliveryController::class, 'outForDelivery']);
+        Route::post('/deliveries/{restaurantDelivery}/deliver', [RestaurantDeliveryController::class, 'deliver']);
+        Route::post('/deliveries/{restaurantDelivery}/cancel', [RestaurantDeliveryController::class, 'cancel']);
+
+        // Fidélité — programme & clients (RESTO-606/#6211).
+        Route::get('/loyalty-programs', [RestaurantLoyaltyController::class, 'indexProgram']);
+        Route::post('/loyalty-programs', [RestaurantLoyaltyController::class, 'storeProgram']);
+        Route::put('/loyalty-programs/{restaurantLoyaltyProgram}', [RestaurantLoyaltyController::class, 'updateProgram']);
+
+        Route::get('/loyalty-customers', [RestaurantLoyaltyController::class, 'indexCustomers']);
+        Route::post('/loyalty-customers', [RestaurantLoyaltyController::class, 'storeCustomer']);
+        Route::post('/loyalty-customers/{restaurantLoyaltyCustomer}/credit', [RestaurantLoyaltyController::class, 'creditCustomer']);
+        Route::post('/loyalty-customers/{restaurantLoyaltyCustomer}/redeem', [RestaurantLoyaltyController::class, 'redeemCustomer']);
+
+        // Promotions (RESTO-607/#6212).
+        Route::get('/promotions', [RestaurantPromotionController::class, 'index']);
+        Route::post('/promotions', [RestaurantPromotionController::class, 'store']);
+        Route::get('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'show']);
+        Route::put('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'update']);
+        Route::delete('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'destroy']);
+        Route::post('/promotions/validate', [RestaurantPromotionController::class, 'validate']);
+
+        // Rapports agrégés + dashboard KPIs (RESTO-701/#6214, RESTO-703/#6216).
+        Route::get('/reports/sales', [RestaurantReportController::class, 'sales']);
+        Route::get('/reports/occupancy', [RestaurantReportController::class, 'occupancy']);
+        Route::get('/reports/products', [RestaurantReportController::class, 'products']);
+        Route::get('/reports/cogs', [RestaurantReportController::class, 'cogs']);
+        Route::get('/reports/pos', [RestaurantReportController::class, 'pos']);
+        Route::get('/dashboard/kpis', [RestaurantReportController::class, 'kpis']);
+
+        // Export CSV idempotent + URL signée (RESTO-702/#6215) — génération auth.
+        Route::post('/reports/export', [RestaurantReportExportController::class, 'export']);
     });
 
 // Téléchargement d'export signé — route publique (la signature EST l'auth).

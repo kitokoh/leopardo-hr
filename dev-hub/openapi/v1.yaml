@@ -1906,6 +1906,31 @@ paths:
           description: Signature invalide ou expirée
         '404':
           description: Export introuvable
+  /restaurant/payments/{payment}/callback:
+    parameters:
+    - name: payment
+      in: path
+      required: true
+      schema:
+        type: integer
+    post:
+      tags:
+      - Restaurant
+      summary: Callback signé idempotent d'un paiement (RESTO-407, lot 4xx)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Callback acquitté (idempotent)
+        '422':
+          description: Signature invalide ou montant incohérent
+
   /health:
     get:
       tags:
