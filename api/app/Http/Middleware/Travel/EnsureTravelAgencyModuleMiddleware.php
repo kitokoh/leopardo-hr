@@ -22,6 +22,9 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class EnsureTravelAgencyModuleMiddleware
 {
+    /**
+     * @param  Closure(Request): (Response)  $next
+     */
     public function handle(Request $request, Closure $next): Response
     {
         $company = app()->bound('current_company') ? currentCompany() : null;
