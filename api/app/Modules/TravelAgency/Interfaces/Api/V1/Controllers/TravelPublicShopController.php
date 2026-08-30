@@ -9,23 +9,23 @@ use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\CreateBookingAction;
 use App\Modules\TravelAgency\Domain\Enums\BookingSource;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
-use App\Modules\TravelAgency\Domain\Enums\TicketStatus;
-use App\Modules\TravelAgency\Domain\Models\TravelPayment;
-use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
-use App\Modules\TravelAgency\Infrastructure\Services\TravelTicketPdfGenerator;
-use App\Modules\TravelAgency\Infrastructure\Services\TravelTicketPdfStorage;
-use Illuminate\Support\Facades\DB;
 use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
+use App\Modules\TravelAgency\Domain\Enums\TicketStatus;
 use App\Modules\TravelAgency\Domain\Enums\TripStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
+use App\Modules\TravelAgency\Domain\Models\TravelPayment;
 use App\Modules\TravelAgency\Domain\Models\TravelPublicShopToken;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
+use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelTicketPdfGenerator;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelTicketPdfStorage;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelBookingResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTripResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
@@ -138,7 +138,7 @@ class TravelPublicShopController extends Controller
                 'payment_status' => $booking->payment_status->value,
                 'trip' => $booking->trip ? [
                     'code' => $booking->trip->code,
-                    'departure_date' => $booking->trip->departure_date?->toDateString(),
+                    'departure_date' => $booking->trip->departure_date->toDateString(),
                     'departure_time' => $booking->trip->departure_time,
                 ] : null,
                 'passenger_count' => $booking->passenger_count,
@@ -200,7 +200,7 @@ class TravelPublicShopController extends Controller
             'amount_minor' => $booking->total_amount_minor,
             'currency' => $booking->currency,
             'status' => PaymentStatus::PENDING,
-            'provider_reference' => $result['provider_reference'] ?? null,
+            'provider_reference' => $result['provider_reference'],
             'idempotency_key' => $data['idempotency_key'],
         ]));
 
@@ -273,7 +273,7 @@ class TravelPublicShopController extends Controller
             'name' => $token->name,
             'active' => $token->active,
             'token_prefix' => substr((string) $token->token_hash, 0, 8).'…',
-            'created_at' => $token->created_at?->toIso8601String(),
+            'created_at' => $token->created_at->toIso8601String(),
             'last_used_at' => $token->last_used_at?->toIso8601String(),
         ]]);
     }

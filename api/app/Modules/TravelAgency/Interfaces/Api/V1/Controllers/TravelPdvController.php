@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
+use App\Modules\TravelAgency\Domain\Models\TravelCashSession;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelPdvService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -41,7 +42,7 @@ class TravelPdvController extends Controller
 
         $session = $service->current($actor->company_id);
 
-        return response()->json(['data' => $session instanceof \App\Modules\TravelAgency\Domain\Models\TravelCashSession ? $this->payload($session) : null]);
+        return response()->json(['data' => $session instanceof TravelCashSession ? $this->payload($session) : null]);
     }
 
     public function close(Request $request, TravelPdvService $service): JsonResponse
@@ -69,12 +70,12 @@ class TravelPdvController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function payload(\App\Modules\TravelAgency\Domain\Models\TravelCashSession $session): array
+    private function payload(TravelCashSession $session): array
     {
         return [
             'id' => $session->id,
             'status' => $session->status,
-            'opened_at' => $session->opened_at?->toIso8601String(),
+            'opened_at' => $session->opened_at->toIso8601String(),
             'closed_at' => $session->closed_at?->toIso8601String(),
             'opening_balance_minor' => $session->opening_balance_minor,
             'expected_balance_minor' => $session->expected_balance_minor,

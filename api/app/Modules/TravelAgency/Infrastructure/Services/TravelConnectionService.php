@@ -160,15 +160,11 @@ final class TravelConnectionService
         return ['leg1' => $booking1, 'leg2' => $booking2];
     }
 
-    private function departureDateTime(TravelTrip $trip, string $field): ?Carbon
+    private function departureDateTime(TravelTrip $trip, string $field): Carbon
     {
         $date = $field === 'arrival' ? $trip->arrival_date : $trip->departure_date;
-        $time = $field === 'arrival' ? $trip->arrival_time : $trip->departure_time;
+        $time = (string) ($field === 'arrival' ? $trip->arrival_time : $trip->departure_time);
 
-        if ($date === null) {
-            return null;
-        }
-
-        return $date->copy()->setTimeFromTimeString((string) ($time ?? '00:00'));
+        return Carbon::parse($date->toDateString().' '.($time === '' ? '00:00' : $time));
     }
 }

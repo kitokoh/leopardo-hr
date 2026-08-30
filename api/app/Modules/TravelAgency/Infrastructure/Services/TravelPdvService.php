@@ -70,7 +70,7 @@ final class TravelPdvService
 
         $expected = (int) $session->opening_balance_minor + $this->cashPaidSince($companyId, $session->opened_at);
 
-        return DB::transaction(function () use ($session, $actor, $actualBalanceMinor, $expected): TravelCashSession {
+        return DB::transaction(function () use ($session, $actualBalanceMinor, $expected): TravelCashSession {
             $session->forceFill([
                 'status' => TravelCashSession::STATUS_CLOSED,
                 'closed_at' => now(),

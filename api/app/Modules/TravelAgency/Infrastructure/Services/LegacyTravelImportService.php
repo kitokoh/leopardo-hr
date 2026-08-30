@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
+use App\Modules\TravelAgency\Domain\Models\TravelCity;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
@@ -108,20 +109,20 @@ final class LegacyTravelImportService
                 continue;
             }
 
-            $origin = \App\Modules\TravelAgency\Domain\Models\TravelCity::query()
+            $origin = TravelCity::query()
                 ->where('company_id', $companyId)
                 ->where('name', $originCode)
                 ->orWhere('name', ucfirst(strtolower($originCode)))
                 ->first();
 
-            $destination = \App\Modules\TravelAgency\Domain\Models\TravelCity::query()
+            $destination = TravelCity::query()
                 ->where('company_id', $companyId)
                 ->where('name', $destinationCode)
                 ->orWhere('name', ucfirst(strtolower($destinationCode)))
                 ->first();
 
-            if (! $origin instanceof \App\Modules\TravelAgency\Domain\Models\TravelCity
-                || ! $destination instanceof \App\Modules\TravelAgency\Domain\Models\TravelCity) {
+            if (! $origin instanceof TravelCity
+                || ! $destination instanceof TravelCity) {
                 $report['skipped'][] = 'route:'.$externalId.'(villes introuvables)';
 
                 continue;
@@ -194,7 +195,6 @@ final class LegacyTravelImportService
     }
 
     /**
-     * @param  array<string, mixed>  $dump
      * @param  ImportReport  $report
      */
     private function importPrices(string $companyId, TravelTrip $trip, array $prices, array &$report): void
