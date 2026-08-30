@@ -1600,7 +1600,6 @@ paths:
           description: Permission travel.manage requise
         '404':
           description: Classe introuvable ou appartenant à un autre tenant
-<<<<<<< HEAD
   /travel/vehicles:
     get:
       tags:
@@ -2189,6 +2188,7 @@ paths:
           description: Permission travel.manage requise
         '422':
           description: Validation échouée
+<<<<<<< HEAD
   /travel/trips/connections:
     get:
       tags:
@@ -2238,6 +2238,8 @@ paths:
           description: Non authentifié
         '422':
           description: Paramètres requis manquants
+=======
+>>>>>>> ca6863f60 (feat(travel): API réseau & trajets — véhicules, routes/étapes, trajets, tarifs, publish/cancel, search (TRAVEL-306..311))
   /travel/trips/search:
     get:
       tags:
@@ -2269,6 +2271,7 @@ paths:
         schema:
           type: string
           format: date
+<<<<<<< HEAD
       - name: flexible_days
         in: query
         required: false
@@ -2278,6 +2281,8 @@ paths:
           minimum: 0
           maximum: 7
           default: 0
+=======
+>>>>>>> ca6863f60 (feat(travel): API réseau & trajets — véhicules, routes/étapes, trajets, tarifs, publish/cancel, search (TRAVEL-306..311))
       - name: date_from
         in: query
         required: false
@@ -2671,6 +2676,7 @@ paths:
           description: Tarif ou trajet introuvable ou hors tenant
         '403':
           description: Permission travel.manage requise
+<<<<<<< HEAD
   /travel/bookings:
     get:
       tags:
@@ -4762,7 +4768,7 @@ paths:
         '422':
           description: Validation échouée (consentement manquant, message hors bornes, email/téléphone absents)
 =======
->>>>>>> e62cf4be5 (feat(travel): API back-office référentiel — countries/cities/stations/offices/carriers/classes (Closes #6031, #6032, #6033, #6034, #6035))
+>>>>>>> ca6863f60 (feat(travel): API réseau & trajets — véhicules, routes/étapes, trajets, tarifs, publish/cancel, search (TRAVEL-306..311))
   /health:
     get:
       tags:
@@ -29890,7 +29896,6 @@ components:
         updated_at:
           type: string
           nullable: true
-<<<<<<< HEAD
     TravelVehicle:
       type: object
       properties:
@@ -30038,6 +30043,7 @@ components:
         updated_at:
           type: string
           nullable: true
+<<<<<<< HEAD
     TravelBooking:
       type: object
       properties:
@@ -30451,7 +30457,7 @@ components:
           type: string
           nullable: true
 =======
->>>>>>> e62cf4be5 (feat(travel): API back-office référentiel — countries/cities/stations/offices/carriers/classes (Closes #6031, #6032, #6033, #6034, #6035))
+>>>>>>> ca6863f60 (feat(travel): API réseau & trajets — véhicules, routes/étapes, trajets, tarifs, publish/cancel, search (TRAVEL-306..311))
     TravelCarrier:
       type: object
       properties:
