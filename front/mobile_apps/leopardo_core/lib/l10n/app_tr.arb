@@ -2686,6 +2686,7 @@
   "eduReportcardsStatus": "Durum",
   "eduReportcardsGenerated": "Oluşturuldu",
   "eduReportcardsValidated": "Onaylandı",
+  "eduReportcardsPeriod": "Dönem",
   "eduTeacherTitle": "Öğretmen alanı",
   "eduTeacherSubtitle": "Sınıflarım: yoklama, notlar ve onay için gönderim.",
   "eduTeacherMyclasses": "Sınıflarım",

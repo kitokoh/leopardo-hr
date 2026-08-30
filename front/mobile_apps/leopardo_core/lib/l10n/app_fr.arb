@@ -2686,6 +2686,7 @@
   "eduReportcardsStatus": "Statut",
   "eduReportcardsGenerated": "Généré",
   "eduReportcardsValidated": "Validé",
+  "eduReportcardsPeriod": "Période",
   "eduTeacherTitle": "Espace enseignant",
   "eduTeacherSubtitle": "Mes classes : présence, notes et soumission pour validation.",
   "eduTeacherMyclasses": "Mes classes",
