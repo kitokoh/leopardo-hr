@@ -17,6 +17,7 @@ declare(strict_types=1);
  */
 
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCustomerController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelIncidentController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMaintenanceTaskController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
@@ -142,5 +143,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/fuel-station/maintenance-tasks/{task}', [FuelMaintenanceTaskController::class, 'show'])->whereNumber('task');
         Route::put('/fuel-station/maintenance-tasks/{task}', [FuelMaintenanceTaskController::class, 'update'])->whereNumber('task');
         Route::post('/fuel-station/maintenance-tasks/{task}/complete', [FuelMaintenanceTaskController::class, 'complete'])->middleware('throttle:fuel-station-write')->whereNumber('task');
+        // FUEL-016 (#5810) : clients (CRM tenant) + visites + consentement.
+        Route::get('/fuel-station/customers', [FuelCustomerController::class, 'index']);
+        Route::get('/fuel-station/customers/{customer}', [FuelCustomerController::class, 'show'])->whereNumber('customer');
+        Route::put('/fuel-station/customers/{customer}', [FuelCustomerController::class, 'update'])->whereNumber('customer');
+        Route::patch('/fuel-station/customers/{customer}/consent', [FuelCustomerController::class, 'consent'])->whereNumber('customer');
+        Route::get('/fuel-station/customers/{customer}/visits', [FuelCustomerController::class, 'visits'])->whereNumber('customer');
+        Route::post('/fuel-station/customers/{customer}/visits', [FuelCustomerController::class, 'storeVisit'])->whereNumber('customer');
+        Route::post('/fuel-station/stations/{station}/customers', [FuelCustomerController::class, 'store'])->whereNumber('station');
     });
 });
