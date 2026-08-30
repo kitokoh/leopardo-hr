@@ -15,6 +15,8 @@ Use this file to record real drill executions (staging recommended).
 
 ## Planned mandatory drills
 
+| DR-25 | Restore schéma tenant RestaurantManager sur staging | Avant GO pilote BC-25 (RESTO-903) | Chef de projet | PLANNED — exercice planifié avec le runbook `docs/ops/RUNBOOK_PILOT_RESTAURANTMANAGER.md` (§8) |
+
 | ID | Drill | Deadline | Owner | Status |
 |---|---|---|---|---|
 | DR-01 | Backup restore test on staging | Monthly via `Database Backup & Restore Drill` or manual fallback | Project lead | PASS 2026-08-22 (exercice #5283, local scratch PG 16) — prochain : workflow mensuel prod |
