@@ -23160,6 +23160,69 @@ paths:
                     $ref: '#/components/schemas/Delivery'
         '422':
           $ref: '#/components/responses/Validation422'
+  /delivery/deliveries/reports/summary:
+    get:
+      tags:
+      - Delivery
+      summary: KPIs livraison du tenant (DELIVERY-207/#6291)
+      description: |
+        Read model déterministe scopé tenant : totaux (taux de succès, délai
+        moyen, COD attendu vs collecté) ventilés par source/jour/livreur.
+        Fenêtre de dates bornée (défaut 30 j) ; 422 si from > to.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Résumé des KPIs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryReportSummary'
+        '422':
+          description: Fenêtre de dates invalide
+  /delivery/deliveries/reports/export:
+    get:
+      tags:
+      - Delivery
+      summary: Export CSV des livraisons (DELIVERY-207/#6291)
+      description: |
+        Export CSV streamé des livraisons du tenant sur la fenêtre (champs
+        métier, pas de PII superflue). Export async : BC-26-D07.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Fichier CSV
+          content:
+            text/csv:
+              schema:
+                type: string
+
   /delivery/deliveries/events:
     post:
       tags:
@@ -25320,6 +25383,77 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    DeliveryReportSummary:
+      type: object
+      properties:
+        range:
+          type: object
+          properties:
+            from:
+              type: string
+              format: date-time
+            to:
+              type: string
+              format: date-time
+        totals:
+          type: object
+          properties:
+            deliveries:
+              type: integer
+            delivered:
+              type: integer
+            failed:
+              type: integer
+            cancelled:
+              type: integer
+            returned:
+              type: integer
+            success_rate_pct:
+              type: number
+            avg_delivery_delay_minutes:
+              type: integer
+            cod_expected_minor:
+              type: integer
+            cod_collected_minor:
+              type: integer
+        by_source:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                type: string
+              deliveries:
+                type: integer
+              delivered:
+                type: integer
+              success_rate_pct:
+                type: number
+        by_day:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              deliveries:
+                type: integer
+              delivered:
+                type: integer
+        by_driver:
+          type: array
+          items:
+            type: object
+            properties:
+              driver_id:
+                type: integer
+                nullable: true
+              deliveries:
+                type: integer
+              delivered:
+                type: integer
+
     DeliveryEvent:
       type: object
       properties:
