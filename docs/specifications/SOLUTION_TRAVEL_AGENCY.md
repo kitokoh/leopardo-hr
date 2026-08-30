@@ -881,6 +881,15 @@ logs sans PII inutile · PR courte fusionnable sur `main` · entrée `CHANGELOG.
 
 ### Épic 8xx — Extensions métier (nouveau, « et même plus »)
 
+> **Statut (lot 2026-08-30, PR `feat/travel-batch1-integrations`) :** ✅ TRAVEL-801
+> (assignation auto des sièges), ✅ TRAVEL-802 (aller-retour), ✅ TRAVEL-804
+> (recherche flexible), ✅ TRAVEL-806 (webhooks sortants — lot shop), ✅ TRAVEL-807
+> (synchronisation entrante transporteurs), ✅ TRAVEL-808 (remboursements
+> partiels), ✅ TRAVEL-811 (fidélité voyageur), ✅ TRAVEL-812 (annulation de
+> trajet par l'agence), ✅ TRAVEL-813 (politiques d'annulation configurables).
+> Restants : TRAVEL-803, 805, 809, 810. — Épic 4xx : ✅ TRAVEL-415 (notifications)
+> et ✅ TRAVEL-417 (synthèse Accounting) livrés dans le même lot.
+
 | ID | Tâche fine | Parent |
 |---|---|---|
 | TRAVEL-801 | Assignation automatique des sièges (algorithme simple, surclassable manuellement) | TRAVEL-022 |
