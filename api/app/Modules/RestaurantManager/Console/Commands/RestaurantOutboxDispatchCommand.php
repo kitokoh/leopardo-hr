@@ -28,9 +28,9 @@ use Throwable;
 class RestaurantOutboxDispatchCommand extends Command
 {
     protected $signature = 'restaurant:outbox-dispatch
-        {--limit=100 : nombre max d\'événements par passe (défaut 100)}';
+        {--limit=100 : max events per pass (default 100)}';
 
-    protected $description = 'Consomme les événements d\'outbox RestaurantManager dus (idempotent, retry avec backoff, dead-letter).';
+    protected $description = 'Consumes due RestaurantManager outbox events (idempotent, retry with backoff, dead-letter).';
 
     /** Durée de lease d'un événement en cours de traitement. */
     private const PROCESSING_LEASE_MINUTES = 15;
@@ -60,7 +60,7 @@ class RestaurantOutboxDispatchCommand extends Command
             }
         }
 
-        $this->info("[restaurant:outbox-dispatch] {$processed} événement(s) traité(s).");
+        $this->info("[restaurant:outbox-dispatch] {$processed} event(s) processed.");
 
         return self::SUCCESS;
     }
