@@ -28,7 +28,7 @@ return new class extends Migration
                 $table->unique(['company_id', 'code'], 'travel_advert_types_company_code_unique');
             });
 
-            DB::statement("COMMENT ON TABLE travel_advert_types IS 'Types d'annonces payantes (TRAVEL-905/#6108).'");
+            DB::statement("COMMENT ON TABLE travel_advert_types IS 'Types d''annonces payantes (TRAVEL-905/#6108).'");
         }
 
         if (! schemaTableExists('travel_advert_positions')) {
