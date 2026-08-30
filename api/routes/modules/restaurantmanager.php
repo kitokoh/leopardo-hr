@@ -222,7 +222,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/inventory-counts/{restaurantInventoryCount}/items/{item}', [RestaurantInventoryCountController::class, 'recordItem']);
         Route::get('/pos-sessions/{restaurantPosSession}/cogs', [RestaurantCogsController::class, 'show']);
         Route::post('/reservations/{restaurantReservation}/deposit', [RestaurantReservationController::class, 'deposit']);
-        Route::get('/reservations/availability', [RestaurantReservationController::class, 'availability']);
         Route::put('/branches/{restaurantBranch}/cancellation-policy', [RestaurantCancellationPolicyController::class, 'update']);
         Route::get('/delivery-zones', [RestaurantDeliveryZoneController::class, 'index']);
         Route::post('/delivery-zones', [RestaurantDeliveryZoneController::class, 'store']);
