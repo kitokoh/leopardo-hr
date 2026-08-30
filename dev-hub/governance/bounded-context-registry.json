@@ -729,14 +729,14 @@
     {
       "code": "BC-26",
       "name": "DELIVERY",
-      "context": "DeliveryAgency",
-      "responsibility": "Colis, tournées, arrêts, livreurs, véhicules, preuves de livraison (POD), suivi temps réel, règlement COD et rapports pour les agences de livraison.",
+      "context": "Delivery",
+      "responsibility": "Module de livraison dernier-kilomètre générique : livraisons/colis (sources manual/restaurant/retail/ecommerce/crm/field), tournées, livreurs, preuves (POD), suivi temps réel, règlement COD et rapports — activable par tout tenant (agence, restaurant, retail, e-commerce, pharmacie).",
       "owner": "Agent 26 — BC-DELIVERY",
       "priority": "P1",
       "status": "planned",
       "paths": [
         {
-          "path": "api/app/Modules/DeliveryAgency",
+          "path": "api/app/Modules/Delivery",
           "status": "planned"
         }
       ],
@@ -755,6 +755,8 @@
         "BC-08",
         "BC-11",
         "BC-13",
+        "BC-14",
+        "BC-17",
         "BC-18",
         "BC-20",
         "BC-22"
