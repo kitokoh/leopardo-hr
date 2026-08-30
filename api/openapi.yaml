@@ -5962,6 +5962,28 @@ paths:
                             type: string
         '404':
           description: Référence inconnue ou hors tenant
+  /travel/shop/bookings/{reference}/cancel:
+    post:
+      tags:
+      - Travel
+      summary: Annulation en ligne d'une réservation (portail client, TRAVEL-702/#6089)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Reservation annulee
+        '401':
+          description: Non authentifie
+        '404':
+          description: Introuvable ou hors tenant
+        '422':
+          description: Code invalide, depart passe ou statut non annulable
   /travel/payments/initiate:
     post:
       tags:

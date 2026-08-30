@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\TravelAgency\Application\Actions\CancelBookingAction;
 use App\Modules\TravelAgency\Application\Actions\CreateBookingAction;
 use App\Modules\TravelAgency\Domain\Enums\BookingSource;
 use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
@@ -14,6 +15,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelCurrencyService;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelShopBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelBookingResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTripResource;
@@ -91,8 +93,6 @@ class TravelShopController extends Controller
     /**
      * TRAVEL-805 (#6096) — convertit les tarifs affichés dans la devise
      * demandée (param `currency`), sans toucher aux montants stockés.
-     *
-     * @param  mixed  $trips
      */
     private function convertDisplayPrices(mixed $trips, Request $request, Employee $actor): void
     {
@@ -275,5 +275,52 @@ class TravelShopController extends Controller
         $data['ticket_numbers'] = $booking->tickets->map(fn (TravelTicket $t): string => $t->ticket_number);
 
         return response()->json(['data' => $data]);
+    }
+
+    /**
+     * TRAVEL-702 (#6089) — Annulation en ligne (portail client).
+     *
+     * Le client prouve la possession du billet via `code` (comparé au hash
+     * sha256 `validation_code` des billets de la réservation), fournit un
+     * motif, et l'annulation n'est possible que si la réservation est
+     * pending/confirmed et le départ dans le futur. Idempotent : une
+     * réservation déjà annulée est renvoyée telle quelle (CancelBookingAction).
+     */
+    public function cancel(CancelTravelShopBookingRequest $request, string $reference): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $booking = TravelBooking::query()
+            ->where('reference', $reference)
+            ->first();
+
+        if (! $booking instanceof TravelBooking || $booking->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $booking->load('tickets', 'trip');
+
+        // Preuve de possession : le code fourni doit matcher le hash d'un billet.
+        $codeHash = hash('sha256', (string) $request->input('code'));
+        $owned = $booking->tickets->contains(
+            fn (TravelTicket $ticket): bool => hash_equals((string) $ticket->validation_code, $codeHash)
+        );
+
+        abort_if(! $owned, 422, 'TRAVEL_BOOKING_CODE_INVALID');
+
+        // Annulation bornée : départ dans le futur uniquement.
+        $departure = $booking->trip?->departure_date;
+        abort_if($departure !== null && ! $departure->isFuture(), 422, 'TRAVEL_BOOKING_DEPARTURE_PAST');
+
+        $cancelled = app(CancelBookingAction::class)->execute(
+            $booking,
+            $actor,
+            (string) $request->input('reason')
+        );
+
+        return response()->json([
+            'data' => (new TravelBookingResource($cancelled))->resolve($request),
+        ]);
     }
 }

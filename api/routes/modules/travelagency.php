@@ -199,6 +199,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/shop/trips/{travelTrip}', [TravelShopController::class, 'show']);
         Route::post('/shop/bookings', [TravelShopController::class, 'storeBooking']);
         Route::get('/shop/bookings/{reference}', [TravelShopController::class, 'track']);
+        Route::post('/shop/bookings/{reference}/cancel', [TravelShopController::class, 'cancel']);
 
         // Paiements (TRAVEL-408..411/#6060..#6063).
         Route::post('/payments/initiate', [TravelPaymentController::class, 'initiate']);
