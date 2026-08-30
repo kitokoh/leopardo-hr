@@ -78,7 +78,7 @@ final class FuelCrmContractService
      *
      * @param  array<string, mixed>  $data
      */
-    public function recordVisit(Employee $actor, FuelCustomer $customer, FuelStation $station, array $data): FuelCustomerVisit
+    public function recordVisit(Employee $actor, FuelCustomer $customer, int $stationId, array $data): FuelCustomerVisit
     {
         $idempotencyKey = isset($data['idempotency_key']) ? (string) $data['idempotency_key'] : null;
 
@@ -97,7 +97,7 @@ final class FuelCrmContractService
         $visit = FuelCustomerVisit::query()->create([
             'company_id' => $actor->company_id,
             'customer_id' => $customer->id,
-            'station_id' => $station->id,
+            'station_id' => $stationId,
             'visited_at' => isset($data['visited_at'])
                 ? Carbon::parse((string) $data['visited_at'])
                 : Carbon::now(),

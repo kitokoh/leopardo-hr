@@ -155,20 +155,20 @@ class FuelCustomerController extends Controller
         ]);
     }
 
-    public function storeVisit(StoreFuelCustomerVisitRequest $request, FuelCustomer $customer, FuelStation $station): JsonResponse
+    public function storeVisit(StoreFuelCustomerVisitRequest $request, FuelCustomer $customer): JsonResponse
     {
         $this->assertSolutionActive();
 
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($customer->company_id !== $actor->company_id || $station->company_id !== $actor->company_id) {
+        if ($customer->company_id !== $actor->company_id) {
             abort(404);
         }
 
         $this->authorize('update', $customer);
 
-        $visit = $this->crm->recordVisit($actor, $customer, $station, $request->validated());
+        $visit = $this->crm->recordVisit($actor, $customer, (int) $request->integer('station_id'), $request->validated());
 
         return response()->json(['data' => $this->visitPayload($visit)], 201);
     }

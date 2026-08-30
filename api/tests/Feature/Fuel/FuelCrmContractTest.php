@@ -122,12 +122,14 @@ class FuelCrmContractTest extends TestCase
         ])->json('data.id');
 
         $this->postJson('/api/v1/fuel-station/customers/'.$customerId.'/visits', [
+            'station_id' => $station->id,
             'notes' => 'Plein de 200 L',
             'idempotency_key' => 'visit-2026-08-30-001',
         ])->assertStatus(201);
 
         // Rejeu → aucune visite dupliquée, aucun point en double.
         $this->postJson('/api/v1/fuel-station/customers/'.$customerId.'/visits', [
+            'station_id' => $station->id,
             'notes' => 'Plein de 200 L',
             'idempotency_key' => 'visit-2026-08-30-001',
         ])->assertStatus(201);
