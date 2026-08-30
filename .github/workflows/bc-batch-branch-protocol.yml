@@ -1,0 +1,72 @@
+name: BC Batch Branch Protocol Guard
+
+# Garde du protocole de branches par lot BC (docs/GOUVERNANCE/BC_BATCH_BRANCH_PROTOCOL.md).
+# Vérifie sur le dépôt : une seule branche bc/<code>-* active par BC, claim
+# markers orphelins, PRs bc/* sans `Closes #N` (#2512), cohérence de label BC,
+# taille des PRs (budget proportionnel au nombre d'issues fermées), collisions
+# de migrations inter-PR (#1962) et état de `main`.
+# Rôle = RAPPORT (comme branch-hygiene.yml / crm-branch-protocol.yml) : les
+# violations sont publiées en artefact pour arbitrage manuel ; le mode
+# --strict (sortie 1) n'est utilisé que via workflow_dispatch.
+#
+# Référence : docs/GOUVERNANCE/BC_BATCH_BRANCH_PROTOCOL.md
+
+on:
+  schedule:
+    # Quotidien à 05:37 UTC (décalé des autres gardes de gouvernance).
+    - cron: "37 5 * * *"
+  workflow_dispatch:
+    inputs:
+      strict:
+        description: "Mode strict (sortie 1 sur violation)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+  actions: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: bc-batch-branch-protocol
+  cancel-in-progress: false
+
+jobs:
+  check-protocol:
+    timeout-minutes: 15
+    name: BC batch branch protocol
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Run BC batch branch protocol guard
+        id: guard
+        shell: bash
+        run: |
+          chmod +x dev-hub/tools/check-bc-batch-branch-protocol.sh
+          if [ "${{ github.event.inputs.strict }}" = "true" ]; then
+            dev-hub/tools/check-bc-batch-branch-protocol.sh "${{ github.repository }}" --strict 2>&1 | tee /tmp/bc-batch-branch-protocol-report.txt
+          else
+            dev-hub/tools/check-bc-batch-branch-protocol.sh "${{ github.repository }}" 2>&1 | tee /tmp/bc-batch-branch-protocol-report.txt
+          fi
+          echo "report_file=/tmp/bc-batch-branch-protocol-report.txt" >> "$GITHUB_OUTPUT"
+        # Le rapport est publié même quand des violations sont détectées
+        # (le script sort 0 par défaut ; --strict peut sortir 1).
+        continue-on-error: true
+
+      - name: Publier le rapport en artefact
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: bc-batch-branch-protocol-report
+          path: /tmp/bc-batch-branch-protocol-report.txt
+          if-no-files-found: warn
