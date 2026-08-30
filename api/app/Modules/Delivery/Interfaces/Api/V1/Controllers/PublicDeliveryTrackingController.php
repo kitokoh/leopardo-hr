@@ -46,8 +46,12 @@ final class PublicDeliveryTrackingController
                 'window_to' => $delivery->window_to?->toIso8601String(),
                 'delivered_at' => $delivery->delivered_at?->toIso8601String(),
                 'expires_at' => $share->expires_at?->toIso8601String(),
-                'events' => $delivery->events
-                    ->sortByDesc('event_at')
+                'events' => $delivery->events()
+                    ->orderByDesc('event_at')
+                    // BC-26-D10 (#6296) : timeline publique bornée (50 max)
+                    // — pas de get()/all() non borné (garde MAT-014).
+                    ->limit(50)
+                    ->get()
                     ->map(fn ($event): array => [
                         'type' => $event->type,
                         'event_at' => $event->event_at?->toIso8601String(),

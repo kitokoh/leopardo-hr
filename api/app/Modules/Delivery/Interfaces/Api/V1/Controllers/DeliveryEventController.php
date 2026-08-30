@@ -89,8 +89,10 @@ final class DeliveryEventController
         // (DeliveryPolicy::timeline — rider = ses tournées uniquement).
         Gate::authorize('timeline', $found);
 
+        // BC-26-D10 (#6296) : timeline bornée (limit) — pas de get() non
+        // paginé dans les contrôleurs livraison (garde MAT-014).
         return DeliveryEventResource::collection(
-            $found->events()->orderByDesc('event_at')->get(),
+            $found->events()->orderByDesc('event_at')->limit(200)->get(),
         );
     }
 

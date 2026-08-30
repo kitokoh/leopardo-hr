@@ -44,7 +44,9 @@ final class DeliveryReportController
             ->where('company_id', $companyId)
             ->whereBetween('created_at', [$from, $to])
             ->orderByDesc('created_at')
-            ->get();
+            // BC-26-D10 (#6296) : export streamé via curseur — pas de
+            // get() non paginé (garde MAT-014), mémoire bornée.
+            ->cursor();
 
         $stream = function () use ($deliveries): void {
             $handle = fopen('php://output', 'wb');
