@@ -28137,6 +28137,183 @@ paths:
                     $ref: '#/components/schemas/Delivery'
         '422':
           $ref: '#/components/responses/Validation422'
+  /delivery/deliveries/events:
+    post:
+      tags:
+      - Delivery
+      summary: Enregistre un événement de tracking (DELIVERY-204/#6288)
+      description: |
+        Idempotent : unique (company, delivery, type, event_at) + idempotency_key
+        client — un rejeu retourne l'événement existant. Chaque type est une
+        transition légale de la machine à états ; delivered exige
+        proof_document_id (POD, BC-20 par valeur) — refus 409 PROOF_REQUIRED.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - delivery_id
+              - type
+              properties:
+                delivery_id:
+                  type: integer
+                type:
+                  type: string
+                  enum: [picked_up, out_for_delivery, arrived, delivered, failed, returned]
+                event_at:
+                  type: string
+                  format: date-time
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                origin:
+                  type: string
+                  enum: [mobile, edge, api]
+                  default: mobile
+                idempotency_key:
+                  type: string
+                  format: uuid
+                proof_document_id:
+                  type: integer
+      responses:
+        '201':
+          description: Événement enregistré (ou existant si rejeu)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryEvent'
+        '404':
+          description: Livraison introuvable ou hors tenant
+        '409':
+          description: PROOF_REQUIRED ou INVALID_TRANSITION
+  /delivery/deliveries/{delivery}/tracking-link:
+    post:
+      tags:
+      - Delivery
+      summary: Génère un lien de suivi public borné (DELIVERY-204/#6288)
+      description: |
+        Token 64 chars expirant (7 jours) — le token EST la credential du
+        destinataire (pattern AccountingDocumentShare #5225).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: delivery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Lien de suivi + expiration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      tracking_url:
+                        type: string
+                      expires_at:
+                        type: string
+                        format: date-time
+        '404':
+          description: Livraison introuvable ou hors tenant
+  /delivery/deliveries/{delivery}/tracking:
+    get:
+      tags:
+      - Delivery
+      summary: Ligne du temps interne (DELIVERY-204/#6288)
+      description: |
+        Événements d'une livraison, ordre chronologique décroissant — RBAC
+        manager, scope tenant (404 hors tenant).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: delivery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ligne du temps
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryEvent'
+        '404':
+          description: Livraison introuvable ou hors tenant
+  /deliveries/tracking/{token}:
+    get:
+      tags:
+      - Delivery
+      summary: Suivi public par lien borné (DELIVERY-204/#6288)
+      description: |
+        Endpoint public : le token 64 chars expirant EST la credential (pas
+        d'auth). Champs limités au suivi (RGPD) : statut, événements, adresse
+        de destination, fenêtre. Anti-énumération + Referrer-Policy no-referrer.
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '[A-Za-z0-9]{64}'
+      responses:
+        '200':
+          description: Suivi de la livraison
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      reference:
+                        type: string
+                      status:
+                        type: string
+                      dropoff_address:
+                        type: string
+                      window_from:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      events:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            event_at:
+                              type: string
+                              format: date-time
+        '404':
+          description: Token invalide ou expiré
+        '429':
+          description: Trop de requêtes (throttle)
+
   /delivery/deliveries/routes:
     post:
       tags:
@@ -28305,7 +28482,7 @@ paths:
         '404':
           description: Livraison introuvable ou hors tenant
 
->>>>>>> fd7814c33 (feat(delivery): API tournées — création, affectation, clôture idempotentes (DELIVERY-202, Closes #6286))
+>>>>>>> 81945fd21 (feat(delivery): suivi temps réel — événements idempotents + lien public borné (DELIVERY-204, Closes #6288))
   /delivery/ping:
     get:
       tags:
@@ -30156,13 +30333,36 @@ components:
 <<<<<<< HEAD
     TravelClass:
 =======
-    DeliveryRoute:
->>>>>>> fd7814c33 (feat(delivery): API tournées — création, affectation, clôture idempotentes (DELIVERY-202, Closes #6286))
+    DeliveryEvent:
       type: object
       properties:
         id:
           type: integer
-<<<<<<< HEAD
+        delivery_id:
+          type: integer
+        type:
+          type: string
+        event_at:
+          type: string
+          format: date-time
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        origin:
+          type: string
+        payload:
+          type: object
+          nullable: true
+
+    DeliveryRoute:
+>>>>>>> 81945fd21 (feat(delivery): suivi temps réel — événements idempotents + lien public borné (DELIVERY-204, Closes #6288))
+      type: object
+      properties:
+        id:
+          type: integer
         code:
           type: string
         label:
@@ -30239,45 +30439,10 @@ components:
           type: string
           nullable: true
     TravelRouteStop:
-=======
-        route_date:
-          type: string
-          format: date
-        zone:
-          type: string
-          nullable: true
-        status:
-          type: string
-          enum: [draft, assigned, in_progress, completed]
-        driver_id:
-          type: integer
-          nullable: true
-        vehicle_code:
-          type: string
-          nullable: true
-        deliveries_count:
-          type: integer
-        delivered_count:
-          type: integer
-        failed_count:
-          type: integer
-        cod_collected_minor:
-          type: integer
-        closed_at:
-          type: string
-          format: date-time
-          nullable: true
-        stops:
-          type: array
-          items:
-            $ref: '#/components/schemas/DeliveryRouteStop'
-    DeliveryRouteStop:
->>>>>>> fd7814c33 (feat(delivery): API tournées — création, affectation, clôture idempotentes (DELIVERY-202, Closes #6286))
       type: object
       properties:
         id:
           type: integer
-<<<<<<< HEAD
         route_id:
           type: integer
         city_id:
@@ -30364,30 +30529,6 @@ components:
           type: string
           nullable: true
     TravelBooking:
-=======
-        delivery_id:
-          type: integer
-        sort_order:
-          type: integer
-        status:
-          type: string
-          enum: [pending, en_route, arrived, delivered, failed, skipped]
-        address:
-          type: string
-        contact:
-          type: string
-          nullable: true
-        eta:
-          type: string
-          format: date-time
-          nullable: true
-        delivered_at:
-          type: string
-          format: date-time
-          nullable: true
-
-    Delivery:
->>>>>>> fd7814c33 (feat(delivery): API tournées — création, affectation, clôture idempotentes (DELIVERY-202, Closes #6286))
       type: object
       properties:
         id:

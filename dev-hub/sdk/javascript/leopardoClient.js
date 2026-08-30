@@ -1730,6 +1730,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/dashboard/summary", options);
     },
 
+    /** Suivi public par lien borné (DELIVERY-204/#6288) */
+    getDeliveriesTrackingByToken(options = {}) {
+      return request("GET", "/deliveries/tracking/{token}", options);
+    },
+
     /** Liste des livraisons du tenant (DELIVERY-201/#6285) */
     getDeliveryDeliveries(options = {}) {
       return request("GET", "/delivery/deliveries", options);
@@ -1743,6 +1748,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Détail d'une livraison (DELIVERY-201/#6285) */
     getDeliveryDeliveriesByDelivery(options = {}) {
       return request("GET", "/delivery/deliveries/{delivery}", options);
+    },
+
+    /** Ligne du temps interne (DELIVERY-204/#6288) */
+    getDeliveryDeliveriesByDeliveryTracking(options = {}) {
+      return request("GET", "/delivery/deliveries/{delivery}/tracking", options);
+    },
+
+    /** Génère un lien de suivi public borné (DELIVERY-204/#6288) */
+    postDeliveryDeliveriesByDeliveryTrackingLink(options = {}) {
+      return request("POST", "/delivery/deliveries/{delivery}/tracking-link", options);
+    },
+
+    /** Enregistre un événement de tracking (DELIVERY-204/#6288) */
+    postDeliveryDeliveriesEvents(options = {}) {
+      return request("POST", "/delivery/deliveries/events", options);
     },
 
     /** Crée une tournée (DELIVERY-202/#6286) */

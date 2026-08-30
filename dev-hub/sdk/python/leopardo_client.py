@@ -1404,6 +1404,10 @@ class LeopardoClient:
         """Resume dashboard"""
         return self.request("GET", "/dashboard/summary", **kwargs)
 
+    def get_deliveries_tracking_by_token(self, **kwargs):
+        """Suivi public par lien borné (DELIVERY-204/#6288)"""
+        return self.request("GET", "/deliveries/tracking/{token}", **kwargs)
+
     def get_delivery_deliveries(self, **kwargs):
         """Liste des livraisons du tenant (DELIVERY-201/#6285)"""
         return self.request("GET", "/delivery/deliveries", **kwargs)
@@ -1415,6 +1419,18 @@ class LeopardoClient:
     def get_delivery_deliveries_by_delivery(self, **kwargs):
         """Détail d'une livraison (DELIVERY-201/#6285)"""
         return self.request("GET", "/delivery/deliveries/{delivery}", **kwargs)
+
+    def get_delivery_deliveries_by_delivery_tracking(self, **kwargs):
+        """Ligne du temps interne (DELIVERY-204/#6288)"""
+        return self.request("GET", "/delivery/deliveries/{delivery}/tracking", **kwargs)
+
+    def post_delivery_deliveries_by_delivery_tracking_link(self, **kwargs):
+        """Génère un lien de suivi public borné (DELIVERY-204/#6288)"""
+        return self.request("POST", "/delivery/deliveries/{delivery}/tracking-link", **kwargs)
+
+    def post_delivery_deliveries_events(self, **kwargs):
+        """Enregistre un événement de tracking (DELIVERY-204/#6288)"""
+        return self.request("POST", "/delivery/deliveries/events", **kwargs)
 
     def post_delivery_deliveries_routes(self, **kwargs):
         """Crée une tournée (DELIVERY-202/#6286)"""
