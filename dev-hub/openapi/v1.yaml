@@ -834,6 +834,12 @@ paths:
         '422':
           description: Validation ou invariant métier non respecté
   /restaurant/delivery-riders/{restaurantDeliveryRider}:
+    parameters:
+    - name: restaurantDeliveryRider
+      in: path
+      required: true
+      schema:
+        type: integer
     get:
       tags:
       - Restaurant
@@ -956,6 +962,12 @@ paths:
         '422':
           description: Validation ou invariant métier non respecté
   /restaurant/deliveries/{restaurantDelivery}:
+    parameters:
+    - name: restaurantDelivery
+      in: path
+      required: true
+      schema:
+        type: integer
     get:
       tags:
       - Restaurant
@@ -976,6 +988,12 @@ paths:
         '404':
           description: Ressource introuvable (ou autre tenant)
   /restaurant/deliveries/{restaurantDelivery}/assign:
+    parameters:
+    - name: restaurantDelivery
+      in: path
+      required: true
+      schema:
+        type: integer
     post:
       tags:
       - Restaurant
@@ -1009,6 +1027,12 @@ paths:
         '422':
           description: Validation ou invariant métier non respecté
   /restaurant/deliveries/{restaurantDelivery}/out-for-delivery:
+    parameters:
+    - name: restaurantDelivery
+      in: path
+      required: true
+      schema:
+        type: integer
     post:
       tags:
       - Restaurant
@@ -1031,6 +1055,12 @@ paths:
         '422':
           description: Validation ou invariant métier non respecté
   /restaurant/deliveries/{restaurantDelivery}/deliver:
+    parameters:
+    - name: restaurantDelivery
+      in: path
+      required: true
+      schema:
+        type: integer
     post:
       tags:
       - Restaurant
@@ -1063,6 +1093,12 @@ paths:
         '422':
           description: Validation ou invariant métier non respecté
   /restaurant/deliveries/{restaurantDelivery}/cancel:
+    parameters:
+    - name: restaurantDelivery
+      in: path
+      required: true
+      schema:
+        type: integer
     post:
       tags:
       - Restaurant
@@ -1133,6 +1169,12 @@ paths:
         '422':
           description: Validation ou invariant métier non respecté
   /restaurant/loyalty-programs/{restaurantLoyaltyProgram}:
+    parameters:
+    - name: restaurantLoyaltyProgram
+      in: path
+      required: true
+      schema:
+        type: integer
     put:
       tags:
       - Restaurant
@@ -1217,6 +1259,12 @@ paths:
         '422':
           description: Validation ou invariant métier non respecté
   /restaurant/loyalty-customers/{restaurantLoyaltyCustomer}/credit:
+    parameters:
+    - name: restaurantLoyaltyCustomer
+      in: path
+      required: true
+      schema:
+        type: integer
     post:
       tags:
       - Restaurant
@@ -1257,6 +1305,12 @@ paths:
         '422':
           description: Validation ou invariant métier non respecté
   /restaurant/loyalty-customers/{restaurantLoyaltyCustomer}/redeem:
+    parameters:
+    - name: restaurantLoyaltyCustomer
+      in: path
+      required: true
+      schema:
+        type: integer
     post:
       tags:
       - Restaurant
@@ -1347,6 +1401,12 @@ paths:
         '422':
           description: Validation ou invariant métier non respecté
   /restaurant/promotions/{restaurantPromotion}:
+    parameters:
+    - name: restaurantPromotion
+      in: path
+      required: true
+      schema:
+        type: integer
     get:
       tags:
       - Restaurant
@@ -1813,6 +1873,12 @@ paths:
         '422':
           description: Validation ou invariant métier non respecté
   /restaurant/reports/export/{export}:
+    parameters:
+    - name: export
+      in: path
+      required: true
+      schema:
+        type: integer
     get:
       tags:
       - Restaurant
