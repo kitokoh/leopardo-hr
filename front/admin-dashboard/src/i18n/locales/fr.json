@@ -164,7 +164,9 @@
     "cancel": "Annuler",
     "noResults": "Aucun résultat trouvé.",
     "reload": "Recharger",
-    "dismiss": "Fermer"
+    "dismiss": "Fermer",
+    "save": "Enregistrer",
+    "send": "Envoyer"
   },
   "modules": {
     "attendance": "Pointage",
@@ -4255,7 +4257,9 @@
       "checkin": "Check-in",
       "tickets": "Billets",
       "reports": "Rapports",
-      "rentals": "Locations & Hôtels"
+      "rentals": "Locations & Hôtels",
+      "content": "Contenu & Monétisation",
+      "contacts": "Contacts"
     },
     "referentiel": {
       "tabsLabel": "Sous-sections du référentiel",
@@ -4289,7 +4293,8 @@
       "report": "Rechercher dans le rapport…",
       "rentalVehicle": "Rechercher un véhicule de location…",
       "rentalBooking": "Rechercher une réservation de location…",
-      "hotel": "Rechercher un hôtel…"
+      "hotel": "Rechercher un hôtel…",
+      "site": "Rechercher un site…"
     },
     "field": {
       "iso2": "ISO2",
@@ -4361,7 +4366,19 @@
       "availableUntil": "Disponible au",
       "ownerCarrier": "Compagnie propriétaire",
       "title": "Intitulé",
-      "vehicle": "Véhicule"
+      "vehicle": "Véhicule",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "Email",
+      "phone": "Téléphone",
+      "message": "Message",
+      "price": "Prix",
+      "id": "ID",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "advertType": "Type d'annonce",
+      "advertPosition": "Emplacement",
+      "content": "Contenu"
     },
     "action": {
       "create": "Créer",
@@ -4379,7 +4396,11 @@
       "publish": "Publier",
       "cancelTrip": "Annuler le trajet",
       "addNested": "Ajouter",
-      "add": "Ajouter"
+      "add": "Ajouter",
+      "pay": "Payer",
+      "validate": "Valider",
+      "reject": "Rejeter",
+      "renew": "Renouveler"
     },
     "status": {
       "active": "Actif",
@@ -4505,7 +4526,8 @@
       "ticketsIssued": "Billets émis.",
       "checkedIn": "Passager embarqué.",
       "ticketRevoked": "Billet révoqué.",
-      "exported": "Export CSV téléchargé."
+      "exported": "Export CSV téléchargé.",
+      "actionDone": "Action effectuée."
     },
     "error": {
       "loadFailed": "Impossible de charger les données.",
@@ -4525,6 +4547,114 @@
     "form": {
       "selectPlaceholder": "— Sélectionner —",
       "moneyMinor": "Montant en devises (1 = 100 minor)"
+    },
+    "content": {
+      "tabsLabel": "Sous-sections contenu & monétisation",
+      "tabQuiz": "Quiz",
+      "tabAds": "Annonces",
+      "tabSites": "Sites touristiques",
+      "adsTabsLabel": "Sous-sections annonces"
+    },
+    "quiz": {
+      "title": "Quiz & jeu-concours",
+      "subtitle": "Créez des quiz, gérez les questions (la bonne réponse n'est jamais exposée côté client) et consultez les résultats triés par score.",
+      "create": "Nouveau quiz",
+      "createTitle": "Nouveau quiz",
+      "search": "Rechercher un quiz…",
+      "listCaption": "Quiz",
+      "manage": "Gérer",
+      "results": "Résultats",
+      "detailTitle": "Gérer le quiz",
+      "noDescription": "Aucune description.",
+      "questions": "Questions",
+      "addQuestion": "Ajouter une question",
+      "addQuestionTitle": "Ajouter une question",
+      "points": "pts",
+      "correctHidden": "Bonne réponse gérée côté serveur — jamais exposée.",
+      "noQuestions": "Aucune question. Ajoutez-en pour activer le quiz.",
+      "question": "Question",
+      "options": "Options (2 à 10)",
+      "option": "Option",
+      "removeOption": "Retirer cette option",
+      "addOption": "Ajouter une option",
+      "correctHint": "Cochez la bonne réponse (radio). Elle n'est jamais renvoyée par l'API.",
+      "position": "Position",
+      "maxParticipations": "Participations max / contact",
+      "startsAt": "Début",
+      "endsAt": "Fin",
+      "resultsTitle": "Résultats du quiz",
+      "searchResults": "Rechercher un participant…",
+      "resultsCaption": "Participations (triées par score)",
+      "participantEmail": "Email",
+      "participantName": "Nom",
+      "score": "Score",
+      "bonus": "Bonus",
+      "submittedAt": "Soumis le"
+    },
+    "quizStatus": {
+      "draft": "Brouillon",
+      "active": "Actif",
+      "closed": "Clôturé"
+    },
+    "ads": {
+      "types": "Types d'annonces",
+      "positions": "Emplacements",
+      "prices": "Grille tarifaire",
+      "list": "Annonces",
+      "pricePerImage": "Prix / image",
+      "pricePerCharacter": "Prix / caractère",
+      "paidAt": "Payé le",
+      "expiresAt": "Expire le",
+      "validityDays": "Validité (jours)",
+      "confirmPayTitle": "Confirmer le paiement",
+      "confirmPayBody": "Marquer cette annonce comme payée ? Elle restera en attente de validation.",
+      "confirmValidateTitle": "Valider l'annonce",
+      "confirmValidateBody": "Valider cette annonce ? Elle deviendra visible publiquement jusqu'à expiration.",
+      "confirmRejectTitle": "Rejeter avec motif",
+      "confirmRejectBody": "Rejeter cette annonce ? Elle ne sera pas publiée.",
+      "confirmRenewTitle": "Renouveler",
+      "confirmRenewBody": "Renouveler cette annonce ? Sa visibilité sera prolongée.",
+      "rejectReason": "Motif du rejet"
+    },
+    "adsStatus": {
+      "draft": "Brouillon",
+      "submitted": "Soumise",
+      "paid": "Payée",
+      "validated": "Validée",
+      "rejected": "Rejetée",
+      "expired": "Expirée",
+      "archived": "Archivée"
+    },
+    "sites": {
+      "title": "Sites touristiques",
+      "filterCity": "Filtrer par ville",
+      "search": "Rechercher un site…"
+    },
+    "contacts": {
+      "title": "Contacts voyageurs",
+      "subtitle": "Registre des demandes et consentements par canal (opt-in / opt-out horodaté) + notification manuelle.",
+      "newRequest": "Nouvelle demande",
+      "newRequestTitle": "Nouvelle demande de contact",
+      "search": "Rechercher un contact…",
+      "listCaption": "Demandes & consentements",
+      "consents": "Consentements",
+      "notify": "Notifier",
+      "consentEmailLabel": "J'accepte d'être recontacté(e) par email (consentement obligatoire — RGPD).",
+      "consentsTitle": "Consentements par canal",
+      "consentBody": "Opt-in / opt-out horodaté pour chaque canal. Un canal refusé ne recevra aucune notification.",
+      "channelEmail": "Email",
+      "channelSms": "SMS",
+      "channelWhatsapp": "WhatsApp",
+      "channelApp": "Application / push",
+      "notifyTitle": "Notification manuelle",
+      "notifyBody": "Message borné (2000 caractères max). Seuls les canaux consentis sont proposés — 422 si aucun canal consenti.",
+      "channels": "Canaux (respect du consentement)",
+      "notConsented": "non consenti",
+      "consented": "Consenti",
+      "refused": "Refusé",
+      "createdAt": "Reçu le",
+      "submitted": "Demande enregistrée — accusé envoyé.",
+      "notified": "Notification envoyée."
     }
   }
 }

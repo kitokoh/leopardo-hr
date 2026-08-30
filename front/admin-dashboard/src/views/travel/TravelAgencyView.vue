@@ -90,6 +90,8 @@ import TravelCheckInTab from '@/views/travel/TravelCheckInTab.vue'
 import TravelTicketsTab from '@/views/travel/TravelTicketsTab.vue'
 import TravelReportsTab from '@/views/travel/TravelReportsTab.vue'
 import TravelRentalsHotelsTab from '@/views/travel/TravelRentalsHotelsTab.vue'
+import TravelContentTab from '@/views/travel/TravelContentTab.vue'
+import TravelContactsTab from '@/views/travel/TravelContactsTab.vue'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
@@ -107,7 +109,9 @@ const tabs = [
   { key: 'checkin', label: t('travel.tab.checkin', 'Check-in'), component: TravelCheckInTab },
   { key: 'tickets', label: t('travel.tab.tickets', 'Billets'), component: TravelTicketsTab },
   { key: 'reports', label: t('travel.tab.reports', 'Rapports'), component: TravelReportsTab },
-  { key: 'rentals', label: t('travel.tab.rentals', 'Locations & Hôtels'), component: TravelRentalsHotelsTab }
+  { key: 'rentals', label: t('travel.tab.rentals', 'Locations & Hôtels'), component: TravelRentalsHotelsTab },
+  { key: 'content', label: t('travel.tab.content', 'Contenu & Monétisation'), component: TravelContentTab },
+  { key: 'contacts', label: t('travel.tab.contacts', 'Contacts'), component: TravelContactsTab }
 ]
 
 const activeComponent = computed(() => tabs.find((tab) => tab.key === activeTab.value)?.component)

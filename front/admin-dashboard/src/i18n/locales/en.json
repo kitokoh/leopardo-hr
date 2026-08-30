@@ -164,7 +164,9 @@
     "cancel": "Cancel",
     "noResults": "No results found.",
     "reload": "Reload",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "save": "Enregistrer",
+    "send": "Envoyer"
   },
   "modules": {
     "attendance": "Attendance",
@@ -4255,7 +4257,9 @@
       "checkin": "Check-in",
       "tickets": "Tickets",
       "reports": "Reports",
-      "rentals": "Rentals & Hotels"
+      "rentals": "Rentals & Hotels",
+      "content": "Content & Monetization",
+      "contacts": "Contacts"
     },
     "referentiel": {
       "tabsLabel": "Referential sub-sections",
@@ -4289,7 +4293,8 @@
       "report": "Search in report…",
       "rentalVehicle": "Search a rental vehicle…",
       "rentalBooking": "Search a rental booking…",
-      "hotel": "Search a hotel…"
+      "hotel": "Search a hotel…",
+      "site": "Search a site…"
     },
     "field": {
       "iso2": "ISO2",
@@ -4361,7 +4366,19 @@
       "availableUntil": "Available until",
       "ownerCarrier": "Owner carrier",
       "title": "Title",
-      "vehicle": "Vehicle"
+      "vehicle": "Vehicle",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone",
+      "message": "Message",
+      "price": "Price",
+      "id": "ID",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "advertType": "Advert type",
+      "advertPosition": "Placement",
+      "content": "Content"
     },
     "action": {
       "create": "Create",
@@ -4379,7 +4396,11 @@
       "publish": "Publish",
       "cancelTrip": "Cancel trip",
       "addNested": "Add",
-      "add": "Add"
+      "add": "Add",
+      "pay": "Pay",
+      "validate": "Validate",
+      "reject": "Reject",
+      "renew": "Renew"
     },
     "status": {
       "active": "Active",
@@ -4505,7 +4526,8 @@
       "ticketsIssued": "Tickets issued.",
       "checkedIn": "Passenger checked in.",
       "ticketRevoked": "Ticket revoked.",
-      "exported": "CSV export downloaded."
+      "exported": "CSV export downloaded.",
+      "actionDone": "Action completed."
     },
     "error": {
       "loadFailed": "Unable to load data.",
@@ -4525,6 +4547,114 @@
     "form": {
       "selectPlaceholder": "— Select —",
       "moneyMinor": "Amount in currency (1 = 100 minor)"
+    },
+    "content": {
+      "tabsLabel": "Content & monetization sections",
+      "tabQuiz": "Quizzes",
+      "tabAds": "Adverts",
+      "tabSites": "Tourist sites",
+      "adsTabsLabel": "Advert sections"
+    },
+    "quiz": {
+      "title": "Quizzes & contests",
+      "subtitle": "Create quizzes, manage questions (the correct answer is never exposed to clients) and view results sorted by score.",
+      "create": "New quiz",
+      "createTitle": "New quiz",
+      "search": "Search a quiz…",
+      "listCaption": "Quizzes",
+      "manage": "Manage",
+      "results": "Results",
+      "detailTitle": "Manage quiz",
+      "noDescription": "No description.",
+      "questions": "Questions",
+      "addQuestion": "Add question",
+      "addQuestionTitle": "Add question",
+      "points": "pts",
+      "correctHidden": "Correct answer handled server-side — never exposed.",
+      "noQuestions": "No questions yet. Add some to activate the quiz.",
+      "question": "Question",
+      "options": "Options (2 to 10)",
+      "option": "Option",
+      "removeOption": "Remove this option",
+      "addOption": "Add option",
+      "correctHint": "Select the correct answer (radio). It is never returned by the API.",
+      "position": "Position",
+      "maxParticipations": "Max participations / contact",
+      "startsAt": "Starts at",
+      "endsAt": "Ends at",
+      "resultsTitle": "Quiz results",
+      "searchResults": "Search a participant…",
+      "resultsCaption": "Participations (sorted by score)",
+      "participantEmail": "Email",
+      "participantName": "Name",
+      "score": "Score",
+      "bonus": "Bonus",
+      "submittedAt": "Submitted at"
+    },
+    "quizStatus": {
+      "draft": "Draft",
+      "active": "Active",
+      "closed": "Closed"
+    },
+    "ads": {
+      "types": "Advert types",
+      "positions": "Placements",
+      "prices": "Price grid",
+      "list": "Adverts",
+      "pricePerImage": "Price / image",
+      "pricePerCharacter": "Price / character",
+      "paidAt": "Paid at",
+      "expiresAt": "Expires at",
+      "validityDays": "Validity (days)",
+      "confirmPayTitle": "Confirm payment",
+      "confirmPayBody": "Mark this advert as paid? It will remain pending validation.",
+      "confirmValidateTitle": "Validate advert",
+      "confirmValidateBody": "Validate this advert? It will become publicly visible until expiry.",
+      "confirmRejectTitle": "Reject with reason",
+      "confirmRejectBody": "Reject this advert? It will not be published.",
+      "confirmRenewTitle": "Renew",
+      "confirmRenewBody": "Renew this advert? Its visibility will be extended.",
+      "rejectReason": "Rejection reason"
+    },
+    "adsStatus": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "paid": "Paid",
+      "validated": "Validated",
+      "rejected": "Rejected",
+      "expired": "Expired",
+      "archived": "Archived"
+    },
+    "sites": {
+      "title": "Tourist sites",
+      "filterCity": "Filter by city",
+      "search": "Search a site…"
+    },
+    "contacts": {
+      "title": "Traveler contacts",
+      "subtitle": "Registry of requests and per-channel consents (timestamped opt-in / opt-out) + manual notification.",
+      "newRequest": "New request",
+      "newRequestTitle": "New contact request",
+      "search": "Search a contact…",
+      "listCaption": "Requests & consents",
+      "consents": "Consents",
+      "notify": "Notify",
+      "consentEmailLabel": "I agree to be contacted by email (mandatory consent — GDPR).",
+      "consentsTitle": "Per-channel consents",
+      "consentBody": "Timestamped opt-in / opt-out for each channel. A declined channel receives no notification.",
+      "channelEmail": "Email",
+      "channelSms": "SMS",
+      "channelWhatsapp": "WhatsApp",
+      "channelApp": "App / push",
+      "notifyTitle": "Manual notification",
+      "notifyBody": "Bounded message (2000 chars max). Only consented channels are offered — 422 if none consented.",
+      "channels": "Channels (respect consent)",
+      "notConsented": "not consented",
+      "consented": "Consented",
+      "refused": "Refused",
+      "createdAt": "Received at",
+      "submitted": "Request recorded — acknowledgement sent.",
+      "notified": "Notification sent."
     }
   }
 }

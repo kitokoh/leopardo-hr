@@ -75,6 +75,100 @@ async function mockTravelApi(page, { pingStatus = 200 } = {}) {
       }),
     }),
   )
+  // TRAVEL-911/912 (#6416/#6417) : mocks des écrans contenu & contacts
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/quizzes(\\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: [
+          { id: 1, title: 'Quiz découverte Cameroun', status: 'active', starts_at: '2026-08-01T00:00:00+00:00', ends_at: '2026-09-01T00:00:00+00:00' },
+        ],
+      }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/quizzes\/1(\\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: {
+          id: 1,
+          title: 'Quiz découverte Cameroun',
+          description: 'Testez vos connaissances',
+          status: 'active',
+          questions: [
+            { id: 11, question: 'Quelle est la capitale ?', options: ['Yaoundé', 'Douala'], points: 2 },
+          ],
+        },
+      }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/quizzes\/1\/results(\\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: [
+          { id: 101, participant_email: 'marie@test.com', participant_name: 'Marie', score: 8, bonus: 1, submitted_at: '2026-08-10T09:00:00+00:00' },
+        ],
+      }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/advert-types(\\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [{ id: 1, code: 'banner', label: 'Bannière' }] }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/advert-positions(\\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [{ id: 1, code: 'header', label: 'En-tête' }] }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/advert-prices(\\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [] }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/adverts(\\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: [
+          { id: 1, title: 'Annonce test', content: 'Contenu', status: 'validated', price_minor: 5000, currency: 'XAF', paid_at: '2026-08-10T09:00:00+00:00', expires_at: '2026-09-10T09:00:00+00:00' },
+        ],
+      }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/tourist-sites(\\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: [
+          { id: 1, name: 'Chutes de la Lobé', city_id: 1, latitude: 2.88, longitude: 9.9, status: 'active' },
+        ],
+      }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/contacts(\\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: [
+          { id: 1, first_name: 'Jean', last_name: 'Dupont', email: 'jean.dupont@test.com', phone: '+237600000000', email_consent_given: true, sms_consent_given: false, whatsapp_consent_given: true, created_at: '2026-08-12T09:00:00+00:00' },
+        ],
+      }),
+    }),
+  )
 }
 
 async function loginViaToken(page) {
@@ -113,7 +207,7 @@ test.describe('TravelAgency — gate feature flag (TRAVEL-601)', () => {
     await expect(page.getByRole('heading', { name: /Agence de voyage/i }).first()).toBeVisible({
       timeout: 15_000,
     })
-    for (const tab of ['Référentiel', 'Réservations', 'Check-in', 'Billets', 'Rapports', 'Locations & Hôtels']) {
+    for (const tab of ['Référentiel', 'Réservations', 'Check-in', 'Billets', 'Rapports', 'Locations & Hôtels', 'Contenu & Monétisation', 'Contacts']) {
       await expect(page.getByRole('tab', { name: new RegExp(tab, 'i') })).toBeVisible()
     }
   })
@@ -205,5 +299,120 @@ test.describe('TravelAgency — écrans (TRAVEL-602..608)', () => {
     })
     await expect(page.getByRole('heading', { name: /Réservations de location/i })).toBeVisible()
     await expect(page.getByRole('heading', { name: /Hôtels/i })).toBeVisible()
+  })
+})
+
+test.describe('TravelAgency — contenu & monétisation (TRAVEL-911, #6416)', () => {
+  test.skip(!AUTHENTICATED, 'Skipped: requiert PLAYWRIGHT_AUTH_TOKEN (tests authentifiés)')
+  test.skip(LIVE, 'Skipped: BACKEND_LIVE=1 — tests mock désactivés')
+
+  test('onglet Contenu & Monétisation : sous-sections Quiz / Annonces / Sites', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /Contenu & Monétisation/i }).click()
+    await expect(page.getByRole('heading', { name: /Quiz & jeu-concours/i })).toBeVisible({
+      timeout: 15_000,
+    })
+    for (const sub of ['Quiz', 'Annonces', 'Sites touristiques']) {
+      await expect(page.getByRole('tab', { name: new RegExp(sub, 'i') })).toBeVisible()
+    }
+    // Donnée mockée du quiz
+    await expect(page.getByText('Quiz découverte Cameroun')).toBeVisible({ timeout: 15_000 })
+  })
+
+  test('quiz : gestion (questions) et résultats', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /Contenu & Monétisation/i }).click()
+    await page.getByRole('button', { name: /Gérer/i }).click()
+    await expect(page.getByText('Quelle est la capitale ?')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText(/Bonne réponse gérée côté serveur/i)).toBeVisible()
+    // Fermer puis ouvrir les résultats
+    await page.getByRole('button', { name: /Fermer/i }).first().click()
+    await page.getByRole('button', { name: /Résultats/i }).click()
+    await expect(page.getByText('marie@test.com')).toBeVisible({ timeout: 15_000 })
+  })
+
+  test('annonces : référentiels, grille tarifaire et cycle de vie', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /Contenu & Monétisation/i }).click()
+    await page.getByRole('tab', { name: /Annonces/i }).click()
+    await expect(page.getByText("Types d'annonces")).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText('Emplacements')).toBeVisible()
+    // Grille tarifaire
+    await page.getByRole('tab', { name: /Grille tarifaire/i }).click()
+    await expect(page.getByRole('heading', { name: /Grille tarifaire/i })).toBeVisible({ timeout: 15_000 })
+    // Liste des annonces + statut mocké (l'onglet externe « Annonces » existe aussi → .last())
+    await page.getByRole('tab', { name: /^Annonces$/i }).last().click()
+    await expect(page.getByText('Annonce test')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText(/Validée/i)).toBeVisible()
+  })
+
+  test('sites touristiques : CRUD + filtre par ville', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /Contenu & Monétisation/i }).click()
+    await page.getByRole('tab', { name: /Sites touristiques/i }).click()
+    await expect(page.getByText('Chutes de la Lobé')).toBeVisible({ timeout: 15_000 })
+    await expect(page.locator('#travel-sites-city-filter')).toBeVisible()
+  })
+})
+
+test.describe('TravelAgency — contacts voyageurs (TRAVEL-912, #6417)', () => {
+  test.skip(!AUTHENTICATED, 'Skipped: requiert PLAYWRIGHT_AUTH_TOKEN (tests authentifiés)')
+  test.skip(LIVE, 'Skipped: BACKEND_LIVE=1 — tests mock désactivés')
+
+  test('onglet Contacts : liste, consentements et actions', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /^Contacts$/i }).click()
+    await expect(page.getByRole('heading', { name: /Contacts voyageurs/i })).toBeVisible({
+      timeout: 15_000,
+    })
+    await expect(page.getByText('jean.dupont@test.com')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('button', { name: /Consentements/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /Notifier/i })).toBeVisible()
+    // Badges de consentement (email oui, sms non)
+    await expect(page.getByText(/Consenti/i).first()).toBeVisible()
+    await expect(page.getByText(/Refusé/i).first()).toBeVisible()
+  })
+
+  test('nouvelle demande : soumission du formulaire (POST /travel/contact)', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /^Contacts$/i }).click()
+    await page.getByRole('button', { name: /Nouvelle demande/i }).click()
+    await page.locator('#travel-contact-email').fill('visiteur@test.com')
+    await page.locator('#travel-contact-message').fill('Je souhaite des informations.')
+    await page.locator('#travel-contact-consent-email').check()
+    await page.getByRole('button', { name: /Enregistrer/i }).click()
+    // La modale se ferme après le POST mocké (200)
+    await expect(page.locator('#travel-contact-email')).not.toBeVisible({ timeout: 15_000 })
+  })
+
+  test('notification manuelle : ouverture modale + envoi', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /^Contacts$/i }).click()
+    await page.getByRole('button', { name: /Notifier/i }).click()
+    await expect(page.getByText(/Message borné/i)).toBeVisible({ timeout: 15_000 })
+    await page.locator('#travel-notify-message').fill('Votre trajet est confirmé.')
+    await page.getByRole('button', { name: /Envoyer/i }).click()
+    await expect(page.locator('#travel-notify-message')).not.toBeVisible({ timeout: 15_000 })
   })
 })
