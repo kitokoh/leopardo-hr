@@ -271,7 +271,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/adverts', [TravelAdvertController::class, 'store']);
         Route::get('/adverts/{travelAdvert}', [TravelAdvertController::class, 'show']);
         Route::post('/adverts/{travelAdvert}/pay', [TravelAdvertController::class, 'pay']);
-        Route::post('/adverts/{travelAdvert}/validate', [TravelAdvertController::class, 'validate']);
+        Route::post('/adverts/{travelAdvert}/validate', [TravelAdvertController::class, 'validateAdvert']);
         Route::post('/adverts/{travelAdvert}/reject', [TravelAdvertController::class, 'reject']);
         Route::post('/adverts/{travelAdvert}/renew', [TravelAdvertController::class, 'renew']);
 

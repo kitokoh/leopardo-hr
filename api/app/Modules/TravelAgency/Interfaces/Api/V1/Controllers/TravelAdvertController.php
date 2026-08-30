@@ -168,7 +168,7 @@ class TravelAdvertController extends Controller
         ]]);
     }
 
-    public function validate(Request $request, TravelAdvert $travelAdvert): JsonResponse
+    public function validateAdvert(Request $request, TravelAdvert $travelAdvert): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
