@@ -102,7 +102,7 @@
     </DataTable>
 
     <!-- Détail réservation -->
-    <TravelModal :open="detailOpen" :title="detailTitle" wide @close="closedetailOpen">
+    <TravelModal :open="detailOpen" :title="detailTitle" wide @close="closeDetail">
       <div v-if="detailLoading" class="py-10 text-center text-sm text-slate-500">
         {{ $t('travel.loading', 'Chargement…') }}
       </div>
@@ -217,7 +217,7 @@
     <TravelModal
       :open="reasonOpen"
       :title="reasonAction === 'cancel' ? $t('travel.bookings.cancelReasonTitle', 'Motif d\u2019annulation') : $t('travel.bookings.refundReasonTitle', 'Motif de remboursement')"
-      @close="closereasonOpen"
+      @close="closeReason"
     >
       <form @submit.prevent="submitReason">
         <FormField

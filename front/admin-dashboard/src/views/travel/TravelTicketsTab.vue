@@ -45,7 +45,7 @@
       :open="ticketsOpen"
       :title="ticketsTitle"
       wide
-      @close="closeticketsOpen"
+      @close="closeTickets"
     >
       <div v-if="ticketsLoading" class="py-10 text-center text-sm text-slate-500">
         {{ $t('travel.loading', 'Chargement…') }}
@@ -102,7 +102,7 @@
     <TravelModal
       :open="revokeOpen"
       :title="$t('travel.tickets.revokeTitle', 'Motif de révocation')"
-      @close="closerevokeOpen"
+      @close="closeRevoke"
     >
       <form @submit.prevent="submitRevoke">
         <FormField id="ticket-revoke-reason" :label="$t('travel.bookings.reason', 'Motif')" :error="revokeError" required>

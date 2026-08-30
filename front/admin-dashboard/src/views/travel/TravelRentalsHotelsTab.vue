@@ -27,7 +27,7 @@
     </div>
 
     <!-- Gestion des images d'un véhicule de location -->
-    <TravelModal :open="imagesOpen" :title="imagesTitle" @close="closeimagesOpen">
+    <TravelModal :open="imagesOpen" :title="imagesTitle" @close="closeImages">
       <div v-if="imagesError" class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700" role="alert">
         {{ imagesError }}
       </div>
