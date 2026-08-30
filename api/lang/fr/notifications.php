@@ -34,4 +34,8 @@ return [
 
     'payment_document_ready_title' => 'Document prêt',
     'payment_document_ready_body' => 'Votre document de paiement est généré et disponible au téléchargement.',
+    'restaurant_delivery_status_changed_title' => 'Livraison : :status',
+    'restaurant_delivery_status_changed_body' => 'La livraison #:delivery (commande #:order) est maintenant « :status ».',
+    'restaurant_reservation_reminder_title' => 'Réservation à venir (J-1)',
+    'restaurant_reservation_reminder_body' => 'Réservation :reference — :covers couvert(s) le :date. Préparez la table.',
 ];

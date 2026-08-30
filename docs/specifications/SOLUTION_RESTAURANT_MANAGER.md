@@ -340,6 +340,7 @@ restaurant_deliveries
 - id, company_id, order_id
 - zone_id NULL, rider_id NULL, status (pending|assigned|out_for_delivery|delivered|cancelled)
 - fee_minor int, delivered_at NULL, delivered_to_contact NULL
+- UNIQUE(company_id, order_id) (une livraison par commande — RESTO-605)
 
 restaurant_loyalty_programs
 - id, company_id
@@ -524,6 +525,8 @@ PO       : draft → sent → received | cancelled
 | `restaurant.stock.alert.v1` | Notifications (gérant), Reporting |
 | `restaurant.pos.closed.v1` | Accounting (synthèse), Reporting |
 | `restaurant.sales.settled.v1` | Accounting (synthèse périodique validée) |
+| `restaurant.delivery.status.changed.v1` | Notifications (livreur) — RESTO-605 |
+| `restaurant.reservation.reminder.v1` | Notifications (équipe branche, J-1) — RESTO-608 |
 
 ### 6.4 Intégrations transversales
 

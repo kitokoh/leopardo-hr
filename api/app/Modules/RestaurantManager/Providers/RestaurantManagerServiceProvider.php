@@ -4,7 +4,21 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Providers;
 
+use App\Modules\Notification\Infrastructure\Services\CommunicationService;
+use App\Modules\RestaurantManager\Application\Actions\CreateDeliveryAction;
+use App\Modules\RestaurantManager\Application\Actions\CreditLoyaltyPointsAction;
+use App\Modules\RestaurantManager\Application\Actions\ExportRestaurantReportAction;
+use App\Modules\RestaurantManager\Application\Actions\RedeemLoyaltyPointsAction;
+use App\Modules\RestaurantManager\Application\Actions\TransitionDeliveryAction;
+use App\Modules\RestaurantManager\Application\Consumers\DeliveryNotificationConsumer;
+use App\Modules\RestaurantManager\Application\Consumers\LoyaltyOrderPaidConsumer;
+use App\Modules\RestaurantManager\Application\Consumers\ReservationReminderConsumer;
+use App\Modules\RestaurantManager\Application\Services\DeliveryStateMachine;
+use App\Modules\RestaurantManager\Application\Services\RestaurantReportService;
 use App\Modules\RestaurantManager\Console\Commands\ActivateRestaurantManagerCommand;
+use App\Modules\RestaurantManager\Console\Commands\RestaurantNoShowExpireCommand;
+use App\Modules\RestaurantManager\Console\Commands\RestaurantOutboxDispatchCommand;
+use App\Modules\RestaurantManager\Console\Commands\RestaurantSendRemindersCommand;
 use App\Modules\RestaurantManager\Console\Commands\SeedRestaurantDemoCommand;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantBranchRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOrderRepositoryInterface;
@@ -15,8 +29,12 @@ use App\Modules\RestaurantManager\Domain\Contracts\SolutionManifest;
 use App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantCategory;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantDelivery;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryRider;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantHour;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantIngredient;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyCustomer;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyProgram;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantMenu;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantMenuItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
@@ -24,6 +42,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderPayment;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantRefund;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantSupplier;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
@@ -40,11 +59,16 @@ use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGatewayRegistry
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CashPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\MobileMoneyPaymentGateway;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Policies\RestaurantBranchPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantCategoryPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantDeliveryPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantDeliveryRiderPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantHourPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantIngredientPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantLoyaltyCustomerPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantLoyaltyProgramPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantMenuItemPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantMenuPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantOrderPaymentPolicy;
@@ -52,6 +76,7 @@ use App\Modules\RestaurantManager\Policies\RestaurantOrderPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantPosSessionPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantProductIngredientPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantProductPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantPromotionPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantRefundPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantSupplierPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantTablePolicy;
@@ -109,11 +134,43 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         });
 
         // RESTO-105 (#6162) — activation tenant (flag + référentiel) ;
-        // RESTO-107 (#6164) — seed de démonstration idempotent.
+        // RESTO-107 (#6164) — seed de démonstration idempotent ;
+        // RESTO-606/608 (#6211/#6213) — outbox dispatch, no-show, rappels.
         $this->commands([
             ActivateRestaurantManagerCommand::class,
             SeedRestaurantDemoCommand::class,
+            RestaurantOutboxDispatchCommand::class,
+            RestaurantNoShowExpireCommand::class,
+            RestaurantSendRemindersCommand::class,
         ]);
+
+        // RESTO-606 (#6211) — registre des consommateurs d'outbox de la
+        // verticale + services du lot livraison/fidélité/rapports.
+        $this->app->singleton(RestaurantOutboxConsumerRegistry::class, function (): RestaurantOutboxConsumerRegistry {
+            $registry = new RestaurantOutboxConsumerRegistry();
+
+            $registry->register(new LoyaltyOrderPaidConsumer(
+                new CreditLoyaltyPointsAction(),
+            ));
+
+            $registry->register(new DeliveryNotificationConsumer(
+                app(CommunicationService::class),
+            ));
+
+            $registry->register(new ReservationReminderConsumer(
+                app(CommunicationService::class),
+            ));
+
+            return $registry;
+        });
+
+        $this->app->singleton(DeliveryStateMachine::class);
+        $this->app->singleton(CreateDeliveryAction::class);
+        $this->app->singleton(TransitionDeliveryAction::class);
+        $this->app->singleton(CreditLoyaltyPointsAction::class);
+        $this->app->singleton(RedeemLoyaltyPointsAction::class);
+        $this->app->singleton(RestaurantReportService::class);
+        $this->app->singleton(ExportRestaurantReportAction::class);
     }
 
     public function boot(): void
@@ -148,5 +205,13 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         Gate::policy(RestaurantOrderPayment::class, RestaurantOrderPaymentPolicy::class);
         Gate::policy(RestaurantRefund::class, RestaurantRefundPolicy::class);
         Gate::policy(RestaurantTableSession::class, RestaurantTableSessionPolicy::class);
+
+        // Policies livraison (RESTO-605, #6210), fidélité (RESTO-606, #6211)
+        // et promotions (RESTO-607, #6212) — mêmes patterns.
+        Gate::policy(RestaurantDeliveryRider::class, RestaurantDeliveryRiderPolicy::class);
+        Gate::policy(RestaurantDelivery::class, RestaurantDeliveryPolicy::class);
+        Gate::policy(RestaurantLoyaltyProgram::class, RestaurantLoyaltyProgramPolicy::class);
+        Gate::policy(RestaurantLoyaltyCustomer::class, RestaurantLoyaltyCustomerPolicy::class);
+        Gate::policy(RestaurantPromotion::class, RestaurantPromotionPolicy::class);
     }
 }

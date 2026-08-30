@@ -34,4 +34,8 @@ return [
 
     'payment_document_ready_title' => 'المستند جاهز',
     'payment_document_ready_body' => 'تم إنشاء مسтد مدفوعاتك وهو متاح للتنزيل.',
+    'restaurant_delivery_status_changed_title' => 'التوصيل: :status',
+    'restaurant_delivery_status_changed_body' => 'أصبح التوصيل رقم :delivery (الطلب رقم :order) الآن « :status ».',
+    'restaurant_reservation_reminder_title' => 'حجز قادم (قبل يوم)',
+    'restaurant_reservation_reminder_body' => 'الحجز :reference — :covers شخصًا في :date. جهّز الطاولة.',
 ];
