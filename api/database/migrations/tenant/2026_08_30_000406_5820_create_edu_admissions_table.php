@@ -80,7 +80,7 @@ return new class extends Migration
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_admissions_status_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_admissions\" ADD CONSTRAINT edu_admissions_status_check "
                     ."CHECK (status IN ('new','document_pending','review','accepted','waitlisted','rejected','cancelled','converted')); "
-                    ."END IF; END $$"
+                    .'END IF; END $$'
                 );
             }
         }
