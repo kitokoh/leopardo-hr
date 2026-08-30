@@ -2255,6 +2255,111 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/fuel-station/cash-sessions/{session}/movements", options);
     },
 
+    /** Lister les clients fidelite */
+    getFuelStationCustomers(options = {}) {
+      return request("GET", "/fuel-station/customers", options);
+    },
+
+    /** Creer ou synchroniser un client (manager, idempotent par external_id) */
+    postFuelStationCustomers(options = {}) {
+      return request("POST", "/fuel-station/customers", options);
+    },
+
+    /** Detail d'un client */
+    getFuelStationCustomersByCustomer(options = {}) {
+      return request("GET", "/fuel-station/customers/{customer}", options);
+    },
+
+    /** Modifier le consentement marketing (manager, RGPD) */
+    putFuelStationCustomersByCustomerConsent(options = {}) {
+      return request("PUT", "/fuel-station/customers/{customer}/consent", options);
+    },
+
+    /** Depenser des points de fidelite (manager) */
+    postFuelStationCustomersByCustomerRedeem(options = {}) {
+      return request("POST", "/fuel-station/customers/{customer}/redeem", options);
+    },
+
+    /** Lister les equipements (kind=pump|tank|meter) */
+    getFuelStationEquipment(options = {}) {
+      return request("GET", "/fuel-station/equipment", options);
+    },
+
+    /** Creer un equipement (manager, kind=pump|tank|meter) */
+    postFuelStationEquipment(options = {}) {
+      return request("POST", "/fuel-station/equipment", options);
+    },
+
+    /** Mettre a jour un equipement (manager) */
+    putFuelStationEquipmentByKindById(options = {}) {
+      return request("PUT", "/fuel-station/equipment/{kind}/{id}", options);
+    },
+
+    /** Export CSV des releves (manager, audite) */
+    getFuelStationExportsReadings(options = {}) {
+      return request("GET", "/fuel-station/exports/readings", options);
+    },
+
+    /** Export CSV des ventes (manager, audite) */
+    getFuelStationExportsSales(options = {}) {
+      return request("GET", "/fuel-station/exports/sales", options);
+    },
+
+    /** Journal des imports (manager) */
+    getFuelStationImports(options = {}) {
+      return request("GET", "/fuel-station/imports", options);
+    },
+
+    /** Lister les incidents */
+    getFuelStationIncidents(options = {}) {
+      return request("GET", "/fuel-station/incidents", options);
+    },
+
+    /** Signaler un incident (tout employe du tenant) */
+    postFuelStationIncidents(options = {}) {
+      return request("POST", "/fuel-station/incidents", options);
+    },
+
+    /** Detail d'un incident */
+    getFuelStationIncidentsByIncident(options = {}) {
+      return request("GET", "/fuel-station/incidents/{incident}", options);
+    },
+
+    /** Assigner un incident (manager) */
+    postFuelStationIncidentsByIncidentAssign(options = {}) {
+      return request("POST", "/fuel-station/incidents/{incident}/assign", options);
+    },
+
+    /** Cloturer un incident (manager) */
+    postFuelStationIncidentsByIncidentClose(options = {}) {
+      return request("POST", "/fuel-station/incidents/{incident}/close", options);
+    },
+
+    /** Resoudre un incident (manager) */
+    postFuelStationIncidentsByIncidentResolve(options = {}) {
+      return request("POST", "/fuel-station/incidents/{incident}/resolve", options);
+    },
+
+    /** Lister les taches de maintenance */
+    getFuelStationMaintenanceTasks(options = {}) {
+      return request("GET", "/fuel-station/maintenance-tasks", options);
+    },
+
+    /** Creer une tache de maintenance (manager) */
+    postFuelStationMaintenanceTasks(options = {}) {
+      return request("POST", "/fuel-station/maintenance-tasks", options);
+    },
+
+    /** Detail d'une tache de maintenance */
+    getFuelStationMaintenanceTasksByTask(options = {}) {
+      return request("GET", "/fuel-station/maintenance-tasks/{task}", options);
+    },
+
+    /** Mettre a jour une tache de maintenance (manager) */
+    putFuelStationMaintenanceTasksByTask(options = {}) {
+      return request("PUT", "/fuel-station/maintenance-tasks/{task}", options);
+    },
+
     /** Sessions de caisse du pompiste connecte (self-service) */
     getFuelStationMeCashSessions(options = {}) {
       return request("GET", "/fuel-station/me/cash-sessions", options);
@@ -2283,6 +2388,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Corriger un releve (versionne, audite) — manager principal/rh */
     postFuelStationMeterReadingsByReadingCorrections(options = {}) {
       return request("POST", "/fuel-station/meter-readings/{reading}/corrections", options);
+    },
+
+    /** Lister les produits du catalogue */
+    getFuelStationProducts(options = {}) {
+      return request("GET", "/fuel-station/products", options);
+    },
+
+    /** Creer un produit (manager) */
+    postFuelStationProducts(options = {}) {
+      return request("POST", "/fuel-station/products", options);
+    },
+
+    /** Mettre a jour un produit (manager) */
+    putFuelStationProductsByProduct(options = {}) {
+      return request("PUT", "/fuel-station/products/{product}", options);
+    },
+
+    /** Anomalies de compteur (manager) */
+    getFuelStationReportsAnomalies(options = {}) {
+      return request("GET", "/fuel-station/reports/anomalies", options);
+    },
+
+    /** Ventes journalieres (manager) */
+    getFuelStationReportsDailySales(options = {}) {
+      return request("GET", "/fuel-station/reports/daily-sales", options);
+    },
+
+    /** Synthese d'un shift (manager) */
+    getFuelStationReportsShiftSummary(options = {}) {
+      return request("GET", "/fuel-station/reports/shift-summary", options);
     },
 
     /** Lister les ventes (manager, pagine) */
@@ -2345,6 +2480,46 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/fuel-station/shifts/{shift}/presence", options);
     },
 
+    /** Lister les sites operationnels */
+    getFuelStationSites(options = {}) {
+      return request("GET", "/fuel-station/sites", options);
+    },
+
+    /** Creer un site operationnel (manager) */
+    postFuelStationSites(options = {}) {
+      return request("POST", "/fuel-station/sites", options);
+    },
+
+    /** Detail d'un site */
+    getFuelStationSitesBySite(options = {}) {
+      return request("GET", "/fuel-station/sites/{site}", options);
+    },
+
+    /** Lister les stations (tenants-scoped, filtres allowlist) */
+    getFuelStationStations(options = {}) {
+      return request("GET", "/fuel-station/stations", options);
+    },
+
+    /** Creer une station (manager) */
+    postFuelStationStations(options = {}) {
+      return request("POST", "/fuel-station/stations", options);
+    },
+
+    /** Archiver une station (manager) */
+    deleteFuelStationStationsByStation(options = {}) {
+      return request("DELETE", "/fuel-station/stations/{station}", options);
+    },
+
+    /** Detail d'une station */
+    getFuelStationStationsByStation(options = {}) {
+      return request("GET", "/fuel-station/stations/{station}", options);
+    },
+
+    /** Mettre a jour une station (manager) */
+    putFuelStationStationsByStation(options = {}) {
+      return request("PUT", "/fuel-station/stations/{station}", options);
+    },
+
     /** Lister les intervalles calcules d'un compteur */
     getFuelStationStationsByStationPumpsByPumpMetersByMeterIntervals(options = {}) {
       return request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals", options);
@@ -2358,6 +2533,46 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Enregistrer un releve de compteur (cumulatif, idempotent) */
     postFuelStationStationsByStationPumpsByPumpMetersByMeterReadings(options = {}) {
       return request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", options);
+    },
+
+    /** Lister les entrees de stock (manager) */
+    getFuelStationStockEntries(options = {}) {
+      return request("GET", "/fuel-station/stock-entries", options);
+    },
+
+    /** Enregistrer une entree de stock (manager, idempotent) */
+    postFuelStationStockEntries(options = {}) {
+      return request("POST", "/fuel-station/stock-entries", options);
+    },
+
+    /** Niveau de stock calcule (manager) */
+    getFuelStationStockLevel(options = {}) {
+      return request("GET", "/fuel-station/stock/level", options);
+    },
+
+    /** Lancer un rapprochement station/jour (manager, idempotent) */
+    postFuelStationStockReconcile(options = {}) {
+      return request("POST", "/fuel-station/stock/reconcile", options);
+    },
+
+    /** Historique des rapprochements (manager) */
+    getFuelStationStockReconciliations(options = {}) {
+      return request("GET", "/fuel-station/stock/reconciliations", options);
+    },
+
+    /** Resynchronisation terminal (releves/ventes depuis since_id) */
+    getFuelStationSyncOutbox(options = {}) {
+      return request("GET", "/fuel-station/sync/outbox", options);
+    },
+
+    /** Synchroniser des releves (idempotent par idempotency_key) */
+    postFuelStationSyncReadings(options = {}) {
+      return request("POST", "/fuel-station/sync/readings", options);
+    },
+
+    /** Synchroniser des ventes (idempotent par external_id) */
+    postFuelStationSyncSales(options = {}) {
+      return request("POST", "/fuel-station/sync/sales", options);
     },
 
     /** Candidature partenaire */

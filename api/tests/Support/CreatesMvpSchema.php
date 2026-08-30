@@ -1304,7 +1304,7 @@ trait CreatesMvpSchema
                 $table->jsonb('payload');
                 $table->string('status', 20)->default('pending');
                 $table->unsignedSmallInteger('attempts')->default(0);
-                $table->timestampTz('available_at')->useCurrent();
+                $table->timestampTz('available_at', 6)->useCurrent();
                 $table->text('last_error')->nullable();
                 $table->timestampTz('processed_at')->nullable();
                 $table->string('idempotency_key', 255);
@@ -2470,6 +2470,169 @@ trait CreatesMvpSchema
                 $table->timestamps();
 
                 $table->unique(['company_id', 'external_id'], 'fuel_sales_external_unique');
+            });
+        }
+
+        // — FuelStation batch A (FUEL-009/010/014/015/016/018, #5803..#5814) :
+        // parité fixture ↔ migrations tenant 2026_08_30_0004xx (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('fuel_stock_entries'))) {
+            Schema::create($this->moduleTable('fuel_stock_entries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id')->nullable()->index();
+                $table->string('product_code', 40);
+                $table->decimal('quantity', 14, 3);
+                $table->decimal('unit_cost', 14, 2)->default(0);
+                $table->string('entry_type', 20)->default('delivery');
+                $table->string('reason', 255)->nullable();
+                $table->string('reference', 120)->nullable();
+                $table->date('entry_date');
+                $table->string('idempotency_key', 191);
+                $table->unsignedInteger('created_by')->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'idempotency_key'], 'fuel_stock_entries_key_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_reconciliation_runs'))) {
+            Schema::create($this->moduleTable('fuel_reconciliation_runs'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id')->nullable()->index();
+                $table->date('run_date');
+                $table->string('status', 20)->default('pending');
+                $table->timestampTz('started_at')->nullable();
+                $table->timestampTz('finished_at')->nullable();
+                $table->jsonb('summary')->nullable();
+                $table->string('last_error', 500)->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'station_id', 'run_date'], 'fuel_reconciliation_run_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_incidents'))) {
+            Schema::create($this->moduleTable('fuel_incidents'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id')->nullable()->index();
+                $table->string('equipment_type', 20)->default('other');
+                $table->unsignedBigInteger('equipment_id')->nullable();
+                $table->string('severity', 20)->default('medium');
+                $table->string('status', 20)->default('open');
+                $table->string('title', 200);
+                $table->text('description')->nullable();
+                $table->unsignedInteger('reported_by')->nullable();
+                $table->unsignedInteger('assigned_to')->nullable();
+                $table->timestampTz('occurred_at')->useCurrent();
+                $table->timestampTz('resolved_at')->nullable();
+                $table->unsignedInteger('resolved_by')->nullable();
+                $table->text('resolution_notes')->nullable();
+                $table->timestampTz('closed_at')->nullable();
+                $table->unsignedInteger('closed_by')->nullable();
+                $table->text('closure_notes')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_incident_attachments'))) {
+            Schema::create($this->moduleTable('fuel_incident_attachments'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('incident_id')->index();
+                $table->string('file_name', 200);
+                $table->string('mime_type', 120);
+                $table->unsignedBigInteger('size_bytes')->default(0);
+                $table->unsignedInteger('uploaded_by')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_maintenance_tasks'))) {
+            Schema::create($this->moduleTable('fuel_maintenance_tasks'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id')->nullable()->index();
+                $table->unsignedBigInteger('incident_id')->nullable()->index();
+                $table->string('task_type', 20)->default('preventive');
+                $table->string('title', 200);
+                $table->text('description')->nullable();
+                $table->string('priority', 20)->default('medium');
+                $table->string('status', 20)->default('todo');
+                $table->unsignedInteger('assigned_to')->nullable();
+                $table->date('scheduled_for')->nullable();
+                $table->date('completed_at')->nullable();
+                $table->unsignedInteger('completed_by')->nullable();
+                $table->text('completion_notes')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_outbox_events'))) {
+            Schema::create($this->moduleTable('fuel_outbox_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('event_type', 80);
+                $table->string('aggregate_type', 120)->nullable();
+                $table->string('aggregate_id', 120)->nullable();
+                $table->jsonb('payload');
+                $table->string('status', 20)->default('pending');
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->timestampTz('available_at', 6)->useCurrent();
+                $table->text('last_error')->nullable();
+                $table->timestampTz('processed_at')->nullable();
+                $table->string('idempotency_key', 255);
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                $table->unique(['company_id', 'idempotency_key'], 'fuel_outbox_company_key_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_customers'))) {
+            Schema::create($this->moduleTable('fuel_customers'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id')->nullable()->index();
+                $table->string('external_id', 120);
+                $table->string('full_name', 200);
+                $table->text('phone')->nullable();
+                $table->text('email')->nullable();
+                $table->boolean('marketing_consent')->default(false);
+                $table->bigInteger('loyalty_points')->default(0);
+                $table->text('metadata')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'external_id'], 'fuel_customers_company_external_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_imports'))) {
+            Schema::create($this->moduleTable('fuel_imports'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('kind', 40);
+                $table->string('file_name', 200);
+                $table->string('status', 20)->default('uploaded');
+                $table->unsignedInteger('total_rows')->default(0);
+                $table->unsignedInteger('processed_rows')->default(0);
+                $table->unsignedInteger('failed_rows')->default(0);
+                $table->jsonb('error_summary')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestampTz('started_at')->nullable();
+                $table->timestampTz('finished_at')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        // fuel_sales.customer_id (FUEL-016) — parité avec la migration additive.
+        $fuelSales = $this->moduleTable('fuel_sales');
+        if (Schema::hasTable($fuelSales) && ! Schema::hasColumn($fuelSales, 'customer_id')) {
+            Schema::table($fuelSales, function (Blueprint $table): void {
+                $table->unsignedBigInteger('customer_id')->nullable()->index()->after('cash_session_id');
             });
         }
 

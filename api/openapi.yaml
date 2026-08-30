@@ -6865,6 +6865,1430 @@ paths:
         '404':
           description: Affectation introuvable ou autre tenant
 
+  # ———— BC-15 FuelStation batch A (FUEL-009/010/011/014/016/017/018/019/020)
+  /fuel-station/stations:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les stations (tenants-scoped, filtres allowlist)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+          - archived
+      - name: q
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Stations paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer une station (manager)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                address:
+                  type: string
+                phone:
+                  type: string
+                timezone:
+                  type: string
+                currency:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - archived
+      responses:
+        '201':
+          description: Station creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/stations/{station}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une station
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Station
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Introuvable ou autre tenant
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour une station (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Station mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+    delete:
+      tags:
+      - FuelStation
+      summary: Archiver une station (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Station archivee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /fuel-station/sites:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les sites operationnels
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Sites pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer un site operationnel (manager)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - station_id
+              - code
+              - name
+              properties:
+                station_id:
+                  type: integer
+                code:
+                  type: string
+                name:
+                  type: string
+                address:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+      responses:
+        '201':
+          description: Site cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/sites/{site}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'un site
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: site
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Site
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Introuvable ou autre tenant
+  /fuel-station/equipment:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les equipements (kind=pump|tank|meter)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: kind
+        in: query
+        schema:
+          type: string
+          enum:
+          - pump
+          - tank
+          - meter
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Equipements pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer un equipement (manager, kind=pump|tank|meter)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - kind
+              - station_id
+              - code
+              properties:
+                kind:
+                  type: string
+                  enum:
+                  - pump
+                  - tank
+                  - meter
+                station_id:
+                  type: integer
+                code:
+                  type: string
+                status:
+                  type: string
+                product_types:
+                  type: array
+                  items:
+                    type: string
+                product_type:
+                  type: string
+                capacity_minor:
+                  type: integer
+                current_level_minor:
+                  type: integer
+                meter_code:
+                  type: string
+                meter_type:
+                  type: string
+                unit_code:
+                  type: string
+                precision_scale:
+                  type: integer
+                rollover_limit:
+                  type: integer
+                installed_at:
+                  type: string
+                  format: date
+      responses:
+        '201':
+          description: Equipement cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/equipment/{kind}/{id}:
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour un equipement (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: kind
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - pump
+          - tank
+          - meter
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Equipement mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /fuel-station/products:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les produits du catalogue
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Produits pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer un produit (manager)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                unit_code:
+                  type: string
+                  enum:
+                  - l
+                  - gal
+                status:
+                  type: string
+      responses:
+        '201':
+          description: Produit cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/products/{product}:
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour un produit (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Produit mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /fuel-station/stock-entries:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les entrees de stock (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: product_code
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Entrees de stock paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer une entree de stock (manager, idempotent)
+      description: "Aucun ajustement silencieux : entry_type=adjustment exige reason."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - product_code
+              - quantity
+              - idempotency_key
+              properties:
+                station_id:
+                  type: integer
+                product_code:
+                  type: string
+                quantity:
+                  type: number
+                unit_cost:
+                  type: number
+                entry_type:
+                  type: string
+                  enum:
+                  - delivery
+                  - adjustment
+                  - return
+                reason:
+                  type: string
+                reference:
+                  type: string
+                entry_date:
+                  type: string
+                  format: date
+                idempotency_key:
+                  type: string
+      responses:
+        '201':
+          description: Entree de stock creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /fuel-station/stock/level:
+    get:
+      tags:
+      - FuelStation
+      summary: Niveau de stock calcule (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: product_code
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Niveau de stock
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/stock/reconcile:
+    post:
+      tags:
+      - FuelStation
+      summary: Lancer un rapprochement station/jour (manager, idempotent)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: date
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Rapprochement effectue (run + ecarts)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/stock/reconciliations:
+    get:
+      tags:
+      - FuelStation
+      summary: Historique des rapprochements (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Rapprochements pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/incidents:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les incidents
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - open
+          - in_progress
+          - resolved
+          - closed
+      - name: severity
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Incidents pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Signaler un incident (tout employe du tenant)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              properties:
+                station_id:
+                  type: integer
+                equipment_type:
+                  type: string
+                  enum:
+                  - pump
+                  - tank
+                  - meter
+                  - other
+                equipment_id:
+                  type: integer
+                severity:
+                  type: string
+                  enum:
+                  - low
+                  - medium
+                  - high
+                  - critical
+                title:
+                  type: string
+                description:
+                  type: string
+                occurred_at:
+                  type: string
+                  format: date
+                attachments:
+                  type: array
+                  maxItems: 5
+                  items:
+                    type: object
+                    required:
+                    - file_name
+                    - mime_type
+                    - size_bytes
+                    properties:
+                      file_name:
+                        type: string
+                      mime_type:
+                        type: string
+                      size_bytes:
+                        type: integer
+      responses:
+        '201':
+          description: Incident signale
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/incidents/{incident}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'un incident
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: incident
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Incident
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Introuvable ou autre tenant
+  /fuel-station/incidents/{incident}/assign:
+    post:
+      tags:
+      - FuelStation
+      summary: Assigner un incident (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: incident
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - assigned_to
+              properties:
+                assigned_to:
+                  type: integer
+      responses:
+        '200':
+          description: Incident assigne
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /fuel-station/incidents/{incident}/resolve:
+    post:
+      tags:
+      - FuelStation
+      summary: Resoudre un incident (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: incident
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - resolution_notes
+              properties:
+                resolution_notes:
+                  type: string
+      responses:
+        '200':
+          description: Incident resolu
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /fuel-station/incidents/{incident}/close:
+    post:
+      tags:
+      - FuelStation
+      summary: Cloturer un incident (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: incident
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - closure_notes
+              properties:
+                closure_notes:
+                  type: string
+      responses:
+        '200':
+          description: Incident cloture
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /fuel-station/maintenance-tasks:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les taches de maintenance
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Taches paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer une tache de maintenance (manager)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              properties:
+                station_id:
+                  type: integer
+                incident_id:
+                  type: integer
+                task_type:
+                  type: string
+                  enum:
+                  - preventive
+                  - corrective
+                title:
+                  type: string
+                description:
+                  type: string
+                priority:
+                  type: string
+                  enum:
+                  - low
+                  - medium
+                  - high
+                assigned_to:
+                  type: integer
+                scheduled_for:
+                  type: string
+                  format: date
+      responses:
+        '201':
+          description: Tache creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/maintenance-tasks/{task}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une tache de maintenance
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tache
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Introuvable ou autre tenant
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour une tache de maintenance (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                priority:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - todo
+                  - in_progress
+                  - done
+                  - cancelled
+                assigned_to:
+                  type: integer
+                scheduled_for:
+                  type: string
+                  format: date
+                completion_notes:
+                  type: string
+      responses:
+        '200':
+          description: Tache mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /fuel-station/customers:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les clients fidelite
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: marketing_consent
+        in: query
+        schema:
+          type: boolean
+      - name: q
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Clients pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer ou synchroniser un client (manager, idempotent par external_id)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - external_id
+              - full_name
+              properties:
+                station_id:
+                  type: integer
+                external_id:
+                  type: string
+                full_name:
+                  type: string
+                phone:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                marketing_consent:
+                  type: boolean
+                metadata:
+                  type: object
+      responses:
+        '200':
+          description: Client cree ou mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/customers/{customer}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'un client
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: customer
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Client
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Introuvable ou autre tenant
+  /fuel-station/customers/{customer}/consent:
+    put:
+      tags:
+      - FuelStation
+      summary: Modifier le consentement marketing (manager, RGPD)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: customer
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - marketing_consent
+              properties:
+                marketing_consent:
+                  type: boolean
+      responses:
+        '200':
+          description: Consentement mis a jour (evenement versionne)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /fuel-station/customers/{customer}/redeem:
+    post:
+      tags:
+      - FuelStation
+      summary: Depenser des points de fidelite (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: customer
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - points
+              - reason
+              properties:
+                points:
+                  type: integer
+                  minimum: 1
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Points debites
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /fuel-station/reports/daily-sales:
+    get:
+      tags:
+      - FuelStation
+      summary: Ventes journalieres (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: date
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Aggregats de ventes du jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/reports/shift-summary:
+    get:
+      tags:
+      - FuelStation
+      summary: Synthese d'un shift (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: date
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Synthese du shift
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/reports/anomalies:
+    get:
+      tags:
+      - FuelStation
+      summary: Anomalies de compteur (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Intervalles a revoir
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/exports/sales:
+    get:
+      tags:
+      - FuelStation
+      summary: Export CSV des ventes (manager, audite)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: format
+        in: query
+        schema:
+          type: string
+          enum:
+          - csv
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: CSV des ventes (neutralise OWASP)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/exports/readings:
+    get:
+      tags:
+      - FuelStation
+      summary: Export CSV des releves (manager, audite)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: format
+        in: query
+        schema:
+          type: string
+          enum:
+          - csv
+      - name: meter_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: CSV des releves
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/imports:
+    get:
+      tags:
+      - FuelStation
+      summary: Journal des imports (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Imports journalises
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/sync/outbox:
+    get:
+      tags:
+      - FuelStation
+      summary: Resynchronisation terminal (releves/ventes depuis since_id)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: since_id
+        in: query
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          maximum: 500
+      responses:
+        '200':
+          description: Releves et ventes recents
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/sync/readings:
+    post:
+      tags:
+      - FuelStation
+      summary: Synchroniser des releves (idempotent par idempotency_key)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - readings
+              properties:
+                readings:
+                  type: array
+                  maxItems: 500
+                  items:
+                    type: object
+                    required:
+                    - station_id
+                    - pump_id
+                    - meter_id
+                    - reading_value_minor
+                    - idempotency_key
+                    properties:
+                      station_id:
+                        type: integer
+                      pump_id:
+                        type: integer
+                      meter_id:
+                        type: integer
+                      reading_value_minor:
+                        type: integer
+                      captured_at:
+                        type: string
+                        format: date-time
+                      timezone:
+                        type: string
+                      shift_id:
+                        type: integer
+                      device_reference:
+                        type: string
+                      idempotency_key:
+                        type: string
+      responses:
+        '200':
+          description: "Lot traite (received/duplicates)"
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/sync/sales:
+    post:
+      tags:
+      - FuelStation
+      summary: Synchroniser des ventes (idempotent par external_id)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - sales
+              properties:
+                sales:
+                  type: array
+                  maxItems: 500
+                  items:
+                    type: object
+                    required:
+                    - product
+                    - quantity
+                    - unit_price
+                    - external_id
+                    properties:
+                      station_id:
+                        type: integer
+                      pump_id:
+                        type: integer
+                      cash_session_id:
+                        type: integer
+                      product:
+                        type: string
+                      quantity:
+                        type: number
+                      unit_price:
+                        type: number
+                      sale_time:
+                        type: string
+                        format: date-time
+                      source:
+                        type: string
+                        enum:
+                        - manual
+                        - kiosk
+                        - pos
+                      external_id:
+                        type: string
+      responses:
+        '200':
+          description: "Lot traite (received/duplicates)"
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
   /accounting/contacts:
     get:
       tags:
