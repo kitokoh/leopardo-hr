@@ -4270,16 +4270,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/article-categories", options);
     },
 
-    /** TRAVEL-901 — Liste des articles */
-    getTravelArticles(options = {}) {
-      return request("GET", "/travel/articles", options);
-    },
-
-    /** TRAVEL-901 — Création d''un article */
-    postTravelArticles(options = {}) {
-      return request("POST", "/travel/articles", options);
-    },
-
     /** TRAVEL-901 — Suppression d''un article */
     deleteTravelArticlesByTravelArticle(options = {}) {
       return request("DELETE", "/travel/articles/{travelArticle}", options);
@@ -4467,6 +4457,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
 
     /** Formulaire de contact → lead CRM (TRAVEL-416/#6068) */
     postTravelContact(options = {}) {
+      return request("POST", "/travel/contact", options);
+    },
+
+    /** TRAVEL-416 — Formulaire de contact → lead CRM (événement outbox) */
+    postTravelContact2(options = {}) {
       return request("POST", "/travel/contact", options);
     },
 
@@ -4688,41 +4683,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Suppression d'une image (TRAVEL-319/#6049) */
     deleteTravelRentalVehiclesByTravelRentalVehicleImagesByTravelRentalVehicleImage(options = {}) {
       return request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}/images/{travelRentalVehicleImage}", options);
-    },
-
-    /** TRAVEL-504 — Annulations sur période */
-    getTravelReportsCancellations(options = {}) {
-      return request("GET", "/travel/reports/cancellations", options);
-    },
-
-    /** TRAVEL-507 — Dashboard KPIs */
-    getTravelReportsDashboard(options = {}) {
-      return request("GET", "/travel/reports/dashboard", options);
-    },
-
-    /** TRAVEL-505 — Export CSV idempotent */
-    postTravelReportsExport(options = {}) {
-      return request("POST", "/travel/reports/export", options);
-    },
-
-    /** TRAVEL-505 — Lecture d''un export (URL signée éphémère) */
-    getTravelReportsExportByTravelExportAsset(options = {}) {
-      return request("GET", "/travel/reports/export/{travelExportAsset}", options);
-    },
-
-    /** TRAVEL-502 — Occupation par trajet */
-    getTravelReportsOccupancy(options = {}) {
-      return request("GET", "/travel/reports/occupancy", options);
-    },
-
-    /** TRAVEL-503 — Recettes (confirmés − remboursements) */
-    getTravelReportsRevenue(options = {}) {
-      return request("GET", "/travel/reports/revenue", options);
-    },
-
-    /** TRAVEL-501 — Ventes (réservations nettes) sur période */
-    getTravelReportsSales(options = {}) {
-      return request("GET", "/travel/reports/sales", options);
     },
 
     /** Création d'un aller-retour combiné (TRAVEL-802/#6093) */
