@@ -3025,6 +3025,17 @@ trait CreatesMvpSchema
                 $table->timestamps();
             });
         }
+        if (! Schema::hasTable($this->moduleTable('travel_public_shop_tokens'))) {
+            Schema::create($this->moduleTable('travel_public_shop_tokens'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->unique();
+                $table->string('token_hash', 64);
+                $table->string('name', 80)->nullable();
+                $table->boolean('active')->default(true);
+                $table->timestamp('last_used_at')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     private function dropMvpTables(): void
@@ -3122,6 +3133,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "travel_comments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_articles"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_article_categories"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_public_shop_tokens"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_cash_sessions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_currency_rates"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_quotes"'.$cascade);

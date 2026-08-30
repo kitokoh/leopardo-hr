@@ -47,6 +47,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCorporateContro
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelConnectionController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPdvController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
@@ -174,6 +175,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/loyalty/redeem', [TravelLoyaltyController::class, 'redeem']);
         Route::get('/loyalty/rewards', [TravelLoyaltyController::class, 'rewards']);
         Route::post('/loyalty/rewards', [TravelLoyaltyController::class, 'storeReward']);
+
+        // Boutique publique — gestion du jeton (TRAVEL-1001/#6114, travel.manage).
+        Route::get('/public-shop-token', [TravelPublicShopController::class, 'token']);
+        Route::post('/public-shop-token/rotate', [TravelPublicShopController::class, 'rotateToken']);
 
         // Point de vente tablette (TRAVEL-810/#6100) — caisse + reçus.
         Route::post('/pdv/session/open', [TravelPdvController::class, 'open']);

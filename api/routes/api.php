@@ -63,6 +63,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogControl
 use App\Modules\Recruitment\Interfaces\Api\V1\CandidateApplicationController;
 use App\Modules\Recruitment\Interfaces\Api\V1\PublicCareerController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierSyncController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
 use Illuminate\Support\Facades\Route;
 
@@ -144,6 +145,15 @@ Route::prefix('v1')->group(function (): void {
     // Stripe/Chargily webhooks (public, verified by provider signature inside
     // the controller). PA2-API-005: dedicated 'webhooks-inbound' throttle since
     // these routes sit outside the authenticated 'api' middleware group below.
+    // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé, sans
+    // auth utilisateur) — throttling renforcé `shop-public`.
+    Route::middleware(['throttle:shop-public', 'travel.public.shop'])->group(function (): void {
+        Route::get('/public/travel/shop/trips', [TravelPublicShopController::class, 'search']);
+        Route::get('/public/travel/shop/trips/{travelTrip}', [TravelPublicShopController::class, 'show']);
+        Route::post('/public/travel/shop/bookings', [TravelPublicShopController::class, 'storeBooking']);
+        Route::get('/public/travel/shop/bookings/{reference}', [TravelPublicShopController::class, 'track']);
+    });
+
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
         // TRAVEL-409 (#6061) — callback provider paiements TravelAgency
         // (signé HMAC, idempotent — public, vérifié dans le contrôleur).
