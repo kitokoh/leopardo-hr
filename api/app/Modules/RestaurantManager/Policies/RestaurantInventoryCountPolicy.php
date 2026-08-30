@@ -10,9 +10,9 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCount;
 /**
  * RESTO-504 (#6203) — Policy des inventaires physiques.
  *
- * Création/saisie/soumission : gérant, RH ou manager de salle. Approbation :
- * gérant ou RH uniquement (`restaurant.manage` — ajustements de stock).
- * Lecture : tout employé authentifié du tenant (404 sûr cross-tenant).
+ * Création/saisie/soumission : `principal`/`rh` (gestion du stock) ; le
+ * manager de salle peut lire. L'approbation est réservée à la direction
+ * (`principal`/`rh` avec `restaurant.manage`).
  */
 class RestaurantInventoryCountPolicy
 {
@@ -28,7 +28,7 @@ class RestaurantInventoryCountPolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
     public function update(Employee $actor, RestaurantInventoryCount $count): bool
@@ -38,7 +38,6 @@ class RestaurantInventoryCountPolicy
 
     public function approve(Employee $actor, RestaurantInventoryCount $count): bool
     {
-        return $actor->hasManagerRole('principal', 'rh')
-            && $count->company_id === $actor->company_id;
+        return $this->update($actor, $count);
     }
 }
