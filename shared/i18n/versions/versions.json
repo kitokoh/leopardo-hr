@@ -53,11 +53,7 @@
         "fr": "c67fa9803409c56b9e97db13335a159b59edffc3086fb2a64cf3707671e538f6",
         "tr": "079a0c20b4f7fb07b588244aa2ae61bcb0f5663294c8fc79d31b274d0b2b0c31"
       },
-<<<<<<< HEAD
-      "updated_at": "2026-08-30T11:02:44.816Z"
-=======
       "updated_at": "2026-08-30T11:03:26.010Z"
->>>>>>> origin/main
     },
     "admin": {
       "checksums": {
@@ -66,11 +62,7 @@
         "fr": "56f18dbfb587d0ee48313bbad106cc277d91b33eb32a907543a2450bff0129ef",
         "tr": "d4245c5afff3c99a9bc62dfee4a01a9c76a7e6b76f18437ad361156047c8f201"
       },
-<<<<<<< HEAD
-      "updated_at": "2026-08-30T11:02:44.999Z"
-=======
       "updated_at": "2026-08-30T11:03:26.040Z"
->>>>>>> origin/main
     }
   }
 }
