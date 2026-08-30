@@ -213,6 +213,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
         // ── Annonces : cycle de vie (TRAVEL-907/908/#6110/#6111) ───────────
         Route::get('/adverts', [TravelAdvertController::class, 'index']);
+        Route::get('/adverts/admin', [TravelAdvertController::class, 'adminIndex']); // TRAVEL-915/#6428 — AVANT /adverts/{travelAdvert}
         Route::post('/adverts', [TravelAdvertController::class, 'store']);
         Route::get('/adverts/{travelAdvert}', [TravelAdvertController::class, 'show']);
         Route::post('/adverts/{travelAdvert}/pay', [TravelAdvertController::class, 'pay']);
@@ -226,6 +227,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'show']);
         Route::put('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'update']);
         Route::delete('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'destroy']);
+
+        // ── Registre des contacts voyageurs (TRAVEL-913/#6426, TRAVEL-914/#6427) ──
+        Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
+        Route::patch('/contacts/{travelCustomerContact}', [TravelCustomerContactController::class, 'updateConsent']);
 
         // ── Notifications manuelles legacy → canaux plateforme (TRAVEL-910/#6113)
         Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);

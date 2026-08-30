@@ -4251,6 +4251,27 @@ paths:
           description: Non authentifié
         '422':
           description: Validation échouée (grille absente, bornes)
+  /travel/adverts/admin:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-915 — Liste admin des annonces (tous statuts, pilotage du cycle)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [draft, submitted, paid, validated, rejected, expired, archived]
+      responses:
+        '200':
+          description: Annonces du tenant (tous statuts, avec libellés type/emplacement)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Rôle insuffisant
   /travel/adverts/{travelAdvert}:
     get:
       tags:
@@ -4540,6 +4561,65 @@ paths:
           description: Résultats triés par score
         '403':
           description: Rôle insuffisant
+  /travel/contacts:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-913 — Registre des contacts voyageurs (liste admin, consentements par canal)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Contacts du tenant (avec consentements email/sms/whatsapp)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Rôle insuffisant
+  /travel/contacts/{travelCustomerContact}:
+    patch:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour du consentement par canal (opt-in/opt-out horodaté)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - channel
+              - consent
+              properties:
+                channel:
+                  type: string
+                  enum: [email, sms, whatsapp]
+                consent:
+                  type: boolean
+      responses:
+        '200':
+          description: Consentement mis à jour
+        '401':
+          description: Non authentifié
+        '403':
+          description: Rôle insuffisant
+        '404':
+          description: Contact introuvable
+        '422':
+          description: Canal inconnu
   /travel/contacts/{travelCustomerContact}/notify:
     post:
       tags:

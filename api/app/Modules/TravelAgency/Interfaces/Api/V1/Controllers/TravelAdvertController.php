@@ -58,6 +58,53 @@ class TravelAdvertController extends Controller
         return response()->json(['data' => $adverts]);
     }
 
+    /**
+     * Liste ADMIN tenant : TOUTES les annonces (tous statuts) avec libellés
+     * type/emplacement — pilotage du cycle soumission→paiement→validation
+     * (TRAVEL-915/#6428). Réservé aux rôles de gestion (hasManagerRole).
+     */
+    public function adminIndex(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+            abort(403);
+        }
+
+        $status = $request->query('status');
+
+        $adverts = TravelAdvert::query()
+            ->with(['advertType', 'advertPosition'])
+            ->where('company_id', $actor->company_id)
+            ->when($status, fn ($query, $status) => $query->where('status', $status))
+            ->orderByDesc('id')
+            ->limit(200)
+            ->get();
+
+        return response()->json([
+            'data' => $adverts->map(fn (TravelAdvert $a) => [
+                'id' => $a->id,
+                'title' => $a->title,
+                'content' => $a->content_redacted,
+                'status' => $a->status->value,
+                'advert_type_id' => $a->advert_type_id,
+                'advert_position_id' => $a->advert_position_id,
+                'advert_type' => $a->advertType?->label,
+                'advert_position' => $a->advertPosition?->label,
+                'price_minor' => $a->price_minor,
+                'currency' => $a->currency,
+                'payment_reference' => $a->payment_reference,
+                'rejected_reason' => $a->rejected_reason,
+                'validity_days' => $a->validity_days,
+                'paid_at' => $a->paid_at?->toIso8601String(),
+                'validated_at' => $a->validated_at?->toIso8601String(),
+                'expires_at' => $a->expires_at?->toIso8601String(),
+                'visible' => $a->isVisible(),
+            ]),
+        ]);
+    }
+
     public function show(Request $request, TravelAdvert $travelAdvert): JsonResponse
     {
         /** @var Employee $actor */
