@@ -22,6 +22,7 @@
 
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRouteController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.delivery'])
@@ -36,5 +37,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/deliveries', [DeliveryController::class, 'index']);
             Route::post('/deliveries', [DeliveryController::class, 'store']);
             Route::get('/deliveries/{delivery}', [DeliveryController::class, 'show'])->whereNumber('delivery');
+
+            // Tournées (DELIVERY-202/#6286) — création, affectation idempotente,
+            // clôture idempotente, détail avec stops ordonnés.
+            Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
+            Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
+            Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
+            Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
         });
     });

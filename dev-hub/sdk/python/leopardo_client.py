@@ -1416,6 +1416,22 @@ class LeopardoClient:
         """Détail d'une livraison (DELIVERY-201/#6285)"""
         return self.request("GET", "/delivery/deliveries/{delivery}", **kwargs)
 
+    def post_delivery_deliveries_routes(self, **kwargs):
+        """Crée une tournée (DELIVERY-202/#6286)"""
+        return self.request("POST", "/delivery/deliveries/routes", **kwargs)
+
+    def get_delivery_deliveries_routes_by_route(self, **kwargs):
+        """Détail d'une tournée (DELIVERY-202/#6286)"""
+        return self.request("GET", "/delivery/deliveries/routes/{route}", **kwargs)
+
+    def post_delivery_deliveries_routes_by_route_assign(self, **kwargs):
+        """Affecte livreur + véhicule (DELIVERY-202/#6286)"""
+        return self.request("POST", "/delivery/deliveries/routes/{route}/assign", **kwargs)
+
+    def post_delivery_deliveries_routes_by_route_close(self, **kwargs):
+        """Clôture une tournée (DELIVERY-202/#6286)"""
+        return self.request("POST", "/delivery/deliveries/routes/{route}/close", **kwargs)
+
     def get_delivery_ping(self, **kwargs):
         """Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282)"""
         return self.request("GET", "/delivery/ping", **kwargs)

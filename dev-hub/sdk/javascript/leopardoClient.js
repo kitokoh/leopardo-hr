@@ -1745,6 +1745,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/delivery/deliveries/{delivery}", options);
     },
 
+    /** Crée une tournée (DELIVERY-202/#6286) */
+    postDeliveryDeliveriesRoutes(options = {}) {
+      return request("POST", "/delivery/deliveries/routes", options);
+    },
+
+    /** Détail d'une tournée (DELIVERY-202/#6286) */
+    getDeliveryDeliveriesRoutesByRoute(options = {}) {
+      return request("GET", "/delivery/deliveries/routes/{route}", options);
+    },
+
+    /** Affecte livreur + véhicule (DELIVERY-202/#6286) */
+    postDeliveryDeliveriesRoutesByRouteAssign(options = {}) {
+      return request("POST", "/delivery/deliveries/routes/{route}/assign", options);
+    },
+
+    /** Clôture une tournée (DELIVERY-202/#6286) */
+    postDeliveryDeliveriesRoutesByRouteClose(options = {}) {
+      return request("POST", "/delivery/deliveries/routes/{route}/close", options);
+    },
+
     /** Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282) */
     getDeliveryPing(options = {}) {
       return request("GET", "/delivery/ping", options);
