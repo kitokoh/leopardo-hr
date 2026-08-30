@@ -14,7 +14,7 @@ class FuelReadingFutureException extends DomainException
     public function __construct()
     {
         parent::__construct(
-            'Le relevé est daté dans le futur (dérive d\'horloge dépassée).',
+            'Le releve est date dans le futur (derive d\'horloge depassee).',
             422,
             'FUEL_READING_FUTURE'
         );
