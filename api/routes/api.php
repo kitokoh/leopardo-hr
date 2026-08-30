@@ -62,6 +62,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
 use App\Modules\Recruitment\Interfaces\Api\V1\CandidateApplicationController;
 use App\Modules\Recruitment\Interfaces\Api\V1\PublicCareerController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicContactController;
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -165,6 +166,15 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/{companySlug}/feed.xml', [PublicCareerController::class, 'feed']);
         Route::get('/{companySlug}/jobs/{jobPosting}', [PublicCareerController::class, 'show'])->whereNumber('jobPosting');
         Route::post('/{companySlug}/jobs/{jobPosting}/apply', [CandidateApplicationController::class, 'store'])->whereNumber('jobPosting');
+    });
+
+    // TRAVEL-913 (#6425) — formulaire de contact PUBLIC de la verticale
+    // TravelAgency : le visiteur n'a pas de session tenant, le tenant est
+    // résolu depuis {companySlug} (même pattern que public/careers/*).
+    // Même validation et même logique que POST /travel/contact (consentement
+    // obligatoire) via SubmitTravelContactAction — throttle public dédié.
+    Route::middleware(['throttle:public-registry'])->prefix('public/travel')->group(function (): void {
+        Route::post('/contact/{companySlug}', [TravelPublicContactController::class, 'store']);
     });
 
     // Issue #4217 (audit 360° 2026-08-16) — registre multi-pays canonique

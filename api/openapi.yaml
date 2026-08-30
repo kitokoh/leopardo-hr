@@ -4783,6 +4783,55 @@ paths:
           description: Supprimé
         '404':
           description: Introuvable
+  /public/travel/contact/{companySlug}:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-913 — Formulaire de contact public (visiteur, tenant par slug)'
+      parameters:
+      - name: companySlug
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Slug du tenant (pattern public/careers/*)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - message
+              - consent_email
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 120
+                last_name:
+                  type: string
+                  maxLength: 120
+                email:
+                  type: string
+                  format: email
+                  maxLength: 190
+                phone:
+                  type: string
+                  maxLength: 40
+                message:
+                  type: string
+                  maxLength: 2000
+                consent_email:
+                  type: boolean
+                  description: Consentement de contact explicite (obligatoire, RGPD)
+      responses:
+        '202':
+          description: Demande reçue (événement travel.contact.submitted.v1 publié)
+        '404':
+          description: Tenant inconnu ou suspendu
+        '422':
+          description: Validation échouée (bornes, consentement manquant)
   /travel/contact:
     post:
       tags:
