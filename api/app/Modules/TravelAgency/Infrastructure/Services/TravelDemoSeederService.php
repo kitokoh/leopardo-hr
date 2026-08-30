@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -23,9 +24,7 @@ use Illuminate\Support\Facades\DB;
  */
 final class TravelDemoSeederService
 {
-    public function __construct(private readonly TravelGeoSeederService $geoSeeder)
-    {
-    }
+    public function __construct(private readonly TravelGeoSeederService $geoSeeder) {}
 
     public function seed(Company $company): void
     {
@@ -102,7 +101,7 @@ final class TravelDemoSeederService
      */
     private function cityIdsByCountry(Company $company, array $iso2s): array
     {
-        /** @var \Illuminate\Support\Collection<string, int> $idsByCountry */
+        /** @var Collection<string, int> $idsByCountry */
         $idsByCountry = DB::table('travel_cities')
             ->where('company_id', $company->id)
             ->whereIn('country_iso2', $iso2s)
