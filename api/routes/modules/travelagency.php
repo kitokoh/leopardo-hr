@@ -17,6 +17,10 @@
  * Référence : docs/specifications/SOLUTION_TRAVEL_AGENCY.md (§7 API v1).
  */
 
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPositionController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPriceController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertTypeController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelArticleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
@@ -30,6 +34,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelExportControlle
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuizController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelReportController;
@@ -40,11 +45,6 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketControlle
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPositionController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPriceController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertTypeController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuizController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.travelagency'])
@@ -187,7 +187,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/comments/{travelComment}/moderate', [TravelCommentController::class, 'moderate']);
         Route::post('/comments/{travelComment}/report', [TravelCommentController::class, 'report']);
         Route::delete('/comments/{travelComment}', [TravelCommentController::class, 'destroy']);
-
 
         // ── Quiz & jeu-concours (TRAVEL-904/#6107) ─────────────────────────
         Route::get('/quizzes', [TravelQuizController::class, 'index']);
