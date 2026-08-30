@@ -7,6 +7,7 @@ namespace App\AI;
 use App\AI\DTOs\AIResponse;
 use App\AI\DTOs\ToolCall;
 use App\AI\DTOs\ToolResult;
+use App\AI\Exceptions\ToolPermissionDeniedException;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Domain\Models\Department;
@@ -23,6 +24,8 @@ class IntentEngine
         private readonly WriteToolPolicy $writeToolPolicy,
         private readonly PendingActionStore $pendingActionStore,
         private readonly WriteActionRunner $writeActionRunner,
+        // BC-23-D05 (issue #6237) : matrice de permissions par outil AI.
+        private readonly ToolPermissionPolicy $toolPermissionPolicy,
     ) {}
 
     /**
@@ -60,17 +63,37 @@ class IntentEngine
      */
     public function executeToolCalls(AIResponse $response, string $companyId, int $userId): array
     {
+        // BC-23-D05 : le rôle est résolu une seule fois pour toute la boucle
+        // de tool calls (évite N requêtes Employee).
+        $role = $this->toolPermissionPolicy->resolveRole($userId, $companyId);
         $results = [];
 
         foreach ($response->toolCalls as $toolCall) {
-            $results[] = $this->executeSingleTool($toolCall, $companyId, $userId);
+            $results[] = $this->executeSingleTool($toolCall, $companyId, $userId, $role);
         }
 
         return $results;
     }
 
-    private function executeSingleTool(ToolCall $toolCall, string $companyId, int $userId): ToolResult
+    private function executeSingleTool(ToolCall $toolCall, string $companyId, int $userId, string $role): ToolResult
     {
+        // BC-23-D05 : fail-closed — l'appel d'un outil hors matrice (rôle ou
+        // permission insuffisante) est refusé AVANT tout effet de bord
+        // (y compris la création d'une pending action pour les write-tools).
+        try {
+            $this->toolPermissionPolicy->assertCanUse($toolCall->name, $role);
+        } catch (ToolPermissionDeniedException $exception) {
+            return new ToolResult(
+                toolCallId: $toolCall->id,
+                name: $toolCall->name,
+                content: json_encode([
+                    'error' => $exception->errorCode(),
+                    'message' => 'AI tool permission denied',
+                ]) ?: '{}',
+                success: false,
+            );
+        }
+
         if ($this->writeToolPolicy->requiresConfirmation($toolCall->name)) {
             return $this->pendingConfirmationResult($toolCall, $companyId, $userId);
         }
@@ -113,6 +136,17 @@ class IntentEngine
     {
         if (! $this->writeToolPolicy->requiresConfirmation($toolName)) {
             return ['error' => "Tool '{$toolName}' does not require confirmation."];
+        }
+
+        // BC-23-D05 : défense en profondeur — le rôle est re-vérifié à la
+        // confirmation (le rôle du demandeur peut avoir changé entre le chat
+        // et le clic de confirmation).
+        $role = $this->toolPermissionPolicy->resolveRole($userId, $companyId);
+        if (! $this->toolPermissionPolicy->canUse($toolName, $role)) {
+            return [
+                'error' => 'AI_TOOL_PERMISSION_DENIED',
+                'code' => ToolPermissionDeniedException::ERROR_CODE,
+            ];
         }
 
         return $this->writeActionRunner->run($toolName, $arguments, $companyId, $userId);
