@@ -197,3 +197,10 @@ Artisan::command('super-admin:reset-password {email} {password}', function (stri
 // confirmer avant la clôture (novembre).
 Schedule::command('islamic:check-unconfirmed')
     ->yearlyOn(11, 15, '09:00');
+
+// #5695 — Digest RH hebdomadaire : envoyé aux managers le lundi à 07h30 UTC.
+// Inclut : absences en attente, taux de présence, nouveaux employés, contrats expirants.
+Schedule::command('manager:weekly-digest')
+    ->weeklyOn(1, '07:30')
+    ->withoutOverlapping()
+    ->onOneServer();

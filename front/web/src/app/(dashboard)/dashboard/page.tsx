@@ -21,6 +21,7 @@ import {
   FileCheck,
   Languages,
   ArrowRight,
+  Loader2,
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { trackClientEvent } from '@/lib/client-analytics';
@@ -726,6 +727,112 @@ function PriorityAction({ label, value, href }: { label: string; value: number; 
   );
 }
 
+type LeaveBalance = {
+  id: number | string;
+  absence_type?: { id?: number; name?: string; code?: string } | null;
+  allocated_days?: number | null;
+  used_days?: number | null;
+  remaining_days?: number | null;
+};
+
+/**
+ * #5694 — Carte solde congés pour le dashboard employé.
+ * Charge GET /api/v1/me/leave-balances et affiche les soldes par type.
+ */
+function LeaveBalanceCard({ locale }: { locale: AppLocale }) {
+  const [balances, setBalances] = useState<LeaveBalance[]>([]);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    apiFetch('/me/leave-balances')
+      .then((r) => r.json() as Promise<{ data?: LeaveBalance[] }>)
+      .then((p) => {
+        if (!active) return;
+        setBalances(Array.isArray(p.data) ? p.data : []);
+      })
+      .catch(() => { if (active) setError(true); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  if (error || (!loading && balances.length === 0)) return null;
+
+  return (
+    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex items-center gap-2 mb-5">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-white shrink-0">
+          <Calendar className="h-4 w-4" aria-hidden="true" />
+        </div>
+        <div>
+          <h2 className="text-base font-black text-slate-950">
+            {i18nT(locale, 'leaveBalance.title', 'Mes soldes de congés')}
+          </h2>
+          <p className="text-xs text-slate-500">
+            {i18nT(locale, 'leaveBalance.subtitle', 'Jours disponibles pour l\'année en cours')}
+          </p>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center gap-2 text-sm text-slate-400 py-4">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span>{i18nT(locale, 'leaveBalance.loading', 'Chargement...')}</span>
+        </div>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {balances.map((balance) => {
+            const allocated = Number(balance.allocated_days ?? 0);
+            const used      = Number(balance.used_days ?? 0);
+            const remaining = Number(balance.remaining_days ?? (allocated - used));
+            const pct       = allocated > 0 ? Math.min(100, Math.round((used / allocated) * 100)) : 0;
+            const critical  = remaining <= 2 && allocated > 0;
+
+            return (
+              <div
+                key={String(balance.id)}
+                className={`rounded-2xl border p-4 ${critical ? 'border-amber-200 bg-amber-50' : 'border-slate-100 bg-slate-50'}`}
+              >
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500 truncate">
+                  {balance.absence_type?.name ?? i18nT(locale, 'leaveBalance.leave', 'Congé')}
+                </p>
+                <div className="mt-2 flex items-end justify-between gap-2">
+                  <p className={`text-3xl font-black tabular-nums ${critical ? 'text-amber-700' : 'text-slate-950'}`}>
+                    {remaining}
+                  </p>
+                  <p className="text-xs text-slate-400 pb-1">
+                    / {allocated} j
+                  </p>
+                </div>
+                {/* Barre de progression */}
+                {allocated > 0 && (
+                  <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-200">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${critical ? 'bg-amber-400' : 'bg-emerald-500'}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                )}
+                <p className="mt-1.5 text-[10px] text-slate-400">
+                  {used} {i18nT(locale, 'leaveBalance.used', 'utilisé(s)')} · {remaining} {i18nT(locale, 'leaveBalance.remaining', 'restant(s)')}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="mt-4 flex justify-end">
+        <Link href="/absences" className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 hover:text-emerald-800 transition">
+          {i18nT(locale, 'leaveBalance.viewAll', 'Voir mes demandes')}
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 function EmployeeDashboard({ user }: { user: StoredAuthUser | null }) {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const cards = [
@@ -754,6 +861,9 @@ function EmployeeDashboard({ user }: { user: StoredAuthUser | null }) {
           </Link>
         ))}
       </div>
+
+      {/* #5694 — Carte solde congés */}
+      <LeaveBalanceCard locale={locale} />
     </div>
   );
 }

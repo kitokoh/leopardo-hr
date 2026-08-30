@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Absence\Interfaces\Api\V1\Controllers\AbsenceController;
+use App\Modules\Absence\Interfaces\Api\V1\Controllers\AbsenceTypeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,6 +13,12 @@ use Illuminate\Support\Facades\Route;
 | Mounted inside Route::prefix('v1') in api.php.
 | Full paths: /api/v1/absences/...
 */
+
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
+    ->group(function (): void {
+        // #5693 — Types d'absence disponibles (utilisé par le formulaire front/web).
+        Route::get('/absence-types', [AbsenceTypeController::class, 'index']);
+    });
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
     ->prefix('absences')
