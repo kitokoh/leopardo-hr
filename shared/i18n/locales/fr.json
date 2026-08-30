@@ -1497,7 +1497,8 @@
     "taxBrackets": "Baremes fiscaux",
     "legalRates": "Taux legaux",
     "account": "Mon compte",
-    "notFound": "Page non trouvee"
+    "notFound": "Page non trouvee",
+    "travelAgency": "Agence de voyage"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?"
@@ -3631,5 +3632,297 @@
     "loadError": "Impossible de charger la file cuisine.",
     "actionError": "Action impossible, réessayez.",
     "loading": "Chargement de la file cuisine…"
+  },
+  "travel": {
+    "loading": "Chargement…",
+    "section": {
+      "title": "Agence de voyage",
+      "subtitle": "Gestion de la verticale TravelAgency : référentiel, réseau, ventes, billetterie et rapports."
+    },
+    "gate": {
+      "disabledTitle": "Module Agence de voyage non activé",
+      "disabledBody": "La verticale TravelAgency n'est pas activée pour le tenant connecté. Activez la fonctionnalité « travelagency » pour accéder à ce module.",
+      "errorTitle": "Module temporairement indisponible",
+      "errorBody": "Impossible de joindre le service TravelAgency. Réessayez dans un instant.",
+      "retry": "Réessayer"
+    },
+    "tab": {
+      "referentiel": "Référentiel",
+      "routes": "Routes & Trajets",
+      "bookings": "Réservations",
+      "checkin": "Check-in",
+      "tickets": "Billets",
+      "reports": "Rapports",
+      "rentals": "Locations & Hôtels"
+    },
+    "referentiel": {
+      "tabsLabel": "Sous-sections du référentiel",
+      "tabGeo": "Pays & Villes",
+      "tabStations": "Stations",
+      "tabOffices": "Bureaux",
+      "tabCarriers": "Compagnies",
+      "tabClasses": "Classes",
+      "tabVehicles": "Véhicules",
+      "countries": "Pays",
+      "cities": "Villes",
+      "geoNote": "Référentiel géographique alimenté par seed (lecture seule).",
+      "stations": "Stations / terminaux",
+      "offices": "Bureaux de vente",
+      "carriers": "Compagnies de transport",
+      "classes": "Classes de service",
+      "vehicles": "Flotte de véhicules"
+    },
+    "search": {
+      "placeholder": "Rechercher…",
+      "country": "Rechercher un pays…",
+      "city": "Rechercher une ville…",
+      "station": "Rechercher une station…",
+      "office": "Rechercher un bureau…",
+      "carrier": "Rechercher une compagnie…",
+      "class": "Rechercher une classe…",
+      "vehicle": "Rechercher un véhicule…",
+      "route": "Rechercher une ligne…",
+      "trip": "Rechercher un trajet…",
+      "booking": "Rechercher une réservation…",
+      "report": "Rechercher dans le rapport…",
+      "rentalVehicle": "Rechercher un véhicule de location…",
+      "rentalBooking": "Rechercher une réservation de location…",
+      "hotel": "Rechercher un hôtel…"
+    },
+    "field": {
+      "iso2": "ISO2",
+      "iso3": "ISO3",
+      "name": "Nom",
+      "phoneCode": "Indicatif",
+      "countryIso2": "Pays",
+      "region": "Région",
+      "status": "Statut",
+      "code": "Code",
+      "city": "Ville",
+      "timezone": "Fuseau",
+      "isTerminal": "Terminal (grande gare)",
+      "address": "Adresse",
+      "contactPhone": "Téléphone",
+      "label": "Libellé",
+      "priority": "Priorité",
+      "color": "Couleur",
+      "registration": "Immatriculation",
+      "seatCapacity": "Places",
+      "carrier": "Compagnie",
+      "notes": "Notes",
+      "origin": "Départ",
+      "destination": "Arrivée",
+      "distanceKm": "Distance (km)",
+      "durationMin": "Durée (min)",
+      "rank": "Rang",
+      "isStopover": "Escale",
+      "minDurationMin": "Min (min)",
+      "route": "Ligne",
+      "departureDate": "Départ",
+      "departureTime": "Heure",
+      "arrivalDate": "Arrivée",
+      "arrivalTime": "Heure d'arrivée",
+      "means": "Moyen",
+      "totalSeats": "Places",
+      "class": "Classe",
+      "adultPrice": "Adulte",
+      "childPrice": "Enfant",
+      "currency": "Devise",
+      "reference": "Référence",
+      "trip": "Trajet",
+      "passengerCount": "Passagers",
+      "totalAmount": "Montant",
+      "paymentStatus": "Paiement",
+      "fullName": "Nom complet",
+      "ageCategory": "Catégorie",
+      "seat": "Siège",
+      "unitPrice": "Prix unitaire",
+      "ticketNumber": "N° billet",
+      "passenger": "Passager",
+      "issuedAt": "Émis le",
+      "paymentRef": "Référence paiement",
+      "provider": "Prestataire",
+      "amount": "Montant",
+      "createdAt": "Créé le",
+      "validationCode": "Code de validation",
+      "classification": "Classement",
+      "description": "Description",
+      "roomNumber": "N° chambre",
+      "roomType": "Type",
+      "capacity": "Capacité",
+      "pricePerNight": "Prix / nuit",
+      "startDate": "Début",
+      "endDate": "Fin",
+      "deposit": "Caution",
+      "pricePerDay": "Prix / jour",
+      "availableFrom": "Disponible du",
+      "availableUntil": "Disponible au",
+      "ownerCarrier": "Compagnie propriétaire",
+      "title": "Intitulé",
+      "vehicle": "Véhicule"
+    },
+    "action": {
+      "create": "Créer",
+      "createTitle": "Créer un élément",
+      "edit": "Modifier",
+      "editTitle": "Modifier",
+      "save": "Enregistrer",
+      "delete": "Supprimer",
+      "deleteTitle": "Confirmer la suppression",
+      "view": "Voir",
+      "confirm": "Confirmer",
+      "cancel": "Annuler",
+      "refund": "Rembourser",
+      "issueTicket": "Billet",
+      "publish": "Publier",
+      "cancelTrip": "Annuler le trajet",
+      "addNested": "Ajouter",
+      "add": "Ajouter"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif",
+      "archived": "Archivé"
+    },
+    "carrierType": {
+      "bus": "Bus / autocar",
+      "train": "Train",
+      "boat": "Bateau",
+      "plane": "Avion"
+    },
+    "means": {
+      "bus": "Bus / autocar",
+      "train": "Train",
+      "boat": "Bateau",
+      "plane": "Avion"
+    },
+    "tripStatus": {
+      "draft": "Brouillon",
+      "published": "Publié",
+      "cancelled": "Annulé"
+    },
+    "bookingStatus": {
+      "pending": "En attente",
+      "confirmed": "Confirmée",
+      "cancelled": "Annulée",
+      "refunded": "Remboursée",
+      "expired": "Expirée"
+    },
+    "paymentStatus": {
+      "pending": "En attente",
+      "paid": "Payé",
+      "failed": "Échoué",
+      "refunded": "Remboursé"
+    },
+    "ticketStatus": {
+      "issued": "Émis",
+      "checkedIn": "Embarqué",
+      "revoked": "Révoqué",
+      "unknown": "Inconnu"
+    },
+    "routes": {
+      "title": "Lignes & itinéraires",
+      "subtitle": "Lignes ville-à-ville, étapes ordonnées et escales.",
+      "stopsTitle": "Étapes de la ligne"
+    },
+    "trips": {
+      "title": "Trajets datés",
+      "subtitle": "Départs planifiés, tarifs par classe, publication.",
+      "pricesTitle": "Tarifs par classe"
+    },
+    "bookings": {
+      "title": "Réservations",
+      "filterStatus": "Statut",
+      "allStatuses": "Tous",
+      "filterTrip": "Trajet",
+      "allTrips": "Tous",
+      "from": "Du",
+      "to": "Au",
+      "reset": "Réinitialiser",
+      "passengers": "Passagers",
+      "tickets": "Billets",
+      "payments": "Paiements",
+      "detailTitle": "Réservation",
+      "cancelReasonTitle": "Motif d'annulation",
+      "refundReasonTitle": "Motif de remboursement",
+      "reason": "Motif",
+      "reasonRequired": "Le motif est obligatoire."
+    },
+    "checkin": {
+      "selectTrip": "Sélectionner un trajet",
+      "chooseTrip": "— Choisir un trajet —",
+      "refresh": "Actualiser",
+      "boarded": "Embarqués",
+      "pending": "En attente",
+      "searchManifest": "Rechercher passager / billet",
+      "searchManifestPlaceholder": "Nom ou n° de billet…",
+      "checkIn": "Embarquer",
+      "checkedIn": "Embarqué ✓",
+      "emptyManifest": "Aucun passager sur ce trajet.",
+      "noTicket": "Aucun billet associé à ce passager."
+    },
+    "tickets": {
+      "title": "Billetterie",
+      "filterTrip": "Trajet",
+      "manage": "Billets",
+      "empty": "Aucun billet émis pour cette réservation. Utilisez l'action « Billet » depuis l'onglet Réservations.",
+      "downloadPdf": "PDF",
+      "revoke": "Révoquer",
+      "revokeTitle": "Motif de révocation",
+      "pdfError": "Téléchargement impossible."
+    },
+    "reports": {
+      "tabsLabel": "Rapports",
+      "sales": "Ventes",
+      "occupancy": "Occupation",
+      "revenue": "Recettes",
+      "cancellations": "Annulations",
+      "exportCsv": "Exporter CSV",
+      "empty": "Aucune donnée sur la période.",
+      "exportError": "Export impossible."
+    },
+    "rentals": {
+      "vehicles": "Véhicules de location",
+      "bookings": "Réservations de location",
+      "hotels": "Hôtels",
+      "roomsTitle": "Chambres",
+      "images": "Images",
+      "noImages": "Aucune image.",
+      "addImage": "Ajouter une image",
+      "rentalStatus": {
+        "completed": "Terminée"
+      }
+    },
+    "toast": {
+      "saved": "Enregistré.",
+      "deleted": "Supprimé.",
+      "published": "Trajet publié.",
+      "cancelled": "Réservation annulée.",
+      "confirmed": "Réservation confirmée.",
+      "refunded": "Réservation remboursée.",
+      "ticketsIssued": "Billets émis.",
+      "checkedIn": "Passager embarqué.",
+      "ticketRevoked": "Billet révoqué.",
+      "exported": "Export CSV téléchargé."
+    },
+    "error": {
+      "loadFailed": "Impossible de charger les données.",
+      "saveFailed": "Échec de l'enregistrement.",
+      "deleteFailed": "Échec de la suppression.",
+      "actionFailed": "L'action a échoué."
+    },
+    "confirm": {
+      "deleteMessage": "Supprimer définitivement cet élément ?",
+      "cancelTrip": "Annuler ce trajet ? Les réservations seront traitées selon les règles métier.",
+      "cancelRental": "Annuler cette réservation de location ?"
+    },
+    "table": {
+      "actions": "Actions",
+      "emptyNested": "Aucun élément."
+    },
+    "form": {
+      "selectPlaceholder": "— Sélectionner —",
+      "moneyMinor": "Montant en devises (1 = 100 minor)"
+    }
   }
 }
