@@ -692,6 +692,14 @@ rejouables.
   validation `travel.manage`, visible uniquement payée+validée+non expirée,
   expiration (`travel:expire-adverts`) et renouvellement payé.
 
+### 8.8 Annuaire & notifications legacy livrés (TRAVEL-909/910, #6112/#6113)
+
+- Sites touristiques : `travel_tourist_sites` (nom, description redigée, ville,
+  géo, statut) — CRUD + recherche par ville/nom.
+- Notifications legacy gv-back : la file maison n'est pas reproduite ; envoi
+  manuel via canaux plateforme (email / in-app BC-13) + consentement
+  (`travel_customer_contacts`), endpoint `POST /travel/contacts/{contact}/notify`.
+
 ## 9. Sécurité & RGPD
 
 | Sujet | Mesure |
