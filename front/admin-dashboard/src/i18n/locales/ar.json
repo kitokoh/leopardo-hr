@@ -1576,7 +1576,8 @@
     "notFound": "الصفحة غير موجودة",
     "accountingActivation": "المحاسبة — ابدأ",
     "accountingDashboard": "المحاسبة — لوحة القيادة",
-    "accountingSettings": "المحاسبة — الإعدادات"
+    "accountingSettings": "المحاسبة — الإعدادات",
+    "fuelStation": "محطات الوقود"
   },
   "webhooks": {
     "confirm_delete": "حذف خطاف الويب هذا؟",
@@ -4234,87 +4235,50 @@
     "actionError": "تعذر تنفيذ الإجراء، حاول مجددًا.",
     "loading": "جارٍ تحميل قائمة المطبخ…"
   },
-  "travel": {
-    "content": {
-      "title": "Content & ads",
-      "subtitle": "Quizzes, paid ads and tourist sites.",
-      "tabs": {
-        "quiz": "Quizzes",
-        "adverts": "Ads",
-        "sites": "Tourist sites",
-        "contacts": "Contacts"
-      }
-    },
-    "quiz": {
-      "title": "Quizzes & contests",
-      "create": "Create a quiz",
-      "questions": "Questions",
-      "results": "Results",
-      "addQuestion": "Add a question",
-      "question": "Question",
-      "options": "Options",
-      "optionsInput": "Options (comma separated)",
-      "correctIndex": "Correct answer index",
-      "points": "Points",
-      "participant": "Participant",
-      "score": "Score",
-      "bonus": "Bonus",
-      "endsAt": "Ends at",
-      "status": {
-        "draft": "Draft",
-        "active": "Active",
-        "closed": "Closed"
-      }
-    },
-    "adverts": {
-      "title": "Ads",
-      "types": "Types",
-      "positions": "Positions",
-      "prices": "Pricing",
-      "label": "Label",
-      "code": "Code",
-      "type": "Type",
-      "position": "Position",
-      "priceImage": "Image price (minor)",
-      "priceChar": "Character price (minor)",
-      "currency": "Currency",
-      "create": "Submit an ad",
-      "content": "Content",
-      "validityDays": "Duration (days)",
-      "pay": "Pay",
-      "validate": "Validate",
-      "reject": "Reject",
-      "renew": "Renew",
-      "rejectReason": "Rejection reason",
-      "price": "Price",
-      "expiresAt": "Expires at",
-      "allStatuses": "All statuses",
-      "status": {
-        "draft": "Draft",
-        "submitted": "Submitted",
-        "paid": "Paid",
-        "validated": "Validated",
-        "rejected": "Rejected",
-        "expired": "Expired"
-      }
-    },
-    "sites": {
-      "title": "Tourist sites",
-      "name": "Name",
-      "description": "Description",
-      "latitude": "Latitude",
-      "longitude": "Longitude"
-    },
-    "contacts": {
-      "title": "Customer contacts",
-      "search": "Search by email",
-      "name": "Name",
-      "consents": "Consents",
-      "notify": "Notify",
-      "message": "Message",
-      "channelEmail": "Email",
-      "channelSms": "SMS",
-      "channelWhatsapp": "WhatsApp"
-    }
+  "fuel": {
+    "statStations": "المحطات",
+    "statOpenIncidents": "الحوادث المفتوحة",
+    "statPendingReconciliations": "مطابقات للمراجعة",
+    "statVariance": "فروقات للتوضيح",
+    "tabsStations": "المحطات",
+    "tabsIncidents": "الحوادث",
+    "tabsReconciliations": "المطابقات",
+    "searchStation": "ابحث عن محطة...",
+    "searchIncident": "ابحث عن حادث...",
+    "searchReconciliation": "ابحث عن تقرير...",
+    "colCode": "الرمز",
+    "colName": "الاسم",
+    "colTimezone": "المنطقة الزمنية",
+    "colStatus": "الحالة",
+    "colDate": "تاريخ الإنشاء",
+    "colTitle": "العنوان",
+    "colStation": "المحطة",
+    "colEquipmentType": "المعدات",
+    "colPriority": "الأولوية",
+    "colReportDate": "اليوم",
+    "colExpected": "المتوقع",
+    "colClosing": "الإغلاق",
+    "colVariance": "الفرق",
+    "stationActive": "نشطة",
+    "stationInactive": "غير نشطة",
+    "stationArchived": "مؤرشفة",
+    "incidentReported": "مُبلغ عنه",
+    "incidentAssigned": "مُسند",
+    "incidentInProgress": "قيد المعالجة",
+    "incidentResolved": "تم الحل",
+    "incidentClosed": "مغلق",
+    "priorityLow": "منخفض",
+    "priorityMedium": "متوسط",
+    "priorityHigh": "مرتفع",
+    "priorityCritical": "حرج",
+    "reconcilPending": "للمراجعة",
+    "reconcilReviewed": "تمت المراجعة",
+    "reconcilApproved": "معتمد",
+    "errStations": "تعذر تحميل المحطات.",
+    "errIncidents": "تعذر تحميل الحوادث.",
+    "errReconciliations": "تعذر تحميل المطابقات.",
+    "stationsCaption": "محطات الأسطول",
+    "incidentsCaption": "الحوادث المبلغ عنها",
+    "reconciliationsCaption": "تقارير المطابقة"
   }
 }

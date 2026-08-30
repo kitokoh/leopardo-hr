@@ -1576,7 +1576,8 @@
     "notFound": "Sayfa bulunamadi",
     "accountingActivation": "Muhasebe — Başlayın",
     "accountingDashboard": "Muhasebe — Panel",
-    "accountingSettings": "Muhasebe — Ayarlar"
+    "accountingSettings": "Muhasebe — Ayarlar",
+    "fuelStation": "Akaryakıt istasyonları"
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?",
@@ -4234,87 +4235,50 @@
     "actionError": "İşlem başarısız, tekrar deneyin.",
     "loading": "Mutfak kuyruğu yükleniyor…"
   },
-  "travel": {
-    "content": {
-      "title": "Content & ads",
-      "subtitle": "Quizzes, paid ads and tourist sites.",
-      "tabs": {
-        "quiz": "Quizzes",
-        "adverts": "Ads",
-        "sites": "Tourist sites",
-        "contacts": "Contacts"
-      }
-    },
-    "quiz": {
-      "title": "Quizzes & contests",
-      "create": "Create a quiz",
-      "questions": "Questions",
-      "results": "Results",
-      "addQuestion": "Add a question",
-      "question": "Question",
-      "options": "Options",
-      "optionsInput": "Options (comma separated)",
-      "correctIndex": "Correct answer index",
-      "points": "Points",
-      "participant": "Participant",
-      "score": "Score",
-      "bonus": "Bonus",
-      "endsAt": "Ends at",
-      "status": {
-        "draft": "Draft",
-        "active": "Active",
-        "closed": "Closed"
-      }
-    },
-    "adverts": {
-      "title": "Ads",
-      "types": "Types",
-      "positions": "Positions",
-      "prices": "Pricing",
-      "label": "Label",
-      "code": "Code",
-      "type": "Type",
-      "position": "Position",
-      "priceImage": "Image price (minor)",
-      "priceChar": "Character price (minor)",
-      "currency": "Currency",
-      "create": "Submit an ad",
-      "content": "Content",
-      "validityDays": "Duration (days)",
-      "pay": "Pay",
-      "validate": "Validate",
-      "reject": "Reject",
-      "renew": "Renew",
-      "rejectReason": "Rejection reason",
-      "price": "Price",
-      "expiresAt": "Expires at",
-      "allStatuses": "All statuses",
-      "status": {
-        "draft": "Draft",
-        "submitted": "Submitted",
-        "paid": "Paid",
-        "validated": "Validated",
-        "rejected": "Rejected",
-        "expired": "Expired"
-      }
-    },
-    "sites": {
-      "title": "Tourist sites",
-      "name": "Name",
-      "description": "Description",
-      "latitude": "Latitude",
-      "longitude": "Longitude"
-    },
-    "contacts": {
-      "title": "Customer contacts",
-      "search": "Search by email",
-      "name": "Name",
-      "consents": "Consents",
-      "notify": "Notify",
-      "message": "Message",
-      "channelEmail": "Email",
-      "channelSms": "SMS",
-      "channelWhatsapp": "WhatsApp"
-    }
+  "fuel": {
+    "statStations": "İstasyonlar",
+    "statOpenIncidents": "Açık olaylar",
+    "statPendingReconciliations": "İncelenecek mutabakatlar",
+    "statVariance": "Açıklanacak farklar",
+    "tabsStations": "İstasyonlar",
+    "tabsIncidents": "Olaylar",
+    "tabsReconciliations": "Mutabakatlar",
+    "searchStation": "İstasyon ara...",
+    "searchIncident": "Olay ara...",
+    "searchReconciliation": "Rapor ara...",
+    "colCode": "Kod",
+    "colName": "Ad",
+    "colTimezone": "Saat dilimi",
+    "colStatus": "Durum",
+    "colDate": "Oluşturuldu",
+    "colTitle": "Başlık",
+    "colStation": "İstasyon",
+    "colEquipmentType": "Ekipman",
+    "colPriority": "Öncelik",
+    "colReportDate": "Gün",
+    "colExpected": "Beklenen",
+    "colClosing": "Kapanış",
+    "colVariance": "Fark",
+    "stationActive": "Aktif",
+    "stationInactive": "Pasif",
+    "stationArchived": "Arşivlendi",
+    "incidentReported": "Bildirildi",
+    "incidentAssigned": "Atandı",
+    "incidentInProgress": "Sürüyor",
+    "incidentResolved": "Çözüldü",
+    "incidentClosed": "Kapatıldı",
+    "priorityLow": "Düşük",
+    "priorityMedium": "Orta",
+    "priorityHigh": "Yüksek",
+    "priorityCritical": "Kritik",
+    "reconcilPending": "İncelenecek",
+    "reconcilReviewed": "İncelendi",
+    "reconcilApproved": "Onaylandı",
+    "errStations": "İstasyonlar yüklenemedi.",
+    "errIncidents": "Olaylar yüklenemedi.",
+    "errReconciliations": "Mutabakatlar yüklenemedi.",
+    "stationsCaption": "Filo istasyonları",
+    "incidentsCaption": "Bildirilen olaylar",
+    "reconciliationsCaption": "Mutabakat raporları"
   }
 }
