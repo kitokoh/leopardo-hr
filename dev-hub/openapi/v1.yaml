@@ -23171,6 +23171,146 @@ paths:
                     $ref: '#/components/schemas/Delivery'
         '422':
           $ref: '#/components/responses/Validation422'
+  /delivery/deliveries/routes:
+    post:
+      tags:
+      - Delivery
+      summary: Crée une tournée (DELIVERY-202/#6286)
+      description: |
+        Crée une tournée (statut draft) + stops ordonnés à partir des colis.
+        Refus 409 si un colis est déjà planifié dans une tournée non close.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - route_date
+              - delivery_ids
+              properties:
+                route_date:
+                  type: string
+                  format: date
+                zone:
+                  type: string
+                delivery_ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 200
+                  items:
+                    type: integer
+      responses:
+        '201':
+          description: Tournée créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '409':
+          description: Colis déjà planifié
+  /delivery/deliveries/routes/{route}/assign:
+    post:
+      tags:
+      - Delivery
+      summary: Affecte livreur + véhicule (DELIVERY-202/#6286)
+      description: |
+        Idempotent (même affectation → même résultat). Garde anti-chevauchement :
+        un livreur = une tournée par date (409 DRIVER_ALREADY_ASSIGNED).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - driver_id
+              properties:
+                driver_id:
+                  type: integer
+                vehicle_code:
+                  type: string
+      responses:
+        '200':
+          description: Tournée affectée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '409':
+          description: Livreur déjà affecté ce jour
+  /delivery/deliveries/routes/{route}/close:
+    post:
+      tags:
+      - Delivery
+      summary: Clôture une tournée (DELIVERY-202/#6286)
+      description: |
+        Idempotente. Refus 409 ROUTE_INCOMPLETE si des stops sont non terminés.
+        Calcule totaux colis/livrés/échecs/COD collecté (verrou SELECT FOR UPDATE).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tournée clôturée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '409':
+          description: Tournée incomplète ou vide
+  /delivery/deliveries/routes/{route}:
+    get:
+      tags:
+      - Delivery
+      summary: Détail d'une tournée (DELIVERY-202/#6286)
+      description: |
+        Détail scopé au tenant — 404 si absente OU hors tenant. Stops ordonnés.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tournée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '404':
+          description: Tournée introuvable ou hors tenant
+
   /delivery/deliveries/{delivery}:
     get:
       tags:
@@ -25014,6 +25154,68 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    DeliveryRoute:
+      type: object
+      properties:
+        id:
+          type: integer
+        route_date:
+          type: string
+          format: date
+        zone:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [draft, assigned, in_progress, completed]
+        driver_id:
+          type: integer
+          nullable: true
+        vehicle_code:
+          type: string
+          nullable: true
+        deliveries_count:
+          type: integer
+        delivered_count:
+          type: integer
+        failed_count:
+          type: integer
+        cod_collected_minor:
+          type: integer
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeliveryRouteStop'
+    DeliveryRouteStop:
+      type: object
+      properties:
+        id:
+          type: integer
+        delivery_id:
+          type: integer
+        sort_order:
+          type: integer
+        status:
+          type: string
+          enum: [pending, en_route, arrived, delivered, failed, skipped]
+        address:
+          type: string
+        contact:
+          type: string
+          nullable: true
+        eta:
+          type: string
+          format: date-time
+          nullable: true
+        delivered_at:
+          type: string
+          format: date-time
+          nullable: true
+
     Delivery:
       type: object
       properties:
