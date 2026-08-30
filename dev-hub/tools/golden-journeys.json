@@ -18,7 +18,7 @@
     },
     "restaurantmanager": {
       "label": "RestaurantManager (verticale)",
-      "status": "planned"
+      "status": "active"
     }
   },
   "journeys": [
@@ -349,6 +349,70 @@
           "method": "POST",
           "route": "/api/v1/restaurant/pos-sessions/{restaurantPosSession}/close",
           "role": "manager:server"
+        }
+      ]
+    },
+    {
+      "id": "GJ-RESTO-01",
+      "name": "Pilote RestaurantManager — caisse → commande → paiement → clôture",
+      "solution": "restaurantmanager",
+      "acceptance": "Session de caisse ouverte → commande salle (articles) → soumission → confirmation cuisine → service → paiement → clôture de caisse, sans 409/422 ; écart de caisse = 0.",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Ouvrir une session de caisse",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions",
+          "role": "manager"
+        },
+        {
+          "order": 2,
+          "action": "Créer une commande (salle)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders",
+          "role": "server"
+        },
+        {
+          "order": 3,
+          "action": "Ajouter un article",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/items",
+          "role": "server"
+        },
+        {
+          "order": 4,
+          "action": "Soumettre la commande",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/submit",
+          "role": "server"
+        },
+        {
+          "order": 5,
+          "action": "Confirmer (cuisine)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/confirm",
+          "role": "kitchen"
+        },
+        {
+          "order": 6,
+          "action": "Servir",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/serve",
+          "role": "server"
+        },
+        {
+          "order": 7,
+          "action": "Encaisser (espèces)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/pay",
+          "role": "server"
+        },
+        {
+          "order": 8,
+          "action": "Clôturer la caisse",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions/{restaurantPosSession}/close",
+          "role": "manager"
         }
       ]
     }
