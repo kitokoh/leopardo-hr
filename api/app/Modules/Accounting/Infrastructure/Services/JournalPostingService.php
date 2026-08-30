@@ -181,10 +181,16 @@ final class JournalPostingService
     /**
      * Clôture une période comptable (idempotent) : plus aucun posting accepté.
      */
-    public function closePeriod(string $period, ?string $closedBy = null): AccountingClosedPeriod
+    public function closePeriod(string $period, ?string $closedBy = null, ?string $companyId = null): AccountingClosedPeriod
     {
+        $attributes = ['period' => $period];
+
+        if ($companyId !== null) {
+            $attributes['company_id'] = $companyId;
+        }
+
         return AccountingClosedPeriod::query()->firstOrCreate(
-            ['period' => $period],
+            $attributes,
             ['closed_by' => $closedBy, 'closed_at' => Carbon::now()],
         );
     }

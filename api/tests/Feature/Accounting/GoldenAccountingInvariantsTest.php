@@ -256,7 +256,7 @@ class GoldenAccountingInvariantsTest extends TestCase
         $service->postDocument($document);
         $this->assertSame(3, AccountingJournalEntry::query()->where('company_id', $company->id)->count());
 
-        $service->closePeriod('2026-08', closedBy: 'golden-test');
+        $service->closePeriod('2026-08', closedBy: 'golden-test', companyId: $company->id);
         $this->assertTrue($service->isPeriodClosed('2026-08'));
         $this->assertTrue(AccountingClosedPeriod::query()->where('period', '2026-08')->exists());
 
@@ -279,7 +279,9 @@ class GoldenAccountingInvariantsTest extends TestCase
 
         $service = new JournalPostingService;
         $service->postDocument($this->invoice($company, $contact, 'FAC-2026-0030', ht: 1000.0));
-        $service->postPayment($this->payment($company, $this->invoice($company, $contact, 'FAC-2026-0031', ht: 500.0), 595.0, PaymentMethod::BankTransfer->value));
+        $invoice0031 = $this->invoice($company, $contact, 'FAC-2026-0031', ht: 500.0);
+        $service->postDocument($invoice0031);
+        $service->postPayment($this->payment($company, $invoice0031, 595.0, PaymentMethod::BankTransfer->value));
 
         $ledger = new AccountingLedgerService;
 
@@ -328,7 +330,7 @@ class GoldenAccountingInvariantsTest extends TestCase
         // pas de timestamps mis à jour, aucune mise à jour, uniquement des
         // insertions (append-only) — le résultat d'un run reste reproductible.
         $audit = PayrollCalculationAudit::create([
-            'correlation_id' => 'golden-correlation-1',
+            'correlation_id' => '00000000-0000-4000-8000-000000000001',
             'company_id' => null,
             'actor_type' => PayrollCalculationAudit::ACTOR_USER,
             'country_code' => 'DZ',
@@ -345,7 +347,7 @@ class GoldenAccountingInvariantsTest extends TestCase
 
         // Re-calcul d'un même run = nouvelle ligne, jamais de mutation.
         PayrollCalculationAudit::create([
-            'correlation_id' => 'golden-correlation-1',
+            'correlation_id' => '00000000-0000-4000-8000-000000000001',
             'company_id' => null,
             'actor_type' => PayrollCalculationAudit::ACTOR_USER,
             'country_code' => 'DZ',
