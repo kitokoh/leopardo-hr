@@ -17,12 +17,10 @@ class CheckOverdueInvoices extends Command
 
     public function handle(): int
     {
-        // DEP-BC21 #6248 : `pending` (hérité de la génération mensuelle) et
-        // `sent` passent par la machine à états → `overdue` dès due_date passée.
-        $overdueInvoices = Invoice::whereIn('status', [
-            InvoiceStatus::Pending->value,
-            InvoiceStatus::Sent->value,
-        ])
+        // DEP-BC21 #6248 : les factures `sent` passent par la machine à états
+        // → `overdue` dès due_date passée (la CHECK invoices_status_check
+        // n'autorise que draft/sent/paid/overdue/cancelled).
+        $overdueInvoices = Invoice::where('status', InvoiceStatus::Sent->value)
             ->where('due_date', '<', now())
             ->get();
 
