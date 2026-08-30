@@ -67,6 +67,7 @@ class RestaurantPublicShopApiTest extends TestCase
                 'branch_id' => $branch->id,
                 'price_minor' => 1500,
                 'currency' => 'XAF',
+                'tax_rate_id' => null,
                 'is_available' => true,
             ]);
 

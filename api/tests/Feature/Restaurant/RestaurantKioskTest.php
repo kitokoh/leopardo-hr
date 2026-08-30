@@ -51,6 +51,7 @@ class RestaurantKioskTest extends TestCase
                 'code' => 'PLAT-JOUR',
                 'price_minor' => 2000,
                 'currency' => 'XAF',
+                'tax_rate_id' => null,
                 'is_available' => true,
             ]);
 

@@ -61,6 +61,7 @@ class RestaurantGoldenJourneyTest extends TestCase
                 'code' => 'DISH-ROYAL',
                 'price_minor' => 3000,
                 'currency' => 'XAF',
+                'tax_rate_id' => null,
                 'is_available' => true,
             ]);
 
