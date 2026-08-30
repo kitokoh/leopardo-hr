@@ -16,6 +16,10 @@
     "edumanager": {
       "label": "EduManager (verticale)",
       "status": "planned"
+    },
+    "travelagency": {
+      "label": "TravelAgency (verticale voyage)",
+      "status": "planned"
     }
   },
   "journeys": [
@@ -282,6 +286,63 @@
           "method": "POST",
           "route": "/api/v1/edu/attendance",
           "role": "teacher"
+        }
+      ]
+    },
+    {
+      "id": "GJ-TRAVEL-01",
+      "name": "Vente de billet en ligne (recherche → réservation → paiement → billet → check-in)",
+      "solution": "travelagency",
+      "acceptance": "Un voyageur recherche un trajet, réserve pour des passagers, paie en mobile money (callback signé), reçoit son billet PDF nominatif et fait son check-in (TRAVEL-1007/#6120, spec §4.1).",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Rechercher un voyage",
+          "method": "GET",
+          "route": "/api/v1/travel/shop/trips",
+          "role": "public"
+        },
+        {
+          "order": 2,
+          "action": "Consulter le trajet",
+          "method": "GET",
+          "route": "/api/v1/travel/shop/trips/{travelTrip}",
+          "role": "public"
+        },
+        {
+          "order": 3,
+          "action": "Réserver (passagers)",
+          "method": "POST",
+          "route": "/api/v1/travel/shop/bookings",
+          "role": "public"
+        },
+        {
+          "order": 4,
+          "action": "Initier le paiement mobile money",
+          "method": "POST",
+          "route": "/api/v1/travel/payments/initiate",
+          "role": "public"
+        },
+        {
+          "order": 5,
+          "action": "Émettre le billet",
+          "method": "POST",
+          "route": "/api/v1/travel/bookings/{travelBooking}/issue-ticket",
+          "role": "manager:principal"
+        },
+        {
+          "order": 6,
+          "action": "Télécharger le billet PDF",
+          "method": "GET",
+          "route": "/api/v1/travel/tickets/{travelTicket}/pdf",
+          "role": "manager:principal"
+        },
+        {
+          "order": 7,
+          "action": "Check-in du voyageur",
+          "method": "POST",
+          "route": "/api/v1/travel/tickets/{travelTicket}/check-in",
+          "role": "manager:principal"
         }
       ]
     }

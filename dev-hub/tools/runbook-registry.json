@@ -33,5 +33,7 @@
     { "code": "BC-23", "name": "AI", "runbooks": [], "notes": "Services IA assistifs couverts par backup/restore plateforme + incident P1." }
   ,
   { "code": "BC-25", "name": "RESTAURANT", "runbooks": ["docs/ops/RUNBOOK_PILOT_RESTAURANTMANAGER.md"], "notes": "Pilote RestaurantManager : runbook dédié (activation, smoke, incidents, rollback) + runbooks plateforme (backup/restore/rollback/incident) + recette UAT docs/ops/RECETTE_UAT_RESTAURANTMANAGER.md (RESTO-903/#6232)." }
+  ,
+  { "code": "BC-24", "name": "TRAVEL", "runbooks": ["docs/ops/RUNBOOK_PILOT_TRAVELAGENCY.md"], "notes": "Pilote TravelAgency : runbook dédié (activation, smoke, incidents, kill switch, rollback, RPO<24h/RTO<4h) + runbooks plateforme (backup/restore/rollback/incident) + recette UAT docs/ops/RECETTE_UAT_TRAVELAGENCY.md (TRAVEL-1010/#6123)." }
   ]
 }
