@@ -36,4 +36,12 @@ return [
     'payment_document_ready_body' => 'تم إنشاء مسтد مدفوعاتك وهو متاح للتنزيل.',
     'weekly_manager_digest_title' => 'ملخص الفريق الأسبوعي',
     'weekly_manager_digest_body' => 'أسبوع :week_start — فريق من :team_size شخص(ًا) · :present حضور مسجل · :pending_absences غياب قيد الانتظار · :pending_advances سلف قيد الانتظار · :pending_corrections تصحيحات قيد الانتظار.',
+    'fuel_meter_anomaly_title' => 'تم اكتشاف خلل في قراءة العداد',
+    'fuel_meter_anomaly_body' => 'لم تتم مراجعة فترة قراءة غير طبيعية (الفترة #:interval_id).',
+    'fuel_missing_closure_title' => 'إغلاق جلسة الصندوق مفقود',
+    'fuel_missing_closure_body' => 'جلسة الصندوق #:session_id مفتوحة منذ أكثر من 24 ساعة دون إغلاق.',
+    'fuel_stock_variance_title' => 'فرق مخزون غير مفسر',
+    'fuel_stock_variance_body' => 'تسوية #:run_id تُظهر فرقًا غير مفسر.',
+    'fuel_maintenance_due_title' => 'صيانة متأخرة',
+    'fuel_maintenance_due_body' => 'المهمة « :task_title » تجاوزت موعدها.',
 ];

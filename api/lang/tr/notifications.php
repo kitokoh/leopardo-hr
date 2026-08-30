@@ -36,4 +36,12 @@ return [
     'payment_document_ready_body' => 'Ödeme belgeniz oluşturuldu ve indirilmeye hazır.',
     'weekly_manager_digest_title' => 'Haftalık ekip özeti',
     'weekly_manager_digest_body' => ':week_start haftası — :team_size kişilik ekip · :present kayıtlı devam · :pending_absences bekleyen izin · :pending_advances bekleyen avans · :pending_corrections bekleyen düzeltme.',
+    'fuel_meter_anomaly_title' => 'Sayaç okuma anormalliği tespit edildi',
+    'fuel_meter_anomaly_body' => 'Anormal bir sayaç aralığı incelenmedi (aralık #:interval_id).',
+    'fuel_missing_closure_title' => 'Eksik kasa kapanışı',
+    'fuel_missing_closure_body' => 'Kasa oturumu #:session_id 24 saatten uzun süredir kapanmadan açık.',
+    'fuel_stock_variance_title' => 'Açıklanamayan stok farkı',
+    'fuel_stock_variance_body' => ':run_id numaralı mutabakat açıklanamayan bir fark gösteriyor.',
+    'fuel_maintenance_due_title' => 'Gecikmiş bakım',
+    'fuel_maintenance_due_body' => '“:task_title” görevi süresi geçmiş.',
 ];

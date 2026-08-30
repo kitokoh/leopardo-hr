@@ -36,4 +36,12 @@ return [
     'payment_document_ready_body' => 'Votre document de paiement est généré et disponible au téléchargement.',
     'weekly_manager_digest_title' => 'Digest hebdomadaire de votre équipe',
     'weekly_manager_digest_body' => 'Semaine du :week_start — Équipe de :team_size personne(s) · :present présence(s) enregistrée(s) · :pending_absences absence(s) en attente · :pending_advances avance(s) en attente · :pending_corrections correction(s) en attente.',
+    'fuel_meter_anomaly_title' => 'Anomalie de relevé détectée',
+    'fuel_meter_anomaly_body' => 'Un intervalle de relevé anormal n\'a pas été revu (intervalle #:interval_id).',
+    'fuel_missing_closure_title' => 'Clôture de caisse manquante',
+    'fuel_missing_closure_body' => 'La session de caisse #:session_id est ouverte depuis plus de 24 h sans clôture.',
+    'fuel_stock_variance_title' => 'Écart de stock inexpliqué',
+    'fuel_stock_variance_body' => 'Le rapprochement #:run_id présente un écart non expliqué.',
+    'fuel_maintenance_due_title' => 'Maintenance en retard',
+    'fuel_maintenance_due_body' => 'La tâche « :task_title » a dépassé son échéance.',
 ];

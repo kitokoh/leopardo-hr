@@ -36,4 +36,12 @@ return [
     'payment_document_ready_body' => 'Your payment document is generated and available to download.',
     'weekly_manager_digest_title' => 'Weekly team digest',
     'weekly_manager_digest_body' => 'Week of :week_start — Team of :team_size person(s) · :present attendance(s) recorded · :pending_absences pending absence(s) · :pending_advances pending advance(s) · :pending_corrections pending correction(s).',
+    'fuel_meter_anomaly_title' => 'Meter reading anomaly detected',
+    'fuel_meter_anomaly_body' => 'An abnormal reading interval has not been reviewed (interval #:interval_id).',
+    'fuel_missing_closure_title' => 'Missing cash session closure',
+    'fuel_missing_closure_body' => 'Cash session #:session_id has been open for over 24 h without closure.',
+    'fuel_stock_variance_title' => 'Unexplained stock variance',
+    'fuel_stock_variance_body' => 'Reconciliation run #:run_id shows an unexplained variance.',
+    'fuel_maintenance_due_title' => 'Overdue maintenance',
+    'fuel_maintenance_due_body' => 'Task “:task_title” is past due.',
 ];

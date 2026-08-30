@@ -179,6 +179,30 @@ return [
             'body_key' => 'notifications.platform_announcement_body',
         ],
 
+        'fuel_meter_anomaly' => [
+            'category' => 'fuel',
+            'title_key' => 'notifications.fuel_meter_anomaly_title',
+            'body_key' => 'notifications.fuel_meter_anomaly_body',
+            'vars' => ['interval_id'],
+        ],
+        'fuel_missing_closure' => [
+            'category' => 'fuel',
+            'title_key' => 'notifications.fuel_missing_closure_title',
+            'body_key' => 'notifications.fuel_missing_closure_body',
+            'vars' => ['session_id'],
+        ],
+        'fuel_stock_variance' => [
+            'category' => 'fuel',
+            'title_key' => 'notifications.fuel_stock_variance_title',
+            'body_key' => 'notifications.fuel_stock_variance_body',
+            'vars' => ['run_id'],
+        ],
+        'fuel_maintenance_due' => [
+            'category' => 'fuel',
+            'title_key' => 'notifications.fuel_maintenance_due_title',
+            'body_key' => 'notifications.fuel_maintenance_due_body',
+            'vars' => ['task_title'],
+        ],
         'weekly_manager_digest' => [
             'category' => 'hr',
             'title_key' => 'notifications.weekly_manager_digest_title',
