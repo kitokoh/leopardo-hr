@@ -114,7 +114,9 @@ class TravelRouteStopController extends Controller
 
         DB::transaction(function () use ($travelRouteStop): void {
             $travelRouteStop->delete();
-            $this->renumberRanks($travelRouteStop->route);
+            $route = $travelRouteStop->route;
+            assert($route instanceof \App\Modules\TravelAgency\Domain\Models\TravelRoute);
+            $this->renumberRanks($route);
         });
 
         return new JsonResponse(null, 204);

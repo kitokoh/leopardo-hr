@@ -14,13 +14,13 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * TRAVEL-320 (#6050) — Réservation de location de véhicule.
+ * TRAVEL-320 (#6050) — Reservation de location de vehicule.
  *
- * Invariant de non-chevauchement : deux réservations du même véhicule ne
- * peuvent pas se chevaucher (scope `overlapping()`, vérifié en transaction
- * avec verrouillage du véhicule — 409 sinon). Montant calculé côté serveur
- * (prix/jour × durée), idempotence par `idempotency_key`, événement outbox
- * `travel.rental.booking.confirmed.v1` après commit.
+ * Invariant de non-chevauchement : deux reservations du meme vehicule ne
+ * peuvent pas se chevaucher (scope `overlapping()`, verifie en transaction
+ * avec verrouillage du vehicule — 409 sinon). Montant calcule cote serveur
+ * (prix/jour × duree), idempotence par `idempotency_key`, evenement outbox
+ * `travel.rental.booking.confirmed.v1` apres commit.
  */
 final class CreateRentalBookingAction
 {
@@ -45,7 +45,7 @@ final class CreateRentalBookingAction
         }
 
         $booking = DB::transaction(function () use ($vehicle, $idempotencyKey, $data): TravelRentalBooking {
-            // Verrouille le véhicule : sérialise les créations concurrentes.
+            // Verrouille le vehicule : serialise les creations concurrentes.
             TravelRentalVehicle::query()->whereKey($vehicle->id)->lockForUpdate()->firstOrFail();
 
             $overlap = TravelRentalBooking::query()
@@ -53,7 +53,7 @@ final class CreateRentalBookingAction
                 ->exists();
 
             if ($overlap) {
-                abort(409, 'Ce véhicule est déjà réservé sur cette période.');
+                abort(409, 'Ce vehicule est deja reserve sur cette periode.');
             }
 
             $start = Carbon::parse($data['start_date']);

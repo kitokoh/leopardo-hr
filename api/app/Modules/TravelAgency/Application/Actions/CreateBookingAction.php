@@ -20,15 +20,15 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
- * TRAVEL-312 (#6042) — Création d'une réservation guichet (multi-passagers).
+ * TRAVEL-312 (#6042) — Creation d'une reservation guichet (multi-passagers).
  *
- * Invariant stock (spec §4-D4) : la transaction verrouille les sièges
- * choisis avec `SELECT … FOR UPDATE` (jamais de décrément non protégé).
- * Si les sièges ne sont pas fournis, ils sont attribués automatiquement
- * parmi les places libres du trajet. Le montant total est calculé depuis
- * les tarifs du trajet (unité mineures, adulte/enfant), jamais accepté du
- * client. Idempotence : une `idempotency_key` déjà utilisée renvoie la
- * réservation existante (pas de doublon).
+ * Invariant stock (spec §4-D4) : la transaction verrouille les sieges
+ * choisis avec `SELECT … FOR UPDATE` (jamais de decrement non protege).
+ * Si les sieges ne sont pas fournis, ils sont attribues automatiquement
+ * parmi les places libres du trajet. Le montant total est calcule depuis
+ * les tarifs du trajet (unite mineures, adulte/enfant), jamais accepte du
+ * client. Idempotence : une `idempotency_key` deja utilisee renvoie la
+ * reservation existante (pas de doublon).
  *
  * @phpstan-type PassengerInput array{
  *     full_name: string,
@@ -65,19 +65,19 @@ final class CreateBookingAction
         }
 
         if ($trip->status->value !== 'published') {
-            abort(409, 'Ce trajet n\'est pas ouvert à la réservation.');
+            abort(409, 'Ce trajet n\'est pas ouvert a la reservation.');
         }
 
         $booking = DB::transaction(function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId): TravelBooking {
-            // Verrouille le trajet : empêche deux réservations concurrentes
-            // de lire le même inventaire.
+            // Verrouille le trajet : empeche deux reservations concurrentes
+            // de lire le meme inventaire.
             /** @var TravelTrip $lockedTrip */
             $lockedTrip = TravelTrip::query()
                 ->whereKey($trip->id)
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            // Sélection des sièges (explicites ou auto-attribués).
+            // Selection des sieges (explicites ou auto-attribues).
             $seats = $this->resolveSeats($lockedTrip, $passengers);
 
             $total = $this->computeTotal($lockedTrip, $passengers);
@@ -115,7 +115,7 @@ final class CreateBookingAction
                     $passenger->save();
                 }
 
-                // Réserve le siège : statut reserved + rattachement.
+                // Reserve le siege : statut reserved + rattachement.
                 $seat->forceFill([
                     'status' => SeatStatus::RESERVED,
                     'booking_id' => $booking->id,
@@ -141,8 +141,8 @@ final class CreateBookingAction
     }
 
     /**
-     * Verrouille (FOR UPDATE) et attribue les sièges demandés, ou les N
-     * premiers libres. Échoue en 409 si un siège demandé est indisponible.
+     * Verrouille (FOR UPDATE) et attribue les sieges demandes, ou les N
+     * premiers libres. Echoue en 409 si un siege demande est indisponible.
      *
      * @param  list<PassengerInput>  $passengers
      * @return list<TravelTripSeat>
@@ -156,8 +156,8 @@ final class CreateBookingAction
             }
         }
 
-        // Verrouille TOUTES les lignes sièges du trajet : la sélection
-        // concurrente de sièges libres est sérialisée (pas de course).
+        // Verrouille TOUTES les lignes sieges du trajet : la selection
+        // concurrente de sieges libres est serialisee (pas de course).
         /** @var Collection<int, TravelTripSeat> $allSeats */
         $allSeats = TravelTripSeat::query()
             ->where('trip_id', $trip->id)
@@ -180,7 +180,7 @@ final class CreateBookingAction
 
                 $seat = $allSeats->first(fn (TravelTripSeat $s): bool => $s->seat_number === $seatNumber);
                 if ($seat === null || $seat->status !== SeatStatus::FREE) {
-                    abort(409, 'Siège '.$seatNumber.' indisponible.');
+                    abort(409, 'Siege '.$seatNumber.' indisponible.');
                 }
 
                 $selected[] = $seat;
@@ -199,12 +199,12 @@ final class CreateBookingAction
             abort(409, 'Plus assez de places libres sur ce trajet.');
         }
 
-        return $auto->values()->all();
+        return array_values($auto->values()->all());
     }
 
     /**
-     * Devise de la réservation : celle des tarifs du trajet (source de
-     * vérité du prix), repli sur la devise du tenant.
+     * Devise de la reservation : celle des tarifs du trajet (source de
+     * verite du prix), repli sur la devise du tenant.
      */
     private function resolveCurrency(TravelTrip $trip): string
     {
@@ -218,7 +218,7 @@ final class CreateBookingAction
     }
 
     /**
-     * Montant total en unités mineures = somme des tarifs unitaires.
+     * Montant total en unites mineures = somme des tarifs unitaires.
      *
      * @param  list<PassengerInput>  $passengers
      */
@@ -244,7 +244,7 @@ final class CreateBookingAction
             ->first();
 
         if (! $price instanceof TravelTripPrice) {
-            abort(422, 'Aucun tarif défini pour cette classe sur ce trajet.');
+            abort(422, 'Aucun tarif defini pour cette classe sur ce trajet.');
         }
 
         $isChild = AgeCategory::from($passengerData['age_category']) !== AgeCategory::ADULT;
