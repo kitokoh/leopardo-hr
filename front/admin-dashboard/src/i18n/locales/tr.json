@@ -4233,5 +4233,76 @@
     "loadError": "Mutfak kuyruğu yüklenemedi.",
     "actionError": "İşlem başarısız, tekrar deneyin.",
     "loading": "Mutfak kuyruğu yükleniyor…"
+  },
+  "travel": {
+    "content": {
+      "title": "Content & ads",
+      "subtitle": "Quizzes, paid ads and tourist sites.",
+      "tabs": {
+        "quiz": "Quizzes",
+        "adverts": "Ads",
+        "sites": "Tourist sites"
+      }
+    },
+    "quiz": {
+      "title": "Quizzes & contests",
+      "create": "Create a quiz",
+      "questions": "Questions",
+      "results": "Results",
+      "addQuestion": "Add a question",
+      "question": "Question",
+      "options": "Options",
+      "optionsInput": "Options (comma separated)",
+      "correctIndex": "Correct answer index",
+      "points": "Points",
+      "participant": "Participant",
+      "score": "Score",
+      "bonus": "Bonus",
+      "endsAt": "Ends at",
+      "status": {
+        "draft": "Draft",
+        "active": "Active",
+        "closed": "Closed"
+      }
+    },
+    "adverts": {
+      "title": "Ads",
+      "types": "Types",
+      "positions": "Positions",
+      "prices": "Pricing",
+      "label": "Label",
+      "code": "Code",
+      "type": "Type",
+      "position": "Position",
+      "priceImage": "Image price (minor)",
+      "priceChar": "Character price (minor)",
+      "currency": "Currency",
+      "create": "Submit an ad",
+      "content": "Content",
+      "validityDays": "Duration (days)",
+      "pay": "Pay",
+      "validate": "Validate",
+      "reject": "Reject",
+      "renew": "Renew",
+      "rejectReason": "Rejection reason",
+      "price": "Price",
+      "expiresAt": "Expires at",
+      "allStatuses": "All statuses",
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "paid": "Paid",
+        "validated": "Validated",
+        "rejected": "Rejected",
+        "expired": "Expired"
+      }
+    },
+    "sites": {
+      "title": "Tourist sites",
+      "name": "Name",
+      "description": "Description",
+      "latitude": "Latitude",
+      "longitude": "Longitude"
+    }
   }
 }
