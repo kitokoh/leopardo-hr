@@ -13,7 +13,9 @@ use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Modules\Fleet\Domain\Models\Vehicle;
+use App\Modules\FuelStation\Domain\Models\FuelAlert;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
+use App\Modules\FuelStation\Domain\Models\FuelNotificationPreference;
 use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
 use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
 use App\Modules\FuelStation\Domain\Models\FuelReportExport;
@@ -33,6 +35,7 @@ use App\Modules\FuelStation\Domain\Models\FuelShift;
 use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment;
 use App\Modules\FuelStation\Domain\Models\FuelStockMovement;
 use App\Modules\FuelStation\Domain\Models\FuelStockReconciliation;
+use App\Modules\FuelStation\Domain\Policies\FuelAlertPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelCashSessionPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelEquipmentPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelProductPolicy;
@@ -136,6 +139,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(FuelProduct::class, FuelProductPolicy::class);
         // — FuelStation (FUEL-015 #5809 : outbox contrat Accounting)
         Gate::policy(FuelOutboxEvent::class, FuelOutboxPolicy::class);
+        // — FuelStation (FUEL-019 #5813 : alertes & préférences)
+        Gate::policy(FuelAlert::class, FuelAlertPolicy::class);
+        Gate::policy(FuelNotificationPreference::class, FuelAlertPolicy::class);
         // — FuelStation (FUEL-017 #5811 : reporting opérationnel)
         Gate::policy(FuelReportSnapshot::class, FuelReportPolicy::class);
         Gate::policy(FuelReportExport::class, FuelReportPolicy::class);

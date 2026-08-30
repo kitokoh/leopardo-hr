@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Core\Notifications\Contracts\InAppNotifier;
+use App\Modules\Notification\Infrastructure\Services\InAppNotifierAdapter;
+
 use App\AI\LLMClient;
 use App\AI\Providers\ClaudeClient;
 use App\AI\Providers\OpenAIClient;
@@ -30,6 +33,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Contrat transversal de notification in-app (garde cross-module #5584) :
+        // les modules métier type-hintent le contrat Core, l'implémentation vit
+        // dans le module Notification (BC-13).
+        $this->app->bind(InAppNotifier::class, InAppNotifierAdapter::class);
+
         // Canonical singleton — tous les nouveaux usages
         $this->app->singleton(TenantManager::class);
 

@@ -8466,6 +8466,158 @@ paths:
         '404':
           description: Import introuvable ou autre tenant
 
+  /fuel-station/notifications/preferences:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les preferences de notification (manager, FUEL-019)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Preferences
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour les preferences (bulk upsert, FUEL-019)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - preferences
+              properties:
+                preferences:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - event_type
+                    - channel
+                    - enabled
+                    properties:
+                      event_type:
+                        type: string
+                        enum:
+                        - reading_anomaly
+                        - stock_variance
+                        - missing_cash_session_close
+                        - maintenance_due
+                        - incident
+                      channel:
+                        type: string
+                        enum:
+                        - in_app
+                        - email
+                        - push
+                      enabled:
+                        type: boolean
+                      station_id:
+                        type: integer
+                        nullable: true
+      responses:
+        '200':
+          description: Preferences mises a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation
+  /fuel-station/alerts:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les alertes dedupliquees (manager, FUEL-019)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - open
+          - acknowledged
+          - resolved
+      - name: event_type
+        in: query
+        schema:
+          type: string
+          enum:
+          - reading_anomaly
+          - stock_variance
+          - missing_cash_session_close
+          - maintenance_due
+          - incident
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Alertes paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/alerts/{alert}/acknowledge:
+    post:
+      tags:
+      - FuelStation
+      summary: Accuser reception d'une alerte (manager, FUEL-019)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: alert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Alerte acknowledgee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Alerte introuvable ou autre tenant
+  /fuel-station/alerts/{alert}/resolve:
+    post:
+      tags:
+      - FuelStation
+      summary: Resoudre une alerte (manager, FUEL-019)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: alert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Alerte resolue
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Alerte introuvable ou autre tenant
+
   /accounting/contacts:
     get:
       tags:
