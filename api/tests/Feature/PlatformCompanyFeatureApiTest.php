@@ -4,7 +4,9 @@ namespace Tests\Feature;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -17,6 +19,22 @@ class PlatformCompanyFeatureApiTest extends TestCase
     {
         parent::setUp();
         $this->setUpMvpSchema();
+
+        // MAT-010 (#5868) — le contrôleur audite chaque bascule dans
+        // `feature_flag_audits` (table publique de la migration dédiée) :
+        // la fixture MVP ne la crée pas, on la matérialise pour ce test.
+        if (! Schema::hasTable('feature_flag_audits')) {
+            Schema::create('feature_flag_audits', function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('flag_key', 80);
+                $table->boolean('previous_value');
+                $table->boolean('new_value');
+                $table->string('source', 40)->default('platform_controller');
+                $table->unsignedBigInteger('actor_user_id')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+            });
+        }
     }
 
     protected function tearDown(): void
