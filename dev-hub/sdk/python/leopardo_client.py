@@ -1404,6 +1404,22 @@ class LeopardoClient:
         """Resume dashboard"""
         return self.request("GET", "/dashboard/summary", **kwargs)
 
+    def get_delivery_deliveries(self, **kwargs):
+        """Liste des livraisons du tenant (DELIVERY-201/#6285)"""
+        return self.request("GET", "/delivery/deliveries", **kwargs)
+
+    def post_delivery_deliveries(self, **kwargs):
+        """Crée une livraison (DELIVERY-201/#6285)"""
+        return self.request("POST", "/delivery/deliveries", **kwargs)
+
+    def get_delivery_deliveries_by_delivery(self, **kwargs):
+        """Détail d'une livraison (DELIVERY-201/#6285)"""
+        return self.request("GET", "/delivery/deliveries/{delivery}", **kwargs)
+
+    def get_delivery_ping(self, **kwargs):
+        """Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282)"""
+        return self.request("GET", "/delivery/ping", **kwargs)
+
     def get_demo_users(self, **kwargs):
         """Comptes demo publics pour la documentation QA"""
         return self.request("GET", "/demo-users", **kwargs)

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Providers;
 
+use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
 use App\Modules\Delivery\Domain\Contracts\SolutionManifest;
 use App\Modules\Delivery\Domain\Manifests\DeliveryManifest;
+use App\Modules\Delivery\Infrastructure\Repositories\DeliveryRepository;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -32,9 +34,11 @@ class DeliveryServiceProvider extends ServiceProvider
     {
         $this->app->singleton(SolutionManifest::class, DeliveryManifest::class);
 
-        // Ports & adapters de persistance (DELIVERY-2xx) : les implémentations
-        // Eloquent seront résolues en singleton derrière leur contrat,
-        // conformément au pattern CrmLeadRepository / RestaurantOrderRepository.
+        // Ports & adapters de persistance (DELIVERY-201/#6285) : les
+        // implémentations Eloquent sont résolues en singleton derrière leur
+        // contrat, conformément au pattern CrmLeadRepository /
+        // RestaurantOrderRepository.
+        $this->app->singleton(DeliveryRepositoryInterface::class, DeliveryRepository::class);
     }
 
     public function boot(): void
