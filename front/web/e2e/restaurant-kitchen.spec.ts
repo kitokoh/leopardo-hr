@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { test, managerUser } from './fixtures/authenticated';
+import { test } from './fixtures/authenticated';
 
 /**
  * RESTO-902 (#6231) — E2E de l'écran cuisine (RESTO-707/#6220).
@@ -63,8 +63,6 @@ async function mockKitchenApi(page: Page) {
 }
 
 test.describe('Écran cuisine (RESTO-707)', () => {
-  test.use({ authenticatedUser: managerUser });
-
   test('affiche la file cuisine et ses commandes', async ({ page }) => {
     await mockKitchenApi(page);
 
