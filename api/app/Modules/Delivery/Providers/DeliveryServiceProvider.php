@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Delivery\Providers;
 
 use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
+use App\Modules\Delivery\Console\Commands\CloseDeliveryRouteCommand;
+use App\Modules\Delivery\Console\Commands\ExportDeliveryReportCommand;
+use App\Modules\Delivery\Console\Commands\ReplayDeliveryDlqCommand;
 use App\Modules\Delivery\Domain\Contracts\DeliveryAccountingContract;
 use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
 use App\Modules\Delivery\Domain\Contracts\RecipientMessageContract;
@@ -33,10 +36,11 @@ use Illuminate\Support\ServiceProvider;
  * e-commerce, CRM, pharmacie).
  *
  * `register()` enregistre les ports & adapters du module (contrats →
- * implémentations), le manifest de solution et les contrats inter-contextes
- * (BC-08 comptabilité COD, BC-13 COMMS notifications) ; `boot()` enregistre
- * les Policies RBAC (BC-26-D05) et le listener de planification des
- * notifications (BC-26-D06/DELIVERY-206).
+ * implémentations), le manifest de solution, les contrats inter-contextes
+ * (BC-08 comptabilité COD, BC-13 COMMS notifications) et les commandes
+ * console (BC-26-D07 : clôture/export asynchrones + rejeu DLQ) ; `boot()`
+ * enregistre les Policies RBAC (BC-26-D05) et le listener de planification
+ * des notifications (DELIVERY-206).
  *
  * L'activation par tenant passe par le feature flag `delivery`
  * (companies.features) — voir EnsureDeliveryModuleMiddleware (DELIVERY-101)
@@ -63,6 +67,14 @@ class DeliveryServiceProvider extends ServiceProvider
         // — seam journalisé (PII hachée) tant que les providers ne sont pas
         // branchés sur les destinataires externes.
         $this->app->singleton(RecipientMessageContract::class, LoggingRecipientMessageAdapter::class);
+
+        // BC-26-D07 (#6295) : asynchronisme du module (clôture lourde,
+        // exports, rejeu DLQ) — pattern AccountingServiceProvider.
+        $this->commands([
+            CloseDeliveryRouteCommand::class,
+            ExportDeliveryReportCommand::class,
+            ReplayDeliveryDlqCommand::class,
+        ]);
     }
 
     public function boot(): void
