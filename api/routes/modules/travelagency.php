@@ -30,6 +30,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryControll
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuizController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelReportController;
@@ -168,6 +169,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
         // ── Contenu éditorial — articles & catégories (TRAVEL-901/#6104) ────
         // Annonces payantes — référentiels (TRAVEL-905/#6108).
+        // Quiz & jeu-concours (TRAVEL-904/#6107).
+        Route::get('/quizzes', [TravelQuizController::class, 'index']);
+        Route::post('/quizzes', [TravelQuizController::class, 'store']);
+        Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
+        Route::put('/quizzes/{travelQuiz}', [TravelQuizController::class, 'update']);
+        Route::delete('/quizzes/{travelQuiz}', [TravelQuizController::class, 'destroy']);
+        Route::post('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'storeQuestion']);
+        Route::put('/quizzes/{travelQuiz}/questions/{travelQuizQuestion}', [TravelQuizController::class, 'updateQuestion']);
+        Route::delete('/quizzes/{travelQuiz}/questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']);
+        Route::post('/quizzes/{travelQuiz}/participate', [TravelQuizController::class, 'participate']);
+        Route::get('/quizzes/{travelQuiz}/participations', [TravelQuizController::class, 'participations']);
+
         Route::get('/advert-types', [TravelAdvertController::class, 'indexAdvertTypes']);
         Route::post('/advert-types', [TravelAdvertController::class, 'storeAdvertType']);
         Route::put('/advert-types/{travelAdvertType}', [TravelAdvertController::class, 'updateAdvertType']);

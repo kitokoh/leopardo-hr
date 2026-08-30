@@ -4219,6 +4219,362 @@ paths:
           description: Annonce introuvable ou d'un autre tenant
         '422':
           description: Annonce non payée
+  /travel/quizzes:
+    get:
+      tags:
+      - Travel
+      summary: Liste des quiz (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [draft, published, archived]
+      responses:
+        '200':
+          description: Quiz du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelQuiz'
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: Création d'un quiz (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+                  maxLength: 200
+                description_redacted:
+                  type: string
+                  nullable: true
+                max_attempts:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  default: 1
+                status:
+                  type: string
+                  enum: [draft, published, archived]
+      responses:
+        '201':
+          description: Quiz créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelQuiz'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise (rôle opérationnel de l'agence)
+        '422':
+          description: Validation échouée
+  /travel/quizzes/{travelQuiz}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un quiz avec ses questions (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Quiz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelQuiz'
+        '404':
+          description: Quiz introuvable ou d'un autre tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'un quiz (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  maxLength: 200
+                description_redacted:
+                  type: string
+                  nullable: true
+                max_attempts:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                status:
+                  type: string
+                  enum: [draft, published, archived]
+      responses:
+        '200':
+          description: Quiz mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelQuiz'
+        '404':
+          description: Quiz introuvable ou d'un autre tenant
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un quiz (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Quiz supprimé
+        '404':
+          description: Quiz introuvable ou d'un autre tenant
+  /travel/quizzes/{travelQuiz}/questions:
+    post:
+      tags:
+      - Travel
+      summary: Ajout d'une question à un quiz (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question, options, correct_option_index]
+              properties:
+                question:
+                  type: string
+                  maxLength: 500
+                options:
+                  type: array
+                  minItems: 2
+                  maxItems: 10
+                  items:
+                    type: string
+                correct_option_index:
+                  type: integer
+                  minimum: 0
+                points:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000
+                  default: 1
+                sort_order:
+                  type: integer
+                  default: 0
+      responses:
+        '201':
+          description: Question créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelQuizQuestion'
+        '404':
+          description: Quiz introuvable ou d'un autre tenant
+        '422':
+          description: Validation échouée (options, index, points)
+  /travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}:
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'une question (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelQuizQuestion
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  maxLength: 500
+                options:
+                  type: array
+                  minItems: 2
+                  maxItems: 10
+                  items:
+                    type: string
+                correct_option_index:
+                  type: integer
+                  minimum: 0
+                points:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000
+                sort_order:
+                  type: integer
+      responses:
+        '200':
+          description: Question mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelQuizQuestion'
+        '404':
+          description: Question/quiz introuvable ou d'un autre tenant
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une question (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelQuizQuestion
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Question supprimée
+        '404':
+          description: Question/quiz introuvable ou d'un autre tenant
+  /travel/quizzes/{travelQuiz}/participate:
+    post:
+      tags:
+      - Travel
+      summary: Participation à un quiz (score serveur, participation unique) (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [answers]
+              properties:
+                answers:
+                  type: array
+                  items:
+                    type: integer
+                  description: Index des choix (un par question, dans l'ordre)
+      responses:
+        '201':
+          description: Participation enregistrée avec le score
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      quiz_id:
+                        type: integer
+                      score:
+                        type: integer
+                      status:
+                        type: string
+                      completed_at:
+                        type: string
+                        nullable: true
+        '404':
+          description: Quiz introuvable ou d'un autre tenant
+        '422':
+          description: Quiz non publié, participation déjà enregistrée ou réponses invalides
+  /travel/quizzes/{travelQuiz}/participations:
+    get:
+      tags:
+      - Travel
+      summary: Résultats d'un quiz (travel.manage) (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Participations triées par score
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelQuizParticipation'
+        '403':
+          description: Permission travel.manage requise (principal/rh)
+        '404':
+          description: Quiz introuvable ou d'un autre tenant
   /travel/advert-types:
     get:
       tags:
@@ -30302,6 +30658,75 @@ components:
           type: string
           nullable: true
         updated_at:
+          type: string
+          nullable: true
+    TravelQuiz:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description_redacted:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [draft, published, archived]
+        max_attempts:
+          type: integer
+        published_at:
+          type: string
+          nullable: true
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelQuizQuestion'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelQuizQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+        quiz_id:
+          type: integer
+        question:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        points:
+          type: integer
+        sort_order:
+          type: integer
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelQuizParticipation:
+      type: object
+      properties:
+        id:
+          type: integer
+        quiz_id:
+          type: integer
+        participant_type:
+          type: string
+        participant_id:
+          type: integer
+        score:
+          type: integer
+        status:
+          type: string
+        completed_at:
           type: string
           nullable: true
     TravelAdvertType:
