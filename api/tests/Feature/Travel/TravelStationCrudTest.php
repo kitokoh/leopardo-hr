@@ -86,7 +86,7 @@ class TravelStationCrudTest extends TestCase
         $this->activateTravel($company);
         $this->principal($company);
 
-        $cityId = app(TenantManager::class)->withinTenant($company, function () use ($company): int {
+        $cityId = app(TenantManager::class)->withinTenant($company, function (): int {
             return TravelCity::factory()->create()->id;
         });
 

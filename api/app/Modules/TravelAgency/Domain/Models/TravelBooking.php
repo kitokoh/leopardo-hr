@@ -78,7 +78,7 @@ class TravelBooking extends Model
      */
     public function trip(): BelongsTo
     {
-        return $this->belongsTo(TravelTrip::class);
+        return $this->belongsTo(TravelTrip::class, 'trip_id');
     }
 
     /**

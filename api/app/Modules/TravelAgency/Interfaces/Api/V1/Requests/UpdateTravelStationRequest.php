@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Interfaces\Api\V1\Requests;
 
-use App\Modules\TravelAgency\Domain\Models\TravelCity;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -26,7 +26,9 @@ class UpdateTravelStationRequest extends FormRequest
         return [
             'code' => ['sometimes', 'string', 'max:40'],
             'name' => ['sometimes', 'string', 'max:120'],
-            'city_id' => ['sometimes', 'integer', Rule::exists((new TravelCity)->getTable(), 'id')],
+            'city_id' => ['sometimes', 'integer', Rule::exists('travel_cities', 'id')->where(
+                fn (Builder $query): Builder => $query->where('company_id', currentCompany()->id)
+            )],
             'address' => ['nullable', 'string', 'max:255'],
             'contact_phone' => ['nullable', 'string', 'max:40'],
             'timezone' => ['sometimes', 'string', 'timezone'],

@@ -9,6 +9,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -66,7 +67,7 @@ class TravelVehicleTest extends TestCase
     {
         $this->tenants->withinTenant($this->companyA, function (): void {
             $this->expectException(QueryException::class);
-            TravelVehicle::factory()->create(['seat_capacity' => 0]);
+            DB::transaction(fn () => TravelVehicle::factory()->create(['seat_capacity' => 0]));
         });
     }
 

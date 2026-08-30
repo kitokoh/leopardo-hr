@@ -30,7 +30,7 @@ class TravelCityResource extends JsonResource
             'region' => $this->region,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
-            'status' => $this->status->value,
+            'status' => $this->status,
         ];
     }
 }
