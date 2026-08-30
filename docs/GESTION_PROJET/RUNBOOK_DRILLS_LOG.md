@@ -18,6 +18,7 @@ Use this file to record real drill executions (staging recommended).
 | DR-24 | Restore schéma tenant TravelAgency sur staging (RTO < 4h) | Avant GO pilote BC-24 (TRAVEL-1010) | Chef de projet | PLANNED — exercice planifié avec le runbook `docs/ops/RUNBOOK_PILOT_TRAVELAGENCY.md` (§8) |
 
 | DR-25 | Restore schéma tenant RestaurantManager sur staging | Avant GO pilote BC-25 (RESTO-903) | Chef de projet | PLANNED — exercice planifié avec le runbook `docs/ops/RUNBOOK_PILOT_RESTAURANTMANAGER.md` (§8) |
+| DR-26 | Restore schéma tenant TravelAgency sur staging | Avant GO pilote BC-24 (TRAVEL-050/051) | Chef de projet | PLANNED — exercice planifié avec le runbook `docs/ops/RUNBOOK_PILOT_TRAVELAGENCY.md` (§5) |
 
 | ID | Drill | Deadline | Owner | Status |
 |---|---|---|---|---|
