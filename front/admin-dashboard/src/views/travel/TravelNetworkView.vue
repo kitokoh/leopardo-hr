@@ -73,7 +73,7 @@
             <h2 class="text-sm font-semibold text-slate-900 dark:text-white">
               {{ t('travel.network.routeStopsTitle', 'Étapes de la route').replace(':code', selectedRoute.code || '') }} — {{ selectedRoute.code }}
             </h2>
-            <button class="btn-secondary" @click="selectedRoute = null">
+            <button class="btn-secondary" @click="closeRouteStops">
               {{ t('travel.common.close', 'Fermer') }}
             </button>
           </div>
@@ -179,7 +179,7 @@
             <h2 class="text-sm font-semibold text-slate-900 dark:text-white">
               {{ t('travel.network.tripPricesTitle', 'Tarifs du trajet') }} — {{ selectedTrip.code }}
             </h2>
-            <button class="btn-secondary" @click="selectedTrip = null">
+            <button class="btn-secondary" @click="closeTripPrices">
               {{ t('travel.common.close', 'Fermer') }}
             </button>
           </div>
@@ -226,7 +226,7 @@
         :busy="saving"
         :error="formError"
         @save="saveRoute"
-        @cancel="routeModalOpen = false"
+        @cancel="closeRouteModal"
       />
 
       <TravelFormModal
@@ -237,7 +237,7 @@
         :busy="saving"
         :error="formError"
         @save="saveStop"
-        @cancel="stopModalOpen = false"
+        @cancel="closeStopModal"
       />
 
       <TravelFormModal
@@ -248,7 +248,7 @@
         :busy="saving"
         :error="formError"
         @save="saveTrip"
-        @cancel="tripModalOpen = false"
+        @cancel="closeTripModal"
       />
 
       <TravelFormModal
@@ -259,7 +259,7 @@
         :busy="saving"
         :error="formError"
         @save="savePrice"
-        @cancel="priceModalOpen = false"
+        @cancel="closePriceModal"
       />
 
       <TravelFormModal
@@ -270,7 +270,7 @@
         :busy="saving"
         :error="formError"
         @save="confirmCancelTrip"
-        @cancel="cancelTripModalOpen = false"
+        @cancel="closeCancelTripModal"
       />
 
       <ConfirmDialog
@@ -279,7 +279,7 @@
         :message="deleteMessage"
         :confirm-label="t('travel.common.delete', 'Supprimer')"
         @confirm="confirmDelete"
-        @cancel="deleteOpen = false"
+        @cancel="closeDelete"
       />
     </template>
   </div>
@@ -515,6 +515,44 @@ async function load(key, params = {}) {
 function switchTab(key) {
   activeTab.value = key
   if (key === 'trips' && lists.trips.length === 0) load('trips')
+}
+
+function closeTripPrices() {
+  selectedTrip.value = null
+}
+
+function closeRouteStops() {
+  selectedRoute.value = null
+}
+
+function closeRouteModal() {
+  routeModalOpen.value = false
+  editingRoute.value = null
+}
+
+function closeStopModal() {
+  stopModalOpen.value = false
+  editingStop.value = null
+}
+
+function closeTripModal() {
+  tripModalOpen.value = false
+  editingTrip.value = null
+}
+
+function closePriceModal() {
+  priceModalOpen.value = false
+  editingPrice.value = null
+}
+
+function closeCancelTripModal() {
+  cancelTripModalOpen.value = false
+  cancelTripTarget.value = null
+}
+
+function closeDelete() {
+  deleteOpen.value = false
+  deleteAction.value = null
 }
 
 async function init() {
