@@ -7,6 +7,7 @@ namespace App\Modules\Billing\Infrastructure\Services;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Events\SubscriptionPaid;
 use App\Modules\Billing\Domain\Enums\PlanCode;
+use App\Modules\Billing\Domain\Enums\SubscriptionStatus;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Payroll\Domain\Models\Payment;
@@ -35,12 +36,14 @@ class StripeService
 
     public function __construct()
     {
-        $this->secretKey = (string) config('services.stripe.secret');
-        $this->webhookSecret = (string) config('services.stripe.webhook_secret');
+        // strval() plutôt que (string) : PHPStan (diff-gate) refuse le cast de
+        // `mixed` retourné par config() — strval accepte mixed sans élargir la baseline.
+        $this->secretKey = strval(config('services.stripe.secret'));
+        $this->webhookSecret = strval(config('services.stripe.webhook_secret'));
         $this->priceIds = [
-            'pilot' => (string) config('services.stripe.price_pilot'),
-            'operations' => (string) config('services.stripe.price_operations'),
-            'enterprise' => (string) config('services.stripe.price_enterprise'),
+            'pilot' => strval(config('services.stripe.price_pilot')),
+            'operations' => strval(config('services.stripe.price_operations')),
+            'enterprise' => strval(config('services.stripe.price_enterprise')),
         ];
     }
 
@@ -86,9 +89,17 @@ class StripeService
 
         $data = $response->json();
 
+        if (! is_array($data) || ! isset($data['url'], $data['id'])) {
+            Log::error('Stripe: Réponse checkout invalide', [
+                'status' => $response->status(),
+                'company_id' => $company->id,
+            ]);
+            throw new RuntimeException('Invalid Stripe checkout response.');
+        }
+
         return [
-            'url' => $data['url'],
-            'session_id' => $data['id'],
+            'url' => strval($data['url']),
+            'session_id' => strval($data['id']),
         ];
     }
 
@@ -203,11 +214,15 @@ class StripeService
             return;
         }
 
-        if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO public');
-        }
-
-        $company = Company::query()->find($companyId);
+        // Lecture QUALIFIÉE de `public.companies` (DEP-BC21 #6246) : l'ancien
+        // `SET search_path TO public` cassait les écritures suivantes sur la
+        // session — `subscriptions` vit dans le schéma tenant (shared_tenants
+        // en mode shared), l'écriture partait sur `public.subscriptions` qui
+        // n'existe pas (webhook checkout → 500 → retries Stripe). On lit le
+        // modèle depuis sa table qualifiée SANS détourner le search_path.
+        $company = Company::query()
+            ->from(DB::getDriverName() === 'pgsql' ? 'public.companies' : 'companies')
+            ->find($companyId);
         if (! $company) {
             Log::warning('Stripe: Company not found', ['company_id' => $companyId]);
 
@@ -222,21 +237,34 @@ class StripeService
             ]),
         ]);
 
-        // Create or update subscription
-        Subscription::query()->updateOrCreate(
-            ['company_id' => $company->id],
-            [
-                'plan' => $plan,
-                'status' => 'active',
-                'payment_method' => 'stripe',
-                'stripe_subscription_id' => $subscriptionId,
-                'current_period_start' => now(),
-                'current_period_end' => now()->addMonth(),
-                'trial_ends_at' => null,
-                'cancelled_at' => null,
-                'cancel_reason' => null,
-            ]
-        );
+        // Create or activate the subscription (DEP-BC21 #6246) : la création
+        // pose l'état actif initial ; une souscription existante (trial,
+        // past_due, expired, cancelled) est réactivée via la transition
+        // gardée — un webhook rejoué retombe sur l'état actif sans effet double.
+        $subscription = Subscription::query()
+            ->where('company_id', $company->id)
+            ->first();
+
+        $attributes = [
+            'plan' => $plan,
+            'payment_method' => 'stripe',
+            'stripe_subscription_id' => $subscriptionId,
+            'current_period_start' => now(),
+            'current_period_end' => now()->addMonth(),
+            'trial_ends_at' => null,
+            'cancelled_at' => null,
+            'cancel_reason' => null,
+        ];
+
+        if (! $subscription) {
+            Subscription::query()->create([
+                'company_id' => $company->id,
+                'status' => SubscriptionStatus::Active->value,
+                ...$attributes,
+            ]);
+        } else {
+            $this->transitionSubscription($subscription, SubscriptionStatus::Active, $attributes, allowReactivation: true);
+        }
 
         Log::info('Stripe: Subscription activated', [
             'company_id' => $companyId,
@@ -283,7 +311,7 @@ class StripeService
             event(new SubscriptionPaid($payment));
 
             if ($invoiceModel->subscription) {
-                $invoiceModel->subscription->update(['status' => 'active']);
+                $this->transitionSubscription($invoiceModel->subscription, SubscriptionStatus::Active);
             }
         }
 
@@ -297,8 +325,7 @@ class StripeService
             ->first();
 
         if ($subscription) {
-            $subscription->update([
-                'status' => 'active',
+            $this->transitionSubscription($subscription, SubscriptionStatus::Active, [
                 'current_period_start' => isset($invoice['period_start'])
                     ? Carbon::createFromTimestamp($invoice['period_start'])
                     : now(),
@@ -322,7 +349,7 @@ class StripeService
         $invoiceModel->update(['status' => 'overdue']);
 
         if ($invoiceModel->subscription) {
-            $invoiceModel->subscription->update(['status' => 'past_due']);
+            $this->transitionSubscription($invoiceModel->subscription, SubscriptionStatus::PastDue);
         }
     }
 
@@ -336,15 +363,30 @@ class StripeService
             return;
         }
 
+        // Mapping Stripe → machine à états Leopardo (DEP-BC21 #6246) :
+        // `unpaid` (paiement échoué, défaut continu) → `past_due` ;
+        // `incomplete_expired` (checkout jamais complété) → `expired` ;
+        // `trialing` → `trial`. Un statut inconnu conserve l'état local.
         $status = match ($subscription['status'] ?? '') {
-            'active' => 'active',
-            'past_due' => 'past_due',
-            'canceled', 'cancelled' => 'cancelled',
-            'unpaid' => 'unpaid',
-            default => $sub->status,
+            'active' => SubscriptionStatus::Active,
+            'past_due' => SubscriptionStatus::PastDue,
+            'canceled', 'cancelled' => SubscriptionStatus::Cancelled,
+            'unpaid' => SubscriptionStatus::PastDue,
+            'incomplete_expired' => SubscriptionStatus::Expired,
+            'trialing' => SubscriptionStatus::Trial,
+            default => null,
         };
 
-        $sub->update(['status' => $status]);
+        if ($status === null) {
+            Log::info('Stripe: Statut de souscription non mappé — état local conservé', [
+                'company_id' => $sub->company_id,
+                'stripe_status' => $subscription['status'] ?? 'unknown',
+            ]);
+
+            return;
+        }
+
+        $this->transitionSubscription($sub, $status);
     }
 
     private function handleSubscriptionDeleted(array $subscription): void
@@ -354,8 +396,7 @@ class StripeService
             ->first();
 
         if ($sub) {
-            $sub->update([
-                'status' => 'cancelled',
+            $this->transitionSubscription($sub, SubscriptionStatus::Cancelled, [
                 'cancelled_at' => now(),
             ]);
 
@@ -394,6 +435,55 @@ class StripeService
                     'error' => $e->getMessage(),
                 ]);
             }
+        }
+    }
+
+    /**
+     * Transition d'état GARDÉE pour les webhooks (DEP-BC21 #6246).
+     *
+     * Toutes les écritures de `status` de souscription passent par la machine
+     * à états (`transitionTo`). Un webhook provider ne doit JAMAIS planter ni
+     * faire échouer le traitement d'un autre événement parce qu'une transition
+     * métier est refusée : on journalise un warning et on conserve l'état
+     * courant — l'idempotence du registre #5444 reste intacte.
+     *
+     * Règle « cancelled est sticky » : une souscription résiliée LOCALEMENT
+     * (`POST /billing/subscription/cancel`) ne doit pas être réactivée par un
+     * écho webhook (ex. `invoice.paid` ou `subscription.updated=active` après
+     * le cancel). Seule une réactivation EXPLICITE la fait repasser en active
+     * — nouvel abonnement Stripe (`checkout.session.completed`, qui passe
+     * `$allowReactivation = true`) ou endpoint `renew`/`upgrade`.
+     *
+     * @param  array<string, mixed>  $extra  attributs additionnels (period_end, cancelled_at…)
+     */
+    private function transitionSubscription(
+        Subscription $subscription,
+        SubscriptionStatus $target,
+        array $extra = [],
+        bool $allowReactivation = false,
+    ): void {
+        if (
+            ! $allowReactivation
+            && $subscription->status === SubscriptionStatus::Cancelled->value
+            && $target === SubscriptionStatus::Active
+        ) {
+            Log::info('Stripe: Réactivation refusée — souscription résiliée localement', [
+                'company_id' => $subscription->company_id,
+                'event_target' => $target->value,
+            ]);
+
+            return;
+        }
+
+        try {
+            $subscription->transitionTo($target, $extra);
+        } catch (InvalidArgumentException $e) {
+            Log::warning('Stripe: Transition de souscription refusée par la machine à états', [
+                'company_id' => $subscription->company_id,
+                'from' => $subscription->status,
+                'to' => $target->value,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 }
