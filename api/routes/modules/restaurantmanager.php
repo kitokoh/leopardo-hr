@@ -194,7 +194,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/inventory-counts', [RestaurantInventoryCountController::class, 'index']);
         Route::post('/inventory-counts', [RestaurantInventoryCountController::class, 'store']);
         Route::get('/inventory-counts/{restaurantInventoryCount}', [RestaurantInventoryCountController::class, 'show']);
-        Route::put('/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}', [RestaurantInventoryCountController::class, 'updateItem']);
         Route::post('/inventory-counts/{restaurantInventoryCount}/submit', [RestaurantInventoryCountController::class, 'submit']);
         Route::post('/inventory-counts/{restaurantInventoryCount}/approve', [RestaurantInventoryCountController::class, 'approve']);
 

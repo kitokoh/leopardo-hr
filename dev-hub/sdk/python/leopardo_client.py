@@ -3048,9 +3048,53 @@ class LeopardoClient:
         """Taux de rotation (turnover) sur N mois"""
         return self.request("GET", "/reports/turnover", **kwargs)
 
+    def get_restaurant_branches(self, **kwargs):
+        """Liste des branch (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/branches", **kwargs)
+
+    def post_restaurant_branches(self, **kwargs):
+        """Création d'un branch"""
+        return self.request("POST", "/restaurant/branches", **kwargs)
+
+    def delete_restaurant_branches_by_restaurantbranch(self, **kwargs):
+        """Suppression d'un branch"""
+        return self.request("DELETE", "/restaurant/branches/{restaurantBranch}", **kwargs)
+
+    def get_restaurant_branches_by_restaurantbranch(self, **kwargs):
+        """Détail d'un branch"""
+        return self.request("GET", "/restaurant/branches/{restaurantBranch}", **kwargs)
+
+    def put_restaurant_branches_by_restaurantbranch(self, **kwargs):
+        """Mise à jour d'un branch"""
+        return self.request("PUT", "/restaurant/branches/{restaurantBranch}", **kwargs)
+
     def put_restaurant_branches_by_restaurantbranch_cancellation_policy(self, **kwargs):
         """Politique d'annulation de la branche (RESTO-603/#6208)"""
         return self.request("PUT", "/restaurant/branches/{restaurantBranch}/cancellation-policy", **kwargs)
+
+    def get_restaurant_branches_by_restaurantbranch_zones(self, **kwargs):
+        """Liste des zone (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/branches/{restaurantBranch}/zones", **kwargs)
+
+    def get_restaurant_categories(self, **kwargs):
+        """Liste des category (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/categories", **kwargs)
+
+    def post_restaurant_categories(self, **kwargs):
+        """Création d'un category"""
+        return self.request("POST", "/restaurant/categories", **kwargs)
+
+    def delete_restaurant_categories_by_restaurantcategory(self, **kwargs):
+        """Suppression d'un category"""
+        return self.request("DELETE", "/restaurant/categories/{restaurantCategory}", **kwargs)
+
+    def get_restaurant_categories_by_restaurantcategory(self, **kwargs):
+        """Détail d'un category"""
+        return self.request("GET", "/restaurant/categories/{restaurantCategory}", **kwargs)
+
+    def put_restaurant_categories_by_restaurantcategory(self, **kwargs):
+        """Mise à jour d'un category"""
+        return self.request("PUT", "/restaurant/categories/{restaurantCategory}", **kwargs)
 
     def get_restaurant_delivery_zones(self, **kwargs):
         """Liste des zones de livraison"""
@@ -3075,6 +3119,46 @@ class LeopardoClient:
     def get_restaurant_delivery_zones_by_restaurantdeliveryzone_quote(self, **kwargs):
         """Devis de livraison (frais serveur, RESTO-604/#6209)"""
         return self.request("GET", "/restaurant/delivery-zones/{restaurantDeliveryZone}/quote", **kwargs)
+
+    def get_restaurant_hours(self, **kwargs):
+        """Liste des hour (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/hours", **kwargs)
+
+    def post_restaurant_hours(self, **kwargs):
+        """Création d'un hour"""
+        return self.request("POST", "/restaurant/hours", **kwargs)
+
+    def delete_restaurant_hours_by_restauranthour(self, **kwargs):
+        """Suppression d'un hour"""
+        return self.request("DELETE", "/restaurant/hours/{restaurantHour}", **kwargs)
+
+    def get_restaurant_hours_by_restauranthour(self, **kwargs):
+        """Détail d'un hour"""
+        return self.request("GET", "/restaurant/hours/{restaurantHour}", **kwargs)
+
+    def put_restaurant_hours_by_restauranthour(self, **kwargs):
+        """Mise à jour d'un hour"""
+        return self.request("PUT", "/restaurant/hours/{restaurantHour}", **kwargs)
+
+    def get_restaurant_ingredients(self, **kwargs):
+        """Liste des ingredient (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/ingredients", **kwargs)
+
+    def post_restaurant_ingredients(self, **kwargs):
+        """Création d'un ingredient"""
+        return self.request("POST", "/restaurant/ingredients", **kwargs)
+
+    def delete_restaurant_ingredients_by_restaurantingredient(self, **kwargs):
+        """Suppression d'un ingredient"""
+        return self.request("DELETE", "/restaurant/ingredients/{restaurantIngredient}", **kwargs)
+
+    def get_restaurant_ingredients_by_restaurantingredient(self, **kwargs):
+        """Détail d'un ingredient"""
+        return self.request("GET", "/restaurant/ingredients/{restaurantIngredient}", **kwargs)
+
+    def put_restaurant_ingredients_by_restaurantingredient(self, **kwargs):
+        """Mise à jour d'un ingredient"""
+        return self.request("PUT", "/restaurant/ingredients/{restaurantIngredient}", **kwargs)
 
     def get_restaurant_inventory_counts(self, **kwargs):
         """Liste des inventaires physiques"""
@@ -3112,6 +3196,102 @@ class LeopardoClient:
         """Détail des mouvements de stock"""
         return self.request("GET", "/restaurant/inventory-movements/{restaurantInventoryMovement}", **kwargs)
 
+    def get_restaurant_kitchen_orders(self, **kwargs):
+        """RESTO-410 — File cuisine (commandes in_preparation/ready de la branche, branch_id obligatoire)"""
+        return self.request("GET", "/restaurant/kitchen/orders", **kwargs)
+
+    def post_restaurant_kitchen_orders_by_restaurantorder_ready(self, **kwargs):
+        """RESTO-410 — Plat prêt (in_preparation → ready)"""
+        return self.request("POST", "/restaurant/kitchen/orders/{restaurantOrder}/ready", **kwargs)
+
+    def post_restaurant_kitchen_orders_by_restaurantorder_start(self, **kwargs):
+        """RESTO-410 — Prise en cuisine (open → in_preparation)"""
+        return self.request("POST", "/restaurant/kitchen/orders/{restaurantOrder}/start", **kwargs)
+
+    def get_restaurant_menus(self, **kwargs):
+        """Liste des menu (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/menus", **kwargs)
+
+    def post_restaurant_menus(self, **kwargs):
+        """Création d'un menu"""
+        return self.request("POST", "/restaurant/menus", **kwargs)
+
+    def delete_restaurant_menus_by_restaurantmenu(self, **kwargs):
+        """Suppression d'un menu"""
+        return self.request("DELETE", "/restaurant/menus/{restaurantMenu}", **kwargs)
+
+    def get_restaurant_menus_by_restaurantmenu(self, **kwargs):
+        """Détail d'un menu"""
+        return self.request("GET", "/restaurant/menus/{restaurantMenu}", **kwargs)
+
+    def put_restaurant_menus_by_restaurantmenu(self, **kwargs):
+        """Mise à jour d'un menu"""
+        return self.request("PUT", "/restaurant/menus/{restaurantMenu}", **kwargs)
+
+    def get_restaurant_menus_by_restaurantmenu_items(self, **kwargs):
+        """Liste des menuitem (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/menus/{restaurantMenu}/items", **kwargs)
+
+    def post_restaurant_menus_by_restaurantmenu_items(self, **kwargs):
+        """Création d'un menuitem"""
+        return self.request("POST", "/restaurant/menus/{restaurantMenu}/items", **kwargs)
+
+    def delete_restaurant_menus_by_restaurantmenu_items_by_restaurantmenuitem(self, **kwargs):
+        """Suppression d'un menuitem"""
+        return self.request("DELETE", "/restaurant/menus/{restaurantMenu}/items/{restaurantMenuItem}", **kwargs)
+
+    def put_restaurant_menus_by_restaurantmenu_items_by_restaurantmenuitem(self, **kwargs):
+        """Mise à jour d'un menuitem"""
+        return self.request("PUT", "/restaurant/menus/{restaurantMenu}/items/{restaurantMenuItem}", **kwargs)
+
+    def get_restaurant_orders(self, **kwargs):
+        """RESTO-402 — Liste des commandes (filtres branche/statut, paginée)"""
+        return self.request("GET", "/restaurant/orders", **kwargs)
+
+    def post_restaurant_orders(self, **kwargs):
+        """RESTO-402 — Création de commande (idempotente, types salle/emporter/livraison)"""
+        return self.request("POST", "/restaurant/orders", **kwargs)
+
+    def get_restaurant_orders_by_restaurantorder(self, **kwargs):
+        """RESTO-402 — Détail d''une commande (articles + paiements)"""
+        return self.request("GET", "/restaurant/orders/{restaurantOrder}", **kwargs)
+
+    def get_restaurant_orders_by_restaurantorder_bill(self, **kwargs):
+        """RESTO-405 — Addition (totaux recalculés serveur — sous-total, TVA, remise promo, total)"""
+        return self.request("GET", "/restaurant/orders/{restaurantOrder}/bill", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_cancel(self, **kwargs):
+        """RESTO-404 — Annulation de commande (draft|open → cancelled)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/cancel", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_confirm(self, **kwargs):
+        """RESTO-404 — Confirmation de commande (open → in_preparation)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/confirm", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_items(self, **kwargs):
+        """RESTO-403 — Ajout d''un article (prix/TVA serveur, totaux recalculés)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/items", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_items_by_restaurantorderitem_cancel(self, **kwargs):
+        """RESTO-403 — Annulation d''une ligne d''article (totaux recalculés)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/items/{restaurantOrderItem}/cancel", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_pay(self, **kwargs):
+        """RESTO-407 — Encaissement (montant vérifié serveur, idempotent, callback signé pour mobile money)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/pay", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_refund(self, **kwargs):
+        """RESTO-408 — Remboursement (réservé restaurant.manage, motif, idempotent)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/refund", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_serve(self, **kwargs):
+        """RESTO-404 — Service en salle (ready → served)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/serve", **kwargs)
+
+    def post_restaurant_orders_by_restaurantorder_submit(self, **kwargs):
+        """RESTO-404 — Soumission de commande (draft → open, événement order.created.v1)"""
+        return self.request("POST", "/restaurant/orders/{restaurantOrder}/submit", **kwargs)
+
     def post_restaurant_payments_by_payment_callback(self, **kwargs):
         """Callback signé idempotent d'un paiement (RESTO-407)"""
         return self.request("POST", "/restaurant/payments/{payment}/callback", **kwargs)
@@ -3120,9 +3300,57 @@ class LeopardoClient:
         """Smoke test de la verticale RestaurantManager (BC-25 RESTAURANT, RESTO-101/#6158)"""
         return self.request("GET", "/restaurant/ping", **kwargs)
 
+    def post_restaurant_pos_sessions(self, **kwargs):
+        """RESTO-401 — Ouverture d''une session de caisse POS (une seule session ouverte par branche)"""
+        return self.request("POST", "/restaurant/pos-sessions", **kwargs)
+
+    def get_restaurant_pos_sessions_by_restaurantpossession(self, **kwargs):
+        """RESTO-401 — Détail d''une session de caisse"""
+        return self.request("GET", "/restaurant/pos-sessions/{restaurantPosSession}", **kwargs)
+
+    def post_restaurant_pos_sessions_by_restaurantpossession_close(self, **kwargs):
+        """RESTO-401 — Clôture d''une session de caisse (totaux recalculés serveur, écart + motif, immuable)"""
+        return self.request("POST", "/restaurant/pos-sessions/{restaurantPosSession}/close", **kwargs)
+
     def get_restaurant_pos_sessions_by_restaurantpossession_cogs(self, **kwargs):
         """COGS de la session de caisse (RESTO-506/#6205)"""
         return self.request("GET", "/restaurant/pos-sessions/{restaurantPosSession}/cogs", **kwargs)
+
+    def get_restaurant_pos_sessions_current(self, **kwargs):
+        """RESTO-401 — Session de caisse en cours (par branche, sinon première branche du tenant)"""
+        return self.request("GET", "/restaurant/pos-sessions/current", **kwargs)
+
+    def get_restaurant_products(self, **kwargs):
+        """Liste des product (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/products", **kwargs)
+
+    def post_restaurant_products(self, **kwargs):
+        """Création d'un product"""
+        return self.request("POST", "/restaurant/products", **kwargs)
+
+    def delete_restaurant_products_by_restaurantproduct(self, **kwargs):
+        """Suppression d'un product"""
+        return self.request("DELETE", "/restaurant/products/{restaurantProduct}", **kwargs)
+
+    def get_restaurant_products_by_restaurantproduct(self, **kwargs):
+        """Détail d'un product"""
+        return self.request("GET", "/restaurant/products/{restaurantProduct}", **kwargs)
+
+    def put_restaurant_products_by_restaurantproduct(self, **kwargs):
+        """Mise à jour d'un product"""
+        return self.request("PUT", "/restaurant/products/{restaurantProduct}", **kwargs)
+
+    def get_restaurant_products_by_restaurantproduct_ingredients(self, **kwargs):
+        """Liste des productingredient (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/products/{restaurantProduct}/ingredients", **kwargs)
+
+    def post_restaurant_products_by_restaurantproduct_ingredients(self, **kwargs):
+        """Création d'un productingredient"""
+        return self.request("POST", "/restaurant/products/{restaurantProduct}/ingredients", **kwargs)
+
+    def delete_restaurant_products_by_restaurantproduct_ingredients_by_restaurantproductingredient(self, **kwargs):
+        """Suppression d'un productingredient"""
+        return self.request("DELETE", "/restaurant/products/{restaurantProduct}/ingredients/{restaurantProductIngredient}", **kwargs)
 
     def get_restaurant_purchase_orders(self, **kwargs):
         """Liste des bons de commande"""
@@ -3143,6 +3371,18 @@ class LeopardoClient:
     def put_restaurant_purchase_orders_by_restaurantpurchaseorder(self, **kwargs):
         """Modification des bons de commande"""
         return self.request("PUT", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", **kwargs)
+
+    def post_restaurant_purchase_orders_by_restaurantpurchaseorder_cancel(self, **kwargs):
+        """RESTO-502 — Annulation (draft|sent → cancelled)"""
+        return self.request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/cancel", **kwargs)
+
+    def post_restaurant_purchase_orders_by_restaurantpurchaseorder_items(self, **kwargs):
+        """RESTO-502 — Ajout d''une ligne (total du PO recalculé serveur)"""
+        return self.request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/items", **kwargs)
+
+    def delete_restaurant_purchase_orders_by_restaurantpurchaseorder_items_by_restaurantpurchaseorderitem(self, **kwargs):
+        """RESTO-502 — Suppression d''une ligne (draft uniquement)"""
+        return self.request("DELETE", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/items/{restaurantPurchaseOrderItem}", **kwargs)
 
     def post_restaurant_purchase_orders_by_restaurantpurchaseorder_receive(self, **kwargs):
         """Réception du bon de commande (mouvements de stock)"""
@@ -3227,6 +3467,114 @@ class LeopardoClient:
     def get_restaurant_stock_alerts(self, **kwargs):
         """Alertes de seuil de stock (RESTO-505/#6204)"""
         return self.request("GET", "/restaurant/stock/alerts", **kwargs)
+
+    def get_restaurant_suppliers(self, **kwargs):
+        """Liste des supplier (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/suppliers", **kwargs)
+
+    def post_restaurant_suppliers(self, **kwargs):
+        """Création d'un supplier"""
+        return self.request("POST", "/restaurant/suppliers", **kwargs)
+
+    def delete_restaurant_suppliers_by_restaurantsupplier(self, **kwargs):
+        """Suppression d'un supplier"""
+        return self.request("DELETE", "/restaurant/suppliers/{restaurantSupplier}", **kwargs)
+
+    def get_restaurant_suppliers_by_restaurantsupplier(self, **kwargs):
+        """Détail d'un supplier"""
+        return self.request("GET", "/restaurant/suppliers/{restaurantSupplier}", **kwargs)
+
+    def put_restaurant_suppliers_by_restaurantsupplier(self, **kwargs):
+        """Mise à jour d'un supplier"""
+        return self.request("PUT", "/restaurant/suppliers/{restaurantSupplier}", **kwargs)
+
+    def get_restaurant_tables(self, **kwargs):
+        """Liste des table (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/tables", **kwargs)
+
+    def post_restaurant_tables(self, **kwargs):
+        """Création d'un table"""
+        return self.request("POST", "/restaurant/tables", **kwargs)
+
+    def delete_restaurant_tables_by_restauranttable(self, **kwargs):
+        """Suppression d'un table"""
+        return self.request("DELETE", "/restaurant/tables/{restaurantTable}", **kwargs)
+
+    def get_restaurant_tables_by_restauranttable(self, **kwargs):
+        """Détail d'un table"""
+        return self.request("GET", "/restaurant/tables/{restaurantTable}", **kwargs)
+
+    def put_restaurant_tables_by_restauranttable(self, **kwargs):
+        """Mise à jour d'un table"""
+        return self.request("PUT", "/restaurant/tables/{restaurantTable}", **kwargs)
+
+    def post_restaurant_tables_by_restauranttable_close(self, **kwargs):
+        """RESTO-409 — Clôture de la session d''occupation (immuable, événement table.closed.v1)"""
+        return self.request("POST", "/restaurant/tables/{restaurantTable}/close", **kwargs)
+
+    def post_restaurant_tables_by_restauranttable_open(self, **kwargs):
+        """RESTO-409 — Ouverture d''une session d''occupation de table (table occupée → 409)"""
+        return self.request("POST", "/restaurant/tables/{restaurantTable}/open", **kwargs)
+
+    def get_restaurant_tax_rates(self, **kwargs):
+        """Liste des taxrate (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/tax-rates", **kwargs)
+
+    def post_restaurant_tax_rates(self, **kwargs):
+        """Création d'un taxrate"""
+        return self.request("POST", "/restaurant/tax-rates", **kwargs)
+
+    def delete_restaurant_tax_rates_by_restauranttaxrate(self, **kwargs):
+        """Suppression d'un taxrate"""
+        return self.request("DELETE", "/restaurant/tax-rates/{restaurantTaxRate}", **kwargs)
+
+    def get_restaurant_tax_rates_by_restauranttaxrate(self, **kwargs):
+        """Détail d'un taxrate"""
+        return self.request("GET", "/restaurant/tax-rates/{restaurantTaxRate}", **kwargs)
+
+    def put_restaurant_tax_rates_by_restauranttaxrate(self, **kwargs):
+        """Mise à jour d'un taxrate"""
+        return self.request("PUT", "/restaurant/tax-rates/{restaurantTaxRate}", **kwargs)
+
+    def get_restaurant_units(self, **kwargs):
+        """Liste des unit (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/units", **kwargs)
+
+    def post_restaurant_units(self, **kwargs):
+        """Création d'un unit"""
+        return self.request("POST", "/restaurant/units", **kwargs)
+
+    def delete_restaurant_units_by_restaurantunit(self, **kwargs):
+        """Suppression d'un unit"""
+        return self.request("DELETE", "/restaurant/units/{restaurantUnit}", **kwargs)
+
+    def get_restaurant_units_by_restaurantunit(self, **kwargs):
+        """Détail d'un unit"""
+        return self.request("GET", "/restaurant/units/{restaurantUnit}", **kwargs)
+
+    def put_restaurant_units_by_restaurantunit(self, **kwargs):
+        """Mise à jour d'un unit"""
+        return self.request("PUT", "/restaurant/units/{restaurantUnit}", **kwargs)
+
+    def get_restaurant_zones(self, **kwargs):
+        """Liste des zone (référentiel BC-25)"""
+        return self.request("GET", "/restaurant/zones", **kwargs)
+
+    def post_restaurant_zones(self, **kwargs):
+        """Création d'un zone"""
+        return self.request("POST", "/restaurant/zones", **kwargs)
+
+    def delete_restaurant_zones_by_restaurantzone(self, **kwargs):
+        """Suppression d'un zone"""
+        return self.request("DELETE", "/restaurant/zones/{restaurantZone}", **kwargs)
+
+    def get_restaurant_zones_by_restaurantzone(self, **kwargs):
+        """Détail d'un zone"""
+        return self.request("GET", "/restaurant/zones/{restaurantZone}", **kwargs)
+
+    def put_restaurant_zones_by_restaurantzone(self, **kwargs):
+        """Mise à jour d'un zone"""
+        return self.request("PUT", "/restaurant/zones/{restaurantZone}", **kwargs)
 
     def get_salary_advances(self, **kwargs):
         """Lister les avances sur salaire"""
