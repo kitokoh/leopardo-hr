@@ -21,6 +21,7 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingContro
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -84,5 +85,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // FUEL-008 (#5802) : ventes (manager).
         Route::get('/fuel-station/sales', [FuelSaleController::class, 'index']);
         Route::get('/fuel-station/sales/{sale}', [FuelSaleController::class, 'show'])->whereNumber('sale');
+        // FUEL-009 (#5803) : stocks, livraisons et rapprochements (manager).
+        Route::get('/fuel-station/stocks/movements', [FuelStockController::class, 'movements']);
+        Route::post('/fuel-station/stocks/adjustments', [FuelStockController::class, 'storeAdjustment']);
+        Route::post('/fuel-station/deliveries', [FuelStockController::class, 'storeDelivery']);
+        Route::get('/fuel-station/deliveries', [FuelStockController::class, 'deliveries']);
+        Route::post('/fuel-station/deliveries/{delivery}/verify', [FuelStockController::class, 'verifyDelivery'])->whereNumber('delivery');
+        Route::post('/fuel-station/reconciliations', [FuelStockController::class, 'runReconciliation']);
+        Route::get('/fuel-station/reconciliations', [FuelStockController::class, 'reconciliations']);
     });
 });

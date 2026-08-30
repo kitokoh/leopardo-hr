@@ -6865,6 +6865,305 @@ paths:
         '404':
           description: Affectation introuvable ou autre tenant
 
+  /fuel-station/stocks/movements:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les mouvements de stock (manager, FUEL-009)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: direction
+        in: query
+        schema:
+          type: string
+          enum:
+          - in
+          - out
+      - name: reason
+        in: query
+        schema:
+          type: string
+          enum:
+          - delivery
+          - sale
+          - adjustment
+          - opening
+      - name: product_type
+        in: query
+        schema:
+          type: string
+      - name: from
+        in: query
+        schema:
+          type: string
+          example: '2026-08-01T00:00:00Z'
+      - name: to
+        in: query
+        schema:
+          type: string
+          example: '2026-08-31T23:59:59Z'
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Mouvements pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /fuel-station/stocks/adjustments:
+    post:
+      tags:
+      - FuelStation
+      summary: Ajustement de stock explicite et audite (manager, FUEL-009)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - station_id
+              - product_type
+              - quantity_minor
+              - direction
+              - movement_at
+              - idempotency_key
+              - notes
+              properties:
+                station_id:
+                  type: integer
+                tank_id:
+                  type: integer
+                  nullable: true
+                product_type:
+                  type: string
+                quantity_minor:
+                  type: integer
+                direction:
+                  type: string
+                  enum:
+                  - in
+                  - out
+                movement_at:
+                  type: string
+                  example: '2026-08-29T14:00:00Z'
+                idempotency_key:
+                  type: string
+                notes:
+                  type: string
+      responses:
+        '201':
+          description: Mouvement cree (200 si rejeu idempotent)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/deliveries:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les livraisons (manager, FUEL-009)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - draft
+          - received
+          - verified
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Livraisons paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer une livraison (manager, rejouable, FUEL-009)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - station_id
+              - product_type
+              - quantity_minor
+              - delivered_at
+              - idempotency_key
+              properties:
+                station_id:
+                  type: integer
+                tank_id:
+                  type: integer
+                  nullable: true
+                product_type:
+                  type: string
+                quantity_minor:
+                  type: integer
+                supplier:
+                  type: string
+                  nullable: true
+                reference_number:
+                  type: string
+                  nullable: true
+                delivered_at:
+                  type: string
+                  example: '2026-08-29T08:00:00Z'
+                idempotency_key:
+                  type: string
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Livraison enregistree (+ mouvement de stock cree)
+        '200':
+          description: Rejeu idempotent (livraison existante retournee)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/deliveries/{delivery}/verify:
+    post:
+      tags:
+      - FuelStation
+      summary: Verifier une livraison (manager, FUEL-009)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: delivery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Livraison verifiee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Livraison introuvable ou autre tenant
+  /fuel-station/reconciliations:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les rapprochements de stock (manager, FUEL-009)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: product_type
+        in: query
+        schema:
+          type: string
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - pending_measurement
+          - completed
+          - exception
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rapprochements pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Executer un rapprochement compteurs/ventes/stock (rejouable, FUEL-009)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - station_id
+              - product_type
+              - period_start
+              - period_end
+              - idempotency_key
+              properties:
+                station_id:
+                  type: integer
+                product_type:
+                  type: string
+                period_start:
+                  type: string
+                  example: '2026-08-01'
+                period_end:
+                  type: string
+                  example: '2026-08-31'
+                measured_close_minor:
+                  type: integer
+                  nullable: true
+                tolerance_minor:
+                  type: integer
+                  nullable: true
+                idempotency_key:
+                  type: string
+      responses:
+        '201':
+          description: Rapport cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station introuvable ou autre tenant
+        '422':
+          description: Validation
+
   /accounting/contacts:
     get:
       tags:
