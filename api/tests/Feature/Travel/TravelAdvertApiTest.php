@@ -271,4 +271,80 @@ class TravelAdvertApiTest extends TestCase
             ->assertOk()
             ->assertJsonMissing(['title' => 'Annonce tenant B']);
     }
+
+    /* ── TRAVEL-914 (#6422) — GET /adverts/manage (liste admin) ── */
+
+    public function test_manage_index_lists_all_statuses_for_manager(): void
+    {
+        $this->actingManager();
+        $this->tenants->withinTenant($this->company, function (): void {
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce draft',
+                'status' => AdvertStatus::DRAFT->value,
+            ]);
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce validée',
+                'status' => AdvertStatus::VALIDATED->value,
+                'paid_at' => now(),
+                'expires_at' => now()->addDays(5),
+            ]);
+        });
+
+        $this->getJson('/api/v1/travel/adverts/manage')
+            ->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.status', 'validated')
+            ->assertJsonPath('data.1.status', 'draft');
+    }
+
+    public function test_manage_index_filters_by_status(): void
+    {
+        $this->actingManager();
+        $this->tenants->withinTenant($this->company, function (): void {
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce draft',
+                'status' => AdvertStatus::DRAFT->value,
+            ]);
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce soumise',
+                'status' => AdvertStatus::SUBMITTED->value,
+            ]);
+        });
+
+        $this->getJson('/api/v1/travel/adverts/manage?status=draft')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.title', 'Annonce draft');
+    }
+
+    public function test_manage_index_requires_manager_role(): void
+    {
+        /** @var Employee $agent */
+        $agent = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'agent',
+            'manager_role' => null,
+        ]);
+        Sanctum::actingAs($agent);
+
+        $this->getJson('/api/v1/travel/adverts/manage')->assertStatus(403);
+    }
+
+    public function test_manage_index_is_isolated_per_tenant(): void
+    {
+        /** @var Company $companyB */
+        $companyB = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->tenants->withinTenant($companyB, function (): void {
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce tenant B',
+                'status' => AdvertStatus::DRAFT->value,
+            ]);
+        });
+
+        $this->actingManager();
+
+        $this->getJson('/api/v1/travel/adverts/manage')
+            ->assertOk()
+            ->assertJsonMissing(['title' => 'Annonce tenant B']);
+    }
 }
