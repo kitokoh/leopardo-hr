@@ -62,6 +62,11 @@ export function travelAction(resource, id, action, payload = {}) {
   return api.post(`/travel/${resource}/${id}/${action}`, payload)
 }
 
+/** GET /travel/{resource}/{id}/{action} (ex. billet PDF → URL signée). */
+export function travelGetAction(resource, id, action, params = {}) {
+  return api.get(`/travel/${resource}/${id}/${action}`, { params })
+}
+
 /** POST sous-ressource : /travel/{resource}/{id}/{sub}. */
 export function createTravelSub(resource, id, sub, payload = {}) {
   return api.post(`/travel/${resource}/${id}/${sub}`, payload)
