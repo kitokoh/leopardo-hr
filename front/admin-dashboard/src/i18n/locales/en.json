@@ -4248,7 +4248,11 @@
       "export": "Export",
       "yes": "Yes",
       "no": "No",
-      "perPage": "per page"
+      "perPage": "per page",
+      "city": "City",
+      "carrier": "Carrier",
+      "saving": "Saving…",
+      "selectPlaceholder": "— Select —"
     },
     "home": {
       "title": "Travel Agency",
@@ -4297,6 +4301,52 @@
     "catalog": {
       "title": "Rentals & hotels",
       "subtitle": "Rental vehicles, bookings and hotel catalog."
+    },
+    "countries": {
+      "name": "Name",
+      "phoneCode": "Phone code"
+    },
+    "cities": {
+      "name": "City",
+      "country": "Country",
+      "region": "Region"
+    },
+    "stations": {
+      "name": "Name",
+      "phone": "Phone",
+      "address": "Address",
+      "timezone": "Timezone",
+      "isTerminal": "Terminal",
+      "code": "Code"
+    },
+    "offices": {
+      "name": "Name",
+      "phone": "Phone",
+      "address": "Address"
+    },
+    "carriers": {
+      "name": "Name",
+      "type": "Type",
+      "phone": "Phone",
+      "code": "Code"
+    },
+    "classes": {
+      "label": "Label",
+      "color": "Color",
+      "priority": "Priority",
+      "code": "Code"
+    },
+    "vehicles": {
+      "registration": "Registration",
+      "seats": "Seats",
+      "code": "Code",
+      "notes": "Notes"
+    },
+    "carrierTypes": {
+      "bus": "Bus",
+      "train": "Train",
+      "plane": "Plane",
+      "boat": "Boat"
     }
   }
 }

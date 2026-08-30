@@ -4248,7 +4248,11 @@
       "export": "Exporter",
       "yes": "Oui",
       "no": "Non",
-      "perPage": "par page"
+      "perPage": "par page",
+      "city": "Ville",
+      "carrier": "Compagnie",
+      "saving": "Enregistrement…",
+      "selectPlaceholder": "— Sélectionner —"
     },
     "home": {
       "title": "Agence de voyage",
@@ -4297,6 +4301,52 @@
     "catalog": {
       "title": "Locations & hôtels",
       "subtitle": "Véhicules en location, réservations et catalogue hôtelier."
+    },
+    "countries": {
+      "name": "Nom",
+      "phoneCode": "Indicatif"
+    },
+    "cities": {
+      "name": "Ville",
+      "country": "Pays",
+      "region": "Région"
+    },
+    "stations": {
+      "name": "Nom",
+      "phone": "Téléphone",
+      "address": "Adresse",
+      "timezone": "Fuseau horaire",
+      "isTerminal": "Terminal",
+      "code": "Code"
+    },
+    "offices": {
+      "name": "Nom",
+      "phone": "Téléphone",
+      "address": "Adresse"
+    },
+    "carriers": {
+      "name": "Nom",
+      "type": "Type",
+      "phone": "Téléphone",
+      "code": "Code"
+    },
+    "classes": {
+      "label": "Libellé",
+      "color": "Couleur",
+      "priority": "Priorité",
+      "code": "Code"
+    },
+    "vehicles": {
+      "registration": "Immatriculation",
+      "seats": "Places",
+      "code": "Code",
+      "notes": "Notes"
+    },
+    "carrierTypes": {
+      "bus": "Bus",
+      "train": "Train",
+      "plane": "Avion",
+      "boat": "Bateau"
     }
   }
 }
