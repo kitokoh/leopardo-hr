@@ -4072,6 +4072,37 @@ paths:
         '422':
           description: Validation échouée (devise tenant, bornes)
   /travel/advert-prices/{travelAdvertPrice}:
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPrice
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+      responses:
+        '200':
+          description: Élément mis à jour
+        '422':
+          description: Code dupliqué (tenant)
+
     delete:
       tags:
       - Travel
@@ -4131,6 +4162,37 @@ paths:
         '422':
           description: Code invalide ou déjà pris
   /travel/advert-types/{travelAdvertType}:
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertType
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+      responses:
+        '200':
+          description: Élément mis à jour
+        '422':
+          description: Code dupliqué (tenant)
+
     delete:
       tags:
       - Travel
@@ -4190,6 +4252,37 @@ paths:
         '422':
           description: Code invalide ou déjà pris
   /travel/advert-positions/{travelAdvertPosition}:
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPosition
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+      responses:
+        '200':
+          description: Élément mis à jour
+        '422':
+          description: Code dupliqué (tenant)
+
     delete:
       tags:
       - Travel
@@ -4207,6 +4300,25 @@ paths:
           description: Supprimée
         '404':
           description: Introuvable
+  /travel/adverts/manage:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Annonces en gestion (tous statuts, filtrables)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: Filtre par statut (draft, submitted, paid, validated, rejected, expired, archived)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Annonces avec statuts (rôles manager)
+        '403':
+          description: Rôle manager requis
   /travel/adverts:
     get:
       tags:
@@ -4425,6 +4537,47 @@ paths:
       tags:
       - Travel
       summary: 'TRAVEL-904 — Détail d''un quiz (questions SANS réponses correctes)'
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  maxLength: 160
+                description:
+                  type: string
+                  maxLength: 2000
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+                status:
+                  type: string
+                  enum: [draft, active, closed]
+      responses:
+        '200':
+          description: Quiz mis à jour
+        '403':
+          description: Rôle insuffisant
+        '404':
+          description: Quiz introuvable
       security:
       - BearerAuth: []
       parameters:
@@ -4486,6 +4639,91 @@ paths:
           description: Rôle insuffisant
         '422':
           description: Index hors bornes
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Questions d'un quiz (admin, bonne réponse exposée)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Questions (avec correct_option_index — gestion)
+        '403':
+          description: Rôle gestion requis
+  /travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}:
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour d'une question'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelQuizQuestion
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  maxLength: 500
+                options:
+                  type: array
+                  maxItems: 10
+                  items:
+                    type: string
+                correct_option_index:
+                  type: integer
+                points:
+                  type: integer
+                position:
+                  type: integer
+      responses:
+        '200':
+          description: Question mise à jour
+        '403':
+          description: Rôle insuffisant
+        '404':
+          description: Question introuvable
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Suppression d'une question'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelQuizQuestion
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Question supprimée
+        '403':
+          description: Rôle insuffisant
   /travel/quizzes/{travelQuiz}/participate:
     post:
       tags:
@@ -4555,21 +4793,109 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-912 — Contacts voyageurs (gestion, consentements)'
+      summary: 'TRAVEL-913 — Registre admin des contacts voyageurs (liste paginée, recherche, filtre consentement)'
       security:
       - BearerAuth: []
       parameters:
       - name: search
         in: query
         required: false
+        description: Recherche email / prénom / nom / téléphone (ilike)
         schema:
           type: string
+      - name: consent
+        in: query
+        required: false
+        description: Ne renvoyer que les contacts ayant consenti au canal (email|sms|whatsapp)
+        schema:
+          type: string
+          enum: [email, sms, whatsapp]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 50
       responses:
         '200':
-          description: Contacts + consentements par canal
+          description: Contacts du tenant (data + meta pagination)
+        '401':
+          description: Non authentifié
         '403':
-          description: Rôle insuffisant
+          description: Rôle principal / RH / manager requis
   /travel/contacts/{travelCustomerContact}/consent:
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-912/913 — Mise à jour des consentements par canal'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email_consent:
+                  type: boolean
+                sms_consent:
+                  type: boolean
+                whatsapp_consent:
+                  type: boolean
+      responses:
+        '200':
+          description: Consentements mis à jour
+        '403':
+          description: Rôle principal / RH / manager requis
+        '404':
+          description: Introuvable (ou autre tenant)
+    patch:
+      tags:
+      - Travel
+      summary: "TRAVEL-913 — Opt-in / opt-out d'un canal de consentement (horodaté)"
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - channel
+              - given
+              properties:
+                channel:
+                  type: string
+                  enum: [email, sms, whatsapp]
+                given:
+                  type: boolean
+      responses:
+        '200':
+          description: Consentement mis à jour (horodatage conservé)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Rôle principal / RH / manager requis
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Validation échouée (canal inconnu)
     post:
       tags:
       - Travel
@@ -4794,6 +5120,57 @@ paths:
           description: Supprimé
         '404':
           description: Introuvable
+  /travel/public/contact:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-913 — Formulaire de contact public (URL signée + throttle, consentement obligatoire)'
+      parameters:
+      - name: company
+        in: query
+        required: true
+        description: Identifiant du tenant (paramètre signé de l'URL — forger un lien pour un autre tenant est impossible)
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - message
+              - consent_email
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 120
+                last_name:
+                  type: string
+                  maxLength: 120
+                email:
+                  type: string
+                  maxLength: 190
+                phone:
+                  type: string
+                  maxLength: 40
+                message:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                consent_email:
+                  type: boolean
+                  description: Consentement obligatoire (accepted)
+      responses:
+        '202':
+          description: Demande reçue (événement travel.contact.submitted.v1)
+        '403':
+          description: Signature invalide ou expirée
+        '404':
+          description: Tenant introuvable
+        '422':
+          description: Validation échouée (consentement manquant, bornes)
   /travel/contact:
     post:
       tags:
