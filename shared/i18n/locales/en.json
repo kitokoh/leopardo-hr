@@ -3655,7 +3655,13 @@
       "tickets": "Tickets",
       "reports": "Reports",
       "rentals": "Rentals & Hotels",
+<<<<<<< HEAD
       "content": "Content & Monetization",
+=======
+      "quizzes": "Quiz",
+      "adverts": "Adverts",
+      "sites": "Tourist sites",
+>>>>>>> origin/bc/bc24-travel-admin-ui
       "contacts": "Contacts"
     },
     "referentiel": {
@@ -3692,7 +3698,13 @@
       "rentalBooking": "Search a rental booking…",
       "hotel": "Search a hotel…",
       "quiz": "Search a quiz…",
+<<<<<<< HEAD
       "site": "Search a site…"
+=======
+      "advert": "Search an advert…",
+      "site": "Search a site…",
+      "contact": "Search a contact…"
+>>>>>>> origin/bc/bc24-travel-admin-ui
     },
     "field": {
       "iso2": "ISO2",
@@ -3935,6 +3947,7 @@
     },
     "quiz": {
       "title": "Quizzes & contests",
+<<<<<<< HEAD
       "subtitle": "Server-graded participation — the correct answer is never exposed to participants.",
       "questionsAction": "Questions",
       "resultsAction": "Results",
@@ -3956,12 +3969,39 @@
       "colScore": "Score",
       "colBonus": "Bonus",
       "colSubmitted": "Submitted"
+=======
+      "subtitle": "Create quizzes, add questions and review participations.",
+      "questionsTitle": "Quiz questions",
+      "resultsTitle": "Results",
+      "field": {
+        "question": "Question",
+        "options": "Choices",
+        "points": "Points",
+        "correctIndex": "Correct answer index",
+        "maxParticipations": "Max participations per contact",
+        "participantName": "Name",
+        "participantEmail": "Email",
+        "score": "Score",
+        "bonus": "Bonus",
+        "submittedAt": "Submitted on"
+      },
+      "action": {
+        "questions": "Questions",
+        "results": "Results",
+        "addQuestion": "Add a question"
+      },
+      "hint": {
+        "options": "One option per line.",
+        "correctIndex": "Starts at 0 (first line = 0)."
+      }
+>>>>>>> origin/bc/bc24-travel-admin-ui
     },
     "quizStatus": {
       "draft": "Draft",
       "active": "Active",
       "closed": "Closed"
     },
+<<<<<<< HEAD
     "advert": {
       "title": "Paid adverts",
       "subtitle": "Types, positions, pricing grid and advert lifecycle.",
@@ -4061,6 +4101,75 @@
       "messagePlaceholder": "Your request (2,000 characters max)…",
       "consent": "I agree to be contacted by email regarding my request.",
       "submit": "Send request"
+=======
+    "adverts": {
+      "tabsLabel": "Advert sub-sections",
+      "tabTypes": "Types",
+      "tabPositions": "Positions",
+      "tabPrices": "Price grid",
+      "tabAdverts": "Adverts",
+      "title": "Paid adverts",
+      "subtitle": "Submit an advert and track visible ones.",
+      "createTitle": "Submit an advert",
+      "types": "Advert types",
+      "positions": "Advert positions",
+      "prices": "Price grid",
+      "field": {
+        "type": "Type",
+        "position": "Position",
+        "validityDays": "Validity (days)",
+        "content": "Content",
+        "price": "Price",
+        "pricePerImage": "Price per image",
+        "pricePerCharacter": "Price per character",
+        "expiresAt": "Expires on"
+      },
+      "action": {
+        "renew": "Renew",
+        "submit": "Submit"
+      }
+    },
+    "sites": {
+      "title": "Tourist sites",
+      "subtitle": "Points of interest with location and city search.",
+      "filterCity": "Filter by city",
+      "allCities": "All cities",
+      "statusDisabled": "Disabled",
+      "field": {
+        "latitude": "Latitude",
+        "longitude": "Longitude"
+      }
+    },
+    "contacts": {
+      "formTitle": "Contact form",
+      "formSubtitle": "Submit a contact request — email consent is required.",
+      "registryTitle": "Contact registry",
+      "registrySubtitle": "Per-channel consents (timestamped opt-in/opt-out) and manual notification.",
+      "registryUnavailable": "Registry unavailable — list endpoint not delivered on this deployment yet.",
+      "consentLabel": "I agree to be contacted by email about my request.",
+      "consentOn": "Consented",
+      "consentOff": "Not consented",
+      "notifyTitle": "Manual notification",
+      "notifyTarget": "Recipient",
+      "notifyHint": "A channel without consent is ignored; 422 if no channel is consented.",
+      "channelApp": "Application (linked employee)",
+      "success": "Request received — thank you, we will get back to you.",
+      "field": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "phone": "Phone",
+        "message": "Message",
+        "consents": "Consents",
+        "channels": "Channels"
+      },
+      "action": {
+        "submit": "Send request",
+        "toggleConsent": "Toggle consent",
+        "notify": "Notify",
+        "send": "Send"
+      }
+>>>>>>> origin/bc/bc24-travel-admin-ui
     }
   }
 }

@@ -3655,7 +3655,13 @@
       "tickets": "التذاكر",
       "reports": "التقارير",
       "rentals": "الإيجارات والفنادق",
+<<<<<<< HEAD
       "content": "المحتوى والربح",
+=======
+      "quizzes": "الاختبارات",
+      "adverts": "الإعلانات",
+      "sites": "المواقع السياحية",
+>>>>>>> origin/bc/bc24-travel-admin-ui
       "contacts": "جهات الاتصال"
     },
     "referentiel": {
@@ -3691,8 +3697,15 @@
       "rentalVehicle": "ابحث عن مركبة إيجار…",
       "rentalBooking": "ابحث عن حجز إيجار…",
       "hotel": "ابحث عن فندق…",
+<<<<<<< HEAD
       "quiz": "ابحث عن مسابقة…",
       "site": "ابحث عن موقع…"
+=======
+      "quiz": "ابحث عن اختبار…",
+      "advert": "ابحث عن إعلان…",
+      "site": "ابحث عن موقع…",
+      "contact": "ابحث عن جهة اتصال…"
+>>>>>>> origin/bc/bc24-travel-admin-ui
     },
     "field": {
       "iso2": "كود ISO2",
@@ -3934,6 +3947,7 @@
       "moneyMinor": "المبلغ بالعملة (1 = 100 وحدة صغيرة)"
     },
     "quiz": {
+<<<<<<< HEAD
       "title": "المسابقات والألعاب",
       "subtitle": "التصحيح على الخادم — لا تُكشف الإجابة الصحيحة للمشاركين أبداً.",
       "questionsAction": "الأسئلة",
@@ -3956,12 +3970,40 @@
       "colScore": "النتيجة",
       "colBonus": "المكافأة",
       "colSubmitted": "أُرسل في"
+=======
+      "title": "الاختبارات والمسابقات",
+      "subtitle": "أنشئ الاختبارات وأضف الأسئلة وراجع المشاركات.",
+      "questionsTitle": "أسئلة الاختبار",
+      "resultsTitle": "النتائج",
+      "field": {
+        "question": "السؤال",
+        "options": "الخيارات",
+        "points": "النقاط",
+        "correctIndex": "مؤشر الإجابة الصحيحة",
+        "maxParticipations": "الحد الأقصى للمشاركات لكل جهة اتصال",
+        "participantName": "الاسم",
+        "participantEmail": "البريد الإلكتروني",
+        "score": "النتيجة",
+        "bonus": "المكافأة",
+        "submittedAt": "أُرسل في"
+      },
+      "action": {
+        "questions": "الأسئلة",
+        "results": "النتائج",
+        "addQuestion": "إضافة سؤال"
+      },
+      "hint": {
+        "options": "خيار واحد في كل سطر.",
+        "correctIndex": "يبدأ من 0 (السطر الأول = 0)."
+      }
+>>>>>>> origin/bc/bc24-travel-admin-ui
     },
     "quizStatus": {
       "draft": "مسودة",
       "active": "نشط",
       "closed": "مغلق"
     },
+<<<<<<< HEAD
     "advert": {
       "title": "الإعلانات المدفوعة",
       "subtitle": "الأنواع والمواضع وشبكة الأسعار ودورة حياة الإعلانات.",
@@ -4061,6 +4103,75 @@
       "messagePlaceholder": "طلبك (2000 حرف كحد أقصى)…",
       "consent": "أوافق على التواصل معي عبر البريد بخصوص طلبي.",
       "submit": "إرسال الطلب"
+=======
+    "adverts": {
+      "tabsLabel": "أقسام الإعلانات الفرعية",
+      "tabTypes": "الأنواع",
+      "tabPositions": "المواضع",
+      "tabPrices": "جدول الأسعار",
+      "tabAdverts": "الإعلانات",
+      "title": "الإعلانات المدفوعة",
+      "subtitle": "أرسل إعلانًا وتابع الإعلانات المرئية.",
+      "createTitle": "إرسال إعلان",
+      "types": "أنواع الإعلانات",
+      "positions": "المواضع الإعلانية",
+      "prices": "جدول الأسعار",
+      "field": {
+        "type": "النوع",
+        "position": "الموضع",
+        "validityDays": "مدة الصلاحية (أيام)",
+        "content": "المحتوى",
+        "price": "السعر",
+        "pricePerImage": "السعر لكل صورة",
+        "pricePerCharacter": "السعر لكل حرف",
+        "expiresAt": "ينتهي في"
+      },
+      "action": {
+        "renew": "تجديد",
+        "submit": "إرسال"
+      }
+    },
+    "sites": {
+      "title": "المواقع السياحية",
+      "subtitle": "أماكن الاهتمام مع الموقع والبحث حسب المدينة.",
+      "filterCity": "تصفية حسب المدينة",
+      "allCities": "كل المدن",
+      "statusDisabled": "معطل",
+      "field": {
+        "latitude": "خط العرض",
+        "longitude": "خط الطول"
+      }
+    },
+    "contacts": {
+      "formTitle": "نموذج الاتصال",
+      "formSubtitle": "أرسل طلب اتصال — الموافقة على البريد الإلكتروني إلزامية.",
+      "registryTitle": "سجل جهات الاتصال",
+      "registrySubtitle": "الموافقات حسب القناة (اشتراك/إلغاء مختوم بالوقت) والإشعار اليدوي.",
+      "registryUnavailable": "السجل غير متاح — نقطة نهاية القائمة غير منشورة بعد على هذا النشر.",
+      "consentLabel": "أوافق على أن يتم التواصل معي عبر البريد الإلكتروني بشأن طلبي.",
+      "consentOn": "موافق",
+      "consentOff": "غير موافق",
+      "notifyTitle": "إشعار يدوي",
+      "notifyTarget": "المستلم",
+      "notifyHint": "يتم تجاهل القناة بدون موافقة؛ 422 إذا لم تكن هناك قناة موافق عليها.",
+      "channelApp": "التطبيق (موظف مرتبط)",
+      "success": "تم استلام الطلب — شكرًا، سنعاود التواصل معك.",
+      "field": {
+        "firstName": "الاسم الأول",
+        "lastName": "الاسم الأخير",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "message": "الرسالة",
+        "consents": "الموافقات",
+        "channels": "القنوات"
+      },
+      "action": {
+        "submit": "إرسال الطلب",
+        "toggleConsent": "تبديل الموافقة",
+        "notify": "إشعار",
+        "send": "إرسال"
+      }
+>>>>>>> origin/bc/bc24-travel-admin-ui
     }
   }
 }

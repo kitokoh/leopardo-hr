@@ -90,7 +90,13 @@ import TravelCheckInTab from '@/views/travel/TravelCheckInTab.vue'
 import TravelTicketsTab from '@/views/travel/TravelTicketsTab.vue'
 import TravelReportsTab from '@/views/travel/TravelReportsTab.vue'
 import TravelRentalsHotelsTab from '@/views/travel/TravelRentalsHotelsTab.vue'
+<<<<<<< HEAD
 import TravelContentTab from '@/views/travel/TravelContentTab.vue'
+=======
+import TravelQuizTab from '@/views/travel/TravelQuizTab.vue'
+import TravelAdvertsTab from '@/views/travel/TravelAdvertsTab.vue'
+import TravelSitesTab from '@/views/travel/TravelSitesTab.vue'
+>>>>>>> origin/bc/bc24-travel-admin-ui
 import TravelContactsTab from '@/views/travel/TravelContactsTab.vue'
 
 const localeStore = useLocaleStore()
@@ -110,7 +116,13 @@ const tabs = [
   { key: 'tickets', label: t('travel.tab.tickets', 'Billets'), component: TravelTicketsTab },
   { key: 'reports', label: t('travel.tab.reports', 'Rapports'), component: TravelReportsTab },
   { key: 'rentals', label: t('travel.tab.rentals', 'Locations & Hôtels'), component: TravelRentalsHotelsTab },
+<<<<<<< HEAD
   { key: 'content', label: t('travel.tab.content', 'Contenu & Monétisation'), component: TravelContentTab },
+=======
+  { key: 'quizzes', label: t('travel.tab.quizzes', 'Quiz'), component: TravelQuizTab },
+  { key: 'adverts', label: t('travel.tab.adverts', 'Annonces'), component: TravelAdvertsTab },
+  { key: 'sites', label: t('travel.tab.sites', 'Sites touristiques'), component: TravelSitesTab },
+>>>>>>> origin/bc/bc24-travel-admin-ui
   { key: 'contacts', label: t('travel.tab.contacts', 'Contacts'), component: TravelContactsTab }
 ]
 

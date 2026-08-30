@@ -3655,7 +3655,13 @@
       "tickets": "Biletler",
       "reports": "Raporlar",
       "rentals": "Kiralama ve Oteller",
+<<<<<<< HEAD
       "content": "İçerik ve Gelir",
+=======
+      "quizzes": "Quiz",
+      "adverts": "Reklamlar",
+      "sites": "Turistik yerler",
+>>>>>>> origin/bc/bc24-travel-admin-ui
       "contacts": "Kişiler"
     },
     "referentiel": {
@@ -3692,7 +3698,13 @@
       "rentalBooking": "Kiralama rezervasyonu ara…",
       "hotel": "Otel ara…",
       "quiz": "Quiz ara…",
+<<<<<<< HEAD
       "site": "Site ara…"
+=======
+      "advert": "Reklam ara…",
+      "site": "Yer ara…",
+      "contact": "Kişi ara…"
+>>>>>>> origin/bc/bc24-travel-admin-ui
     },
     "field": {
       "iso2": "ISO2",
@@ -3934,6 +3946,7 @@
       "moneyMinor": "Para birimi cinsinden tutar (1 = 100 birim)"
     },
     "quiz": {
+<<<<<<< HEAD
       "title": "Quizler ve yarışmalar",
       "subtitle": "Sunucu tarafında puanlanır — doğru cevap katılımcılara asla gösterilmez.",
       "questionsAction": "Sorular",
@@ -3956,12 +3969,40 @@
       "colScore": "Puan",
       "colBonus": "Bonus",
       "colSubmitted": "Gönderim"
+=======
+      "title": "Quiz ve yarışmalar",
+      "subtitle": "Quiz oluşturun, soru ekleyin ve katılımları inceleyin.",
+      "questionsTitle": "Quiz soruları",
+      "resultsTitle": "Sonuçlar",
+      "field": {
+        "question": "Soru",
+        "options": "Seçenekler",
+        "points": "Puan",
+        "correctIndex": "Doğru cevap indeksi",
+        "maxParticipations": "Kişi başına maks. katılım",
+        "participantName": "Ad",
+        "participantEmail": "E-posta",
+        "score": "Puan",
+        "bonus": "Bonus",
+        "submittedAt": "Gönderim"
+      },
+      "action": {
+        "questions": "Sorular",
+        "results": "Sonuçlar",
+        "addQuestion": "Soru ekle"
+      },
+      "hint": {
+        "options": "Her satıra bir seçenek.",
+        "correctIndex": "0'dan başlar (ilk satır = 0)."
+      }
+>>>>>>> origin/bc/bc24-travel-admin-ui
     },
     "quizStatus": {
       "draft": "Taslak",
       "active": "Aktif",
       "closed": "Kapalı"
     },
+<<<<<<< HEAD
     "advert": {
       "title": "Ücretli ilanlar",
       "subtitle": "Türler, konumlar, fiyat tablosu ve ilan yaşam döngüsü.",
@@ -4061,6 +4102,75 @@
       "messagePlaceholder": "Talebiniz (en fazla 2.000 karakter)…",
       "consent": "Talebimle ilgili e-posta ile iletişime geçilmesini kabul ediyorum.",
       "submit": "Talebi gönder"
+=======
+    "adverts": {
+      "tabsLabel": "Reklam alt bölümleri",
+      "tabTypes": "Türler",
+      "tabPositions": "Konumlar",
+      "tabPrices": "Fiyat tablosu",
+      "tabAdverts": "Reklamlar",
+      "title": "Ücretli reklamlar",
+      "subtitle": "Reklam gönderin ve görünür olanları takip edin.",
+      "createTitle": "Reklam gönder",
+      "types": "Reklam türleri",
+      "positions": "Reklam konumları",
+      "prices": "Fiyat tablosu",
+      "field": {
+        "type": "Tür",
+        "position": "Konum",
+        "validityDays": "Geçerlilik (gün)",
+        "content": "İçerik",
+        "price": "Fiyat",
+        "pricePerImage": "Görsel başına fiyat",
+        "pricePerCharacter": "Karakter başına fiyat",
+        "expiresAt": "Bitiş"
+      },
+      "action": {
+        "renew": "Yenile",
+        "submit": "Gönder"
+      }
+    },
+    "sites": {
+      "title": "Turistik yerler",
+      "subtitle": "Konum ve şehir aramalı ilgi noktaları.",
+      "filterCity": "Şehre göre filtrele",
+      "allCities": "Tüm şehirler",
+      "statusDisabled": "Devre dışı",
+      "field": {
+        "latitude": "Enlem",
+        "longitude": "Boylam"
+      }
+    },
+    "contacts": {
+      "formTitle": "İletişim formu",
+      "formSubtitle": "İletişim talebi gönderin — e-posta onayı zorunludur.",
+      "registryTitle": "Kişi kayıtları",
+      "registrySubtitle": "Kanal bazında onaylar (zaman damgalı) ve manuel bildirim.",
+      "registryUnavailable": "Kayıtlar kullanılamıyor — liste ucu bu dağıtımda henüz yayınlanmadı.",
+      "consentLabel": "Talebimle ilgili e-posta ile iletişime geçilmesini kabul ediyorum.",
+      "consentOn": "Onaylı",
+      "consentOff": "Onaysız",
+      "notifyTitle": "Manuel bildirim",
+      "notifyTarget": "Alıcı",
+      "notifyHint": "Onaysız kanal yok sayılır; onaylı kanal yoksa 422.",
+      "channelApp": "Uygulama (bağlı çalışan)",
+      "success": "Talep alındı — teşekkürler, size dönüş yapacağız.",
+      "field": {
+        "firstName": "Ad",
+        "lastName": "Soyad",
+        "email": "E-posta",
+        "phone": "Telefon",
+        "message": "Mesaj",
+        "consents": "Onaylar",
+        "channels": "Kanallar"
+      },
+      "action": {
+        "submit": "Talebi gönder",
+        "toggleConsent": "Onayı değiştir",
+        "notify": "Bildir",
+        "send": "Gönder"
+      }
+>>>>>>> origin/bc/bc24-travel-admin-ui
     }
   }
 }
