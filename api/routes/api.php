@@ -62,7 +62,10 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
 use App\Modules\Recruitment\Interfaces\Api\V1\CandidateApplicationController;
 use App\Modules\Recruitment\Interfaces\Api\V1\PublicCareerController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryAppWebhookController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKioskController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -160,6 +163,10 @@ Route::prefix('v1')->group(function (): void {
         // signature HMAC (secret par tenant, fail-closed) ; le tenant est résolu
         // depuis le payload signé puis posé via TenantManager (pattern #5272).
         Route::post('/restaurant/payments/{payment}/callback', RestaurantPaymentCallbackController::class);
+        // RESTO-806 (#6227) — webhooks entrants apps de livraison (Uber Eats,
+        // Glovo, ...). Public : signature HMAC fail-closed par adaptateur
+        // (secret par tenant), tenant résolu depuis le payload signé.
+        Route::post('/restaurant/webhooks/delivery-apps/{provider}', [RestaurantDeliveryAppWebhookController::class, 'handle']);
     });
 
     // Public careers portal (ATS): unauthenticated job listing/detail, the
@@ -178,6 +185,23 @@ Route::prefix('v1')->group(function (): void {
     // apps mobiles pré-login listent les pays supportés avant toute connexion.
     // Aucune donnée sensible (codes ISO, devises, fuseaux, confidenceLevel).
     Route::middleware(['throttle:public-registry'])->get('/supported-countries', [SupportedCountryController::class, 'index']);
+
+    // RESTO-805 (#6226) — boutique publique RestaurantManager (jeton signé par
+    // tenant, sans auth utilisateur) — throttling renforcé `shop-public` +
+    // hook anti-bot CAPTCHA configurable (pattern TRAVEL-1001/#6114).
+    Route::middleware(['throttle:shop-public', 'restaurant.public.shop'])->group(function (): void {
+        Route::get('/public/restaurant/shop/menu', [RestaurantPublicShopController::class, 'menu']);
+        Route::post('/public/restaurant/shop/orders', [RestaurantPublicShopController::class, 'storeOrder']);
+        Route::get('/public/restaurant/shop/orders/{reference}', [RestaurantPublicShopController::class, 'track']);
+        Route::post('/public/restaurant/shop/orders/{reference}/pay', [RestaurantPublicShopController::class, 'initiatePayment']);
+    });
+
+    // RESTO-807 (#6228) — kiosque libre-service (même jeton boutique, web).
+    Route::middleware(['throttle:shop-public', 'restaurant.public.shop'])->group(function (): void {
+        Route::get('/public/restaurant/kiosk/menu', [RestaurantKioskController::class, 'menu']);
+        Route::post('/public/restaurant/kiosk/orders', [RestaurantKioskController::class, 'storeOrder']);
+        Route::get('/public/restaurant/kiosk/orders/{reference}', [RestaurantKioskController::class, 'track']);
+    });
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);
