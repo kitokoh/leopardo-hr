@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelComment;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelCommentRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelCommentResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -37,7 +38,7 @@ class TravelCommentController extends Controller
         return TravelCommentResource::collection($comments)->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreTravelCommentRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -46,19 +47,12 @@ class TravelCommentController extends Controller
             abort(403);
         }
 
-        $content = (string) $request->json('content');
-        $content = trim($content);
-
-        if ($content === '' || mb_strlen($content) > 2000) {
-            abort(422, 'Comment content is required (max 2000 characters).');
-        }
-
         $comment = TravelComment::query()->create([
             'company_id' => $actor->company_id,
-            'article_id' => (int) $request->json('article_id'),
+            'article_id' => (int) $request->validated('article_id'),
             'author_type' => 'employee',
             'author_id' => $actor->id,
-            'content_redacted' => $content,
+            'content_redacted' => trim((string) $request->validated('content')),
             'status' => 'pending',
         ]);
 
