@@ -44,6 +44,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminTrainingCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminWebhookController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformFeatureFlagController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
@@ -296,6 +297,9 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'update']);
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);
+        // MAT-010 (#5868) : kill switches / feature flags plateforme (BC-01).
+        Route::get('/feature-flags', [PlatformFeatureFlagController::class, 'index']);
+        Route::post('/feature-flags', [PlatformFeatureFlagController::class, 'store']);
         Route::get('/metrics/overview', PlatformMetricsOverviewController::class);
 
         // PA2-QA-006 — Redis/jobs observability (queue depth, failed jobs,
