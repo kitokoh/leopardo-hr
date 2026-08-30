@@ -2259,7 +2259,7 @@ trait CreatesMvpSchema
         $this->createCrmChannelTables();
         $this->createCrmAutomationTables();
         $this->createCrmExportTables();
-    }
+
         // — FuelStation (solution verticale, FUEL-002..008, issues #5795..#5802) :
         // parité fixture ↔ migrations tenant récentes (garde #5443) — mêmes
         // colonnes que les migrations (PK bigint, company_id uuid indexé),
@@ -2489,7 +2489,7 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'external_id'], 'fuel_sales_external_unique');
             });
         }
-
+    }
 
     /**
      * #5728 — Automatisations CRM tenant. Miroir des migrations tenant
