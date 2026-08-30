@@ -31,6 +31,20 @@ return [
     'max_conversation_messages' => 50,
     'context_window_tokens' => 4096,
 
+    // BC-23-D10 (issue #6238) — budgets de tokens AI versionnés.
+    // Limites explicites par appel LLM, par contexte de conversation et par
+    // exécution d'agent (workflow). Dépassement → 422 AI_TOKEN_BUDGET_EXCEEDED
+    // (fail-closed : aucun appel LLM hors budget, aucun effet de bord).
+    'budgets' => [
+        // Tokens max (input + output) cumulés pour UNE requête chat / agent.
+        'max_tokens_per_request' => (int) env('AI_BUDGET_MAX_TOKENS_PER_REQUEST', 4096),
+        // Tokens cumulés max d'une conversation (historique + échanges).
+        // Au-delà, les nouveaux messages sont refusés (nouvelle conversation).
+        'max_context_tokens' => (int) env('AI_BUDGET_MAX_CONTEXT_TOKENS', 32768),
+        // Tokens cumulés max d'une exécution d'agent (toutes étapes).
+        'max_tokens_per_workflow' => (int) env('AI_BUDGET_MAX_TOKENS_PER_WORKFLOW', 16384),
+    ],
+
     'voice' => [
         'stt_provider' => env('AI_STT_PROVIDER', 'whisper'),
         // Issue #5616 (P0-SEC) : edge-tts est un binaire externe (pip) qui

@@ -48,6 +48,7 @@ return [
     'VALIDATION_FAILED' => 'Some fields are incorrect.',
     'TOO_MANY_REQUESTS' => 'Too many requests. Try again later.',
     'AI_QUOTA_EXCEEDED' => 'Monthly AI quota reached. Try again next month.',
+    'AI_TOKEN_BUDGET_EXCEEDED' => 'AI token budget exceeded. Shorten the message or start a new conversation.',
     'SERVICE_UNAVAILABLE' => 'Service temporarily unavailable.',
     'HTTP_ERROR' => 'An error occurred. Please try again.',
     'UNSUPPORTED_API_VERSION' => 'Unsupported API version.',
