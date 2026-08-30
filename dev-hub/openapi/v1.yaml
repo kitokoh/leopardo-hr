@@ -743,6 +743,38 @@ paths:
                 properties:
                   data:
                     type: array
+  /travel/ping:
+    get:
+      tags:
+      - Travel
+      summary: Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977)
+      description: |
+        Route de contrôle : prouve que le module est chargé, que le feature flag
+        `travelagency` est actif pour le tenant courant et que le pipeline
+        middleware (auth → tenant → module) est opérationnel. Lecture pure.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Verticale active
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - status
+                - service
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    example: travelagency
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
   /health:
     get:
       tags:
