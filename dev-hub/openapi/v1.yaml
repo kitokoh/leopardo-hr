@@ -3867,6 +3867,1152 @@ paths:
           description: Non authentifié
         '404':
           description: Ressource introuvable ou hors tenant
+  /travel/advert-prices:
+    get:
+      tags:
+      - Travel
+      summary: Liste de la grille tarifaire des annonces (TRAVEL-906/#6109)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Grille tarifaire du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelAdvertPrice'
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: Création d'un tarif (type × position, devise tenant) (TRAVEL-906/#6109)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [advert_type_id, advert_position_id]
+              properties:
+                advert_type_id:
+                  type: integer
+                advert_position_id:
+                  type: integer
+                price_image_minor:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                price_character_minor:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                currency:
+                  type: string
+                  maxLength: 3
+                  description: Devise du tenant par défaut
+      responses:
+        '201':
+          description: Tarif créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvertPrice'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise (rôle opérationnel de l'agence)
+        '422':
+          description: Référence inconnue du tenant, devise différente, tarif négatif ou doublon (type/position/devise)
+  /travel/advert-prices/{travelAdvertPrice}:
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour des montants d'un tarif (TRAVEL-906/#6109)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPrice
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                price_image_minor:
+                  type: integer
+                  minimum: 0
+                price_character_minor:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: Tarif mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvertPrice'
+        '404':
+          description: Tarif introuvable ou d'un autre tenant
+        '422':
+          description: Montants négatifs
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un tarif (TRAVEL-906/#6109)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPrice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Tarif supprimé
+        '404':
+          description: Tarif introuvable ou d'un autre tenant
+  /travel/adverts:
+    get:
+      tags:
+      - Travel
+      summary: Liste des annonces payantes (filtres statut/type) (TRAVEL-907/#6110)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [draft, pending_payment, paid, published, rejected, expired, archived]
+      - name: advert_type_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des annonces du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelAdvert'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      per_page:
+                        type: integer
+                      current_page:
+                        type: integer
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: Soumission d'une annonce — prix calculé serveur (TRAVEL-907/#6110)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [advert_type_id, advert_position_id, title, body_redacted]
+              properties:
+                advert_type_id:
+                  type: integer
+                advert_position_id:
+                  type: integer
+                title:
+                  type: string
+                  maxLength: 200
+                body_redacted:
+                  type: string
+                  maxLength: 5000
+                image_path:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Annonce créée (statut draft, total calculé serveur)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvert'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise (rôle opérationnel de l'agence)
+        '422':
+          description: Type/position inconnus du tenant ou tarif non configuré
+  /travel/adverts/{travelAdvert}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'une annonce (TRAVEL-907/#6110)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Annonce
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvert'
+        '404':
+          description: Annonce introuvable ou d'un autre tenant
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une annonce (TRAVEL-907/#6110)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Annonce supprimée
+        '404':
+          description: Annonce introuvable ou d'un autre tenant
+  /travel/adverts/{travelAdvert}/pay:
+    post:
+      tags:
+      - Travel
+      summary: Paiement d'une annonce (cash ou provider, idempotent) (TRAVEL-907/#6110)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider]
+              properties:
+                provider:
+                  type: string
+                  enum: [cash, pvit, momo, card]
+                provider_reference:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Annonce payée (statut paid)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvert'
+        '404':
+          description: Annonce introuvable ou d'un autre tenant
+        '422':
+          description: Statut non payable ou fournisseur inconnu
+  /travel/adverts/{travelAdvert}/renew:
+    post:
+      tags:
+      - Travel
+      summary: Renouvellement d'une annonce expirée (nouveau paiement) (TRAVEL-908/#6111)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider]
+              properties:
+                provider:
+                  type: string
+                  enum: [cash, pvit, momo, card]
+                provider_reference:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Annonce renouvelée (republiée, expires_at prolongé)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvert'
+        '403':
+          description: Permission travel.manage requise (principal/rh)
+        '404':
+          description: Annonce introuvable ou d'un autre tenant
+        '422':
+          description: Annonce ni expirée ni publiée, ou fournisseur inconnu
+  /travel/adverts/{travelAdvert}/validate:
+    post:
+      tags:
+      - Travel
+      summary: Validation/modération d'une annonce payée (travel.manage) (TRAVEL-907/#6110)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [approved]
+              properties:
+                approved:
+                  type: boolean
+                note:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Annonce publiée (approved) ou rejetée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvert'
+        '403':
+          description: Permission travel.manage requise (principal/rh)
+        '404':
+          description: Annonce introuvable ou d'un autre tenant
+        '422':
+          description: Annonce non payée
+  /travel/quizzes:
+    get:
+      tags:
+      - Travel
+      summary: Liste des quiz (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [draft, published, archived]
+      responses:
+        '200':
+          description: Quiz du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelQuiz'
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: Création d'un quiz (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+                  maxLength: 200
+                description_redacted:
+                  type: string
+                  nullable: true
+                max_attempts:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  default: 1
+                status:
+                  type: string
+                  enum: [draft, published, archived]
+      responses:
+        '201':
+          description: Quiz créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelQuiz'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise (rôle opérationnel de l'agence)
+        '422':
+          description: Validation échouée
+  /travel/quizzes/{travelQuiz}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un quiz avec ses questions (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Quiz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelQuiz'
+        '404':
+          description: Quiz introuvable ou d'un autre tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'un quiz (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  maxLength: 200
+                description_redacted:
+                  type: string
+                  nullable: true
+                max_attempts:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                status:
+                  type: string
+                  enum: [draft, published, archived]
+      responses:
+        '200':
+          description: Quiz mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelQuiz'
+        '404':
+          description: Quiz introuvable ou d'un autre tenant
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un quiz (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Quiz supprimé
+        '404':
+          description: Quiz introuvable ou d'un autre tenant
+  /travel/quizzes/{travelQuiz}/questions:
+    post:
+      tags:
+      - Travel
+      summary: Ajout d'une question à un quiz (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question, options, correct_option_index]
+              properties:
+                question:
+                  type: string
+                  maxLength: 500
+                options:
+                  type: array
+                  minItems: 2
+                  maxItems: 10
+                  items:
+                    type: string
+                correct_option_index:
+                  type: integer
+                  minimum: 0
+                points:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000
+                  default: 1
+                sort_order:
+                  type: integer
+                  default: 0
+      responses:
+        '201':
+          description: Question créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelQuizQuestion'
+        '404':
+          description: Quiz introuvable ou d'un autre tenant
+        '422':
+          description: Validation échouée (options, index, points)
+  /travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}:
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'une question (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelQuizQuestion
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  maxLength: 500
+                options:
+                  type: array
+                  minItems: 2
+                  maxItems: 10
+                  items:
+                    type: string
+                correct_option_index:
+                  type: integer
+                  minimum: 0
+                points:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000
+                sort_order:
+                  type: integer
+      responses:
+        '200':
+          description: Question mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelQuizQuestion'
+        '404':
+          description: Question/quiz introuvable ou d'un autre tenant
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une question (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelQuizQuestion
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Question supprimée
+        '404':
+          description: Question/quiz introuvable ou d'un autre tenant
+  /travel/quizzes/{travelQuiz}/participate:
+    post:
+      tags:
+      - Travel
+      summary: Participation à un quiz (score serveur, participation unique) (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [answers]
+              properties:
+                answers:
+                  type: array
+                  items:
+                    type: integer
+                  description: Index des choix (un par question, dans l'ordre)
+      responses:
+        '201':
+          description: Participation enregistrée avec le score
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      quiz_id:
+                        type: integer
+                      score:
+                        type: integer
+                      status:
+                        type: string
+                      completed_at:
+                        type: string
+                        nullable: true
+        '404':
+          description: Quiz introuvable ou d'un autre tenant
+        '422':
+          description: Quiz non publié, participation déjà enregistrée ou réponses invalides
+  /travel/quizzes/{travelQuiz}/participations:
+    get:
+      tags:
+      - Travel
+      summary: Résultats d'un quiz (travel.manage) (TRAVEL-904/#6107)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Participations triées par score
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelQuizParticipation'
+        '403':
+          description: Permission travel.manage requise (principal/rh)
+        '404':
+          description: Quiz introuvable ou d'un autre tenant
+  /travel/tourist-sites:
+    get:
+      tags:
+      - Travel
+      summary: Annuaire des sites touristiques (filtres ville/recherche/statut) (TRAVEL-909/#6112)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: city_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [draft, published, archived]
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Sites du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelTouristSite'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      per_page:
+                        type: integer
+                      current_page:
+                        type: integer
+        '401':
+          description: Non authentifié
+        '422':
+          description: Ville inconnue du tenant
+    post:
+      tags:
+      - Travel
+      summary: Création d'un site touristique (TRAVEL-909/#6112)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 200
+                description_redacted:
+                  type: string
+                  nullable: true
+                city_id:
+                  type: integer
+                  nullable: true
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                  nullable: true
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                  nullable: true
+                images:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum: [draft, published, archived]
+                  default: published
+      responses:
+        '201':
+          description: Site créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTouristSite'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise (rôle opérationnel de l'agence)
+        '422':
+          description: Validation échouée (ville, géo, statut)
+  /travel/tourist-sites/{travelTouristSite}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un site touristique (TRAVEL-909/#6112)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTouristSite
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Site
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTouristSite'
+        '404':
+          description: Site introuvable ou d'un autre tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'un site touristique (TRAVEL-909/#6112)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTouristSite
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 200
+                description_redacted:
+                  type: string
+                  nullable: true
+                city_id:
+                  type: integer
+                  nullable: true
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                  nullable: true
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                  nullable: true
+                images:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum: [draft, published, archived]
+      responses:
+        '200':
+          description: Site mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTouristSite'
+        '404':
+          description: Site introuvable ou d'un autre tenant
+        '422':
+          description: Validation échouée
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un site touristique (TRAVEL-909/#6112)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTouristSite
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Site supprimé
+        '404':
+          description: Site introuvable ou d'un autre tenant
+  /travel/advert-types:
+    get:
+      tags:
+      - Travel
+      summary: Liste des types d'annonces payantes (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Types d'annonces du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelAdvertType'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'un type d'annonce (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, name]
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 120
+                description:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Type créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvertType'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise (rôle opérationnel de l'agence)
+        '422':
+          description: code obligatoire ou déjà pris dans le tenant
+  /travel/advert-types/{travelAdvertType}:
+    put:
+      tags:
+      - Travel
+      summary: Renommage d'un type d'annonce (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertType
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                description:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Type mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvertType'
+        '404':
+          description: Type introuvable ou d'un autre tenant
+        '422':
+          description: name obligatoire
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un type d'annonce (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertType
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Type supprimé
+        '404':
+          description: Type introuvable ou d'un autre tenant
+  /travel/advert-positions:
+    get:
+      tags:
+      - Travel
+      summary: Liste des positions de publication (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Positions du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelAdvertPosition'
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: Création d'une position de publication (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, name]
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 120
+                description:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Position créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvertPosition'
+        '422':
+          description: code obligatoire ou déjà pris dans le tenant
+  /travel/advert-positions/{travelAdvertPosition}:
+    put:
+      tags:
+      - Travel
+      summary: Renommage d'une position de publication (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPosition
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                description:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Position mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvertPosition'
+        '404':
+          description: Position introuvable ou d'un autre tenant
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une position de publication (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPosition
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Position supprimée
+        '404':
+          description: Position introuvable ou d'un autre tenant
   /travel/articles:
     get:
       tags:
@@ -29649,6 +30795,221 @@ components:
         status:
           type: string
           enum: [active, disabled]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelAdvertPrice:
+      type: object
+      properties:
+        id:
+          type: integer
+        advert_type_id:
+          type: integer
+        advert_position_id:
+          type: integer
+        price_image_minor:
+          type: integer
+        price_character_minor:
+          type: integer
+        currency:
+          type: string
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelAdvert:
+      type: object
+      properties:
+        id:
+          type: integer
+        advert_type_id:
+          type: integer
+        advert_position_id:
+          type: integer
+        title:
+          type: string
+        body_redacted:
+          type: string
+        image_path:
+          type: string
+          nullable: true
+        character_count:
+          type: integer
+        price_image_minor:
+          type: integer
+        price_character_minor:
+          type: integer
+        total_minor:
+          type: integer
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [draft, pending_payment, paid, published, rejected, expired, archived]
+        payment_id:
+          type: integer
+          nullable: true
+        paid_at:
+          type: string
+          nullable: true
+        validated_by_user_id:
+          type: integer
+          nullable: true
+        validated_at:
+          type: string
+          nullable: true
+        published_at:
+          type: string
+          nullable: true
+        expires_at:
+          type: string
+          nullable: true
+        moderation_note:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelQuiz:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description_redacted:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [draft, published, archived]
+        max_attempts:
+          type: integer
+        published_at:
+          type: string
+          nullable: true
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelQuizQuestion'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelQuizQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+        quiz_id:
+          type: integer
+        question:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        points:
+          type: integer
+        sort_order:
+          type: integer
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelQuizParticipation:
+      type: object
+      properties:
+        id:
+          type: integer
+        quiz_id:
+          type: integer
+        participant_type:
+          type: string
+        participant_id:
+          type: integer
+        score:
+          type: integer
+        status:
+          type: string
+        completed_at:
+          type: string
+          nullable: true
+    TravelTouristSite:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description_redacted:
+          type: string
+          nullable: true
+        city_id:
+          type: integer
+          nullable: true
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        images:
+          type: array
+          items:
+            type: string
+          nullable: true
+        status:
+          type: string
+          enum: [draft, published, archived]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelAdvertType:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelAdvertPosition:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
         created_at:
           type: string
           nullable: true
