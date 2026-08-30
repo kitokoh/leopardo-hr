@@ -6,9 +6,10 @@ namespace Tests\Feature\Travel;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
-use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelPayment;
+use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -99,7 +100,7 @@ class TravelTicketPaymentTest extends TestCase
     {
         $this->tenants->withinTenant($this->companyA, function (): void {
             $this->expectException(QueryException::class);
-            TravelPayment::factory()->create(['amount_minor' => 0]);
+            DB::transaction(fn () => TravelPayment::factory()->create(['amount_minor' => 0]));
         });
     }
 

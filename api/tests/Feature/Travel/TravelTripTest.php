@@ -11,6 +11,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -74,7 +75,7 @@ class TravelTripTest extends TestCase
             TravelTripPrice::factory()->create(['trip_id' => $trip->id, 'class_id' => $class->id]);
 
             $this->expectException(QueryException::class);
-            TravelTripPrice::factory()->create(['trip_id' => $trip->id, 'class_id' => $class->id]);
+            DB::transaction(fn () => TravelTripPrice::factory()->create(['trip_id' => $trip->id, 'class_id' => $class->id]));
         });
     }
 
@@ -82,7 +83,7 @@ class TravelTripTest extends TestCase
     {
         $this->tenants->withinTenant($this->companyA, function (): void {
             $this->expectException(QueryException::class);
-            TravelTripPrice::factory()->create(['adult_price_minor' => 0]);
+            DB::transaction(fn () => TravelTripPrice::factory()->create(['adult_price_minor' => 0]));
         });
     }
 
@@ -90,7 +91,7 @@ class TravelTripTest extends TestCase
     {
         $this->tenants->withinTenant($this->companyA, function (): void {
             $this->expectException(QueryException::class);
-            TravelTrip::factory()->create(['total_seats' => 0]);
+            DB::transaction(fn () => TravelTrip::factory()->create(['total_seats' => 0]));
         });
     }
 }

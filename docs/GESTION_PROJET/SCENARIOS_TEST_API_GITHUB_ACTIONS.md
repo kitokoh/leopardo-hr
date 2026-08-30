@@ -1507,3 +1507,22 @@ Note 2026-08-26 (PM hygiene, PR #5597) : retour au vert des checks backend — R
 - Audit partages (#5522) : actions `accounting.share.info` / `accounting.share.download` (préfixe module, convention #5439) → `GET /accounting/documents/shared/{document}/accesses` liste bien les accès (avant : 0 ligne).
 - Payroll : `PayrollPaymentOrder::items()` a une FK explicite `payment_order_id` → l'ordre de virement prépare ses lignes sans QueryException (`column payroll_payment_order_id does not exist`).
 - Couverture : `VatDeclarationTest`, `AccountingMultiCurrencyTest`, `WebhookIdempotenceTest`, `EmailBounceWebhookControllerTest`, `ShareAccessAuditTest`, `PayrollPaymentOrderFlowTest`, `TwoFactorAuthTest`, `AccountingActivationTest` (route `/activation/complete`), `LangCatalogParityTest` (fins de fichier `];` tolérées), `OpenApiDocsTest` (`openapi: "3.0.3"` quoté).
+
+## BC-24 TRAVEL — API réseau & trajets (TRAVEL-306..311, 2026-08-30)
+
+Deuxième tranche de l'épic 3xx : `GET|POST /travel/vehicles`, `GET|PUT|DELETE /travel/vehicles/{travelVehicle}` ;
+`GET|POST /travel/routes`, `GET|PUT|DELETE /travel/routes/{travelRoute}` ; sous-ressource étapes
+`GET|POST /travel/routes/{travelRoute}/stops` + `PUT|DELETE /travel/routes/{travelRoute}/stops/{travelRouteStop}`
+(rank auto-attribué, réordonnancement) ; `GET|POST /travel/trips` (génération transactionnelle des sièges),
+`GET|PUT|DELETE /travel/trips/{travelTrip}` ; `GET|POST /travel/trips/{travelTrip}/prices` +
+`GET|PUT|DELETE /travel/trips/{travelTrip}/prices/{travelTripPrice}` (409 sur doublon (trip, classe)) ;
+`POST /travel/trips/{travelTrip}/publish|cancel` (transitions validées, motif obligatoire à l'annulation,
+événements outbox `travel.trip.published.v1`/`travel.trip.cancelled.v1`) ; `GET /travel/trips/search`
+(filtres origin/destination/date/plage/moyen/statut/prix).
+- Scénarios à vérifier : 401 sans auth ; 403 feature flag inactif ; référence cross-tenant (ville, route,
+  carrier, classe) → 422 ; ressource cross-tenant → 404 ; trajet publié verrouillé → 422 ; doublon
+  (trip, classe) → 409 ; doublon code classe → 422 ; sièges générés en nombre exact ; outbox dédup par
+  (tenant, idempotency_key) ; recherche paginée sans N+1.
+- Couverture : `api/tests/Feature/Travel/TravelVehicleApiTest.php`, `TravelRouteApiTest.php`,
+  `TravelTripApiTest.php`, `TravelTripPriceApiTest.php`, `TravelTripWorkflowTest.php`, `TravelTripSearchTest.php`
+  (+ 135 tests Travel au total, dont correctifs d'invariants 2xx protégés par savepoint).

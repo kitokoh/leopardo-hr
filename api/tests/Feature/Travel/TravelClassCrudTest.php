@@ -70,10 +70,10 @@ class TravelClassCrudTest extends TestCase
         $this->postJson('/api/v1/travel/classes', [
             'code' => 'ECO',
             'label' => 'Doublon',
-        ])->assertStatus(500);
-        // Note : la contrainte DB rejette le doublon (500 sans handler
-        // dédié QueryException → 422) ; TRAVEL-322 (matrice permissions)
-        // ajoutera une validation applicative renvoyant 422.
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors('code');
+        // Unicité `code` par tenant validée applicativement (règle
+        // Rule::unique scoped company_id) → 422, jamais 500.
     }
 
     public function test_show_class_of_another_tenant_returns_404(): void

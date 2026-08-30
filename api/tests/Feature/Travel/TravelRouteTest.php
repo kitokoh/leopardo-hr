@@ -10,6 +10,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelCity;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelRouteStop;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -51,10 +52,10 @@ class TravelRouteTest extends TestCase
             $city = TravelCity::factory()->create();
 
             $this->expectException(QueryException::class);
-            TravelRoute::factory()->create([
+            DB::transaction(fn () => TravelRoute::factory()->create([
                 'origin_city_id' => $city->id,
                 'destination_city_id' => $city->id,
-            ]);
+            ]));
         });
     }
 
@@ -70,10 +71,10 @@ class TravelRouteTest extends TestCase
             ]);
 
             $this->expectException(QueryException::class);
-            TravelRoute::factory()->create([
+            DB::transaction(fn () => TravelRoute::factory()->create([
                 'origin_city_id' => $origin->id,
                 'destination_city_id' => $destination->id,
-            ]);
+            ]));
         });
     }
 
@@ -112,7 +113,7 @@ class TravelRouteTest extends TestCase
             TravelRouteStop::factory()->create(['route_id' => $route->id, 'city_id' => $city->id, 'rank' => 1]);
 
             $this->expectException(QueryException::class);
-            TravelRouteStop::factory()->create(['route_id' => $route->id, 'city_id' => $city->id, 'rank' => 2]);
+            DB::transaction(fn () => TravelRouteStop::factory()->create(['route_id' => $route->id, 'city_id' => $city->id, 'rank' => 2]));
         });
     }
 
@@ -124,7 +125,7 @@ class TravelRouteTest extends TestCase
             TravelRouteStop::factory()->create(['route_id' => $route->id, 'rank' => 1]);
 
             $this->expectException(QueryException::class);
-            TravelRouteStop::factory()->create(['route_id' => $route->id, 'rank' => 1]);
+            DB::transaction(fn () => TravelRouteStop::factory()->create(['route_id' => $route->id, 'rank' => 1]));
         });
     }
 }

@@ -28,7 +28,7 @@ class TravelOfficeResource extends JsonResource
             'city_id' => $this->city_id,
             'address' => $this->address,
             'contact_phone' => $this->contact_phone,
-            'status' => $this->status->value,
+            'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

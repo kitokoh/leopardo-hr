@@ -31,7 +31,7 @@ class TravelStationResource extends JsonResource
             'contact_phone' => $this->contact_phone,
             'timezone' => $this->timezone,
             'is_terminal' => $this->is_terminal,
-            'status' => $this->status->value,
+            'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

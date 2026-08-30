@@ -10,6 +10,7 @@ use App\Modules\TravelAgency\Domain\Enums\CarrierType;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -82,7 +83,7 @@ class TravelCarrierClassTest extends TestCase
             TravelCarrier::factory()->create(['code' => 'CAR-DUP']);
 
             $this->expectException(QueryException::class);
-            TravelCarrier::factory()->create(['code' => 'CAR-DUP']);
+            DB::transaction(fn () => TravelCarrier::factory()->create(['code' => 'CAR-DUP']));
         });
     }
 
