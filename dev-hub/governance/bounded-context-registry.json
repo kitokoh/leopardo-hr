@@ -3,7 +3,7 @@
     "title": "Bounded Context Registry — Leopardo HR",
     "description": "Registre canonique machine-readable des bounded contexts (MAT-001, issue #5859). Référence humaine : docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (plan de gouvernance, PR agent-readiness).",
     "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
-    "updated": "2026-08-28"
+    "updated": "2026-08-29"
   },
   "_shared_exceptions": [
     {
@@ -474,7 +474,7 @@
       "responsibility": "Campus, élèves, guardians, classes, présences, notes, bulletins et admissions.",
       "owner": "Agent 16 — BC-EDU",
       "priority": "P1",
-      "status": "planned",
+      "status": "active",
       "paths": [
         {
           "path": "api/app/Solutions/EduManager",
@@ -490,7 +490,7 @@
         "api/database/migrations/tenant"
       ],
       "events": [
-        "App\\Solutions\\EduManager\\Domain\\Events"
+        "App\\Modules\\EduManager\\Domain\\Events"
       ],
       "dependencies": [
         "BC-02",
