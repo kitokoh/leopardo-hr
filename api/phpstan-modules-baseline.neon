@@ -1,19 +1,5 @@
 parameters:
 	ignoreErrors:
-
-
-		-
-			message: '#^Call to function is_array\(\) with array\<string, mixed\> will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
-			message: '#^Call to method toIso8601String\(\) on an unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
 		-
 			message: '#^Parameter \#2 \$file of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService\:\:uploadDocument\(\) expects Illuminate\\Http\\UploadedFile, array given\.$#'
 			identifier: argument.type
@@ -25,12 +11,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Cabinet/Application/Actions/UploadDocument.php
-
-		-
-			message: '#^Property App\\Modules\\Cameras\\Domain\\Camera\:\:\$company_id \(int\) does not accept string\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Services/CameraService.php
 
 		-
 			message: '#^Property App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Controllers\\PublicCameraViewerController\:\:\$cameras is never read, only written\.$#'
@@ -63,18 +43,6 @@ parameters:
 			path: app/Modules/EdgeSync/Interfaces/Api/V1/EdgeController.php
 
 		-
-			message: '#^Property App\\Modules\\HR\\Domain\\Models\\UserInvitation\:\:\$employee_id \(string\|null\) does not accept int\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Modules/HR/Infrastructure/Services/UserInvitationService.php
-
-		-
-			message: '#^Property App\\Modules\\HR\\Domain\\Models\\Department\:\:\$company_id \(int\|null\) does not accept string\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Modules/HR/Interfaces/Api/V1/Controllers/DepartmentController.php
-
-		-
 			message: '#^Negated boolean expression is always false\.$#'
 			identifier: booleanNot.alwaysFalse
 			count: 1
@@ -87,76 +55,3130 @@ parameters:
 			path: app/Modules/Notification/Interfaces/Api/V1/Controllers/NotificationStreamController.php
 
 		-
-			message: '#^Call to function abort_if\(\) with false and 401 will always evaluate to false\.$#'
-			identifier: function.impossibleType
-			count: 1
-			path: app/Modules/Onboarding/Interfaces/Api/V1/Controllers/OnboardingChecklistController.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
-			identifier: parameter.notFound
-			count: 2
-			path: app/Modules/Payroll/Domain/Models/PaySlip.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Http\\Request\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 3
-			path: app/Modules/Payroll/Domain/Models/PaymentConfirmation.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
-			identifier: parameter.notFound
-			count: 3
-			path: app/Modules/Payroll/Domain/Models/PayrollRun.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Http\\Request\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 3
-			path: app/Modules/Payroll/Domain/Models/SalaryAdvance.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
-			identifier: parameter.notFound
-			count: 4
-			path: app/Modules/Payroll/Domain/Models/SalaryComponent.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
-			identifier: parameter.notFound
-			count: 2
-			path: app/Modules/Payroll/Domain/Models/SalaryStructure.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
-			identifier: parameter.notFound
-			count: 4
-			path: app/Modules/Payroll/Domain/Models/SocialContribution.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
-			identifier: parameter.notFound
-			count: 2
-			path: app/Modules/Payroll/Domain/Models/TaxSlab.php
-
-		-
 			message: '#^Offset ''days_worked'' on array\{employee_id\: int, num_cnss\: string, last_name\: string, first_name\: string, cin\: string, gross_salary\: float, days_worked\: int\} on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.offset
 			count: 1
 			path: app/Modules/Payroll/Infrastructure/Services/SocialDeclarationGenerator.php
 
 		-
-			message: '#^Parameter \#2 \$approver of method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService\:\:approve\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, string given\.$#'
-			identifier: argument.type
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$currency\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Modules/Planning/Application/Actions/ApproveLeave.php
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
 
 		-
-			message: '#^Method App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\PlatformAdminDashboardController\:\:redisAlert\(\) never returns array\<string, mixed\> so it can be removed from the return type\.$#'
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$passenger_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$total_amount_minor\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$customer_contact_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$expires_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$idempotency_key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$passenger_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$total_amount_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/BookQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CancelBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CancelBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CancelBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CancelBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/CancelBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$version\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CancelBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CancelRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CancelRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CancelRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$vehicle_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CancelRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CancelTripAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CancelTripAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CancelTripAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CancelTripAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTicket\:\:\$booking_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CheckInTicketAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTicket\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CheckInTicketAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTicket\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CheckInTicketAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTicket\:\:\$ticket_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CheckInTicketAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/ConfirmBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/ConfirmBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/ConfirmBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/ConfirmBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/ConfirmBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$version\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/ConfirmBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRoute\:\:\$destination_city_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/ConnectionSearchAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRoute\:\:\$origin_city_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/ConnectionSearchAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$arrival_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/ConnectionSearchAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$arrival_time\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/ConnectionSearchAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$departure_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/ConnectionSearchAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$departure_time\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/ConnectionSearchAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTripPrice\:\:\$adult_price_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/ConnectionSearchAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$expires_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$passenger_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$total_amount_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPassenger\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTripPrice\:\:\$adult_price_minor\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTripPrice\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTripSeat\:\:\$seat_number\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTripSeat\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/CreateBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$expires_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$passenger_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$total_amount_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/CreateQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTripPrice\:\:\$adult_price_minor\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/CreateQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTripPrice\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateQuoteAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$end_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$start_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$total_amount_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$vehicle_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalVehicle\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalVehicle\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Modules/TravelAgency/Application/Actions/CreateRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalVehicle\:\:\$price_per_day_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateRentalBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/CreateRoundTripAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/CreateRoundTripAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRoundTrip\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateRoundTripAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRoundTrip\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/CreateRoundTripAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/CreateRoundTripAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/GenerateTripSeatsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$total_seats\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/GenerateTripSeatsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/IssueTicketsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/IssueTicketsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/IssueTicketsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/IssueTicketsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPassenger\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/IssueTicketsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPassenger\:\:\$unit_price_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/IssueTicketsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTicket\:\:\$issued_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/IssueTicketsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTicket\:\:\$passenger_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/IssueTicketsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTicket\:\:\$ticket_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/IssueTicketsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$departure_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/IssueTicketsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/PublishTripAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/PublishTripAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/PublishTripAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/PublishTripAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/RefundBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/RefundBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/RefundBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$total_amount_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/RefundBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$version\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundBookingAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPassenger\:\:\$booking_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPassenger\:\:\$class_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPassenger\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPassenger\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPassenger\:\:\$unit_price_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRefund\:\:\$amount_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRefund\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRefund\:\:\$penalty_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/RefundPassengerAction.php
+
+		-
+			message: '#^Offset ''email'' on array\{first_name\?\: string\|null, last_name\?\: string\|null, email\: string, phone\?\: string\|null, message\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/SubmitTravelContactAction.php
+
+		-
+			message: '#^Offset ''message'' on array\{first_name\?\: string\|null, last_name\?\: string\|null, email\: string, phone\?\: string\|null, message\: string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/SubmitTravelContactAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCarrier\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Modules/TravelAgency/Application/Actions/SyncCarrierTripsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelClass\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/SyncCarrierTripsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRoute\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/SyncCarrierTripsAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/SyncCarrierTripsAction.php
+
+		-
+			message: '#^Call to function is_array\(\) with string\|null will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/TravelManualNotificationAction.php
+
+		-
+			message: '#^Instanceof between Illuminate\\Database\\Eloquent\\Collection\<int, App\\Core\\Auth\\Domain\\Models\\Employee\> and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to false\.$#'
+			identifier: instanceof.alwaysFalse
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/TravelManualNotificationAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCurrencyRate\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Actions/UpsertCurrencyRateAction.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$booking_source\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Services/TravelReportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$passenger_count\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Services/TravelReportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Services/TravelReportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$total_amount_minor\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Services/TravelReportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPayment\:\:\$amount_minor\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Application/Services/TravelReportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPayment\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Services/TravelReportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Services/TravelReportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$departure_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Services/TravelReportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Application/Services/TravelReportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$route_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Services/TravelReportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$total_seats\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Application/Services/TravelReportService.php
+
+		-
+			message: '#^Parameter \#1 \$array of function usort contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Modules/TravelAgency/Application/Services/TravelReportService.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function usort contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Modules/TravelAgency/Application/Services/TravelReportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$passenger_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Console/Commands/RecalculateTravelReadModelsCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$total_amount_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Console/Commands/RecalculateTravelReadModelsCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Console/Commands/RecalculateTravelReadModelsCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$departure_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Console/Commands/RecalculateTravelReadModelsCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Console/Commands/RecalculateTravelReadModelsCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$total_seats\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Console/Commands/RecalculateTravelReadModelsCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Console/Commands/TravelExpirePendingBookingsCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Console/Commands/TravelExpirePendingBookingsCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Console/Commands/TravelExpirePendingBookingsCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Console/Commands/TravelExpirePendingBookingsCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Console/Commands/TravelExpirePendingBookingsCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$version\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Console/Commands/TravelExpirePendingBookingsCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPayment\:\:\$amount_minor\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Console/Commands/TravelSettleSalesCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPayment\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Console/Commands/TravelSettleSalesCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPayment\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Console/Commands/TravelSettleSalesCommand.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$idempotency_key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Domain/Models/TravelBooking.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Domain/Models/TravelBooking.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelLoyaltyAccount\:\:\$opt_in_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Domain/Models/TravelLoyaltyAccount.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelLoyaltyAccount\:\:\$opt_out_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Domain/Models/TravelLoyaltyAccount.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPassenger\:\:\$document_number_encrypted\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Domain/Models/TravelPassenger.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPassenger\:\:\$document_number_hash\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Domain/Models/TravelPassenger.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPayment\:\:\$idempotency_key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Domain/Models/TravelPayment.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelPayment\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Domain/Models/TravelPayment.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Domain/Models/TravelQuote.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$idempotency_key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Domain/Models/TravelRentalBooking.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Domain/Models/TravelRentalBooking.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Domain/Models/TravelRoundTrip.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRoundTrip\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Domain/Models/TravelRoundTrip.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTicket\:\:\$ticket_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Domain/Models/TravelTicket.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTicket\:\:\$validation_code\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Domain/Models/TravelTicket.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$booking_source\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Exports/TravelCsvExporter.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Exports/TravelCsvExporter.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$passenger_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Exports/TravelCsvExporter.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Exports/TravelCsvExporter.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Exports/TravelCsvExporter.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$total_amount_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Exports/TravelCsvExporter.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Exports/TravelCsvExporter.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Jobs/ExpirePendingBookingsJob.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Infrastructure/Jobs/ExpirePendingBookingsJob.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Jobs/ExpirePendingBookingsJob.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Jobs/ExpirePendingBookingsJob.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Infrastructure/Jobs/ExpirePendingBookingsJob.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$version\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Jobs/ExpirePendingBookingsJob.php
+
+		-
+			message: '#^Method App\\Modules\\TravelAgency\\Infrastructure\\Jobs\\ExpirePendingBookingsJob\:\:tenantCompanyId\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
-			path: app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformAdminDashboardController.php
+			path: app/Modules/TravelAgency/Infrastructure/Jobs/ExpirePendingBookingsJob.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$customer_contact_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/LoyaltyPointsService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelLoyaltyAccount\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Infrastructure/Services/LoyaltyPointsService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelLoyaltyAccount\:\:\$opt_in_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/LoyaltyPointsService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelLoyaltyAccount\:\:\$points_balance\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Infrastructure/Services/LoyaltyPointsService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTicket\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Infrastructure/Services/LoyaltyPointsService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTicket\:\:\$ticket_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/LoyaltyPointsService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCurrencyRate\:\:\$rate_minor\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelCurrencyConverter.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelLegacyImportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCity\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelLegacyImportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCity\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelLegacyImportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelClass\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelLegacyImportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRoute\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelLegacyImportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelLegacyImportService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$booked_by_user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelNotificationConsumer.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$customer_contact_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelNotificationConsumer.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$payment_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelNotificationConsumer.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 6
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelNotificationConsumer.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelNotificationConsumer.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelNotificationConsumer.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCancellationPolicy\:\:\$hours_before_departure\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelRefundPolicyResolver.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCancellationPolicy\:\:\$penalty_percent\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelRefundPolicyResolver.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCancellationPolicy\:\:\$refundable\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelRefundPolicyResolver.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$departure_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelRefundPolicyResolver.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Infrastructure/Services/TravelRefundPolicyResolver.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelArticle\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelArticleController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelArticle\:\:\$published_at\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelArticleController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 6
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelBookingController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelBookingController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCancellationPolicy\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelCancellationPolicyController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCarrier\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelCarrierController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelClass\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelClassController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelComment\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelCommentController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelComment\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelCommentController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCurrencyRate\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelCurrencyRateController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCustomerContact\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelCustomerContactController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelArticle\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelEngagementController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelArticle\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 8
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelEngagementController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelLike\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelEngagementController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelShare\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelEngagementController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelHotel\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 7
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelHotelController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelHotel\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelHotelController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelHotelRoom\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelHotelController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelHotelRoom\:\:\$hotel_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelHotelController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelLoyaltyAccount\:\:\$contact_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelLoyaltyController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelLoyaltyAccount\:\:\$points_balance\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelLoyaltyController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelOffice\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelOfficeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCarrierApiKey\:\:\$carrier_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelPartnerController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCarrierApiKey\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelPartnerController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCarrierApiKey\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelPartnerController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCarrierApiKey\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelPartnerController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCarrierApiKey\:\:\$label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelPartnerController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuizParticipation\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelQuizController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelQuoteController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelRentalBookingController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalVehicle\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelRentalBookingController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalVehicle\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 6
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelRentalVehicleController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalVehicle\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelRentalVehicleController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalVehicleImage\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelRentalVehicleController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalVehicleImage\:\:\$vehicle_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelRentalVehicleController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRoundTrip\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelRoundTripController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRoute\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelRouteController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRoute\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelRouteStopController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRoute\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelRouteStopController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRouteStop\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelRouteStopController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRouteStop\:\:\$route_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelRouteStopController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelStation\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelStationController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTicket\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelTicketController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 6
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelTripController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelTripController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelTripController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelTripPriceController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelTripPriceController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelTripPriceController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTripPrice\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelTripPriceController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTripPrice\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelTripPriceController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelVehicle\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelVehicleController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelArticleResource\:\:\$author_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelArticleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelArticleResource\:\:\$author_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelArticleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelArticleResource\:\:\$body_redacted\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelArticleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelArticleResource\:\:\$category_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelArticleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelArticleResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelArticleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelArticleResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelArticleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelArticleResource\:\:\$moderated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelArticleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelArticleResource\:\:\$published_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelArticleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelArticleResource\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelArticleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelArticleResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelArticleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelArticleResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelArticleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelArticleResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelArticleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelBookingResource\:\:\$booking_source\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelBookingResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelBookingResource\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelBookingResource\:\:\$expires_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelBookingResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelBookingResource\:\:\$passenger_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelBookingResource\:\:\$payment_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelBookingResource\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelBookingResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelBookingResource\:\:\$total_amount_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelBookingResource\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelBookingResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelBookingResource\:\:\$version\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCarrierResource\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCarrierResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCarrierResource\:\:\$contact_phone\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCarrierResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCarrierResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCarrierResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCarrierResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCarrierResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCarrierResource\:\:\$logo_asset_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCarrierResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCarrierResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCarrierResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCarrierResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCarrierResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCarrierResource\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCarrierResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCarrierResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCarrierResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCityResource\:\:\$country_iso2\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCityResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCityResource\:\:\$latitude\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCityResource\:\:\$longitude\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCityResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCityResource\:\:\$region\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCityResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCityResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelClassResource\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelClassResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelClassResource\:\:\$color\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelClassResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelClassResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelClassResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelClassResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelClassResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelClassResource\:\:\$label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelClassResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelClassResource\:\:\$priority\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelClassResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelClassResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelClassResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelClassResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelClassResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCommentResource\:\:\$article_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCommentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCommentResource\:\:\$author_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCommentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCommentResource\:\:\$author_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCommentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCommentResource\:\:\$content_redacted\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCommentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCommentResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCommentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCommentResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCommentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCommentResource\:\:\$moderated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCommentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCommentResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCommentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCommentResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCommentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCountryResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCountryResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCountryResource\:\:\$iso2\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCountryResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCountryResource\:\:\$iso3\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCountryResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCountryResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCountryResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCountryResource\:\:\$phone_code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCountryResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCountryResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCountryResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCurrencyRateResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCurrencyRateResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCurrencyRateResource\:\:\$from_currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCurrencyRateResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCurrencyRateResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCurrencyRateResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCurrencyRateResource\:\:\$rate_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCurrencyRateResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCurrencyRateResource\:\:\$to_currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCurrencyRateResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCurrencyRateResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCurrencyRateResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCurrencyRateResource\:\:\$valid_from\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCurrencyRateResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelCurrencyRateResource\:\:\$valid_to\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelCurrencyRateResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelExportAssetResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelExportAssetResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelResource\:\:\$address\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelResource\:\:\$city_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelResource\:\:\$classification\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelResource\:\:\$contact_phone\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelResource\:\:\$description_redacted\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelRoomResource\:\:\$capacity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelRoomResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelRoomResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelRoomResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelRoomResource\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelRoomResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelRoomResource\:\:\$hotel_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelRoomResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelRoomResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelRoomResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelRoomResource\:\:\$price_per_night_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelRoomResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelRoomResource\:\:\$room_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelRoomResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelRoomResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelRoomResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelRoomResource\:\:\$type_code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelRoomResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelHotelRoomResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelHotelRoomResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelOfficeResource\:\:\$address\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelOfficeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelOfficeResource\:\:\$city_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelOfficeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelOfficeResource\:\:\$contact_phone\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelOfficeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelOfficeResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelOfficeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelOfficeResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelOfficeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelOfficeResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelOfficeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelOfficeResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelOfficeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelOfficeResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelOfficeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelPassengerResource\:\:\$age_category\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelPassengerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelPassengerResource\:\:\$birth_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelPassengerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelPassengerResource\:\:\$booking_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelPassengerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelPassengerResource\:\:\$class_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelPassengerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelPassengerResource\:\:\$document_number_encrypted\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelPassengerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelPassengerResource\:\:\$document_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelPassengerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelPassengerResource\:\:\$full_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelPassengerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelPassengerResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelPassengerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelPassengerResource\:\:\$seat_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelPassengerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelPassengerResource\:\:\$unit_price_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelPassengerResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$booking_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$customer_contact_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$expires_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$passenger_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$total_amount_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelQuoteResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRefundResource\:\:\$amount_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRefundResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRefundResource\:\:\$booking_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRefundResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRefundResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRefundResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRefundResource\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRefundResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRefundResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRefundResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRefundResource\:\:\$passenger_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRefundResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRefundResource\:\:\$penalty_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRefundResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRefundResource\:\:\$reason\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRefundResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRefundResource\:\:\$refund_key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRefundResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalBookingResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalBookingResource\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalBookingResource\:\:\$customer_contact_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalBookingResource\:\:\$deposit_amount_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalBookingResource\:\:\$end_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalBookingResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalBookingResource\:\:\$payment_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalBookingResource\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalBookingResource\:\:\$start_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalBookingResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalBookingResource\:\:\$total_amount_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalBookingResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalBookingResource\:\:\$vehicle_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalBookingResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleImageResource\:\:\$asset_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleImageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleImageResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleImageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleImageResource\:\:\$position\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleImageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleImageResource\:\:\$vehicle_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleImageResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleResource\:\:\$available_from\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleResource\:\:\$available_until\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleResource\:\:\$city_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleResource\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleResource\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleResource\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleResource\:\:\$owner_carrier_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleResource\:\:\$price_per_day_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRentalVehicleResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRentalVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRoundTripResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRoundTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRoundTripResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRoundTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRoundTripResource\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRoundTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRoundTripResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRoundTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteResource\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteResource\:\:\$destination_city_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteResource\:\:\$distance_km\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteResource\:\:\$duration_min\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteResource\:\:\$origin_city_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteStopResource\:\:\$city_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteStopResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteStopResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteStopResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteStopResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteStopResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteStopResource\:\:\$is_stopover\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteStopResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteStopResource\:\:\$min_duration_min\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteStopResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteStopResource\:\:\$rank\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteStopResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteStopResource\:\:\$route_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteStopResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelRouteStopResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelRouteStopResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelStationResource\:\:\$address\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelStationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelStationResource\:\:\$city_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelStationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelStationResource\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelStationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelStationResource\:\:\$contact_phone\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelStationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelStationResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelStationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelStationResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelStationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelStationResource\:\:\$is_terminal\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelStationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelStationResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelStationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelStationResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelStationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelStationResource\:\:\$timezone\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelStationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelStationResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelStationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTicketResource\:\:\$booking_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTicketResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTicketResource\:\:\$checked_in_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTicketResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTicketResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTicketResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTicketResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTicketResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTicketResource\:\:\$issued_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTicketResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTicketResource\:\:\$passenger_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTicketResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTicketResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTicketResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTicketResource\:\:\$ticket_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTicketResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTicketResource\:\:\$valid_from\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTicketResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTicketResource\:\:\$valid_until\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTicketResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripPriceResource\:\:\$adult_price_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripPriceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripPriceResource\:\:\$child_price_minor\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripPriceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripPriceResource\:\:\$class_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripPriceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripPriceResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripPriceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripPriceResource\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripPriceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripPriceResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripPriceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripPriceResource\:\:\$trip_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripPriceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripPriceResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripPriceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$arrival_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$arrival_time\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$carrier_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$departure_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$departure_time\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$means_of_transport\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$published_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$route_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$total_seats\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelTripResource\:\:\$vehicle_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelVehicleResource\:\:\$carrier_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelVehicleResource\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelVehicleResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelVehicleResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelVehicleResource\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelVehicleResource\:\:\$registration_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelVehicleResource\:\:\$seat_capacity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelVehicleResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Interfaces\\Api\\V1\\Resources\\TravelVehicleResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelVehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelArticle\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Policies/TravelArticlePolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelBookingPolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCancellationPolicy\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelCancellationPolicyPolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCarrierApiKey\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Policies/TravelCarrierApiKeyPolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCarrier\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelCarrierPolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelClass\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelClassPolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelComment\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/TravelAgency/Policies/TravelCommentPolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelCurrencyRate\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelCurrencyRatePolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelHotel\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelHotelPolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelOffice\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelOfficePolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelQuote\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Policies/TravelQuotePolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalBooking\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelRentalBookingPolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRentalVehicle\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelRentalVehiclePolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRoundTrip\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/TravelAgency/Policies/TravelRoundTripPolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelRoute\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelRoutePolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelStation\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelStationPolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTicket\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelTicketPolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelTrip\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelTripPolicy.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\TravelAgency\\Domain\\Models\\TravelVehicle\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/TravelAgency/Policies/TravelVehiclePolicy.php
 
 		-
 			message: '#^Trait App\\Shared\\Traits\\Approvable is used zero times and is not analysed\.$#'
