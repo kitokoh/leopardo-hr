@@ -10,6 +10,8 @@ use App\Modules\TravelAgency\Console\Commands\RecalculateTravelReadModelsCommand
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use App\Modules\TravelAgency\Domain\Models\TravelArticle;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelComment;
@@ -26,6 +28,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelEventPublisherConsumer;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
+use App\Modules\TravelAgency\Policies\TravelAdvertPolicy;
 use App\Modules\TravelAgency\Policies\TravelArticlePolicy;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelCommentPolicy;
@@ -94,6 +97,10 @@ class TravelAgencyServiceProvider extends ServiceProvider
         // (TRAVEL-501..507, #6071..#6077) — ability `travel.reports`
         // ouverte aux rôles opérationnels de l'agence.
         Gate::policy(TravelArticle::class, TravelArticlePolicy::class);
+
+        // Annonces payantes (TRAVEL-905..908, #6108..#6111).
+        Gate::policy(TravelAdvertType::class, TravelAdvertPolicy::class);
+        Gate::policy(TravelAdvertPosition::class, TravelAdvertPolicy::class);
 
         // TRAVEL-414 (#6066) — publication des événements travel.*.v1 sur le
         // bus tenant-scopé (BC consommateurs sans import inter-modules).
