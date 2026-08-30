@@ -4,6 +4,13 @@
 **Objet** : passation complète de l'exploitation Leopardo RH — pour l'équipe, les ops et les agents entrants.
 **Règle d'or** : ce document est le **point d'entrée unique** ; chaque procédure détaillée vit dans son runbook dédié (index §4).
 
+> ⚠️ **Correction (2026-08-29)** : §1 et §5 décrivaient la base de données comme un Postgres
+> managé Render et le web service comme plan `starter` — vérifié faux via l'API Render : aucune
+> instance Postgres Render n'existe sur ce compte (`GET /v1/postgres` → vide), la base réelle est
+> **Neon** (externe) ; le web service `gestionemployerbackend` est en plan **`free`**, pas
+> `starter` (contrairement à ce que déclare `render.yaml`). Corrigé ci-dessous — le reste du
+> document (workers absents #5172, déviation cache/queue) était déjà exact.
+
 ---
 
 ## 1. État du système (au 2026-08-20)
@@ -12,10 +19,10 @@
 |---|---|
 | Version | `v4.24.0` (release 2026-08-11 ; tag git) |
 | Branche canonique | `main` (protection : checks requis, PR obligatoire) |
-| API (prod) | `https://gestionemployerbackend.onrender.com` (Render, web service `gestionemployerbackend`, plan starter, région frankfurt) |
+| API (prod) | `https://gestionemployerbackend.onrender.com` (Render, web service `gestionemployerbackend`, plan **`free`** — pas `starter`, écart avec `render.yaml`, vérifié via API Render 2026-08-29 ; région frankfurt) |
 | Vitrine (prod) | Vercel — **domaine `leopardo-rh.com` NXDOMAIN** (issue #3452, action DNS en attente) |
 | Proxy API vitrine | `https://gestionemployer-backend.vercel.app` |
-| Base de données | PostgreSQL Render `leopardo-db` (schémas `public` + `shared_tenants`, multitenancy mode `schema`) |
+| Base de données | **Neon** (Postgres externe, pas de Postgres Render — `GET /v1/postgres` renvoie vide) ; schémas `public` + `shared_tenants`, multitenancy mode `schema` |
 | Cache/Queue/Session | Redis interne Render `leopardo-redis` (plan free) — **⚠️ env live en déviation : `QUEUE_CONNECTION=database`, `CACHE_STORE/SESSION_DRIVER=file`** (issue #5172) |
 | Mail | API HTTP **Mailgun** (`MAIL_MAILER=mailgun`, #5139 — le SMTP sortant est bloqué par Render) |
 | Workers | ⚠️ **`leopardo-queue-worker` et `leopardo-scheduler` NON provisionnés sur Render** (issue #5172 — runbook livré, action ops requise) |
@@ -64,7 +71,7 @@
 ## 5. Coûts & budget (cadence agents)
 
 - **Budget agents** : `docs/OPS/BUDGET_AGENTS.md` (#5148) — plafond mensuel, arrêt au plafond, cadence 1 agent feature + 50 % traîne, tableau hebdo à remplir chaque vendredi.
-- **Coûts infra** : Render (web starter + DB starter + Redis free), Vercel (quota 100 deploys/j gratuit — déploiements path-aware pour ne pas le brûler), Mailgun (sandbox → domaine), Sentry/UptimeRobot.
+- **Coûts infra** : Render (web `free` — pas `starter` en réalité), Neon (Postgres externe, pas un coût Render), Redis Render (free), Vercel (quota 100 deploys/j gratuit — déploiements path-aware pour ne pas le brûler), Mailgun (sandbox → domaine), Sentry/UptimeRobot.
 - **⚠️ Leçons CI** : le quota Vercel s'épuise (~100/j) et bloque visuellement les PR (non bloquant) ; les runs GitHub Actions peuvent ne pas se créer sous rafale (leçon sweep-qa-360) — commenter la PR et attendre plutôt que merger sans checks.
 
 ## 6. Traîne connue & risques (au handoff)
