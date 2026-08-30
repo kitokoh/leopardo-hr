@@ -33,6 +33,11 @@ class RestaurantCategory extends Model
         'status',
     ];
 
+    protected $attributes = [
+        'status' => 'active',
+        'sort_order' => 0,
+    ];
+
     protected $casts = [
         'sort_order' => 'integer',
         'status' => RestaurantRecordStatus::class,

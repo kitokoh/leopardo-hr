@@ -38,6 +38,10 @@ class RestaurantRefund extends Model
         'idempotency_key',
     ];
 
+    protected $attributes = [
+        'status' => 'pending',
+    ];
+
     protected $casts = [
         'amount_minor' => 'integer',
         'status' => RefundStatus::class,
