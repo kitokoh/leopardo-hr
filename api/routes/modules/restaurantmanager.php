@@ -33,6 +33,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderI
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderTransitionController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPosSessionController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductIngredientController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderController;
@@ -210,4 +211,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/reservations/{restaurantReservation}/check-in', [RestaurantReservationController::class, 'checkIn']);
         Route::post('/reservations/{restaurantReservation}/no-show', [RestaurantReservationController::class, 'noShow']);
         Route::post('/reservations/{restaurantReservation}/cancel', [RestaurantReservationController::class, 'cancel']);
+
+        // Boutique en ligne publique — gestion du jeton (RESTO-805/#6226,
+        // restaurant.manage). Le jeton en clair n'est renvoyé qu'à la rotation.
+        Route::get('/public-shop-token', [RestaurantPublicShopController::class, 'token']);
+        Route::post('/public-shop-token/rotate', [RestaurantPublicShopController::class, 'rotateToken']);
     });

@@ -45,4 +45,14 @@ class RestaurantCategory extends Model
     {
         return $this->belongsTo(RestaurantBranch::class, 'branch_id');
     }
+
+    /**
+     * Produits de la catégorie (RESTO-805/#6226 — menu public).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<RestaurantProduct, $this>
+     */
+    public function products(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(RestaurantProduct::class, 'category_id');
+    }
 }

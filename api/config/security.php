@@ -10,6 +10,7 @@ return [
         'ai_per_minute' => (int) env('RATE_LIMIT_AI_PER_MINUTE', 20),
         'client_analytics_per_minute' => (int) env('RATE_LIMIT_CLIENT_ANALYTICS_PER_MINUTE', 120),
         'webhooks_inbound_per_minute' => (int) env('RATE_LIMIT_WEBHOOKS_INBOUND_PER_MINUTE', 60),
+        'restaurant_shop_public_per_minute' => (int) env('RATE_LIMIT_RESTAURANT_SHOP_PUBLIC_PER_MINUTE', 30),
         // PA2-API-005: web (session-based) login forms and kiosk punch endpoints
         // sit outside the API 'auth-sensitive'/'api' limiters, so they need their
         // own dedicated buckets to stay protected against brute-force attempts.

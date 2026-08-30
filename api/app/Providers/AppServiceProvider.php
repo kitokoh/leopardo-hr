@@ -194,6 +194,14 @@ class AppServiceProvider extends ServiceProvider
                 ->by('webhooks-inbound:'.$request->ip());
         });
 
+        // RESTO-805 (#6226) — boutique en ligne publique RestaurantManager :
+        // throttling renforcé (endpoints publics sans auth utilisateur),
+        // anti-scraping par IP (pattern shop-public TRAVEL-1001/#6114).
+        RateLimiter::for('restaurant-shop-public', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.restaurant_shop_public_per_minute', 30))
+                ->by('restaurant-shop-public:'.$request->ip());
+        });
+
         // Audit expert 2026-08-15 (issue #2621) — GET /trial/status est pollé
         // par l'UI vitrine toutes les 5 s (jusqu'à ~12 requêtes/min) ; il doit
         // avoir son propre bucket, distinct de `5,15` réservé aux mutations

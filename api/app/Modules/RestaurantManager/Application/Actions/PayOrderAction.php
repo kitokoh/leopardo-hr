@@ -51,6 +51,25 @@ final class PayOrderAction
             throw new RuntimeException('Order does not belong to tenant.');
         }
 
+        return $this->payForCompany($order->company_id, $order, $data);
+    }
+
+    /**
+     * Variante sans acteur authentifié — boutique publique (RESTO-805/#6226).
+     *
+     * Le tenant est déjà résolu par le jeton de boutique (middleware
+     * `restaurant.public.shop`) ; `$companyId` doit être vérifié par
+     * l'appelant contre l'appartenance de la commande (le scope
+     * BelongsToCompany + le contrôle explicite du contrôleur le garantissent).
+     *
+     * @param  array{provider_code: string, amount_minor: int, tip_minor?: int|null, idempotency_key?: string|null}  $data
+     */
+    public function payForCompany(string $companyId, RestaurantOrder $order, array $data): RestaurantOrderPayment
+    {
+        if ($order->company_id !== $companyId) {
+            throw new RuntimeException('Order does not belong to tenant.');
+        }
+
         if (! $this->stateMachine->isPayable($order->status)) {
             abort(409, sprintf('Order cannot be paid from status "%s".', $order->status->value));
         }

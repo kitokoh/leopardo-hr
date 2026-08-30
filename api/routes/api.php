@@ -62,7 +62,9 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
 use App\Modules\Recruitment\Interfaces\Api\V1\CandidateApplicationController;
 use App\Modules\Recruitment\Interfaces\Api\V1\PublicCareerController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMarketplaceWebhookController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -160,6 +162,21 @@ Route::prefix('v1')->group(function (): void {
         // signature HMAC (secret par tenant, fail-closed) ; le tenant est résolu
         // depuis le payload signé puis posé via TenantManager (pattern #5272).
         Route::post('/restaurant/payments/{payment}/callback', RestaurantPaymentCallbackController::class);
+        // RESTO-806 (#6227) — webhooks entrants des apps de livraison (Uber
+        // Eats, Glovo). Public : tenant résolu par le jeton de boutique
+        // (`?token=`, middleware restaurant.public.shop), confiance portée par
+        // la signature HMAC provider + idempotence par event_id.
+        Route::post('/restaurant/marketplace/{provider}/webhooks', [RestaurantMarketplaceWebhookController::class, 'handle']);
+    });
+
+    // RESTO-805 (#6226) — boutique en ligne publique RestaurantManager (jeton
+    // tenant signé, sans auth utilisateur) — throttling renforcé
+    // `restaurant-shop-public` (anti-scraping par IP, pattern TRAVEL-1001).
+    Route::middleware(['throttle:restaurant-shop-public', 'restaurant.public.shop'])->group(function (): void {
+        Route::get('/public/restaurant/menu', [RestaurantPublicShopController::class, 'menu']);
+        Route::post('/public/restaurant/orders', [RestaurantPublicShopController::class, 'storeOrder']);
+        Route::get('/public/restaurant/orders/{reference}', [RestaurantPublicShopController::class, 'show']);
+        Route::post('/public/restaurant/orders/{reference}/pay', [RestaurantPublicShopController::class, 'pay']);
     });
 
     // Public careers portal (ATS): unauthenticated job listing/detail, the
