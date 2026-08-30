@@ -269,7 +269,6 @@ import {
   createTravelSub,
   deleteTravelSub,
   travelList,
-  travelItem,
   formatMinor
 } from '@/services/travel'
 
