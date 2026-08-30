@@ -11,6 +11,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use App\Modules\TravelAgency\Domain\Models\TravelPayment;
+use App\Core\Tenant\TenantManager;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -47,26 +48,28 @@ class TravelAdvertLifecycleTest extends TestCase
 
     private function makeCatalog(Company $company, int $image = 50000, int $perChar = 25): array
     {
-        $type = TravelAdvertType::query()->create([
-            'company_id' => $company->id,
-            'code' => 'image_banner',
-            'name' => 'Bannière',
-        ]);
-        $position = TravelAdvertPosition::query()->create([
-            'company_id' => $company->id,
-            'code' => 'home_top',
-            'name' => 'Accueil haut',
-        ]);
-        TravelAdvertPrice::query()->create([
-            'company_id' => $company->id,
-            'advert_type_id' => $type->id,
-            'advert_position_id' => $position->id,
-            'price_image_minor' => $image,
-            'price_character_minor' => $perChar,
-            'currency' => 'XAF',
-        ]);
+        return app(TenantManager::class)->withinTenant($company, function () use ($image, $perChar): array {
+            $type = TravelAdvertType::query()->create([
+                'company_id' => $company->id,
+                'code' => 'image_banner',
+                'name' => 'Bannière',
+            ]);
+            $position = TravelAdvertPosition::query()->create([
+                'company_id' => $company->id,
+                'code' => 'home_top',
+                'name' => 'Accueil haut',
+            ]);
+            TravelAdvertPrice::query()->create([
+                'company_id' => $company->id,
+                'advert_type_id' => $type->id,
+                'advert_position_id' => $position->id,
+                'price_image_minor' => $image,
+                'price_character_minor' => $perChar,
+                'currency' => 'XAF',
+            ]);
 
-        return [$type, $position];
+            return [$type, $position];
+        });
     }
 
     private function submit(Company $company, array $overrides = []): int
@@ -111,16 +114,16 @@ class TravelAdvertLifecycleTest extends TestCase
         $this->activateTravel($company);
         $this->login($company);
 
-        $foreignType = TravelAdvertType::query()->create([
+        $foreignType = app(TenantManager::class)->withinTenant($other, fn () => TravelAdvertType::query()->create([
             'company_id' => $other->id,
             'code' => 'foreign',
             'name' => 'Étranger',
-        ]);
-        $position = TravelAdvertPosition::query()->create([
+        ]));
+        $position = app(TenantManager::class)->withinTenant($company, fn () => TravelAdvertPosition::query()->create([
             'company_id' => $company->id,
             'code' => 'home_top',
             'name' => 'Accueil',
-        ]);
+        ]));
 
         // Type d'un autre tenant → 422.
         $this->postJson('/api/v1/travel/adverts', [
@@ -131,11 +134,11 @@ class TravelAdvertLifecycleTest extends TestCase
         ])->assertStatus(422);
 
         // Type du tenant mais AUCUN tarif configuré → 422 (prix serveur).
-        $localType = TravelAdvertType::query()->create([
+        $localType = app(TenantManager::class)->withinTenant($company, fn () => TravelAdvertType::query()->create([
             'company_id' => $company->id,
             'code' => 'no_price',
             'name' => 'Sans tarif',
-        ]);
+        ]));
         $this->postJson('/api/v1/travel/adverts', [
             'advert_type_id' => $localType->id,
             'advert_position_id' => $position->id,

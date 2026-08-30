@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
+use App\Core\Tenant\TenantManager;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -43,20 +44,20 @@ class TravelAdvertPriceTest extends TestCase
 
     private function makeType(Company $company, string $code = 'image_banner'): TravelAdvertType
     {
-        return TravelAdvertType::query()->create([
+        return app(TenantManager::class)->withinTenant($company, fn (): TravelAdvertType => TravelAdvertType::query()->create([
             'company_id' => $company->id,
             'code' => $code,
             'name' => 'Bannière',
-        ]);
+        ]));
     }
 
     private function makePosition(Company $company, string $code = 'home_top'): TravelAdvertPosition
     {
-        return TravelAdvertPosition::query()->create([
+        return app(TenantManager::class)->withinTenant($company, fn (): TravelAdvertPosition => TravelAdvertPosition::query()->create([
             'company_id' => $company->id,
             'code' => $code,
             'name' => 'Accueil haut',
-        ]);
+        ]));
     }
 
     public function test_price_crud_in_minor_units(): void

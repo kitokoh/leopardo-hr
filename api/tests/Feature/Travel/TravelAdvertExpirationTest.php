@@ -11,6 +11,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use App\Modules\TravelAgency\Domain\Models\TravelPayment;
+use App\Core\Tenant\TenantManager;
 use Illuminate\Support\Facades\Artisan;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -47,42 +48,44 @@ class TravelAdvertExpirationTest extends TestCase
 
     private function makePublishedAdvert(Company $company, ?\Illuminate\Support\Carbon $expiresAt = null): TravelAdvert
     {
-        $type = TravelAdvertType::query()->create([
-            'company_id' => $company->id,
-            'code' => 'image_banner',
-            'name' => 'Bannière',
-        ]);
-        $position = TravelAdvertPosition::query()->create([
-            'company_id' => $company->id,
-            'code' => 'home_top',
-            'name' => 'Accueil',
-        ]);
-        TravelAdvertPrice::query()->create([
-            'company_id' => $company->id,
-            'advert_type_id' => $type->id,
-            'advert_position_id' => $position->id,
-            'price_image_minor' => 1000,
-            'price_character_minor' => 10,
-            'currency' => 'XAF',
-        ]);
+        return app(TenantManager::class)->withinTenant($company, function () use ($expiresAt): TravelAdvert {
+            $type = TravelAdvertType::query()->create([
+                'company_id' => $company->id,
+                'code' => 'image_banner',
+                'name' => 'Bannière',
+            ]);
+            $position = TravelAdvertPosition::query()->create([
+                'company_id' => $company->id,
+                'code' => 'home_top',
+                'name' => 'Accueil',
+            ]);
+            TravelAdvertPrice::query()->create([
+                'company_id' => $company->id,
+                'advert_type_id' => $type->id,
+                'advert_position_id' => $position->id,
+                'price_image_minor' => 1000,
+                'price_character_minor' => 10,
+                'currency' => 'XAF',
+            ]);
 
-        return TravelAdvert::query()->create([
-            'company_id' => $company->id,
-            'advert_type_id' => $type->id,
-            'advert_position_id' => $position->id,
-            'title' => 'Annonce test',
-            'body_redacted' => 'Contenu',
-            'character_count' => 8,
-            'price_image_minor' => 1000,
-            'price_character_minor' => 10,
-            'total_minor' => 1080,
-            'currency' => 'XAF',
-            'status' => TravelAdvert::STATUS_PUBLISHED,
-            'published_at' => now()->subDays(5),
-            'expires_at' => $expiresAt ?? now()->addDays(25),
-            'validated_by_user_id' => 1,
-            'validated_at' => now()->subDays(5),
-        ]);
+            return TravelAdvert::query()->create([
+                'company_id' => $company->id,
+                'advert_type_id' => $type->id,
+                'advert_position_id' => $position->id,
+                'title' => 'Annonce test',
+                'body_redacted' => 'Contenu',
+                'character_count' => 8,
+                'price_image_minor' => 1000,
+                'price_character_minor' => 10,
+                'total_minor' => 1080,
+                'currency' => 'XAF',
+                'status' => TravelAdvert::STATUS_PUBLISHED,
+                'published_at' => now()->subDays(5),
+                'expires_at' => $expiresAt ?? now()->addDays(25),
+                'validated_by_user_id' => 1,
+                'validated_at' => now()->subDays(5),
+            ]);
+        });
     }
 
     public function test_expired_advert_is_invisible_and_job_is_idempotent(): void
