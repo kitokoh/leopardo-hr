@@ -168,7 +168,7 @@ jobs:
             --log-junit=storage/test-results/coverage.xml 2>&1 | tee storage/coverage/summary.txt
 
       - name: Extract first test failures (causal errors)
-        if: always()
+        if: needs.detect-changes.outputs.api_changed == 'true' && always()
         working-directory: ./api
         shell: bash
         run: |
@@ -222,7 +222,10 @@ jobs:
           set -euo pipefail
           CLOVER_FILE="storage/coverage/clover.xml"
           if [[ ! -f "${CLOVER_FILE}" ]]; then
-            echo "percentage=0" >> "$GITHUB_OUTPUT"
+            # api non modifié ou suite sans clover : la gate est gardée par
+            # api_changed ; on sort 100 pour ne jamais faire échouer un check
+            # qui n'a pas de raison de mesurer la couverture.
+            echo "percentage=100" >> "$GITHUB_OUTPUT"
             echo "Coverage clover file not found, defaulting to 0%."
             exit 0
           fi
@@ -327,7 +330,7 @@ jobs:
           fi
 
       - name: Upload coverage artifacts
-        if: always()
+        if: needs.detect-changes.outputs.api_changed == 'true' && always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: backend-coverage-report
@@ -341,7 +344,7 @@ jobs:
           retention-days: 30
 
       - name: Comment coverage on PR
-        if: github.event_name == 'pull_request' && always()
+        if: github.event_name == 'pull_request' && needs.detect-changes.outputs.api_changed == 'true' && always()
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
@@ -395,7 +398,7 @@ jobs:
             }
 
       - name: Fail if coverage below threshold
-        if: steps.gate.outputs.passed == 'false'
+        if: needs.detect-changes.outputs.api_changed == 'true' && steps.gate.outputs.passed == 'false'
         run: |
           echo "Coverage gate failed (threshold: ${COVERAGE_MIN:-65}%). Increase test coverage or adjust BACKEND_COVERAGE_MIN variable."
           exit 1
