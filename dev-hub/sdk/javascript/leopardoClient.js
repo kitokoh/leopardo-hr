@@ -4345,6 +4345,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/adverts/{travelAdvert}/validate", options);
     },
 
+    /** TRAVEL-914 — Liste admin des annonces (toutes statuts, RBAC modération) */
+    getTravelAdvertsManage(options = {}) {
+      return request("GET", "/travel/adverts/manage", options);
+    },
+
     /** TRAVEL-901 — Catégories d''articles */
     getTravelArticleCategories(options = {}) {
       return request("GET", "/travel/article-categories", options);
@@ -4530,9 +4535,14 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/contact", options);
     },
 
-    /** TRAVEL-912 — Contacts voyageurs (gestion, consentements) */
+    /** TRAVEL-913 — Registre admin des contacts voyageurs (liste paginée, recherche, filtre consentement) */
     getTravelContacts(options = {}) {
       return request("GET", "/travel/contacts", options);
+    },
+
+    /** TRAVEL-913 — Opt-in / opt-out d'un canal de consentement (horodaté) */
+    patchTravelContactsByTravelCustomerContactConsent(options = {}) {
+      return request("PATCH", "/travel/contacts/{travelCustomerContact}/consent", options);
     },
 
     /** TRAVEL-912 — Mise à jour des consentements par canal */
@@ -4623,6 +4633,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977) */
     getTravelPing(options = {}) {
       return request("GET", "/travel/ping", options);
+    },
+
+    /** TRAVEL-913 — Formulaire de contact public (URL signée + throttle, consentement obligatoire) */
+    postTravelPublicContact(options = {}) {
+      return request("POST", "/travel/public/contact", options);
     },
 
     /** TRAVEL-904 — Liste des quiz */

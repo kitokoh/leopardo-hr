@@ -35,6 +35,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelExportControlle
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHotelController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelOfficeController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicContactController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelQuizController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
@@ -220,6 +221,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
         // ── Annonces : cycle de vie (TRAVEL-907/908/#6110/#6111) ───────────
         Route::get('/adverts', [TravelAdvertController::class, 'index']);
+        Route::get('/adverts/manage', [TravelAdvertController::class, 'manageIndex']); // TRAVEL-914/#6422 — AVANT /adverts/{travelAdvert}
         Route::post('/adverts', [TravelAdvertController::class, 'store']);
         Route::get('/adverts/{travelAdvert}', [TravelAdvertController::class, 'show']);
         Route::post('/adverts/{travelAdvert}/pay', [TravelAdvertController::class, 'pay']);
@@ -234,9 +236,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'update']);
         Route::delete('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'destroy']);
 
-        // ── Contacts admin (TRAVEL-913/#6421) : liste + consentements par canal
+        // ── Contacts admin (TRAVEL-913/#6421/#6425) : liste + consentements par canal
         Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
         Route::post('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent']);
+        Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsentChannel']); // TRAVEL-913/#6425
 
         // ── Notifications manuelles legacy → canaux plateforme (TRAVEL-910/#6113)
         Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
@@ -251,3 +254,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/articles/{travelArticle}/rate', [TravelEngagementController::class, 'rate']);
         Route::get('/articles/{travelArticle}/engagement', [TravelEngagementController::class, 'aggregates']);
     });
+
+// ── Formulaire de contact PUBLIC (TRAVEL-913/#6425) ──────────────────────
+// Hors groupe auth : URL signée (pattern restaurant/public/*, RESTO-805) —
+// le `company` est un paramètre signé (forger un lien pour un autre tenant
+// est impossible) ; throttle dédié anti-spam.
+Route::post('/travel/public/contact', [TravelPublicContactController::class, 'store'])
+    ->middleware(['signed', 'throttle:60,1'])
+    ->name('travel.public.contact.store');

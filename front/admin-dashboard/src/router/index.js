@@ -344,7 +344,6 @@ const routes = [
         }
       },
       {
->>>>>>> origin/feat/travel-101-202-foundations
         path: '/travel/catalog',
         name: 'travel-catalog',
         component: () => import('../views/travel/TravelCatalogView.vue'),

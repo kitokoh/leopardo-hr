@@ -75,7 +75,8 @@ import {
   TicketIcon,
   ChartBarIcon
   ChartBarIcon,
-  MegaphoneIcon} from '@heroicons/vue/24/outline'
+  MegaphoneIcon
+} from '@heroicons/vue/24/outline'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)

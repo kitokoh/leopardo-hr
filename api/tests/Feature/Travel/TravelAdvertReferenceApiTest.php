@@ -159,6 +159,7 @@ class TravelAdvertReferenceApiTest extends TestCase
             'currency' => 'XAF',
         ])->assertStatus(422);
     }
+
     /* ── TRAVEL-914 (#6422) — PUT des référentiels (complétion CRUD) ── */
 
     public function test_advert_type_can_be_updated(): void

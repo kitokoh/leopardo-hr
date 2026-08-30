@@ -188,6 +188,7 @@ class TravelQuizApiTest extends TestCase
             ->assertOk()
             ->assertJsonMissing(['title' => 'Quiz tenant B']);
     }
+
     /* ── TRAVEL-914 (#6422) — gestion admin : update quiz / questions ── */
 
     public function test_quiz_can_be_updated_by_manager(): void

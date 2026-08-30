@@ -3496,6 +3496,10 @@ class LeopardoClient:
         """TRAVEL-907 — Validation d''une annonce (travel.manage)"""
         return self.request("POST", "/travel/adverts/{travelAdvert}/validate", **kwargs)
 
+    def get_travel_adverts_manage(self, **kwargs):
+        """TRAVEL-914 — Liste admin des annonces (toutes statuts, RBAC modération)"""
+        return self.request("GET", "/travel/adverts/manage", **kwargs)
+
     def get_travel_article_categories(self, **kwargs):
         """TRAVEL-901 — Catégories d''articles"""
         return self.request("GET", "/travel/article-categories", **kwargs)
@@ -3645,8 +3649,12 @@ class LeopardoClient:
         return self.request("POST", "/travel/contact", **kwargs)
 
     def get_travel_contacts(self, **kwargs):
-        """TRAVEL-912 — Contacts voyageurs (gestion, consentements)"""
+        """TRAVEL-913 — Registre admin des contacts voyageurs (liste paginée, recherche, filtre consentement)"""
         return self.request("GET", "/travel/contacts", **kwargs)
+
+    def patch_travel_contacts_by_travelcustomercontact_consent(self, **kwargs):
+        """TRAVEL-913 — Opt-in / opt-out d'un canal de consentement (horodaté)"""
+        return self.request("PATCH", "/travel/contacts/{travelCustomerContact}/consent", **kwargs)
 
     def post_travel_contacts_by_travelcustomercontact_consent(self, **kwargs):
         """TRAVEL-912 — Mise à jour des consentements par canal"""
@@ -3719,6 +3727,10 @@ class LeopardoClient:
     def get_travel_ping(self, **kwargs):
         """Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977)"""
         return self.request("GET", "/travel/ping", **kwargs)
+
+    def post_travel_public_contact(self, **kwargs):
+        """TRAVEL-913 — Formulaire de contact public (URL signée + throttle, consentement obligatoire)"""
+        return self.request("POST", "/travel/public/contact", **kwargs)
 
     def get_travel_quizzes(self, **kwargs):
         """TRAVEL-904 — Liste des quiz"""
