@@ -35,6 +35,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         ->whereNumber('station')
         ->whereNumber('pump')
         ->whereNumber('meter');
+
+    // FUEL-014 (#5808) — synchronisation offline de relevés (lot, rejeu idempotent).
+    Route::post('/fuel-station/readings/sync', [FuelMeterReadingController::class, 'sync']);
     Route::get('/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings', [FuelMeterReadingController::class, 'index'])
         ->whereNumber('station')
         ->whereNumber('pump')

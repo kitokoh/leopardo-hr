@@ -1944,6 +1944,10 @@ class LeopardoClient:
         """Corriger un releve (versionne, audite) — manager principal/rh"""
         return self.request("POST", "/fuel-station/meter-readings/{reading}/corrections", **kwargs)
 
+    def post_fuel_station_readings_sync(self, **kwargs):
+        """Synchroniser un lot de relevés offline (pompiste, idempotent, FUEL-014 #5808)"""
+        return self.request("POST", "/fuel-station/readings/sync", **kwargs)
+
     def get_fuel_station_reconciliations(self, **kwargs):
         """Lister les passes de rapprochement (manager, paginé, FUEL-009 #5803)"""
         return self.request("GET", "/fuel-station/reconciliations", **kwargs)

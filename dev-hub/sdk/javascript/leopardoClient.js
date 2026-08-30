@@ -2405,6 +2405,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/fuel-station/meter-readings/{reading}/corrections", options);
     },
 
+    /** Synchroniser un lot de relevés offline (pompiste, idempotent, FUEL-014 #5808) */
+    postFuelStationReadingsSync(options = {}) {
+      return request("POST", "/fuel-station/readings/sync", options);
+    },
+
     /** Lister les passes de rapprochement (manager, paginé, FUEL-009 #5803) */
     getFuelStationReconciliations(options = {}) {
       return request("GET", "/fuel-station/reconciliations", options);

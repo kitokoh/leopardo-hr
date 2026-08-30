@@ -6171,6 +6171,82 @@ paths:
         '409':
           description: Intervalle deja revu
 
+  /fuel-station/readings/sync:
+    post:
+      tags:
+      - FuelStation
+      summary: Synchroniser un lot de relevés offline (pompiste, idempotent, FUEL-014 #5808)
+      description: "Rejoue un lot de relevés capturés hors-ligne (≤ 100). Chaque item porte une idempotency_key client — un rejeu ne crée jamais de doublon. captured_at (horloge appareil) est préservé, distinct de l'horodatage de réception serveur. Référence hors tenant → skipped (REFERENCE_OUTSIDE_TENANT), sans révéler l'existence."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - readings
+              properties:
+                readings:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: object
+                    required:
+                    - station_id
+                    - pump_id
+                    - meter_id
+                    - reading_value_minor
+                    - idempotency_key
+                    properties:
+                      station_id: {type: integer}
+                      pump_id: {type: integer}
+                      meter_id: {type: integer}
+                      reading_value_minor: {type: integer, minimum: 0}
+                      reading_unit: {type: string, enum: [l, ml, gal, ft3]}
+                      captured_at: {type: string, format: date-time, nullable: true}
+                      timezone: {type: string, maxLength: 64}
+                      shift_id: {type: integer, nullable: true}
+                      device_reference: {type: string, maxLength: 120, nullable: true}
+                      idempotency_key: {type: string, maxLength: 191}
+      responses:
+        '200':
+          description: Résultats du lot (created/replayed/skipped)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        item: {type: string}
+                        status: {type: string, enum: [created, replayed, skipped, failed]}
+                        reading_id: {type: integer, nullable: true}
+                        error: {type: string, nullable: true}
+                        interval:
+                          type: object
+                          nullable: true
+                          properties:
+                            delta_minor: {type: integer, nullable: true}
+                            calculation_status: {type: string, nullable: true}
+                        received_at: {type: string, nullable: true}
+                  meta:
+                    type: object
+                    properties:
+                      total: {type: integer}
+                      created: {type: integer}
+                      replayed: {type: integer}
+                      skipped: {type: integer}
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Lot invalide (vide, clé trop courte, référence manquante)
+
   /fuel-station/me/shifts:
     get:
       tags:
