@@ -34,28 +34,42 @@ class TravelAdvertController extends Controller
     ) {}
 
     /**
-     * Liste publique tenant : annonces VISIBLES uniquement.
+     * Liste des annonces.
+     *
+     * Mode public (défaut) : annonces VISIBLES uniquement (payée + validée
+     * + non expirée). Mode gestion (`travel.manage`) : toutes les annonces
+     * du tenant, filtrables par `?status=` (nécessaire à l'UI admin pour
+     * modérer les soumissions/paiements — TRAVEL-911/#6416).
      */
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $adverts = TravelAdvert::query()
-            ->where('company_id', $actor->company_id)
-            ->get()
-            ->filter(fn (TravelAdvert $a) => $a->isVisible())
-            ->values()
-            ->map(fn (TravelAdvert $a) => [
-                'id' => $a->id,
-                'title' => $a->title,
-                'content' => $a->content_redacted,
-                'price_minor' => $a->price_minor,
-                'currency' => $a->currency,
-                'expires_at' => $a->expires_at?->toIso8601String(),
-            ]);
+        $query = TravelAdvert::query()->where('company_id', $actor->company_id);
 
-        return response()->json(['data' => $adverts]);
+        $manage = $actor->can('moderate', TravelAdvert::class);
+
+        if (! $manage) {
+            $adverts = $query->get()->filter(fn (TravelAdvert $a) => $a->isVisible())->values();
+        } else {
+            $query->when($request->query('status'), fn ($q, $status) => $q->where('status', $status));
+            $adverts = $query->orderByDesc('id')->get();
+        }
+
+        $data = $adverts->map(fn (TravelAdvert $a) => [
+            'id' => $a->id,
+            'title' => $a->title,
+            'content' => $a->content_redacted,
+            'status' => $a->status->value,
+            'price_minor' => $a->price_minor,
+            'currency' => $a->currency,
+            'paid_at' => $a->paid_at?->toIso8601String(),
+            'validated_at' => $a->validated_at?->toIso8601String(),
+            'expires_at' => $a->expires_at?->toIso8601String(),
+        ]);
+
+        return response()->json(['data' => $data]);
     }
 
     public function show(Request $request, TravelAdvert $travelAdvert): JsonResponse
