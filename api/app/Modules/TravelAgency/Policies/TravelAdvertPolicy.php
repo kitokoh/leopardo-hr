@@ -26,7 +26,7 @@ final class TravelAdvertPolicy
 
     public function view(Employee $actor, Model $resource): bool
     {
-        return $resource->company_id === $actor->company_id;
+        return $this->belongsToTenant($resource, $actor);
     }
 
     public function create(Employee $actor): bool
@@ -36,7 +36,7 @@ final class TravelAdvertPolicy
 
     public function update(Employee $actor, Model $resource): bool
     {
-        return $this->create($actor) && $resource->company_id === $actor->company_id;
+        return $this->create($actor) && $this->belongsToTenant($resource, $actor);
     }
 
     public function delete(Employee $actor, Model $resource): bool
@@ -50,6 +50,11 @@ final class TravelAdvertPolicy
      */
     public function manage(Employee $actor, Model $resource): bool
     {
-        return $actor->hasManagerRole('principal', 'rh') && $resource->company_id === $actor->company_id;
+        return $actor->hasManagerRole('principal', 'rh') && $this->belongsToTenant($resource, $actor);
+    }
+
+    private function belongsToTenant(Model $resource, Employee $actor): bool
+    {
+        return (string) $resource->getAttribute('company_id') === (string) $actor->company_id;
     }
 }
