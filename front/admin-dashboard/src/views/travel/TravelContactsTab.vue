@@ -134,7 +134,7 @@
         </p>
 
         <div class="col-span-full flex justify-end gap-2 pt-2">
-          <button type="button" class="btn-secondary" @click="contactFormOpen = false">
+          <button type="button" class="btn-secondary" @click="closeContactForm">
             {{ $t('common.cancel', 'Annuler') }}
           </button>
           <button type="submit" class="btn-primary" :disabled="contactSaving">
@@ -172,7 +172,7 @@
         </p>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" class="btn-secondary" @click="consentOpen = false">
+          <button type="button" class="btn-secondary" @click="closeConsentModal">
             {{ $t('common.cancel', 'Annuler') }}
           </button>
           <button type="submit" class="btn-primary" :disabled="consentSaving">
@@ -222,7 +222,7 @@
         </p>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" class="btn-secondary" @click="notifyOpen = false">
+          <button type="button" class="btn-secondary" @click="closeNotifyModal">
             {{ $t('common.cancel', 'Annuler') }}
           </button>
           <button type="submit" class="btn-primary" :disabled="notifySaving">

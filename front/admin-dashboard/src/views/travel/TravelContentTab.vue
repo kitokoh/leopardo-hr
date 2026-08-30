@@ -148,7 +148,7 @@
           </p>
 
           <div class="col-span-full flex justify-end gap-2 pt-2">
-            <button type="button" class="btn-secondary" @click="quizFormOpen = false">
+            <button type="button" class="btn-secondary" @click="closeQuizForm">
               {{ $t('common.cancel', 'Annuler') }}
             </button>
             <button type="submit" class="btn-primary" :disabled="quizSaving">
@@ -309,7 +309,7 @@
           </p>
 
           <div class="flex justify-end gap-2 pt-2">
-            <button type="button" class="btn-secondary" @click="questionFormOpen = false">
+            <button type="button" class="btn-secondary" @click="closeQuestionForm">
               {{ $t('common.cancel', 'Annuler') }}
             </button>
             <button type="submit" class="btn-primary" :disabled="questionSaving">
@@ -420,7 +420,7 @@
             {{ advertActionError }}
           </p>
           <div class="flex justify-end gap-2 pt-2">
-            <button type="button" class="btn-secondary" @click="advertActionOpen = false">
+            <button type="button" class="btn-secondary" @click="closeAdvertAction">
               {{ $t('common.cancel', 'Annuler') }}
             </button>
             <button type="submit" class="btn-primary" :disabled="advertActionSaving">
