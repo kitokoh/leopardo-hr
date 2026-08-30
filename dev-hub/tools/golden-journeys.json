@@ -16,6 +16,10 @@
     "edumanager": {
       "label": "EduManager (verticale)",
       "status": "planned"
+    },
+    "restaurantmanager": {
+      "label": "RestaurantManager (verticale restauration)",
+      "status": "active"
     }
   },
   "journeys": [
@@ -282,6 +286,105 @@
           "method": "POST",
           "route": "/api/v1/edu/attendance",
           "role": "teacher"
+        }
+      ]
+    },
+    {
+      "id": "GJ-RESTO-01",
+      "name": "Service en salle complet (caisse → commande → service → paiement → clôture)",
+      "solution": "restaurantmanager",
+      "acceptance": "Une commande dine_in est créée, préparée en cuisine, servie, réglée en espèces, la table et la caisse sont clôturées sans écart inexpliqué (RESTO-901/#6230, spec §4.1).",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Ouvrir la caisse (fonds de caisse)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions",
+          "role": "manager:server"
+        },
+        {
+          "order": 2,
+          "action": "Ouvrir la table",
+          "method": "POST",
+          "route": "/api/v1/restaurant/tables/{table}/open",
+          "role": "manager:server"
+        },
+        {
+          "order": 3,
+          "action": "Créer la commande (dine_in, table, couverts)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders",
+          "role": "manager:server"
+        },
+        {
+          "order": 4,
+          "action": "Ajouter un article",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/items",
+          "role": "manager:server"
+        },
+        {
+          "order": 5,
+          "action": "Soumettre la commande",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/submit",
+          "role": "manager:server"
+        },
+        {
+          "order": 6,
+          "action": "Confirmer (départ cuisine)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/confirm",
+          "role": "manager:server"
+        },
+        {
+          "order": 7,
+          "action": "Cuisine : démarrer la préparation",
+          "method": "POST",
+          "route": "/api/v1/restaurant/kitchen/orders/{order}/start",
+          "role": "manager:kitchen"
+        },
+        {
+          "order": 8,
+          "action": "Cuisine : plat prêt",
+          "method": "POST",
+          "route": "/api/v1/restaurant/kitchen/orders/{order}/ready",
+          "role": "manager:kitchen"
+        },
+        {
+          "order": 9,
+          "action": "Servir la commande",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/serve",
+          "role": "manager:server"
+        },
+        {
+          "order": 10,
+          "action": "Consulter l’addition (totaux serveur)",
+          "method": "GET",
+          "route": "/api/v1/restaurant/orders/{order}/bill",
+          "role": "manager:server"
+        },
+        {
+          "order": 11,
+          "action": "Encaisser en espèces",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/pay",
+          "role": "manager:server"
+        },
+        {
+          "order": 12,
+          "action": "Clôturer la table",
+          "method": "POST",
+          "route": "/api/v1/restaurant/tables/{table}/close",
+          "role": "manager:server"
+        },
+        {
+          "order": 13,
+          "action": "Clôturer la caisse (écart calculé serveur)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions/{posSession}/close",
+          "role": "manager:principal"
         }
       ]
     }
