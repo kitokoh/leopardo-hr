@@ -20,6 +20,7 @@
  * Référence : docs/specifications/SOLUTION_DELIVERY.md (§4 API v1).
  */
 
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryAsyncExportController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
@@ -94,6 +95,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
                 ->middleware('delivery.permission:admin|manager');
             Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index'])
                 ->middleware('delivery.permission:admin|manager');
+
+            // Export CSV async (BC-26-D07/#6295) — job tenant-scoped,
+            // observable (pending → generating → done/failed).
+            Route::post('/deliveries/reports/async-export', [DeliveryAsyncExportController::class, 'store'])
+                ->middleware('delivery.permission:admin|manager');
+            Route::get('/deliveries/reports/async-export/{export}', [DeliveryAsyncExportController::class, 'show'])
+                ->middleware('delivery.permission:admin|manager')->whereNumber('export');
+            Route::get('/deliveries/reports/async-export/{export}/download', [DeliveryAsyncExportController::class, 'download'])
+                ->middleware('delivery.permission:admin|manager')->whereNumber('export');
         });
     });
 

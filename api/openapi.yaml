@@ -23194,6 +23194,76 @@ paths:
                     $ref: '#/components/schemas/DeliveryReportSummary'
         '422':
           description: Fenêtre de dates invalide
+  /delivery/deliveries/reports/async-export:
+    post:
+      tags:
+      - Delivery
+      summary: Lance un export CSV async (BC-26-D07/#6295)
+      description: |
+        Crée une ligne pending + dispatch GenerateDeliveryExportJob (file
+        documents, retry borné 3). Réponse 202 avec id d'observation.
+      security:
+      - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from:
+                  type: string
+                  format: date
+                to:
+                  type: string
+                  format: date
+      responses:
+        '202':
+          description: Export planifié
+  /delivery/deliveries/reports/async-export/{export}:
+    get:
+      tags:
+      - Delivery
+      summary: Statut de l'export (BC-26-D07/#6295)
+      description: |
+        pending → generating → done/failed. done → download_url.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: export
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Statut de l'export
+        '404':
+          description: Export introuvable ou hors tenant
+  /delivery/deliveries/reports/async-export/{export}/download:
+    get:
+      tags:
+      - Delivery
+      summary: Télécharge l'export CSV (BC-26-D07/#6295)
+      description: |
+        409 EXPORT_NOT_READY tant que done n'est pas atteint.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: export
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fichier CSV
+          content:
+            text/csv:
+              schema:
+                type: string
+        '409':
+          description: EXPORT_NOT_READY
+
   /delivery/deliveries/reports/export:
     get:
       tags:

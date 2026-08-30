@@ -2386,6 +2386,23 @@ trait CreatesMvpSchema
             });
         }
 
+        // ── BC-26 DELIVERY (delivery_exports) ─────────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('delivery_exports'))) {
+            Schema::create($this->moduleTable('delivery_exports'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('status', 20)->default('pending');
+                $table->date('from_date');
+                $table->date('to_date');
+                $table->string('filename', 255)->nullable();
+                $table->string('error_message', 500)->nullable();
+                $table->unsignedBigInteger('requested_by')->nullable();
+                $table->timestamp('completed_at')->nullable();
+                $table->timestamps();
+                $table->index(['company_id', 'status'], 'delivery_exports_company_status_idx');
+            });
+        }
+
         // ── BC-26 DELIVERY (delivery_tracking_shares) ─────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('delivery_tracking_shares'))) {
             Schema::create($this->moduleTable('delivery_tracking_shares'), function (Blueprint $table): void {
