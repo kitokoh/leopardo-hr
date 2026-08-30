@@ -103,6 +103,9 @@ final class EduAdmissionService
             'status' => EduAdmission::STATUS_CONVERTED,
         ]);
 
+        // EDU-014 : notification direction (admission convertie).
+        app(EduNotificationService::class)->admissionConverted($admission->refresh());
+
         return $student;
     }
 

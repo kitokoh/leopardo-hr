@@ -49,6 +49,11 @@ final class EduAttendanceService
             $payload
         );
 
+        // EDU-014 : notification direction (absence enregistrée).
+        if ($attendance->status === EduAttendance::STATUS_ABSENT) {
+            app(EduNotificationService::class)->absenceRecorded($attendance);
+        }
+
         return $attendance;
     }
 
