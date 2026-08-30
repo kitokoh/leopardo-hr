@@ -2798,6 +2798,23 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('travel_tourist_sites'))) {
+            Schema::create($this->moduleTable('travel_tourist_sites'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 200);
+                $table->text('description_redacted')->nullable();
+                $table->unsignedBigInteger('city_id')->nullable();
+                $table->decimal('latitude', 10, 7)->nullable();
+                $table->decimal('longitude', 10, 7)->nullable();
+                $table->jsonb('images')->nullable();
+                $table->string('status', 20)->default('published');
+                $table->timestamps();
+                $table->index(['company_id', 'city_id'], 'travel_tourist_sites_company_city_idx');
+                $table->index(['company_id', 'status'], 'travel_tourist_sites_company_status_idx');
+            });
+        }
+
         // ── BC-24 TRAVEL — TRAVEL-905 (issue #6108) — annonces (référentiels) ──
         if (! Schema::hasTable($this->moduleTable('travel_advert_types'))) {
             Schema::create($this->moduleTable('travel_advert_types'), function (Blueprint $table): void {
