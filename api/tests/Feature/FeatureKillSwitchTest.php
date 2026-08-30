@@ -58,13 +58,13 @@ class FeatureKillSwitchTest extends TestCase
     {
         $company = Company::factory()->create(['features' => ['cameras' => true]]);
 
-        /** @var \App\Core\Tenant\Domain\Models\Company $fresh */
+        /** @var Company $fresh */
         $fresh = $company->refresh();
         $this->assertTrue($fresh->hasFeature('cameras'));
 
         app(FeatureKillSwitchService::class)->kill('cameras', 'Incident en cours');
 
-        /** @var \App\Core\Tenant\Domain\Models\Company $fresh */
+        /** @var Company $fresh */
         $fresh = $company->refresh();
         $this->assertFalse($fresh->hasFeature('cameras'));
         $this->assertTrue(app(FeatureKillSwitchService::class)->isKilled('cameras'));
@@ -78,10 +78,10 @@ class FeatureKillSwitchTest extends TestCase
 
         app(FeatureKillSwitchService::class)->kill('cameras', 'Maintenance');
 
-        /** @var \App\Core\Tenant\Domain\Models\Company $fresh */
+        /** @var Company $fresh */
         $fresh = $company->refresh();
         $this->assertFalse($fresh->hasFeature('cameras'));
-        /** @var \App\Core\Tenant\Domain\Models\Company $fresh */
+        /** @var Company $fresh */
         $fresh = $company->refresh();
         $this->assertTrue($fresh->hasFeature('finance'));
     }
@@ -109,7 +109,7 @@ class FeatureKillSwitchTest extends TestCase
 
         $company = Company::factory()->create(['features' => ['finance' => true]]);
 
-        /** @var \App\Core\Tenant\Domain\Models\Company $fresh */
+        /** @var Company $fresh */
         $fresh = $company->refresh();
         $this->assertTrue($fresh->hasFeature('finance'));
     }

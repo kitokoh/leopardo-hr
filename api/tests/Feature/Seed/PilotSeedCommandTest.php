@@ -35,6 +35,7 @@ class PilotSeedCommandTest extends TestCase
     public function test_pilot_seed_creates_pilots_and_is_idempotent(): void
     {
         $cmd = $this->artisan('pilot:seed', ['vertical' => 'crm']);
+        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
         $cmd->assertExitCode(0);
 
         foreach (['crm-pilot-alpha', 'crm-pilot-beta'] as $slug) {
@@ -49,6 +50,7 @@ class PilotSeedCommandTest extends TestCase
 
         // Réentrance : second run sans erreur, aucun doublon.
         $cmd = $this->artisan('pilot:seed', ['vertical' => 'crm']);
+        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
         $cmd->assertExitCode(0);
         $this->assertSame(1, Company::query()->where('slug', 'crm-pilot-alpha')->count());
     }
@@ -58,6 +60,7 @@ class PilotSeedCommandTest extends TestCase
         $this->seed(CrmPilotSeeder::class);
 
         $cmd = $this->artisan('pilot:cleanup', ['vertical' => 'crm']);
+        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
         $cmd->assertExitCode(0);
 
         $this->assertNull(Company::query()->where('slug', 'crm-pilot-alpha')->first());
@@ -66,6 +69,7 @@ class PilotSeedCommandTest extends TestCase
 
         // Second run : no-op.
         $cmd = $this->artisan('pilot:cleanup', ['vertical' => 'crm']);
+        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
         $cmd->assertExitCode(0);
     }
 
@@ -74,6 +78,7 @@ class PilotSeedCommandTest extends TestCase
         Company::factory()->create(['slug' => 'acme-real-client', 'name' => 'Acme Real']);
 
         $cmd = $this->artisan('pilot:cleanup', ['vertical' => 'crm', '--tenant' => 'acme-real-client']);
+        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
         $cmd->assertFailed();
 
         $this->assertNotNull(Company::query()->where('slug', 'acme-real-client')->first());
@@ -82,8 +87,10 @@ class PilotSeedCommandTest extends TestCase
     public function test_pilot_seed_unknown_vertical_fails_cleanly(): void
     {
         $cmd = $this->artisan('pilot:seed', ['vertical' => 'nope']);
+        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
         $cmd->assertFailed();
         $cmd = $this->artisan('pilot:cleanup', ['vertical' => 'nope']);
+        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
         $cmd->assertFailed();
     }
 

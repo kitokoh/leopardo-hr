@@ -115,6 +115,7 @@ class LeaveCrossTenantIsolationTest extends TestCase
         // `absence_types_code_unique` est global (non scopé par tenant) : les
         // codes doivent être uniques dans TOUTE la base, d'où le suffixe tenant.
         $suffix = $company->slug;
+
         return AbsenceType::query()->create([
             'company_id' => $company->id,
             'name' => $deductsLeave ? 'Congé payé' : 'Mission',
