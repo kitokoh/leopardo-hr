@@ -39,6 +39,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopContro
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTouristSiteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
 use Illuminate\Support\Facades\Route;
@@ -180,6 +181,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/quizzes/{travelQuiz}/questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']);
         Route::post('/quizzes/{travelQuiz}/participate', [TravelQuizController::class, 'participate']);
         Route::get('/quizzes/{travelQuiz}/participations', [TravelQuizController::class, 'participations']);
+
+        // Sites touristiques (TRAVEL-909/#6112).
+        Route::get('/tourist-sites', [TravelTouristSiteController::class, 'index']);
+        Route::post('/tourist-sites', [TravelTouristSiteController::class, 'store']);
+        Route::get('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'show']);
+        Route::put('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'update']);
+        Route::delete('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'destroy']);
 
         Route::get('/advert-types', [TravelAdvertController::class, 'indexAdvertTypes']);
         Route::post('/advert-types', [TravelAdvertController::class, 'storeAdvertType']);
