@@ -68,7 +68,11 @@ import {
   ChartBarIcon,
   ChatBubbleLeftRightIcon,
   ArrowUpIcon,
-  ArrowDownIcon
+  ArrowDownIcon,
+  BoltIcon,
+  ExclamationTriangleIcon,
+  ClipboardDocumentListIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/vue/24/outline'
 import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale } from '@/i18n/index.js'
@@ -114,7 +118,11 @@ const iconMap = {
   CreditCardIcon,
   CurrencyEuroIcon,
   ChartBarIcon,
-  ChatBubbleLeftRightIcon
+  ChatBubbleLeftRightIcon,
+  BoltIcon,
+  ExclamationTriangleIcon,
+  ClipboardDocumentListIcon,
+  ArrowDownTrayIcon
 }
 
 const iconComponent = computed(() => iconMap[props.icon] || ChartBarIcon)
