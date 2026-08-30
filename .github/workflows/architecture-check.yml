@@ -350,6 +350,16 @@ jobs:
         # dev-hub/tools/module-isolation-allowlist.txt.
         run: dev-hub/tools/check-module-isolation.sh
 
+      - name: Event catalogue guard self-test (MAT-006 / issue #5864)
+        run: python3 dev-hub/tools/check-event-catalogue-test.py
+
+      - name: Event catalogue guard (MAT-006 / issue #5864)
+        # Chaque classe App\Events\*.php doit avoir une entrée à jour dans
+        # dev-hub/governance/event-catalogue.json (owner, version, payload,
+        # consumers). Détecte les breaking changes de payload non versionnés
+        # et les événements supprimés du code sans dépréciation actée.
+        run: python3 dev-hub/tools/check-event-catalogue.py .
+
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
 
