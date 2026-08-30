@@ -17,6 +17,7 @@
  * Référence : docs/specifications/SOLUTION_TRAVEL_AGENCY.md (§7 API v1).
  */
 
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelArticleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCommentController;
@@ -166,6 +167,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/reports/export/{travelExportAsset}', [TravelExportController::class, 'show']);
 
         // ── Contenu éditorial — articles & catégories (TRAVEL-901/#6104) ────
+        // Annonces payantes — référentiels (TRAVEL-905/#6108).
+        Route::get('/advert-types', [TravelAdvertController::class, 'indexAdvertTypes']);
+        Route::post('/advert-types', [TravelAdvertController::class, 'storeAdvertType']);
+        Route::put('/advert-types/{travelAdvertType}', [TravelAdvertController::class, 'updateAdvertType']);
+        Route::delete('/advert-types/{travelAdvertType}', [TravelAdvertController::class, 'destroyAdvertType']);
+        Route::get('/advert-positions', [TravelAdvertController::class, 'indexAdvertPositions']);
+        Route::post('/advert-positions', [TravelAdvertController::class, 'storeAdvertPosition']);
+        Route::put('/advert-positions/{travelAdvertPosition}', [TravelAdvertController::class, 'updateAdvertPosition']);
+        Route::delete('/advert-positions/{travelAdvertPosition}', [TravelAdvertController::class, 'destroyAdvertPosition']);
+
+        // Annonces payantes — cycle de vie (TRAVEL-906/907/908).
+
         Route::get('/articles', [TravelArticleController::class, 'index']);
         Route::post('/articles', [TravelArticleController::class, 'store']);
         Route::get('/articles/{travelArticle}', [TravelArticleController::class, 'show']);

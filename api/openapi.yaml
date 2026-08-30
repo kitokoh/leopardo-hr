@@ -3856,6 +3856,226 @@ paths:
           description: Non authentifié
         '404':
           description: Ressource introuvable ou hors tenant
+  /travel/advert-types:
+    get:
+      tags:
+      - Travel
+      summary: Liste des types d'annonces payantes (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Types d'annonces du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelAdvertType'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'un type d'annonce (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, name]
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 120
+                description:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Type créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvertType'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission requise (rôle opérationnel de l'agence)
+        '422':
+          description: code obligatoire ou déjà pris dans le tenant
+  /travel/advert-types/{travelAdvertType}:
+    put:
+      tags:
+      - Travel
+      summary: Renommage d'un type d'annonce (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertType
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                description:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Type mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvertType'
+        '404':
+          description: Type introuvable ou d'un autre tenant
+        '422':
+          description: name obligatoire
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un type d'annonce (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertType
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Type supprimé
+        '404':
+          description: Type introuvable ou d'un autre tenant
+  /travel/advert-positions:
+    get:
+      tags:
+      - Travel
+      summary: Liste des positions de publication (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Positions du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelAdvertPosition'
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: Création d'une position de publication (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, name]
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  type: string
+                  maxLength: 120
+                description:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Position créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvertPosition'
+        '422':
+          description: code obligatoire ou déjà pris dans le tenant
+  /travel/advert-positions/{travelAdvertPosition}:
+    put:
+      tags:
+      - Travel
+      summary: Renommage d'une position de publication (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPosition
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                description:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Position mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvertPosition'
+        '404':
+          description: Position introuvable ou d'un autre tenant
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'une position de publication (TRAVEL-905/#6108)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPosition
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Position supprimée
+        '404':
+          description: Position introuvable ou d'un autre tenant
   /travel/articles:
     get:
       tags:
@@ -29638,6 +29858,42 @@ components:
         status:
           type: string
           enum: [active, disabled]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelAdvertType:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelAdvertPosition:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
         created_at:
           type: string
           nullable: true

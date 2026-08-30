@@ -2767,6 +2767,31 @@ trait CreatesMvpSchema
             });
         }
 
+        // ── BC-24 TRAVEL — TRAVEL-905 (issue #6108) — annonces (référentiels) ──
+        if (! Schema::hasTable($this->moduleTable('travel_advert_types'))) {
+            Schema::create($this->moduleTable('travel_advert_types'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 120);
+                $table->text('description')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_advert_types_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_advert_positions'))) {
+            Schema::create($this->moduleTable('travel_advert_positions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 120);
+                $table->text('description')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_advert_positions_company_code_unique');
+            });
+        }
+
         // ── BC-24 TRAVEL — TRAVEL-212 (issue #6025) ────────────────────────
         if (! Schema::hasTable($this->moduleTable('travel_rental_vehicles'))) {
             Schema::create($this->moduleTable('travel_rental_vehicles'), function (Blueprint $table): void {
