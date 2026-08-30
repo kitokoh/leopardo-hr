@@ -48,4 +48,28 @@ class EduGuardianPolicy
     {
         return $this->update($actor, $guardian);
     }
+
+    // ── Portail guardian (EDU-013, #5829) ──────────────────────────────────
+
+    /**
+     * Émission d'un lien d'accès expirable : direction uniquement.
+     */
+    public function issueLink(Employee $actor): bool
+    {
+        return $this->viewAny($actor);
+    }
+
+    /**
+     * Accès au portail : direction du tenant, ou le gardien lui-même
+     * (lien `employee_id`) — jamais les profils d'autres responsables.
+     */
+    public function accessPortal(Employee $actor, EduGuardian $guardian): bool
+    {
+        if ($this->viewAny($actor)) {
+            return $guardian->company_id === $actor->company_id;
+        }
+
+        return $guardian->company_id === $actor->company_id
+            && $guardian->employee_id === $actor->id;
+    }
 }
