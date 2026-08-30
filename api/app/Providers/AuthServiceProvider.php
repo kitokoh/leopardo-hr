@@ -23,6 +23,7 @@ use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelSite;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Domain\Models\FuelDelivery;
+use App\Modules\FuelStation\Domain\Models\FuelImport;
 use App\Modules\FuelStation\Domain\Models\FuelIncident;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
@@ -36,6 +37,7 @@ use App\Modules\FuelStation\Domain\Policies\FuelCashSessionPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelEquipmentPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelProductPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStationPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelImportPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelMaintenancePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelOutboxPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelReportPolicy;
@@ -123,6 +125,8 @@ class AuthServiceProvider extends ServiceProvider
         // — FuelStation (FUEL-010 #5804 : incidents, maintenance, tâches)
         Gate::policy(FuelIncident::class, FuelMaintenancePolicy::class);
         Gate::policy(FuelMaintenanceTask::class, FuelMaintenancePolicy::class);
+        // — FuelStation (FUEL-018 #5812 : imports CSV)
+        Gate::policy(FuelImport::class, FuelImportPolicy::class);
         // — FuelStation (FUEL-011 #5805 : référentiel manager)
         Gate::policy(FuelStation::class, FuelStationPolicy::class);
         Gate::policy(FuelSite::class, FuelStationPolicy::class);

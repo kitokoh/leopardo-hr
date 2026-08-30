@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelEquipmentController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelIncidentController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelOutboxController;
@@ -140,5 +141,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/fuel-station/reports/exports', [FuelReportController::class, 'createExport']);
         Route::get('/fuel-station/reports/exports', [FuelReportController::class, 'exports']);
         Route::get('/fuel-station/reports/exports/{export}/download', [FuelReportController::class, 'download'])->whereNumber('export');
+        // FUEL-018 (#5812) : imports CSV sécurisés (preview, rollback logique).
+        Route::post('/fuel-station/imports', [FuelImportController::class, 'store']);
+        Route::get('/fuel-station/imports', [FuelImportController::class, 'index']);
+        Route::get('/fuel-station/imports/{import}', [FuelImportController::class, 'show'])->whereNumber('import');
     });
 });
