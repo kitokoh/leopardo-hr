@@ -4890,6 +4890,30 @@ paths:
           description: Tenant introuvable
         '422':
           description: Validation échouée (consentement manquant, bornes)
+  /travel/public-contact-link:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-913 — Génération du lien public signé du formulaire de contact'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expires_in_hours:
+                  type: integer
+                  minimum: 1
+                  maximum: 168
+                  default: 24
+      responses:
+        '201':
+          description: Lien signé généré (contact_url + expires_at)
+        '403':
+          description: Rôle insuffisant (manager requis)
   /travel/contact:
     post:
       tags:
