@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Providers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Console\Commands\TravelOutboxDispatchCommand;
 use App\Modules\TravelAgency\Console\Commands\RecalculateTravelReadModelsCommand;
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
+use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
 use App\Modules\TravelAgency\Domain\Models\TravelArticle;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelComment;
@@ -22,6 +24,8 @@ use App\Modules\TravelAgency\Domain\Models\TravelStation;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelEventPublisherConsumer;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use App\Modules\TravelAgency\Policies\TravelArticlePolicy;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelCommentPolicy;
@@ -62,9 +66,13 @@ class TravelAgencyServiceProvider extends ServiceProvider
         $this->app->singleton(SolutionManifest::class, TravelAgencyManifest::class);
 
         // TRAVEL-506 (#6076) — recalcul des read models de reporting.
+        // TRAVEL-414 (#6066) — consommation de l'outbox événementielle.
         $this->commands([
             RecalculateTravelReadModelsCommand::class,
+            TravelOutboxDispatchCommand::class,
         ]);
+
+        $this->app->singleton(TravelOutboxConsumerRegistry::class);
     }
 
     public function boot(): void
@@ -86,6 +94,16 @@ class TravelAgencyServiceProvider extends ServiceProvider
         // (TRAVEL-501..507, #6071..#6077) — ability `travel.reports`
         // ouverte aux rôles opérationnels de l'agence.
         Gate::policy(TravelArticle::class, TravelArticlePolicy::class);
+
+        // TRAVEL-414 (#6066) — publication des événements travel.*.v1 sur le
+        // bus tenant-scopé (BC consommateurs sans import inter-modules).
+        $this->app->booted(function (): void {
+            /** @var TravelOutboxConsumerRegistry $registry */
+            $registry = $this->app->make(TravelOutboxConsumerRegistry::class);
+            /** @var TravelOutboxConsumer $consumer */
+            $consumer = $this->app->make(TravelEventPublisherConsumer::class);
+            $registry->register($consumer);
+        });
         Gate::policy(TravelComment::class, TravelCommentPolicy::class);
         Gate::define('travel.reports', fn (Employee $actor): bool => TravelReportPolicy::authorize($actor));
     }
