@@ -7,6 +7,7 @@ namespace App\Modules\Accounting\Application\Actions;
 use App\Modules\Accounting\Domain\Models\AccountingReportingSnapshot;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 /**
  * BC-22-D10 (issue #6243) — snapshots horodatés des read models de reporting.
@@ -31,7 +32,9 @@ final class AccountingReportingSnapshotService
 {
     public const REPORT_ACCOUNTING_DASHBOARD = 'accounting_dashboard';
 
-    public function __construct(private readonly AccountingDashboardService $dashboard) {}
+    public function __construct(private readonly AccountingDashboardService $dashboard)
+    {
+    }
 
     /**
      * Recompute idempotent du snapshot d'un read model pour une période.
@@ -117,7 +120,7 @@ final class AccountingReportingSnapshotService
             return $this->dashboard->summary($companyId, $from, $to);
         }
 
-        throw new \InvalidArgumentException('REPORT_UNKNOWN');
+        throw new InvalidArgumentException('REPORT_UNKNOWN');
     }
 
     /**
@@ -156,6 +159,11 @@ final class AccountingReportingSnapshotService
         foreach ($payload as $key => $value) {
             if (is_array($value)) {
                 $payload[$key] = $this->canonicalize($value);
+            } elseif (is_int($value) || is_float($value)) {
+                // jsonb renvoie des entiers pour les valeurs sans décimale alors
+                // que le compute produit des floats — normaliser pour une
+                // comparaison stricte stable (idempotence).
+                $payload[$key] = (float) $value;
             }
         }
 

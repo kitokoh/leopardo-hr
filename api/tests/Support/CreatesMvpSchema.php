@@ -2537,6 +2537,26 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-22-D10 (issue #6243) — snapshots horodatés des read models.
+        if (! Schema::hasTable($this->tenantTable('accounting_reporting_snapshots'))) {
+            Schema::create($this->tenantTable('accounting_reporting_snapshots'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('report', 60);
+                $table->date('period_from');
+                $table->date('period_to');
+                $table->unsignedInteger('version')->default(1);
+                $table->jsonb('payload');
+                $table->timestamp('refreshed_at');
+                $table->timestamps();
+
+                $table->unique(
+                    ['company_id', 'report', 'period_from', 'period_to'],
+                    'acc_reporting_snapshots_company_report_period_unique',
+                );
+            });
+        }
+
         if (! Schema::hasTable($this->tenantTable('employee_attendance_preferences'))) {
             Schema::create($this->tenantTable('employee_attendance_preferences'), function (Blueprint $table): void {
                 $table->increments('id');

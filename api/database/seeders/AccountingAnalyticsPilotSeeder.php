@@ -50,7 +50,7 @@ class AccountingAnalyticsPilotSeeder extends Seeder
         $existing = Company::query()->where('slug', self::PILOT_SLUG)->first();
 
         if ($existing instanceof Company) {
-            $this->command?->warn("Pilote Analytics déjà présent ({$existing->slug}) — skip (réentrant).");
+            $this->command?->warn('Pilote Analytics déjà présent ({$existing->slug}) — skip (réentrant).');
 
             return;
         }
@@ -71,7 +71,7 @@ class AccountingAnalyticsPilotSeeder extends Seeder
             $this->seedAccountingVitrine($company);
         });
 
-        $this->command?->info("Pilote Analytics créé : {$company->slug} (comptable@".self::PILOT_DOMAIN.' / pilot123).');
+        $this->command?->info('Pilote Analytics créé : '.$company->slug.' (comptable@'.self::PILOT_DOMAIN.' / pilot123).');
     }
 
     private function seedUsers(Company $company): void
@@ -86,7 +86,7 @@ class AccountingAnalyticsPilotSeeder extends Seeder
                 'company_id' => $company->id,
                 'first_name' => 'Salima',
                 'last_name' => 'Comptable',
-                'email' => "comptable@".self::PILOT_DOMAIN,
+                'email' => 'comptable@'.self::PILOT_DOMAIN,
                 'role' => 'manager',
                 'manager_role' => 'comptable',
                 'status' => 'active',
@@ -98,7 +98,7 @@ class AccountingAnalyticsPilotSeeder extends Seeder
                 'company_id' => $company->id,
                 'first_name' => 'Yacine',
                 'last_name' => 'Principal',
-                'email' => "principal@".self::PILOT_DOMAIN,
+                'email' => 'principal@'.self::PILOT_DOMAIN,
                 'role' => 'manager',
                 'manager_role' => 'principal',
                 'status' => 'active',
@@ -111,7 +111,7 @@ class AccountingAnalyticsPilotSeeder extends Seeder
 
     private function seedAccountingVitrine(Company $company): void
     {
-        if (! schemaTableExists('accounting_documents')) {
+        if (!schemaTableExists('accounting_documents')) {
             $this->command?->warn('Tables comptables absentes — vitrine du pilote Analytics ignorée.');
 
             return;

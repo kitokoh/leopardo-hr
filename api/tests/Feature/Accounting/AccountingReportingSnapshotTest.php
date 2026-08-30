@@ -7,7 +7,10 @@ namespace Tests\Feature\Accounting;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Application\Actions\AccountingReportingSnapshotService;
+use App\Modules\Accounting\Application\Actions\SeedAccountingDemoData;
+use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingReportingSnapshot;
+use App\Modules\Accounting\Infrastructure\Services\PaymentRegistrationService;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -41,7 +44,7 @@ class AccountingReportingSnapshotTest extends TestCase
         $companyB = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD', 'timezone' => 'UTC']);
         $this->companyB = $companyB;
 
-        (new \App\Modules\Accounting\Application\Actions\SeedAccountingDemoData)->seed($companyA);
+        (new SeedAccountingDemoData)->seed($companyA);
     }
 
     private function service(): AccountingReportingSnapshotService
@@ -76,13 +79,13 @@ class AccountingReportingSnapshotTest extends TestCase
 
         // Nouvel encaissement sur la facture partielle → le contenu du read
         // model change (collections + impayés) sans toucher au seed.
-        $partialInvoice = \App\Modules\Accounting\Domain\Models\AccountingDocument::query()
+        $partialInvoice = AccountingDocument::query()
             ->where('company_id', $this->companyA->id)
             ->where('type', 'invoice')
             ->where('status', 'partially_paid')
             ->firstOrFail();
 
-        app(\App\Modules\Accounting\Infrastructure\Services\PaymentRegistrationService::class)
+        app(PaymentRegistrationService::class)
             ->register($partialInvoice, 100.0, 'cash');
 
         $recomputed = $service->recompute((string) $this->companyA->id, 'accounting_dashboard');

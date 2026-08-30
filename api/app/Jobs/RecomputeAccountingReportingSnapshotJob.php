@@ -54,7 +54,7 @@ class RecomputeAccountingReportingSnapshotJob implements ShouldQueue, TenantScop
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function handle(): void

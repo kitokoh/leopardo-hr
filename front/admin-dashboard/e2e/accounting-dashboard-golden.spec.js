@@ -11,13 +11,22 @@ import { expect, test } from '@playwright/test'
  *   - la garde UI n'est pas autoritaire : sans session → redirection /login
  *     (le RBAC API reste la source de vérité, testé côté backend).
  *
- * E2E isolé : aucun appel réseau réel (toutes les routes API sont mockées),
- * exécuté par web-ci.yml (front/admin-dashboard/**).
+ * E2E hermétique : AUCUN appel réseau réel — toutes les routes /api/v1/**
+ * sont mockées (un catch-all renvoie un JSON vide pour absorber les appels
+ * annexes de l'app, ex. health check, sans dépendre du réseau/CI).
  */
 
 const AUTH_ME_URL = /\/api\/v1\/platform\/auth\/me$/
 const DASHBOARD_URL = /\/api\/v1\/accounting\/dashboard\?.*$/
 const EXPORT_URL = /\/api\/v1\/accounting\/dashboard\/export(?:\?.*)?$/
+
+// Catch-all : empêche tout egress réseau réel (CORS/Render) — enregistré en
+// PREMIER, les mocks spécifiques (enregistrés ensuite) ont priorité.
+function mockApiCatchAll(page) {
+  return page.route('**/api/v1/**', (route) => {
+    route.fulfill({ status: 200, contentType: 'application/json', body: '{"data":{}}' })
+  })
+}
 
 const USER = {
   data: {
@@ -126,11 +135,13 @@ function signIn(page) {
 
 test.describe('Golden journey Analytics — dashboard comptable', () => {
   test('sans session : redirection /login (garde UI non autoritaire)', async ({ page }) => {
+    await mockApiCatchAll(page)
     await page.goto('/accounting/dashboard')
     await expect(page).toHaveURL(/\/login/)
   })
 
   test('état loading puis agrégats déterministes rendus', async ({ page }) => {
+    await mockApiCatchAll(page)
     await mockAuth(page)
     await mockDashboard(page, DASHBOARD, 600)
     await mockExport(page)
@@ -152,6 +163,7 @@ test.describe('Golden journey Analytics — dashboard comptable', () => {
   })
 
   test('état vide : message explicite, aucun crash', async ({ page }) => {
+    await mockApiCatchAll(page)
     await mockAuth(page)
     await mockDashboard(page, EMPTY_DASHBOARD)
     await mockExport(page)
@@ -163,6 +175,7 @@ test.describe('Golden journey Analytics — dashboard comptable', () => {
   })
 
   test('état erreur : toast explicite, la page reste utilisable', async ({ page }) => {
+    await mockApiCatchAll(page)
     await mockAuth(page)
     await page.route(DASHBOARD_URL, (route) =>
       route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ message: 'Erreur serveur' }) }),
@@ -179,6 +192,7 @@ test.describe('Golden journey Analytics — dashboard comptable', () => {
   })
 
   test('export CSV impayés : appel à l’endpoint canonique et téléchargement', async ({ page }) => {
+    await mockApiCatchAll(page)
     await mockAuth(page)
     await mockDashboard(page)
     await mockExport(page)
