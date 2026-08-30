@@ -53,6 +53,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Issue #4948 : trial provisionings bloqués (worker de queue jamais
         // exécuté) → fail-loud au lieu d'un pending silencieux.
         $schedule->command('trial-provisionings:sweep')->everyFifteenMinutes();
+        // TRAVEL-418/#6070 — libère les sièges des réservations pending
+        // expirées (job tenant-scoped par compagnie, idempotent).
+        $schedule->command('travel:expire-pending-bookings')->everyFiveMinutes()->withoutOverlapping();
         // Plan 64 — Auto-close attendance logs without check-out after 12h
         $schedule->command('attendance:auto-close')->hourly();
         $schedule->command('accounting:purge-expired-shares')->daily();
