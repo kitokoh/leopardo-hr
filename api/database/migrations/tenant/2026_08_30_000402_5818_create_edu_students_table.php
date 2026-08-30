@@ -46,7 +46,7 @@ return new class extends Migration
                 $table->string('birth_date_encrypted', 255)->nullable();
                 // active | inactive | archived — CHECK edu_students_status_check
                 $table->string('status', 20)->default('active');
-                $table->jsonb('metadata')->nullable();
+                $table->text('metadata')->nullable(); // chiffré au repos (cast encrypted:array, pattern AccountingContact)
                 $table->timestamps();
 
                 $table->unique(['company_id', 'student_number'], 'edu_students_company_number_unique');
