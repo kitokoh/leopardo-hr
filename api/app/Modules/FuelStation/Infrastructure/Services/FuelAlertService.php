@@ -130,7 +130,9 @@ final class FuelAlertService
             ->where(function (Builder $query) use ($stationId): void {
                 $query->where('station_id', $stationId)->orWhereNull('station_id');
             })
-            ->orderByDesc('station_id')
+            // ASC = NULL (global) en dernier : la préférence station-spécifique
+            // prime sur la préférence globale (PG : NULLS LAST en ASC).
+            ->orderBy('station_id')
             ->first();
 
         // Absence de ligne = in_app activé par défaut ; les autres canaux
