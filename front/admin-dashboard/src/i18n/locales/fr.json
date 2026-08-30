@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-25T00:00:00Z",
+  "_updated_at": "2026-08-30T12:00:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -171,7 +171,8 @@
     "payroll": "Paie",
     "cabinet": "Coffre documentaire",
     "notifications": "Notifications",
-    "evaluations": "Evaluations"
+    "evaluations": "Evaluations",
+    "restaurant": "Écran cuisine"
   },
   "emails": {
     "invitation": {
@@ -4212,5 +4213,25 @@
   "settingsQrRejected": "QR rejeté : {error}",
   "settingsBiometricSubmitFailed": "Échec de l'envoi : {error}",
   "settingsNotificationsSaveFailed": "Échec de l’enregistrement des préférences : {error}",
-  "companydetailPlanWithPrice": "{planName} — {price}"
+  "companydetailPlanWithPrice": "{planName} — {price}",
+  "restaurant": {
+    "kitchenTitle": "Écran cuisine",
+    "kitchenSubtitle": "File de commandes en temps réel — préparation et mise à disposition",
+    "branch": "Branche",
+    "branchAll": "Toutes les branches",
+    "inPreparation": "En préparation",
+    "ready": "Prêtes",
+    "empty": "Aucune commande en attente. La file est vide.",
+    "start": "Démarrer",
+    "markReady": "Prête",
+    "orderRef": "Commande",
+    "table": "Table",
+    "covers": "couverts",
+    "takeaway": "À emporter",
+    "delivery": "Livraison",
+    "dineIn": "Sur place",
+    "loadError": "Impossible de charger la file cuisine.",
+    "actionError": "Action impossible, réessayez.",
+    "loading": "Chargement de la file cuisine…"
+  }
 }
