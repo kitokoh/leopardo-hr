@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Events\AbsenceApproved;
 use App\Events\AbsenceRejected;
 use App\Events\AbsenceRequested;
 use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
 use App\Events\EmployeeArchived;
-use App\Events\EmployeeDeparted;
 use App\Events\EmployeeCreated;
+use App\Events\EmployeeDeparted;
 use App\Events\EmployeeRoleAssigned;
 use App\Events\PayrollValidated;
-use App\Core\Auth\Domain\Models\AuditLog;
+use App\Modules\FuelStation\Domain\Events\FuelIncidentReported;
+use App\Modules\FuelStation\Domain\Events\FuelIncidentResolved;
+use App\Modules\FuelStation\Domain\Events\FuelReconciliationReported;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
@@ -33,6 +36,9 @@ class AuditLogger implements ShouldQueue
         AbsenceApproved::class => ['action' => 'approved', 'model' => 'absence'],
         AbsenceRejected::class => ['action' => 'rejected', 'model' => 'absence'],
         PayrollValidated::class => ['action' => 'validated', 'model' => 'payroll'],
+        FuelIncidentReported::class => ['action' => 'incident_reported', 'model' => 'incident'],
+        FuelIncidentResolved::class => ['action' => 'incident_resolved', 'model' => 'incident'],
+        FuelReconciliationReported::class => ['action' => 'reconciliation_reported', 'model' => 'report'],
     ];
 
     public function handle(object $event): void
@@ -129,4 +135,3 @@ class AuditLogger implements ShouldQueue
         return array_keys(self::EVENT_MAP);
     }
 }
-

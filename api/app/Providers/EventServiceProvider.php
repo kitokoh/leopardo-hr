@@ -25,6 +25,9 @@ use App\Listeners\LinkPartnerToNewCompany;
 use App\Listeners\NotifyTaxRateValidation;
 use App\Listeners\ProcessCommissionOnPayment;
 use App\Listeners\WebhookListener;
+use App\Modules\FuelStation\Domain\Events\FuelIncidentReported;
+use App\Modules\FuelStation\Domain\Events\FuelIncidentResolved;
+use App\Modules\FuelStation\Domain\Events\FuelReconciliationReported;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -53,5 +56,10 @@ class EventServiceProvider extends ServiceProvider
         TaxRateApproved::class => [NotifyTaxRateValidation::class.'@handleTaxRateApproved'],
         TaxRateRejected::class => [NotifyTaxRateValidation::class.'@handleTaxRateRejected'],
         MarketingLeadQualified::class => [ConvertMarketingLeadToContact::class.'@handleMarketingLeadQualified'],
+
+        // FuelStation (FUEL-009 #5803 / FUEL-010 #5804) — workflow audité.
+        FuelIncidentReported::class => [AuditLogger::class],
+        FuelIncidentResolved::class => [AuditLogger::class],
+        FuelReconciliationReported::class => [AuditLogger::class],
     ];
 }
