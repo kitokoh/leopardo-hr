@@ -4338,7 +4338,20 @@
     },
     "checkin": {
       "title": "Check-in & manifest",
-      "subtitle": "Boarding per trip and passenger counter."
+      "subtitle": "Boarding per trip and passenger counter.",
+      "trip": "Trip",
+      "selectTrip": "Select a trip…",
+      "boarded": "boarded",
+      "seat": "Seat",
+      "passenger": "Passenger",
+      "age": "Age",
+      "class": "Class",
+      "ticket": "Ticket",
+      "action": "Boarding",
+      "emptyManifest": "No passengers for this trip",
+      "noTicket": "No ticket",
+      "checkIn": "Board",
+      "done": "Boarded"
     },
     "tickets": {
       "title": "Tickets",
