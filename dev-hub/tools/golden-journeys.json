@@ -17,12 +17,12 @@
       "label": "EduManager (verticale)",
       "status": "planned"
     },
-    "travelagency": {
-      "label": "TravelAgency (verticale)",
-      "status": "active"
-    },
     "delivery": {
       "label": "DeliveryAgency (BC-26 DELIVERY)",
+      "status": "active"
+    },
+    "travelagency": {
+      "label": "TravelAgency (verticale)",
       "status": "active"
     },
     "restaurantmanager": {
