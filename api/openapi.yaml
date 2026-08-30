@@ -29111,6 +29111,22 @@ components:
       required: true
       schema:
         type: string
+    TravelReportPeriod:
+      name: period_from
+      in: query
+      description: Début de période (YYYY-MM-DD) — agrégation des rapports TRAVEL-501..504.
+      required: false
+      schema:
+        type: string
+        format: date
+    TravelReportPeriodTo:
+      name: period_to
+      in: query
+      description: Fin de période (YYYY-MM-DD) — agrégation des rapports TRAVEL-501..504.
+      required: false
+      schema:
+        type: string
+        format: date
   headers:
     XRequestId:
       description: Identifiant de correlation a fournir au support en cas d'incident.
