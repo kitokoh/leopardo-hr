@@ -39,6 +39,16 @@ export type ClientModuleAccess = ClientModule & {
 
 export const CLIENT_MODULES: ClientModule[] = [
   {
+    key: 'restaurant',
+    href: '/restaurant',
+    label: 'Restaurant',
+    group: 'general',
+    capabilityKeys: ['restaurant', 'restaurantmanager', 'can_view_restaurant'],
+    featureKeys: ['restaurantmanager', 'restaurant'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Restaurant Manager',
+  },
+  {
     key: 'dashboard',
     href: '/dashboard',
     label: 'Tableau de bord',
